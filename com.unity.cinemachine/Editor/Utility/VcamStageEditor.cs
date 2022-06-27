@@ -2,6 +2,7 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
@@ -19,7 +20,7 @@ namespace Cinemachine.Editor
         static StageData[] sStageData = null;
 
         [InitializeOnLoad]
-        class EditorInitialize
+        static class EditorInitialize
         {
             // This code dynamically discovers eligible classes and builds the menu
             // data for the various component pipeline stages.
@@ -30,49 +31,30 @@ namespace Cinemachine.Editor
                 var stageTypes = new List<Type>[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
                 for (int i = 0; i < stageTypes.Length; ++i)
                 {
-                    sStageData[i].Name = ((CinemachineCore.Stage)i).ToString();
+                    sStageData[i].Name = ObjectNames.NicifyVariableName(((CinemachineCore.Stage)i).ToString());
                     stageTypes[i] = new List<Type>();
                 }
 
                 // Get all ICinemachineComponents
-                var allTypes
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract);
+                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) =>
+                    typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract &&
+                    t.GetCustomAttribute<CameraPipelineAttribute>() != null);
 
-                // GML todo: use class attribute instead
-                // Create a temp game object so we can instance behaviours
-                GameObject go = new GameObject("Cinemachine Temp Object");
-                go.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
-                foreach (Type t in allTypes)
+                foreach (var t in allTypes)
                 {
-                    MonoBehaviour b = go.AddComponent(t) as MonoBehaviour;
-                    CinemachineComponentBase c = b != null ? (CinemachineComponentBase)b : null;
-                    if (c != null)
-                    {
-                        CinemachineCore.Stage stage = c.Stage;
-                        stageTypes[(int)stage].Add(t);
-                    }
+                    var stage = (int)t.GetCustomAttribute<CameraPipelineAttribute>().Stage;
+                    stageTypes[stage].Add(t);
                 }
-                GameObject.DestroyImmediate(go);
 
                 // Create the static lists
                 for (int i = 0; i < stageTypes.Length; ++i)
                 {
                     stageTypes[i].Insert(0, null);  // first item is "none"
                     sStageData[i].types = stageTypes[i].ToArray();
-                    GUIContent[] names = new GUIContent[sStageData[i].types.Length];
+                    var names = new GUIContent[sStageData[i].types.Length];
                     for (int n = 0; n < names.Length; ++n)
-                    {
-                        if (n == 0)
-                        {
-                            bool useSimple
-                                = (i == (int)CinemachineCore.Stage.Aim)
-                                    || (i == (int)CinemachineCore.Stage.Body);
-                            names[n] = new GUIContent((useSimple) ? "Do nothing" : "none");
-                        }
-                        else
-                            names[n] = new GUIContent(InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
-                    }
+                        names[n] = new GUIContent(
+                            n == 0 ? "none" : InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
                     sStageData[i].PopupOptions = names;
                 }
             }
@@ -213,7 +195,7 @@ namespace Cinemachine.Editor
             Rect rect = EditorGUILayout.GetControlRect(true);
 
             // Don't use PrefixLabel() because it will link the enabled status of field and label
-            GUIContent label = new GUIContent(InspectorUtility.NicifyClassName(m_Stage.ToString()));
+            GUIContent label = new GUIContent(ObjectNames.NicifyVariableName(m_Stage.ToString()));
             if (m_StageError)
                 label.image = EditorGUIUtility.IconContent("console.warnicon.sml").image;
             float labelWidth = EditorGUIUtility.labelWidth - EditorGUI.indentLevel * indentSize;
@@ -255,6 +237,7 @@ namespace Cinemachine.Editor
                     {
                         ++EditorGUI.indentLevel;
                         m_ComponentEditor.OnInspectorGUI();
+                        EditorGUILayout.Space();
                         --EditorGUI.indentLevel;
                     }
                 }
@@ -276,9 +259,9 @@ namespace Cinemachine.Editor
         static GUIContent ProceduralMotionLabel = new GUIContent(
             "Procedural Motion", 
             "Use the procedural motion algorithms to automatically drive the transform in "
-                + "relation to the LookAt and Follow targets.  \n\n"
-                + "Body controls the position, and Aim controls the rotation.\n\n"
-                + "If Do Nothing is selected, "
+                + "relation to the LookAt and Tracking targets.  \n\n"
+                + "Position Control controls the position, and Rotation Control controls the rotation.\n\n"
+                + "If None is selected, "
                 + "then the transform will not be written to, and can be controlled manually "
                 + "or otherwise driven by script.");
                 

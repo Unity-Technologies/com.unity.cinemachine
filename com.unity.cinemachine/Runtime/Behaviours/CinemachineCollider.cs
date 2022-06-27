@@ -21,7 +21,6 @@ namespace Cinemachine
     /// Additionally, the Collider can be used to assess the shot quality and
     /// report this as a field in the camera State.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
@@ -223,11 +222,10 @@ namespace Cinemachine
             }
             public void UpdateDistanceSmoothing(float distance)
             {
-                float now = CinemachineCore.CurrentTime;
-                if (m_SmoothedDistance == 0 || distance <= m_SmoothedDistance)
+                if (m_SmoothedDistance == 0 || distance < m_SmoothedDistance)
                 {
                     m_SmoothedDistance = distance;
-                    m_SmoothedTime = now;
+                    m_SmoothedTime = CinemachineCore.CurrentTime;
                 }
             }
             public void ResetDistanceSmoothing(float smoothingTime)
@@ -261,7 +259,7 @@ namespace Cinemachine
             return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
         }
         
-          /// <summary>
+        /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>

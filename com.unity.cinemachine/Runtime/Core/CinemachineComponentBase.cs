@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Cinemachine
@@ -5,7 +6,8 @@ namespace Cinemachine
     /// <summary>
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.API)]
+    // GML todo: rename this to CinemachinePipelineComponent ?
+    [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>
@@ -18,6 +20,7 @@ namespace Cinemachine
             {
                 if (m_vcamOwner == null)
                     m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+                // GML todo: remove this
                 if (m_vcamOwner == null && transform.parent != null)
                     m_vcamOwner = transform.parent.GetComponent<CinemachineVirtualCameraBase>();
                 return m_vcamOwner;
@@ -25,12 +28,34 @@ namespace Cinemachine
         }
         CinemachineVirtualCameraBase m_vcamOwner;
 
+        /// <summary>
+        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Handles pipeline validation.
+        /// </summary>
+        protected virtual void OnEnable()
+        {
+            var vcam = VirtualCamera as CmCamera;
+            if (vcam != null)
+                vcam.InvalidatePipelineCache();
+        }
+
+        /// <summary>
+        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Handles pipeline validation.
+        /// </summary>
+        protected virtual void OnDisable()
+        {
+            var vcam = VirtualCamera as CmCamera;
+            if (vcam != null)
+                vcam.InvalidatePipelineCache();
+        }
+
         /// <summary>Returns the owner vcam's Follow target.</summary>
         public Transform FollowTarget
         {
             get
             {
-                CinemachineVirtualCameraBase vcam = VirtualCamera;
+                var vcam = VirtualCamera;
                 return vcam == null ? null : vcam.ResolveFollow(vcam.Follow);
             }
         }
@@ -46,7 +71,14 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        public ICinemachineTargetGroup AbstractFollowTargetGroup => VirtualCamera.AbstractFollowTargetGroup;
+        public ICinemachineTargetGroup AbstractFollowTargetGroup 
+        {
+            get
+            {
+                CinemachineVirtualCameraBase vcam = VirtualCamera;
+                return vcam == null ? null : vcam.AbstractFollowTargetGroup;
+            }
+        }
 
         /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
         public CinemachineTargetGroup FollowTargetGroup => AbstractFollowTargetGroup as CinemachineTargetGroup;
@@ -138,9 +170,11 @@ namespace Cinemachine
         /// Base class implementation does nothing.</summary>
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">Current effective deltaTime</param>
+        // GML todo: should this just be another stage in the pipeline?
         public virtual void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime) {}
 
         /// <summary>What part of the pipeline this fits into</summary>
+        // GML todo: remove this - use attribute
         public abstract CinemachineCore.Stage Stage { get; }
 
         /// <summary>Special for Body Stage compoments that want to be applied after Aim 
@@ -187,6 +221,7 @@ namespace Cinemachine
         public virtual float GetMaxDampTime() { return 0; }
 
         /// <summary>Components that require user input should implement this and return true.</summary>
+        // GML todo: remove this
         public virtual bool RequiresUserInput => false;
     }
 }

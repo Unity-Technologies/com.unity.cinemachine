@@ -4,9 +4,26 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## ## [3.0.0-pre.1] - 2022-06-01
+- Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
+- VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
+- FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
+- Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
+- Add flag for custom priority setting.
+- HDRP only: Added FocusDistance setting to lens
+- HDRP only: New AutoFocus extension.  Use instead of VolumeSettings for Focus Tracking.  Includes Automatic mode that queries depth buffer instead of tracking a specific target.
+
+
 ## UNRELEASED
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
+- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
+- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
+- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
+- Bugfix: Fixed spurious Z rotations during speherical blend.
+- Regression fix: POV is relative to its parent transform.
+- Bugfix: SensorSize is not saved when not using physical camera.
 
 
 ## [2.9.0-pre.7] - 2022-03-29
@@ -16,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 - Bugfix: SaveDuringPlay works with ILists now.
+- Bugfix: Paste VirtualCamera and FreeLook components onto prefab works for subcomponents
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
 - Bugfix: POV orientation was incorrect with World Up override
 - Added AutoEnable option to CinemachineInputHandler
@@ -36,6 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow logged console messages when looking straight up or down.
 - BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 - Regression fix: CinemachineCollider smoothing time did not reset correctly, so it was working once only.
+- Cinemachine supports Splines package. Added new Body component: CinemachineSplineDolly. 
 - Bugfix: Overlay tooltip names were incorrect.
 - Bugfix: Confiner2D now displays the calculated confining area when its vcam is selected.
 - Samples no longer throw errors with HDRP and URP. 3rdPersonWithAimMode and Timeline samples no longer have invalid references.

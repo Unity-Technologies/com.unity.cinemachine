@@ -21,7 +21,7 @@ namespace Cinemachine
     public sealed class CinemachineCore
     {
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
-        public static readonly int kStreamingVersion = 20170927;
+        public static readonly int kStreamingVersion = 20220201;
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
@@ -29,10 +29,10 @@ namespace Cinemachine
         /// </summary>
         public enum Stage
         {
-            /// <summary>Second stage: position the camera in space</summary>
+            /// <summary>First stage: position the camera in space</summary>
             Body,
 
-            /// <summary>Third stage: orient the camera to point at the target</summary>
+            /// <summary>Second stage: orient the camera to point at the target</summary>
             Aim,
 
             /// <summary>Final pipeline stage: apply noise (this is done separately, in the
@@ -59,8 +59,9 @@ namespace Cinemachine
 
         /// <summary>
         /// If true, show hidden Cinemachine objects, to make manual script mapping possible.
+        /// GML todo: delete this
         /// </summary>
-        public static bool sShowHiddenObjects = false;
+        public static bool sShowHiddenObjects = true;
 
         /// <summary>Delegate for overriding Unity's default input system.  Returns the value
         /// of the named axis.</summary>
@@ -132,6 +133,9 @@ namespace Cinemachine
 
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public int BrainCount { get { return mActiveBrains.Count; } }
+
+        /// <summary>Enables frame delta compensation for not updated frames. False is useful for deterministic test results. </summary>
+        internal static bool FrameDeltaCompensationEnabled = true;
 
         /// <summary>Access the array of active CinemachineBrains in the scene
         /// without generating garbage</summary>
@@ -340,15 +344,17 @@ namespace Cinemachine
                 };
                 mUpdateStatus.Add(vcam, status);
             }
+            
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : s_FixedFrameCount - status.lastUpdateFixedFrame;
+            
             if (deltaTime >= 0)
             {
                 if (frameDelta == 0 && status.lastUpdateMode == updateClock
                         && status.lastUpdateDeltaTime == deltaTime)
                     return; // already updated
-                if (frameDelta > 0)
+                if (FrameDeltaCompensationEnabled && frameDelta > 0)
                     deltaTime *= frameDelta; // try to catch up if multiple frames
             }
 

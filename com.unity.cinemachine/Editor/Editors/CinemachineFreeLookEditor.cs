@@ -9,6 +9,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
+
+#pragma warning disable 618 // CinemachineFreeLook obsolete
+
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor
@@ -60,13 +63,27 @@ namespace Cinemachine
 
         public override void OnInspectorGUI()
         {
+            Target.GetRig(0); // force an update of the rig cache
+            if (!Target.RigsAreCreated)
+            {
+                EditorGUILayout.HelpBox(
+                    "It's not possible to add this component to a prefab instance.  "
+                    + "Instead, you can open the Prefab in Prefab Mode or unpack "
+                    + "the Prefab instance to remove the Prefab connection.",
+                    MessageType.Error);
+                return;
+            }
+            
             Target.m_XAxis.ValueRangeLocked
                 = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
 
             // Ordinary properties
             BeginInspector();
-            DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawUpgradeButton();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
+            DrawInputProviderButtonInInspector();
+            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
@@ -145,7 +162,7 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandle(freelook,
+                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleFreelook(freelook,
                     new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
                 if (draggedRig >= 0)
                     SetSelectedRig(Target, draggedRig);
@@ -221,27 +238,54 @@ namespace Cinemachine
             {
                 CinemachineFreeLook.CreateRigOverride
                     = (CinemachineFreeLook vcam, string name, CinemachineVirtualCamera copyFrom) =>
+                {
+                    // Recycle the game object if it exists
+                    GameObject go = null;
+                    foreach (Transform child in vcam.transform)
                     {
-                        // Create a new rig with default components
-                        GameObject go = ObjectFactory.CreateGameObject(name);
-                        Undo.RegisterCreatedObjectUndo(go, "created rig");
-                        Undo.SetTransformParent(go.transform, vcam.transform, "parenting rig");
-                        CinemachineVirtualCamera rig = Undo.AddComponent<CinemachineVirtualCamera>(go);
-                        Undo.RecordObject(rig, "creating rig");
-                        if (copyFrom != null)
-                            ReflectionHelpers.CopyFields(copyFrom, rig);
-                        else
+                        if (child.gameObject.name == name)
                         {
-                            go = rig.GetComponentOwner().gameObject;
-                            Undo.RecordObject(Undo.AddComponent<CinemachineOrbitalTransposer>(go), "creating rig");
-                            Undo.RecordObject(Undo.AddComponent<CinemachineComposer>(go), "creating rig");
+                            go = child.gameObject;
+                            break;
                         }
-                        return rig;
-                    };
-                CinemachineFreeLook.DestroyRigOverride = (GameObject rig) =>
+                    }
+
+                    CinemachineVirtualCamera rig = null;
+                    if (go == null)
                     {
-                        Undo.DestroyObjectImmediate(rig);
-                    };
+                        // Create a new rig - can't do it if prefab instance
+                        if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject))
+                            return null;
+                        go =  ObjectFactory.CreateGameObject(name);
+                        Undo.RegisterCreatedObjectUndo(go, "created rig");
+                        Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
+                    }
+
+                    // Create a new rig with default components
+                    rig = Undo.AddComponent<CinemachineVirtualCamera>(go);
+                    rig.CreatePipeline(copyFrom);
+                    if (copyFrom != null)
+                        ReflectionHelpers.CopyFields(copyFrom, rig);
+                    else
+                    {
+                        // Defaults
+                        go = rig.GetComponentOwner().gameObject;
+                        Undo.AddComponent<CinemachineOrbitalTransposer>(go);
+                        Undo.AddComponent<CinemachineComposer>(go);
+                        rig.InvalidateComponentPipeline();
+                    }
+                    return rig;
+                };
+
+                CinemachineFreeLook.DestroyRigOverride = (GameObject rig) =>
+                {
+                    var vcam = rig.GetComponent<CinemachineVirtualCamera>();
+                    if (vcam != null)
+                    {
+                        vcam.DestroyPipeline();
+                        Undo.DestroyObjectImmediate(vcam);
+                    }
+                };
             }
         }
 

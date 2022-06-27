@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -50,10 +51,10 @@ namespace Cinemachine
     /// <seealso cref="CinemachineComposer"/>
     /// <seealso cref="CinemachineTransposer"/>
     /// <seealso cref="CinemachineBasicMultiChannelPerlin"/>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
+    [Obsolete("This is deprecated. Use CmCamera instead.")]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
@@ -171,15 +172,6 @@ namespace Cinemachine
             base.OnEnable();
             m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
             InvalidateComponentPipeline();
-
-            // Can't add components during OnValidate
-            if (ValidatingStreamVersion < 20170927)
-            {
-                if (Follow != null && GetCinemachineComponent(CinemachineCore.Stage.Body) == null)
-                    AddCinemachineComponent<CinemachineHardLockToTarget>();
-                if (LookAt != null && GetCinemachineComponent(CinemachineCore.Stage.Aim) == null)
-                    AddCinemachineComponent<CinemachineHardLookAt>();
-            }
         }
 
         /// <summary>Calls the DestroyPipelineDelegate for destroying the hidden
@@ -195,16 +187,27 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
-        protected override void OnValidate()
+        internal protected override void LegacyUpgrade(int streamedVersion)
         {
-            base.OnValidate();
-            m_Lens.Validate();
+            base.LegacyUpgrade(streamedVersion);
             if (m_LegacyBlendHint != BlendHint.None)
             {
                 m_Transitions.m_BlendHint = m_LegacyBlendHint;
                 m_LegacyBlendHint = BlendHint.None;
             }
+        }
+
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
+        }
+
+        /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
+        protected void OnValidate()
+        {
+            m_Lens.Validate();
         }
 
         void OnTransformChildrenChanged()
@@ -214,16 +217,8 @@ namespace Cinemachine
 
         void Reset()
         {
-#if UNITY_EDITOR
-            if (UnityEditor.PrefabUtility.GetPrefabInstanceStatus(gameObject)
-                != UnityEditor.PrefabInstanceStatus.NotAPrefab)
-            {
-                Debug.Log("You cannot reset a prefab instance.  "
-                    + "First disconnect this instance from the prefab, or enter Prefab Edit mode");
-                return;
-            }
-#endif
             DestroyPipeline();
+            UpdateComponentPipeline();
         }
 
         /// <summary>
@@ -255,30 +250,34 @@ namespace Cinemachine
         public delegate void DestroyPipelineDelegate(GameObject pipeline);
 
         /// <summary>Destroy any existing pipeline container.</summary>
-        private void DestroyPipeline()
+        internal void DestroyPipeline()
         {
             List<Transform> oldPipeline = new List<Transform>();
             foreach (Transform child in transform)
                 if (child.GetComponent<CinemachinePipeline>() != null)
                     oldPipeline.Add(child);
 
-            if (!RuntimeUtility.IsPrefab(gameObject))
+            foreach (Transform child in oldPipeline)
             {
-                foreach (Transform child in oldPipeline)
+                if (DestroyPipelineOverride != null)
+                    DestroyPipelineOverride(child.gameObject);
+                else
                 {
-                    if (DestroyPipelineOverride != null)
-                        DestroyPipelineOverride(child.gameObject);
-                    else
+                    var oldStuff = child.GetComponents<CinemachineComponentBase>();
+                    foreach (var c in oldStuff)
+                        Destroy(c);
+                    if (!RuntimeUtility.IsPrefab(gameObject))
                         Destroy(child.gameObject);
                 }
-                m_ComponentOwner = null;
             }
+            m_ComponentOwner = null;
+            InvalidateComponentPipeline();
             PreviousStateIsValid = false;
         }
 
         /// <summary>Create a default pipeline container.
         /// Note: copyFrom only supported in Editor, not build</summary>
-        private Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
+        internal Transform CreatePipeline(CinemachineVirtualCamera copyFrom)
         {
             CinemachineComponentBase[] components = null;
             if (copyFrom != null)
@@ -290,9 +289,9 @@ namespace Cinemachine
             Transform newPipeline = null;
             if (CreatePipelineOverride != null)
                 newPipeline = CreatePipelineOverride(this, PipelineName, components);
-            else
+            else if (!RuntimeUtility.IsPrefab(gameObject))
             {
-                GameObject go =  new GameObject(PipelineName);
+                GameObject go = new GameObject(PipelineName);
                 go.transform.parent = transform;
                 go.AddComponent<CinemachinePipeline>();
                 newPipeline = go.transform;
@@ -394,22 +393,26 @@ namespace Cinemachine
         CameraState m_State = CameraState.Default; // Current state this frame
 
         CinemachineComponentBase[] m_ComponentPipeline = null;
-        [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;   // serialized to handle copy/paste
+
+        // Serialized only to implement copy/paste of CM subcomponents.
+        // Note however that this strategy has its limitations: the CM pipeline Components
+        // won't be pasted onto a prefab asset outside the scene unless the prefab
+        // is opened in Prefab edit mode.
+        [SerializeField][HideInInspector] private Transform m_ComponentOwner = null;
+
         void UpdateComponentPipeline()
         {
-            bool isPrefab = RuntimeUtility.IsPrefab(gameObject);
 #if UNITY_EDITOR
             // Did we just get copy/pasted?
             if (m_ComponentOwner != null && m_ComponentOwner.parent != transform)
             {
-                if (!isPrefab) // can't paste to a prefab
-                {
-                    CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
-                        ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
-                    DestroyPipeline();
-                    m_ComponentOwner = CreatePipeline(copyFrom);
-                }
+                CinemachineVirtualCamera copyFrom = (m_ComponentOwner.parent != null)
+                    ? m_ComponentOwner.parent.gameObject.GetComponent<CinemachineVirtualCamera>() : null;
+                DestroyPipeline();
+                CreatePipeline(copyFrom);
+                m_ComponentOwner = null;
             }
+            // Make sure the pipeline stays hidden, even through prefab
             if (m_ComponentOwner != null)
                 SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
 #endif
@@ -423,21 +426,19 @@ namespace Cinemachine
             {
                 if (child.GetComponent<CinemachinePipeline>() != null)
                 {
-                    m_ComponentOwner = child;
                     CinemachineComponentBase[] components = child.GetComponents<CinemachineComponentBase>();
                     foreach (CinemachineComponentBase c in components)
                         if (c.enabled)
                             list.Add(c);
+                    m_ComponentOwner = child;
+                    break;
                 }
             }
 
             // Make sure we have a pipeline owner
-            if (m_ComponentOwner == null && !isPrefab)
+            if (m_ComponentOwner == null)
                 m_ComponentOwner = CreatePipeline(null);
 
-            // Make sure the pipeline stays hidden, even through prefab
-            if (m_ComponentOwner != null)
-                SetFlagsForHiddenChild(m_ComponentOwner.gameObject);
             if (m_ComponentOwner != null && m_ComponentOwner.gameObject != null)
             {
                 // Sort the pipeline
