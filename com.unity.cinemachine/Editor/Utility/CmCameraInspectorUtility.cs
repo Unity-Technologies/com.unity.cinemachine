@@ -389,9 +389,10 @@ namespace Cinemachine.Editor
         /// </summary>
         public void SortComponents()
         {
-            return; // causes problem in prefabs
             if (Target == null)
                 return; // target was deleted
+            if (PrefabUtility.IsPartOfNonAssetPrefabInstance(Target))
+                return; // causes problem in prefab instances
             SortOrder lastItem = SortOrder.None;
             bool sortNeeded = false;
             Target.gameObject.GetComponents(s_componentCache);
