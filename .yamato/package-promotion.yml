@@ -27,15 +27,15 @@ publish:
 {% for platform in test_platforms[runtime_platform['0']] -%}
 {% for project in runtime_platform['1'].test_projects -%}
 {%- comment -%}
-# If nightly trigger's platforms list contains "all" or this platform, then this platform needs to be included in nightly trigger, otherwise skip it.
+# If weekly trigger's platforms list contains "all" or this platform, then this platform needs to be included in weekly trigger, otherwise skip it.
 {%- endcomment -%}
-{% unless project.nightly.platforms contains "all" or project.nightly.platforms contains platform.name -%}
+{% unless project.weekly.platforms contains "all" or project.weekly.platforms contains platform.name -%}
 {% continue -%}
 {% endunless -%}
 {%- comment -%}
-# If nightly trigger's editors list contains "all" or this editor version, then this editor needs to be included in nightly trigger, otherwise skip it.
+# If weekly trigger's editors list contains "all" or this editor version, then this editor needs to be included in weekly trigger, otherwise skip it.
 {%- endcomment -%}
-{% unless project.nightly.editors contains "all" or project.nightly.editors contains editor.version -%}
+{% unless project.weekly.editors contains "all" or project.weekly.editors contains editor.version -%}
 {% continue -%}
 {% endunless -%}
 {% if project.project_name == "package_test" -%}

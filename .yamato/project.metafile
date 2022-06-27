@@ -32,7 +32,8 @@ packages:
             enabled_platforms: [win, mac, ubuntu, ubuntu-20]
 
 is_monorepo: !!bool false
-enable_nightly: !!bool true
+enable_nightly: !!bool false
+enable_weekly: !!bool true
 using_submodule: !!bool false
 git_main_branch: master
 
@@ -81,7 +82,7 @@ test_triggers:
               PR:
                 platforms: [ubuntu-20]
                 editors: [all]
-              nightly:
+              weekly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
                 editors: [all]
 
@@ -89,7 +90,7 @@ test_triggers:
               PR:
                 platforms: [ubuntu-20]
                 editors: [all]
-              nightly:
+              weekly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
                 editors: [all]
             
@@ -97,7 +98,7 @@ test_triggers:
               PR:
                 platforms: [ubuntu-20]
                 editors: [all]
-              nightly:
+              weekly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
                 editors: [2020.3, 2021.3, 2022.1]
             
@@ -105,7 +106,7 @@ test_triggers:
               PR:
                 platforms: [ubuntu-20]
                 editors: [2019.4]
-              nightly:
+              weekly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
                 editors: [all]
             
@@ -113,6 +114,6 @@ test_triggers:
               PR:
                 platforms: [ubuntu-20]
                 editors: [all]
-              nightly:
+              weekly:
                 platforms: [win, mac, ubuntu, ubuntu-20]
                 editors: [all]
