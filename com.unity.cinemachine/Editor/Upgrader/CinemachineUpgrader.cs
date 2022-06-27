@@ -193,6 +193,10 @@ namespace Cinemachine.Editor
                         if (prefabInstance == null || convertedCopy == null)
                             continue; // ignore, instance is not in this scene
                         
+                        // copy cm camera related properties (such as targets and lens)
+                        UnityEditorInternal.ComponentUtility.CopyComponent(convertedCopy.GetComponent<CmCamera>());
+                        UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabInstance.GetComponent<CmCamera>());
+                        
                         var prefabInstanceComponents = 
                             prefabInstance.GetComponents<CinemachineComponentBase>();
                         var convertedComponents = 
