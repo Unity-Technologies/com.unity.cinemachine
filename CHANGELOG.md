@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.8.7] - 2022-07-01
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
-- Bugfix: Fixed spurious Z rotations during speherical blend.
+- Bugfix: Fixed spurious Z rotations during spherical blend.
 - Regression fix: POV is relative to its parent transform.
 
 ## [2.8.6] - 2022-05-03
