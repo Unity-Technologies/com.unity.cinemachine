@@ -595,6 +595,9 @@ namespace Cinemachine
 
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
+
+            // Used for blend reversal
+            public float blendStartPosition;
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
@@ -753,6 +756,7 @@ namespace Cinemachine
             // Are we transitioning cameras?
             var activeCamera = TopCameraFromPriorityQueue();
             var outGoingCamera = frame.blend.CamB;
+
             if (activeCamera != outGoingCamera)
             {
                 // Do we need to create a game-play blend?
@@ -761,58 +765,40 @@ namespace Cinemachine
                 {
                     // Create a blend (curve will be null if a cut)
                     var blendDef = LookupBlend(outGoingCamera, activeCamera);
-                    if (blendDef.BlendCurve != null && blendDef.BlendTime > 0)
+                    float blendDuration = blendDef.BlendTime;
+                    float blendStartPosition = 0;
+                    if (blendDef.BlendCurve != null && blendDuration > UnityVectorExtensions.Epsilon)
                     {
                         if (frame.blend.IsComplete)
-                        {
-                            frame.blend.CamA = outGoingCamera; // new blend
-                            frame.blend.ReverseCache.Reset();
-                        }
+                            frame.blend.CamA = outGoingCamera;  // new blend
                         else
                         {
                             // Special case: if backing out of a blend-in-progress
                             // with the same blend in reverse, adjust the blend time
+                            // to cancel out the progress made in the opposite direction
                             if ((frame.blend.CamA == activeCamera 
                                     || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
-                                && frame.blend.CamB == outGoingCamera)
+                                && frame.blend.CamB == outGoingCamera 
+                                && frame.blend.Duration <= blendDef.BlendTime)
                             {
-                                var blendDefReverse = LookupBlend(activeCamera, outGoingCamera);
-                                var previousOriginalDuration = blendDefReverse.m_Time;
-                                var currentOriginalDuration = blendDef.m_Time;
-                                
-                                frame.blend.ReverseCache.OriginalDirection = !frame.blend.ReverseCache.OriginalDirection;
-                                var originalDir = frame.blend.ReverseCache.OriginalDirection;
-                                // DeltaRatio determines the amount traveled as ratio by the previous blend,
-                                // the sign is determined by the direction with respect to the original direction
-                                var deltaRatio = (originalDir ? -1f : 1f) * 
-                                    (frame.blend.TimeInBlend / previousOriginalDuration);
-                                
-                                // CumulativeRatio is the amount traveled overall as a ratio
-                                // in all previous blends with respect to the current blend's original duration
-                                frame.blend.ReverseCache.CumulativeRatio += deltaRatio;
-                                var duration = currentOriginalDuration * frame.blend.ReverseCache.CumulativeRatio;
-                                
-                                // Remaining duration depends on the original direction
-                                // A->B => A[xxxxxrrr]B, A<-B => A[rrrrrxxx]B
-                                var remainingDuration = originalDir ? currentOriginalDuration - duration : duration;
-                                blendDef.m_Time = remainingDuration;
+                                // How far have we blended?  That is what we must undo
+                                var progress = frame.blendStartPosition 
+                                    + (1 - frame.blendStartPosition) * frame.blend.TimeInBlend / frame.blend.Duration;
+                                blendDuration *= progress;
+                                blendStartPosition = 1 - progress;
                             }
-                            else
-                            {
-                                frame.blend.ReverseCache.Reset();
-                            }
-
                             // Chain to existing blend
                             frame.blend.CamA = new BlendSourceVirtualCamera(
                                 new CinemachineBlend(
                                     frame.blend.CamA, frame.blend.CamB,
                                     frame.blend.BlendCurve, frame.blend.Duration,
-                                    frame.blend.TimeInBlend, frame.blend.ReverseCache));
+                                    frame.blend.TimeInBlend));
                         }
                     }
                     frame.blend.BlendCurve = blendDef.BlendCurve;
-                    frame.blend.Duration = blendDef.BlendTime;
+                    frame.blend.Duration = blendDuration;
                     frame.blend.TimeInBlend = 0;
+                    frame.blendStartPosition = blendStartPosition;
                 }
                 // Set the current active camera
                 frame.blend.CamB = activeCamera;
@@ -829,7 +815,6 @@ namespace Cinemachine
                     frame.blend.BlendCurve = null;
                     frame.blend.Duration = 0;
                     frame.blend.TimeInBlend = 0;
-                    frame.blend.ReverseCache.Reset();
                 }
             }
         }

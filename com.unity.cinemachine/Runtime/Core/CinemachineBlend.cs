@@ -43,22 +43,6 @@ namespace Cinemachine
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration;
 
-        internal struct BlendReverseCache
-        {
-            // CumulativeRatio [0,1] determines the amount the camera has traveled between outGoingCamera and activeCamera.
-            [Range(0,1)]
-            public float CumulativeRatio;
-            // OriginalDirection determines the direction of the current blend with respect to the original blend
-            public bool OriginalDirection;
-
-            public void Reset()
-            {
-                CumulativeRatio = 0;
-                OriginalDirection = true;
-            }
-        }
-        internal BlendReverseCache ReverseCache;
-
         /// <summary>True if the time relative to the start of the blend is greater
         /// than or equal to the blend duration</summary>
         public bool IsComplete => TimeInBlend >= Duration || !IsValid;
@@ -124,17 +108,6 @@ namespace Cinemachine
             BlendCurve = curve;
             TimeInBlend = t;
             Duration = duration;
-        }
-
-        internal CinemachineBlend(ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, 
-            float duration, float t, BlendReverseCache reverseCache)
-        {
-            CamA = a;
-            CamB = b;
-            BlendCurve = curve;
-            TimeInBlend = t;
-            Duration = duration;
-            ReverseCache = reverseCache;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
