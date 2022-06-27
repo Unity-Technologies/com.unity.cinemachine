@@ -37,9 +37,9 @@ namespace Cinemachine
         public float m_SoftZoneWidth;
         [Obsolete("m_SoftZoneHeight has been deprecated. Use CinemachineRotationComposer.Composition.SoftZoneSize.y instead")]
         public float m_SoftZoneHeight;
-        [Obsolete("m_BiasX has been deprecated. Use CinemachineRotationComposer.Composition.CenterShift.x instead")]
+        [Obsolete("m_BiasX has been deprecated. Use CinemachineRotationComposer.Composition.Bias.x instead")]
         public float m_BiasX;
-        [Obsolete("m_BiasY has been deprecated. Use CinemachineRotationComposer.Composition.CenterShift.y instead")]
+        [Obsolete("m_BiasY has been deprecated. Use CinemachineRotationComposer.Composition.Bias.y instead")]
         public float m_BiasY;
 
         [Obsolete("m_CenterOnActivate has been deprecated. Use CinemachineRotationComposer.CenterOnActivate instead")]
