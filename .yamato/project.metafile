@@ -36,7 +36,7 @@ enable_nightly: !!bool true
 using_submodule: !!bool false
 git_main_branch: master
 
-enable_codecov: !!bool false
+enable_codecov: !!bool true
 enable_sonarqube: !!bool false
 
 test_editors:
