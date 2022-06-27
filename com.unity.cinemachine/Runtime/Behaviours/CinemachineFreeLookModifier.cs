@@ -110,7 +110,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -234,7 +234,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -282,7 +282,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -353,7 +353,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -431,7 +431,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -509,7 +509,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -583,7 +583,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -665,7 +665,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>

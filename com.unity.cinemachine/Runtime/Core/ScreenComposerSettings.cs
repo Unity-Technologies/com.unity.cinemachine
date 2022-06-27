@@ -23,8 +23,8 @@ namespace Cinemachine
             + "towards the desired position, depending on the damping speed")]
         public Vector2 SoftZoneSize;
 
-        /// <summary>A non-zero CenterShift will move the targt position away from the center of the soft zone</summary>
-        [Tooltip("A non-zero CenterShift will move the targt position away from the center of the soft zone")]
+        /// <summary>A non-zero CenterShift will move the target position away from the center of the soft zone</summary>
+        [Tooltip("A non-zero CenterShift will move the target position away from the center of the soft zone")]
         public Vector2 CenterShift;
 
         /// <summary>Clamps values to the expected ranges</summary>
@@ -59,7 +59,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Tests whether 2 ScreenComposerSettings are approxiamtely equal.
+        /// Tests whether 2 ScreenComposerSettings are approximately equal.
         /// </summary>
         /// <param name="a">First settings object</param>
         /// <param name="b">Second settings object</param>
