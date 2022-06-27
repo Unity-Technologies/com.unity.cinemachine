@@ -8,12 +8,12 @@ using Tests.Runtime;
 namespace Tests.Runtime
 {
     [TestFixture]
-    public class CamerasBlendingTests : CinemachineFixtureBase
+    public class CamerasBlendingTests : CinemachineRuntimeFixtureBase
     {
         private const float BlendingTime = 1;
 
         private CinemachineBrain m_Brain;
-        private CinemachineVirtualCamera m_TargetVCam;
+        private CmCamera m_TargetVCam;
 
         [SetUp]
         public override void SetUp()
@@ -30,12 +30,12 @@ namespace Tests.Runtime
             var followObject = CreateGameObject("Follow Object");
 
             // Source vcam
-            var sourceVCam = CreateGameObject("Source CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            var sourceVCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             sourceVCam.Priority = 2;
             sourceVCam.Follow = followObject.transform;
 
             // target vcam
-            m_TargetVCam = CreateGameObject("Target CM Vcam", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+            m_TargetVCam = CreateGameObject("Target CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_TargetVCam.Priority = 1;
             m_TargetVCam.Follow = followObject.transform;
 

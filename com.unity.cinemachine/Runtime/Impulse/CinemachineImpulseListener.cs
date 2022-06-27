@@ -11,7 +11,6 @@ namespace Cinemachine
     /// </summary>
     [SaveDuringPlay]
     [AddComponentMenu("")] // Hide in menu
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [ExecuteAlways]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseListener.html")]
     public class CinemachineImpulseListener : CinemachineExtension

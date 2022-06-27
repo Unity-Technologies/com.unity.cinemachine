@@ -6,6 +6,8 @@ using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
 
+#pragma warning disable 618 // CinemachineVirtualCamera obsolete
+
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVirtualCamera))]
@@ -155,7 +157,7 @@ namespace Cinemachine.Editor
             }
             BeginInspector();
             DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.m_Priority));
+            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
             DrawLensSettingsInInspector(FindProperty(x => x.m_Lens));
@@ -164,6 +166,18 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
+        void DrawHeaderInInspector()
+        {
+            if (!IsPropertyExcluded("Header"))
+            {
+                DrawUpgradeButton();
+                DrawCameraStatusInInspector();
+                DrawGlobalControlsInInspector();
+                DrawInputProviderButtonInInspector();
+                ExcludeProperty("Header");
+            }
+        }
+        
         void ResetTargetOnUndo() 
         {
             ResetTarget();

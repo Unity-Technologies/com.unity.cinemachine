@@ -28,35 +28,36 @@ namespace Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
+    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera, ISerializationCallbackReceiver
     {
+        // TODO: remove m_ExcludedPropertiesInInspector
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         public string[] m_ExcludedPropertiesInInspector = new string[] { "m_Script" };
 
+        // TODO: remove m_LockStageInInspector
         /// <summary>Inspector control - Use for enabling sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         public CinemachineCore.Stage[] m_LockStageInInspector;
 
-        /// <summary>Version that was last streamed, for upgrading legacy</summary>
-        public int ValidatingStreamVersion
-        {
-            get { return m_OnValidateCalled ? m_ValidatingStreamVersion : CinemachineCore.kStreamingVersion; }
-            private set { m_ValidatingStreamVersion = value; }
-        }
-        private int m_ValidatingStreamVersion = 0;
-        private bool m_OnValidateCalled = false;
-
-        [HideInInspector, SerializeField, NoSaveDuringPlay]
-        private int m_StreamingVersion;
-
-        /// <summary>The priority will determine which camera becomes active based on the
-        /// state of other cameras and this camera.  Higher numbers have greater priority.
+        /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
+        /// active simultaneously.  The most-recently-activated CmCamera will take control, unless there 
+        /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated 
+        /// highest-priority CmCamera will control the main camera. 
+        /// 
+        /// The default priority is 0.  Often it is sufficient to leave the default setting.  
+        /// In special cases where you want a CmCamera to have a higher or lower priority than 0, 
+        /// the value can be set here.
         /// </summary>
         [NoSaveDuringPlay]
-        [Tooltip("The priority will determine which camera becomes active based on the state of "
-            + "other cameras and this camera.  Higher numbers have greater priority.")]
-        public int m_Priority = 10;
+        [Tooltip("Priority can be used to control which Cm Camera is live when multiple CM Cameras are "
+            + "active simultaneously.  The most-recently-activated CmCamera will take control, unless there "
+            + "is another Cm Camera active with a higher priority.  In general, the most-recently-activated "
+            + "highest-priority CmCamera will control the main camera. \n\n"
+            + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
+            + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
+            + "the value can be set here.")]
+        public CameraPriority CameraPriority;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
@@ -104,6 +105,46 @@ namespace Cinemachine
             + "Set this to tune for performance. Most of the time Never is fine, "
             + "unless the virtual camera is doing shot evaluation.")]
         public StandbyUpdateMode m_StandbyUpdate = StandbyUpdateMode.RoundRobin;
+
+        //============================================================================
+        // Legacy streaming support
+
+        [HideInInspector, SerializeField, NoSaveDuringPlay]
+        private int m_StreamingVersion = CinemachineCore.kStreamingVersion;
+
+        /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                LegacyUpgrade(m_StreamingVersion);
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
+        }
+
+        /// <summary>Pre-Serialization handler - delegates to derived classes</summary>
+        void ISerializationCallbackReceiver.OnBeforeSerialize() => OnBeforeSerialize();
+
+        /// <summary>
+        /// Override this to handle any upgrades necessitated by a streaming version change
+        /// </summary>
+        /// <param name="streamedVersion">The version that was streamed</param>
+        internal protected virtual void LegacyUpgrade(int streamedVersion)
+        {
+            if (streamedVersion < 20220601)
+                CameraPriority = new CameraPriority { Priority = m_LegacyPriority, UseCustomPriority = true };
+        }
+
+        [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
+        int m_LegacyPriority = 10;
+
+        /// <summary>Obsolete field - use Priority instead</summary>
+        // GML this does not work because we can't auto-upgrade an int field to an int property :-/
+        //[Obsolete("m_Priority has been removed.  Please use Priority. (UnityUpgradable) -> Priority", false)]
+        [Obsolete("m_Priority has been removed.  Please use Priority.", false)]
+        public int m_Priority { get => Priority; set => Priority = value; }
+
+        //============================================================================
+
+        internal virtual void OnBeforeSerialize() {}
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.
@@ -228,7 +269,7 @@ namespace Cinemachine
         /// See CinemachineCore.Stage.
         /// </summary>
         /// <param name="extension">The extension to add.</param>
-        public virtual void AddExtension(CinemachineExtension extension)
+        internal void AddExtension(CinemachineExtension extension)
         {
             if (mExtensions == null)
                 mExtensions = new List<CinemachineExtension>();
@@ -239,7 +280,7 @@ namespace Cinemachine
 
         /// <summary>Remove a Pipeline stage hook callback.</summary>
         /// <param name="extension">The extension to remove.</param>
-        public virtual void RemoveExtension(CinemachineExtension extension)
+        internal void RemoveExtension(CinemachineExtension extension)
         {
             if (mExtensions != null)
                 mExtensions.Remove(extension);
@@ -354,9 +395,10 @@ namespace Cinemachine
 
         /// <summary>Get the Priority of the virtual camera.  This determines its placement
         /// in the CinemachineCore's queue of eligible shots.</summary>
-        public int Priority { 
-            get => m_Priority;
-            set => m_Priority = value;
+        public int Priority 
+        { 
+            get => CameraPriority.UseCustomPriority ? CameraPriority.Priority : 0;
+            set => CameraPriority = new CameraPriority { Priority = value, UseCustomPriority = true };
         }
 
         /// <summary>Hint for blending to and from this virtual camera</summary>
@@ -566,16 +608,6 @@ namespace Cinemachine
             return null;
         }
 
-        /// <summary>Enforce bounds for fields, when changed in inspector.
-        /// Call base class implementation at the beginning of overridden method.
-        /// After base method is called, ValidatingStreamVersion will be valid.</summary>
-        protected virtual void OnValidate()
-        {
-            m_OnValidateCalled = true;
-            ValidatingStreamVersion = m_StreamingVersion;
-            m_StreamingVersion = CinemachineCore.kStreamingVersion;
-        }
-
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
         {
@@ -609,7 +641,7 @@ namespace Cinemachine
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void Update()
         {
-            if (m_Priority != m_QueuePriority)
+            if (Priority != m_QueuePriority)
             {
                 UpdateVcamPoolStatus(); // Force a re-sort
             }
@@ -663,7 +695,7 @@ namespace Cinemachine
             CinemachineCore.Instance.RemoveActiveCamera(this);
             if (m_parentVcam == null && isActiveAndEnabled)
                 CinemachineCore.Instance.AddActiveCamera(this);
-            m_QueuePriority = m_Priority;
+            m_QueuePriority = Priority;
         }
 
         /// <summary>When multiple virtual cameras have the highest priority, there is
@@ -824,8 +856,8 @@ namespace Cinemachine
                 m_CachedFollowTargetGroup = null;
                 if (m_CachedFollowTarget != null)
                 {
-                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedFollowTargetVcam);
-                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedFollowTargetGroup);
+                    target.TryGetComponent(out m_CachedFollowTargetVcam);
+                    target.TryGetComponent(out m_CachedFollowTargetGroup);
                 }
             }
             target = ResolveLookAt(LookAt);
@@ -837,8 +869,8 @@ namespace Cinemachine
                 m_CachedLookAtTargetGroup = null;
                 if (target != null)
                 {
-                    target.TryGetComponent<CinemachineVirtualCameraBase>(out m_CachedLookAtTargetVcam);
-                    target.TryGetComponent<ICinemachineTargetGroup>(out m_CachedLookAtTargetGroup);
+                    target.TryGetComponent(out m_CachedLookAtTargetVcam);
+                    target.TryGetComponent(out m_CachedLookAtTargetGroup);
                 }
             }
         }
