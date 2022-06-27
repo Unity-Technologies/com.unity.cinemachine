@@ -16,7 +16,7 @@ ci_trigger:
     - .yamato/project-test.yml#test_ubuntu_{{editor}}_{{test_project.name}}
       {% endfor %}
     {% endfor %}
-
+    
     {% for test_name in all_configurations.ci.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
