@@ -1,4 +1,5 @@
-﻿using Cinemachine.Utility;
+﻿using System;
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine
@@ -7,9 +8,9 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to place the camera on the Follow Target.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {
         /// <summary>

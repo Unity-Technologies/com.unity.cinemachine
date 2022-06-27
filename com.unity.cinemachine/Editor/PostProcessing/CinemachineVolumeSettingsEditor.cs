@@ -1,29 +1,31 @@
-#if CINEMACHINE_HDRP
     using UnityEngine;
     using UnityEditor;
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
     using System.Collections.Generic;
+#if CINEMACHINE_HDRP
     #if CINEMACHINE_HDRP_7_3_1
         using UnityEngine.Rendering.HighDefinition;
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
 #elif CINEMACHINE_LWRP_7_3_1
-    using UnityEngine;
-    using UnityEditor;
-    using UnityEngine.Rendering;
-    using UnityEditor.Rendering;
-    using System.Collections.Generic;
     using UnityEngine.Rendering.Universal;
 #endif
 
 namespace Cinemachine.PostFX.Editor
 {
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
     [CustomEditor(typeof(CinemachineVolumeSettings))]
     public sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
+#if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
+        public override void OnInspectorGUI()
+        {
+            EditorGUILayout.HelpBox(
+                "This component is only valid for HDRP and URP projects.",
+                MessageType.Warning);
+        }
+#else
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;
 
@@ -95,7 +97,8 @@ namespace Cinemachine.PostFX.Editor
                         MessageType.Warning);
 #else
                 {
-                    valid = dof.active && dof.focusDistance.overrideState
+                    valid = dof.active 
+                        && (dof.focusDistance.overrideState || dof.focusDistanceMode == FocusDistanceMode.Camera)
                         && dof.focusMode.overrideState && dof.focusMode == DepthOfFieldMode.UsePhysicalCamera;
                 }
                 if (!valid)
@@ -234,6 +237,6 @@ namespace Cinemachine.PostFX.Editor
             AssetDatabase.Refresh();
             return profile;
         }
-    }
 #endif
+    }
 }

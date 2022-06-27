@@ -10,24 +10,24 @@ using UnityEngine.TestTools.Utils;
 namespace Tests.Runtime
 {
 #if CINEMACHINE_PHYSICS_2D
-    public class Confiner2DUnitTests : CinemachineFixtureBase
+    public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
         private Camera m_Cam;
-        private CinemachineVirtualCamera m_Vcam;
+        private CmCamera m_Vcam;
         private CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
         public override void SetUp()
         {
             m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
-            var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineVirtualCamera), typeof(CinemachineConfiner2D));
-            m_Vcam = vcamHolder.GetComponent<CinemachineVirtualCamera>();
+            var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
+            m_Vcam = vcamHolder.GetComponent<CmCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
             m_Vcam.Priority = 100;
             m_Cam.orthographic = true;
             m_Vcam.AddExtension(m_Confiner2D);
 
-            m_Vcam.m_Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
+            m_Vcam.Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
 
             base.SetUp();
         }
@@ -35,7 +35,7 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
-            m_Vcam.m_Lens.OrthographicSize = 1;
+            m_Vcam.Lens.OrthographicSize = 1;
             
             base.TearDown();
         }

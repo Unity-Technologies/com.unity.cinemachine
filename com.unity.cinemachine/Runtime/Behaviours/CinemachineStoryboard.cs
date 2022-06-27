@@ -14,7 +14,6 @@ namespace Cinemachine
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
     [DisallowMultipleComponent]

@@ -33,10 +33,10 @@ namespace Cinemachine.Examples
 
         void OnEnable()
         {
-            var vcam = GetComponentInChildren<CinemachineVirtualCamera>();
+            var vcam = GetComponent<CinemachineVirtualCameraBase>();
             if (vcam != null)
             {
-                TpsFollow = vcam.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+                TpsFollow = vcam.GetComponentInChildren<Cinemachine3rdPersonFollow>();
                 FollowTarget = vcam.Follow;
             }
 

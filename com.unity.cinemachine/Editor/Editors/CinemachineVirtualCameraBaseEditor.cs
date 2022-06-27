@@ -143,42 +143,58 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            DrawHeaderInInspector();
+            DrawUpgradeButton();
+            DrawCameraStatusInInspector();
+            DrawGlobalControlsInInspector();
+            DrawInputProviderButtonInInspector();
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
         }
 
-        /// <summary>
-        /// Draw the virtual camera header in the inspector.  
-        /// This includes Solo button, Live status, and global settings
-        /// </summary>
-        protected void DrawHeaderInInspector()
+        protected void DrawUpgradeButton()
         {
-            if (!IsPropertyExcluded("Header"))
+            var attrs = serializedObject.targetObject.GetType()
+                .GetCustomAttributes(typeof(ObsoleteAttribute), true);
+            if (attrs != null && attrs.Length > 0)
             {
-                DrawCameraStatusInInspector();
-                DrawGlobalControlsInInspector();
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-                DrawInputProviderButtonInInspector();
+#if true // For testing only - do not release with this because no undo and no animation fixup
+                if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Convert to CmCamera")))
+                {
+                    var upgrader = new CinemachineUpgradeManager();
+                    Undo.SetCurrentGroupName("Convert to CmCamera");
+                    for (int i = 0; i < targets.Length; ++i)
+                    {
+                        upgrader.Upgrade(((CinemachineVirtualCameraBase)targets[i]).gameObject);
+                    }
+                    GUIUtility.ExitGUI();
+                }
 #endif
-                ExcludeProperty("Header");
+                if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Upgrade Project to Cinemachine 3")))
+                {
+                    var upgrader = new CinemachineUpgradeManager();
+                    upgrader.UpgradeAll();
+                    GUIUtility.ExitGUI();
+                }
+                EditorGUILayout.Space();
             }
         }
-        
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         static GUIContent s_InputProviderAddLabel = new GUIContent("Add Input Provider", 
             "Adds CinemachineInputProvider component to this vcam, "
             + "if it does not have one, enabling the vcam to read input from Input Actions. "
             + "By default, a simple mouse XY input action is added.");
 
-        static InputActionReference s_InputActionReference = null;
-
-        void DrawInputProviderButtonInInspector()
+        /// <summary>
+        /// Draw a message prompting the user to add a CinemachineInputProvider.  
+        /// Does nothing if Input package not installed.
+        /// </summary>
+        protected void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
             for (int i = 0; !needsButton && i < targets.Length; ++i)
             {
-                var vcam = targets[i] as CinemachineVirtualCameraBase;
+                var vcam = (CinemachineVirtualCameraBase)targets[i];
                 if (vcam.RequiresUserInput() && vcam.GetComponent<AxisState.IInputAxisProvider>() == null)
                     needsButton = true;
             }
@@ -186,32 +202,29 @@ namespace Cinemachine.Editor
                 return;
 
             EditorGUILayout.Space();
-            EditorGUILayout.HelpBox(
+            InspectorUtility.HelpBoxWithButton(
                 "The InputSystem package is installed, but it is not used to control this vcam.", 
-                MessageType.Info);
-            var rect = EditorGUILayout.GetControlRect(true);
-            rect.x += EditorGUIUtility.labelWidth; 
-            rect.width -= EditorGUIUtility.labelWidth;
-            if (GUI.Button(rect, s_InputProviderAddLabel))
-            {
-                if (s_InputActionReference == null)
+                MessageType.Info,
+                new GUIContent("Add Input\nProvider"), () =>
                 {
-                    s_InputActionReference = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
-                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").
-                        FirstOrDefault(x => x.name == "Player/Look");
-                }
-                Undo.SetCurrentGroupName("Add CinemachineInputProvider");
-                for (int i = 0; i < targets.Length; ++i)
-                {
-                    var vcam = targets[i] as CinemachineVirtualCameraBase;
-                    if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
-                        continue;
-                    var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
-                    inputProvider.XYAxis = s_InputActionReference;
-                }
-            }
+                    Undo.SetCurrentGroupName("Add CinemachineInputProvider");
+                    for (int i = 0; i < targets.Length; ++i)
+                    {
+                        var vcam = (CinemachineVirtualCameraBase)targets[i];
+                        if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
+                            continue;
+                        var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
+                        inputProvider.XYAxis = ScriptableObjectUtility.DefaultLookAction;
+                    }
+                });
             EditorGUILayout.Space();
         }
+#else
+        /// <summary>
+        /// Draw a message prompting the user to add a CinemachineInputProvider.  
+        /// Does nothing if Input package not installed.
+        /// </summary>
+        protected void DrawInputProviderButtonInInspector() {}
 #endif
 
         /// <summary>
@@ -563,7 +576,7 @@ namespace Cinemachine.Editor
 
                             EditorGUI.PrefixLabel(labelRect, propertyScope.content);
                             v.x = EditorGUI.FloatField(floatFieldLeft, v.x);
-                            EditorGUI.MinMaxSlider(sliderRect, ref v.x, ref v.y, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
+                            EditorGUI.MinMaxSlider(sliderRect, ref v.x, ref v.y, Camera.kMinAperture, Camera.kMaxAperture);
                             v.y = EditorGUI.FloatField(floatFieldRight, v.y);
 
                             curvature.vector2Value = v;

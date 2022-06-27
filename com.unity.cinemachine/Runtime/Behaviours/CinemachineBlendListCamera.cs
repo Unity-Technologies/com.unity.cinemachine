@@ -16,7 +16,6 @@ namespace Cinemachine
     /// Blends between cameras are specified.
     /// The last camera is held indefinitely.
     /// </summary>
-    [DocumentationSorting(DocumentationSortingAttribute.Level.UserRef)]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
