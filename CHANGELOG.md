@@ -5,10 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.8.7] - 2022-06-26
+## [2.8.7] - 2022-07-01
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
 - Bugfix: Fixed spurious Z rotations during speherical blend.
-
+- Regression fix: POV is relative to its parent transform.
 
 ## [2.8.6] - 2022-05-03
 - Bugfix: A memory leak no longer occurs with PostProcessing if no PP layer is present on the camera.
