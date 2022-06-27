@@ -1,0 +1,50 @@
+{% metadata_file .yamato/project.metafile %}
+---
+
+promote:
+  name: Promote to Production
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  variables:
+    UPMCI_PROMOTION: 1
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package promote
+  triggers:
+    tags:
+      only:
+        - /^[Rr]elease-(0\.\d+\.\d+|[1-9]\d*\.\d+\.\d+(-preview(\.\d+)?|-exp(\.\d+|-\w+\.\d+)|-pre\.\d+))$/
+  artifacts:
+    artifacts:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+{% for package in test_triggers.packages -%}
+{% for editor in test_editors -%}
+{% for runtime_platform in package.runtime_platforms -%}
+{% for platform in test_platforms[runtime_platform['0']] -%}
+{% for project in runtime_platform['1'].test_projects -%}
+{%- comment -%}
+# If nightly trigger's platforms list contains "all" or this platform, then this platform needs to be included in nightly trigger, otherwise skip it.
+{%- endcomment -%}
+{% unless project.nightly.platforms contains "all" or project.nightly.platforms contains platform.name -%}
+{% continue -%}
+{% endunless -%}
+{%- comment -%}
+# If nightly trigger's editors list contains "all" or this editor version, then this editor needs to be included in nightly trigger, otherwise skip it.
+{%- endcomment -%}
+{% unless project.nightly.editors contains "all" or project.nightly.editors contains editor.version -%}
+{% continue -%}
+{% endunless -%}
+{% if project.project_name == "package_test" -%}
+    - .yamato/common/package-test.yml#test_{{ package.short_name }}_package_{{ runtime_platform['0'] }}_{{ editor.version }}_{{ platform.name }}
+{% else -%}
+    - .yamato/common/package-test.yml#test_{{ package.short_name }}_{{ runtime_platform['0'] }}_{{ project.project_name }}_{{ editor.version }}_{{ platform.name }}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
+{% endfor -%}
