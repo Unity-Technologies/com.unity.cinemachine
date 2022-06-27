@@ -51,59 +51,6 @@ test_{{ package.short_name }}_PR_trigger:
 {% endfor -%}
 {% endfor -%}
 
-
-{%- comment -%}
-# Define nightly trigger for all packages if it is a mono repo
-# Also define a nightly trigger for each single package
-{%- endcomment -%}
-{% if is_monorepo == true -%}
-test_all_packages_nightly_trigger:
-  name: "All packages: Test nightly trigger"
-  dependencies:
-{% for package in test_triggers.packages -%}
-    - .yamato/common/package-test.yml#test_{{ package.short_name }}_nightly_trigger
-{% endfor -%}
-{% endif -%}  
-{% for package in test_triggers.packages -%}
-test_{{ package.short_name }}_nightly_trigger:
-{% if is_monorepo == true -%}
-  name: "{{ package.short_name }}: Test nightly trigger"
-{% else -%}
-  name : "Test {{ package.short_name }} nightly trigger"
-{% endif -%}
-  triggers:
-    recurring:
-      - branch: {{git_main_branch}}
-        frequency: daily
-        rerun: always  
-  dependencies:
-{% for editor in test_editors -%}
-{% for runtime_platform in package.runtime_platforms -%}
-{% for platform in test_platforms[runtime_platform['0']] -%}
-{% for project in runtime_platform['1'].test_projects -%}
-{%- comment -%}
-# If nightly trigger's platforms list contains "all" or this platform, then this platform needs to be included in nightly trigger, otherwise skip it.
-{%- endcomment -%}
-{% unless project.nightly.platforms contains "all" or project.nightly.platforms contains platform.name -%}
-{% continue -%}
-{% endunless -%}
-{%- comment -%}
-# If nightly trigger's editors list contains "all" or this editor version, then this editor needs to be included in nightly trigger, otherwise skip it.
-{%- endcomment -%}
-{% unless project.nightly.editors contains "all" or project.nightly.editors contains editor.version -%}
-{% continue -%}
-{% endunless -%}
-{% if project.project_name == "package_test" -%}
-    - .yamato/common/package-test.yml#test_{{ package.short_name }}_package_{{ runtime_platform['0'] }}_{{ editor.version }}_{{ platform.name }}
-{% else -%}
-    - .yamato/common/package-test.yml#test_{{ package.short_name }}_{{ runtime_platform['0'] }}_{{ project.project_name }}_{{ editor.version }}_{{ platform.name }}
-{% endif -%}
-{% endfor -%}
-{% endfor -%}
-{% endfor -%}
-{% endfor -%}
-{% endfor -%}
-
 {%- comment -%}
 # Define PR trigger for all packages if it is a mono repo
 # Also define a PR trigger for each single package
@@ -157,7 +104,7 @@ test_{{ package.short_name }}_PR_trigger:
 
 {%- comment -%}
 # Define weekly trigger for all packages if it is a mono repo
-# Also define a nightly trigger for each single package
+# Also define a weekly trigger for each single package
 {%- endcomment -%}
 {% if is_monorepo == true -%}
 test_all_packages_weekly_trigger:
