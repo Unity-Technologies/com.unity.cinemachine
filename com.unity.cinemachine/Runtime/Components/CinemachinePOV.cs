@@ -152,7 +152,7 @@ namespace Cinemachine
                 rot = parent.rotation * rot;
                 up = parent.up;
             }
-            rot = Quaternion.FromToRotation(up, curState.ReferenceUp) * rot;
+            rot = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
             curState.RawOrientation = rot;
         }
 
