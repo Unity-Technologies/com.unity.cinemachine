@@ -268,8 +268,8 @@ namespace Cinemachine
                     Composition.ScreenPosition - Composition.SoftZoneSize / 2 + new Vector2(0.5f, 0.5f),
                     Composition.SoftZoneSize);
                 r.position += new Vector2(
-                    Composition.CenterShift.x * (Composition.SoftZoneSize.x - Composition.DeadZoneSize.x),
-                    Composition.CenterShift.y * (Composition.SoftZoneSize.y - Composition.DeadZoneSize.y));
+                    Composition.Bias.x * (Composition.SoftZoneSize.x - Composition.DeadZoneSize.x),
+                    Composition.Bias.y * (Composition.SoftZoneSize.y - Composition.DeadZoneSize.y));
                 return r;
             }
             set

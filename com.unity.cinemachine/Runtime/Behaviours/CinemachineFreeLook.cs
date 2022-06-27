@@ -628,7 +628,7 @@ namespace Cinemachine
                             composer.Composition.ScreenPosition = new Vector2(0.5f, softCenterDefaultsV[i]);
                             composer.Composition.DeadZoneSize = Vector3.zero;
                             composer.Composition.SoftZoneSize = Vector3.zero;
-                            composer.Composition.CenterShift = Vector3.zero;
+                            composer.Composition.Bias = Vector3.zero;
                         }
                     }
                 }

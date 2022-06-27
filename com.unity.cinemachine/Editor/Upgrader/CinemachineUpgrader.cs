@@ -228,7 +228,7 @@ namespace Cinemachine.Editor
                     ScreenPosition = new Vector2(c.m_ScreenX, c.m_ScreenY) - new Vector2(0.5f, 0.5f),
                     DeadZoneSize = new Vector2(c.m_DeadZoneWidth, c.m_DeadZoneHeight),
                     SoftZoneSize = new Vector2(c.m_SoftZoneWidth, c.m_SoftZoneHeight),
-                    CenterShift = new Vector2(c.m_BiasX, c.m_BiasY)
+                    Bias = new Vector2(c.m_BiasX, c.m_BiasY)
                 };
             }
             
