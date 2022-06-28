@@ -598,6 +598,10 @@ namespace Cinemachine
 
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
+
+            // Used for blend reversal.  Range is 0...1,
+            // representing where the blend started when reversed mid-blend
+            public float blendStartPosition;
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
@@ -756,6 +760,7 @@ namespace Cinemachine
             // Are we transitioning cameras?
             var activeCamera = TopCameraFromPriorityQueue();
             var outGoingCamera = frame.blend.CamB;
+
             if (activeCamera != outGoingCamera)
             {
                 // Do we need to create a game-play blend?
@@ -764,7 +769,9 @@ namespace Cinemachine
                 {
                     // Create a blend (curve will be null if a cut)
                     var blendDef = LookupBlend(outGoingCamera, activeCamera);
-                    if (blendDef.BlendCurve != null && blendDef.BlendTime > 0)
+                    float blendDuration = blendDef.BlendTime;
+                    float blendStartPosition = 0;
+                    if (blendDef.BlendCurve != null && blendDuration > UnityVectorExtensions.Epsilon)
                     {
                         if (frame.blend.IsComplete)
                             frame.blend.CamA = outGoingCamera;  // new blend
@@ -772,15 +779,17 @@ namespace Cinemachine
                         {
                             // Special case: if backing out of a blend-in-progress
                             // with the same blend in reverse, adjust the blend time
+                            // to cancel out the progress made in the opposite direction
                             if ((frame.blend.CamA == activeCamera 
                                     || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
-                                && frame.blend.CamB == outGoingCamera 
-                                && frame.blend.Duration <= blendDef.BlendTime)
+                                && frame.blend.CamB == outGoingCamera)
                             {
-                                blendDef.m_Time = 
-                                    (frame.blend.TimeInBlend / frame.blend.Duration) * blendDef.BlendTime;
+                                // How far have we blended?  That is what we must undo
+                                var progress = frame.blendStartPosition 
+                                    + (1 - frame.blendStartPosition) * frame.blend.TimeInBlend / frame.blend.Duration;
+                                blendDuration *= progress;
+                                blendStartPosition = 1 - progress;
                             }
-
                             // Chain to existing blend
                             frame.blend.CamA = new BlendSourceVirtualCamera(
                                 new CinemachineBlend(
@@ -790,8 +799,9 @@ namespace Cinemachine
                         }
                     }
                     frame.blend.BlendCurve = blendDef.BlendCurve;
-                    frame.blend.Duration = blendDef.BlendTime;
+                    frame.blend.Duration = blendDuration;
                     frame.blend.TimeInBlend = 0;
+                    frame.blendStartPosition = blendStartPosition;
                 }
                 // Set the current active camera
                 frame.blend.CamB = activeCamera;
