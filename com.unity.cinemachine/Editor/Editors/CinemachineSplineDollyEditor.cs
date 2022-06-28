@@ -32,6 +32,7 @@ namespace Cinemachine.Editor
             row.Right.Add(new PropertyField(unitsProp, "") 
                 { tooltip = unitsProp.tooltip, style = { flexGrow = 2, flexBasis = 0 }});
 
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.SplineOffset)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraUp)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.AutomaticDolly)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
