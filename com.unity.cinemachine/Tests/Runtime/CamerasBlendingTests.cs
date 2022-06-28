@@ -3,14 +3,13 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
-using Tests.Runtime;
 
 namespace Tests.Runtime
 {
     [TestFixture]
     public class CamerasBlendingTests : CinemachineFixtureBase
     {
-        private const float k_BlendingTime = 1;
+        const float k_BlendingTime = 1;
 
         CinemachineBrain m_Brain;
         CinemachineVirtualCameraBase m_Source, m_Target;
