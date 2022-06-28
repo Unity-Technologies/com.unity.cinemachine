@@ -596,7 +596,8 @@ namespace Cinemachine
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
 
-            // Used for blend reversal
+            // Used for blend reversal.  Range is 0...1,
+            // representing where the blend started when reversed mid-blend
             public float blendStartPosition;
         }
 
@@ -778,8 +779,7 @@ namespace Cinemachine
                             // to cancel out the progress made in the opposite direction
                             if ((frame.blend.CamA == activeCamera 
                                     || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
-                                && frame.blend.CamB == outGoingCamera 
-                                && frame.blend.Duration <= blendDef.BlendTime)
+                                && frame.blend.CamB == outGoingCamera)
                             {
                                 // How far have we blended?  That is what we must undo
                                 var progress = frame.blendStartPosition 
