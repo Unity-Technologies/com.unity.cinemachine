@@ -41,6 +41,11 @@
             "name": "com.unity.splines",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_SPLINES"
+        },
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.0.0",
+            "define": "CINEMACHINE_V3_OR_HIGHER"
         }
     ],
     "noEngineReferences": false

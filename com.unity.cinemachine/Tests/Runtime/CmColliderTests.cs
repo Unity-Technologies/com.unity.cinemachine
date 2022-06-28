@@ -53,7 +53,6 @@ namespace Tests.Runtime
 
             yield return null; 
             m_Brain.ManualUpdate();
-            
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -62,7 +61,7 @@ namespace Tests.Runtime
             yield return WaitForOnePhysicsFrame();
             m_Brain.ManualUpdate();
             
-            // camera moved check
+            // Camera moved check
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             Assert.That(new Vector3(0, 0, -4.4f), Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
@@ -157,12 +156,6 @@ namespace Tests.Runtime
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
             Assert.That(new Vector3(0, 0, -4.621426f), Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
-        }
-
-        static IEnumerator WaitForOnePhysicsFrame()
-        {
-            yield return new WaitForFixedUpdate(); // this is needed to ensure physics system is up-to-date
-            yield return null; 
         }
     }
 #endif
