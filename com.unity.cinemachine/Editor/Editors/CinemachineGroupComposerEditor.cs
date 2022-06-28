@@ -70,8 +70,6 @@ namespace Cinemachine.Editor
                     notGroupHelp.SetVisible(noTarget);
             }
 
-
-
             return ux;
         }
 
