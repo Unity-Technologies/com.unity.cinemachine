@@ -557,12 +557,8 @@ namespace Cinemachine.Editor
                                 Mathf.Max(trackedDolly.m_RollDamping, trackedDolly.m_PitchDamping));
                             splineDolly.CameraUp = (CinemachineSplineDolly.CameraUpMode)trackedDolly.m_CameraUp;
                             splineDolly.DampingEnabled = true;
-                            splineDolly.AutomaticDolly = new CinemachineSplineDolly.AutoDolly
-                            {
-                                Enabled = trackedDolly.m_AutoDolly.m_Enabled,
-                                PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset,
-                                SearchResolution = trackedDolly.m_AutoDolly.m_SearchResolution,
-                            };
+                            splineDolly.AutomaticDolly.Enabled = trackedDolly.m_AutoDolly.m_Enabled;
+                            splineDolly.AutomaticDolly.PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset;
                             splineDolly.CameraPosition = trackedDolly.m_PathPosition;
                             splineDolly.SplineOffset = trackedDolly.m_PathOffset;
                             var path = trackedDolly.m_Path;

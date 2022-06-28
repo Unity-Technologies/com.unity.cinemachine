@@ -121,7 +121,7 @@ namespace Cinemachine.Editor
         }
 #endif
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Track", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Spline", false, m_GameObjectMenuPriority)]
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Camera with Track");
@@ -129,7 +129,8 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
             vcam.gameObject.AddComponent<CinemachineRotationComposer>();
-            var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            var splineContainer = ObjectFactory.CreateGameObject(
+                "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
             splineContainer.Spline.EditType = SplineType.CatmullRom;
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
@@ -137,14 +138,17 @@ namespace Cinemachine.Editor
             splineDolly.Spline = splineContainer;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Track with Cart", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Spline with Cart", false, m_GameObjectMenuPriority)]
         static void CreateDollyTrackWithCart(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
-            var path = CreateCinemachineObject<CinemachineSmoothPath>(
-                "Dolly Track", command.context as GameObject, false);
-            CreateCinemachineObject<CinemachineDollyCart>(
-                "Dolly Cart", command.context as GameObject, true).m_Path = path;
+            var splineContainer = ObjectFactory.CreateGameObject(
+                "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
+            splineContainer.Spline.Add(new BezierKnot(Vector3.right));
+            CreateCinemachineObject<CinemachineSplineCart>(
+                "Dolly Cart", command.context as GameObject, true).Spline = splineContainer;
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_GameObjectMenuPriority)]
