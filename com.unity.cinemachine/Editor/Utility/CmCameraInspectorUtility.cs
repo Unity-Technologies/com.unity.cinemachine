@@ -390,7 +390,7 @@ namespace Cinemachine.Editor
         public void SortComponents()
         {
             if (Target == null || PrefabUtility.IsPartOfNonAssetPrefabInstance(Target))
-                return; // target was deleted
+                return; // target was deleted or is part of a prefab instance
 
             SortOrder lastItem = SortOrder.None;
             bool sortNeeded = false;
