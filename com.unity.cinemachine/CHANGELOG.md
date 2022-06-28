@@ -6,29 +6,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [2.9.0-pre.7] - 2022-06-01
-## ## [3.0.0-pre.1] - 2022-06-01
-- Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
-- VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
-- FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
-- Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
-- Add flag for custom priority setting.
-- HDRP only: Added FocusDistance setting to lens
-- HDRP only: New AutoFocus extension.  Use instead of VolumeSettings for Focus Tracking.  Includes Automatic mode that queries depth buffer instead of tracking a specific target.
-
-
-## UNRELEASED
-- Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
-- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
-- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
-- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
-- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
-- Bugfix: Fixed spurious Z rotations during speherical blend.
-- Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
-- Regression fix: POV is relative to its parent transform.
-- Bugfix: SensorSize is not saved when not using physical camera.
-
-
-## [2.9.0-pre.7] - 2022-03-29
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 - Bugfix: Standalone profiler no longer crashed with CM.
 - Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
@@ -46,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
 - Bugfix: Fixed spurious Z rotations during speherical blend.
 - Regression fix: POV is relative to its parent transform.
+- Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 
 
 ## [2.9.0-pre.6] - 2022-01-12
