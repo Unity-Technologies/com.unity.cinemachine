@@ -1,7 +1,7 @@
-using System;
-using System.Linq.Expressions;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -9,115 +9,59 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     sealed class CinemachineSplineDollyEditor : UnityEditor.Editor
     {
-        SerializedProperty m_Spline, m_CameraPosition, m_PositionUnits, m_SplineOffset, 
-            m_CameraUp, m_DampingEnabled, m_Damping, 
-            m_AngularDamping, m_AutoDollyEnabled, m_AutoDollyPositionOffset;
+        CinemachineSplineDolly Target => target as CinemachineSplineDolly;
 
-        GUIContent m_SplineGUIContent, m_CameraPositionGUIContent, m_PositionUnitsGUIContent, m_SplineOffsetGUIContent, 
-            m_CameraUpGUIContent, m_DampingEnabledGUIContent, m_DampingGUIContent, 
-            m_AngularDampingGUIContent, m_AutoDollyEnabledGUIContent, m_AutoDollyPositionOffsetGUIContent;
-
-        // Helper to avoid string literals, enabling compiler to check for errors
-        SerializedProperty FindProperty<TValue>(Expression<Func<CinemachineSplineDolly, TValue>> expr)
+        public override VisualElement CreateInspectorGUI()
         {
-            return serializedObject.FindProperty(Utility.ReflectionHelpers.GetFieldPath(expr));
-        }
+            var serializedTarget = new SerializedObject(Target);
+            var ux = new VisualElement();
 
-        void OnEnable()
-        {
-            m_SplineGUIContent = new GUIContent("Spline", (m_Spline = FindProperty(x => x.Spline)).tooltip);
-            m_CameraPositionGUIContent = new GUIContent("Camera Position", (m_CameraPosition = FindProperty(x => x.CameraPosition)).tooltip);
-            m_PositionUnitsGUIContent = new GUIContent(" ", (m_PositionUnits = FindProperty(x => x.PositionUnits)).tooltip);
-            m_SplineOffsetGUIContent = new GUIContent("Offset", (m_SplineOffset = FindProperty(x => x.SplineOffset)).tooltip);
-            m_CameraUpGUIContent = new GUIContent("Camera Up", (m_CameraUp = FindProperty(x => x.CameraUp)).tooltip);
-            m_DampingEnabledGUIContent = new GUIContent("Damping", (m_DampingEnabled = FindProperty(x => x.DampingEnabled)).tooltip);
-            m_DampingGUIContent = new GUIContent("Positional", (m_Damping = FindProperty(x => x.Damping)).tooltip);
-            m_AngularDampingGUIContent = new GUIContent("Angular", (m_AngularDamping = FindProperty(x => x.AngularDamping)).tooltip);
-            m_AutoDollyEnabledGUIContent = new GUIContent("Auto Dolly", (m_AutoDollyEnabled = FindProperty(x => x.AutomaticDolly.Enabled)).tooltip);
-            m_AutoDollyPositionOffsetGUIContent = new GUIContent("Position Offset", (m_AutoDollyPositionOffset = FindProperty(x => x.AutomaticDolly.PositionOffset)).tooltip);
-        }
+            var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
+            var noTargetHelp = ux.AddChild(new HelpBox("Automatic Dolly requires a Tracking target.", HelpBoxMessageType.Warning));
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            
-            bool nullSpline = false;
-            for (int i = 0; !nullSpline && i < targets.Length; ++i)
-                nullSpline = ((CinemachineSplineDolly)targets[i]).Spline == null;
+            var splineProp = serializedTarget.FindProperty(() => Target.Spline);
+            ux.Add(new PropertyField(splineProp));
 
-            if (nullSpline)
+            var posProp = serializedTarget.FindProperty(() => Target.CameraPosition);
+            var unitsProp =serializedTarget.FindProperty(() => Target.PositionUnits);
+            var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            row.Left.Add(new Label(posProp.displayName) 
+                { tooltip = posProp.tooltip, style = { alignSelf = Align.Center, flexGrow = 0 }});
+            row.Right.Add(new PropertyField(posProp, "") 
+                { tooltip = posProp.tooltip, style = { flexGrow = 1, flexBasis = 0 }});
+            row.Right.Add(new PropertyField(unitsProp, "") 
+                { tooltip = unitsProp.tooltip, style = { flexGrow = 2, flexBasis = 0 }});
+
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraUp)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.AutomaticDolly)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
+
+            TrackSpline(splineProp);
+            ux.TrackPropertyValue(splineProp, TrackSpline);
+            void TrackSpline(SerializedProperty p)
             {
-                EditorGUILayout.HelpBox("A Spline is required", MessageType.Warning);
+                bool noSpline = false;
+                for (int i = 0; !noSpline && i < targets.Length; ++i)
+                    noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
+                noSplineHelp.SetVisible(noSpline);
             }
 
-            bool noFollowTarget = false;
-            bool autoDollyEnabled = false;
-            for (int i = 0; !(noFollowTarget && autoDollyEnabled) && i < targets.Length; ++i)
+            // GML: This is rather evil.  Is there a better (event-driven) way?
+            var autoDollyProp = serializedTarget.FindProperty(() => Target.AutomaticDolly).FindPropertyRelative("Enabled");
+            TrackAutoDolly();
+            ux.schedule.Execute(TrackAutoDolly).Every(250);
+            void TrackAutoDolly()
             {
-                autoDollyEnabled = ((CinemachineSplineDolly)targets[i]).AutomaticDolly.Enabled;
-                noFollowTarget = ((CinemachineSplineDolly)targets[i]).FollowTarget == null;
+                bool noTarget = false;
+                if (autoDollyProp.boolValue)
+                {
+                    for (int i = 0; !noTarget && i < targets.Length; ++i)
+                        noTarget = targets[i] != null && (targets[i] as CinemachineSplineDolly).FollowTarget == null;
+                }
+                if (noTargetHelp != null)
+                    noTargetHelp.SetVisible(noTarget);
             }
-
-            if (autoDollyEnabled && noFollowTarget)
-                EditorGUILayout.HelpBox("AutoDolly requires a Follow Target", MessageType.Warning);
-
-            EditorGUILayout.PropertyField(m_Spline, m_SplineGUIContent);
-
-            if (nullSpline)
-            {
-                GUI.enabled = false;
-            }
-            EditorGUILayout.BeginHorizontal();
-            {
-                var rect = EditorGUILayout.GetControlRect();
-                var halfWidth = (rect.width - EditorGUIUtility.labelWidth) * 0.5f;
-                rect.width -= halfWidth;
-                EditorGUI.PropertyField(rect, m_CameraPosition, m_CameraPositionGUIContent);
-
-                var oldIndent = EditorGUI.indentLevel; 
-                EditorGUI.indentLevel = 0;
-                var oldLabelWidth = EditorGUIUtility.labelWidth;
-                EditorGUIUtility.labelWidth = 3;
-                rect.x += rect.width; rect.width = halfWidth;
-                EditorGUI.PropertyField(rect, m_PositionUnits, m_PositionUnitsGUIContent);
-                EditorGUIUtility.labelWidth = oldLabelWidth;
-                EditorGUI.indentLevel = oldIndent;
-            } 
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.PropertyField(m_SplineOffset, m_SplineOffsetGUIContent);
-            EditorGUILayout.PropertyField(m_CameraUp, m_CameraUpGUIContent);
-
-            if (!nullSpline && noFollowTarget)
-            {
-                GUI.enabled = false;
-            }
-            EditorGUILayout.PropertyField(m_AutoDollyEnabled, m_AutoDollyEnabledGUIContent);
-            if (m_AutoDollyEnabled.boolValue)
-            {
-                EditorGUI.indentLevel++; 
-                EditorGUILayout.PropertyField(m_AutoDollyPositionOffset, m_AutoDollyPositionOffsetGUIContent); 
-                EditorGUI.indentLevel--;
-            }
-            if (!nullSpline && noFollowTarget)
-            {
-                GUI.enabled = true;
-            }
-
-            EditorGUILayout.PropertyField(m_DampingEnabled, m_DampingEnabledGUIContent);
-            if (m_DampingEnabled.boolValue)
-            { 
-                EditorGUI.indentLevel++; 
-                EditorGUILayout.PropertyField(m_Damping, m_DampingGUIContent); 
-                EditorGUILayout.PropertyField(m_AngularDamping, m_AngularDampingGUIContent); 
-                EditorGUI.indentLevel--;
-            }
-            
-            serializedObject.ApplyModifiedProperties();
-            if (nullSpline)
-            {
-                GUI.enabled = true;
-            }
+            return ux;
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy

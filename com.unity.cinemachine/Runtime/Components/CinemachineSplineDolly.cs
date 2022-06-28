@@ -71,38 +71,50 @@ namespace Cinemachine
             FollowTargetNoRoll,
         };
 
-        /// <summary>If checked, will enable damping.</summary>
-        [Tooltip("If checked, will enable damping.")]
-        public bool DampingEnabled;
+        /// <summary>Settings for controlling damping</summary>
+        [Serializable]
+        public struct DampingSettings
+        {
+            /// <summary>Enables automatic dolly, which chooses a spline position
+            /// that is as close as possible to the tracking target.</summary>
+            [Tooltip("Enables automatic dolly, which chooses a spline position that is as "
+                + "close as possible to the tracking target.  Note: this can have a performance impact")]
+            public bool Enabled;
+
+            /// <summary>How aggressively the camera tries to maintain the offset along
+            /// the x, y, or z directions in spline local space.
+            /// Meaning:
+            /// - x represents the axis that is perpendicular to the spline. Use this to smooth out
+            /// imperfections in the path. This may move the camera off the spline.
+            /// - y represents the axis that is defined by the spline-local up direction. Use this to smooth out
+            /// imperfections in the path. This may move the camera off the spline.
+            /// - z represents the axis that is parallel to the spline. This won't move the camera off the spline.
+            /// Smaller numbers are more responsive. Larger numbers give a heavier more slowly responding camera.
+            /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
+            [Tooltip("How aggressively the camera tries to maintain the offset along the " 
+                + "x, y, or z directions in spline local space. \n" 
+                + "- x represents the axis that is perpendicular to the spline. Use this to smooth out " 
+                + "imperfections in the path. This may move the camera off the spline.\n" 
+                + "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out " 
+                + "imperfections in the path. This may move the camera off the spline.\n" 
+                + "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n" 
+                + "Smaller numbers are more responsive, larger numbers give a heavier more slowly responding camera. " 
+                + "Using different settings per axis can yield a wide range of camera behaviors.")]
+            public Vector3 Position;
+
+            /// <summary>How aggressively the camera tries to track the target's orientation.
+            /// Small numbers are more responsive.  Larger numbers give a heavier more slowly responding camera.</summary>
+            [Range(0f, 20f)]
+            [Tooltip("How aggressively the camera tries to track the target's orientation.  "
+                + "Small numbers are more responsive.  Larger numbers give a heavier more slowly responding camera.")]
+            public float Angular;
+        }
+
+        /// <summary>Settings for controlling damping</summary>
+        [FoldoutWithEnabledButton]
+        [Tooltip("Settings for controlling damping")]
+        public DampingSettings Damping;
         
-        /// <summary>How aggressively the camera tries to maintain the offset along
-        /// the x, y, or z directions in spline local space.
-        /// Meaning:
-        /// - x represents the axis that is perpendicular to the spline. Use this to smooth out
-        /// imperfections in the path. This may move the camera off the spline.
-        /// - y represents the axis that is defined by the spline-local up direction. Use this to smooth out
-        /// imperfections in the path. This may move the camera off the spline.
-        /// - z represents the axis that is parallel to the spline. This won't move the camera off the spline.
-        /// Smaller numbers are more responsive. Larger numbers give a more heavy, slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
-        [Tooltip("How aggressively the camera tries to maintain the offset along the " 
-            + "x, y, or z directions in spline local space. \n" 
-            + "- x represents the axis that is perpendicular to the spline. Use this to smooth out " 
-            + "imperfections in the path. This may move the camera off the spline.\n" 
-            + "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out " 
-            + "imperfections in the path. This may move the camera off the spline.\n" 
-            + "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n" 
-            + "Smaller numbers are more responsive, larger numbers give a more heavy, slowly responding camera. " 
-            + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public Vector3 Damping = Vector3.zero;
-
-        /// <summary>How aggressively the camera tries to track the target's orientation.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target's orientation.  "
-            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float AngularDamping = 0f;
-
         /// <summary>Controls how automatic dollying occurs</summary>
         [Serializable]
         public struct AutoDolly
@@ -157,6 +169,7 @@ namespace Cinemachine
         }
 
         /// <summary>Controls how automatic dollying occurs</summary>
+        [FoldoutWithEnabledButton]
         [Tooltip("Controls how automatic dollying occurs.  A tracking target is necessary to use this feature.")]
         public AutoDolly AutomaticDolly = AutoDolly.Default;
 
@@ -172,10 +185,10 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            Damping.x = Mathf.Clamp(Damping.x, 0, 20);
-            Damping.y = Mathf.Clamp(Damping.y, 0, 20);
-            Damping.z = Mathf.Clamp(Damping.z, 0, 20);
-            AngularDamping = Mathf.Clamp(AngularDamping, 0, 20);
+            Damping.Position.x = Mathf.Clamp(Damping.Position.x, 0, 20);
+            Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
+            Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
+            Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
         }
 
         void Reset()
@@ -185,9 +198,7 @@ namespace Cinemachine
             PositionUnits = PathIndexUnit.Normalized;
             SplineOffset = Vector3.zero;
             CameraUp = CameraUpMode.Default;
-            DampingEnabled = false;
-            Damping = Vector3.zero;
-            AngularDamping = 0f;
+            Damping = default;
             AutomaticDolly = AutoDolly.Default;
         }
 
@@ -208,8 +219,8 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => !DampingEnabled ? 0 :
-            Mathf.Max(Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)), AngularDamping);
+        public override float GetMaxDampTime() => !Damping.Enabled ? 0 :
+            Mathf.Max(Mathf.Max(Damping.Position.x, Mathf.Max(Damping.Position.y, Damping.Position.z)), Damping.Angular);
 
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
@@ -276,10 +287,10 @@ namespace Cinemachine
                 normalizedSplinePosition = next;
 
                 // Apply damping in the spline direction
-                if (DampingEnabled && deltaTime >= 0)
+                if (Damping.Enabled && deltaTime >= 0)
                 {
                     float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
-                    offset = Damper.Damp(offset, Damping.z, deltaTime);
+                    offset = Damper.Damp(offset, Damping.Position.z, deltaTime);
                     normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
                 }
             }
@@ -297,24 +308,24 @@ namespace Cinemachine
             newCameraPos += SplineOffset.z * offsetZ;
 
             // Apply damping to the remaining directions
-            if (DampingEnabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 Vector3 currentCameraPos = m_PreviousCameraPosition;
                 Vector3 delta = (currentCameraPos - newCameraPos);
                 Vector3 delta1 = Vector3.Dot(delta, offsetY) * offsetY;
                 Vector3 delta0 = delta - delta1;
 
-                delta0 = Damper.Damp(delta0, Damping.x, deltaTime);
-                delta1 = Damper.Damp(delta1, Damping.y, deltaTime);
+                delta0 = Damper.Damp(delta0, Damping.Position.x, deltaTime);
+                delta1 = Damper.Damp(delta1, Damping.Position.y, deltaTime);
                 newCameraPos = currentCameraPos - (delta0 + delta1);
             }
             curState.RawPosition = m_PreviousCameraPosition = newCameraPos;
 
             // Set the orientation and up
             Quaternion newOrientation = GetCameraOrientationAtSplinePoint(newSplineOrientation, curState.ReferenceUp);
-            if (DampingEnabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                float t = VirtualCamera.DetachedFollowTargetDamp(1, AngularDamping, deltaTime);
+                float t = VirtualCamera.DetachedFollowTargetDamp(1, Damping.Angular, deltaTime);
                 newOrientation = Quaternion.Slerp(m_PreviousOrientation, newOrientation, t);
             }
             m_PreviousOrientation = newOrientation;

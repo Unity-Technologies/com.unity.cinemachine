@@ -29,7 +29,7 @@ namespace Tests.Runtime
             m_Dolly = m_CmCam.gameObject.AddComponent<CinemachineSplineDolly>();
             m_Dolly.Spline = m_SplineContainer;
             m_Dolly.CameraUp = CinemachineSplineDolly.CameraUpMode.Default;
-            m_Dolly.DampingEnabled = false;
+            m_Dolly.Damping.Enabled = false;
         }
 
         [UnityTest]
