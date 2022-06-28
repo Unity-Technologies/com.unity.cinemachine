@@ -110,14 +110,16 @@ namespace Cinemachine.Editor
                 var conversionLinks = new List<ConversionLink>();
                 
                 // In each scene, check each prefabInstance of prefabAsset and store their modifications in an upgraded copy of the prefab instance.
-                var sceneCount = m_SceneManager.sceneCount;
+                var sceneCount = m_SceneManager.SceneCount;
                 for (var s = 0; s < sceneCount; ++s)
                 {
+#if DEBUG_HELPERS
                     Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
+#endif
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                     
                     var allPrefabInstances = 
-                        PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(activeScene, prefabAsset);
+                        PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(activeScene, prefabAsset, m_PrefabManager.GetPrefabAssetPath(p));
 
                     var componentsList = new List<CinemachineVirtualCameraBase>();
                     foreach (var prefabInstance in allPrefabInstances)
@@ -161,13 +163,13 @@ namespace Cinemachine.Editor
                 using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_PrefabManager.GetPrefabAssetPath(p)))
                 {
                     var prefabContents= editingScope.prefabContentsRoot;
-                    var freelooks = prefabContents.GetComponentsInChildren<CinemachineFreeLook>();
+                    var freelooks = prefabContents.GetComponentsInChildren<CinemachineFreeLook>(true);
                     foreach (var freelook in freelooks)
                     {
                         Upgrade(freelook.gameObject);
                     }
-
-                    var vcams = prefabContents.GetComponentsInChildren<CinemachineVirtualCamera>();
+                    
+                    var vcams = prefabContents.GetComponentsInChildren<CinemachineVirtualCamera>(true);
                     foreach (var vcam in vcams)
                     {
                         if (vcam.ParentCamera is not CinemachineFreeLook) // this check is needed in case a freelook was not fully upgradable
@@ -179,17 +181,21 @@ namespace Cinemachine.Editor
                 // from the linked converted copy of the prefab instance.
                 for (int s = 0; s < sceneCount; ++s)
                 {
+#if DEBUG_HELPERS
                     Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
+#endif
                     var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
-                    
+                    var allGameObjectsInScene = GetAllGameObjects();
                     foreach (var conversionLink in conversionLinks)
                     {
-                        var prefabInstance = 
-                            GameObject.Find(conversionLink.originalGUIDName);
-                        var convertedCopy = 
-                            GameObject.Find(conversionLink.convertedGUIDName);
+                        var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
+                        var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
                         if (prefabInstance == null || convertedCopy == null)
                             continue; // ignore, instance is not in this scene
+                        
+                        // copy cm camera related properties (such as targets and lens)
+                        UnityEditorInternal.ComponentUtility.CopyComponent(convertedCopy.GetComponent<CmCamera>());
+                        UnityEditorInternal.ComponentUtility.PasteComponentValues(prefabInstance.GetComponent<CmCamera>());
                         
                         var prefabInstanceComponents = 
                             prefabInstance.GetComponents<CinemachineComponentBase>();
@@ -248,14 +254,34 @@ namespace Cinemachine.Editor
                     EditorSceneManager.SaveScene(activeScene);
                 }
             }
+            
+            // local functions
+            List<GameObject> GetAllGameObjects()
+            {
+                var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+                return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject) && 
+                    !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave)).ToList();
+            }
+
+            static GameObject Find(string name, List<GameObject> gameobjects)
+            {
+                foreach (var go in gameobjects)
+                {
+                    if (go != null && go.name.Equals(name))
+                        return go;
+                }
+                return null;
+            }
         }
-        
+
         void UpgradeInScenes()
         {
-            var sceneCount = m_SceneManager.sceneCount;
+            var sceneCount = m_SceneManager.SceneCount;
             for (var s = 0; s < sceneCount; ++s)
             {
+#if DEBUG_HELPERS
                 Debug.Log("Opening scene: " + m_SceneManager.GetScenePath(s));
+#endif
                 var activeScene = EditorSceneManager.OpenScene(m_SceneManager.GetScenePath(s), OpenSceneMode.Single);
                 
                 var timelineManager = new TimelineManager(activeScene);
@@ -298,25 +324,43 @@ namespace Cinemachine.Editor
                 }
             }
         }
+        
 
         class SceneManager
         {
-            public string GetScenePath(int index)
-            {
-                return AssetDatabase.GUIDToAssetPath(m_AllSceneGuids[index]);
-            }
-                
-            public int sceneCount;
-            List<string> m_AllSceneGuids;
+            public List<string> s_IgnoreList = new() {}; // TODO: expose this to the user
+            public int SceneCount { get; private set; }
+            public string GetScenePath(int index) => m_AllScenePaths[index];
+
+            List<string> m_AllScenePaths;
             public SceneManager()
             {
-                m_AllSceneGuids = new List<string>();
-                m_AllSceneGuids.AddRange(AssetDatabase.FindAssets("t:scene", new[]
+                var allSceneGuids = new List<string>();
+                allSceneGuids.AddRange(AssetDatabase.FindAssets("t:scene", new[]
                 {
                     "Assets"
                 }));
-                sceneCount = m_AllSceneGuids.Count;
-                    
+                m_AllScenePaths = new List<string>();
+                for (var i = allSceneGuids.Count - 1; i >= 0; i--)
+                {
+                    var sceneGuid = allSceneGuids[i];
+                    var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
+                    var add = true;
+                    foreach (var ignore in s_IgnoreList)
+                    {
+                        if (scenePath.Contains(ignore))
+                        {
+                            add = false;
+                            break;
+                        }
+                    }
+                    if (add) {
+                        m_AllScenePaths.Add(scenePath);
+                    }
+                }
+
+                SceneCount = m_AllScenePaths.Count;
+
 #if DEBUG_HELPERS
                 Debug.Log("**** All scenes ****");
                 m_AllSceneGuids.ForEach(guid => Debug.Log(AssetDatabase.GUIDToAssetPath(guid)));
@@ -824,8 +868,8 @@ namespace Cinemachine.Editor
                 m_PrefabAssets = new List<GameObject>();
                 foreach (var prefab in allPrefabs)
                 {
-                    var freelooks = prefab.GetComponentsInChildren<CinemachineFreeLook>();
-                    var vcams = prefab.GetComponentsInChildren<CinemachineVirtualCamera>();
+                    var freelooks = prefab.GetComponentsInChildren<CinemachineFreeLook>(true);
+                    var vcams = prefab.GetComponentsInChildren<CinemachineVirtualCamera>(true);
                     if ((freelooks != null && freelooks.Length > 0) || (vcams != null && vcams.Length > 0))
                     {
                         m_PrefabAssets.Add(prefab);
@@ -873,7 +917,7 @@ namespace Cinemachine.Editor
 #endif
             }
 
-            public static List<GameObject> FindAllInstancesOfPrefabEvenInNestedPrefabs(Scene activeScene, GameObject prefab)
+            public static List<GameObject> FindAllInstancesOfPrefabEvenInNestedPrefabs(Scene activeScene, GameObject prefab, string prefabPath)
             {
                 // find all freelooks and vcams in the current scene
                 var rootObjects = activeScene.GetRootGameObjects();
@@ -898,14 +942,14 @@ namespace Cinemachine.Editor
                     if (prefabInstance.name.Contains(k_UnupgradableTag))
                         continue; // ignore, because we created it
                     
-                    var source = PrefabUtility.GetCorrespondingObjectFromSource(prefabInstance);
+                    var nearestPrefabRoot = PrefabUtility.GetNearestPrefabInstanceRoot(prefabInstance);
+                    var nearestPrefabRootPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefabInstance);
                     // Check if prefabInstance is an instance of the input prefab
-                    // If prefabInstance is a direct instance of prefab, then source is the same object as prefab
-                    // However, if prefabInstance is part of a nested prefab, then source is unfortunately a different object.
-                    // So I have to compare their names, which should be a sufficient condition, it does not make sense
-                    // to have prefabs assets with the same name, but it is not enforced, so it could happen...
-                    if (source != null && (prefab.Equals(source) || prefab.name == source.name)) 
-                        allInstances.Add(prefabInstance);
+                    if (nearestPrefabRoot != null && nearestPrefabRootPath.Equals(prefabPath))
+                    {
+                        if (!allInstances.Contains(nearestPrefabRoot)) 
+                            allInstances.Add(nearestPrefabRoot);
+                    }
                 }
                 return allInstances;
             }

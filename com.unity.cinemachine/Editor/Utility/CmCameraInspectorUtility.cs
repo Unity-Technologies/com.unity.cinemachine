@@ -389,9 +389,9 @@ namespace Cinemachine.Editor
         /// </summary>
         public void SortComponents()
         {
-            if (Target == null || PrefabUtility.IsPartOfPrefabInstance(Target))
+            if (Target == null || PrefabUtility.IsPartOfNonAssetPrefabInstance(Target))
                 return; // target was deleted
-            
+
             SortOrder lastItem = SortOrder.None;
             bool sortNeeded = false;
             Target.gameObject.GetComponents(s_componentCache);
