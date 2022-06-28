@@ -178,7 +178,7 @@ namespace Cinemachine
         /// <param name="fromCamera">The Camera from which the FoV, near
         /// and far clip planes will be copied.</param>
         /// <returns>The LensSettings as extracted from the supplied Camera</returns>
-	    public static LensSettings FromCamera(Camera fromCamera)
+        public static LensSettings FromCamera(Camera fromCamera)
         {
             LensSettings lens = Default;
             if (fromCamera != null)

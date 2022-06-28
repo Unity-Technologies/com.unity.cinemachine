@@ -16,115 +16,57 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    public class CinemachineComposer : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableScreenPosition, 
-        CinemachineFreeLookModifier.IModifiableBiasPosition
+    public class CinemachineRotationComposer : CinemachineComponentBase, 
+        CinemachineFreeLookModifier.IModifiableComposition
     {
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
         /// when the desired area is not in the tracked object's center</summary>
         [Tooltip("Target offset from the target object's center in target-local space. Use this to "
             + "fine-tune the tracking target position when the desired area is not the tracked object's center.")]
-        public Vector3 m_TrackedObjectOffset = Vector3.zero;
+        public Vector3 TrackedObjectOffset;
 
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
-        /// the target will be this many seconds into the future.  Note that this setting is sensitive
-        /// to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.
-        /// If the camera jitters unacceptably when the target is in motion, turn down this setting,
-        /// or animate the target more smoothly.</summary>
-        [Space]
-        [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion "
-            + "of the target.  The composer will look at a point where it estimates the target will be this "
-            + "many seconds into the future.  Note that this setting is sensitive to noisy animation, and "
-            + "can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters "
-            + "unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
-        [Range(0f, 1f)]
-        public float m_LookaheadTime = 0;
+        /// the target will be a little into the future.</summary>
+        [FoldoutWithEnabledButton]
+        public LookaheadSettings Lookahead;
 
-        /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out
-        /// jittery predictions and also increase prediction lag</summary>
-        [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth "
-            + "out jittery predictions and also increase prediction lag")]
-        [Range(0, 30)]
-        public float m_LookaheadSmoothing = 0;
-
-        /// <summary>If checked, movement along the Y axis will be ignored for lookahead calculations</summary>
-        [Tooltip("If checked, movement along the Y axis will be ignored for lookahead calculations")]
-        public bool m_LookaheadIgnoreY;
-
-        /// <summary>How aggressively the camera tries to follow the target in the screen-horizontal direction.
+        /// <summary>How aggressively the camera tries to follow the target in screen space.
         /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
         /// the dead zone. Larger numbers give a more heavy slowly responding camera.
         /// Using different vertical and horizontal settings can yield a wide range of camera behaviors.</summary>
-        [Space]
-        [Range(0f, 20)]
-        [Tooltip("How aggressively the camera tries to follow the target in the screen-horizontal direction. "
+        [Tooltip("How aggressively the camera tries to follow the target in the screen space. "
             + "Small numbers are more responsive, rapidly orienting the camera to keep the target in "
             + "the dead zone. Larger numbers give a more heavy slowly responding camera. Using different "
             + "vertical and horizontal settings can yield a wide range of camera behaviors.")]
-        public float m_HorizontalDamping = 0.5f;
+        public Vector2 Damping;
 
-        /// <summary>How aggressively the camera tries to follow the target in the screen-vertical direction.
-        /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
-        /// the dead zone. Larger numbers give a more heavy slowly responding camera. Using different vertical
-        /// and horizontal settings can yield a wide range of camera behaviors.</summary>
-        [Range(0f, 20)]
-        [Tooltip("How aggressively the camera tries to follow the target in the screen-vertical direction. "
-            + "Small numbers are more responsive, rapidly orienting the camera to keep the target in "
-            + "the dead zone. Larger numbers give a more heavy slowly responding camera. Using different "
-            + "vertical and horizontal settings can yield a wide range of camera behaviors.")]
-        public float m_VerticalDamping = 0.5f;
-
-        /// <summary>Horizontal screen position for target. The camera will rotate to the position the tracked object here</summary>
-        [Space]
-        [Range(-0.5f, 1.5f)]
-        [Tooltip("Horizontal screen position for target. The camera will rotate to position the tracked object here.")]
-        public float m_ScreenX = 0.5f;
-
-        /// <summary>Vertical screen position for target, The camera will rotate to to position the tracked object here</summary>
-        [Range(-0.5f, 1.5f)]
-        [Tooltip("Vertical screen position for target, The camera will rotate to position the tracked object here.")]
-        public float m_ScreenY = 0.5f;
-
-        /// <summary>Camera will not rotate horizontally if the target is within this range of the position</summary>
-        [Range(0f, 2f)]
-        [Tooltip("Camera will not rotate horizontally if the target is within this range of the position.")]
-        public float m_DeadZoneWidth = 0f;
-
-        /// <summary>Camera will not rotate vertically if the target is within this range of the position</summary>
-        [Range(0f, 2f)]
-        [Tooltip("Camera will not rotate vertically if the target is within this range of the position.")]
-        public float m_DeadZoneHeight = 0f;
-
-        /// <summary>When target is within this region, camera will gradually move to re-align
-        /// towards the desired position, depending onm the damping speed</summary>
-        [Range(0f, 2f)]
-        [Tooltip("When target is within this region, camera will gradually rotate horizontally to re-align "
-            + "towards the desired position, depending on the damping speed.")]
-        public float m_SoftZoneWidth = 0.8f;
-
-        /// <summary>When target is within this region, camera will gradually move to re-align
-        /// towards the desired position, depending onm the damping speed</summary>
-        [Range(0f, 2f)]
-        [Tooltip("When target is within this region, camera will gradually rotate vertically to re-align "
-            + "towards the desired position, depending on the damping speed.")]
-        public float m_SoftZoneHeight = 0.8f;
-
-        /// <summary>A non-zero bias will move the targt position away from the center of the soft zone</summary>
-        [Range(-0.5f, 0.5f)]
-        [Tooltip("A non-zero bias will move the target position horizontally away from the center of the soft zone.")]
-        public float m_BiasX = 0f;
-
-        /// <summary>A non-zero bias will move the targt position away from the center of the soft zone</summary>
-        [Range(-0.5f, 0.5f)]
-        [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
-        public float m_BiasY = 0f;
+        /// <summary>Settings for screen-space composition</summary>
+        [HideFoldout]
+        public ScreenComposerSettings Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
 
         /// <summary>Force target to center of screen when this camera activates.  
         /// If false, will clamp target to the edges of the dead zone</summary>
         [Tooltip("Force target to center of screen when this camera activates.  If false, will "
             + "clamp target to the edges of the dead zone")]
-        public bool m_CenterOnActivate = true;
+        public bool CenterOnActivate = true;
+
+        void Reset()
+        {
+            TrackedObjectOffset = Vector3.zero;
+            Lookahead = new LookaheadSettings();
+            Damping = new Vector2(0.5f, 0.5f);
+            Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
+            CenterOnActivate = true;
+        }
+
+        void OnValidate()
+        {
+            Damping.x = Mathf.Max(0, Damping.x);
+            Damping.y = Mathf.Max(0, Damping.y);
+            Composition.Validate();
+        }
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid { get { return enabled && LookAtTarget != null; } }
@@ -134,7 +76,7 @@ namespace Cinemachine
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
 
         /// <summary>Internal API for inspector</summary>
-        public Vector3 TrackedPoint { get; private set; }
+        internal Vector3 TrackedPoint { get; private set; }
 
         /// <summary>Apply the target offsets to the target location.
         /// Also set the TrackedPoint property, taking lookahead into account.</summary>
@@ -142,22 +84,22 @@ namespace Cinemachine
         /// <param name="up">Currest effective world up</param>
         /// <param name="deltaTime">Current effective deltaTime</param>
         /// <returns>The LookAt point with the offset applied</returns>
-        protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(
+        internal protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(
             Vector3 lookAt, Vector3 up, float deltaTime)
         {
             Vector3 pos = lookAt;
             if (LookAtTarget != null)
-                pos += LookAtTargetRotation * m_TrackedObjectOffset;
+                pos += LookAtTargetRotation * TrackedObjectOffset;
 
-            if (m_LookaheadTime < Epsilon)
+            if (!Lookahead.Enabled || Lookahead.Time < Epsilon)
                 TrackedPoint = pos;
             else
             {
                 var resetLookahead = VirtualCamera.LookAtTargetChanged || !VirtualCamera.PreviousStateIsValid;
-                m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime, m_LookaheadTime);
-                var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
-                if (m_LookaheadIgnoreY)
+                m_Predictor.Smoothing = Lookahead.Smoothing;
+                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime, Lookahead.Time);
+                var delta = m_Predictor.PredictPositionDelta(Lookahead.Time);
+                if (Lookahead.IgnoreY)
                     delta = delta.ProjectOntoPlane(up);
                 TrackedPoint = pos + delta;
             }
@@ -203,10 +145,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(m_HorizontalDamping, m_VerticalDamping); 
-        }
+        public override float GetMaxDampTime() => Mathf.Max(Damping.x, Damping.y); 
 
         /// <summary>Sets the state's ReferenceLookAt, applying the offset.</summary>
         /// <param name="curState">Input state that must be mutated</param>
@@ -260,7 +199,7 @@ namespace Cinemachine
                 rigOrientation = Quaternion.LookRotation(
                     rigOrientation * Vector3.forward, curState.ReferenceUp);
                 Rect rect = mCache.mFovSoftGuideRect;
-                if (m_CenterOnActivate)
+                if (CenterOnActivate)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 RotateToScreenBounds(
                     ref curState, rect, curState.ReferenceLookAt,
@@ -305,20 +244,18 @@ namespace Cinemachine
         /// <summary>Internal API for the inspector editor</summary>
         internal Rect SoftGuideRect
         {
-            get
-            {
-                return new Rect(
-                    m_ScreenX - m_DeadZoneWidth / 2, m_ScreenY - m_DeadZoneHeight / 2,
-                    m_DeadZoneWidth, m_DeadZoneHeight);
-            }
+            get => new Rect(
+                    Composition.ScreenPosition - Composition.DeadZoneSize / 2 + new Vector2(0.5f, 0.5f),
+                    Composition.DeadZoneSize);
             set
             {
-                m_DeadZoneWidth = Mathf.Clamp(value.width, 0, 2);
-                m_DeadZoneHeight = Mathf.Clamp(value.height, 0, 2);
-                m_ScreenX = Mathf.Clamp(value.x + m_DeadZoneWidth / 2, -0.5f,  1.5f);
-                m_ScreenY = Mathf.Clamp(value.y + m_DeadZoneHeight / 2, -0.5f,  1.5f);
-                m_SoftZoneWidth = Mathf.Max(m_SoftZoneWidth, m_DeadZoneWidth);
-                m_SoftZoneHeight = Mathf.Max(m_SoftZoneHeight, m_DeadZoneHeight);
+                Composition.DeadZoneSize = new Vector2(Mathf.Clamp(value.width, 0, 2), Mathf.Clamp(value.height, 0, 2));
+                Composition.ScreenPosition = new Vector2(
+                    Mathf.Clamp(value.x - 0.5f + Composition.DeadZoneSize.x / 2, -1.5f,  1.5f), 
+                    Mathf.Clamp(value.y - 0.5f + Composition.DeadZoneSize.y / 2, -1.5f,  1.5f));
+                Composition.SoftZoneSize = new Vector2(
+                    Mathf.Max(Composition.SoftZoneSize.x, Composition.DeadZoneSize.x),
+                    Mathf.Max(Composition.SoftZoneSize.y, Composition.DeadZoneSize.y));
             }
         }
 
@@ -328,19 +265,19 @@ namespace Cinemachine
             get
             {
                 Rect r = new Rect(
-                        m_ScreenX - m_SoftZoneWidth / 2, m_ScreenY - m_SoftZoneHeight / 2,
-                        m_SoftZoneWidth, m_SoftZoneHeight);
+                    Composition.ScreenPosition - Composition.SoftZoneSize / 2 + new Vector2(0.5f, 0.5f),
+                    Composition.SoftZoneSize);
                 r.position += new Vector2(
-                        m_BiasX * (m_SoftZoneWidth - m_DeadZoneWidth),
-                        m_BiasY * (m_SoftZoneHeight - m_DeadZoneHeight));
+                    Composition.Bias.x * (Composition.SoftZoneSize.x - Composition.DeadZoneSize.x),
+                    Composition.Bias.y * (Composition.SoftZoneSize.y - Composition.DeadZoneSize.y));
                 return r;
             }
             set
             {
-                m_SoftZoneWidth = Mathf.Clamp(value.width, 0, 2f);
-                m_SoftZoneHeight = Mathf.Clamp(value.height, 0, 2f);
-                m_DeadZoneWidth = Mathf.Min(m_DeadZoneWidth, m_SoftZoneWidth);
-                m_DeadZoneHeight = Mathf.Min(m_DeadZoneHeight, m_SoftZoneHeight);
+                Composition.SoftZoneSize.x = Mathf.Clamp(value.width, 0, 2f);
+                Composition.SoftZoneSize.y = Mathf.Clamp(value.height, 0, 2f);
+                Composition.DeadZoneSize.x = Mathf.Min(Composition.DeadZoneSize.x, Composition.SoftZoneSize.x);
+                Composition.DeadZoneSize.y = Mathf.Min(Composition.DeadZoneSize.y, Composition.SoftZoneSize.y);
             }
         }
 
@@ -466,9 +403,9 @@ namespace Cinemachine
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 rotToRect.x = VirtualCamera.DetachedLookAtTargetDamp(
-                    rotToRect.x, m_VerticalDamping, deltaTime);
+                    rotToRect.x, Damping.y, deltaTime);
                 rotToRect.y = VirtualCamera.DetachedLookAtTargetDamp(
-                    rotToRect.y, m_HorizontalDamping, deltaTime);
+                    rotToRect.y, Damping.x, deltaTime);
             }
 
             // Rotate
@@ -510,24 +447,10 @@ namespace Cinemachine
             return false;
         }
 
-        Vector2 CinemachineFreeLookModifier.IModifiableScreenPosition.Screen
+        ScreenComposerSettings CinemachineFreeLookModifier.IModifiableComposition.Composition
         {
-            get => new Vector2(m_ScreenX, m_ScreenY);
-            set
-            {
-                m_ScreenX = value.x;
-                m_ScreenY = value.y;
-            }
-        }
-
-        Vector2 CinemachineFreeLookModifier.IModifiableBiasPosition.Bias
-        {
-            get => new Vector2(m_BiasX, m_BiasY);
-            set
-            {
-                m_BiasX = value.x;
-                m_BiasY = value.y;
-            }
+            get => Composition;
+            set => Composition = value;
         }
     }
 }

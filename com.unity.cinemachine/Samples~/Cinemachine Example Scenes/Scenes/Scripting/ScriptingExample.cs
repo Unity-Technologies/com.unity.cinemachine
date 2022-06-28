@@ -23,14 +23,13 @@ public class ScriptingExample : MonoBehaviour
 
         // Install a composer.  You can install whatever CinemachineComponents you need,
         // including your own custom-authored Cinemachine components.
-        var composer = vcam.gameObject.AddComponent<CinemachineComposer>();
-        composer.m_ScreenX = 0.30f;
-        composer.m_ScreenY = 0.35f;
+        var composer = vcam.gameObject.AddComponent<CinemachineRotationComposer>();
+        composer.Composition.ScreenPosition = new Vector2(0.30f, 0.35f);
 
         // Create a FreeLook vcam on object "Cylinder"
         freelook = new GameObject("FreeLook").AddComponent<CmCamera>();
         freelook.gameObject.AddComponent<CinemachineOrbitalFollow>();
-        freelook.gameObject.AddComponent<CinemachineComposer>();
+        freelook.gameObject.AddComponent<CinemachineRotationComposer>();
         freelook.gameObject.AddComponent<InputAxisController>();
         freelook.Follow = GameObject.Find("Cylinder").transform;
         freelook.LookAt = GameObject.Find("Cylinder/Sphere").transform;

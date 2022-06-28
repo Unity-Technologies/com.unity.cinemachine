@@ -606,7 +606,7 @@ namespace Cinemachine
                     {
                         newRigs[i] = go.AddComponent<CinemachineVirtualCamera>();
                         newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>();
-                        newRigs[i].AddCinemachineComponent<CinemachineComposer>();
+                        newRigs[i].AddCinemachineComponent<CinemachineRotationComposer>();
                     }
                 }
 
@@ -621,15 +621,14 @@ namespace Cinemachine
                     {
                         // Only set defaults if not copying
                         orbital.m_YawDamping = 0;
-                        CinemachineComposer composer = newRigs[i].GetCinemachineComponent<CinemachineComposer>();
+                        var composer = newRigs[i].GetCinemachineComponent<CinemachineRotationComposer>();
                         if (composer != null)
                         {
-                            composer.m_HorizontalDamping = composer.m_VerticalDamping = 0;
-                            composer.m_ScreenX = 0.5f;
-                            composer.m_ScreenY = softCenterDefaultsV[i];
-                            composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0f;
-                            composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0.8f;
-                            composer.m_BiasX = composer.m_BiasY = 0;
+                            composer.Damping = Vector3.zero;
+                            composer.Composition.ScreenPosition = new Vector2(0.5f, softCenterDefaultsV[i]);
+                            composer.Composition.DeadZoneSize = Vector3.zero;
+                            composer.Composition.SoftZoneSize = Vector3.zero;
+                            composer.Composition.Bias = Vector3.zero;
                         }
                     }
                 }

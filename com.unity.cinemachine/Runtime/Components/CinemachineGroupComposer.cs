@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -16,11 +15,11 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    public class CinemachineGroupComposer : CinemachineComposer
+    public class CinemachineGroupComposer : CinemachineRotationComposer
     {
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
-        [Space]
-        [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  1 means fill the whole screen.  0.5 means fill half the screen, etc.")]
+        [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  "
+            + "1 means fill the whole screen.  0.5 means fill half the screen, etc.")]
         public float m_GroupFramingSize = 0.8f;
 
         /// <summary>What screen dimensions to consider when framing</summary>
@@ -40,8 +39,10 @@ namespace Cinemachine
 
         /// <summary>How aggressively the camera tries to frame the group.
         /// Small numbers are more responsive</summary>
-        [Range(0, 20)]
-        [Tooltip("How aggressively the camera tries to frame the group. Small numbers are more responsive, rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a more heavy slowly responding camera.")]
+        [RangeSlider(0, 20)]
+        [Tooltip("How aggressively the camera tries to frame the group. Small numbers are more responsive, "
+            + "rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a heavier "
+            + "more slowly responding camera.")]
         public float m_FrameDamping = 2f;
 
         /// <summary>How to adjust the camera to get the desired framing</summary>
@@ -77,12 +78,12 @@ namespace Cinemachine
         public float m_MaximumDistance = 5000f;
 
         /// <summary>If adjusting FOV, will not set the FOV lower than this</summary>
-        [Range(1, 179)]
+        [RangeSlider(1, 179)]
         [Tooltip("If adjusting FOV, will not set the FOV lower than this.")]
         public float m_MinimumFOV = 3;
 
         /// <summary>If adjusting FOV, will not set the FOV higher than this</summary>
-        [Range(1, 179)]
+        [RangeSlider(1, 179)]
         [Tooltip("If adjusting FOV, will not set the FOV higher than this.")]
         public float m_MaximumFOV = 60;
 
@@ -105,6 +106,22 @@ namespace Cinemachine
             m_MaximumFOV = Mathf.Clamp(m_MaximumFOV, m_MinimumFOV, 179);
             m_MinimumOrthoSize = Mathf.Max(0.01f, m_MinimumOrthoSize);
             m_MaximumOrthoSize = Mathf.Max(m_MinimumOrthoSize, m_MaximumOrthoSize);
+        }
+
+        private void Reset()
+        {
+            m_GroupFramingSize = 0.8f;
+            m_FramingMode = FramingMode.HorizontalAndVertical;
+            m_FrameDamping = 2f;
+            m_AdjustmentMode = AdjustmentMode.ZoomOnly;
+            m_MaxDollyIn = 5000f;
+            m_MaxDollyOut = 5000f;
+            m_MinimumDistance = 1;
+            m_MaximumDistance = 5000f;
+            m_MinimumFOV = 3;
+            m_MaximumFOV = 60;
+            m_MinimumOrthoSize = 1;
+            m_MaximumOrthoSize = 5000;            
         }
 
         // State for damping

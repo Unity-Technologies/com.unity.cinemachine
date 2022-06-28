@@ -34,18 +34,28 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
     
     /// <summary>
+    /// Interface for CinemachineComponentBase-derived to allow its screen composition to be driven
+    /// </summary>
+    public interface IModifiableComposition
+    {
+        /// <summary>Get/set the screen position</summary>
+        ScreenComposerSettings Composition { get; set; }
+    }
+
+    /// <summary>
     /// Interface for CinemachineComponentBase-derived to allow its screen position to be driven
     /// </summary>
+    /// GML todo: delete this
     public interface IModifiableScreenPosition
     {
         /// <summary>Get/set the screen position</summary>
         Vector2 Screen { get; set; }
     }
 
-
     /// <summary>
     /// Interface for CinemachineComponentBase-derived to allow its bias position to be driven
     /// </summary>
+    /// GML todo: delete this
     public interface IModifiableBiasPosition
     {
         /// <summary>Get/set the bias position</summary>
@@ -100,7 +110,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -224,7 +234,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -272,7 +282,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -315,8 +325,82 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     }
     
     /// <summary>
+    /// Builtin Freelook modifier for screen composition. Modifies composition at the start of the camera pipeline.
+    /// </summary>
+    public class CompositionModifier : ComponentModifier<IModifiableComposition>
+    {
+        /// <summary>Values for the top and bottom rigs</summary>
+        [HideFoldout]
+        public TopBottomRigs<ScreenComposerSettings> Composition;
+
+        /// <summary>Called from OnValidate to calidate this component</summary>
+        /// <param name="vcam">the virtual camera owner</param>
+        public override void Validate(CinemachineVirtualCameraBase vcam)
+        {
+            Composition.Top.Validate();
+            Composition.Bottom.Validate();
+        }
+
+        /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
+        /// <param name="vcam">the virtual camera owner</param>
+        public override void Reset(CinemachineVirtualCameraBase vcam) 
+        {
+            if (CachedComponent != null)
+                Composition.Top = Composition.Bottom = CachedComponent.Composition;
+        }
+
+        ScreenComposerSettings m_SavedComposition;
+
+        /// <summary>
+        /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
+        public override void BeforePipeline(
+            CinemachineVirtualCameraBase vcam, 
+            ref CameraState state, float deltaTime, float modifierValue) 
+        {
+            if (CachedComponent != null)
+            {
+                m_SavedComposition = CachedComponent.Composition;
+                CachedComponent.Composition = modifierValue >= 0
+                    ? ScreenComposerSettings.Lerp(m_SavedComposition, Composition.Top, modifierValue)
+                    : ScreenComposerSettings.Lerp(Composition.Bottom, m_SavedComposition, modifierValue + 1);
+            }
+        }
+
+        /// <summary>
+        /// Called from extension's PostPipelineStageCallback(Finalize).  Perform any necessary actions to state,
+        /// and restore any camera parameters changed in <see cref="BeforePipeline"/>.
+        /// </summary>
+        /// <param name="vcam">vcam owner</param>
+        /// <param name="state">current vcam state.  May be modified in this function</param>
+        /// <param name="deltaTime">current applicable deltaTime</param>
+        /// <param name="modifierValue">The normalized value of the modifier variable.  
+        /// This is the FreeLook's vertical axis.
+        /// Ranges from -1 to 1, where 0 is center rig.</param>
+        public override void AfterPipeline(
+            CinemachineVirtualCameraBase vcam,
+            ref CameraState state, float deltaTime,
+            float modifierValue)
+        {
+            // Restore the settings
+            if (CachedComponent != null)
+            {
+                CachedComponent.Composition = m_SavedComposition;
+            }
+        }
+    }
+    
+    /// <summary>
     /// Builtin Freelook modifier for Composer's Screen position. Modifies Screen position at the start of the camera pipeline.
     /// </summary>
+    ///GML todo: delete this
     public class ScreenPositionModifier : ComponentModifier<IModifiableScreenPosition>
     {
         /// <summary>Values for the top and bottom rigs</summary>
@@ -347,7 +431,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -394,6 +478,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     /// <summary>
     /// Builtin Freelook modifier for Composer's Screen position. Modifies Screen position at the start of the camera pipeline.
     /// </summary>
+    ///GML todo: delete this
     public class BiasPositionModifier : ComponentModifier<IModifiableBiasPosition>
     {
         /// <summary>Values for the top and bottom rigs</summary>
@@ -424,7 +509,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
         
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -498,7 +583,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>
@@ -580,7 +665,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
         /// <summary>
         /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
-        /// modify relevant camera settings.  Original camera settings should be restored in .
+        /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
         /// </summary>
         /// <param name="vcam">vcam owner</param>
         /// <param name="state">current vcam state.  May be modified in this function</param>

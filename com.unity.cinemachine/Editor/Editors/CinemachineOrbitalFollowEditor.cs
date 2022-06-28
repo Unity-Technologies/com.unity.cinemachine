@@ -23,19 +23,15 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             EditorApplication.update += UpdateHelpBoxes;
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
-#endif
         }
         
         void OnDisable()
         {
             EditorApplication.update -= UpdateHelpBoxes;
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
-#endif
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -151,7 +147,6 @@ namespace Cinemachine.Editor
             m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.ThreeRing);
         }
    
-#if UNITY_2021_2_OR_NEWER     
         static GUIContent[] s_OrbitNames = 
         {
             new GUIContent("Top"), 
@@ -245,7 +240,6 @@ namespace Cinemachine.Editor
             }
             Handles.color = originalColor;
         }
-#endif
 
         // TODO: ask swap's opinion on this. Do we want to always draw this or only when follow offset handle is not selected
         // TODO: what color? when follow offset handle is selected, do we want to draw CameraPath.
