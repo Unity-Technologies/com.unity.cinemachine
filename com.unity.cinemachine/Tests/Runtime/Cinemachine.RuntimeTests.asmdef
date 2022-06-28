@@ -28,6 +28,11 @@
             "name": "com.unity.modules.animation",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_ANIMATION"
+        },
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.0.0",
+            "define": "CINEMACHINE_V3_OR_HIGHER"
         }
     ]
 }
