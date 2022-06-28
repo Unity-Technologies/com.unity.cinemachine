@@ -596,7 +596,8 @@ namespace Cinemachine
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
 
-            // Used for blend reversal
+            // Used for blend reversal.  Range is 0...1,
+            // representing where the blend started when reversed mid-blend
             public float blendStartPosition;
         }
 
