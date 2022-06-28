@@ -13,8 +13,7 @@ namespace Tests.Runtime
         private const float k_BlendingTime = 1;
 
         CinemachineBrain m_Brain;
-        CinemachineVirtualCameraBase m_Source;
-        CinemachineVirtualCameraBase m_Target;
+        CinemachineVirtualCameraBase m_Source, m_Target;
 
         [SetUp]
         public override void SetUp()
@@ -27,17 +26,19 @@ namespace Tests.Runtime
             m_Brain.m_DefaultBlend = new CinemachineBlendDefinition(
                 CinemachineBlendDefinition.Style.Linear,
                 k_BlendingTime);
-
-            // Source vcam
+            
+#if CINEMACHINE_V3_OR_HIGHER
+            m_Source = CreateGameObject("A", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_Target = CreateGameObject("B", typeof(CmCamera)).GetComponent<CmCamera>();
+#else
             m_Source = CreateGameObject("A", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-            m_Source.Priority = 10;
-            m_Source.enabled = true;
-            m_Source.transform.position = Vector3.zero;
-
-            // Target vcam
             m_Target = CreateGameObject("B", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
+#endif
+            m_Source.Priority = 10;
             m_Target.Priority = 15;
+            m_Source.enabled = true;
             m_Target.enabled = false;
+            m_Source.transform.position = Vector3.zero;
             m_Target.transform.position = new Vector3(10, 0, 0);
 
             base.SetUp();
