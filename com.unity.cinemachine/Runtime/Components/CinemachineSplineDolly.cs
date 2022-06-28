@@ -102,11 +102,11 @@ namespace Cinemachine
                 + "Using different settings per axis can yield a wide range of camera behaviors.")]
             public Vector3 Position;
 
-            /// <summary>How aggressively the camera tries to track the target's orientation.
-            /// Small numbers are more responsive.  Larger numbers give a heavier more slowly responding camera.</summary>
+            /// <summary>How aggressively the camera tries to track the target's rotation.
+            /// This is only used if the Camera Up is taken from the target's rotation.</summary>
             [Range(0f, 20f)]
-            [Tooltip("How aggressively the camera tries to track the target's orientation.  "
-                + "Small numbers are more responsive.  Larger numbers give a heavier more slowly responding camera.")]
+            [Tooltip("How aggressively the camera tries to track the target's rotation.  "
+                + "This is only used if the Camera Up is taken from the target's rotation.")]
             public float Angular;
         }
 
