@@ -196,9 +196,14 @@ namespace Cinemachine.Editor
                     if (vcam != null)
                         result = UpgradeVcam(vcam);
                 }
+
+                // Cinemachine pipeline components (there will be more of these...)
                 old.TryGetComponent<CinemachineComposer>(out var composer);
                 if (composer != null)
                     UpgradeComposer(composer);
+                old.TryGetComponent<CinemachineFramingTransposer>(out var ft);
+                if (ft != null)
+                    UpgradeFramingTransposer(ft);
 
                 return result;
             }
@@ -220,6 +225,40 @@ namespace Cinemachine.Editor
                 Object.DestroyImmediate(c);
             }
 
+            static void UpgradeFramingTransposer(CinemachineFramingTransposer c)
+            {
+                var pc = c.gameObject.AddComponent<CinemachinePositionComposer>();
+                pc.TrackedObjectOffset = c.m_TrackedObjectOffset;
+                pc.Lookahead = new LookaheadSettings
+                {
+                    Enabled = c.m_LookaheadTime > 0,
+                    Time = c.m_LookaheadTime,
+                    Smoothing = c.m_LookaheadSmoothing,
+                    IgnoreY = c.m_LookaheadIgnoreY
+                };
+                pc.CameraDistance = c.m_CameraDistance;
+                pc.DeadZoneDepth = c.m_DeadZoneDepth;
+                pc.Damping = new Vector3(c.m_XDamping, c.m_YDamping, c.m_ZDamping);
+                pc.Composition = new ScreenComposerSettings
+                {
+                    ScreenPosition = new Vector2(c.m_ScreenX, c.m_ScreenY) - new Vector2(0.5f, 0.5f),
+                    DeadZoneSize = new Vector2(c.m_DeadZoneWidth, c.m_DeadZoneHeight),
+                    SoftZoneSize = new Vector2(c.m_SoftZoneWidth, c.m_SoftZoneHeight),
+                    Bias = new Vector2(c.m_BiasX, c.m_BiasY)
+                };
+                pc.UnlimitedSoftZone = c.m_UnlimitedSoftZone;
+                pc.CenterOnActivate = c.m_CenterOnActivate;
+                pc.GroupFramingMode = pc.GroupFramingMode == CinemachinePositionComposer.FramingModes.None 
+                    ? CinemachinePositionComposer.FramingModes.None : (CinemachinePositionComposer.FramingModes)((int)c.m_GroupFramingMode + 1);
+                pc.AdjustmentMode = (CinemachinePositionComposer.AdjustmentModes)c.m_AdjustmentMode;
+                pc.GroupFramingSize = c.m_GroupFramingSize;
+                pc.DollyRange = new Vector2(-c.m_MaxDollyIn, c.m_MaxDollyOut);
+                pc.TargetDistanceRange = new Vector2(c.m_MinimumDistance, c.m_MaximumDistance);
+                pc.FovRange = new Vector2(c.m_MinimumFOV, c.m_MaximumFOV);
+                pc.OrthoSizeRange = new Vector2(c.m_MinimumOrthoSize, c.m_MaximumOrthoSize);
+                Object.DestroyImmediate(c);
+            }
+            
             static ScreenComposerSettings ScreenComposerSettingsFromLegacyComposer(CinemachineComposer c)
             {
                 return new ScreenComposerSettings

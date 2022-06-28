@@ -1,81 +1,19 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
-using System.Collections.Generic;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineFramingTransposer))]
+    [CustomEditor(typeof(CinemachinePositionComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
+    internal class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            if (Target.m_UnlimitedSoftZone)
-            {
-                excluded.Add(FieldPath(x => x.m_SoftZoneWidth));
-                excluded.Add(FieldPath(x => x.m_SoftZoneHeight));
-                excluded.Add(FieldPath(x => x.m_BiasX));
-                excluded.Add(FieldPath(x => x.m_BiasY));
-            }
-            ICinemachineTargetGroup group = Target.AbstractFollowTargetGroup;
-            if (group == null || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
-            {
-                excluded.Add(FieldPath(x => x.m_GroupFramingSize));
-                excluded.Add(FieldPath(x => x.m_AdjustmentMode));
-                excluded.Add(FieldPath(x => x.m_MaxDollyIn));
-                excluded.Add(FieldPath(x => x.m_MaxDollyOut));
-                excluded.Add(FieldPath(x => x.m_MinimumDistance));
-                excluded.Add(FieldPath(x => x.m_MaximumDistance));
-                excluded.Add(FieldPath(x => x.m_MinimumFOV));
-                excluded.Add(FieldPath(x => x.m_MaximumFOV));
-                excluded.Add(FieldPath(x => x.m_MinimumOrthoSize));
-                excluded.Add(FieldPath(x => x.m_MaximumOrthoSize));
-                if (group == null)
-                    excluded.Add(FieldPath(x => x.m_GroupFramingMode));
-            }
-            else
-            {
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
-                bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
-                if (ortho)
-                {
-                    excluded.Add(FieldPath(x => x.m_AdjustmentMode));
-                    excluded.Add(FieldPath(x => x.m_MaxDollyIn));
-                    excluded.Add(FieldPath(x => x.m_MaxDollyOut));
-                    excluded.Add(FieldPath(x => x.m_MinimumDistance));
-                    excluded.Add(FieldPath(x => x.m_MaximumDistance));
-                    excluded.Add(FieldPath(x => x.m_MinimumFOV));
-                    excluded.Add(FieldPath(x => x.m_MaximumFOV));
-                }
-                else
-                {
-                    excluded.Add(FieldPath(x => x.m_MinimumOrthoSize));
-                    excluded.Add(FieldPath(x => x.m_MaximumOrthoSize));
-                    switch (Target.m_AdjustmentMode)
-                    {
-                    case CinemachineFramingTransposer.AdjustmentMode.DollyOnly:
-                        excluded.Add(FieldPath(x => x.m_MinimumFOV));
-                        excluded.Add(FieldPath(x => x.m_MaximumFOV));
-                        break;
-                    case CinemachineFramingTransposer.AdjustmentMode.ZoomOnly:
-                        excluded.Add(FieldPath(x => x.m_MaxDollyIn));
-                        excluded.Add(FieldPath(x => x.m_MaxDollyOut));
-                        excluded.Add(FieldPath(x => x.m_MinimumDistance));
-                        excluded.Add(FieldPath(x => x.m_MaximumDistance));
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
+        CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
         protected virtual void OnEnable()
         {
@@ -94,10 +32,8 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
             
-#if UNITY_2021_2_OR_NEWER           
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-#endif
         }
 
         protected virtual void OnDisable()
@@ -107,33 +43,77 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
 
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-#endif
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineFramingTransposer).FollowTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "Framing Transposer requires a Tracking target.  "
-                        + "Change Position Control to None if you don't want a Tracking target.",
-                    MessageType.Warning);
+            var serializedTarget = new SerializedObject(Target);
+            var ux = new VisualElement();
 
-            // First snapshot some settings
-            Rect oldHard = Target.HardGuideRect;
-            Rect oldSoft = Target.SoftGuideRect;
+            var noTargetHelp = ux.AddChild(new HelpBox(
+                "A Tracking target is required.  Change Position Control to None if you don't want a Tracking target.", 
+                HelpBoxMessageType.Warning));
 
-            // Draw the properties
-            DrawRemainingPropertiesInInspector();
-            m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraDistance)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.DeadZoneDepth)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.UnlimitedSoftZone)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
+
+            var groupFraming = ux.AddChild(new VisualElement());
+            groupFraming.AddSpace();
+
+            groupFraming.Add(new PropertyField(serializedTarget.FindProperty(() => Target.GroupFramingMode)));
+            groupFraming.Add(new PropertyField(serializedTarget.FindProperty(() => Target.GroupFramingSize)));
+
+            var nonOrthoControls = groupFraming.AddChild(new VisualElement());
+
+            var adjustmentModeProperty = serializedTarget.FindProperty(() => Target.AdjustmentMode);
+            nonOrthoControls.Add(new PropertyField(adjustmentModeProperty));
+
+            var dollyRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
+            var distanceRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.TargetDistanceRange)));
+            var fovRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
+
+            var orthoControls = groupFraming.AddChild(new VisualElement());
+            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));
+
+            ux.TrackPropertyValue(adjustmentModeProperty, (prop) =>
+            {
+                bool haveDolly = prop.intValue != (int)CinemachinePositionComposer.AdjustmentModes.ZoomOnly;
+                bool haveZoom = prop.intValue != (int)CinemachinePositionComposer.AdjustmentModes.DollyOnly;
+
+                fovRange.SetVisible(haveZoom);
+                dollyRange.SetVisible(haveDolly);
+                distanceRange.SetVisible(haveDolly);
+            });
+            
+            // GML: This is rather evil.  Is there a better (event-driven) way?
+            UpdateVisibility();
+            ux.schedule.Execute(UpdateVisibility).Every(250);
+
+            void UpdateVisibility()
+            {
+                groupFraming.SetVisible(Target.AbstractFollowTargetGroup != null);
+
+                bool ortho = Target.VcamState.Lens.Orthographic;
+                nonOrthoControls.SetVisible(!ortho);
+                orthoControls.SetVisible(ortho);
+
+                bool noTarget = false;
+                for (int i = 0; i < targets.Length; ++i)
+                    noTarget |= targets[i] != null && (targets[i] as CinemachinePositionComposer).FollowTarget == null;
+                if (noTargetHelp != null)
+                    noTargetHelp.SetVisible(noTarget);
+            }
+            return ux;
         }
-        
+
         protected virtual void OnGUI()
         {
             // Draw the camera guides
@@ -147,7 +127,7 @@ namespace Cinemachine.Editor
             bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
 
             // Screen guides
-            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.m_UnlimitedSoftZone);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.UnlimitedSoftZone);
 
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
@@ -174,12 +154,12 @@ namespace Cinemachine.Editor
             }
         }
 
-        [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineFramingTransposer))]
-        private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
+        [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachinePositionComposer))]
+        private static void DrawGroupComposerGizmos(CinemachinePositionComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
             if (target.AbstractFollowTargetGroup != null
-                && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
+                && target.GroupFramingMode != CinemachinePositionComposer.FramingModes.None)
             {
                 Matrix4x4 m = Gizmos.matrix;
                 Bounds b = target.LastBounds;
@@ -200,24 +180,16 @@ namespace Cinemachine.Editor
             }
         }
 
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-        
-        void DrawSceneTools()
         {
             var framingTransposer = Target;
             if (framingTransposer == null || !framingTransposer.IsValid)
-            {
                 return;
-            }
             
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
-                    new SerializedObject(framingTransposer).FindProperty(() => framingTransposer.m_TrackedObjectOffset));
+                    new SerializedObject(framingTransposer).FindProperty(() => framingTransposer.TrackedObjectOffset));
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -233,7 +205,7 @@ namespace Cinemachine.Editor
                 {
                     // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
                     var so = new SerializedObject(framingTransposer);
-                    var prop = so.FindProperty(() => framingTransposer.m_CameraDistance);
+                    var prop = so.FindProperty(() => framingTransposer.CameraDistance);
                     prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
                     so.ApplyModifiedProperties();
                 }
@@ -244,13 +216,13 @@ namespace Cinemachine.Editor
                 if (cameraDistanceHandleIsUsedOrHovered)
                 {
                     CinemachineSceneToolHelpers.DrawLabel(camPos, 
-                        "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
+                        "Camera Distance (" + framingTransposer.CameraDistance.ToString("F1") + ")");
                 }
                 
                 Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
                     Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 Handles.DrawLine(camPos, 
-                    framingTransposer.FollowTargetPosition + framingTransposer.m_TrackedObjectOffset);
+                    framingTransposer.FollowTargetPosition + framingTransposer.TrackedObjectOffset);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
                     cdHandleId);
@@ -258,6 +230,5 @@ namespace Cinemachine.Editor
                 Handles.color = originalColor;
             }
         }
-#endif
     }
 }

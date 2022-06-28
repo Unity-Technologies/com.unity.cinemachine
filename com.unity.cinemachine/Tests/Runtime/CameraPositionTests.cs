@@ -47,11 +47,9 @@ namespace Tests.Runtime
         public IEnumerator FramingTransposer()
         {
             var cameraDistance = 1f;
-            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
-            framingTransposer.m_XDamping = 0;
-            framingTransposer.m_YDamping = 0;
-            framingTransposer.m_ZDamping = 0;
-            framingTransposer.m_CameraDistance = cameraDistance;
+            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+            framingTransposer.Damping = Vector3.zero;
+            framingTransposer.CameraDistance = cameraDistance;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;

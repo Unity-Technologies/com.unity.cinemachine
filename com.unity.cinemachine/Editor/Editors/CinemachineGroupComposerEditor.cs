@@ -15,18 +15,20 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = base.CreateInspectorGUI();
 
-            InspectorUtility.AddSpace(ux);
+            ux.AddSpace();
             var notGroupHelp = ux.AddChild(new HelpBox(
                 "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup.", 
                 HelpBoxMessageType.Info));
 
-            var framingMode = ux.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_FramingMode)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_FramingMode)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_GroupFramingSize)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_FrameDamping)));
 
             var nonOrthoControls = ux.AddChild(new VisualElement());
+
             var adjustmentModeProperty = serializedTarget.FindProperty(() => Target.m_AdjustmentMode);
-            var adjustmentMode = nonOrthoControls.AddChild(new PropertyField(adjustmentModeProperty));
+            nonOrthoControls.Add(new PropertyField(adjustmentModeProperty));
+
             var maxDollyIn = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaxDollyIn)));
             var maxDollyOut = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaxDollyOut)));
             var minDistance = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumDistance)));
@@ -35,26 +37,8 @@ namespace Cinemachine.Editor
             var maxFov = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumFOV)));
 
             var orthoControls = ux.AddChild(new VisualElement());
-            var minOrtho = orthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumOrthoSize)));
-            var maxOrtho = orthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumOrthoSize)));
-
-            // GML: This is rather evil.  Is there a better (event-driven) way?
-            UpdateUX();
-            ux.schedule.Execute(UpdateUX).Every(250);
-
-            void UpdateUX()
-            {
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
-                bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
-                nonOrthoControls.SetVisible(!ortho);
-                orthoControls.SetVisible(ortho);
-
-                bool noTarget = false;
-                for (int i = 0; i < targets.Length; ++i)
-                    noTarget |= targets[i] != null && (targets[i] as CinemachineGroupComposer).AbstractLookAtTargetGroup == null;
-                if (notGroupHelp != null)
-                    notGroupHelp.SetVisible(noTarget);
-            }
+            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumOrthoSize)));
+            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumOrthoSize)));
 
             nonOrthoControls.TrackPropertyValue(adjustmentModeProperty, (prop) =>
             {
@@ -68,6 +52,25 @@ namespace Cinemachine.Editor
                 minDistance.SetVisible(haveDolly);
                 maxDistance.SetVisible(haveDolly);
             });
+            
+            // GML: This is rather evil.  Is there a better (event-driven) way?
+            UpdateVisibility();
+            ux.schedule.Execute(UpdateVisibility).Every(250);
+
+            void UpdateVisibility()
+            {
+                bool ortho = Target.VcamState.Lens.Orthographic;
+                nonOrthoControls.SetVisible(!ortho);
+                orthoControls.SetVisible(ortho);
+
+                bool noTarget = false;
+                for (int i = 0; i < targets.Length; ++i)
+                    noTarget |= targets[i] != null && (targets[i] as CinemachineGroupComposer).AbstractLookAtTargetGroup == null;
+                if (notGroupHelp != null)
+                    notGroupHelp.SetVisible(noTarget);
+            }
+
+
 
             return ux;
         }

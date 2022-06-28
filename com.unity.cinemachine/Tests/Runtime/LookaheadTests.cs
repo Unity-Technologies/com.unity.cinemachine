@@ -11,7 +11,7 @@ namespace Tests.Runtime
     {
         CmCamera m_VCam;
         CinemachineRotationComposer m_Composer;
-        CinemachineFramingTransposer m_FramingTransposer;
+        CinemachinePositionComposer m_FramingTransposer;
         Transform m_Target;
 
         [SetUp]
@@ -25,10 +25,10 @@ namespace Tests.Runtime
             m_VCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
-            m_FramingTransposer = m_VCam.gameObject.AddComponent<CinemachineFramingTransposer>();
+            m_FramingTransposer = m_VCam.gameObject.AddComponent<CinemachinePositionComposer>();
             m_Composer = m_VCam.gameObject.AddComponent<CinemachineRotationComposer>();
-            m_FramingTransposer.m_LookaheadSmoothing = m_Composer.Lookahead.Smoothing = 0.3f;
-            m_FramingTransposer.m_LookaheadTime = m_Composer.Lookahead.Time = 10;
+            m_FramingTransposer.Lookahead.Smoothing = m_Composer.Lookahead.Smoothing = 0.3f;
+            m_FramingTransposer.Lookahead.Time = m_Composer.Lookahead.Time = 10;
 
             base.SetUp();
         }
@@ -73,7 +73,7 @@ namespace Tests.Runtime
             var delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
             
-            delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.m_LookaheadTime);
+            delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
             
             m_Target.Translate(10, 0, 0);
@@ -82,7 +82,7 @@ namespace Tests.Runtime
             delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
             
-            delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.m_LookaheadTime);
+            delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
         }
     }

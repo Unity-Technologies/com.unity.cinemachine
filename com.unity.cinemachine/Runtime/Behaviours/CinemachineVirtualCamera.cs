@@ -48,7 +48,7 @@ namespace Cinemachine
     /// </summary>
     /// <seealso cref="CinemachineVirtualCameraBase"/>
     /// <seealso cref="LensSettings"/>
-    /// <seealso cref="CinemachineComposer"/>
+    /// <seealso cref="CinemachineRotationComposer"/>
     /// <seealso cref="CinemachineTransposer"/>
     /// <seealso cref="CinemachineBasicMultiChannelPerlin"/>
     [DisallowMultipleComponent]

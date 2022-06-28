@@ -59,7 +59,7 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
+            vcam.gameObject.AddComponent<CinemachinePositionComposer>();
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
