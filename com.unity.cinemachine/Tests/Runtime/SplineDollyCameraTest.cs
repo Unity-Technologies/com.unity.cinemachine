@@ -27,9 +27,9 @@ namespace Tests.Runtime
             m_CmCam = CreateGameObject("CM vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_CmCam.Follow = CreatePrimitive(PrimitiveType.Cube).transform;
             m_Dolly = m_CmCam.gameObject.AddComponent<CinemachineSplineDolly>();
-            m_Dolly.AddSplineContainer(m_SplineContainer);
+            m_Dolly.Spline = m_SplineContainer;
             m_Dolly.CameraUp = CinemachineSplineDolly.CameraUpMode.Default;
-            m_Dolly.DampingEnabled = false;
+            m_Dolly.Damping.Enabled = false;
         }
 
         [UnityTest]
