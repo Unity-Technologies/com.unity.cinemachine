@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,7 +11,11 @@ namespace Cinemachine
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
+    [AddComponentMenu("")] // Don't display in add component menu
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
+#if UNITY_2022_1_OR_NEWER
+    [Obsolete("CinemachineDollyCart has been deprecated. Use CinemachineSplineCart instead.", false)]
+#endif
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>

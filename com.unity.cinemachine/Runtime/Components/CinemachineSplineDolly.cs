@@ -1,34 +1,33 @@
 using UnityEngine;
 using System;
-using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine.Splines;
 
 namespace Cinemachine
 {
     /// <summary>
-    /// A Cinemachine Virtual Camera Body component that constrains camera motion to a Spline.
+    /// A Cinemachine Camera Body component that constrains camera motion to a Spline.
     /// The camera can move along the spline.
     ///
     /// This behaviour can operate in two modes: manual positioning, and Auto-Dolly positioning.
     /// In Manual mode, the camera's position is specified by animating the Spline Position field.
     /// In Auto-Dolly mode, the Spline Position field is animated automatically every frame by finding
-    /// the position on the spline that's closest to the virtual camera's Follow target.
+    /// the position on the spline that's closest to the camera's tracking target.
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
-        /// <summary>The Spline container to which the camera will be constrained.  This must be non-null.</summary>
-        [Tooltip("The Spline container to which the camera will be constrained.  This must be non-null."), SerializeField]
-        internal SplineContainer Spline;
+        /// <summary>The Spline container to which the camera will be constrained.</summary>
+        [Tooltip("The Spline container to which the camera will be constrained.")]
+        public SplineContainer Spline;
 
         /// <summary>The position along the spline at which the camera will be placed. This can be animated directly,
         /// or set automatically by the Auto-Dolly feature to get as close as possible to the Follow target.
         /// The value is interpreted according to the Position Units setting.</summary>
         [Tooltip("The position along the spline at which the camera will be placed.  "
-           + "This can be animated directly, or set automatically by the Auto-Dolly feature to "
+            + "This can be animated directly, or set automatically by the Auto-Dolly feature to "
             + "get as close as possible to the Follow target.  The value is interpreted "
             + "according to the Position Units setting.")]
         public float CameraPosition;
@@ -38,11 +37,11 @@ namespace Cinemachine
         /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
         /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
         /// interpolation between the specific knot index and the next knot."</summary>
-        [Tooltip("How to interpret the Spline Position:\n"+
-            "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"+
-            "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"+
-            "- Knot: Values are defined by knot indices and a fractional value representing the normalized " +
-            "interpolation between the specific knot index and the next knot.\n")]
+        [Tooltip("How to interpret the Spline Position:\n"
+            + "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"
+            + "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"
+            + "- Knot: Values are defined by knot indices and a fractional value representing the normalized " 
+            + "interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit PositionUnits = PathIndexUnit.Normalized;
 
         /// <summary>Where to put the camera relative to the spline postion.  X is perpendicular 
@@ -71,38 +70,51 @@ namespace Cinemachine
             FollowTargetNoRoll,
         };
 
-        /// <summary>If checked, will enable damping.</summary>
-        [Tooltip("If checked, will enable damping.")]
-        public bool DampingEnabled;
+        /// <summary>Settings for controlling damping</summary>
+        [Serializable]
+        public struct DampingSettings
+        {
+            /// <summary>Enables damping, which causes the camera to move gradually towards 
+            /// the desired spline position.</summary>
+            [Tooltip("Enables damping, which causes the camera to move gradually towards the desired spline position")]
+            public bool Enabled;
+
+            /// <summary>How aggressively the camera tries to maintain the offset along
+            /// the x, y, or z directions in spline local space.
+            /// Meaning:
+            /// - x represents the axis that is perpendicular to the spline. Use this to smooth out
+            /// imperfections in the path. This may move the camera off the spline.
+            /// - y represents the axis that is defined by the spline-local up direction. Use this to smooth out
+            /// imperfections in the path. This may move the camera off the spline.
+            /// - z represents the axis that is parallel to the spline. This won't move the camera off the spline.
+            /// Smaller numbers are more responsive. Larger numbers give a heavier more slowly responding camera.
+            /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
+            [Tooltip("How aggressively the camera tries to maintain the offset along the " 
+                + "x, y, or z directions in spline local space. \n" 
+                + "- x represents the axis that is perpendicular to the spline. Use this to smooth out " 
+                + "imperfections in the path. This may move the camera off the spline.\n" 
+                + "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out " 
+                + "imperfections in the path. This may move the camera off the spline.\n" 
+                + "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n" 
+                + "Smaller numbers are more responsive, larger numbers give a heavier more slowly responding camera. " 
+                + "Using different settings per axis can yield a wide range of camera behaviors.")]
+            public Vector3 Position;
+
+            /// <summary>How aggressively the camera tries to maintain the desired rotation.
+            /// This is only used if the Camera Up is not Default.</summary>
+            [RangeSlider(0f, 20f)]
+            [Tooltip("How aggressively the camera tries to maintain the desired rotation.  "
+                + "This is only used if the Camera Up is not Default.")]
+            public float Angular;
+        }
+
+        /// <summary>Settings for controlling damping, which causes the camera to 
+        /// move gradually towards the desired spline position</summary>
+        [FoldoutWithEnabledButton]
+        [Tooltip("Settings for controlling damping, which causes the camera to "
+            + "move gradually towards the desired spline position")]
+        public DampingSettings Damping;
         
-        /// <summary>How aggressively the camera tries to maintain the offset along
-        /// the x, y, or z directions in spline local space.
-        /// Meaning:
-        /// - x represents the axis that is perpendicular to the spline. Use this to smooth out
-        /// imperfections in the path. This may move the camera off the spline.
-        /// - y represents the axis that is defined by the spline-local up direction. Use this to smooth out
-        /// imperfections in the path. This may move the camera off the spline.
-        /// - z represents the axis that is parallel to the spline. This won't move the camera off the spline.
-        /// Smaller numbers are more responsive. Larger numbers give a more heavy, slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
-        [Tooltip("How aggressively the camera tries to maintain the offset along the " +
-            "x, y, or z directions in spline local space. \n" +
-            "- x represents the axis that is perpendicular to the spline. Use this to smooth out " +
-            "imperfections in the path. This may move the camera off the spline.\n" +
-            "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out " +
-            "imperfections in the path. This may move the camera off the spline.\n" +
-            "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n" +
-            "Smaller numbers are more responsive, larger numbers give a more heavy, slowly responding camera. " +
-            "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public Vector3 Damping = Vector3.zero;
-
-        /// <summary>How aggressively the camera tries to track the target's orientation.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
-        [Tooltip("How aggressively the camera tries to track the target's orientation.  "
-            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float AngularDamping = 0f;
-
         /// <summary>Controls how automatic dollying occurs</summary>
         [Serializable]
         public struct AutoDolly
@@ -113,45 +125,85 @@ namespace Cinemachine
                 + "close as possible to the Follow target.  Note: this can have significant performance impact")]
             public bool Enabled;
 
-            /// <summary>Offset, in current position units, from the closest point on the spline to the follow target.</summary>
+            /// <summary>
+            /// Offset, in current position units, from the closest point on the spline to the follow target.
+            /// </summary>
             [Tooltip("Offset, in current position units, from the closest point on the spline to the follow target")]
             public float PositionOffset;
 
             /// <summary>
             /// Affects how many segments to split a spline into when calculating the nearest point.
-            /// Higher values mean smaller and more segments, which increases accuracy at the cost of processing time.
-            /// In most cases, the default resolution is appropriate. Use with <seealso cref="SearchIteration"/> to fine-tune point accuracy.
+            /// Higher values mean smaller and more segments, which increases accuracy at the cost of 
+            /// processing time.  In most cases, the default resolution is appropriate. Use 
+            /// with <seealso cref="SearchIteration"/> to fine-tune point accuracy.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
             [HideInInspector]
-            [Tooltip("Affects how many segments to split a spline into when calculating the nearest point." +
-                "Higher values mean smaller and more segments, which increases accuracy at the cost of processing time. " +
-                "In most cases, the default value (4) is appropriate. Use with SearchIteration to fine-tune point accuracy.")]
+            [Tooltip("Affects how many segments to split a spline into when calculating the nearest point.  " 
+                + "Higher values mean smaller and more segments, which increases accuracy at the cost of "
+                + "processing time.  In most cases, the default value (4) is appropriate. Use with SearchIteration "
+                + "to fine-tune point accuracy.")]
             public int SearchResolution;
 
             /// <summary>
             /// The nearest point is calculated by finding the nearest point on the entire length
-            /// of the spline using <seealso cref="SearchResolution"/> to divide into equally spaced line segments. Successive
-            /// iterations will then subdivide further the nearest segment, producing more accurate results. In most cases,
-            /// the default value is sufficient.
+            /// of the spline using <seealso cref="SearchResolution"/> to divide into equally spaced line segments. 
+            /// Successive iterations will then subdivide further the nearest segment, producing more 
+            /// accurate results. In most cases, the default value is sufficient.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
             [HideInInspector]
-            [Tooltip("The nearest point is calculated by finding the nearest point on the entire length of the spline " +
-                "using SearchResolution to divide into equally spaced line segments. Successive iterations will then " +
-                "subdivide further the nearest segment, producing more accurate results. In most cases, the default value (2) is sufficient.")]
+            [Tooltip("The nearest point is calculated by finding the nearest point on the entire "
+                + "length of the spline using SearchResolution to divide into equally spaced line segments. "
+                + "Successive iterations will then subdivide further the nearest segment, producing more "
+                + "accurate results. In most cases, the default value (2) is sufficient.")]
             public int SearchIteration;
+
+            internal static AutoDolly Default => new AutoDolly
+            {
+                Enabled = false, 
+                PositionOffset = 0,
+                SearchIteration = 4, 
+                SearchResolution = 2,
+            };
         }
 
         /// <summary>Controls how automatic dollying occurs</summary>
-        [Tooltip("Controls how automatic dollying occurs.  A Follow target is necessary to use this feature.")]
-        public AutoDolly AutomaticDolly = new AutoDolly 
-        { 
-            Enabled = false, 
-            PositionOffset = 0,
-            SearchIteration = 4, 
-            SearchResolution = 2,
-        };
+        [FoldoutWithEnabledButton]
+        [Tooltip("Controls how automatic dollying occurs.  A tracking target is necessary to use this feature.")]
+        public AutoDolly AutomaticDolly = AutoDolly.Default;
+
+        // State info for damping
+        float m_PreviousNormalizedSplinePosition;
+        Quaternion m_PreviousOrientation = Quaternion.identity;
+        Vector3 m_PreviousCameraPosition = Vector3.zero;
+
+        CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
+
+        void OnValidate()
+        {
+            Damping.Position.x = Mathf.Clamp(Damping.Position.x, 0, 20);
+            Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
+            Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
+            Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
+        }
+
+        void Reset()
+        {
+            Spline = null;
+            CameraPosition = 0;
+            PositionUnits = PathIndexUnit.Normalized;
+            SplineOffset = Vector3.zero;
+            CameraUp = CameraUpMode.Default;
+            Damping = default;
+            AutomaticDolly = AutoDolly.Default;
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            RefreshRollCache();
+        }
 
         /// <summary>True if component is enabled and has a spline</summary>
         public override bool IsValid => enabled && Spline != null;
@@ -164,18 +216,8 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => !DampingEnabled ? 0 :
-            Mathf.Max(Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)), AngularDamping);
-
-        /// <summary>
-        /// Adds spline to SplineDolly.
-        /// </summary>
-        /// <param name="splineContainer">The spline to add. If null, then any spline on SplineDolly will be removed.</param>
-        public void AddSplineContainer(SplineContainer splineContainer)
-        {
-            Spline = splineContainer;
-            UpdateSplineData();
-        }
+        public override float GetMaxDampTime() => !Damping.Enabled ? 0 :
+            Mathf.Max(Mathf.Max(Damping.Position.x, Mathf.Max(Damping.Position.y, Damping.Position.z)), Damping.Angular);
 
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
@@ -183,17 +225,14 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             if (!IsValid)
-            {
                 return;
-            }
 
             var splinePath = Spline.Spline;
             if (splinePath == null || splinePath.Count == 0)
-            {
                 return;
-            }
             
-            CameraPosition = SanitizeInterpolationValue(splinePath, CameraPosition, PositionUnits);
+            CameraPosition = splinePath.StandardizeSplinePosition(CameraPosition, PositionUnits, splinePath.GetLength());
+
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
                 splinePath.ConvertIndexUnit(CameraPosition, PositionUnits, PathIndexUnit.Normalized);
@@ -214,7 +253,10 @@ namespace Cinemachine
                 SplineUtility.GetNearestPoint(splinePath, 
                     Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out normalizedSplinePosition, 
                     AutomaticDolly.SearchResolution, AutomaticDolly.SearchIteration);
-                normalizedSplinePosition = Mathf.Clamp01(normalizedSplinePosition); // GML hack because SplineUtility.GetNearestPoint is buggy
+
+                // GML hack because SplineUtility.GetNearestPoint is buggy
+                normalizedSplinePosition = Mathf.Clamp01(normalizedSplinePosition);
+
                 CameraPosition = splinePath.ConvertIndexUnit(normalizedSplinePosition, 
                     PathIndexUnit.Normalized, PositionUnits);
                 
@@ -241,10 +283,10 @@ namespace Cinemachine
                 normalizedSplinePosition = next;
 
                 // Apply damping in the spline direction
-                if (DampingEnabled && deltaTime >= 0)
+                if (Damping.Enabled && deltaTime >= 0)
                 {
                     float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
-                    offset = Damper.Damp(offset, Damping.z, deltaTime);
+                    offset = Damper.Damp(offset, Damping.Position.z, deltaTime);
                     normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
                 }
             }
@@ -262,24 +304,24 @@ namespace Cinemachine
             newCameraPos += SplineOffset.z * offsetZ;
 
             // Apply damping to the remaining directions
-            if (DampingEnabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 Vector3 currentCameraPos = m_PreviousCameraPosition;
                 Vector3 delta = (currentCameraPos - newCameraPos);
                 Vector3 delta1 = Vector3.Dot(delta, offsetY) * offsetY;
                 Vector3 delta0 = delta - delta1;
 
-                delta0 = Damper.Damp(delta0, Damping.x, deltaTime);
-                delta1 = Damper.Damp(delta1, Damping.y, deltaTime);
+                delta0 = Damper.Damp(delta0, Damping.Position.x, deltaTime);
+                delta1 = Damper.Damp(delta1, Damping.Position.y, deltaTime);
                 newCameraPos = currentCameraPos - (delta0 + delta1);
             }
             curState.RawPosition = m_PreviousCameraPosition = newCameraPos;
 
             // Set the orientation and up
             Quaternion newOrientation = GetCameraOrientationAtSplinePoint(newSplineOrientation, curState.ReferenceUp);
-            if (DampingEnabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                float t = VirtualCamera.DetachedFollowTargetDamp(1, AngularDamping, deltaTime);
+                float t = VirtualCamera.DetachedFollowTargetDamp(1, Damping.Angular, deltaTime);
                 newOrientation = Quaternion.Slerp(m_PreviousOrientation, newOrientation, t);
             }
             m_PreviousOrientation = newOrientation;
@@ -287,75 +329,6 @@ namespace Cinemachine
 
             if (CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
-        }
-
-
-        CinemachineSplineRoll m_RollCache; // don't use this directly
-
-        CinemachineSplineRoll SplineRoll
-        {
-            get
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    RefreshRollCache();
-#endif
-                return m_RollCache;
-            }
-        }
-        
-        float SanitizeInterpolationValue(Spline spline, float t, PathIndexUnit unit)
-        {
-            var sanitized = t;
-            var splineClosed = spline.Closed;
-            switch (unit)
-            {
-                case PathIndexUnit.Distance:
-                {
-                    var splineLength = m_SplineLength;
-                    if (splineClosed)
-                    {
-                        sanitized %= splineLength;
-                        if (sanitized < 0)
-                        {
-                            sanitized += splineLength;
-                        }
-                    }
-                    else sanitized = Mathf.Clamp(sanitized, 0, splineLength);
-
-                    break;
-                }
-                case PathIndexUnit.Knot:
-                {
-                    var knotCount = m_SplineKnotCount;
-                    if (splineClosed)
-                    {
-                        sanitized %= knotCount;
-                        if (sanitized < 0)
-                        {
-                            sanitized += knotCount;
-                        }
-                    }
-                    else sanitized = Mathf.Clamp(sanitized, 0, knotCount);
-
-                    break;
-                }
-                default:
-                case PathIndexUnit.Normalized:
-                {
-                    if (splineClosed)
-                    {
-                        sanitized -= Mathf.Floor(sanitized);
-                        if (sanitized < 0)
-                        {
-                            sanitized += 1f;
-                        }
-                    }
-                    else sanitized = Mathf.Clamp01(sanitized);
-                    break;
-                }
-            }
-            return sanitized;
         }
 
         Quaternion GetCameraOrientationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
@@ -379,107 +352,30 @@ namespace Cinemachine
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
         }
 
-        float m_PreviousNormalizedSplinePosition = 0;
-        Quaternion m_PreviousOrientation = Quaternion.identity;
-        Vector3 m_PreviousCameraPosition = Vector3.zero;
+        CinemachineSplineRoll SplineRoll
+        {
+            get
+            {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    RefreshRollCache();
+#endif
+                return m_RollCache;
+            }
+        }
         
-        bool m_Registered = false;
-        SplineContainer m_SplineCache;
-        void OnValidate()
-        {
-            if (m_SplineCache != null)
-            {
-                m_SplineCache.Spline.changed -= UpdateSplineData;
-                m_SplineCache = Spline;
-                m_Registered = false;
-            }
-            if (!m_Registered && Spline != null && Spline.Spline != null)
-            {
-                m_Registered = true;
-                m_SplineCache = Spline;
-                Spline.Spline.changed += UpdateSplineData;
-            }
-
-            Damping.x = Mathf.Clamp(Damping.x, 0, 20);
-            Damping.y = Mathf.Clamp(Damping.y, 0, 20);
-            Damping.z = Mathf.Clamp(Damping.z, 0, 20);
-            AngularDamping = Mathf.Clamp(AngularDamping, 0, 20);
-            UpdateSplineData();
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            RefreshRollCache();
-        }
-
-        float m_SplineLength;
-        int m_SplineKnotCount;
-        void UpdateSplineData()
-        {
-            if (Spline != null && Spline.Spline != null)
-            {
-                m_SplineLength = Spline.Spline.GetLength();
-                m_SplineKnotCount = Spline.Spline.Knots.Count();
-            }
-            else
-            {
-                m_SplineLength = m_SplineKnotCount = 0;
-            }
-        }
-
         void RefreshRollCache()
         {
-            if (VirtualCamera != null)
-                VirtualCamera.TryGetComponent(out m_RollCache); // check if vcam has CinemachineSplineRoll
+            // check if we have CinemachineSplineRoll
+            TryGetComponent(out m_RollCache);
 #if UNITY_EDITOR
+            // need to tell CinemachineSplineRoll about its spline for gizmo drawing purposes
             if (m_RollCache != null)
-                m_RollCache.SplineContainer = Spline; // need to tell CinemachineSplineRoll about its spline for drawing purposes
+                m_RollCache.SplineContainer = Spline; 
 #endif
+            // check if our spline has CinemachineSplineRoll
             if (Spline != null && m_RollCache == null)
-                Spline.TryGetComponent(out m_RollCache); // check if our spline has CinemachineSplineRoll
-        }
-    }
-
-    static class SplineContainerExtensions
-    {
-        public static bool EvaluateSplineWithRoll(
-            this SplineContainer spline,
-            CinemachineSplineRoll roll,
-            float tNormalized, 
-            out Vector3 position, out Quaternion rotation)
-        {
-            if (!spline.Evaluate(tNormalized, out var localPosition, out var localTangent, out var localUp))
-            {
-                position = localPosition;
-                rotation = Quaternion.identity;
-                return false;
-            }
-
-            position = localPosition;
-            Vector3 fwd = localTangent;
-            Vector3 up = localUp;
-
-            // fix tangent when 0
-            if (fwd.Equals(Vector3.zero))
-            {
-                const float delta = 0.001f;
-                var atEnd = tNormalized > 1.0f - delta;
-                var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
-                var p = spline.EvaluatePosition(t1);
-                fwd = atEnd ? localPosition - p : p - localPosition;
-            }
-            // GML todo: what if fwd and up are parallel?
-            rotation = Quaternion.LookRotation(fwd, up);
-
-            // Apply extra roll
-            if (roll != null && roll.enabled)
-            {
-                float rollValue = roll.Roll.Evaluate(spline.Spline, tNormalized, 
-                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
-                rotation = Quaternion.AngleAxis(-rollValue, fwd) * rotation;
-            }
-            return true;
+                Spline.TryGetComponent(out m_RollCache);
         }
     }
 }
