@@ -562,8 +562,6 @@ namespace Cinemachine.Editor
             m_Snapshot.SensorSize = SensorSize(property);
         }
 
-        static float FoldoutHackWTF => 13;
-
         GUIContent GetFOVLabel()
         {
             if (m_Snapshot.IsOrtho) return OrthoSizeLabel;
@@ -700,7 +698,7 @@ namespace Cinemachine.Editor
             var fovLabelWidth = GUI.skin.label.CalcSize(fovLabel).x;
 
             property.isExpanded = EditorGUI.Foldout(
-                new Rect(rect.x - FoldoutHackWTF, rect.y, EditorGUIUtility.labelWidth - fovLabelWidth + FoldoutHackWTF, rect.height),
+                new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth - fovLabelWidth, rect.height),
                 property.isExpanded, label, true);
 
             if (!property.isExpanded)
@@ -740,9 +738,8 @@ namespace Cinemachine.Editor
 
                 if (m_Snapshot.IsPhysical)
                 {
-                    rect.y += rect.height + vSpace; rect.x -= FoldoutHackWTF;
+                    rect.y += rect.height + vSpace;
                     s_PhysicalExapnded = EditorGUI.Foldout(rect, s_PhysicalExapnded, PhysicalPropertiesLabel, true);
-                    rect.x += FoldoutHackWTF;
 
                     if (s_PhysicalExapnded)
                     {
@@ -781,9 +778,8 @@ namespace Cinemachine.Editor
                         --EditorGUI.indentLevel;
                     }
                 }
-                rect.y += rect.height + vSpace; rect.x -= FoldoutHackWTF;
+                rect.y += rect.height + vSpace;
                 s_AdvancedLensExpanded = EditorGUI.Foldout(rect, s_AdvancedLensExpanded, AdvancedLabel);
-                rect.x += FoldoutHackWTF;
                 if (s_AdvancedLensExpanded)
                 {
                     ++EditorGUI.indentLevel;
