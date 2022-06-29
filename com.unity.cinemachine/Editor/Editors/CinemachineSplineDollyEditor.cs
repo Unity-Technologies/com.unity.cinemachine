@@ -22,15 +22,10 @@ namespace Cinemachine.Editor
             var splineProp = serializedTarget.FindProperty(() => Target.Spline);
             ux.Add(new PropertyField(splineProp));
 
-            var posProp = serializedTarget.FindProperty(() => Target.CameraPosition);
-            var unitsProp =serializedTarget.FindProperty(() => Target.PositionUnits);
-            var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
-            row.Left.Add(new Label(posProp.displayName) 
-                { tooltip = posProp.tooltip, style = { alignSelf = Align.Center, flexGrow = 0 }});
-            row.Right.Add(new PropertyField(posProp, "") 
-                { tooltip = posProp.tooltip, style = { flexGrow = 1, flexBasis = 0 }});
-            row.Right.Add(new PropertyField(unitsProp, "") 
-                { tooltip = unitsProp.tooltip, style = { flexGrow = 2, flexBasis = 0 }});
+            var row = ux.AddChild(InspectorUtility.CreatePropertyRow(
+                serializedTarget.FindProperty(() => Target.CameraPosition), out _));
+            row.Right.Add(new PropertyField(serializedTarget.FindProperty(() => Target.PositionUnits), "") 
+                { style = { flexGrow = 2, flexBasis = 0 }});
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.SplineOffset)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraUp)));

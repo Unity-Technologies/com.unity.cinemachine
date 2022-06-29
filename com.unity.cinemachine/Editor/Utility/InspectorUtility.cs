@@ -431,9 +431,12 @@ namespace Cinemachine.Editor
                 // This is to peek at the resolved label width
                 var hack = AddChild(this,  new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }});
 
-                var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
-                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0, marginLeft = kLeftMarginHack }});
-                Right = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
+                var row = AddChild(this, new VisualElement 
+                    { style = { flexDirection = FlexDirection.Row }});
+                Left = row.AddChild(new VisualElement 
+                    { style = { flexDirection = FlexDirection.Row, flexGrow = 0, marginLeft = kLeftMarginHack }});
+                Right = row.AddChild(new VisualElement 
+                    { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
 
                 hack.Label.RegisterCallback<GeometryChangedEvent>(
                     (evt) => Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset);
@@ -456,7 +459,8 @@ namespace Cinemachine.Editor
 
                 // There are 2 modes for this element: foldout closed and foldout open.
                 // When closed, we cheat the layout system, and to implement this we do a switcheroo
-                var closedContainer = AddChild(this, new LeftRightContainer() { style = { flexGrow = 1, marginLeft = -LeftRightContainer.kLeftMarginHack }});
+                var closedContainer = AddChild(this, new LeftRightContainer() 
+                    { style = { flexGrow = 1, marginLeft = -LeftRightContainer.kLeftMarginHack }});
                 Add(foldout);
 
                 var closedFoldout = new Foldout { text = foldout.text, tooltip = foldout.tooltip, value = false };
@@ -540,6 +544,20 @@ namespace Cinemachine.Editor
                 else if (p.propertyType == SerializedPropertyType.Integer)
                     new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
             }
+        }
+
+        internal static LeftRightContainer CreatePropertyRow(
+            SerializedProperty property, out VisualElement propertyField)
+        {
+            var row = new LeftRightContainer();
+
+            var label = row.Left.AddChild(new Label(property.displayName) 
+                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
+            propertyField = row.Right.AddChild(new PropertyField(property, "") 
+                { tooltip = property.tooltip, style = { flexGrow = 1, flexBasis = 0 }});
+            AddPropertyDragger(label, property, propertyField);
+
+            return row;
         }
 
         internal static VisualElement CreateHelpBoxWithButton(

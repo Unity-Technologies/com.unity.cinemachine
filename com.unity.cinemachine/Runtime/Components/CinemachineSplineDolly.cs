@@ -75,10 +75,9 @@ namespace Cinemachine
         [Serializable]
         public struct DampingSettings
         {
-            /// <summary>Enables automatic dolly, which chooses a spline position
-            /// that is as close as possible to the tracking target.</summary>
-            [Tooltip("Enables automatic dolly, which chooses a spline position that is as "
-                + "close as possible to the tracking target.  Note: this can have a performance impact")]
+            /// <summary>Enables damping, which causes the camera to move gradually towards 
+            /// the desired spline position.</summary>
+            [Tooltip("Enables damping, which causes the camera to move gradually towards the desired spline position")]
             public bool Enabled;
 
             /// <summary>How aggressively the camera tries to maintain the offset along
@@ -102,17 +101,19 @@ namespace Cinemachine
                 + "Using different settings per axis can yield a wide range of camera behaviors.")]
             public Vector3 Position;
 
-            /// <summary>How aggressively the camera tries to track the target's rotation.
-            /// This is only used if the Camera Up is taken from the target's rotation.</summary>
+            /// <summary>How aggressively the camera tries to maintain the desired rotation.
+            /// This is only used if the Camera Up is not Default.</summary>
             [Range(0f, 20f)]
-            [Tooltip("How aggressively the camera tries to track the target's rotation.  "
-                + "This is only used if the Camera Up is taken from the target's rotation.")]
+            [Tooltip("How aggressively the camera tries to maintain the desired rotation.  "
+                + "This is only used if the Camera Up is not Default.")]
             public float Angular;
         }
 
-        /// <summary>Settings for controlling damping</summary>
+        /// <summary>Settings for controlling damping, which causes the camera to 
+        /// move gradually towards the desired spline position</summary>
         [FoldoutWithEnabledButton]
-        [Tooltip("Settings for controlling damping")]
+        [Tooltip("Settings for controlling damping, which causes the camera to "
+            + "move gradually towards the desired spline position")]
         public DampingSettings Damping;
         
         /// <summary>Controls how automatic dollying occurs</summary>
