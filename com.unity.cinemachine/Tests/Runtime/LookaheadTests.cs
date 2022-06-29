@@ -29,6 +29,7 @@ namespace Tests.Runtime
             m_Composer = m_VCam.gameObject.AddComponent<CinemachineRotationComposer>();
             m_FramingTransposer.Lookahead.Smoothing = m_Composer.Lookahead.Smoothing = 0.3f;
             m_FramingTransposer.Lookahead.Time = m_Composer.Lookahead.Time = 10;
+            m_FramingTransposer.Lookahead.Enabled = m_Composer.Lookahead.Enabled = true;
 
             base.SetUp();
         }
