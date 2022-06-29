@@ -685,16 +685,17 @@ namespace Cinemachine.Editor
                 CopyValues(template, newAim);
 
                 // Add modifier if it is a composer
-                var middle = newAim as CinemachineRotationComposer;
+                var middle = newAim as CinemachineComposer;
                 var top = freelook.GetRig(0).GetComponentInChildren<CinemachineComposer>();
                 var bottom = freelook.GetRig(2).GetComponentInChildren<CinemachineComposer>();
                 if (middle != null && top != null && bottom != null)
                 {
                     var topComposition = ScreenComposerSettingsFromLegacyComposer(top);
+                    var middleComposition = ScreenComposerSettingsFromLegacyComposer(middle);
                     var bottomComposition = ScreenComposerSettingsFromLegacyComposer(bottom);
 
-                    if (!ScreenComposerSettings.Approximately(middle.Composition, topComposition)
-                        || !ScreenComposerSettings.Approximately(middle.Composition, bottomComposition))
+                    if (!ScreenComposerSettings.Approximately(middleComposition, topComposition)
+                        || !ScreenComposerSettings.Approximately(middleComposition, bottomComposition))
                     {
                         freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.CompositionModifier
                         {
