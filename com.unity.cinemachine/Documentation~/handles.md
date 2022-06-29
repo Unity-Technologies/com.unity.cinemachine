@@ -46,7 +46,7 @@ This starts from where the camera is placed. You can drag the points to increase
 
 ![tracked-object-offset](images/tracked-object-offset.png)
 
-For more information on the Tracked object offset property see, [Composer properties](CinemachineAimComposer.md).
+For more information on the Tracked object offset property see, [Rotation Composer properties](CinemachineAimRotationComposer.md).
 
 ## Cinemachine tool settings
 

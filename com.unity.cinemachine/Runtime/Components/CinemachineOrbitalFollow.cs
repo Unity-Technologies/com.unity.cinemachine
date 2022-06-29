@@ -13,7 +13,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineOrbitalFollow 
         : CinemachineComponentBase, IInputAxisTarget
         , CinemachineFreeLookModifier.IModifierValueSource
@@ -53,7 +53,7 @@ namespace Cinemachine
         public Vector3 PositionDamping = new Vector3(1, 1, 1);
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
-        public enum OrbitMode
+        public enum OrbitStyles
         {
             /// <summary>Camera is at a fixed distance from the target, 
             /// defining a sphere</summary>
@@ -65,7 +65,7 @@ namespace Cinemachine
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
         [Tooltip("Defines the manner in which the orbit surface is constructed." )]
-        public OrbitMode OrbitStyle = OrbitMode.Sphere;
+        public OrbitStyles OrbitStyle = OrbitStyles.Sphere;
 
         /// <summary>The camera will be placed at this distance from the Follow target</summary>
         [Tooltip("The camera will be placed at this distance from the Follow target.")]
@@ -178,7 +178,7 @@ namespace Cinemachine
             PositionDamping = new Vector3(1, 1, 1);
             RotationDamping = new Vector3(1, 1, 1);
             QuaternionDamping = 1f;
-            OrbitStyle = OrbitMode.Sphere;
+            OrbitStyle = OrbitStyles.Sphere;
             Radius = 10;
             Orbits = Cinemachine3OrbitRig.Settings.Default;
             HorizontalAxis = DefaultHorizontal;
@@ -191,7 +191,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.PositionControl;
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
         /// <summary>
         /// Report maximum damping time needed for this component.
@@ -253,7 +253,7 @@ namespace Cinemachine
         {
             Vector3 pos;
             float t;
-            if (OrbitStyle == OrbitMode.ThreeRing)
+            if (OrbitStyle == OrbitStyles.ThreeRing)
             {
                 if (m_OrbitCache.SettingsChanged(Orbits))
                     m_OrbitCache.UpdateOrbitCache(Orbits);

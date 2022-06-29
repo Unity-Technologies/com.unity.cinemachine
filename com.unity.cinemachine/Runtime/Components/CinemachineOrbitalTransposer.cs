@@ -31,7 +31,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineOrbitalTransposer : CinemachineTransposer
     {
         /// <summary>

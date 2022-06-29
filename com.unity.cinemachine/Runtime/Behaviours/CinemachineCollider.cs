@@ -222,11 +222,10 @@ namespace Cinemachine
             }
             public void UpdateDistanceSmoothing(float distance)
             {
-                float now = CinemachineCore.CurrentTime;
-                if (m_SmoothedDistance == 0 || distance <= m_SmoothedDistance)
+                if (m_SmoothedDistance == 0 || distance < m_SmoothedDistance)
                 {
                     m_SmoothedDistance = distance;
-                    m_SmoothedTime = now;
+                    m_SmoothedTime = CinemachineCore.CurrentTime;
                 }
             }
             public void ResetDistanceSmoothing(float smoothingTime)
@@ -271,7 +270,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.PositionControl)
+            if (stage == CinemachineCore.Stage.Body)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
@@ -339,7 +338,7 @@ namespace Cinemachine
                 }
             }
             // Rate the shot after the aim was set
-            if (stage == CinemachineCore.Stage.RotationControl)
+            if (stage == CinemachineCore.Stage.Aim)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);

@@ -120,8 +120,8 @@ namespace Cinemachine
             m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
 
-        /// <summary>Pre-Serialization handler - does nothing</summary>
-        void ISerializationCallbackReceiver.OnBeforeSerialize() {}
+        /// <summary>Pre-Serialization handler - delegates to derived classes</summary>
+        void ISerializationCallbackReceiver.OnBeforeSerialize() => OnBeforeSerialize();
 
         /// <summary>
         /// Override this to handle any upgrades necessitated by a streaming version change
@@ -143,6 +143,8 @@ namespace Cinemachine
         public int m_Priority { get => Priority; set => Priority = value; }
 
         //============================================================================
+
+        internal virtual void OnBeforeSerialize() {}
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.

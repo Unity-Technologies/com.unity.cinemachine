@@ -90,9 +90,16 @@ namespace Cinemachine.Editor
 
                 EditorGUI.BeginChangeCheck();
                 // shoulder handle
-                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+#if UNITY_2022_2_OR_NEWER
+                var sHandleIds = Handles.PositionHandleIds.@default;
+                var newShoulderPosition = Handles.PositionHandle(sHandleIds, shoulderPosition, heading);
+                var sHandleMinId = sHandleIds.x - 1;
+                var sHandleMaxId = sHandleIds.xyz + 1;
+#else
+                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
                 var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
-                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive); // TODO: KGB workaround until id is exposed
+                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
+#endif
 
                 Handles.color = Handles.preselectionColor;
                 // arm handle
@@ -133,7 +140,7 @@ namespace Cinemachine.Editor
                     + camDistance.ToString("F1") + ")", armPosition, camPos);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleMaxId);
-                
+
                 Handles.color = originalColor;
             }
             

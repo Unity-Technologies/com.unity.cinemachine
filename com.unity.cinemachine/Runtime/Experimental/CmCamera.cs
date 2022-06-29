@@ -50,7 +50,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
-    public sealed class CmCamera : CinemachineVirtualCameraBase
+    public sealed class CmCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]
@@ -242,7 +242,7 @@ namespace Cinemachine
 
             // Apply the component pipeline
             UpdatePipelineCache();
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Pipeline[(int)stage];
@@ -250,13 +250,13 @@ namespace Cinemachine
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
             CinemachineComponentBase postAimBody = null;
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage <= CinemachineCore.Stage.Finalize; ++stage)
             {
                 var c = m_Pipeline[(int)stage];
                 if (c != null && c.IsValid)
                 {
-                    if (stage == CinemachineCore.Stage.PositionControl && c.BodyAppliesAfterAim)
+                    if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
                     {
                         postAimBody = c;
                         continue; // do the body stage of the pipeline after Aim
@@ -264,7 +264,7 @@ namespace Cinemachine
                     c.MutateCameraState(ref state, deltaTime);
                 }
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
-                if (stage == CinemachineCore.Stage.RotationControl)
+                if (stage == CinemachineCore.Stage.Aim)
                 {
                     if (c == null)
                         state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
@@ -272,7 +272,7 @@ namespace Cinemachine
                     if (postAimBody != null)
                     {
                         postAimBody.MutateCameraState(ref state, deltaTime);
-                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.PositionControl, ref state, deltaTime);
+                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
                     }
                 }
             }
@@ -317,6 +317,13 @@ namespace Cinemachine
             UpdatePipelineCache();
             var i = (int)stage;
             return i >= 0 && i < m_Pipeline.Length ? m_Pipeline[i] : null;
+        }
+
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!Lens.IsPhysicalCamera) 
+                Lens.SensorSize = Vector2.one;
         }
     }
 }

@@ -118,7 +118,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam, 
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.PositionControl)
+            if (stage == CinemachineCore.Stage.Body)
             {
                 var aspectRatio = state.Lens.Aspect;
                 if (!m_shapeCache.ValidateCache(

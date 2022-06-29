@@ -40,7 +40,8 @@ namespace Cinemachine.Editor
             row.Left.Add(new Label("Priority") { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0 }});
             row.Right.Add(new PropertyField(customProp, "") 
                 { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0, marginRight = 5 }});
-            var defaultLabel = row.Right.AddChild(new Label("(using default)") { style = { alignSelf = Align.Center, flexGrow = 0 }});
+            var defaultLabel = row.Right.AddChild(new Label("(using default)") 
+                { style = { alignSelf = Align.Center, flexGrow = 0, unityFontStyleAndWeight = FontStyle.Italic }});
             var valueField = row.Right.AddChild(new InspectorUtility.CompactPropertyField(
                 property.FindPropertyRelative(() => def.Priority), "Value") { style = { flexGrow = 1 }});
 

@@ -29,11 +29,11 @@ namespace Cinemachine
         /// </summary>
         public enum Stage
         {
-            /// <summary>Second stage: position the camera in space</summary>
-            PositionControl,
+            /// <summary>First stage: position the camera in space</summary>
+            Body,
 
-            /// <summary>Third stage: orient the camera to point at the target</summary>
-            RotationControl,
+            /// <summary>Second stage: orient the camera to point at the target</summary>
+            Aim,
 
             /// <summary>Final pipeline stage: apply noise (this is done separately, in the
             /// Correction channel of the CameraState)</summary>
@@ -133,6 +133,9 @@ namespace Cinemachine
 
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public int BrainCount { get { return mActiveBrains.Count; } }
+
+        /// <summary>Enables frame delta compensation for not updated frames. False is useful for deterministic test results. </summary>
+        internal static bool FrameDeltaCompensationEnabled = true;
 
         /// <summary>Access the array of active CinemachineBrains in the scene
         /// without generating garbage</summary>
@@ -341,15 +344,17 @@ namespace Cinemachine
                 };
                 mUpdateStatus.Add(vcam, status);
             }
+            
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : s_FixedFrameCount - status.lastUpdateFixedFrame;
+            
             if (deltaTime >= 0)
             {
                 if (frameDelta == 0 && status.lastUpdateMode == updateClock
                         && status.lastUpdateDeltaTime == deltaTime)
                     return; // already updated
-                if (frameDelta > 0)
+                if (FrameDeltaCompensationEnabled && frameDelta > 0)
                     deltaTime *= frameDelta; // try to catch up if multiple frames
             }
 

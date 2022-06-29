@@ -109,7 +109,7 @@ namespace Cinemachine
 
         /// <summary>
         /// For physical cameras, this is the actual size of the image sensor (in mm); it is used to 
-        /// convert between focal length and field of vue.  For nonphysical cameras, it is the aspect ratio.
+        /// convert between focal length and field of view.  For nonphysical cameras, it is the aspect ratio.
         /// </summary>
         public Vector2 SensorSize
         { 
@@ -160,6 +160,7 @@ namespace Cinemachine
         public float ShutterSpeed;
         [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
         public float Aperture;
+        public float FocusDistance;
         [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
         public int BladeCount;
         [MinMaxRangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
@@ -177,7 +178,7 @@ namespace Cinemachine
         /// <param name="fromCamera">The Camera from which the FoV, near
         /// and far clip planes will be copied.</param>
         /// <returns>The LensSettings as extracted from the supplied Camera</returns>
-	    public static LensSettings FromCamera(Camera fromCamera)
+        public static LensSettings FromCamera(Camera fromCamera)
         {
             LensSettings lens = Default;
             if (fromCamera != null)

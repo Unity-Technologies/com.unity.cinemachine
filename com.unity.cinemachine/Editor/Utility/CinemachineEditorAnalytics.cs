@@ -194,10 +194,10 @@ namespace Cinemachine.Editor
                         var componentName = GetTypeName(cmComps[i].GetType(), ref custom_component_count);
                         switch (cmComps[i].Stage)
                         {
-                            case CinemachineCore.Stage.PositionControl:
+                            case CinemachineCore.Stage.Body:
                                 body_component = componentName;
                                 break;
-                            case CinemachineCore.Stage.RotationControl:
+                            case CinemachineCore.Stage.Aim:
                                 aim_component = componentName;
                                 break;
                             case CinemachineCore.Stage.Noise:

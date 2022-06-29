@@ -11,8 +11,6 @@ namespace Cinemachine.Editor
         CmCamera Target => target as CmCamera;
         CmCameraInspectorUtility m_CameraUtility = new CmCameraInspectorUtility();
 
-        static bool s_AdvancedLensExpanded;
-
         [MenuItem("CONTEXT/CmCamera/Adopt Game View Camera Settings")]
         static void AdoptGameViewCameraSettings(MenuCommand command)
         {
@@ -70,19 +68,6 @@ namespace Cinemachine.Editor
             ux.AddHeader("Camera");
             var lensProperty = serializedTarget.FindProperty(() => Target.Lens);
             ux.Add(new PropertyField(lensProperty));
-
-            var modeOverrideProperty = lensProperty.FindPropertyRelative("ModeOverride");
-            var advanced = ux.AddChild(new Foldout() { text = "Advanced", value = s_AdvancedLensExpanded });
-            advanced.RegisterValueChangedCallback((evt) => 
-            {
-                s_AdvancedLensExpanded = evt.newValue;
-                evt.StopPropagation();
-            });
-            advanced.Add(new HelpBox("Setting a mode override here implies changes to the Camera component when "
-                + "Cinemachine activates this CM Camera, and the changes will remain after the CM "
-                + "Camera deactivation. If you set a mode override in any CM Camera, you should set "
-                + "one in all CM Cameras.", HelpBoxMessageType.Info));
-            advanced.Add(new PropertyField(modeOverrideProperty));
 
             ux.AddHeader("Procedural Motion");
             m_CameraUtility.AddSaveDuringPlayToggle(ux);

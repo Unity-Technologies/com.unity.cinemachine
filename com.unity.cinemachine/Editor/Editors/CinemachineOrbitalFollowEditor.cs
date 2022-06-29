@@ -23,19 +23,15 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             EditorApplication.update += UpdateHelpBoxes;
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
-#endif
         }
         
         void OnDisable()
         {
             EditorApplication.update -= UpdateHelpBoxes;
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
-#endif
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -146,12 +142,11 @@ namespace Cinemachine.Editor
 
         void TrackOrbitMode(SerializedProperty modeProp)
         {
-            var mode = (CinemachineOrbitalFollow.OrbitMode)modeProp.intValue;
-            m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.Sphere);
-            m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.ThreeRing);
+            var mode = (CinemachineOrbitalFollow.OrbitStyles)modeProp.intValue;
+            m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.Sphere);
+            m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
         }
    
-#if UNITY_2021_2_OR_NEWER     
         static GUIContent[] s_OrbitNames = 
         {
             new GUIContent("Top"), 
@@ -181,7 +176,7 @@ namespace Cinemachine.Editor
             {
                 switch (orbitalFollow.OrbitStyle)
                 {
-                    case CinemachineOrbitalFollow.OrbitMode.Sphere:
+                    case CinemachineOrbitalFollow.OrbitStyles.Sphere:
                         {
                             EditorGUI.BeginChangeCheck();
                             var camPos = orbitalFollow.VcamState.RawPosition;
@@ -222,7 +217,7 @@ namespace Cinemachine.Editor
                             Handles.color = originalColor;
                         }
                         break;
-                    case CinemachineOrbitalFollow.OrbitMode.ThreeRing:
+                    case CinemachineOrbitalFollow.OrbitStyles.ThreeRing:
                         if (m_UpdateCache)
                             m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
                         
@@ -245,7 +240,6 @@ namespace Cinemachine.Editor
             }
             Handles.color = originalColor;
         }
-#endif
 
         // TODO: ask swap's opinion on this. Do we want to always draw this or only when follow offset handle is not selected
         // TODO: what color? when follow offset handle is selected, do we want to draw CameraPath.
@@ -255,7 +249,7 @@ namespace Cinemachine.Editor
             var vcam = orbital.VirtualCamera;
             if (vcam != null && vcam.Follow != null)
             {
-                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
+                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
                 {
                     var prevColor = Gizmos.color;
                     Gizmos.color = CinemachineCore.Instance.IsLive(vcam)

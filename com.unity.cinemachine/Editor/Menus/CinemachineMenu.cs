@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             vcam.gameObject.AddComponent<CinemachineTransposer>();
-            vcam.gameObject.AddComponent<CinemachineComposer>();
+            vcam.gameObject.AddComponent<CinemachineRotationComposer>();
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
@@ -59,7 +59,7 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
+            vcam.gameObject.AddComponent<CinemachinePositionComposer>();
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
@@ -67,8 +67,8 @@ namespace Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             var vcam = CreatePassiveVirtualCamera("FreeLook Camera", command.context as GameObject, true);
-            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitMode.ThreeRing;
-            Undo.AddComponent<CinemachineComposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
+            Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             Undo.AddComponent<InputAxisController>(vcam.gameObject);
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject);
         }
@@ -128,7 +128,7 @@ namespace Cinemachine.Editor
             var vcam = CreateCinemachineObject<CmCamera>(
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
-            vcam.gameObject.AddComponent<CinemachineComposer>();
+            vcam.gameObject.AddComponent<CinemachineRotationComposer>();
             var splineContainer = ObjectFactory.CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
             splineContainer.Spline.EditType = SplineType.CatmullRom;
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));

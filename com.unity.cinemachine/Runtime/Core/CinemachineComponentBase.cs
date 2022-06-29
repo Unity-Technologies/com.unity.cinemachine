@@ -71,7 +71,14 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        public ICinemachineTargetGroup AbstractFollowTargetGroup => VirtualCamera.AbstractFollowTargetGroup;
+        public ICinemachineTargetGroup AbstractFollowTargetGroup 
+        {
+            get
+            {
+                CinemachineVirtualCameraBase vcam = VirtualCamera;
+                return vcam == null ? null : vcam.AbstractFollowTargetGroup;
+            }
+        }
 
         /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
         public CinemachineTargetGroup FollowTargetGroup => AbstractFollowTargetGroup as CinemachineTargetGroup;

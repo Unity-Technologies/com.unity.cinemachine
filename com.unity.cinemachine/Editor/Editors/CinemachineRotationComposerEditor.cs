@@ -1,15 +1,19 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineComposer))]
+    [CustomEditor(typeof(CinemachineRotationComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
+    internal class CinemachineRotationComposerEditor : UnityEditor.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
+
+        CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
         protected virtual void OnEnable()
         {
@@ -28,9 +32,7 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
    
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-#endif
         }
 
         protected virtual void OnDisable()
@@ -40,29 +42,37 @@ namespace Cinemachine.Editor
             if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
                 InspectorUtility.RepaintGameView();
   
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-#endif
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineComposer).LookAtTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.",
-                    MessageType.Warning);
+            var serializedTarget = new SerializedObject(Target);
+            var ux = new VisualElement();
 
-            // First snapshot some settings
-            Rect oldHard = Target.HardGuideRect;
-            Rect oldSoft = Target.SoftGuideRect;
+            var noTargetHelp = ux.AddChild(new HelpBox(
+                "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.", 
+                HelpBoxMessageType.Warning));
 
-            // Draw the properties
-            DrawRemainingPropertiesInInspector();
-            m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
+
+            // GML: This is rather evil.  Is there a better (event-driven) way?
+            UpdateNoTargetHelp();
+            ux.schedule.Execute(UpdateNoTargetHelp).Every(250);
+
+            void UpdateNoTargetHelp()
+            {
+                bool noTarget = false;
+                for (int i = 0; i < targets.Length; ++i)
+                    noTarget |= targets[i] != null && (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
+                if (noTargetHelp != null)
+                    noTargetHelp.SetVisible(noTarget);
+            }
+            return ux;
         }
 
         protected virtual void OnGUI()
@@ -106,50 +116,17 @@ namespace Cinemachine.Editor
             }
         }
 
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-        
-        void DrawSceneTools()
         {
             var composer = Target;
             if (composer == null || !composer.IsValid)
-            {
                 return;
-            }
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(composer, 
-                    new SerializedObject(composer).FindProperty(() => composer.m_TrackedObjectOffset));
+                    new SerializedObject(composer).FindProperty(() => composer.TrackedObjectOffset));
             }
         }
-#endif
-
-#if false
-        // debugging only
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineComposer))]
-        static void DrawComposerGizmos(CinemachineComposer target, GizmoType selectionType)
-        {
-            // Draw lookahead path
-            if (target.m_LookaheadTime > 0)
-            {
-                Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineSettings.ComposerSettings.TargetColour;
-
-                var p0 = target.m_Predictor.PredictPosition(0);
-                int numSteps = 20;
-                for (int i = 1; i <= numSteps; ++i)
-                {
-                    var p1 = target.m_Predictor.PredictPosition(i * target.m_LookaheadTime / numSteps);
-                    Gizmos.DrawLine(p0, p1);
-                    p0 = p1;
-                }
-                Gizmos.color = originalGizmoColour;
-            }
-        }
-#endif
     }
 }

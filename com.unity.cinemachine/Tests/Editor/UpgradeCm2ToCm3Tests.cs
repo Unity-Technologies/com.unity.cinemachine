@@ -49,8 +49,10 @@ namespace Tests.Editor
                     && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 foreach (var cmComponent in s_AllCinemachineComponents)
                 {
+#pragma warning disable 618 // disable obsolete warning
                     if (cmComponent == typeof(CinemachineTrackedDolly))
                         continue;
+#pragma warning restore 618
                     yield return new TestCaseData(cmComponent).SetName(cmComponent.Name).Returns(null);
                 }
             }
@@ -185,7 +187,7 @@ namespace Tests.Editor
             Assert.That(freelookGo.transform.childCount, Is.Zero);
             Assert.That(freelookGo.GetComponent<CmCamera>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineOrbitalFollow>(), Is.Not.Null);
-            Assert.That(freelookGo.GetComponent<CinemachineComposer>(), Is.Not.Null);
+            Assert.That(freelookGo.GetComponent<CinemachineRotationComposer>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineFreeLookModifier>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<InputAxisController>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(5));

@@ -273,7 +273,7 @@ namespace Cinemachine.Editor
             VcamStageEditor.SetComponentDelegate setComponent)
         {
             m_subeditors = new VcamStageEditor[(int)CinemachineCore.Stage.Finalize];
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.PositionControl;
+            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
                 stage < CinemachineCore.Stage.Finalize; ++stage)
             {
                 var ed = new VcamStageEditor(stage);

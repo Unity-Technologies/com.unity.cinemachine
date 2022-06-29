@@ -11,12 +11,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
 - Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
 - Add flag for custom priority setting.
+- HDRP only: Added FocusDistance setting to lens
+- HDRP only: New AutoFocus extension.  Use instead of VolumeSettings for Focus Tracking.  Includes Automatic mode that queries depth buffer instead of tracking a specific target.
+- Added Lens Mode Override property to CM Brain.  When enabled, it allows CM cameras to override the lens mode (Perspective vs Ortho vs Physical).
 
 
 ## UNRELEASED
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 - Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
+- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
+- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
+- Bugfix: Fixed spurious Z rotations during speherical blend.
+- Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
+- Regression fix: POV is relative to its parent transform.
+- Bugfix: SensorSize is not saved when not using physical camera.
 
 
 ## [2.9.0-pre.7] - 2022-03-29
@@ -26,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
 - Timeline guards added to scripts that rely on it.
 - Bugfix: SaveDuringPlay works with ILists now.
+- Bugfix: Paste VirtualCamera and FreeLook components onto prefab works for subcomponents
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
 - Bugfix: POV orientation was incorrect with World Up override
 - Added AutoEnable option to CinemachineInputHandler

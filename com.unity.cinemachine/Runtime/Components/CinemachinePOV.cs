@@ -14,7 +14,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.RotationControl)]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>
@@ -80,7 +80,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.RotationControl; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
 
         private void OnValidate()
         {
@@ -152,7 +152,7 @@ namespace Cinemachine
                 rot = parent.rotation * rot;
                 up = parent.up;
             }
-            rot = Quaternion.FromToRotation(up, curState.ReferenceUp) * rot;
+            rot = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
             curState.RawOrientation = rot;
         }
 

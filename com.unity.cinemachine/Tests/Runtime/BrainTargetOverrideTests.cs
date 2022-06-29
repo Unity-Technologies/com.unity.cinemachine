@@ -87,11 +87,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator FramingTransposer()
         {
-            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
-            framingTransposer.m_XDamping = 0;
-            framingTransposer.m_YDamping = 0;
-            framingTransposer.m_ZDamping = 0;
-            framingTransposer.m_CameraDistance = 1f;
+            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+            framingTransposer.Damping = Vector3.zero;
+            framingTransposer.CameraDistance = 1f;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();

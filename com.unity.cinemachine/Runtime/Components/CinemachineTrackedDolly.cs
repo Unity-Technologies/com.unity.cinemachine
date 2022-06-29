@@ -16,7 +16,7 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
-    [CameraPipeline(CinemachineCore.Stage.PositionControl)]
+    [CameraPipeline(CinemachineCore.Stage.Body)]
 #if UNITY_2022_1_OR_NEWER
     [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
 #endif
@@ -174,7 +174,7 @@ namespace Cinemachine
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.PositionControl; } }
+        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
         /// <summary>
         /// Report maximum damping time needed for this component.
