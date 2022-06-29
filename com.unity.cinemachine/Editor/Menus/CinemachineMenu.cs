@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             var vcam = CreatePassiveVirtualCamera("FreeLook Camera", command.context as GameObject, true);
-            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitMode.ThreeRing;
+            Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             Undo.AddComponent<InputAxisController>(vcam.gameObject);
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject);

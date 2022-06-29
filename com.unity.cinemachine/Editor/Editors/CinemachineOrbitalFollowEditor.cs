@@ -142,9 +142,9 @@ namespace Cinemachine.Editor
 
         void TrackOrbitMode(SerializedProperty modeProp)
         {
-            var mode = (CinemachineOrbitalFollow.OrbitMode)modeProp.intValue;
-            m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.Sphere);
-            m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitMode.ThreeRing);
+            var mode = (CinemachineOrbitalFollow.OrbitStyles)modeProp.intValue;
+            m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.Sphere);
+            m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
         }
    
         static GUIContent[] s_OrbitNames = 
@@ -176,7 +176,7 @@ namespace Cinemachine.Editor
             {
                 switch (orbitalFollow.OrbitStyle)
                 {
-                    case CinemachineOrbitalFollow.OrbitMode.Sphere:
+                    case CinemachineOrbitalFollow.OrbitStyles.Sphere:
                         {
                             EditorGUI.BeginChangeCheck();
                             var camPos = orbitalFollow.VcamState.RawPosition;
@@ -217,7 +217,7 @@ namespace Cinemachine.Editor
                             Handles.color = originalColor;
                         }
                         break;
-                    case CinemachineOrbitalFollow.OrbitMode.ThreeRing:
+                    case CinemachineOrbitalFollow.OrbitStyles.ThreeRing:
                         if (m_UpdateCache)
                             m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
                         
@@ -249,7 +249,7 @@ namespace Cinemachine.Editor
             var vcam = orbital.VirtualCamera;
             if (vcam != null && vcam.Follow != null)
             {
-                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
+                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
                 {
                     var prevColor = Gizmos.color;
                     Gizmos.color = CinemachineCore.Instance.IsLive(vcam)

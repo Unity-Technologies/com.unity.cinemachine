@@ -390,7 +390,7 @@ namespace Cinemachine.Editor
             static void ConvertFreelookBody(CinemachineFreeLook freelook, GameObject go, CinemachineFreeLookModifier freeLookModifier)
             {
                 var orbitalFollow = go.AddComponent<CinemachineOrbitalFollow>();
-                orbitalFollow.OrbitStyle = CinemachineOrbitalFollow.OrbitMode.ThreeRing;
+                orbitalFollow.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
                 orbitalFollow.Orbits = new Cinemachine3OrbitRig.Settings
                 {
                     Top = new Cinemachine3OrbitRig.Orbit

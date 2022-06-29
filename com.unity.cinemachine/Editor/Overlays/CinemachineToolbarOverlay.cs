@@ -410,7 +410,7 @@ namespace Cinemachine.Editor
 #if UNITY_2022_1_OR_NEWER
                     CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) &&
 #endif
-                    orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitMode.ThreeRing)
+                    orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
                 {
                     style.display = DisplayStyle.Flex; // display menu
                    
