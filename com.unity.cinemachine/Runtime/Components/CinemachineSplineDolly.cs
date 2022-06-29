@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine.Splines;
 
@@ -175,14 +174,11 @@ namespace Cinemachine
         public AutoDolly AutomaticDolly = AutoDolly.Default;
 
         // State info for damping
-        float m_PreviousNormalizedSplinePosition = 0;
+        float m_PreviousNormalizedSplinePosition;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         Vector3 m_PreviousCameraPosition = Vector3.zero;
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
-
-        SplineContainer m_SplineCache;
-        float m_SplineLengthCache;
 
         void OnValidate()
         {
@@ -234,9 +230,8 @@ namespace Cinemachine
             var splinePath = Spline.Spline;
             if (splinePath == null || splinePath.Count == 0)
                 return;
-
-            UpdateSplineCache();
-            CameraPosition = splinePath.StandardizeSplinePosition(CameraPosition, PositionUnits, m_SplineLengthCache);
+            
+            CameraPosition = splinePath.StandardizeSplinePosition(CameraPosition, PositionUnits, splinePath.GetLength());
 
             // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
             var normalizedSplinePosition = 
@@ -381,26 +376,6 @@ namespace Cinemachine
             // check if our spline has CinemachineSplineRoll
             if (Spline != null && m_RollCache == null)
                 Spline.TryGetComponent(out m_RollCache);
-        }
-
-        void UpdateSplineCache()
-        {
-            if (m_SplineCache != Spline)
-            {
-                if (m_SplineCache != null && m_SplineCache.Spline != null)
-                    m_SplineCache.Spline.changed -= UpdateLengthCache;
-
-                m_SplineLengthCache = 0;
-                if (Spline != null && Spline.Spline != null)
-                {
-                    Spline.Spline.changed -= UpdateLengthCache;
-                    Spline.Spline.changed += UpdateLengthCache;
-                    UpdateLengthCache();
-                }
-                m_SplineCache = Spline;
-            }
-            // Local funtion to cache length
-            void UpdateLengthCache() => m_SplineLengthCache = Spline.Spline.GetLength(); 
         }
     }
 }

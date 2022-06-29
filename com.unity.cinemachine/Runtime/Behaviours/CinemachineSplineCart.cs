@@ -42,17 +42,15 @@ namespace Cinemachine
         /// <summary>Move the cart with this speed</summary>
         [Tooltip("Move the cart with this speed along the spline.  "
             + " The value is interpreted according to the Position Units setting.")]
-        public float Speed = 0;
+        public float Speed;
 
         /// <summary>The cart's current position on the spline, in position units</summary>
         [Tooltip("The position along the spline at which the cart will be placed.  "
             + "This can be animated directly or, if the velocity is non-zero, will be updated automatically.  "
             + "The value is interpreted according to the Position Units setting.")]
-        public float SplinePosition = 0;
+        public float SplinePosition;
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
-        float m_SplineLengthCache; // we cache spline ength because calculation is slow
-        SplineContainer m_SplineCache;
 
         void Reset()
         {
@@ -63,7 +61,7 @@ namespace Cinemachine
             SplinePosition = 0;
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
             RefreshRollCache();
         }
@@ -91,10 +89,9 @@ namespace Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
-            UpdateSplineCache();
             if (Spline != null && Spline.Spline != null)
             {
-                SplinePosition = Spline.Spline.StandardizeSplinePosition(distanceAlongPath, PositionUnits, m_SplineLengthCache);
+                SplinePosition = Spline.Spline.StandardizeSplinePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
                 var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
                 Spline.EvaluateSplineWithRoll(SplineRoll, t, out var pos, out var rot);
                 transform.position = pos;
@@ -126,26 +123,6 @@ namespace Cinemachine
             // check if our spline has CinemachineSplineRoll
             if (Spline != null && m_RollCache == null)
                 Spline.TryGetComponent(out m_RollCache);
-        }
-        
-        void UpdateSplineCache()
-        {
-            if (m_SplineCache != Spline)
-            {
-                if (m_SplineCache != null && m_SplineCache.Spline != null)
-                    m_SplineCache.Spline.changed -= UpdateLengthCache;
-
-                m_SplineLengthCache = 0;
-                if (Spline != null && Spline.Spline != null)
-                {
-                    Spline.Spline.changed -= UpdateLengthCache;
-                    Spline.Spline.changed += UpdateLengthCache;
-                    UpdateLengthCache();
-                }
-                m_SplineCache = Spline;
-            }
-            // Local funtion to cache length
-            void UpdateLengthCache() => m_SplineLengthCache = Spline.Spline.GetLength(); 
         }
     }
 }
