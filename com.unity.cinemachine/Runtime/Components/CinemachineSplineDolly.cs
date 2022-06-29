@@ -103,7 +103,7 @@ namespace Cinemachine
 
             /// <summary>How aggressively the camera tries to maintain the desired rotation.
             /// This is only used if the Camera Up is not Default.</summary>
-            [Range(0f, 20f)]
+            [RangeSlider(0f, 20f)]
             [Tooltip("How aggressively the camera tries to maintain the desired rotation.  "
                 + "This is only used if the Camera Up is not Default.")]
             public float Angular;
