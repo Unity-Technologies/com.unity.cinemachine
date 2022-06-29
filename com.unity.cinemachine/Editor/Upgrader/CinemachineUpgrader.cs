@@ -361,7 +361,7 @@ namespace Cinemachine.Editor
 
 #if DEBUG_HELPERS
                 Debug.Log("**** All scenes ****");
-                m_AllSceneGuids.ForEach(guid => Debug.Log(AssetDatabase.GUIDToAssetPath(guid)));
+                m_AllScenePaths.ForEach(path => Debug.Log(path));
                 Debug.Log("********************");
 #endif
             }
@@ -512,7 +512,8 @@ namespace Cinemachine.Editor
                 return true;
             }
 
-            static string[] s_IgnoreList = { "m_ScreenX", "m_ScreenY", "m_BiasX", "m_BiasY", "m_AmplitudeGain", "m_FrequencyGain" };
+            static string[] s_IgnoreList = { "m_ScreenX", "m_ScreenY", "m_BiasX", "m_BiasY", "m_AmplitudeGain", 
+                "m_FrequencyGain", "Composition" };
             static bool IsFreelookUpgradable(CinemachineFreeLook freelook)
             {
                 // Freelook is not upgradable if it has:
@@ -974,7 +975,7 @@ namespace Cinemachine.Editor
                     
 #if DEBUG_HELPERS
                 Debug.Log("**** All prefabs ****");
-                m_PrefabRoots.ForEach(prefab => Debug.Log(prefab.name));
+                m_PrefabAssets.ForEach(prefab => Debug.Log(prefab.name));
                 Debug.Log("*********************");
 #endif
             }
