@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-#define DEBUG_HELPERS
+// #define DEBUG_HELPERS
 // suppress obsolete warnings
 #pragma warning disable CS0618
 
@@ -515,8 +515,7 @@ namespace Cinemachine.Editor
             static string[] s_IgnoreList = { 
                 "m_ScreenX", "m_ScreenY", "m_DeadZoneWidth", "m_DeadZoneHeight", 
                 "m_SoftZoneWidth", "m_SoftZoneHeight", "m_BiasX", "m_BiasY", 
-                "m_AmplitudeGain", "m_FrequencyGain", "Composition" };
-            
+                "m_AmplitudeGain", "m_FrequencyGain", };
             static bool IsFreelookUpgradable(CinemachineFreeLook freelook)
             {
                 // Freelook is not upgradable if it has:
@@ -686,40 +685,26 @@ namespace Cinemachine.Editor
                 CopyValues(template, newAim);
 
                 // Add modifier if it is a composer
-                var topComposition = GetComposition(freelook.GetRig(0));
-                var middleComposition =  GetComposition(freelook.GetRig(1));
-                var bottomComposition = GetComposition(freelook.GetRig(2));
-                if (middleComposition != null && topComposition != null && bottomComposition != null)
+                var middle = newAim as CinemachineRotationComposer;
+                var top = freelook.GetRig(0).GetComponentInChildren<CinemachineComposer>();
+                var bottom = freelook.GetRig(2).GetComponentInChildren<CinemachineComposer>();
+                if (middle != null && top != null && bottom != null)
                 {
-                    if (!ScreenComposerSettings.Approximately(middleComposition.Value, topComposition.Value)
-                        || !ScreenComposerSettings.Approximately(middleComposition.Value, bottomComposition.Value))
+                    var topComposition = ScreenComposerSettingsFromLegacyComposer(top);
+                    var bottomComposition = ScreenComposerSettingsFromLegacyComposer(bottom);
+
+                    if (!ScreenComposerSettings.Approximately(middle.Composition, topComposition)
+                        || !ScreenComposerSettings.Approximately(middle.Composition, bottomComposition))
                     {
                         freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.CompositionModifier
                         {
                             Composition = new CinemachineFreeLookModifier.TopBottomRigs<ScreenComposerSettings>
                             {
-                                Top = topComposition.Value,
-                                Bottom = bottomComposition.Value
+                                Top = topComposition,
+                                Bottom = bottomComposition
                             }
                         });
                     }
-                }
-                
-                ScreenComposerSettings? GetComposition(CinemachineVirtualCamera rig)
-                {
-                    var rotationComposer = rig.GetComponentInChildren<CinemachineRotationComposer>();
-                    if (rotationComposer != null)
-                    {
-                        return rotationComposer.Composition;
-                    }
-
-                    var composer = rig.GetComponentInChildren<CinemachineComposer>();
-                    if (composer != null)
-                    {
-                        return ScreenComposerSettingsFromLegacyComposer(composer);
-                    }
-                    
-                    return null;
                 }
             }
 
@@ -800,7 +785,7 @@ namespace Cinemachine.Editor
                     foreach (var oldComponent in oldPipeline) 
                         UpgradeComponent(oldComponent, go);
                     
-                    var pipelineHolder = go.GetComponentInChildren<CinemachinePipeline>(true).gameObject;
+                    var pipelineHolder = go.GetComponentInChildren<CinemachinePipeline>().gameObject;
                     if (pipelineHolder != null)
                         Object.DestroyImmediate(pipelineHolder);
                 }
