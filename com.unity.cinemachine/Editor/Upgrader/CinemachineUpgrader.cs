@@ -512,8 +512,10 @@ namespace Cinemachine.Editor
                 return true;
             }
 
-            static string[] s_IgnoreList = { "m_ScreenX", "m_ScreenY", "m_BiasX", "m_BiasY", "m_AmplitudeGain", 
-                "m_FrequencyGain", "Composition" };
+            static string[] s_IgnoreList = { 
+                "m_ScreenX", "m_ScreenY", "m_DeadZoneWidth", "m_DeadZoneHeight", 
+                "m_SoftZoneWidth", "m_SoftZoneHeight", "m_BiasX", "m_BiasY", 
+                "m_AmplitudeGain", "m_FrequencyGain", };
             static bool IsFreelookUpgradable(CinemachineFreeLook freelook)
             {
                 // Freelook is not upgradable if it has:
