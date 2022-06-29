@@ -25,10 +25,11 @@ namespace Tests.Runtime
             m_VCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
-            m_FramingTransposer = m_VCam.gameObject.AddComponent<CinemachineFramingTransposer>();
             m_Composer = m_VCam.gameObject.AddComponent<CinemachineRotationComposer>();
+            m_FramingTransposer = m_VCam.gameObject.AddComponent<CinemachineFramingTransposer>();
             m_FramingTransposer.m_LookaheadSmoothing = m_Composer.Lookahead.Smoothing = 0.3f;
             m_FramingTransposer.m_LookaheadTime = m_Composer.Lookahead.Time = 10;
+            m_Composer.Lookahead.Enabled = true;
 
             base.SetUp();
         }
