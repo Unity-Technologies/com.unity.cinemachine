@@ -271,7 +271,7 @@ namespace Cinemachine
                         // Defaults
                         go = rig.GetComponentOwner().gameObject;
                         Undo.AddComponent<CinemachineOrbitalTransposer>(go);
-                        Undo.AddComponent<CinemachineRotationComposer>(go);
+                        Undo.AddComponent<CinemachineComposer>(go);
                         rig.InvalidateComponentPipeline();
                     }
                     return rig;
