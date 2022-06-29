@@ -160,6 +160,24 @@ namespace Cinemachine
             + "the brain's transform is updated")]
         public BrainUpdateMethod m_BlendUpdateMethod = BrainUpdateMethod.LateUpdate;
 
+        /// <summary>Defines the settings for Lens Mode overriding</summary>
+        [Serializable] 
+        public struct LensModeOverrideSettings
+        {
+            /// <summary>If set, will enable CM cameras to override the lens mode of the camera</summary>
+            [Tooltip("If set, will enable CM cameras to override the lens mode of the camera")]
+            public bool Enabled;
+
+            /// <summary>Lens mode to use when no mode override is active</summary>
+            [Tooltip("Lens mode to use when no mode override is active")]
+            public LensSettings.OverrideModes DefaultMode;
+        }
+
+        /// <summary>Controls whether CM cameras can change the lens mode.</summary>
+        [FoldoutWithEnabledButton]
+        public LensModeOverrideSettings LensModeOverride 
+            = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
+
         /// <summary>
         /// The blend which is used if you don't explicitly define a blend between two Virtual Cameras.
         /// </summary>
@@ -972,12 +990,25 @@ namespace Cinemachine
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
-                    cam.lensShift = state.Lens.LensShift;
-                    if (state.Lens.ModeOverride != LensSettings.OverrideModes.None)
-                        cam.orthographic = state.Lens.Orthographic;
-                    bool isPhysical = state.Lens.ModeOverride == LensSettings.OverrideModes.None 
-                        ? cam.usePhysicalProperties : state.Lens.IsPhysicalCamera;
-                    cam.usePhysicalProperties = isPhysical;
+
+                    bool isPhysical = cam.usePhysicalProperties;
+
+                    if (LensModeOverride.Enabled)
+                    {
+                        if (state.Lens.ModeOverride != LensSettings.OverrideModes.None)
+                        {
+                            isPhysical = state.Lens.IsPhysicalCamera;
+                            cam.orthographic = state.Lens.ModeOverride == LensSettings.OverrideModes.Orthographic;
+                        }
+                        else if (LensModeOverride.DefaultMode != LensSettings.OverrideModes.None)
+                        {
+                            isPhysical = LensModeOverride.DefaultMode == LensSettings.OverrideModes.Physical;
+                            cam.orthographic = LensModeOverride.DefaultMode == LensSettings.OverrideModes.Orthographic;
+                        }
+                        cam.usePhysicalProperties = isPhysical;
+                        cam.lensShift = state.Lens.LensShift;
+                    }
+
                     if (isPhysical)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
