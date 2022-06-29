@@ -785,7 +785,7 @@ namespace Cinemachine.Editor
                     foreach (var oldComponent in oldPipeline) 
                         UpgradeComponent(oldComponent, go);
                     
-                    var pipelineHolder = go.GetComponentInChildren<CinemachinePipeline>().gameObject;
+                    var pipelineHolder = go.GetComponentInChildren<CinemachinePipeline>(true).gameObject;
                     if (pipelineHolder != null)
                         Object.DestroyImmediate(pipelineHolder);
                 }
