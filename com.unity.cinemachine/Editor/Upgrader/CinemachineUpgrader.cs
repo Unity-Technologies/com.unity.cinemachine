@@ -810,7 +810,6 @@ namespace Cinemachine.Editor
                             splineDolly.Damping.Angular = Mathf.Max(trackedDolly.m_YawDamping,
                                 Mathf.Max(trackedDolly.m_RollDamping, trackedDolly.m_PitchDamping));
                             splineDolly.CameraUp = (CinemachineSplineDolly.CameraUpMode)trackedDolly.m_CameraUp;
-                            splineDolly.Damping.Enabled = true;
                             splineDolly.AutomaticDolly.Enabled = trackedDolly.m_AutoDolly.m_Enabled;
                             splineDolly.AutomaticDolly.PositionOffset = trackedDolly.m_AutoDolly.m_PositionOffset;
                             splineDolly.CameraPosition = trackedDolly.m_PathPosition;
