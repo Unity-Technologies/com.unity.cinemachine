@@ -64,11 +64,9 @@ namespace Cinemachine.Editor
         /// Upgrades the input gameObject.  Legacy components are not deleted (exception: freeLook rigs).
         /// Instead, they are disabled and new components are created alongside.
         /// </summary>
-        /// <param name="go"></param>
-        /// <returns></returns>
-        public bool Upgrade(GameObject go)
+        public bool Upgrade(GameObject go, Scene? scene = null)
         {
-            return Cm2ToCm3Upgrader.Upgrade(go);
+            return Cm2ToCm3Upgrader.Upgrade(go, scene);
         }
         
         /// <summary>
@@ -309,7 +307,7 @@ namespace Cinemachine.Editor
                     if (go.name.Contains(k_UnupgradableTag))
                         continue; // ignore, because we created it
 
-                    if (Upgrade(go))
+                    if (Upgrade(go, activeScene))
                     {
                         modified = true;
                         timelineManager.UpdateTimelineReference(go.GetComponent<CinemachineVirtualCameraBase>());
@@ -371,8 +369,10 @@ namespace Cinemachine.Editor
             
         static class Cm2ToCm3Upgrader
         {
-            public static bool Upgrade(GameObject old)
+            static Scene? s_CurrentScene;
+            public static bool Upgrade(GameObject old, Scene? scene)
             {
+                s_CurrentScene = scene;
 #if DEBUG_HELPERS
                 Debug.Log("Upgrading " + old.name + " to CM3!");
 #endif
@@ -384,6 +384,7 @@ namespace Cinemachine.Editor
                 if (vcam != null)
                     return UpgradeVcam(vcam);
 
+                s_CurrentScene = null;
                 return true;
             }
             
@@ -403,8 +404,9 @@ namespace Cinemachine.Editor
                 {
                     var clone = Object.Instantiate(go);
                     clone.name = go.name + k_UnupgradableTag;
-                        
-                    Debug.LogWarning("Freelook camera \"" + freelook.name + "\" was not fully upgradable " +
+
+                    var location = s_CurrentScene == null ? "(prefab asset)" : "(in " + s_CurrentScene.Value.name + ")";
+                    Debug.LogWarning("Freelook camera \"" + freelook.name + "\" " + location + " was not fully upgradable " +
                         "automatically! It was partially upgraded. Your data was saved to " + clone.name);
                 }
                 var oldExtensions = go.GetComponents<CinemachineExtension>();
