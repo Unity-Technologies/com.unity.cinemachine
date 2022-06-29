@@ -25,8 +25,8 @@ namespace Tests.Runtime
             m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineCollider)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
-            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachineFramingTransposer>();
-            framingTransposer.m_CameraDistance = 5f;
+            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+            framingTransposer.CameraDistance = 5f;
             m_Collider = m_Vcam.GetComponent<CinemachineCollider>();
             m_Collider.m_Strategy = CinemachineCollider.ResolutionStrategy.PullCameraForward;
             m_Collider.m_CollideAgainst = 1;
