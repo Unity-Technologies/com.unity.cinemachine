@@ -94,6 +94,42 @@ namespace Cinemachine
             + "multiplier and is applied to the specified camera distance.")]
         public InputAxis RadialAxis = DefaultRadial;
 
+        // State information
+        Vector3 m_PreviousWorldOffset;
+
+        // Helper object to track the Follow target
+        CinemachineTransposer.TargetTracker m_TargetTracker;
+
+        // 3-rig orbit implementation
+        Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
+        IInputAxisTarget.ResetHandler m_ResetHandler;
+        
+        void OnValidate()
+        {
+            Radius = Mathf.Max(0, Radius);
+            PositionDamping = PositiveVector3(PositionDamping);
+            RotationDamping = PositiveVector3(PositionDamping);
+            QuaternionDamping = Mathf.Max(0, QuaternionDamping);
+            HorizontalAxis.Validate();
+            VerticalAxis.Validate();
+            RadialAxis.Validate();
+        }
+
+        void Reset()
+        {
+            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
+            RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
+            PositionDamping = new Vector3(1, 1, 1);
+            RotationDamping = new Vector3(1, 1, 1);
+            QuaternionDamping = 1f;
+            OrbitStyle = OrbitStyles.Sphere;
+            Radius = 10;
+            Orbits = Cinemachine3OrbitRig.Settings.Default;
+            HorizontalAxis = DefaultHorizontal;
+            VerticalAxis = DefaultVertical;
+            RadialAxis = DefaultRadial;
+        }
+        
         /// <summary>
         /// PositionDamping speeds for each of the 3 axes of the offset from target
         /// </summary>
@@ -123,16 +159,6 @@ namespace Cinemachine
             }
         }
         
-        // State information
-        Vector3 m_PreviousWorldOffset;
-
-        // Helper object to track the Follow target
-        CinemachineTransposer.TargetTracker m_TargetTracker;
-
-        // 3-rig orbit implementation
-        Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
-        IInputAxisTarget.ResetHandler m_ResetHandler;
-
         static InputAxis DefaultHorizontal => new InputAxis 
         { 
             Value = 0, 
@@ -160,32 +186,6 @@ namespace Cinemachine
 
         static Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 
-        void OnValidate()
-        {
-            Radius = Mathf.Max(0, Radius);
-            PositionDamping = PositiveVector3(PositionDamping);
-            RotationDamping = PositiveVector3(PositionDamping);
-            QuaternionDamping = Mathf.Max(0, QuaternionDamping);
-            HorizontalAxis.Validate();
-            VerticalAxis.Validate();
-            RadialAxis.Validate();
-        }
-
-        void Reset()
-        {
-            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
-            RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
-            PositionDamping = new Vector3(1, 1, 1);
-            RotationDamping = new Vector3(1, 1, 1);
-            QuaternionDamping = 1f;
-            OrbitStyle = OrbitStyles.Sphere;
-            Radius = 10;
-            Orbits = Cinemachine3OrbitRig.Settings.Default;
-            HorizontalAxis = DefaultHorizontal;
-            VerticalAxis = DefaultVertical;
-            RadialAxis = DefaultRadial;
-        }
-
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid => enabled && FollowTarget != null;
 
@@ -209,7 +209,7 @@ namespace Cinemachine
 
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
-        public void GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
+        void IInputAxisTarget.GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
         {
             axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
             axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
@@ -218,11 +218,11 @@ namespace Cinemachine
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The hanlder to register</param>
-        public void RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
+        void IInputAxisTarget.RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The hanlder to unregister</param>
-        public void UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
+        void IInputAxisTarget.UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
 
         /// <summary>Inspector checks this and displays warnng if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;

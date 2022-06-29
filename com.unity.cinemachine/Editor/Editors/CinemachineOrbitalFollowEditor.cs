@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
@@ -11,11 +10,6 @@ namespace Cinemachine.Editor
     internal class CinemachineOrbitalFollowEditor : UnityEditor.Editor
     {
         CinemachineOrbitalFollow Target => target as CinemachineOrbitalFollow;
-        VisualElement m_RotDampingContainer;
-        VisualElement m_RotDamping;
-        VisualElement m_QuatDamping;
-        VisualElement m_Radius;
-        VisualElement m_Orbits;
 
         VisualElement m_NoFollowHelp;
         VisualElement m_NoControllerHelp;
@@ -36,26 +30,27 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            var modeProp = serializedTarget.FindProperty(() => Target.BindingMode);
-            var rotModeProp = serializedTarget.FindProperty(() => Target.RotationDampingMode);
-            var orbitModeProp = serializedTarget.FindProperty(() => Target.OrbitStyle);
+            var modeProp = serializedObject.FindProperty(() => Target.BindingMode);
+            var rotModeProp = serializedObject.FindProperty(() => Target.RotationDampingMode);
+            var orbitModeProp = serializedObject.FindProperty(() => Target.OrbitStyle);
 
             m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Follow target.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(modeProp));
-            m_RotDampingContainer = ux.AddChild(new VisualElement());
-            m_RotDampingContainer.Add(new PropertyField(rotModeProp));
-            m_RotDamping = m_RotDampingContainer.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.RotationDamping)));
-            m_QuatDamping = m_RotDampingContainer.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.QuaternionDamping)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.PositionDamping)));
+            var rotDampingContainer = ux.AddChild(new VisualElement());
+            rotDampingContainer.Add(new PropertyField(rotModeProp));
+            var rotDampingField = rotDampingContainer.AddChild(
+                new PropertyField(serializedObject.FindProperty(() => Target.RotationDamping)));
+            var quatDampingField = rotDampingContainer.AddChild(
+                new PropertyField(serializedObject.FindProperty(() => Target.QuaternionDamping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PositionDamping)));
 
             ux.AddSpace();
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrbitStyle)));
-            m_Radius = ux.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.Radius)));
-            m_Orbits = ux.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.Orbits)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OrbitStyle)));
+            var m_Radius = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Radius)));
+            var m_Orbits = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Orbits)));
 
             ux.AddSpace();
             m_NoControllerHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
@@ -79,18 +74,51 @@ namespace Cinemachine.Editor
                     }
                 }
             }));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.HorizontalAxis)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.VerticalAxis)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.RadialAxis)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.HorizontalAxis)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalAxis)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.RadialAxis)));
 
             TrackBindingMode(modeProp);
             ux.TrackPropertyValue(modeProp, TrackBindingMode);
 
+            void TrackBindingMode(SerializedProperty modeProp)
+            {
+                var mode = (CinemachineTransposer.BindingMode)modeProp.intValue;
+                bool hideRot = mode == CinemachineTransposer.BindingMode.WorldSpace 
+                    || mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+                rotDampingContainer.SetVisible(!hideRot);
+
+                // Hide Horiz range if SimpleFollow
+                int flags = 0;
+                if (mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    flags |= (int)InputAxis.Flags.HideRecentering | (int)InputAxis.Flags.RangeIsDriven;
+                var flagsProp = modeProp.serializedObject.FindProperty("HorizontalAxis").FindPropertyRelative("InspectorFlags");
+                if (flagsProp.intValue != flags)
+                {
+                    flagsProp.intValue = flags;
+                    modeProp.serializedObject.ApplyModifiedProperties();
+                }
+            }
+
             TrackRotDampingMode(rotModeProp);
             ux.TrackPropertyValue(rotModeProp, TrackRotDampingMode);
 
+            void TrackRotDampingMode(SerializedProperty modeProp)
+            {
+                var mode = (CinemachineTransposer.AngularDampingMode)modeProp.intValue;
+                quatDampingField.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Quaternion);
+                rotDampingField.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Euler);
+            }
+
             TrackOrbitMode(orbitModeProp);
             ux.TrackPropertyValue(orbitModeProp, TrackOrbitMode);
+
+            void TrackOrbitMode(SerializedProperty modeProp)
+            {
+                var mode = (CinemachineOrbitalFollow.OrbitStyles)modeProp.intValue;
+                m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.Sphere);
+                m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
+            }
 
             UpdateHelpBoxes();
             return ux;
@@ -113,40 +141,7 @@ namespace Cinemachine.Editor
             if (m_NoControllerHelp != null)
                 m_NoControllerHelp.SetVisible(noHandler);
         }
-
-        void TrackBindingMode(SerializedProperty modeProp)
-        {
-            var mode = (CinemachineTransposer.BindingMode)modeProp.intValue;
-            bool hideRot = mode == CinemachineTransposer.BindingMode.WorldSpace 
-                || mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
-            m_RotDampingContainer.SetVisible(!hideRot);
-
-            // Hide Horiz range if SimpleFollow
-            int flags = 0;
-            if (mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                flags |= (int)InputAxis.Flags.HideRecentering | (int)InputAxis.Flags.RangeIsDriven;
-            var flagsProp = modeProp.serializedObject.FindProperty("HorizontalAxis").FindPropertyRelative("InspectorFlags");
-            if (flagsProp.intValue != flags)
-            {
-                flagsProp.intValue = flags;
-                modeProp.serializedObject.ApplyModifiedProperties();
-            }
-        }
-
-        void TrackRotDampingMode(SerializedProperty modeProp)
-        {
-            var mode = (CinemachineTransposer.AngularDampingMode)modeProp.intValue;
-            m_QuatDamping.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Quaternion);
-            m_RotDamping.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Euler);
-        }
-
-        void TrackOrbitMode(SerializedProperty modeProp)
-        {
-            var mode = (CinemachineOrbitalFollow.OrbitStyles)modeProp.intValue;
-            m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.Sphere);
-            m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
-        }
-   
+  
         static GUIContent[] s_OrbitNames = 
         {
             new GUIContent("Top"), 
@@ -155,20 +150,14 @@ namespace Cinemachine.Editor
         };
         internal static GUIContent[] orbitNames => s_OrbitNames;
 
-        void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-
         bool m_UpdateCache = true;
         float m_VerticalAxisCache;
-        void DrawSceneTools()
+
+        void OnSceneGUI()
         {
             var orbitalFollow = Target;
             if (orbitalFollow == null || !orbitalFollow.IsValid)
-            {
                 return;
-            }
             
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
@@ -177,47 +166,46 @@ namespace Cinemachine.Editor
                 switch (orbitalFollow.OrbitStyle)
                 {
                     case CinemachineOrbitalFollow.OrbitStyles.Sphere:
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        var camPos = orbitalFollow.VcamState.RawPosition;
+                        var camTransform = orbitalFollow.VirtualCamera.transform;
+                        var camRight = camTransform.right;
+                        var followPos = orbitalFollow.FollowTargetPosition;
+                        var handlePos = followPos + camRight * orbitalFollow.Radius;
+                        var rHandleId = GUIUtility.GetControlID(FocusType.Passive);
+                        var newHandlePosition = Handles.Slider(rHandleId, handlePos, -camRight,
+                            CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
+                        if (EditorGUI.EndChangeCheck())
                         {
-                            EditorGUI.BeginChangeCheck();
-                            var camPos = orbitalFollow.VcamState.RawPosition;
-                            var camTransform = orbitalFollow.VirtualCamera.transform;
-                            var camRight = camTransform.right;
-                            var followPos = orbitalFollow.FollowTargetPosition;
-                            var handlePos = followPos + camRight * orbitalFollow.Radius;
-                            var rHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                            var newHandlePosition = Handles.Slider(rHandleId, handlePos, -camRight,
-                                CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
-                            if (EditorGUI.EndChangeCheck())
-                            {
-                                // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
-                                var so = new SerializedObject(orbitalFollow);
-                                var prop = so.FindProperty(() => orbitalFollow.Radius);
-                                prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(
-                                    newHandlePosition, handlePos, -camRight);
-                                so.ApplyModifiedProperties();
-                            }
-
-                            var orbitRadiusHandleIsDragged = GUIUtility.hotControl == rHandleId;
-                            var orbitRadiusHandleIsUsedOrHovered = orbitRadiusHandleIsDragged ||
-                                HandleUtility.nearestControl == rHandleId;
-                            if (orbitRadiusHandleIsUsedOrHovered)
-                            {
-                                CinemachineSceneToolHelpers.DrawLabel(camPos,
-                                    "Radius (" + orbitalFollow.Radius.ToString("F1") + ")");
-                            }
-                            
-                            Handles.color = orbitRadiusHandleIsUsedOrHovered ? 
-                                Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
-                            Handles.DrawLine(camPos, followPos);
-                            Handles.DrawWireDisc(followPos, camTransform.up, orbitalFollow.Radius);
-                            
-                            CinemachineSceneToolHelpers.SoloOnDrag(
-                                orbitRadiusHandleIsDragged, orbitalFollow.VirtualCamera, rHandleId);
-
-                            Handles.color = originalColor;
+                            // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
+                            var so = new SerializedObject(orbitalFollow);
+                            var prop = so.FindProperty(() => orbitalFollow.Radius);
+                            prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(
+                                newHandlePosition, handlePos, -camRight);
+                            so.ApplyModifiedProperties();
                         }
+
+                        var orbitRadiusHandleIsDragged = GUIUtility.hotControl == rHandleId;
+                        var orbitRadiusHandleIsUsedOrHovered = orbitRadiusHandleIsDragged ||
+                            HandleUtility.nearestControl == rHandleId;
+                        if (orbitRadiusHandleIsUsedOrHovered)
+                            CinemachineSceneToolHelpers.DrawLabel(camPos,
+                                "Radius (" + orbitalFollow.Radius.ToString("F1") + ")");
+                            
+                        Handles.color = orbitRadiusHandleIsUsedOrHovered ? 
+                            Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
+                        Handles.DrawLine(camPos, followPos);
+                        Handles.DrawWireDisc(followPos, camTransform.up, orbitalFollow.Radius);
+                            
+                        CinemachineSceneToolHelpers.SoloOnDrag(
+                            orbitRadiusHandleIsDragged, orbitalFollow.VirtualCamera, rHandleId);
+
+                        Handles.color = originalColor;
                         break;
+                    }
                     case CinemachineOrbitalFollow.OrbitStyles.ThreeRing:
+                    {
                         if (m_UpdateCache)
                             m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
                         
@@ -232,9 +220,12 @@ namespace Cinemachine.Editor
                             _ => m_VerticalAxisCache
                         };
                         break;
+                    }
                     default:
+                    {
                         Debug.LogError("OrbitStyle has no associated handle");
                         throw new System.ArgumentOutOfRangeException();
+                    }
                 }
                 
             }

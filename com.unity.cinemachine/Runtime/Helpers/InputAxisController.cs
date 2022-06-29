@@ -59,6 +59,7 @@ namespace Cinemachine
             internal InputAxisDriver Driver;
         }
         
+#if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
         /// Leave this at -1 for single-player games.
         /// For multi-player games, set this to be the player index, and the actions will
@@ -72,6 +73,7 @@ namespace Cinemachine
         /// <summary>If set, Input Actions will be auto-enabled at start</summary>
         [Tooltip("If set, Input Actions will be auto-enabled at start")]
         public bool AutoEnableInputs;
+#endif
 
         /// <summary>This list is dynamically populated based on the discovered axes</summary>
         public List<Controller> Controllers = new List<Controller>();
@@ -90,8 +92,10 @@ namespace Cinemachine
 
         void Reset()
         {
+#if CINEMACHINE_UNITY_INPUTSYSTEM
             PlayerIndex = -1;
             AutoEnableInputs = true;
+#endif
             Controllers.Clear();
             CreateControllers();
         }
@@ -99,19 +103,6 @@ namespace Cinemachine
         void OnEnable()
         {
             CreateControllers();
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            for (int i = 0; AutoEnableInputs && i < Controllers.Count; ++i)
-            {
-                var c = Controllers[i];
-                if (c.InputAction != null && c.InputAction.action != null)
-                {
-                    ResolveActionForPlayer(c, PlayerIndex);
-                    if (c.m_CachedAction != null)
-                        c.m_CachedAction.Enable();
-                }
-            }
-#endif
         }
 
 #if UNITY_EDITOR
@@ -184,7 +175,7 @@ namespace Cinemachine
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
                 if (!string.IsNullOrEmpty(c.InputName) && GetInputAxisValue != null)
-                    c.Control.InputValue = GetInputAxisValue(c.InputName, PlayerIndex) * c.Gain;
+                    c.Control.InputValue = GetInputAxisValue(c.InputName) * c.Gain;
 #endif
                 gotInput |= c.Driver.UpdateInput(deltaTime, m_Axes[i].Axis, ref c.Control);
             }
@@ -218,7 +209,7 @@ namespace Cinemachine
                 {
                     case 0: return "Mouse X";
                     case 1: return "Mouse Y";
-                    case 2: return ""; // "Mouse ScrollWheel"
+                    case 2: return ""; //"Mouse ScrollWheel";
                     default: return "";
                 }
             }
@@ -227,12 +218,12 @@ namespace Cinemachine
         }
 
         /// <summary>Delegate for overriding the legacy input system with custom code</summary>
-        public delegate float GetInputAxisValueDelegate(string axisName, int playerIndex);
+        public delegate float GetInputAxisValueDelegate(string axisName);
 
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
 
-        static float ReadLegacyInput(string axisName, int playerIndex)
+        static float ReadLegacyInput(string axisName)
         {
             float value = 0;
 #if ENABLE_LEGACY_INPUT_MANAGER
@@ -284,6 +275,8 @@ namespace Cinemachine
                 c.m_CachedAction = c.InputAction.action;
                 if (playerIndex != -1)
                     c.m_CachedAction = GetFirstMatch(InputUser.all[playerIndex], c.InputAction);
+                if (AutoEnableInputs && c.m_CachedAction != null)
+                    c.m_CachedAction.Enable();
             }
 
             // local function to wrap the lambda which otherwise causes a tiny gc

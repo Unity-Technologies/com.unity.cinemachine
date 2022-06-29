@@ -24,9 +24,8 @@ namespace Cinemachine.Editor
 
             EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("PlayerIndex"));
-
 #if CINEMACHINE_UNITY_INPUTSYSTEM
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("PlayerIndex"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("AutoEnableInputs"));
 #endif
 
@@ -45,7 +44,8 @@ namespace Cinemachine.Editor
 
                 element.isExpanded = EditorGUI.Foldout(
                     new Rect(rect.x, rect.y, EditorGUIUtility.labelWidth - height, rect.height),
-                    element.isExpanded, new GUIContent(element.displayName, element.tooltip), true);
+                    element.isExpanded, 
+                    new GUIContent(element.displayName, element.tooltip), true);
 
                 if (element.isExpanded)
                 {
