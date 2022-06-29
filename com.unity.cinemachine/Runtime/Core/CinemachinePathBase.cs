@@ -319,6 +319,9 @@ namespace Cinemachine
             return pos;
         }
 
+        // to add enable toggle
+        public void OnEnable() {}
+
         private float[] m_DistanceToPos;
         private float[] m_PosToDistance;
         private int m_CachedSampleSteps;
