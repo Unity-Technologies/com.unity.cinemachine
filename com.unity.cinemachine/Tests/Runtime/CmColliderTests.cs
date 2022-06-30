@@ -43,7 +43,7 @@ namespace Tests.Runtime
             m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate; 
         }
 
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
         public IEnumerator CheckSmoothingTime()
         {
             m_Collider.m_SmoothingTime = 1;
@@ -80,7 +80,7 @@ namespace Tests.Runtime
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
         public IEnumerator CheckDampingWhenOccluded()
         {
             m_Collider.m_SmoothingTime = 0;

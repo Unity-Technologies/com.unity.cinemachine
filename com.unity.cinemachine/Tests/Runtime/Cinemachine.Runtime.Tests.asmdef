@@ -1,5 +1,5 @@
 {
-    "name": "Cinemachine.Tests",
+    "name": "Cinemachine.Runtime.Tests",
     "references": [
         "Cinemachine"
     ],
