@@ -7,9 +7,9 @@ namespace Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the the Body section of the component pipeline.
-    /// Its job is to position the camera somewhere on a sphere centered at the Follow target.
+    /// Its job is to position the camera somewhere on a spheroid centered at the Follow target.
     ///
-    /// The position on the sphere, and the radius of the sphere, can be controlled by user input.
+    /// The position on the sphere and the radius of the sphere can be controlled by user input.
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
@@ -102,6 +102,10 @@ namespace Cinemachine
 
         // 3-rig orbit implementation
         Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
+
+        /// <summary>
+        /// Input axis controller registers here a delegate to call when the camera is reset
+        /// </summary>
         IInputAxisTarget.ResetHandler m_ResetHandler;
         
         void OnValidate()
@@ -159,30 +163,9 @@ namespace Cinemachine
             }
         }
         
-        static InputAxis DefaultHorizontal => new InputAxis 
-        { 
-            Value = 0, 
-            Range = new Vector2(-180, 180), 
-            Wrap = true, 
-            Center = 0, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
-        static InputAxis DefaultVertical => new InputAxis 
-        { 
-            Value = 17.5f, 
-            Range = new Vector2(-10, 45), 
-            Wrap = false, 
-            Center = 17.5f, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
-        static InputAxis DefaultRadial => new InputAxis 
-        { 
-            Value = 1, 
-            Range = new Vector2(1, 5), 
-            Wrap = false, 
-            Center = 1, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
+        static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
+        static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f };
+        static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 5), Wrap = false, Center = 1 };
 
         static Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 
@@ -349,9 +332,15 @@ namespace Cinemachine
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                HorizontalAxis.Restrictions 
+                    &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
+            else
+            {
                 HorizontalAxis.Value = 0;
-
+                HorizontalAxis.Restrictions 
+                    |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
+            }
             m_TargetTracker.TrackTarget(
                 this, BindingMode, deltaTime, curState.ReferenceUp, offset, 
                 EffectivePositionDamping, EffectiveRotationDamping, QuaternionDamping, RotationDampingMode,
@@ -424,7 +413,8 @@ namespace Cinemachine
 
             /// <summary>Controls how taut is the line that connects the rigs' orbits, which 
             /// determines final placement on the Y axis</summary>
-            [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
+            [Tooltip("Controls how taut is the line that connects the rigs' orbits, "
+                + "which determines final placement on the Y axis")]
             [RangeSlider(0f, 1f)]
             public float SplineCurvature;
 
@@ -439,7 +429,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Calculates and cached data necessary to implement the 3-orbit rig surface
+        /// Calculates and caches data necessary to implement the 3-orbit rig surface
         /// </summary>
         internal struct OrbitSplineCache
         {

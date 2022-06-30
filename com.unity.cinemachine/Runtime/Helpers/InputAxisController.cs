@@ -54,6 +54,10 @@ namespace Cinemachine
             [HideFoldout]
             public InputAxisControl Control;
 
+            /// <summary>Controls automatic recentering of axis value.</summary>
+            [FoldoutWithEnabledButton]
+            public InputAxisRecenteringSettings Recentering;
+
             /// <summary>This object drives the axis value based on the control 
             /// and recentering settings</summary>
             internal InputAxisDriver Driver;
@@ -87,7 +91,10 @@ namespace Cinemachine
         void OnValidate()
         {
             for (int i = Controllers.Count; i < Controllers.Count; ++i)
+            {
                 Controllers[i].Control.Validate();
+                Controllers[i].Recentering.Validate();
+            }
         }
 
         void Reset()
@@ -152,7 +159,7 @@ namespace Cinemachine
         void OnResetInput()
         {
             for (int i = 0; i < Controllers.Count; ++i)
-                Controllers[i].Driver.Reset(m_Axes[i].Axis);
+                Controllers[i].Driver.Reset(m_Axes[i].Axis, Controllers[i].Recentering);
         }
 
         void Update()
@@ -183,7 +190,7 @@ namespace Cinemachine
             {
                 if (gotInput)
                     Controllers[i].Driver.CancelRecentering();
-                Controllers[i].Driver.DoRecentering(deltaTime, m_Axes[i].Axis);
+                Controllers[i].Driver.DoRecentering(deltaTime, m_Axes[i].Axis, Controllers[i].Recentering);
             }
         }
 
@@ -193,7 +200,8 @@ namespace Cinemachine
             {
                 Name = m_Axes[axisIndex].Name,
                 Gain = (m_Axes[axisIndex].AxisIndex == 1) ? -1 : 1,
-                Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f }
+                Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f },
+                Recentering = InputAxisRecenteringSettings.Default
             };
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -209,7 +217,7 @@ namespace Cinemachine
                 {
                     case 0: return "Mouse X";
                     case 1: return "Mouse Y";
-                    case 2: return ""; //"Mouse ScrollWheel";
+                    case 2: return "Mouse ScrollWheel";
                     default: return "";
                 }
             }
