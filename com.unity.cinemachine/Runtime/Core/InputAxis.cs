@@ -38,13 +38,13 @@ namespace Cinemachine
         /// <summary>
         /// Register a handler that will be called when input needs to be reset
         /// </summary>
-        /// <param name="handler">Then hanlder to register</param>
+        /// <param name="handler">Then handler to register</param>
         public void RegisterResetHandler(ResetHandler handler);
 
         /// <summary>
         /// Unregister a handler that will be called when input needs to be reset
         /// </summary>
-        /// <param name="handler">Then hanlder to unregister</param>
+        /// <param name="handler">Then handler to unregister</param>
         public void UnregisterResetHandler(ResetHandler handler);
     }
 

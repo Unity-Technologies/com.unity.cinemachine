@@ -534,7 +534,7 @@ namespace Cinemachine
         /// <summary>Call this to notify all virtual camewras that may be tracking a target
         /// that the target's position has suddenly warped to somewhere else, so that
         /// the virtual cameras can update their internal state to make the camera
-        /// warp seamlessy along with the target.
+        /// warp seamlessly along with the target.
         /// 
         /// All virtual cameras are iterated so this call will work no matter how many 
         /// are tracking the target, and whether they are active or inactive.
