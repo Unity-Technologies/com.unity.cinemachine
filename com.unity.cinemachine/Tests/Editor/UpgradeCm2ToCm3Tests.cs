@@ -24,6 +24,7 @@ namespace Tests.Editor
         // We ignore components that are post-3.0
         static readonly Type[] k_IgnoreComponentsList = {
             typeof(CinemachineRotationComposer),
+            typeof(CinemachinePositionComposer),
             typeof(CinemachineOrbitalFollow),
             typeof(CinemachinePanTilt),
             typeof(CinemachineSplineDolly),
@@ -93,8 +94,7 @@ namespace Tests.Editor
             Assert.That(vcamGo.GetComponent<CmCamera>(), Is.Not.Null);
             var newComponent = (CinemachineComponentBase) vcamGo.GetComponent(type);
             Assert.That(newComponent, Is.Not.Null);
-            if (newComponent is not CinemachinePanTilt) // TODO: temp fix
-                Assert.That(PublicFieldsEqual(newComponent, componentValues), Is.True);
+            Assert.That(PublicFieldsEqual(newComponent, componentValues), Is.True);
             Assert.That(vcamGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(2));
         }
         
