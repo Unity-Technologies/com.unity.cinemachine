@@ -71,6 +71,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
+        /// GML todo: rename this
         public ICinemachineTargetGroup AbstractFollowTargetGroup 
         {
             get
@@ -81,6 +82,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
+        /// GML todo: remove this
         public CinemachineTargetGroup FollowTargetGroup => AbstractFollowTargetGroup as CinemachineTargetGroup;
 
         /// <summary>Get the position of the Follow target.  Special handling: If the Follow target is
@@ -116,9 +118,11 @@ namespace Cinemachine
         }
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, or null if target is not a group</summary>
+        /// GML todo: rename this
         public ICinemachineTargetGroup AbstractLookAtTargetGroup => VirtualCamera.AbstractLookAtTargetGroup;
 
         /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
+        /// GML todo: remove this
         public CinemachineTargetGroup LookAtTargetGroup => AbstractLookAtTargetGroup as CinemachineTargetGroup;
 
         /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is
