@@ -27,6 +27,9 @@ namespace Cinemachine
             /// <summary>Identifies this axis in the inspector</summary>
             [HideInInspector] public string Name;
 
+            /// <summary>Identifies this owner of the axis controlled by this controller</summary>
+            [HideInInspector] public UnityEngine.Object Owner;
+
 #if ENABLE_LEGACY_INPUT_MANAGER
             /// <summary>Axis name for the Legacy Input system (if used).  
             /// CinemachineCore.GetInputAxis() will be called with this name.</summary>
@@ -141,19 +144,42 @@ namespace Cinemachine
             m_Axes.Clear();
             m_AxisTargets.Clear();
             GetComponentsInChildren(m_AxisTargets);
+
+            // Trim excess controllers
+            for (int i = Controllers.Count - 1; i >= 0; --i)
+                if (!m_AxisTargets.Contains(Controllers[i].Owner as IInputAxisTarget))
+                    Controllers.RemoveAt(i);
+
+            // Rebuild the controller list, recycling existing ones to preserve the settings
+            List<Controller> newControllers = new();
             foreach (var t in m_AxisTargets)
             {
-                t.GetInputAxes(m_Axes);
                 t.UnregisterResetHandler(OnResetInput);
                 t.RegisterResetHandler(OnResetInput);
-            }
-            // Trim excess controllers
-            if (Controllers.Count > m_Axes.Count)
-                Controllers.RemoveRange(m_Axes.Count, Controllers.Count - m_Axes.Count);
 
-            // Add missing controllers - set up using defaults where possible
-            for (int i = Controllers.Count; i < m_Axes.Count; ++i)
-                Controllers.Add(CreateDefaultControlForAxis(i));
+                var startIndex = m_Axes.Count;
+                t.GetInputAxes(m_Axes);
+                for (int i = startIndex; i < m_Axes.Count; ++i)
+                {
+                    int controllerIndex = GetControllerIndex(Controllers, t, m_Axes[i].Name);
+                    if (controllerIndex < 0)
+                        newControllers.Add(CreateDefaultControlForAxis(i, t));
+                    else
+                    {
+                        newControllers.Add(Controllers[controllerIndex]);
+                        Controllers.RemoveAt(controllerIndex);
+                    }
+                }
+            }
+            Controllers = newControllers;
+
+            static int GetControllerIndex(List<Controller> list, IInputAxisTarget owner, string axisName)
+            {
+                for (int i = 0; i < list.Count; ++i)
+                    if (list[i].Owner as IInputAxisTarget == owner && list[i].Name == axisName)
+                        return i;
+                return -1;
+            }
         }
 
         void OnResetInput()
@@ -194,12 +220,13 @@ namespace Cinemachine
             }
         }
 
-        Controller CreateDefaultControlForAxis(int axisIndex)
+        Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisTarget owner)
         {
             var c = new Controller 
             {
                 Name = m_Axes[axisIndex].Name,
-                Gain = (m_Axes[axisIndex].AxisIndex == 1) ? -1 : 1,
+                Owner = owner as UnityEngine.Object,
+                Gain = (m_Axes[axisIndex].AxisIndex == 1) ? -1 : 1, // invert vertical axis by default
                 Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f },
                 Recentering = InputAxisRecenteringSettings.Default
             };

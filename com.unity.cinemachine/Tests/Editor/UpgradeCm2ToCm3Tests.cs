@@ -13,11 +13,10 @@ using UnityEngine.TestTools;
 
 namespace Tests.Editor
 {
-     public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
+    public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
     {
-        CinemachineUpgradeManager m_Upgrader;
         static IEnumerable<Type> s_AllCinemachineComponents;
-        // We ignore fields that don't have proper equality coverloads
+        // We ignore fields that don't have proper equality overloads
         static readonly string[] k_IgnoreFieldList = {
             "m_HorizontalRecentering", "m_VerticalRecentering",
             "m_RecenterToTargetHeading", "m_RecenterTarget", "m_HorizontalAxis", "m_VerticalAxis"
