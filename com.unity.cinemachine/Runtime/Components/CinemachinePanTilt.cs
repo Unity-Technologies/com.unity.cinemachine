@@ -94,11 +94,11 @@ namespace Cinemachine
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
-        /// <param name="handler">The hanlder to register</param>
+        /// <param name="handler">The handler to register</param>
         void IInputAxisTarget.RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
-        /// <param name="handler">The hanlder to unregister</param>
+        /// <param name="handler">The handler to unregister</param>
         void IInputAxisTarget.UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
@@ -110,15 +110,15 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Inspector checks this and displays warnng if no handler</summary>
+        /// <summary>Inspector checks this and displays warning if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
-        public override bool IsValid { get { return enabled; } }
+        public override bool IsValid => enabled;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
         /// <summary>Does nothing</summary>
         /// <param name="state"></param>
@@ -145,8 +145,8 @@ namespace Cinemachine
         /// Force the virtual camera to assume a given position and orientation.  
         /// Procedural placement then takes over
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot) => SetAxesForRotation(rot);
 
         /// <summary>Notification that this virtual camera is going live.
