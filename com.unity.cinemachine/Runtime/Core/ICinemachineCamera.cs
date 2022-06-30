@@ -92,7 +92,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera
-        /// also warp seamlessy.  Base class implementation does nothing.</summary>
+        /// also warp seamlessly.  Base class implementation does nothing.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         void OnTargetObjectWarped(Transform target, Vector3 positionDelta);

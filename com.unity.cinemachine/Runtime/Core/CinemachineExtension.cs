@@ -107,7 +107,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the extension that a target got warped,
         /// so that the extension can update its internal state to make the camera
-        /// also warp seamlessy.  Base class implementation does nothing.</summary>
+        /// also warp seamlessly.  Base class implementation does nothing.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
@@ -115,7 +115,7 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
         

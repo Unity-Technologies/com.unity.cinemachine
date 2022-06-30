@@ -87,17 +87,6 @@ namespace Cinemachine.Editor
                 bool hideRot = mode == CinemachineTransposer.BindingMode.WorldSpace 
                     || mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
                 rotDampingContainer.SetVisible(!hideRot);
-
-                // Hide Horiz range if SimpleFollow
-                int flags = 0;
-                if (mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                    flags |= (int)InputAxis.Flags.HideRecentering | (int)InputAxis.Flags.RangeIsDriven;
-                var flagsProp = modeProp.serializedObject.FindProperty("HorizontalAxis").FindPropertyRelative("InspectorFlags");
-                if (flagsProp.intValue != flags)
-                {
-                    flagsProp.intValue = flags;
-                    modeProp.serializedObject.ApplyModifiedProperties();
-                }
             }
 
             TrackRotDampingMode(rotModeProp);

@@ -50,6 +50,9 @@ namespace Cinemachine
             + "and represents a rotation about the X axis.")]
         public InputAxis TiltAxis = DefaultTilt;
 
+        /// <summary>
+        /// Input axis controller registers here a delegate to call when the camera is reset
+        /// </summary>
         IInputAxisTarget.ResetHandler m_ResetHandler;
 
         void OnValidate()
@@ -67,23 +70,8 @@ namespace Cinemachine
             ReferenceFrame = ReferenceFrames.ParentObject;
         }
 
-        static InputAxis DefaultPan => new InputAxis 
-        { 
-            Value = 0, 
-            Range = new Vector2(-180, 180), 
-            Wrap = true, 
-            Center = 0, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
-
-        static InputAxis DefaultTilt => new InputAxis 
-        { 
-            Value = 0, 
-            Range = new Vector2(-70, 70), 
-            Wrap = false, 
-            Center = 0, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
+        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
+        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0 };
         
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
@@ -137,9 +125,6 @@ namespace Cinemachine
             var up = referenceFrame * Vector3.up;
             curState.RawOrientation = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
         }
-
-        // Normalize angle value to [-180, 180] degrees.
-        static float NormalizeAngle(float angle) => ((angle + 180) % 360) - 180; 
 
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation.  
