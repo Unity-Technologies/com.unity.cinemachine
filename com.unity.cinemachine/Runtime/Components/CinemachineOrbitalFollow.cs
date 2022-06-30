@@ -7,9 +7,9 @@ namespace Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the the Body section of the component pipeline.
-    /// Its job is to position the camera somewhere on a sphere centered at the Follow target.
+    /// Its job is to position the camera somewhere on a spheroid centered at the Follow target.
     ///
-    /// The position on the sphere, and the radius of the sphere, can be controlled by user input.
+    /// The position on the sphere and the radius of the sphere can be controlled by user input.
     /// </summary>
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
@@ -94,6 +94,46 @@ namespace Cinemachine
             + "multiplier and is applied to the specified camera distance.")]
         public InputAxis RadialAxis = DefaultRadial;
 
+        // State information
+        Vector3 m_PreviousWorldOffset;
+
+        // Helper object to track the Follow target
+        CinemachineTransposer.TargetTracker m_TargetTracker;
+
+        // 3-rig orbit implementation
+        Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
+
+        /// <summary>
+        /// Input axis controller registers here a delegate to call when the camera is reset
+        /// </summary>
+        IInputAxisTarget.ResetHandler m_ResetHandler;
+        
+        void OnValidate()
+        {
+            Radius = Mathf.Max(0, Radius);
+            PositionDamping = PositiveVector3(PositionDamping);
+            RotationDamping = PositiveVector3(PositionDamping);
+            QuaternionDamping = Mathf.Max(0, QuaternionDamping);
+            HorizontalAxis.Validate();
+            VerticalAxis.Validate();
+            RadialAxis.Validate();
+        }
+
+        void Reset()
+        {
+            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
+            RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
+            PositionDamping = new Vector3(1, 1, 1);
+            RotationDamping = new Vector3(1, 1, 1);
+            QuaternionDamping = 1f;
+            OrbitStyle = OrbitStyles.Sphere;
+            Radius = 10;
+            Orbits = Cinemachine3OrbitRig.Settings.Default;
+            HorizontalAxis = DefaultHorizontal;
+            VerticalAxis = DefaultVertical;
+            RadialAxis = DefaultRadial;
+        }
+        
         /// <summary>
         /// PositionDamping speeds for each of the 3 axes of the offset from target
         /// </summary>
@@ -123,68 +163,11 @@ namespace Cinemachine
             }
         }
         
-        // State information
-        Vector3 m_PreviousWorldOffset;
-
-        // Helper object to track the Follow target
-        CinemachineTransposer.TargetTracker m_TargetTracker;
-
-        // 3-rig orbit implementation
-        Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
-        IInputAxisTarget.ResetHandler m_ResetHandler;
-
-        static InputAxis DefaultHorizontal => new InputAxis 
-        { 
-            Value = 0, 
-            Range = new Vector2(-180, 180), 
-            Wrap = true, 
-            Center = 0, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
-        static InputAxis DefaultVertical => new InputAxis 
-        { 
-            Value = 17.5f, 
-            Range = new Vector2(-10, 45), 
-            Wrap = false, 
-            Center = 17.5f, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
-        static InputAxis DefaultRadial => new InputAxis 
-        { 
-            Value = 1, 
-            Range = new Vector2(1, 5), 
-            Wrap = false, 
-            Center = 1, 
-            Recentering = InputAxis.RecenteringSettings.Default 
-        };
+        static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
+        static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f };
+        static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 5), Wrap = false, Center = 1 };
 
         static Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
-
-        void OnValidate()
-        {
-            Radius = Mathf.Max(0, Radius);
-            PositionDamping = PositiveVector3(PositionDamping);
-            RotationDamping = PositiveVector3(PositionDamping);
-            QuaternionDamping = Mathf.Max(0, QuaternionDamping);
-            HorizontalAxis.Validate();
-            VerticalAxis.Validate();
-            RadialAxis.Validate();
-        }
-
-        void Reset()
-        {
-            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
-            RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
-            PositionDamping = new Vector3(1, 1, 1);
-            RotationDamping = new Vector3(1, 1, 1);
-            QuaternionDamping = 1f;
-            OrbitStyle = OrbitStyles.Sphere;
-            Radius = 10;
-            Orbits = Cinemachine3OrbitRig.Settings.Default;
-            HorizontalAxis = DefaultHorizontal;
-            VerticalAxis = DefaultVertical;
-            RadialAxis = DefaultRadial;
-        }
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid => enabled && FollowTarget != null;
@@ -209,7 +192,7 @@ namespace Cinemachine
 
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
-        public void GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
+        void IInputAxisTarget.GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
         {
             axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
             axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
@@ -217,14 +200,14 @@ namespace Cinemachine
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
-        /// <param name="handler">The hanlder to register</param>
-        public void RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
+        /// <param name="handler">The handler to register</param>
+        void IInputAxisTarget.RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
-        /// <param name="handler">The hanlder to unregister</param>
-        public void UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
+        /// <param name="handler">The handler to unregister</param>
+        void IInputAxisTarget.UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
 
-        /// <summary>Inspector checks this and displays warnng if no handler</summary>
+        /// <summary>Inspector checks this and displays warning if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue => GetCameraPoint().w;
@@ -298,8 +281,8 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
@@ -326,7 +309,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
-        /// also warp seamlessy.</summary>
+        /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
@@ -349,9 +332,15 @@ namespace Cinemachine
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                HorizontalAxis.Restrictions 
+                    &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
+            else
+            {
                 HorizontalAxis.Value = 0;
-
+                HorizontalAxis.Restrictions 
+                    |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
+            }
             m_TargetTracker.TrackTarget(
                 this, BindingMode, deltaTime, curState.ReferenceUp, offset, 
                 EffectivePositionDamping, EffectiveRotationDamping, QuaternionDamping, RotationDampingMode,
@@ -424,7 +413,8 @@ namespace Cinemachine
 
             /// <summary>Controls how taut is the line that connects the rigs' orbits, which 
             /// determines final placement on the Y axis</summary>
-            [Tooltip("Controls how taut is the line that connects the rigs' orbits, which determines final placement on the Y axis")]
+            [Tooltip("Controls how taut is the line that connects the rigs' orbits, "
+                + "which determines final placement on the Y axis")]
             [RangeSlider(0f, 1f)]
             public float SplineCurvature;
 
@@ -439,7 +429,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Calculates and cached data necessary to implement the 3-orbit rig surface
+        /// Calculates and caches data necessary to implement the 3-orbit rig surface
         /// </summary>
         internal struct OrbitSplineCache
         {

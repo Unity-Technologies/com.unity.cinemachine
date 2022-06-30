@@ -192,7 +192,7 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {

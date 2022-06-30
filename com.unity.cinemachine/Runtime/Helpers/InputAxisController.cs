@@ -27,6 +27,9 @@ namespace Cinemachine
             /// <summary>Identifies this axis in the inspector</summary>
             [HideInInspector] public string Name;
 
+            /// <summary>Identifies this owner of the axis controlled by this controller</summary>
+            [HideInInspector] public UnityEngine.Object Owner;
+
 #if ENABLE_LEGACY_INPUT_MANAGER
             /// <summary>Axis name for the Legacy Input system (if used).  
             /// CinemachineCore.GetInputAxis() will be called with this name.</summary>
@@ -54,11 +57,16 @@ namespace Cinemachine
             [HideFoldout]
             public InputAxisControl Control;
 
+            /// <summary>Controls automatic recentering of axis value.</summary>
+            [FoldoutWithEnabledButton]
+            public InputAxisRecenteringSettings Recentering;
+
             /// <summary>This object drives the axis value based on the control 
             /// and recentering settings</summary>
             internal InputAxisDriver Driver;
         }
         
+#if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
         /// Leave this at -1 for single-player games.
         /// For multi-player games, set this to be the player index, and the actions will
@@ -72,6 +80,7 @@ namespace Cinemachine
         /// <summary>If set, Input Actions will be auto-enabled at start</summary>
         [Tooltip("If set, Input Actions will be auto-enabled at start")]
         public bool AutoEnableInputs;
+#endif
 
         /// <summary>This list is dynamically populated based on the discovered axes</summary>
         public List<Controller> Controllers = new List<Controller>();
@@ -85,13 +94,18 @@ namespace Cinemachine
         void OnValidate()
         {
             for (int i = Controllers.Count; i < Controllers.Count; ++i)
+            {
                 Controllers[i].Control.Validate();
+                Controllers[i].Recentering.Validate();
+            }
         }
 
         void Reset()
         {
+#if CINEMACHINE_UNITY_INPUTSYSTEM
             PlayerIndex = -1;
             AutoEnableInputs = true;
+#endif
             Controllers.Clear();
             CreateControllers();
         }
@@ -99,19 +113,6 @@ namespace Cinemachine
         void OnEnable()
         {
             CreateControllers();
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            for (int i = 0; AutoEnableInputs && i < Controllers.Count; ++i)
-            {
-                var c = Controllers[i];
-                if (c.InputAction != null && c.InputAction.action != null)
-                {
-                    ResolveActionForPlayer(c, PlayerIndex);
-                    if (c.m_CachedAction != null)
-                        c.m_CachedAction.Enable();
-                }
-            }
-#endif
         }
 
 #if UNITY_EDITOR
@@ -143,25 +144,48 @@ namespace Cinemachine
             m_Axes.Clear();
             m_AxisTargets.Clear();
             GetComponentsInChildren(m_AxisTargets);
+
+            // Trim excess controllers
+            for (int i = Controllers.Count - 1; i >= 0; --i)
+                if (!m_AxisTargets.Contains(Controllers[i].Owner as IInputAxisTarget))
+                    Controllers.RemoveAt(i);
+
+            // Rebuild the controller list, recycling existing ones to preserve the settings
+            List<Controller> newControllers = new();
             foreach (var t in m_AxisTargets)
             {
-                t.GetInputAxes(m_Axes);
                 t.UnregisterResetHandler(OnResetInput);
                 t.RegisterResetHandler(OnResetInput);
-            }
-            // Trim excess controllers
-            if (Controllers.Count > m_Axes.Count)
-                Controllers.RemoveRange(m_Axes.Count, Controllers.Count - m_Axes.Count);
 
-            // Add missing controllers - set up using defaults where possible
-            for (int i = Controllers.Count; i < m_Axes.Count; ++i)
-                Controllers.Add(CreateDefaultControlForAxis(i));
+                var startIndex = m_Axes.Count;
+                t.GetInputAxes(m_Axes);
+                for (int i = startIndex; i < m_Axes.Count; ++i)
+                {
+                    int controllerIndex = GetControllerIndex(Controllers, t, m_Axes[i].Name);
+                    if (controllerIndex < 0)
+                        newControllers.Add(CreateDefaultControlForAxis(i, t));
+                    else
+                    {
+                        newControllers.Add(Controllers[controllerIndex]);
+                        Controllers.RemoveAt(controllerIndex);
+                    }
+                }
+            }
+            Controllers = newControllers;
+
+            static int GetControllerIndex(List<Controller> list, IInputAxisTarget owner, string axisName)
+            {
+                for (int i = 0; i < list.Count; ++i)
+                    if (list[i].Owner as IInputAxisTarget == owner && list[i].Name == axisName)
+                        return i;
+                return -1;
+            }
         }
 
         void OnResetInput()
         {
             for (int i = 0; i < Controllers.Count; ++i)
-                Controllers[i].Driver.Reset(m_Axes[i].Axis);
+                Controllers[i].Driver.Reset(m_Axes[i].Axis, Controllers[i].Recentering);
         }
 
         void Update()
@@ -184,7 +208,7 @@ namespace Cinemachine
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
                 if (!string.IsNullOrEmpty(c.InputName) && GetInputAxisValue != null)
-                    c.Control.InputValue = GetInputAxisValue(c.InputName, PlayerIndex) * c.Gain;
+                    c.Control.InputValue = GetInputAxisValue(c.InputName) * c.Gain;
 #endif
                 gotInput |= c.Driver.UpdateInput(deltaTime, m_Axes[i].Axis, ref c.Control);
             }
@@ -192,17 +216,19 @@ namespace Cinemachine
             {
                 if (gotInput)
                     Controllers[i].Driver.CancelRecentering();
-                Controllers[i].Driver.DoRecentering(deltaTime, m_Axes[i].Axis);
+                Controllers[i].Driver.DoRecentering(deltaTime, m_Axes[i].Axis, Controllers[i].Recentering);
             }
         }
 
-        Controller CreateDefaultControlForAxis(int axisIndex)
+        Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisTarget owner)
         {
             var c = new Controller 
             {
                 Name = m_Axes[axisIndex].Name,
-                Gain = (m_Axes[axisIndex].AxisIndex == 1) ? -1 : 1,
-                Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f }
+                Owner = owner as UnityEngine.Object,
+                Gain = (m_Axes[axisIndex].AxisIndex == 1) ? -1 : 1, // invert vertical axis by default
+                Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f },
+                Recentering = InputAxisRecenteringSettings.Default
             };
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -212,13 +238,13 @@ namespace Cinemachine
             c.InputName = GetDefaultInputName(m_Axes[axisIndex].AxisIndex);
             c.Gain *= 3;
 
-            string GetDefaultInputName(int axisIndex)
+            string GetDefaultInputName(int index)
             {
-                switch (axisIndex)
+                switch (index)
                 {
                     case 0: return "Mouse X";
                     case 1: return "Mouse Y";
-                    case 2: return ""; // "Mouse ScrollWheel"
+                    case 2: return "Mouse ScrollWheel";
                     default: return "";
                 }
             }
@@ -227,12 +253,12 @@ namespace Cinemachine
         }
 
         /// <summary>Delegate for overriding the legacy input system with custom code</summary>
-        public delegate float GetInputAxisValueDelegate(string axisName, int playerIndex);
+        public delegate float GetInputAxisValueDelegate(string axisName);
 
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
 
-        static float ReadLegacyInput(string axisName, int playerIndex)
+        static float ReadLegacyInput(string axisName)
         {
             float value = 0;
 #if ENABLE_LEGACY_INPUT_MANAGER
@@ -284,6 +310,8 @@ namespace Cinemachine
                 c.m_CachedAction = c.InputAction.action;
                 if (playerIndex != -1)
                     c.m_CachedAction = GetFirstMatch(InputUser.all[playerIndex], c.InputAction);
+                if (AutoEnableInputs && c.m_CachedAction != null)
+                    c.m_CachedAction.Enable();
             }
 
             // local function to wrap the lambda which otherwise causes a tiny gc

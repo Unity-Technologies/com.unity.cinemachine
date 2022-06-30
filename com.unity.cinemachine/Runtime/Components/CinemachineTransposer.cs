@@ -213,7 +213,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
-        /// also warp seamlessy.</summary>
+        /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
@@ -226,7 +226,7 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
@@ -496,7 +496,7 @@ namespace Cinemachine
 
             /// <summary>This is called to notify the us that a target got warped,
             /// so that we can update its internal state to make the camera
-            /// also warp seamlessy.</summary>
+            /// also warp seamlessly.</summary>
             /// <param name="positionDelta">The amount the target's position changed</param>
             public void OnTargetObjectWarped(Vector3 positionDelta)
             {
@@ -508,7 +508,7 @@ namespace Cinemachine
             /// </summary>
             /// <param name="component">The component caller</param>
             /// <param name="bindingMode">Current binding mode for damping and offset</param>
-            /// <param name="pos">Worldspace pposition to take</param>
+            /// <param name="pos">Worldspace position to take</param>
             /// <param name="rot">Worldspace orientation to take</param>
             /// <param name="cameraOffsetLocalSpace">Camera offset from target in local space (relative to ReferenceOrientation)</param>
             public void ForceCameraPosition(

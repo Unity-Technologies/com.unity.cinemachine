@@ -71,6 +71,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
+        /// GML todo: rename this
         public ICinemachineTargetGroup AbstractFollowTargetGroup 
         {
             get
@@ -81,6 +82,7 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
+        /// GML todo: remove this
         public CinemachineTargetGroup FollowTargetGroup => AbstractFollowTargetGroup as CinemachineTargetGroup;
 
         /// <summary>Get the position of the Follow target.  Special handling: If the Follow target is
@@ -116,9 +118,11 @@ namespace Cinemachine
         }
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, or null if target is not a group</summary>
+        /// GML todo: rename this
         public ICinemachineTargetGroup AbstractLookAtTargetGroup => VirtualCamera.AbstractLookAtTargetGroup;
 
         /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
+        /// GML todo: remove this
         public CinemachineTargetGroup LookAtTargetGroup => AbstractLookAtTargetGroup as CinemachineTargetGroup;
 
         /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is
@@ -200,7 +204,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera
-        /// also warp seamlessy.  Base class implementation does nothing.</summary>
+        /// also warp seamlessly.  Base class implementation does nothing.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
@@ -209,7 +213,7 @@ namespace Cinemachine
         /// Force the virtual camera to assume a given position and orientation.  
         /// Procedural placement then takes over.
         /// Base class implementation does nothing.</summary>
-        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
 

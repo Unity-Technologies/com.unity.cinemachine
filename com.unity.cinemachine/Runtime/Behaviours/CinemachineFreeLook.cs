@@ -306,7 +306,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the vcam that a target got warped,
         /// so that the vcam can update its internal state to make the camera
-        /// also warp seamlessy.</summary>
+        /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
@@ -322,7 +322,7 @@ namespace Cinemachine
         /// Force the virtual camera to assume a given position and orientation.  
         /// Procedural placement then takes over
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
+        /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {

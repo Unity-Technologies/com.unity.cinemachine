@@ -196,7 +196,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
-        /// also warp seamlessy.</summary>
+        /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)

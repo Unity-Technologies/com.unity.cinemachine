@@ -26,10 +26,10 @@ namespace Cinemachine.Editor
                 rect.y += height + EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Value));
 
-                var flags = property.FindPropertyRelative(() => def.InspectorFlags).intValue;
+                var flags = property.FindPropertyRelative(() => def.Restrictions).intValue;
 
                 var enabled = GUI.enabled;
-                GUI.enabled = (flags & (int)InputAxis.Flags.RangeIsDriven) == 0;
+                GUI.enabled = (flags & (int)InputAxis.RestrictionFlags.RangeIsDriven) == 0;
 
                 rect.y += height + EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Center));
@@ -43,13 +43,6 @@ namespace Cinemachine.Editor
                     new [] { GUIContent.none, null });
 
                 GUI.enabled = enabled;
-
-                if ((flags & (int)InputAxis.Flags.HideRecentering) == 0)
-                {
-                    rect.y += height + EditorGUIUtility.standardVerticalSpacing;
-                    var recenter = property.FindPropertyRelative(() => def.Recentering);
-                    EditorGUI.PropertyField(rect, recenter);
-                }
                 --EditorGUI.indentLevel;
             }
             else
@@ -76,13 +69,7 @@ namespace Cinemachine.Editor
             var lineHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             var height = lineHeight;
             if (property != null && property.isExpanded)
-            {
-                var flags = property.FindPropertyRelative(() => def.InspectorFlags).intValue;
                 height += 3 * lineHeight;
-                if ((flags & (int)InputAxis.Flags.HideRecentering) == 0)
-                    height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative(() => def.Recentering)) 
-                        + EditorGUIUtility.standardVerticalSpacing;
-            }
             return height - EditorGUIUtility.standardVerticalSpacing;
         }
 
@@ -111,19 +98,15 @@ namespace Cinemachine.Editor
                 { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5 }});
             rangeContainer.Add(new Label(wrapProp.displayName) 
                 { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
-            var recenterField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
 
-            var flagsProp = property.FindPropertyRelative(() => def.InspectorFlags);
+            var flagsProp = property.FindPropertyRelative(() => def.Restrictions);
             TrackFlags(flagsProp);
             ux.TrackPropertyValue(flagsProp, TrackFlags);
 
             void TrackFlags(SerializedProperty prop)
             {
-                var flags = flagsProp.intValue;
-                var hideRecentering = (flags & (int)InputAxis.Flags.HideRecentering) != 0;
-                var rangeDisabled = (flags & (int)InputAxis.Flags.RangeIsDriven) != 0;
-
-                recenterField.SetVisible(!hideRecentering);
+                var flags = prop.intValue;
+                var rangeDisabled = (flags & (int)InputAxis.RestrictionFlags.RangeIsDriven) != 0;
                 centerField.SetEnabled(!rangeDisabled);
                 rangeContainer.SetEnabled(!rangeDisabled);
             }

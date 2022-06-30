@@ -16,7 +16,7 @@
                 * [Rotation Composer](CinemachineAimRotationComposer.md)
                 * [Group Composer](CinemachineAimGroupComposer.md)
                 * [Do Nothing](CinemachineAimDoNothing.md)
-                * [POV](CinemachineAimPOV.md)
+                * [Pan Tilt](CinemachineAimPanTilt.md)
                 * [Same As Follow Target](CinemachineAimSameAsFollow.md)
                 * [Hard Look At](CinemachineAimHardLook.md)
             * [Noise properties](CinemachineVirtualCameraNoise.md)
