@@ -17,9 +17,17 @@ namespace Tests.Editor
     {
         CinemachineUpgradeManager m_Upgrader;
         static IEnumerable<Type> s_AllCinemachineComponents;
-        static readonly string[] k_IgnoreList = {
-            "HorizontalAxis", "VerticalAxis", "RadialAxis", "m_HorizontalRecentering", "m_VerticalRecentering",
+        // We ignore fields that don't have proper equality coverloads
+        static readonly string[] k_IgnoreFieldList = {
+            "m_HorizontalRecentering", "m_VerticalRecentering",
             "m_RecenterToTargetHeading", "m_RecenterTarget", "m_HorizontalAxis", "m_VerticalAxis"
+        };
+        // We ignore components that are post-3.0
+        static readonly Type[] k_IgnoreComponentsList = {
+            typeof(CinemachineRotationComposer),
+            typeof(CinemachineOrbitalFollow),
+            typeof(CinemachinePanTilt),
+            typeof(CinemachineSplineDolly),
         };
         CinemachineBrain m_Brain;
         
@@ -49,10 +57,8 @@ namespace Tests.Editor
                     && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 foreach (var cmComponent in s_AllCinemachineComponents)
                 {
-#pragma warning disable 618 // disable obsolete warning
-                    if (cmComponent == typeof(CinemachineTrackedDolly))
+                    if (k_IgnoreComponentsList.Contains(cmComponent))
                         continue;
-#pragma warning restore 618
                     yield return new TestCaseData(cmComponent).SetName(cmComponent.Name).Returns(null);
                 }
             }
@@ -74,7 +80,7 @@ namespace Tests.Editor
             
             var componentAdded = AddCinemachineComponent(vcam, type);
             // Copy fields but ignore fields that don't have a proper Equals override.
-            var componentValues = CopyPublicFields(componentAdded, k_IgnoreList);
+            var componentValues = CopyPublicFields(componentAdded, k_IgnoreFieldList);
 
             yield return null;
             
@@ -139,7 +145,10 @@ namespace Tests.Editor
                     continue;
 
                 if (fieldValue == null || !fieldValue.Equals(value.Item2))
+                {
+                    Debug.Log($"{a.GetType().Name}.{field.Name}: {fieldValue} != {value.Item2}");
                     return false;
+                }
             }
 
             return true;
