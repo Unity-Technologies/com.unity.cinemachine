@@ -217,14 +217,14 @@ namespace Cinemachine
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
-        /// <param name="handler">The hanlder to register</param>
+        /// <param name="handler">The handler to register</param>
         void IInputAxisTarget.RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
-        /// <param name="handler">The hanlder to unregister</param>
+        /// <param name="handler">The handler to unregister</param>
         void IInputAxisTarget.UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
 
-        /// <summary>Inspector checks this and displays warnng if no handler</summary>
+        /// <summary>Inspector checks this and displays warning if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue => GetCameraPoint().w;
@@ -298,8 +298,8 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace pposition to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
@@ -326,7 +326,7 @@ namespace Cinemachine
 
         /// <summary>This is called to notify the us that a target got warped,
         /// so that we can update its internal state to make the camera
-        /// also warp seamlessy.</summary>
+        /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
