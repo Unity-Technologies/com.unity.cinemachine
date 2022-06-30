@@ -138,9 +138,6 @@ namespace Cinemachine
             curState.RawOrientation = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
         }
 
-        // Normalize angle value to [-180, 180] degrees.
-        static float NormalizeAngle(float angle) => ((angle + 180) % 360) - 180; 
-
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation.  
         /// Procedural placement then takes over
