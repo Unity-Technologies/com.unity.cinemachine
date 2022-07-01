@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SaveDuringPlay works with ILists now.
 - Bugfix: Paste VirtualCamera and FreeLook components onto prefab works for subcomponents
 - Bugfix: CinemachineInputProvider now correctly tracks the enabled state of the input action.
-- Bugfix: POV orientation was incorrect with World Up override
+- Bugfix: POV orientation was incorrect with World Up override.
 - Added AutoEnable option to CinemachineInputHandler
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
