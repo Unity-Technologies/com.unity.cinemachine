@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 - Bugfix: The FadeOut sample scene shader was culling some objects incorrectly.
-- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
+- Bugfix: Freelook had the wrong heading at the first frame, which could cause a slight jitter.
 - Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
 - Bugfix: Fixed spurious Z rotations during spherical blend.
 - Regression fix: POV is relative to its parent transform.
