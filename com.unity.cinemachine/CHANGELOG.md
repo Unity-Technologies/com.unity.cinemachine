@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
 - Bugfix: Fixed spurious Z rotations during spherical blend.
 - Regression fix: POV is relative to its parent transform.
-- Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
+- Bugfix: Blending speed was not set correctly when blending back and forth between the same cameras.
 
 
 ## [2.9.0-pre.6] - 2022-01-12
