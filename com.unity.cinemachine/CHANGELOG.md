@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: Cinemachine no longer produces a compiler error in Unity Editor versions older than 2020 when an Input System package is installed.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the Editor.
-- Timeline guards added to scripts that rely on it.
+- Timeline guards were added to scripts that rely on it.
 - Bugfix: SaveDuringPlay works with ILists now.
 - Bugfix: Paste VirtualCamera and FreeLook components onto prefab works for subcomponents
 - Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
