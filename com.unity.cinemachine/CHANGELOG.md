@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: EmbeddedAssetProperties were not displayed correctly in the Editor.
 - Timeline guards were added to scripts that rely on it.
 - Bugfix: SaveDuringPlay works with ILists now.
-- Bugfix: Paste VirtualCamera and FreeLook components onto prefab works for subcomponents
+- Bugfix: Pasting VirtualCamera and FreeLook components onto prefab works for subcomponents now.
 - Bugfix: CinemachineInputProvider now correctly tracks the enabled state of the input action.
 - Bugfix: POV orientation was incorrect with World Up override.
 - Added AutoEnable option to CinemachineInputHandler
