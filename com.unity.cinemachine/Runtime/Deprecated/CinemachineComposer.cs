@@ -9,10 +9,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [Obsolete("CinemachineComposer has been deprecated. Use CinemachineRotationComposer instead")]
-    public class CinemachineComposer : CinemachineComponentBase 
-#if UNITY_EDITOR
-        , Editor.IUpgradeToCm3
-#endif
+    public class CinemachineComposer : CinemachineComponentBase
     {
         [Obsolete("m_TrackedObjectOffset has been deprecated. Use CinemachineRotationComposer.TrackedObjectOffset instead")]
         public Vector3 m_TrackedObjectOffset;
@@ -52,9 +49,8 @@ namespace Cinemachine
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
         public override void MutateCameraState(ref CameraState curState, float deltaTime) {}
 
-#if UNITY_EDITOR
         // Helper to upgrade to CM3
-        void Editor.IUpgradeToCm3.UpgradeToCm3(MonoBehaviour b)
+        internal void UpgradeToCm3(MonoBehaviour b)
         {
             var c = b as CinemachineRotationComposer;
 
@@ -79,6 +75,5 @@ namespace Cinemachine
             SoftZoneSize = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
             Bias = new Vector2(m_BiasX, m_BiasY)
         };
-#endif
     }
 }

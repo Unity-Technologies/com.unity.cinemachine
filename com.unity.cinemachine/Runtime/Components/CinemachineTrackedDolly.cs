@@ -21,9 +21,6 @@ namespace Cinemachine
     [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
 #endif
     public class CinemachineTrackedDolly : CinemachineComponentBase
-#if UNITY_EDITOR
-        , Editor.IUpgradeToCm3
-#endif
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
         [Tooltip("The path to which the camera will be constrained.  This must be non-null.")]
@@ -336,12 +333,9 @@ namespace Cinemachine
         Quaternion m_PreviousOrientation = Quaternion.identity;
         private Vector3 m_PreviousCameraPosition = Vector3.zero;
 
-#if UNITY_EDITOR
         // Helper to upgrade to CM3
-        void Editor.IUpgradeToCm3.UpgradeToCm3(MonoBehaviour b)
+        internal void UpgradeToCm3(CinemachineSplineDolly c)
         {
-            var c = b as CinemachineSplineDolly;
-
             c.Damping.Enabled = true;
             c.Damping.Position = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.Damping.Angular = Mathf.Max(m_YawDamping, Mathf.Max(m_RollDamping, m_PitchDamping));
@@ -350,8 +344,6 @@ namespace Cinemachine
             c.AutomaticDolly.PositionOffset = m_AutoDolly.m_PositionOffset;
             c.CameraPosition = m_PathPosition;
             c.SplineOffset = m_PathOffset;
-            var path = m_Path;
         }
-#endif
     }
 }

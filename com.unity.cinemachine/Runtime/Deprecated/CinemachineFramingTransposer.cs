@@ -11,9 +11,6 @@ namespace Cinemachine
     [Obsolete("CinemachineFramingTransposer has been deprecated. Use CinemachinePositionComposer instead")]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineFramingTransposer : CinemachineComponentBase
-#if UNITY_EDITOR
-        , Editor.IUpgradeToCm3
-#endif
     {
         [Obsolete("CinemachineFramingTransposer.m_TrackedObjectOffset has been deprecated. Use CinemachinePositionComposer.TrackedObjectOffset instead")]
         public Vector3 m_TrackedObjectOffset;
@@ -111,9 +108,8 @@ namespace Cinemachine
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
         public override void MutateCameraState(ref CameraState curState, float deltaTime) {}
 
-#if UNITY_EDITOR
         // Helper to upgrade to CM3
-        void Editor.IUpgradeToCm3.UpgradeToCm3(MonoBehaviour b)
+        internal void UpgradeToCm3(MonoBehaviour b)
         {
             var c = b as CinemachinePositionComposer;
 
@@ -147,6 +143,5 @@ namespace Cinemachine
             c.FovRange = new Vector2(m_MinimumFOV, m_MaximumFOV);
             c.OrthoSizeRange = new Vector2(m_MinimumOrthoSize, m_MaximumOrthoSize);
         }
-#endif
     }
 }

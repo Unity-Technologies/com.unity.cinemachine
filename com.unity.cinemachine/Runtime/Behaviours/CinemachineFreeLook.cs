@@ -605,8 +605,8 @@ namespace Cinemachine
                     else
                     {
                         newRigs[i] = go.AddComponent<CinemachineVirtualCamera>();
-                        newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>();
-                        newRigs[i].AddCinemachineComponent<CinemachineComposer>();
+                        //newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>();
+                        //newRigs[i].AddCinemachineComponent<CinemachineComposer>();
                     }
                 }
 
@@ -614,6 +614,7 @@ namespace Cinemachine
                 if (newRigs[i] != null)
                 {
                     newRigs[i].InvalidateComponentPipeline();
+/*
                     CinemachineOrbitalTransposer orbital = newRigs[i].GetCinemachineComponent<CinemachineOrbitalTransposer>();
                     if (orbital == null)
                         orbital = newRigs[i].AddCinemachineComponent<CinemachineOrbitalTransposer>(); // should not happen
@@ -631,6 +632,7 @@ namespace Cinemachine
                             composer.m_BiasX = composer.m_BiasY = 0;
                         }
                     }
+*/
                 }
             }
             return newRigs;

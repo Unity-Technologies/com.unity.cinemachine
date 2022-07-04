@@ -17,9 +17,6 @@ namespace Cinemachine
     [Obsolete("CinemachineDollyCart has been deprecated. Use CinemachineSplineCart instead.", false)]
 #endif
     public class CinemachineDollyCart : MonoBehaviour
-#if UNITY_EDITOR
-        , Editor.IUpgradeToCm3
-#endif
     {
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
@@ -85,12 +82,9 @@ namespace Cinemachine
             }
         }
 
-#if UNITY_EDITOR
         // Helper to upgrade to CM3
-        void Editor.IUpgradeToCm3.UpgradeToCm3(MonoBehaviour b)
+        internal void UpgradeToCm3(CinemachineSplineCart c)
         {
-            var c = b as CinemachineSplineCart;
-
             c.UpdateMethod = (CinemachineSplineCart.UpdateMethods)m_UpdateMethod;
             switch (m_PositionUnits)
             {
@@ -101,6 +95,5 @@ namespace Cinemachine
             c.Speed = m_Speed;
             c.SplinePosition = m_Position;
         }
-#endif
     }
 }

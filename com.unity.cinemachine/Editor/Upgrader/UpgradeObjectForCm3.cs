@@ -58,8 +58,9 @@ namespace Cinemachine.Editor
 
             // Is it a DollyCart?
             CinemachinePathBase path;
-            if (UpgradeComponent<CinemachineDollyCart, CinemachineSplineCart>(go))
+            if (ReplaceComponent<CinemachineDollyCart, CinemachineSplineCart>(go))
             {
+                go.GetComponent<CinemachineDollyCart>().UpgradeToCm3(go.GetComponent<CinemachineSplineCart>());
                 path = go.GetComponent<CinemachineDollyCart>().m_Path;
                 if (path != null)
                     go.GetComponent<CinemachineSplineCart>().Spline = UpgradePath(path);
@@ -78,10 +79,13 @@ namespace Cinemachine.Editor
                     notUpgradable = UpgradeVcam(vcam);
 
                 // Upgrade the pipeline components (there will be more of these...)
-                UpgradeComponent<CinemachineComposer, CinemachineRotationComposer>(go);
-                UpgradeComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go);
-                if (UpgradeComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
+                if (ReplaceComponent<CinemachineComposer, CinemachineRotationComposer>(go))
+                     go.GetComponent<CinemachineComposer>().UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
+                if (ReplaceComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go))
+                     go.GetComponent<CinemachineFramingTransposer>().UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
+                if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                 {
+                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
                     path = go.GetComponent<CinemachineTrackedDolly>().m_Path;
                     if (path != null)
                         go.GetComponent<CinemachineSplineDolly>().Spline = UpgradePath(path);
@@ -106,17 +110,16 @@ namespace Cinemachine.Editor
         }
 
         /// Upgrade a component that implements IUpgradeToCm3
-        bool UpgradeComponent<TOld, TNew>(GameObject go) 
-            where TOld : MonoBehaviour, IUpgradeToCm3
+        bool ReplaceComponent<TOld, TNew>(GameObject go) 
+            where TOld : MonoBehaviour
             where TNew : MonoBehaviour
         {
             if (go.TryGetComponent<TOld>(out var cOld))
             {
                 Undo.RecordObject(cOld, "Upgrader: disable obsolete");
                 cOld.enabled = false;
-                if (!go.TryGetComponent<TNew>(out var cNew))
-                    cNew = Undo.AddComponent<TNew>(go);
-                cOld.UpgradeToCm3(cNew);
+                if (!go.TryGetComponent<TNew>(out var _))
+                    Undo.AddComponent<TNew>(go);
                 return true;
             }
             return false;
