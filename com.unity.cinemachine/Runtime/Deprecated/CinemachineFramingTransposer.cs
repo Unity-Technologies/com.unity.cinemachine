@@ -11,6 +11,9 @@ namespace Cinemachine
     [Obsolete("CinemachineFramingTransposer has been deprecated. Use CinemachinePositionComposer instead")]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineFramingTransposer : CinemachineComponentBase
+#if UNITY_EDITOR
+        , Editor.IUpgradeToCm3
+#endif
     {
         [Obsolete("CinemachineFramingTransposer.m_TrackedObjectOffset has been deprecated. Use CinemachinePositionComposer.TrackedObjectOffset instead")]
         public Vector3 m_TrackedObjectOffset;
@@ -107,5 +110,43 @@ namespace Cinemachine
         public override bool IsValid => false;
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
         public override void MutateCameraState(ref CameraState curState, float deltaTime) {}
+
+#if UNITY_EDITOR
+        // Helper to upgrade to CM3
+        void Editor.IUpgradeToCm3.UpgradeToCm3(MonoBehaviour b)
+        {
+            var c = b as CinemachinePositionComposer;
+
+            c.TrackedObjectOffset = m_TrackedObjectOffset;
+            c.Lookahead = new LookaheadSettings
+            {
+                Enabled = m_LookaheadTime > 0,
+                Time = m_LookaheadTime,
+                Smoothing = m_LookaheadSmoothing,
+                IgnoreY = m_LookaheadIgnoreY
+            };
+            c.CameraDistance = m_CameraDistance;
+            c.DeadZoneDepth = m_DeadZoneDepth;
+            c.Damping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            c.Composition = new ScreenComposerSettings
+            {
+                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
+                DeadZoneSize = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight),
+                SoftZoneSize = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
+                Bias = new Vector2(m_BiasX, m_BiasY)
+            };
+            c.UnlimitedSoftZone = m_UnlimitedSoftZone;
+            c.CenterOnActivate = m_CenterOnActivate;
+            c.GroupFramingMode = m_GroupFramingMode == FramingMode.None
+                ? CinemachinePositionComposer.FramingModes.None 
+                : (CinemachinePositionComposer.FramingModes)((int)m_GroupFramingMode + 1);
+            c.AdjustmentMode = (CinemachinePositionComposer.AdjustmentModes)m_AdjustmentMode;
+            c.GroupFramingSize = m_GroupFramingSize;
+            c.DollyRange = new Vector2(-m_MaxDollyIn, m_MaxDollyOut);
+            c.TargetDistanceRange = new Vector2(m_MinimumDistance, m_MaximumDistance);
+            c.FovRange = new Vector2(m_MinimumFOV, m_MaximumFOV);
+            c.OrthoSizeRange = new Vector2(m_MinimumOrthoSize, m_MaximumOrthoSize);
+        }
+#endif
     }
 }

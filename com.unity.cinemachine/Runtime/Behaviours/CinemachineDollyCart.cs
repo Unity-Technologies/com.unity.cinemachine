@@ -17,6 +17,9 @@ namespace Cinemachine
     [Obsolete("CinemachineDollyCart has been deprecated. Use CinemachineSplineCart instead.", false)]
 #endif
     public class CinemachineDollyCart : MonoBehaviour
+#if UNITY_EDITOR
+        , Editor.IUpgradeToCm3
+#endif
     {
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
@@ -81,5 +84,23 @@ namespace Cinemachine
                 transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
             }
         }
+
+#if UNITY_EDITOR
+        // Helper to upgrade to CM3
+        void Editor.IUpgradeToCm3.UpgradeToCm3(MonoBehaviour b)
+        {
+            var c = b as CinemachineSplineCart;
+
+            c.UpdateMethod = (CinemachineSplineCart.UpdateMethods)m_UpdateMethod;
+            switch (m_PositionUnits)
+            {
+                case CinemachinePathBase.PositionUnits.PathUnits: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
+                case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
+                case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
+            }
+            c.Speed = m_Speed;
+            c.SplinePosition = m_Position;
+        }
+#endif
     }
 }

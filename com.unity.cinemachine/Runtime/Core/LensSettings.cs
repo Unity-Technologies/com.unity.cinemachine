@@ -361,5 +361,37 @@ namespace Cinemachine
             Anamorphism = Mathf.Clamp(Anamorphism, -1, 1);
 #endif
         }
+
+        /// <summary>
+        /// Compare two lens settings objects for approximate equality
+        /// </summary>
+        /// <param name="a">First LensSettings</param>
+        /// <param name="b">Second Lens Settigs</param>
+        /// <returns>True if the two lenses are approximately equal</returns>
+        public static bool AreEqual(ref LensSettings a, ref LensSettings b)
+        {
+            return Mathf.Approximately(a.NearClipPlane, b.NearClipPlane)
+                && Mathf.Approximately(a.FarClipPlane, b.FarClipPlane)
+                && Mathf.Approximately(a.OrthographicSize, b.OrthographicSize)
+                && Mathf.Approximately(a.FieldOfView, b.FieldOfView)
+                && Mathf.Approximately(a.Dutch, b.Dutch)
+                && Mathf.Approximately(a.LensShift.x, b.LensShift.x)
+                && Mathf.Approximately(a.LensShift.y, b.LensShift.y)
+
+                && Mathf.Approximately(a.SensorSize.x, b.SensorSize.x)
+                && Mathf.Approximately(a.SensorSize.y, b.SensorSize.y)
+                && a.GateFit == b.GateFit
+#if CINEMACHINE_HDRP
+                && Mathf.Approximately(a.Iso, b.Iso)
+                && Mathf.Approximately(a.ShutterSpeed, b.ShutterSpeed)
+                && Mathf.Approximately(a.Aperture, b.Aperture)
+                && a.BladeCount == b.BladeCount
+                && Mathf.Approximately(a.Curvature.x, b.Curvature.x)
+                && Mathf.Approximately(a.Curvature.y, b.Curvature.y)
+                && Mathf.Approximately(a.BarrelClipping, b.BarrelClipping)
+                && Mathf.Approximately(a.Anamorphism, b.Anamorphism)
+#endif
+                ;
+        }
     }
 }
