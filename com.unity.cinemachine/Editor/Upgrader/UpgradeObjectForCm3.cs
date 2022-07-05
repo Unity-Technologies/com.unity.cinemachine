@@ -36,7 +36,8 @@ namespace Cinemachine.Editor
             typeof(CinemachineFreeLook),
             typeof(CinemachineComposer),
             typeof(CinemachineFramingTransposer),
-//            typeof(CinemachinePOV),
+            typeof(CinemachinePOV),
+            typeof(CinemachineOrbitalTransposer),
             typeof(CinemachineTrackedDolly),
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
@@ -87,18 +88,27 @@ namespace Cinemachine.Editor
                      go.GetComponent<CinemachineComposer>().UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
                 if (ReplaceComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go))
                      go.GetComponent<CinemachineFramingTransposer>().UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
-//                if (ReplaceComponent<CinemachinePOV, CinemachinePanTilt>(go))
-//                     go.GetComponent<CinemachinePOV>().UpgradeToCm3(go.GetComponent<CinemachinePanTilt>());
+                if (ReplaceComponent<CinemachinePOV, CinemachinePanTilt>(go))
+                {
+                     var pov = go.GetComponent<CinemachinePOV>();
+                     pov.UpgradeToCm3(go.GetComponent<CinemachinePanTilt>());
+                     ConvertInputAxis(go, "Pan", ref pov.m_HorizontalAxis, ref pov.m_HorizontalRecentering);
+                     ConvertInputAxis(go, "Tilt", ref pov.m_VerticalAxis, ref pov.m_VerticalRecentering);
+                }
+                if (ReplaceComponent<CinemachineOrbitalTransposer, CinemachineOrbitalFollow>(go))
+                {
+                     var orbital = go.GetComponent<CinemachineOrbitalTransposer>();
+                     orbital.UpgradeToCm3(go.GetComponent<CinemachineOrbitalFollow>());
+                     ConvertInputAxis(go, "Horizontal", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
+                }
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                 {
-                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
-                    path = go.GetComponent<CinemachineTrackedDolly>().m_Path;
+                    var dolly = go.GetComponent<CinemachineTrackedDolly>();
+                    dolly.UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
+                    path = dolly.m_Path;
                     if (path != null)
                         go.GetComponent<CinemachineSplineDolly>().Spline = UpgradePath(path);
                 }
-
-                // GML todo: upgrade input properly: POV, OrbitalTransposer
-
             }
             return notUpgradable;
         }
