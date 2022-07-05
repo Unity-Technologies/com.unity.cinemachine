@@ -478,7 +478,7 @@ namespace Cinemachine
             c.RotationDampingMode = m_AngularDampingMode;
             c.RotationDamping = new Vector3(m_YawDamping, m_PitchDamping, m_RollDamping);
             c.QuaternionDamping = m_AngularDamping;
-            c.PositionDamping = new Vector3(m_XDamping, m_YawDamping, m_ZDamping);
+            c.PositionDamping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
             c.Radius = -m_FollowOffset.z;
             c.VerticalAxis.Center = m_FollowOffset.y;

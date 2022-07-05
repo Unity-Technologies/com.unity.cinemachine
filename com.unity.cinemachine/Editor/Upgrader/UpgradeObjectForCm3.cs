@@ -436,6 +436,7 @@ namespace Cinemachine.Editor
             orbital.VerticalAxis.Center = a1;
             orbital.VerticalAxis.Wrap = false;
 
+            // Do we need a modifier?
             var topDamping = new Vector3(top.m_XDamping, top.m_YDamping, top.m_ZDamping);
             var bottomDamping = new Vector3(bottom.m_XDamping, bottom.m_YDamping, bottom.m_ZDamping);
             if (!(orbital.PositionDamping - topDamping).AlmostZero()
