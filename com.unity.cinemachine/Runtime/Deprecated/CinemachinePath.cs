@@ -4,9 +4,10 @@ using Cinemachine.Utility;
 
 namespace Cinemachine
 {
-    /// <summary>Defines a world-space path, consisting of an array of waypoints,
-    /// each of which has position, tangent, and roll settings.  Bezier interpolation
-    /// is performed between the waypoints, to get a smooth and continuous path.</summary>
+    /// <summary>
+    /// This is a deprecated component.  Use SplineContainer instead.
+    /// </summary>
+    [Obsolete("CinemachinePath has been deprecated. Use SplineContainer instead")]
     [AddComponentMenu("Cinemachine/CinemachinePath")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]

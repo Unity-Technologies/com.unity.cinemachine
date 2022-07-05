@@ -5,8 +5,9 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     /// <summary>
-    /// Alternative to AxisState - a simplified structure to hold the definition of an input axis
+    /// This is a deprecated component.  Use InputAxis instead.
     /// </summary>
+    [Obsolete("AxisBase has been deprecated. Use InputAxis instead.")]
     [Serializable]
     public struct AxisBase
     {
@@ -37,9 +38,9 @@ namespace Cinemachine
     }
 
     /// <summary>
-    /// A helper class to drive an input axis, as an alternative to the standard Cinemachine.AxisState.
-    /// Behaviour is a simple direct scaling of the input channel, with no max speed.
+    /// This is a deprecated component.  Use InputAxisDriver instead.
     /// </summary>
+    [Obsolete("CinemachineInputAxisDriver has been deprecated. Use InputAxisDriver instead.")]
     [Serializable]
     public struct CinemachineInputAxisDriver
     {

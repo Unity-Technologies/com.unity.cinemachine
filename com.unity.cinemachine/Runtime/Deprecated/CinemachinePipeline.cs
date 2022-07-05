@@ -1,11 +1,12 @@
+using System;
 using UnityEngine;
 
 namespace Cinemachine
 {
     /// <summary>
-    /// Internal container for CinemachineComponentBase.  Does nothing but contain.
+    /// This is a deprecated component. 
     /// </summary>
-    // GML TODO: delete this
+    [Obsolete("CinemachinePipeline has been deprecated.")]
     [AddComponentMenu("")] // Don't display in add component menu
     public sealed class CinemachinePipeline : MonoBehaviour
     {

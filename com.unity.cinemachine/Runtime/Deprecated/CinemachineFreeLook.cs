@@ -7,18 +7,13 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
-    /// A Cinemachine Camera geared towards a 3rd person camera experience.
-    /// The camera orbits around its subject with three separate camera rigs defining
-    /// rings around the target. Each rig has its own radius, height offset, composer,
-    /// and lens settings.
-    /// Depending on the camera's position along the spline connecting these three rigs,
-    /// these settings are interpolated to give the final camera position and state.
+    /// This is a deprecated component.  Use CmCamera instead.
     /// </summary>
+    [Obsolete("This is deprecated. Use Create -> Cinemachine -> FreeLook camera, or " +
+        "create a CmCamera with appropriate components")]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [Obsolete("This is deprecated. Use Create -> Cinemachine -> FreeLook camera, or " +
-        "create a CmCamera with appropriate components")]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase

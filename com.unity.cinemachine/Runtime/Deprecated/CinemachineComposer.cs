@@ -8,8 +8,8 @@ namespace Cinemachine
     /// <summary>
     /// This is a deprecated component.  Use CinemachineRotationComposer instead.
     /// </summary>
-    [CameraPipeline(CinemachineCore.Stage.Aim)]
     [Obsolete("CinemachineComposer has been deprecated. Use CinemachineRotationComposer instead")]
+    [CameraPipeline(CinemachineCore.Stage.Aim)]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     public class CinemachineComposer : CinemachineComponentBase

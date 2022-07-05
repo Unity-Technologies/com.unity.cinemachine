@@ -7,54 +7,12 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// This behaviour is intended to be attached to an empty Transform GameObject,
-    /// and it represents a Virtual Camera within the Unity scene.
-    ///
-    /// The Virtual Camera will animate its Transform according to the rules contained
-    /// in its CinemachineComponent pipeline (Aim, Body, and Noise).  When the virtual
-    /// camera is Live, the Unity camera will assume the position and orientation
-    /// of the virtual camera.
-    ///
-    /// A virtual camera is not a camera. Instead, it can be thought of as a camera controller,
-    /// not unlike a cameraman. It can drive the Unity Camera and control its position,
-    /// orientation, lens settings, and PostProcessing effects. Each Virtual Camera owns
-    /// its own Cinemachine Component Pipeline, through which you provide the instructions
-    /// for dynamically tracking specific game objects.
-    ///
-    /// A virtual camera is very lightweight, and does no rendering of its own. It merely
-    /// tracks interesting GameObjects, and positions itself accordingly. A typical game
-    /// can have dozens of virtual cameras, each set up to follow a particular character
-    /// or capture a particular event.
-    ///
-    /// A Virtual Camera can be in any of three states:
-    ///
-    /// * **Live**: The virtual camera is actively controlling the Unity Camera. The
-    /// virtual camera is tracking its targets and being updated every frame.
-    /// * **Standby**: The virtual camera is tracking its targets and being updated
-    /// every frame, but no Unity Camera is actively being controlled by it. This is
-    /// the state of a virtual camera that is enabled in the scene but perhaps at a
-    /// lower priority than the Live virtual camera.
-    /// * **Disabled**: The virtual camera is present but disabled in the scene. It is
-    /// not actively tracking its targets and so consumes no processing power. However,
-    /// the virtual camera can be made live from the Timeline.
-    ///
-    /// The Unity Camera can be driven by any virtual camera in the scene. The game
-    /// logic can choose the virtual camera to make live by manipulating the virtual
-    /// cameras' enabled flags and their priorities, based on game logic.
-    ///
-    /// In order to be driven by a virtual camera, the Unity Camera must have a CinemachineBrain
-    /// behaviour, which will select the most eligible virtual camera based on its priority
-    /// or on other criteria, and will manage blending.
+    /// This is a deprecated component.  Use CmCamera instead.
     /// </summary>
-    /// <seealso cref="CinemachineVirtualCameraBase"/>
-    /// <seealso cref="LensSettings"/>
-    /// <seealso cref="CinemachineRotationComposer"/>
-    /// <seealso cref="CinemachineTransposer"/>
-    /// <seealso cref="CinemachineBasicMultiChannelPerlin"/>
+    [Obsolete("CinemachineVirtualCamera is deprecated. Use CmCamera instead.")]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [Obsolete("This is deprecated. Use CmCamera instead.")]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
