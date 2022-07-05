@@ -210,7 +210,7 @@ namespace Cinemachine.Editor
             ref AxisState axis, ref AxisState.Recentering recentering)
         {
             if (!go.TryGetComponent<InputAxisController>(out var iac))
-                iac = go.AddComponent<InputAxisController>();
+                iac = Undo.AddComponent<InputAxisController>(go);
 
             // Force creation of missing input controllers
             iac.SynchronizeControllers();
@@ -275,7 +275,7 @@ namespace Cinemachine.Editor
             cmCamera.Target.CustomLookAtTarget = freelook.m_Follow != freelook.m_LookAt;
             cmCamera.Transitions = freelook.m_Transitions;
                     
-            var freeLookModifier = go.AddComponent<CinemachineFreeLookModifier>();
+            var freeLookModifier = Undo.AddComponent<CinemachineFreeLookModifier>(go);
             ConvertFreelookLens(freelook, cmCamera, freeLookModifier);
             ConvertFreelookBody(freelook, go, freeLookModifier);
             ConvertFreelookAim(freelook, go, freeLookModifier);
@@ -404,7 +404,7 @@ namespace Cinemachine.Editor
                 return;
 
             // Use middle rig as template
-            var orbital = go.AddComponent<CinemachineOrbitalFollow>();
+            var orbital = Undo.AddComponent<CinemachineOrbitalFollow>(go);
             middle.UpgradeToCm3(orbital);
 
             orbital.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
@@ -461,7 +461,7 @@ namespace Cinemachine.Editor
             var template = freelook.GetRig(1).GetCinemachineComponent(CinemachineCore.Stage.Aim);
             if (template == null)
                 return;
-            var newAim = (CinemachineComponentBase)go.AddComponent(template.GetType());
+            var newAim = (CinemachineComponentBase)Undo.AddComponent(go, template.GetType());
             CopyValues(template, newAim);
 
             // Add modifier if it is a composer
@@ -502,7 +502,7 @@ namespace Cinemachine.Editor
             if (template == null || template.m_NoiseProfile == null)
                 return;
 
-            var middleNoise = go.AddComponent<CinemachineBasicMultiChannelPerlin>();
+            var middleNoise = Undo.AddComponent<CinemachineBasicMultiChannelPerlin>(go);
             CopyValues(template, middleNoise);
 
             var middleSettings = GetNoiseSettings(middle);
