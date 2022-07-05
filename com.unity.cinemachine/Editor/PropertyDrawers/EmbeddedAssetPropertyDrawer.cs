@@ -238,7 +238,7 @@ namespace Cinemachine.Editor
 
                 foreach (var t in mAssetTypes)
                 {
-                    menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t.Name)), false, () =>
+                    menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t)), false, () =>
                         {
                             string title = "Create New " + t.Name + " asset";
                             ScriptableObject asset = CreateAsset(t, null, defaultName, title);

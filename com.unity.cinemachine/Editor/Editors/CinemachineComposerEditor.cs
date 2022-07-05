@@ -4,6 +4,7 @@ using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineComposer))]
     [CanEditMultipleObjects]
     internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>

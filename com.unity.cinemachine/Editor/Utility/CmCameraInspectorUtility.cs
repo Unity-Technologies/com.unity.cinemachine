@@ -320,7 +320,7 @@ namespace Cinemachine.Editor
                 {
                     var stage = (int)t.GetCustomAttribute<CameraPipelineAttribute>().Stage;
                     s_StageData[stage].Types.Add(t);
-                    s_StageData[stage].Choices.Add(InspectorUtility.NicifyClassName(t.Name));
+                    s_StageData[stage].Choices.Add(InspectorUtility.NicifyClassName(t));
                 }
 
                 // Populate the extension list

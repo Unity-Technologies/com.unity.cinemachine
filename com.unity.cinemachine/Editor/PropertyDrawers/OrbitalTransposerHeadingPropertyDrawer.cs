@@ -3,6 +3,7 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomPropertyDrawer(typeof(OrbitalTransposerHeadingPropertyAttribute))]
     internal sealed class OrbitalTransposerHeadingPropertyDrawer : PropertyDrawer
     {

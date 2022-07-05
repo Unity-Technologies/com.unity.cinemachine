@@ -5,6 +5,7 @@ namespace Cinemachine
     /// <summary>
     /// Property applied to AxisState.  Used for custom drawing in the inspector.
     /// </summary>
+    [System.Obsolete]
     public sealed class AxisStatePropertyAttribute : PropertyAttribute {}
 
     /// <summary>
@@ -15,11 +16,13 @@ namespace Cinemachine
     /// <summary>
     /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
     /// </summary>
+    [System.Obsolete]
     public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
     /// This attributs is obsolete and unused.
     /// </summary>
+    [System.Obsolete]
     public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
 
     /// <summary>

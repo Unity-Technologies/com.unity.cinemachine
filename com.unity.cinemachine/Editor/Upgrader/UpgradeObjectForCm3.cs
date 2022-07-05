@@ -429,9 +429,9 @@ namespace Cinemachine.Editor
             };
 
             // Compute the new Y axis range, which is now expressed in angles
-            var a0 = Mathf.Atan2(orbital.Orbits.Bottom.Height, orbital.Orbits.Bottom.Radius);
-            var a1 = Mathf.Atan2(orbital.Orbits.Center.Height, orbital.Orbits.Center.Radius);
-            var a2 = Mathf.Atan2(orbital.Orbits.Top.Height, orbital.Orbits.Top.Radius);
+            var a0 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Bottom.Height, orbital.Orbits.Bottom.Radius);
+            var a1 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Center.Height, orbital.Orbits.Center.Radius);
+            var a2 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Top.Height, orbital.Orbits.Top.Radius);
             orbital.VerticalAxis.Range = new Vector2(a0, a2);
             orbital.VerticalAxis.Center = a1;
             orbital.VerticalAxis.Wrap = false;

@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomPropertyDrawer(typeof(AxisStatePropertyAttribute))]
     internal sealed class AxisStatePropertyDrawer : PropertyDrawer
     {

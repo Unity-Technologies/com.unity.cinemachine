@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineFramingTransposer))]
     [CanEditMultipleObjects]
     internal class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
