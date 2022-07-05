@@ -485,5 +485,23 @@ namespace Cinemachine
             // If no reliable heading, then stay where we are.
             return currentHeading;
         }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineOrbitalFollow c)
+        {
+            c.BindingMode = m_BindingMode;
+            c.RotationDampingMode = m_AngularDampingMode;
+            c.RotationDamping = new Vector3(m_YawDamping, m_PitchDamping, m_RollDamping);
+            c.QuaternionDamping = m_AngularDamping;
+            c.PositionDamping = new Vector3(m_XDamping, m_YawDamping, m_ZDamping);
+            c.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
+            c.Radius = -m_FollowOffset.z;
+            c.VerticalAxis.Center = m_FollowOffset.y;
+            c.VerticalAxis.Range = new Vector2(c.VerticalAxis.Center, c.VerticalAxis.Center);
+            c.HorizontalAxis.Range = new Vector2(m_XAxis.m_MinValue, m_XAxis.m_MaxValue);
+            c.HorizontalAxis.Wrap = m_XAxis.m_Wrap;
+            c.RadialAxis.Range = Vector2.one;
+            c.RadialAxis.Center = 1;
+        }
     }
 }

@@ -36,10 +36,14 @@ namespace Cinemachine.Editor
             typeof(CinemachineFreeLook),
             typeof(CinemachineComposer),
             typeof(CinemachineFramingTransposer),
+//            typeof(CinemachinePOV),
             typeof(CinemachineTrackedDolly),
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            typeof(CinemachineInputProvider),
+#endif
         };
 
         /// <summary>
@@ -83,6 +87,8 @@ namespace Cinemachine.Editor
                      go.GetComponent<CinemachineComposer>().UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
                 if (ReplaceComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go))
                      go.GetComponent<CinemachineFramingTransposer>().UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
+//                if (ReplaceComponent<CinemachinePOV, CinemachinePanTilt>(go))
+//                     go.GetComponent<CinemachinePOV>().UpgradeToCm3(go.GetComponent<CinemachinePanTilt>());
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                 {
                     go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
@@ -90,6 +96,9 @@ namespace Cinemachine.Editor
                     if (path != null)
                         go.GetComponent<CinemachineSplineDolly>().Spline = UpgradePath(path);
                 }
+
+                // GML todo: upgrade input properly: POV, OrbitalTransposer
+
             }
             return notUpgradable;
         }
@@ -109,7 +118,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        /// Upgrade a component that implements IUpgradeToCm3
+        /// Disable an obsolete component and add a replacement
         bool ReplaceComponent<TOld, TNew>(GameObject go) 
             where TOld : MonoBehaviour
             where TNew : MonoBehaviour
@@ -186,6 +195,51 @@ namespace Cinemachine.Editor
             }
         }
 
+        void ConvertInputAxis(
+            GameObject go, string name, 
+            ref AxisState axis, ref AxisState.Recentering recentering)
+        {
+            if (!go.TryGetComponent<InputAxisController>(out var iac))
+                iac = go.AddComponent<InputAxisController>();
+
+            // Force creation of missing input controllers
+            iac.SynchronizeControllers();
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            var provider = go.GetComponent<CinemachineInputProvider>();
+            if (provider != null)
+            {
+                provider.enabled = false;
+                iac.AutoEnableInputs = provider.AutoEnableInputs;
+            }
+#endif
+            for (int i = 0; i < iac.Controllers.Count; ++i)
+            {
+                var c = iac.Controllers[i];
+                if (c.Name == name)
+                {
+#if ENABLE_LEGACY_INPUT_MANAGER
+                    iac.Controllers[i].InputName = axis.m_InputAxisName;
+#endif
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                    if (provider != null)
+                        c.InputAction = provider.XYAxis;
+#endif
+                    c.Gain = axis.m_MaxSpeed;
+                    if (axis.m_SpeedMode == AxisState.SpeedMode.MaxSpeed)
+                        c.Gain /= 100; // very approx
+
+                    c.Recentering = new InputAxisRecenteringSettings
+                    {
+                        Enabled = recentering.m_enabled,
+                        Wait = recentering.m_WaitTime,
+                        Time = recentering.m_RecenteringTime
+                    };
+                    break;
+                }
+           }
+        }
+        
         GameObject UpgradeFreelook(CinemachineFreeLook freelook)
         {
             GameObject notUpgradable = null;
@@ -212,14 +266,13 @@ namespace Cinemachine.Editor
             cmCamera.Transitions = freelook.m_Transitions;
                     
             var freeLookModifier = go.AddComponent<CinemachineFreeLookModifier>();
-            ConvertLens(freelook, cmCamera, freeLookModifier);
+            ConvertFreelookLens(freelook, cmCamera, freeLookModifier);
             ConvertFreelookBody(freelook, go, freeLookModifier);
             ConvertFreelookAim(freelook, go, freeLookModifier);
             ConvertFreelookNoise(freelook, go, freeLookModifier);
 
-            // GML todo: upgrade input properly
-            if (!cmCamera.TryGetComponent<InputAxisController>(out var inputAxisController))
-                inputAxisController = go.AddComponent<InputAxisController>();
+            ConvertInputAxis(go, "Horizontal", ref freelook.m_XAxis, ref freelook.m_RecenterToTargetHeading);
+            ConvertInputAxis(go, "Vertical", ref freelook.m_YAxis, ref freelook.m_YAxisRecentering);
 
             // Destroy the hidden child objects
             UnparentAndDestroy(topRig.GetComponentOwner());
@@ -269,7 +322,7 @@ namespace Cinemachine.Editor
                 // This check is conceived with the understanding that if a rig has empty
                 // noise then any specific settings differences can be accounted for in
                 // the FreeLookModifier by setting amplitude to 0
-                return a == null && b == null ||
+                return a == null || b == null ||
                     ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile)
                         && a.m_PivotOffset == b.m_PivotOffset);
             }
@@ -306,7 +359,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        static void ConvertLens(
+        void ConvertFreelookLens(
             CinemachineFreeLook freelook, 
             CmCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
@@ -330,42 +383,53 @@ namespace Cinemachine.Editor
             }
         }
 
-        static void ConvertFreelookBody(
+        void ConvertFreelookBody(
             CinemachineFreeLook freelook, 
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
-            var orbitalFollow = go.AddComponent<CinemachineOrbitalFollow>();
-            orbitalFollow.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
-            orbitalFollow.Orbits = new Cinemachine3OrbitRig.Settings
+            var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            if (top == null || middle == null || bottom == null)
+                return;
+
+            // Use middle rig as template
+            var orbital = go.AddComponent<CinemachineOrbitalFollow>();
+            middle.UpgradeToCm3(orbital);
+
+            orbital.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
+            orbital.Orbits = new Cinemachine3OrbitRig.Settings
             {
                 Top = new Cinemachine3OrbitRig.Orbit
                 {
                     Height = freelook.m_Orbits[0].m_Height,
-                    Radius = freelook.m_Orbits[0].m_Radius,
+                    Radius = Mathf.Max(freelook.m_Orbits[0].m_Radius, 0.01f),
                 },
                 Center = new Cinemachine3OrbitRig.Orbit
                 {
                     Height = freelook.m_Orbits[1].m_Height,
-                    Radius = freelook.m_Orbits[1].m_Radius,
+                    Radius = Mathf.Max(freelook.m_Orbits[1].m_Radius, 0.01f),
                 },
                 Bottom = new Cinemachine3OrbitRig.Orbit
                 {
                     Height = freelook.m_Orbits[2].m_Height,
-                    Radius = freelook.m_Orbits[2].m_Radius,
+                    Radius = Mathf.Max(freelook.m_Orbits[2].m_Radius, 0.01f),
                 },
                 SplineCurvature = freelook.m_SplineCurvature,
             };
-            orbitalFollow.BindingMode = freelook.m_BindingMode;
-                        
-            var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-            var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-            var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineOrbitalTransposer>();
 
-            orbitalFollow.PositionDamping = new Vector3(middle.m_XDamping, middle.m_YDamping, middle.m_ZDamping);
+            // Compute the new Y axis range, which is now expressed in angles
+            var a0 = Mathf.Atan2(orbital.Orbits.Bottom.Height, orbital.Orbits.Bottom.Radius);
+            var a1 = Mathf.Atan2(orbital.Orbits.Center.Height, orbital.Orbits.Center.Radius);
+            var a2 = Mathf.Atan2(orbital.Orbits.Top.Height, orbital.Orbits.Top.Radius);
+            orbital.VerticalAxis.Range = new Vector2(a0, a2);
+            orbital.VerticalAxis.Center = a1;
+            orbital.VerticalAxis.Wrap = false;
+
             var topDamping = new Vector3(top.m_XDamping, top.m_YDamping, top.m_ZDamping);
             var bottomDamping = new Vector3(bottom.m_XDamping, bottom.m_YDamping, bottom.m_ZDamping);
-            if (!(orbitalFollow.PositionDamping - topDamping).AlmostZero()
-                || !(orbitalFollow.PositionDamping - bottomDamping).AlmostZero())
+            if (!(orbital.PositionDamping - topDamping).AlmostZero()
+                || !(orbital.PositionDamping - bottomDamping).AlmostZero())
             {
                 freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.PositionDampingModifier
                 {
@@ -373,12 +437,12 @@ namespace Cinemachine.Editor
                     {
                         Top = topDamping,
                         Bottom = bottomDamping,
-                    },
+                    }
                 });
             }
         }
 
-        static void ConvertFreelookAim(
+        void ConvertFreelookAim(
             CinemachineFreeLook freelook, 
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
@@ -414,7 +478,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        static void ConvertFreelookNoise(
+        void ConvertFreelookNoise(
             CinemachineFreeLook freelook, 
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
