@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [UNRELEASED]
 - Bugfix: Fixed spurious Z rotations during speherical blend.
+- Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 
 
 ## [2.8.6] - 2022-05-03
