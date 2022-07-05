@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineInputProvider stops providing input when the CinemachineInputProvider component is disabled
 - Bugfix: Fixed spurious Z rotations during speherical blend.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
+- Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 
 
 ## [2.6.15] - 2022-05-26
