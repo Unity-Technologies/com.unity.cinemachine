@@ -413,10 +413,7 @@ namespace Cinemachine
             }
 
             /// <summary>Skip the wait time and start recentering now (only if enabled).</summary>
-            public void RecenterNow()
-            {
-                mLastAxisInputTime = 0;
-            }
+            public void RecenterNow() => mLastAxisInputTime = -1;
 
             /// <summary>Bring the axis back to the centered state (only if enabled).</summary>
             /// <param name="axis">The axis to recenter</param>
@@ -441,8 +438,9 @@ namespace Cinemachine
                 if (delta == 0)
                     return;
 
-                if (CinemachineCore.CurrentTime < (mLastAxisInputTime + m_WaitTime))
-                    return;
+                // Time to start recentering?
+                if (mLastAxisInputTime >= 0 && Time.realtimeSinceStartup < (mLastAxisInputTime + m_WaitTime))
+                    return; // nope
 
                 // Determine the direction
                 float r = axis.m_MaxValue - axis.m_MinValue;
