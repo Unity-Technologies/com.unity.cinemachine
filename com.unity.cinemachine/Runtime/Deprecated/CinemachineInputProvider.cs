@@ -1,4 +1,5 @@
 ﻿#if CINEMACHINE_UNITY_INPUTSYSTEM
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,12 +8,9 @@ using UnityEngine.InputSystem.Users;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is an add-on to override the legacy input system and read input using the
-    /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
-    /// or FreeLook that requires user input, and drag in the the desired actions.
-    /// If the Input System Package is not installed, then this behaviour does nothing.
+    /// This is a deprecated component.  Use CinemachineSplineDolly instead.
     /// </summary>
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineAlternativeInput.html")]
+    [Obsolete("CinemachineInputProvider has been deprecated. Use InputAxisController instead.")]
     public class CinemachineInputProvider : MonoBehaviour, AxisState.IInputAxisProvider
     {
         /// <summary>
