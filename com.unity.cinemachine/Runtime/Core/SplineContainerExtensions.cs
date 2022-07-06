@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -20,6 +21,7 @@ namespace Cinemachine
         public static bool EvaluateSplineWithRoll(
             this SplineContainer spline,
             CinemachineSplineRoll roll,
+            Quaternion defaultRotation,
             float tNormalized, 
             out Vector3 position, out Quaternion rotation)
         {
@@ -34,16 +36,23 @@ namespace Cinemachine
             Vector3 fwd = localTangent;
             Vector3 up = localUp;
 
-            // fix tangent when 0
-            if (fwd.Equals(Vector3.zero))
+            // Try to fix tangent when 0
+            if (fwd.AlmostZero())
             {
-                const float delta = 0.001f;
+                const float delta = 0.01f;
                 var atEnd = tNormalized > 1.0f - delta;
                 var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
                 var p = spline.EvaluatePosition(t1);
                 fwd = atEnd ? localPosition - p : p - localPosition;
             }
-            // GML todo: what if fwd and up are parallel?
+
+            // Use supplied defaults if spline rotation is still undefined
+            var cross = Vector3.Cross(fwd, up);
+            if (cross.AlmostZero() || cross.IsNaN())
+            {
+                fwd = defaultRotation * Vector3.forward;
+                up = defaultRotation * Vector3.up;
+            }
             rotation = Quaternion.LookRotation(fwd, up);
 
             // Apply extra roll

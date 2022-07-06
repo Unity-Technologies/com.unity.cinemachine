@@ -293,7 +293,8 @@ namespace Cinemachine
             m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
 
             Spline.EvaluateSplineWithRoll(
-                SplineRoll, normalizedSplinePosition, out var newCameraPos, out var newSplineOrientation);
+                SplineRoll, m_PreviousOrientation, normalizedSplinePosition, 
+                out var newCameraPos, out var newSplineOrientation);
 
             // Apply the offset to get the new camera position
             var offsetX = newSplineOrientation * Vector3.right;

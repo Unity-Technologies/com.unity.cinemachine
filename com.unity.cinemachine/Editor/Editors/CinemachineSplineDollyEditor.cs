@@ -82,7 +82,7 @@ namespace Cinemachine.Editor
             var halfWidth = width * 0.5f;
 
             // For efficiency, we create a mesh with the track and draw it in one shot
-            spline.EvaluateSplineWithRoll(splineRoll, 0, out var p, out var q);
+            spline.EvaluateSplineWithRoll(splineRoll, Quaternion.identity, 0, out var p, out var q);
             var w = (q * Vector3.right) * halfWidth;
 
             var indices = new int[2 * 3 * numSteps];
@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
             for (int i = 1; i < numSteps; ++i)
             {
                 var t = i * stepSize;
-                spline.EvaluateSplineWithRoll(splineRoll, t, out p, out q);
+                spline.EvaluateSplineWithRoll(splineRoll, Quaternion.identity, t, out p, out q);
                 w = (q * Vector3.right) * halfWidth;
 
                 indices[iIndex++] = vIndex - 2;

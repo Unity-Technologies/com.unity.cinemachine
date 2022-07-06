@@ -430,18 +430,9 @@ namespace Cinemachine.Editor
                 SplineCurvature = freelook.m_SplineCurvature,
             };
 
-#if false
-            // Compute the new Y axis range, which is now expressed in angles
-            var a0 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Bottom.Height, orbital.Orbits.Bottom.Radius);
-            var a1 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Center.Height, orbital.Orbits.Center.Radius);
-            var a2 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Top.Height, orbital.Orbits.Top.Radius);
-            orbital.VerticalAxis.Range = new Vector2(a0, a2);
-            orbital.VerticalAxis.Center = a1;
-#else
-            // Preserve the 0...1 reange for Y axis, in case some script is depending on it
+            // Preserve the 0...1 range for Y axis, in case some script is depending on it
             orbital.VerticalAxis.Range = new Vector2(0, 1);
             orbital.VerticalAxis.Center = 0.5f;
-#endif
             orbital.VerticalAxis.Wrap = false;
             orbital.VerticalAxis.Value = freelook.m_YAxis.Value;
 

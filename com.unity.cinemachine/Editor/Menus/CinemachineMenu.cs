@@ -131,7 +131,7 @@ namespace Cinemachine.Editor
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             var splineContainer = ObjectFactory.CreateGameObject(
                 "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
-            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.SetTangentMode(TangentMode.AutoSmooth);
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
             var splineDolly = Undo.AddComponent<CinemachineSplineDolly>(vcam.gameObject);
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
             var splineContainer = ObjectFactory.CreateGameObject(
                 "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
-            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.SetTangentMode(TangentMode.AutoSmooth);
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
             CreateCinemachineObject<CinemachineSplineCart>(
