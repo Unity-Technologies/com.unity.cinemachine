@@ -229,7 +229,7 @@ namespace Cinemachine.Editor
                 if (c.Name == name)
                 {
 #if ENABLE_LEGACY_INPUT_MANAGER
-                    iac.Controllers[i].InputName = axis.m_InputAxisName;
+                    c.InputName = axis.m_InputAxisName;
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (provider != null)
@@ -238,6 +238,8 @@ namespace Cinemachine.Editor
                     c.Gain = axis.m_MaxSpeed;
                     if (axis.m_SpeedMode == AxisState.SpeedMode.MaxSpeed)
                         c.Gain /= 100; // very approx
+                    c.Control.AccelTime = axis.m_AccelTime;
+                    c.Control.DecelTime = axis.m_DecelTime;
 
                     c.Recentering = new InputAxisRecenteringSettings
                     {
@@ -428,13 +430,20 @@ namespace Cinemachine.Editor
                 SplineCurvature = freelook.m_SplineCurvature,
             };
 
+#if false
             // Compute the new Y axis range, which is now expressed in angles
             var a0 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Bottom.Height, orbital.Orbits.Bottom.Radius);
             var a1 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Center.Height, orbital.Orbits.Center.Radius);
             var a2 = Mathf.Rad2Deg * Mathf.Atan2(orbital.Orbits.Top.Height, orbital.Orbits.Top.Radius);
             orbital.VerticalAxis.Range = new Vector2(a0, a2);
             orbital.VerticalAxis.Center = a1;
+#else
+            // Preserve the 0...1 reange for Y axis, in case some script is depending on it
+            orbital.VerticalAxis.Range = new Vector2(0, 1);
+            orbital.VerticalAxis.Center = 0.5f;
+#endif
             orbital.VerticalAxis.Wrap = false;
+            orbital.VerticalAxis.Value = freelook.m_YAxis.Value;
 
             // Do we need a modifier?
             var topDamping = new Vector3(top.m_XDamping, top.m_YDamping, top.m_ZDamping);

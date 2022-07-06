@@ -481,12 +481,17 @@ namespace Cinemachine
             c.PositionDamping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
             c.Radius = -m_FollowOffset.z;
-            c.VerticalAxis.Center = m_FollowOffset.y;
-            c.VerticalAxis.Range = new Vector2(c.VerticalAxis.Center, c.VerticalAxis.Center);
+
             c.HorizontalAxis.Range = new Vector2(m_XAxis.m_MinValue, m_XAxis.m_MaxValue);
             c.HorizontalAxis.Wrap = m_XAxis.m_Wrap;
+            c.HorizontalAxis.Center = c.HorizontalAxis.ClampValue(0);
+            c.HorizontalAxis.Value = c.HorizontalAxis.ClampValue(m_XAxis.Value);
+
+            c.VerticalAxis.Center = c.VerticalAxis.Value = m_FollowOffset.y;
+            c.VerticalAxis.Range = new Vector2(c.VerticalAxis.Center, c.VerticalAxis.Center);
+
             c.RadialAxis.Range = Vector2.one;
-            c.RadialAxis.Center = 1;
+            c.RadialAxis.Center = c.HorizontalAxis.Value = 1;
         }
     }
 }
