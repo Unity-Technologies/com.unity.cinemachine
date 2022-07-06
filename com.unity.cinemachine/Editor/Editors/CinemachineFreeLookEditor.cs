@@ -9,9 +9,6 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace Cinemachine
 {
-
-#pragma warning disable 618 // CinemachineFreeLook obsolete
-
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
@@ -38,12 +35,9 @@ namespace Cinemachine
             base.OnEnable();
             Target.UpdateInputAxisProvider();
             
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FreelookRigSelection));
-#endif
         }
         
         protected override void OnDisable()
@@ -54,12 +48,9 @@ namespace Cinemachine
             if (m_rigEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_rigEditor);
         
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FreelookRigSelection));
-#endif
         }
 
         public override void OnInspectorGUI()
@@ -134,14 +125,6 @@ namespace Cinemachine
             if (m_rigEditor != null && m_RigEditorOnSceneGUI != null)
                 m_RigEditorOnSceneGUI.Invoke(m_rigEditor, null);
 
-#if UNITY_2021_2_OR_NEWER
-            DrawSceneTools();
-#endif
-        }
-        
-#if UNITY_2021_2_OR_NEWER
-        void DrawSceneTools()
-        {
             var freelook = Target;
             if (freelook == null || !freelook.IsValid)
             {
@@ -170,7 +153,6 @@ namespace Cinemachine
             }
             Handles.color = originalColor;
         }
-#endif
 
         static GUIContent[] s_RigNames = 
         {
@@ -196,10 +178,6 @@ namespace Cinemachine
                 prop.serializedObject.ApplyModifiedProperties();
                 freelook.InternalUpdateCameraState(Vector3.up, -1);
             }
-#if UNITY_2021_2_OR_NEWER
-            // Push current selection to the rig selection tool
-            FreelookRigSelection.SelectedRig = rigIndex;
-#endif
         }
 
         UnityEditor.Editor m_rigEditor;

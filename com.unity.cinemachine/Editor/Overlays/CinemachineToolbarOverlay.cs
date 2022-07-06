@@ -1,4 +1,3 @@
-#if UNITY_2021_2_OR_NEWER
 using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
@@ -10,7 +9,6 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
-#if UNITY_2022_1_OR_NEWER
     /// <summary>
     /// This is a generic Tool class for Cinemachine tools.
     /// To create a new tool, inherit from CinemachineTool and implement GetIcon().
@@ -149,7 +147,7 @@ namespace Cinemachine.Editor
     [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
     public class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
     {
-        static readonly string[] k_CmToolbarItems = { FreelookRigSelection.id, OrbitalFollowOrbitSelection.id };
+        static readonly string[] k_CmToolbarItems = { OrbitalFollowOrbitSelection.id };
 
         /// <summary>
         /// Override this method to return your visual element content.
@@ -177,196 +175,7 @@ namespace Cinemachine.Editor
             }
         }
     }
-#else
-    /// <summary>
-    /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar.
-    /// </summary>
-    [Overlay(typeof(SceneView), "Cinemachine")]
-    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
-    class CinemachineToolbarOverlay : ToolbarOverlay
-    {
-        public CinemachineToolbarOverlay()
-            : base(
-                FreelookRigSelection.id,
-                OrbitalFollowOrbitSelection.id,
-                FoVTool.id,
-                FarNearClipTool.id,
-                FollowOffsetTool.id,
-                TrackedObjectOffsetTool.id
-            )
-        {
-            CinemachineSceneToolUtility.RegisterToolbarIsDisplayedHandler(() => displayed);
-            CinemachineSceneToolUtility.RegisterToolbarDisplayHandler(v =>
-            {
-                if (displayed == v)
-                {
-                    return false;
-                }
-                displayed = v;
-                return true;
-            });
-        }
-    }
 
-    /// <summary>
-    /// Creates a toggle tool on the Cinemachine toolbar that is exclusive with other
-    /// CinemachineExclusiveEditorToolbarToggles. Meaning, that maximum one
-    /// CinemachineExclusiveEditorToolbarToggle can be active at any time.
-    /// </summary>
-    abstract class CinemachineExclusiveEditorToolbarToggle : EditorToolbarToggle
-    {
-        protected CinemachineExclusiveEditorToolbarToggle()
-        {
-            var type = GetType();
-            this.RegisterValueChangedCallback(
-                v => CinemachineSceneToolUtility.SetTool(v.newValue, type));
-            CinemachineSceneToolUtility.RegisterExclusiveToolHandlers(type, isOn => value = isOn, 
-                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
-        }
-    }
-    
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class FoVTool : CinemachineExclusiveEditorToolbarToggle
-    {
-        public const string id = "FoVTool/Toggle";
-
-        public FoVTool()
-        {
-            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/Handles/Dark/FOV.png");
-            tooltip = "Field of View Tool";
-        }
-    }
-
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class FarNearClipTool : CinemachineExclusiveEditorToolbarToggle
-    {
-        public const string id = "FarNearClipTool/Toggle";
-
-        public FarNearClipTool()
-        {
-            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/Handles/Dark/FarNearClip.png");
-            tooltip = "Far/Near Clip Tool";
-        }
-    }
-
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class FollowOffsetTool : CinemachineExclusiveEditorToolbarToggle
-    {
-        public const string id = "FollowOffsetTool/Toggle";
-
-        public FollowOffsetTool()
-        {
-            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/Handles/Dark/FollowOffset.png");
-            tooltip = "Follow Offset Tool";
-        }
-    }
-    
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class TrackedObjectOffsetTool : CinemachineExclusiveEditorToolbarToggle
-    {
-        public const string id = "TrackedObjectOffsetTool/Toggle";
-
-        public TrackedObjectOffsetTool()
-        {
-            icon = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath 
-                + "/Editor/EditorResources/Handles/Dark/TrackedObjectOffset.png");
-            tooltip = "Tracked Object Offset Tool";
-        }
-    }
-    
-    /// <summary>
-    /// Creates a toggle tool on the Cinemachine toolbar.
-    /// </summary>
-    abstract class CinemachineEditorToolbarToggle : EditorToolbarToggle
-    {
-        protected CinemachineEditorToolbarToggle()
-        {
-            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => value = isOn, 
-                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
-        }
-    }
-    
-#endif
-    [EditorToolbarElement(id, typeof(SceneView))]
-    class FreelookRigSelection : EditorToolbarDropdown
-    {
-        public const string id = "FreelookRigSelection/Dropdown";
-        public static int SelectedRig;
-        Texture2D[] m_Icons;
-
-        public FreelookRigSelection()
-        {
-            tooltip = "Freelook Rig Selection";
-            clicked += FreelookRigSelectionMenu;
-#if UNITY_2022_1_OR_NEWER
-            EditorApplication.update += DisplayIfRequired;
-#else
-            CinemachineSceneToolUtility.RegisterToolHandlers(GetType(), isOn => {}, 
-                display => style.display = display ? DisplayStyle.Flex : DisplayStyle.None);
-#endif
-            EditorApplication.update += ShadowSelectedRigName;
-            
-            m_Icons = new Texture2D[]
-            {
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
-            };
-        }
-
-        ~FreelookRigSelection()
-        {
-            clicked -= FreelookRigSelectionMenu;
-            EditorApplication.update -= ShadowSelectedRigName;
-#if UNITY_2022_1_OR_NEWER
-            EditorApplication.update -= DisplayIfRequired;
-#endif
-        }
-
-#if UNITY_2022_1_OR_NEWER
-        Type m_FreelookRigSelectionType = typeof(FreelookRigSelection);
-        void DisplayIfRequired() => style.display = 
-            CinemachineSceneToolUtility.IsToolRequired(m_FreelookRigSelectionType) 
-                ? DisplayStyle.Flex : DisplayStyle.None;
-#endif
-
-        void ShadowSelectedRigName()
-        {
-            var index = Mathf.Clamp(SelectedRig, 0, CinemachineFreeLookEditor.RigNames.Length - 1);
-            text = CinemachineFreeLookEditor.RigNames[index].text;
-            icon = m_Icons[index];
-        }
-
-        void FreelookRigSelectionMenu()
-        {
-            var menu = new GenericMenu();
-            for (var i = 0; i < CinemachineFreeLookEditor.RigNames.Length; ++i)
-            {
-                var rigIndex = i; // vital to capture the index here for the lambda below
-                menu.AddItem(CinemachineFreeLookEditor.RigNames[i], false, () =>
-                {
-                    SelectedRig = rigIndex;
-                    var active = Selection.activeObject as GameObject;
-                    if (active != null)
-                    {
-#pragma warning disable CS0618
-                        var freelook = active.GetComponent<CinemachineFreeLook>();
-#pragma warning restore CS0618
-                        if (freelook != null)
-                            CinemachineFreeLookEditor.SetSelectedRig(freelook, rigIndex);
-                    }
-                });
-            }
-            menu.DropDown(worldBound);
-        }
-    }
-    
     [EditorToolbarElement(id, typeof(SceneView))]
     class OrbitalFollowOrbitSelection : EditorToolbarDropdown
     {
@@ -397,9 +206,7 @@ namespace Cinemachine.Editor
             EditorApplication.update -= DisplayAndUpdateOrbitIfRequired;
         }
         
-#if UNITY_2022_1_OR_NEWER
         Type m_OrbitalFollowSelectionType = typeof(OrbitalFollowOrbitSelection);
-#endif
         void DisplayAndUpdateOrbitIfRequired()
         {
             var active = Selection.activeObject as GameObject;
@@ -407,9 +214,7 @@ namespace Cinemachine.Editor
             {
                 var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
                 if (orbitalFollow != null && 
-#if UNITY_2022_1_OR_NEWER
                     CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) &&
-#endif
                     orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
                 {
                     style.display = DisplayStyle.Flex; // display menu
@@ -459,4 +264,3 @@ namespace Cinemachine.Editor
         }
     }
 }
-#endif
