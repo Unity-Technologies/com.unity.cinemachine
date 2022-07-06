@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachinePath))]
     internal sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
     {

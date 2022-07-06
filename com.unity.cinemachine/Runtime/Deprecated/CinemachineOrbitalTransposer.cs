@@ -11,24 +11,9 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a CinemachineComponent in the the Body section of the component pipeline.
-    /// Its job is to position the camera in a variable relationship to a the vcam's
-    /// Follow target object, with offsets and damping.
-    ///
-    /// This component is typically used to implement a camera that follows its target.
-    /// It can accept player input from an input device, which allows the player to
-    /// dynamically control the relationship between the camera and the target,
-    /// for example with a joystick.
-    ///
-    /// The OrbitalTransposer introduces the concept of __Heading__, which is the direction
-    /// in which the target is moving, and the OrbitalTransposer will attempt to position
-    /// the camera in relationship to the heading, which is by default directly behind the target.
-    /// You can control the default relationship by adjusting the Heading Bias setting.
-    ///
-    /// If you attach an input controller to the OrbitalTransposer, then the player can also
-    /// control the way the camera positions itself in relation to the target heading.  This allows
-    /// the camera to move to any spot on an orbit around the target.
+    /// This is a deprecated component.  Use CinemachineOrbitalFollow instead.
     /// </summary>
+    [Obsolete("CinemachineOrbitalTransposer has been deprecated. Use CinemachineOrbitalFollow instead")]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
@@ -484,6 +469,29 @@ namespace Cinemachine
 
             // If no reliable heading, then stay where we are.
             return currentHeading;
+        }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineOrbitalFollow c)
+        {
+            c.BindingMode = m_BindingMode;
+            c.RotationDampingMode = m_AngularDampingMode;
+            c.RotationDamping = new Vector3(m_YawDamping, m_PitchDamping, m_RollDamping);
+            c.QuaternionDamping = m_AngularDamping;
+            c.PositionDamping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            c.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
+            c.Radius = -m_FollowOffset.z;
+
+            c.HorizontalAxis.Range = new Vector2(m_XAxis.m_MinValue, m_XAxis.m_MaxValue);
+            c.HorizontalAxis.Wrap = m_XAxis.m_Wrap;
+            c.HorizontalAxis.Center = c.HorizontalAxis.ClampValue(0);
+            c.HorizontalAxis.Value = c.HorizontalAxis.ClampValue(m_XAxis.Value);
+
+            c.VerticalAxis.Center = c.VerticalAxis.Value = m_FollowOffset.y;
+            c.VerticalAxis.Range = new Vector2(c.VerticalAxis.Center, c.VerticalAxis.Center);
+
+            c.RadialAxis.Range = Vector2.one;
+            c.RadialAxis.Center = c.HorizontalAxis.Value = 1;
         }
     }
 }

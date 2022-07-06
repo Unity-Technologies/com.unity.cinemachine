@@ -300,7 +300,7 @@ namespace Cinemachine
             return 0;
         }
 
-        static void ResolveActionForPlayer(Controller c, int playerIndex)
+        void ResolveActionForPlayer(Controller c, int playerIndex)
         {
             if (c.m_CachedAction != null && c.InputAction.action.id != c.m_CachedAction.id)
                 c.m_CachedAction = null;

@@ -69,11 +69,10 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator OrbTransposer()
         {
-            var orbitalTransposer = m_Vcam.gameObject.AddComponent<CinemachineOrbitalTransposer>();
-            orbitalTransposer.m_XDamping = 0;
-            orbitalTransposer.m_YDamping = 0;
-            orbitalTransposer.m_ZDamping = 0;
-            orbitalTransposer.m_FollowOffset = Vector3.zero;
+            var orbitalTransposer = m_Vcam.gameObject.AddComponent<CinemachineOrbitalFollow>();
+            orbitalTransposer.PositionDamping = Vector3.zero;
+            orbitalTransposer.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
+            orbitalTransposer.Radius = 0;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;

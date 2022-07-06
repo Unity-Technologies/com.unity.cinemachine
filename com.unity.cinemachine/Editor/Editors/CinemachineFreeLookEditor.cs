@@ -12,6 +12,7 @@ namespace Cinemachine
 
 #pragma warning disable 618 // CinemachineFreeLook obsolete
 
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     internal sealed class CinemachineFreeLookEditor

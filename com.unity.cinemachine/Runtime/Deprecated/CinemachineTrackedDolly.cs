@@ -6,20 +6,12 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// A Cinemachine Virtual Camera Body component that constrains camera motion
-    /// to a CinemachinePath.  The camera can move along the path.
-    ///
-    /// This behaviour can operate in two modes: manual positioning, and Auto-Dolly positioning.
-    /// In Manual mode, the camera's position is specified by animating the Path Position field.
-    /// In Auto-Dolly mode, the Path Position field is animated automatically every frame by finding
-    /// the position on the path that's closest to the virtual camera's Follow target.
+    /// This is a deprecated component.  Use CinemachineSplineDolly instead.
     /// </summary>
+    [Obsolete("CinemachineTrackedDolly has been deprecated. Use CinemachineSplineDolly instead.")]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
-#if UNITY_2022_1_OR_NEWER
-    [Obsolete("CinemachineTrackedDolly has been deprecated. Add Splines package to your project, and use CinemachineSplineDolly instead.", false)]
-#endif
     public class CinemachineTrackedDolly : CinemachineComponentBase
     {
         /// <summary>The path to which the camera will be constrained.  This must be non-null.</summary>
@@ -332,5 +324,18 @@ namespace Cinemachine
         private float m_PreviousPathPosition = 0;
         Quaternion m_PreviousOrientation = Quaternion.identity;
         private Vector3 m_PreviousCameraPosition = Vector3.zero;
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineSplineDolly c)
+        {
+            c.Damping.Enabled = true;
+            c.Damping.Position = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            c.Damping.Angular = Mathf.Max(m_YawDamping, Mathf.Max(m_RollDamping, m_PitchDamping));
+            c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp;
+            c.AutomaticDolly.Enabled = m_AutoDolly.m_Enabled;
+            c.AutomaticDolly.PositionOffset = m_AutoDolly.m_PositionOffset;
+            c.CameraPosition = m_PathPosition;
+            c.SplineOffset = m_PathOffset;
+        }
     }
 }

@@ -131,7 +131,7 @@ namespace Cinemachine.Editor
             name = ObjectNames.NicifyVariableName(name);
             
             if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
-                name += " (Obsolete)";
+                name += " (Deprecated)";
 
             return name;
         }

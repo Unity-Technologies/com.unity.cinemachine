@@ -5,13 +5,9 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a CinemachineComponent in the Aim section of the component pipeline.
-    /// Its job is to aim the camera in response to the user's mouse or joystick input.
-    ///
-    /// The composer does not change the camera's position.  It will only pan and tilt the
-    /// camera where it is, in order to get the desired framing.  To move the camera, you have
-    /// to use the virtual camera's Body section.
+    /// This is a deprecated component.  Use CinemachinePanTilt instead.
     /// </summary>
+    [Obsolete("CinemachinePOV has been deprecated. Use CinemachinePanTilt instead")]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
@@ -247,6 +243,16 @@ namespace Cinemachine
             Vector3 right = Vector3.Cross(up, fwd);
             if (!right.AlmostZero())
                 m_VerticalAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
+        }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachinePanTilt c)
+        {
+            c.ReferenceFrame = CinemachinePanTilt.ReferenceFrames.ParentObject;
+            c.PanAxis.Range = new Vector2(m_HorizontalAxis.m_MinValue, m_HorizontalAxis.m_MaxValue);
+            c.PanAxis.Center = 0;
+            c.TiltAxis.Range = new Vector2(m_VerticalAxis.m_MinValue, m_VerticalAxis.m_MaxValue);
+            c.TiltAxis.Center = 0;
         }
     }
 }

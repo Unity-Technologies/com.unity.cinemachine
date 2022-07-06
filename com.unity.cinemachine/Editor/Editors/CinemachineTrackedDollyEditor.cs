@@ -6,6 +6,7 @@ namespace Cinemachine.Editor
 {
     
 #pragma warning disable CS0618 // disable obsolete warning for tracked dolly
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
     sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>

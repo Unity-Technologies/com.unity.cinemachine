@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
     [CanEditMultipleObjects]
     internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>

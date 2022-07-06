@@ -93,7 +93,7 @@ namespace Cinemachine
             {
                 SplinePosition = Spline.Spline.StandardizeSplinePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
                 var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
-                Spline.EvaluateSplineWithRoll(SplineRoll, t, out var pos, out var rot);
+                Spline.EvaluateSplineWithRoll(SplineRoll, transform.rotation, t, out var pos, out var rot);
                 transform.position = pos;
                 transform.rotation = rot;
             }

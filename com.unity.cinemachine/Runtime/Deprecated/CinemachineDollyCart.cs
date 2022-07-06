@@ -5,17 +5,13 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a very simple behaviour that constrains its transform to a CinemachinePath.  
-    /// It can be used to animate any objects along a path, or as a Follow target for 
-    /// Cinemachine Virtual Cameras.
+    /// This is a deprecated component.  Use CinemachineSplineCart instead.
     /// </summary>
+    [Obsolete("CinemachineDollyCart has been deprecated. Use CinemachineSplineCart instead.")]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [AddComponentMenu("")] // Don't display in add component menu
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
-#if UNITY_2022_1_OR_NEWER
-    [Obsolete("CinemachineDollyCart has been deprecated. Use CinemachineSplineCart instead.", false)]
-#endif
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>
@@ -80,6 +76,20 @@ namespace Cinemachine
                 transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
                 transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
             }
+        }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineSplineCart c)
+        {
+            c.UpdateMethod = (CinemachineSplineCart.UpdateMethods)m_UpdateMethod;
+            switch (m_PositionUnits)
+            {
+                case CinemachinePathBase.PositionUnits.PathUnits: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
+                case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
+                case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
+            }
+            c.Speed = m_Speed;
+            c.SplinePosition = m_Position;
         }
     }
 }

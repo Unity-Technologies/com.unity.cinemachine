@@ -6,6 +6,7 @@ using UnityEditorInternal;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineSmoothPath))]
     internal sealed class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
     {

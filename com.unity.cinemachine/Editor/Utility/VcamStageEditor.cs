@@ -54,7 +54,7 @@ namespace Cinemachine.Editor
                     var names = new GUIContent[sStageData[i].types.Length];
                     for (int n = 0; n < names.Length; ++n)
                         names[n] = new GUIContent(
-                            n == 0 ? "none" : InspectorUtility.NicifyClassName(sStageData[i].types[n].Name));
+                            n == 0 ? "none" : InspectorUtility.NicifyClassName(sStageData[i].types[n]));
                     sStageData[i].PopupOptions = names;
                 }
             }

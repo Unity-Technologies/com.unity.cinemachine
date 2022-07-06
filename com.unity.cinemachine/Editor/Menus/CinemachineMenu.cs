@@ -47,8 +47,8 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.gameObject.AddComponent<CinemachineTransposer>();
-            vcam.gameObject.AddComponent<CinemachineRotationComposer>();
+            Undo.AddComponent<CinemachineTransposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
@@ -59,7 +59,7 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+            Undo.AddComponent<CinemachinePositionComposer>(vcam.gameObject);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
@@ -128,13 +128,13 @@ namespace Cinemachine.Editor
             var vcam = CreateCinemachineObject<CmCamera>(
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
-            vcam.gameObject.AddComponent<CinemachineRotationComposer>();
+            Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             var splineContainer = ObjectFactory.CreateGameObject(
                 "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
-            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.SetTangentMode(TangentMode.AutoSmooth);
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
-            var splineDolly = vcam.gameObject.AddComponent<CinemachineSplineDolly>();
+            var splineDolly = Undo.AddComponent<CinemachineSplineDolly>(vcam.gameObject);
             splineDolly.Spline = splineContainer;
         }
 
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
             var splineContainer = ObjectFactory.CreateGameObject(
                 "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
-            splineContainer.Spline.EditType = SplineType.CatmullRom;
+            splineContainer.Spline.SetTangentMode(TangentMode.AutoSmooth);
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
             CreateCinemachineObject<CinemachineSplineCart>(
@@ -159,8 +159,8 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, false);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            vcam.gameObject.AddComponent<CinemachineGroupComposer>();
-            vcam.gameObject.AddComponent<CinemachineTransposer>();
+            Undo.AddComponent<CinemachineGroupComposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineTransposer>(vcam.gameObject);
 
             var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
                 "Target Group", command.context as GameObject, true);
@@ -251,7 +251,7 @@ namespace Cinemachine.Editor
 
             // We use ObjectFactory to create a new GameObject as it automatically supports undo/redo
             var go = ObjectFactory.CreateGameObject(name);
-            T component = go.AddComponent<T>();
+            T component = Undo.AddComponent<T>(go);
 
             if (parentObject != null)
                 Undo.SetTransformParent(go.transform, parentObject.transform, "Set parent of " + name);

@@ -4,8 +4,10 @@ using System;
 
 namespace Cinemachine
 {
-    /// <summary>Abstract base class for a world-space path,
-    /// suitable for a camera dolly track.</summary>
+    /// <summary>
+    /// This is a deprecated component.  Use SplineContainer instead.
+    /// </summary>
+    [Obsolete("CinemachinePathBase has been deprecated. Use SplineContainer instead")]
     public abstract class CinemachinePathBase : MonoBehaviour
     {
         /// <summary>Path samples per waypoint</summary>
