@@ -39,10 +39,15 @@ namespace Cinemachine
             + "If set to Distance, then Spline Position represents distance along the spline.")]
         public PathIndexUnit PositionUnits = PathIndexUnit.Distance;
 
-        /// <summary>Move the cart with this speed</summary>
-        [Tooltip("Move the cart with this speed along the spline.  "
-            + " The value is interpreted according to the Position Units setting.")]
-        public float Speed;
+        /// <summary>Controls how automatic dollying occurs</summary>
+        [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
+        [SerializeReference]
+        [AutoDollySelector]
+        public SplineAutoDolly.ISplineAutoDolly AutomaticDolly;
+        
+        /// <summary>Used only by Automatic Dolly settings that require it</summary>
+        [Tooltip("Used only by Automatic Dolly settings that require it")]
+        public Transform TrackingTarget;
 
         /// <summary>The cart's current position on the spline, in position units</summary>
         [Tooltip("The position along the spline at which the cart will be placed.  "
@@ -52,12 +57,19 @@ namespace Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
+        private void OnValidate()
+        {
+            if (AutomaticDolly != null)
+                AutomaticDolly.Validate();
+        }
+
         void Reset()
         {
             Spline = null;
             UpdateMethod = UpdateMethods.Update;
             PositionUnits = PathIndexUnit.Distance;
-            Speed = 0;
+            AutomaticDolly = null;
+            TrackingTarget = null;
             SplinePosition = 0;
         }
 
@@ -69,14 +81,15 @@ namespace Cinemachine
         void FixedUpdate()
         {
             if (UpdateMethod == UpdateMethods.FixedUpdate)
-                SetCartPosition(SplinePosition + Speed * Time.deltaTime);
+                UpdateCartPosition();
         }
 
         void Update()
         {
-            float speed = Application.isPlaying ? Speed : 0;
-            if (UpdateMethod == UpdateMethods.Update)
-                SetCartPosition(SplinePosition + speed * Time.deltaTime);
+            if (!Application.isPlaying)
+                SetCartPosition(SplinePosition);
+            else if (UpdateMethod == UpdateMethods.Update)
+                UpdateCartPosition();
         }
 
         void LateUpdate()
@@ -84,14 +97,22 @@ namespace Cinemachine
             if (!Application.isPlaying)
                 SetCartPosition(SplinePosition);
             else if (UpdateMethod == UpdateMethods.LateUpdate)
-                SetCartPosition(SplinePosition + Speed * Time.deltaTime);
+                UpdateCartPosition();
+        }
+
+        void UpdateCartPosition()
+        {
+            if (AutomaticDolly != null)
+                SplinePosition = AutomaticDolly.GetSplinePosition(
+                    this, TrackingTarget, Spline, SplinePosition, PositionUnits, Time.deltaTime);
+            SetCartPosition(SplinePosition);
         }
 
         void SetCartPosition(float distanceAlongPath)
         {
-            if (Spline != null && Spline.Spline != null)
+            if (Spline.IsValid())
             {
-                SplinePosition = Spline.Spline.StandardizeSplinePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
+                SplinePosition = Spline.Spline.StandardizePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
                 var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
                 Spline.EvaluateSplineWithRoll(SplineRoll, transform.rotation, t, out var pos, out var rot);
                 transform.position = pos;

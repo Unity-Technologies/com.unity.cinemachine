@@ -17,7 +17,6 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
-            var noTargetHelp = ux.AddChild(new HelpBox("Automatic Dolly requires a Tracking target.", HelpBoxMessageType.Warning));
 
             var splineProp = serializedTarget.FindProperty(() => Target.Spline);
             ux.Add(new PropertyField(splineProp));
@@ -40,22 +39,6 @@ namespace Cinemachine.Editor
                 for (int i = 0; !noSpline && i < targets.Length; ++i)
                     noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
                 noSplineHelp.SetVisible(noSpline);
-            }
-
-            // GML: This is rather evil.  Is there a better (event-driven) way?
-            var autoDollyProp = serializedTarget.FindProperty(() => Target.AutomaticDolly).FindPropertyRelative("Enabled");
-            TrackAutoDolly();
-            ux.schedule.Execute(TrackAutoDolly).Every(250);
-            void TrackAutoDolly()
-            {
-                bool noTarget = false;
-                if (autoDollyProp.boolValue)
-                {
-                    for (int i = 0; !noTarget && i < targets.Length; ++i)
-                        noTarget = targets[i] != null && (targets[i] as CinemachineSplineDolly).FollowTarget == null;
-                }
-                if (noTargetHelp != null)
-                    noTargetHelp.SetVisible(noTarget);
             }
             return ux;
         }
