@@ -84,8 +84,7 @@ namespace Tests.Editor
 
             yield return null;
             
-            var upgrader = new CinemachineUpgradeManager();
-            upgrader.Upgrade(vcamGo);
+            CinemachineUpgradeManager.UpgradeSingleObject(vcamGo);
 
             yield return null;
 
@@ -168,8 +167,7 @@ namespace Tests.Editor
 
             yield return null;
             
-            var upgrader = new CinemachineUpgradeManager();
-            upgrader.Upgrade(vcamGo);
+            CinemachineUpgradeManager.UpgradeSingleObject(vcamGo);
 
             yield return null;
 
@@ -188,8 +186,7 @@ namespace Tests.Editor
 
             yield return null;
             
-            var upgrader = new CinemachineUpgradeManager();
-            upgrader.Upgrade(freelookGo);
+            CinemachineUpgradeManager.UpgradeSingleObject(freelookGo);
             yield return null;
 
             Assert.That(freelookGo.GetComponent<CinemachineFreeLook>(), Is.Null);

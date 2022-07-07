@@ -20,11 +20,13 @@ namespace Cinemachine.Editor
         /// </summary>
         public readonly List<Type> RootUpgradeComponentTypes = new()
         {
-            typeof(CinemachineVirtualCamera),
-            typeof(CinemachineFreeLook),
+            // Put the paths first so any vcam references to them will convert
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
+            typeof(CinemachineFreeLook),
+            typeof(CinemachineVirtualCamera),
         };
 
         /// <summary>
@@ -62,17 +64,11 @@ namespace Cinemachine.Editor
             GameObject notUpgradable = null;
 
             // Is it a DollyCart?
-            CinemachinePathBase path;
             if (ReplaceComponent<CinemachineDollyCart, CinemachineSplineCart>(go))
-            {
                 go.GetComponent<CinemachineDollyCart>().UpgradeToCm3(go.GetComponent<CinemachineSplineCart>());
-                path = go.GetComponent<CinemachineDollyCart>().m_Path;
-                if (path != null)
-                    go.GetComponent<CinemachineSplineCart>().Spline = UpgradePath(path);
-            }
 
             // Is it a path?
-            if (go.TryGetComponent(out path))
+            if (go.TryGetComponent(out CinemachinePathBase path))
                 UpgradePath(path);
             else
             {
@@ -102,13 +98,7 @@ namespace Cinemachine.Editor
                      ConvertInputAxis(go, "Horizontal", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
                 }
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
-                {
-                    var dolly = go.GetComponent<CinemachineTrackedDolly>();
-                    dolly.UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
-                    path = dolly.m_Path;
-                    if (path != null)
-                        go.GetComponent<CinemachineSplineDolly>().Spline = UpgradePath(path);
-                }
+                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
             }
             return notUpgradable;
         }
@@ -267,6 +257,7 @@ namespace Cinemachine.Editor
             {
                 notUpgradable = Object.Instantiate(go);
                 notUpgradable.SetActive(false);
+                notUpgradable.AddComponent<CinemachineDoNotUpgrade>();
                 Undo.RegisterCreatedObjectUndo(notUpgradable, "Upgrader: clone of non upgradable");
             }
 

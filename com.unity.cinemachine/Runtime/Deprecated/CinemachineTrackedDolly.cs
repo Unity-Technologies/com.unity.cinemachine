@@ -336,6 +336,8 @@ namespace Cinemachine
             c.AutomaticDolly.PositionOffset = m_AutoDolly.m_PositionOffset;
             c.CameraPosition = m_PathPosition;
             c.SplineOffset = m_PathOffset;
+            if (m_Path != null)
+                c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
         }
     }
 }
