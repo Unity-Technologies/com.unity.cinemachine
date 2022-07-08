@@ -113,10 +113,10 @@ namespace Cinemachine.Editor
             var notUpgradable = m_ObjectUpgrader.UpgradeComponents(go);
 
             // Patch the timeline shots
-            if (timelineManager != null)
+            if (timelineManager != null && oldComponent != null)
             {
                 var newComponent = go.GetComponent<CmCamera>();
-                if (oldComponent != null && oldComponent != newComponent)
+                if (oldComponent != newComponent)
                     timelineManager.UpdateTimelineReference(oldComponent, newComponent);
             }
 
