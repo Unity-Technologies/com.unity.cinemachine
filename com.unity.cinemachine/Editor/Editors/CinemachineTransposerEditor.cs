@@ -1,9 +1,9 @@
-using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineTransposer))]
     [CanEditMultipleObjects]
     internal class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>

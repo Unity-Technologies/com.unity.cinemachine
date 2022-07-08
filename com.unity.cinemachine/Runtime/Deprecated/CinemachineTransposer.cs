@@ -1,17 +1,13 @@
 using UnityEngine;
 using Cinemachine.TargetTracking;
+using System;
 
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a CinemachineComponent in the Body section of the component pipeline.
-    /// Its job is to position the camera in a fixed relationship to the vcam's Follow
-    /// target object, with offsets and damping.
-    ///
-    /// The Tansposer will only change the camera's position in space.  It will not
-    /// re-orient or otherwise aim the camera.  To to that, you need to instruct
-    /// the vcam in the Aim section of its pipeline.
+    /// This is a deprecated component.  Use CinemachineOrbitalFollow instead.
     /// </summary>
+    [Obsolete("CinemachineTransposer has been deprecated. Use CinemachineFollow instead")]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
