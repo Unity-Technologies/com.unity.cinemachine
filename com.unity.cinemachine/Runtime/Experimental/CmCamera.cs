@@ -299,7 +299,16 @@ namespace Cinemachine
                 m_Pipeline = new CinemachineComponentBase[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
                 var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
-                    m_Pipeline[(int)components[i].Stage] = components[i];
+                {
+                    if (components[i].enabled)
+                    {
+#if UNITY_EDITOR
+                        if (m_Pipeline[(int)components[i].Stage] != null)
+                            Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
+#endif
+                        m_Pipeline[(int)components[i].Stage] = components[i];
+                    }
+                }
             }
         }
 
