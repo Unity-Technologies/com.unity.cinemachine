@@ -23,17 +23,17 @@ namespace Cinemachine
 
         /// <summary>Increase this value to soften the aggressiveness of the follow-zoom.
         /// Small numbers are more responsive, larger numbers give a more heavy slowly responding camera. </summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("Increase this value to soften the aggressiveness of the follow-zoom.  Small numbers are more responsive, larger numbers give a more heavy slowly responding camera.")]
         public float m_Damping = 1f;
 
         /// <summary>Will not generate an FOV smaller than this.</summary>
-        [Range(1f, 179f)]
+        [RangeSlider(1f, 179f)]
         [Tooltip("Lower limit for the FOV that this behaviour will generate.")]
         public float m_MinFOV = 3f;
 
         /// <summary>Will not generate an FOV larget than this.</summary>
-        [Range(1f, 179f)]
+        [RangeSlider(1f, 179f)]
         [Tooltip("Upper limit for the FOV that this behaviour will generate.")]
         public float m_MaxFOV = 60f;
 

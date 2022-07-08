@@ -94,7 +94,7 @@ namespace Cinemachine
         /// <summary></summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which "
             + "determines final placement on the Y axis")]
-        [Range(0f, 1f)]
+        [RangeSlider(0f, 1f)]
         [FormerlySerializedAs("m_SplineTension")]
         public float m_SplineCurvature = 0.2f;
 

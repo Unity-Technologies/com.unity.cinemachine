@@ -45,14 +45,14 @@ public class CinemachineRecomposer : CinemachineExtension
     /// <summary>
     /// Lowering this value relaxes the camera's attention to the Follow target (normal = 1)
     /// </summary>
-    [Range(0, 1)]
+    [RangeSlider(0, 1)]
     [Tooltip("Lowering this value relaxes the camera's attention to the Follow target (normal = 1)")]
     public float m_FollowAttachment;
 
     /// <summary>
     /// Lowering this value relaxes the camera's attention to the LookAt target (normal = 1)
     /// </summary>
-    [Range(0, 1)]
+    [RangeSlider(0, 1)]
     [Tooltip("Lowering this value relaxes the camera's attention to the LookAt target (normal = 1)")]
     public float m_LookAtAttachment;
 
