@@ -115,7 +115,7 @@ namespace Cinemachine.Editor
             // Patch the timeline shots
             if (timelineManager != null)
             {
-                var newComponent = go.GetComponent<CinemachineVirtualCameraBase>();
+                var newComponent = go.GetComponent<CmCamera>();
                 if (oldComponent != null && oldComponent != newComponent)
                     timelineManager.UpdateTimelineReference(oldComponent, newComponent);
             }
