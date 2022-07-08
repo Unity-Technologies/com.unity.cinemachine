@@ -116,67 +116,15 @@ namespace Cinemachine
         public DampingSettings Damping;
         
         /// <summary>Controls how automatic dollying occurs</summary>
-        [Serializable]
-        public struct AutoDolly
-        {
-            /// <summary>If checked, will enable automatic dolly, which chooses a spline position
-            /// that is as close as possible to the Follow target.</summary>
-            [Tooltip("If checked, will enable automatic dolly, which chooses a spline position that is as "
-                + "close as possible to the Follow target.  Note: this can have significant performance impact")]
-            public bool Enabled;
-
-            /// <summary>
-            /// Offset, in current position units, from the closest point on the spline to the follow target.
-            /// </summary>
-            [Tooltip("Offset, in current position units, from the closest point on the spline to the follow target")]
-            public float PositionOffset;
-
-            /// <summary>
-            /// Affects how many segments to split a spline into when calculating the nearest point.
-            /// Higher values mean smaller and more segments, which increases accuracy at the cost of 
-            /// processing time.  In most cases, the default resolution is appropriate. Use 
-            /// with <seealso cref="SearchIteration"/> to fine-tune point accuracy.
-            /// For more information, see SplineUtility.GetNearestPoint.
-            /// </summary>
-            [HideInInspector]
-            [Tooltip("Affects how many segments to split a spline into when calculating the nearest point.  " 
-                + "Higher values mean smaller and more segments, which increases accuracy at the cost of "
-                + "processing time.  In most cases, the default value (4) is appropriate. Use with SearchIteration "
-                + "to fine-tune point accuracy.")]
-            public int SearchResolution;
-
-            /// <summary>
-            /// The nearest point is calculated by finding the nearest point on the entire length
-            /// of the spline using <seealso cref="SearchResolution"/> to divide into equally spaced line segments. 
-            /// Successive iterations will then subdivide further the nearest segment, producing more 
-            /// accurate results. In most cases, the default value is sufficient.
-            /// For more information, see SplineUtility.GetNearestPoint.
-            /// </summary>
-            [HideInInspector]
-            [Tooltip("The nearest point is calculated by finding the nearest point on the entire "
-                + "length of the spline using SearchResolution to divide into equally spaced line segments. "
-                + "Successive iterations will then subdivide further the nearest segment, producing more "
-                + "accurate results. In most cases, the default value (2) is sufficient.")]
-            public int SearchIteration;
-
-            internal static AutoDolly Default => new AutoDolly
-            {
-                Enabled = false, 
-                PositionOffset = 0,
-                SearchIteration = 4, 
-                SearchResolution = 2,
-            };
-        }
-
-        /// <summary>Controls how automatic dollying occurs</summary>
-        [FoldoutWithEnabledButton]
-        [Tooltip("Controls how automatic dollying occurs.  A tracking target is necessary to use this feature.")]
-        public AutoDolly AutomaticDolly = AutoDolly.Default;
+        [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
+        [SerializeReference] [NoSaveDuringPlay]
+        [AutoDollySelector]
+        public SplineAutoDolly.ISplineAutoDolly AutomaticDolly;
 
         // State info for damping
-        float m_PreviousNormalizedSplinePosition;
-        Quaternion m_PreviousOrientation = Quaternion.identity;
-        Vector3 m_PreviousCameraPosition = Vector3.zero;
+        float m_PreviousSplinePosition;
+        Quaternion m_PreviousRotation;
+        Vector3 m_PreviousPosition;
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
@@ -186,6 +134,8 @@ namespace Cinemachine
             Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
             Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
             Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
+            if (AutomaticDolly != null)
+                AutomaticDolly.Validate();
         }
 
         void Reset()
@@ -196,7 +146,7 @@ namespace Cinemachine
             SplineOffset = Vector3.zero;
             CameraUp = CameraUpMode.Default;
             Damping = default;
-            AutomaticDolly = AutoDolly.Default;
+            AutomaticDolly = null;
         }
 
         protected override void OnEnable()
@@ -231,108 +181,79 @@ namespace Cinemachine
             if (splinePath == null || splinePath.Count == 0)
                 return;
             
-            CameraPosition = splinePath.StandardizeSplinePosition(CameraPosition, PositionUnits, splinePath.GetLength());
+            var pathLength = splinePath.GetLength();
+            var splinePos = splinePath.StandardizePosition(CameraPosition, PositionUnits, pathLength);
 
-            // splines work with normalized position by default, so we convert m_SplinePosition to normalized at the start
-            var normalizedSplinePosition = 
-                splinePath.ConvertIndexUnit(CameraPosition, PositionUnits, PathIndexUnit.Normalized);
-            
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
             {
-                m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
-                m_PreviousCameraPosition = curState.RawPosition;
-                m_PreviousOrientation = curState.RawOrientation;
+                m_PreviousSplinePosition = splinePos;
+                m_PreviousPosition = curState.RawPosition;
+                m_PreviousRotation = curState.RawOrientation;
                 RefreshRollCache();
             }
 
-            // Get the new ideal spline base position
-            if (AutomaticDolly.Enabled && FollowTarget != null)
+            // Invoke AutoDolly algorithm to get new desired spline position
+            if (AutomaticDolly != null)
+                splinePos = AutomaticDolly.GetSplinePosition(
+                    this, FollowTarget, Spline, splinePos, PositionUnits, deltaTime);
+
+            // Apply damping in the spline direction
+            if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                // convert follow target into spline local space, because SplineUtility works in spline local space
-                SplineUtility.GetNearestPoint(splinePath, 
-                    Spline.transform.InverseTransformPoint(FollowTargetPosition), out _, out normalizedSplinePosition, 
-                    AutomaticDolly.SearchResolution, AutomaticDolly.SearchIteration);
+                // If spline is closed, we choose shortest path for damping
+                var max = splinePath.GetMaxPosition(PositionUnits, pathLength);
+                var prev = m_PreviousSplinePosition;
+                if (splinePath.Closed && Mathf.Abs(splinePos - prev) > max * 0.5f)
+                    prev += (splinePos > prev) ? max : -max;
 
-                // GML hack because SplineUtility.GetNearestPoint is buggy
-                normalizedSplinePosition = Mathf.Clamp01(normalizedSplinePosition);
-
-                CameraPosition = splinePath.ConvertIndexUnit(normalizedSplinePosition, 
-                    PathIndexUnit.Normalized, PositionUnits);
-                
-                // Apply the spline position offset
-                normalizedSplinePosition += splinePath.ConvertIndexUnit(AutomaticDolly.PositionOffset, 
-                    PositionUnits, PathIndexUnit.Normalized);
+                // Do the damping
+                splinePos = prev + Damper.Damp(splinePos - prev, Damping.Position.z, deltaTime);
             }
-
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-            {
-                const float maxNormalizedValue = 1f;
-                float prev = m_PreviousNormalizedSplinePosition;
-                float next = normalizedSplinePosition;
-
-                if (splinePath.Closed && Mathf.Abs(next - prev) > maxNormalizedValue / 2f)
-                {
-                    if (next > prev)
-                        prev += maxNormalizedValue;
-                    else
-                        prev -= maxNormalizedValue;
-                }
-
-                m_PreviousNormalizedSplinePosition = prev;
-                normalizedSplinePosition = next;
-
-                // Apply damping in the spline direction
-                if (Damping.Enabled && deltaTime >= 0)
-                {
-                    float offset = m_PreviousNormalizedSplinePosition - normalizedSplinePosition;
-                    offset = Damper.Damp(offset, Damping.Position.z, deltaTime);
-                    normalizedSplinePosition = m_PreviousNormalizedSplinePosition - offset;
-                }
-            }
-            m_PreviousNormalizedSplinePosition = normalizedSplinePosition;
+            m_PreviousSplinePosition = CameraPosition = splinePos;
 
             Spline.EvaluateSplineWithRoll(
-                SplineRoll, m_PreviousOrientation, normalizedSplinePosition, 
-                out var newCameraPos, out var newSplineOrientation);
+                SplineRoll, m_PreviousRotation, 
+                splinePath.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
+                out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position
-            var offsetX = newSplineOrientation * Vector3.right;
-            var offsetY = newSplineOrientation * Vector3.up;
-            var offsetZ = newSplineOrientation * Vector3.forward;
-            newCameraPos += SplineOffset.x * offsetX;
-            newCameraPos += SplineOffset.y * offsetY;
-            newCameraPos += SplineOffset.z * offsetZ;
+            var offsetX = newSplineRotation * Vector3.right;
+            var offsetY = newSplineRotation * Vector3.up;
+            var offsetZ = newSplineRotation * Vector3.forward;
+            newPos += SplineOffset.x * offsetX;
+            newPos += SplineOffset.y * offsetY;
+            newPos += SplineOffset.z * offsetZ;
 
             // Apply damping to the remaining directions
             if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
-                Vector3 currentCameraPos = m_PreviousCameraPosition;
-                Vector3 delta = (currentCameraPos - newCameraPos);
-                Vector3 delta1 = Vector3.Dot(delta, offsetY) * offsetY;
-                Vector3 delta0 = delta - delta1;
+                var currentCameraPos = m_PreviousPosition;
+                var delta = (currentCameraPos - newPos);
+                var delta1 = Vector3.Dot(delta, offsetY) * offsetY;
+                var delta0 = delta - delta1;
 
                 delta0 = Damper.Damp(delta0, Damping.Position.x, deltaTime);
                 delta1 = Damper.Damp(delta1, Damping.Position.y, deltaTime);
-                newCameraPos = currentCameraPos - (delta0 + delta1);
+                newPos = currentCameraPos - (delta0 + delta1);
             }
-            curState.RawPosition = m_PreviousCameraPosition = newCameraPos;
+            curState.RawPosition = m_PreviousPosition = newPos;
 
             // Set the orientation and up
-            Quaternion newOrientation = GetCameraOrientationAtSplinePoint(newSplineOrientation, curState.ReferenceUp);
+            var newRot = GetCameraRotationAtSplinePoint(newSplineRotation, curState.ReferenceUp);
             if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 float t = VirtualCamera.DetachedFollowTargetDamp(1, Damping.Angular, deltaTime);
-                newOrientation = Quaternion.Slerp(m_PreviousOrientation, newOrientation, t);
+                newRot = Quaternion.Slerp(m_PreviousRotation, newRot, t);
             }
-            m_PreviousOrientation = newOrientation;
-            curState.RawOrientation = newOrientation;
+            m_PreviousRotation = newRot;
+            curState.RawOrientation = newRot;
 
             if (CameraUp != CameraUpMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
-        Quaternion GetCameraOrientationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
+        Quaternion GetCameraRotationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
         {
             switch (CameraUp)
             {
