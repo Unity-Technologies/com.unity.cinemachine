@@ -83,9 +83,9 @@ namespace Cinemachine.Editor
 
             void TrackBindingMode(SerializedProperty modeProp)
             {
-                var mode = (CinemachineTransposer.BindingMode)modeProp.intValue;
-                bool hideRot = mode == CinemachineTransposer.BindingMode.WorldSpace 
-                    || mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
+                var mode = (TargetTracker.BindingMode)modeProp.intValue;
+                bool hideRot = mode == TargetTracker.BindingMode.WorldSpace 
+                    || mode == TargetTracker.BindingMode.SimpleFollowWithWorldUp;
                 rotDampingContainer.SetVisible(!hideRot);
             }
 
@@ -94,9 +94,9 @@ namespace Cinemachine.Editor
 
             void TrackRotDampingMode(SerializedProperty modeProp)
             {
-                var mode = (CinemachineTransposer.AngularDampingMode)modeProp.intValue;
-                quatDampingField.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Quaternion);
-                rotDampingField.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Euler);
+                var mode = (TargetTracker.AngularDampingMode)modeProp.intValue;
+                quatDampingField.SetVisible(mode == TargetTracker.AngularDampingMode.Quaternion);
+                rotDampingField.SetVisible(mode == TargetTracker.AngularDampingMode.Euler);
             }
 
             TrackOrbitMode(orbitModeProp);

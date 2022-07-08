@@ -27,8 +27,8 @@ namespace Cinemachine.Editor
             switch (Target.m_BindingMode)
             {
                 default:
-                case CinemachineTransposer.BindingMode.LockToTarget:
-                    if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
+                case TargetTracker.BindingMode.LockToTarget:
+                    if (Target.m_AngularDampingMode == TargetTracker.AngularDampingMode.Euler)
                         excluded.Add(FieldPath(x => x.m_AngularDamping));
                     else
                     {
@@ -37,26 +37,26 @@ namespace Cinemachine.Editor
                         excluded.Add(FieldPath(x => x.m_RollDamping));
                     }
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
+                case TargetTracker.BindingMode.LockToTargetNoRoll:
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
+                case TargetTracker.BindingMode.LockToTargetWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetOnAssign:
-                case CinemachineTransposer.BindingMode.WorldSpace:
+                case TargetTracker.BindingMode.LockToTargetOnAssign:
+                case TargetTracker.BindingMode.WorldSpace:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
+                case TargetTracker.BindingMode.SimpleFollowWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_XDamping));
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
@@ -80,7 +80,7 @@ namespace Cinemachine.Editor
                     "Orbital Transposer requires a Follow target.",
                     MessageType.Warning);
             Target.m_XAxis.ValueRangeLocked
-                = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
+                = (Target.m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
         }
         

@@ -191,7 +191,7 @@ namespace Cinemachine
             float deltaTime, Vector3 up, ref AxisState axis,
             ref AxisState.Recentering recentering, bool isLive)
         {
-            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
             {
                 axis.m_MinValue = -180;
                 axis.m_MaxValue = 180;
@@ -206,7 +206,7 @@ namespace Cinemachine
             else if (axis.Update(deltaTime))
                 recentering.CancelRecentering();
 
-            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
             {
                 float finalHeading = axis.Value;
                 axis.Value = 0;
@@ -296,7 +296,7 @@ namespace Cinemachine
             m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
-                && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
+                && m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
@@ -320,7 +320,7 @@ namespace Cinemachine
             {
                 // Get the base camera placement
                 float heading = 0;
-                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_Bias;
                 orient = orient *  Quaternion.AngleAxis(heading, up);
                 Vector3 targetPos = FollowTargetPosition;
@@ -357,7 +357,7 @@ namespace Cinemachine
             if (IsValid)
             {
                 // Calculate the heading
-                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_Bias;
                 Quaternion headingRot = Quaternion.AngleAxis(heading, Vector3.up);
 
@@ -405,7 +405,7 @@ namespace Cinemachine
             if (!IsValid)
                 return Vector3.zero;
             float heading = m_LastHeading;
-            if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                 heading += m_Heading.m_Bias;
             Quaternion orient = Quaternion.AngleAxis(heading, Vector3.up);
             orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, worldUp) * orient;
@@ -420,7 +420,7 @@ namespace Cinemachine
         // Make sure this is calld only once per frame
         private float GetTargetHeading(float currentHeading, Quaternion targetOrientation)
         {
-            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                 return 0;
             if (FollowTarget == null)
                 return currentHeading;

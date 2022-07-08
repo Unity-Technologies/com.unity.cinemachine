@@ -88,8 +88,8 @@ namespace Cinemachine
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  "
             + "This is also used to set the camera's Up vector, which will be maintained "
             + "when aiming the camera.")]
-        public CinemachineOrbitalTransposer.BindingMode m_BindingMode
-            = CinemachineOrbitalTransposer.BindingMode.SimpleFollowWithWorldUp;
+        public TargetTracker.BindingMode m_BindingMode
+            = TargetTracker.BindingMode.SimpleFollowWithWorldUp;
 
         /// <summary></summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which "
@@ -332,7 +332,7 @@ namespace Cinemachine
 
             if (UpdateRigCache())
             {
-                if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                     m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(pos, up);
 
                 PushSettingsToRigs();
@@ -383,7 +383,7 @@ namespace Cinemachine
                     m_YAxisRecentering.CancelRecentering();
             }
             PushSettingsToRigs();
-            if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                 m_XAxis.Value = 0;
         }
 
@@ -746,7 +746,7 @@ namespace Cinemachine
                     ref m_XAxis, ref m_RecenterToTargetHeading,
                     CinemachineCore.Instance.IsLive(this));
                 // Allow externally-driven values to work in this mode
-                if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                     m_XAxis.Value = oldValue;
             }
             return m_CachedXAxisHeading;
@@ -789,7 +789,7 @@ namespace Cinemachine
                 mOrbitals[i].m_XAxis.Value = m_XAxis.Value;
 
                 // Hack to get SimpleFollow with heterogeneous dampings to work
-                if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                     m_Rigs[i].SetStateRawPosition(State.RawPosition);
             }
         }

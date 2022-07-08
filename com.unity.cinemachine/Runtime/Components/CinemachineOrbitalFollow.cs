@@ -23,12 +23,12 @@ namespace Cinemachine
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
             + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
-        public CinemachineTransposer.BindingMode BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
+        public TargetTracker.BindingMode BindingMode = TargetTracker.BindingMode.WorldSpace;
 
         /// <summary>How to calculate the angular damping for the target orientation.
         /// Use Quaternion if you expect the target to take on very steep pitches, which would
         /// be subject to gimbal lock if Eulers are used.</summary>
-        public CinemachineTransposer.AngularDampingMode RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
+        public TargetTracker.AngularDampingMode RotationDampingMode = TargetTracker.AngularDampingMode.Euler;
         
         /// <summary>How aggressively the camera tries to track the target's orientation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
@@ -98,7 +98,7 @@ namespace Cinemachine
         Vector3 m_PreviousWorldOffset;
 
         // Helper object to track the Follow target
-        CinemachineTransposer.TargetTracker m_TargetTracker;
+        TargetTracker m_TargetTracker;
 
         // 3-rig orbit implementation
         Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
@@ -121,8 +121,8 @@ namespace Cinemachine
 
         void Reset()
         {
-            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
-            RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
+            BindingMode = TargetTracker.BindingMode.WorldSpace;
+            RotationDampingMode = TargetTracker.AngularDampingMode.Euler;
             PositionDamping = new Vector3(1, 1, 1);
             RotationDamping = new Vector3(1, 1, 1);
             QuaternionDamping = 1f;
@@ -138,7 +138,7 @@ namespace Cinemachine
         /// PositionDamping speeds for each of the 3 axes of the offset from target
         /// </summary>
         Vector3 EffectivePositionDamping =>
-            BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp 
+            BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp 
                 ? new Vector3(0, PositionDamping.y, PositionDamping.z) : PositionDamping;
 
         /// <summary>
@@ -150,12 +150,12 @@ namespace Cinemachine
             {
                 switch (BindingMode)
                 {
-                    case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
+                    case TargetTracker.BindingMode.LockToTargetNoRoll:
                         return new Vector3(RotationDamping.x, RotationDamping.y, 0);
-                    case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
+                    case TargetTracker.BindingMode.LockToTargetWithWorldUp:
                         return new Vector3(0, RotationDamping.y, 0);
-                    case CinemachineTransposer.BindingMode.WorldSpace:
-                    case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
+                    case TargetTracker.BindingMode.WorldSpace:
+                    case TargetTracker.BindingMode.SimpleFollowWithWorldUp:
                         return Vector3.zero;
                     default:
                         return RotationDamping;
@@ -183,7 +183,7 @@ namespace Cinemachine
         public override float GetMaxDampTime() 
         { 
             var d = EffectivePositionDamping;
-            var d2 = RotationDampingMode == CinemachineTransposer.AngularDampingMode.Euler 
+            var d2 = RotationDampingMode == TargetTracker.AngularDampingMode.Euler 
                 ? EffectiveRotationDamping : new Vector3(QuaternionDamping, 0, 0);
             var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z)); 
             var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
@@ -251,7 +251,7 @@ namespace Cinemachine
                 pos = rot * new Vector3(0, 0, -Radius * RadialAxis.Value);
                 t = VerticalAxis.GetNormalizedValue() * 2 - 1;
             }
-            if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                 pos.z = -Mathf.Abs(pos.z);
 
             return new Vector4(pos.x, pos.y, pos.z, t);
@@ -302,7 +302,7 @@ namespace Cinemachine
                 dir /= distance;
                 var localDir = orient * dir;
                 var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-                VerticalAxis.Value = BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
+                VerticalAxis.Value = BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
                 HorizontalAxis.Value = r.y;
             }
             RadialAxis.Value = distance / Radius;
@@ -333,7 +333,7 @@ namespace Cinemachine
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
                 HorizontalAxis.Restrictions 
                     &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
             else
