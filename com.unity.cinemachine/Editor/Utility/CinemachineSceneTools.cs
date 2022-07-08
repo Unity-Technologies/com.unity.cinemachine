@@ -459,13 +459,14 @@ namespace Cinemachine.Editor
             
             Handles.color = originalColor;
         }
-        
+
         /// <summary>
         /// Draws Orbit handles (e.g. for freelook)
         /// </summary>
         /// <returns>Index of the rig being edited, or -1 if none</returns>
+        [Obsolete]
         public static int OrbitControlHandleFreelook(
-            CinemachineVirtualCameraBase vcam, SerializedProperty orbits)
+            CinemachineFreeLook vcam, SerializedProperty orbits)
         {
             var originalColor = Handles.color;
             var followPos = vcam.Follow.position;
@@ -561,13 +562,9 @@ namespace Cinemachine.Editor
                 Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
                     HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : HelperLineDefaultColor;
                 if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
-                {
-                    DrawLabel(heightHandlePos, "Height: " + orbitHeight.floatValue);
-                }
+                    DrawLabel(heightHandlePos, orbitHeight.displayName + ": " + orbitHeight.floatValue);
                 if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
-                {
-                    DrawLabel(radiusHandlePos, "Radius: " + orbitRadius.floatValue);
-                }
+                    DrawLabel(radiusHandlePos, orbitRadius.displayName + ": " + orbitRadius.floatValue);
 
                 Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
                 return isDragged;
