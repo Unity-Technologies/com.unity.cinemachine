@@ -182,20 +182,23 @@ namespace Cinemachine.Editor
 
         void OnSceneGUI()
         {
-            var framingTransposer = Target;
-            if (framingTransposer == null || !framingTransposer.IsValid)
+            if (Target == null || !Target.IsValid)
                 return;
             
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
-                    new SerializedObject(framingTransposer).FindProperty(() => framingTransposer.TrackedObjectOffset));
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
+                    Target.VirtualCamera, 
+                    new SerializedObject(Target).FindProperty(() => Target.TrackedObjectOffset),
+                    CinemachineCore.Stage.Body);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
+                var property = new SerializedObject(Target).FindProperty(() => Target.CameraDistance);
+
                 var originalColor = Handles.color;
-                var camPos = framingTransposer.VcamState.RawPosition;
-                var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var camPos = Target.VcamState.RawPosition;
+                var targetForward = Target.VirtualCamera.State.FinalOrientation * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -204,28 +207,23 @@ namespace Cinemachine.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
-                    var so = new SerializedObject(framingTransposer);
-                    var prop = so.FindProperty(() => framingTransposer.CameraDistance);
-                    prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
-                    so.ApplyModifiedProperties();
+                    property.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
+                    property.serializedObject.ApplyModifiedProperties();
                 }
 
-                var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
-                var cameraDistanceHandleIsUsedOrHovered = cameraDistanceHandleIsDragged || 
-                    HandleUtility.nearestControl == cdHandleId;
-                if (cameraDistanceHandleIsUsedOrHovered)
+                var isDragged = GUIUtility.hotControl == cdHandleId;
+                var isDraggedOrHovered = isDragged || HandleUtility.nearestControl == cdHandleId;
+                if (isDraggedOrHovered)
                 {
                     CinemachineSceneToolHelpers.DrawLabel(camPos, 
-                        "Camera Distance (" + framingTransposer.CameraDistance.ToString("F1") + ")");
+                        property.displayName + " (" + Target.CameraDistance.ToString("F1") + ")");
                 }
                 
-                Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
+                Handles.color = isDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
-                Handles.DrawLine(camPos, 
-                    framingTransposer.FollowTargetPosition + framingTransposer.TrackedObjectOffset);
+                Handles.DrawLine(camPos, Target.FollowTargetPosition + Target.TrackedObjectOffset);
 
-                CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
-                    cdHandleId);
+                CinemachineSceneToolHelpers.SoloOnDrag(isDragged, Target.VirtualCamera, cdHandleId);
                 
                 Handles.color = originalColor;
             }
