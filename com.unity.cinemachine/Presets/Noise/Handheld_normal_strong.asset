@@ -3,40 +3,50 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7f59e54f2bfd184b9dd451a678d089b, type: 3}
   m_Name: Handheld_normal_strong
   m_EditorClassIdentifier: 
-  m_Position: []
-  m_Orientation:
+  PositionNoise: []
+  OrientationNoise:
   - X:
+      Frequency: 0.4
       Amplitude: 10
-      Frequency: .400000006
+      Constant: 0
     Y:
+      Frequency: 0.06
       Amplitude: 10
-      Frequency: .0599999987
+      Constant: 0
     Z:
-      Amplitude: 0
       Frequency: 0
+      Amplitude: 0
+      Constant: 0
   - X:
+      Frequency: 1.44
       Amplitude: 5
-      Frequency: 1.44000006
+      Constant: 0
     Y:
+      Frequency: 0.73
       Amplitude: 3
-      Frequency: .730000019
+      Constant: 0
     Z:
-      Amplitude: 0
       Frequency: 0
+      Amplitude: 0
+      Constant: 0
   - X:
+      Frequency: 2.49
       Amplitude: 3
-      Frequency: 2.49000001
+      Constant: 0
     Y:
-      Amplitude: 1
       Frequency: 2
+      Amplitude: 1
+      Constant: 0
     Z:
-      Amplitude: 0
       Frequency: 0
+      Amplitude: 0
+      Constant: 0

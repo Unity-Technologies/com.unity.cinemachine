@@ -1,56 +1,176 @@
+using System;
 using Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Cinemachine.TargetTracking
 {
+    /// <summary>
+    /// The coordinate space to use when interpreting the offset from the target
+    /// </summary>
+    public enum BindingMode
+    {
+        /// <summary>
+        /// Camera will be bound to the Follow target using a frame of reference consisting
+        /// of the target's local frame at the moment when the virtual camera was enabled,
+        /// or when the target was assigned.
+        /// </summary>
+        LockToTargetOnAssign = 0,
+        /// <summary>
+        /// Camera will be bound to the Follow target using a frame of reference consisting
+        /// of the target's local frame, with the tilt and roll zeroed out.
+        /// </summary>
+        LockToTargetWithWorldUp = 1,
+        /// <summary>
+        /// Camera will be bound to the Follow target using a frame of reference consisting
+        /// of the target's local frame, with the roll zeroed out.
+        /// </summary>
+        LockToTargetNoRoll = 2,
+        /// <summary>
+        /// Camera will be bound to the Follow target using the target's local frame.
+        /// </summary>
+        LockToTarget = 3,
+        /// <summary>Camera will be bound to the Follow target using a world space offset.</summary>
+        WorldSpace = 4,
+        /// <summary>Offsets will be calculated relative to the target, using Camera-local axes</summary>
+        SimpleFollowWithWorldUp = 5
+    }
+
+    /// <summary>How to calculate the angular damping for the target orientation</summary>
+    public enum AngularDampingMode
+    {
+        /// <summary>Use Euler angles to specify damping values.
+        /// Subject to gimbal-lock fwhen pitch is steep.</summary>
+        Euler,
+        /// <summary>
+        /// Use quaternions to calculate angular damping.
+        /// No per-channel control, but not susceptible to gimbal-lock</summary>
+        Quaternion
+    }
+
+    /// <summary>
+    /// Settings to control damping for target tracking.
+    /// </summary>
+    [Serializable]
+    public struct TrackerSettings
+    {
+        /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
+        [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
+            + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
+        public BindingMode BindingMode;
+
+        /// <summary>How aggressively the camera tries to maintain the offset, per axis.
+        /// Small numbers are more responsive, rapidly translating the camera to keep the target's
+        /// offset.  Larger numbers give a more heavy slowly responding camera.
+        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
+        [Tooltip("How aggressively the camera tries to maintain the offset, per axis.  Small numbers "
+            + "are more responsive, rapidly translating the camera to keep the target's offset.  "
+            + "Larger numbers give a more heavy slowly responding camera. Using different settings per "
+            + "axis can yield a wide range of camera behaviors.")]
+        public Vector3 PositionDamping;
+
+        /// <summary>How to calculate the angular damping for the target orientation.
+        /// Use Quaternion if you expect the target to take on very steep pitches, which would
+        /// be subject to gimbal lock if Eulers are used.</summary>
+        public AngularDampingMode AngularDampingMode;
+
+        /// <summary>How aggressively the camera tries to track the target's rotation, per axis.
+        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
+        [Tooltip("How aggressively the camera tries to track the target's rotation, per axis.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        public Vector3 RotationDamping;
+
+        /// <summary>How aggressively the camera tries to track the target's rotation.
+        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
+        [RangeSlider(0f, 20f)]
+        [Tooltip("How aggressively the camera tries to track the target's rotation.  "
+            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
+        public float QuaternionDamping;
+            
+        /// <summary>
+        /// Get the default tracking settings
+        /// </summary>
+        public static TrackerSettings Default => new TrackerSettings
+        {
+            BindingMode = BindingMode.WorldSpace,
+            PositionDamping = Vector3.one,
+            AngularDampingMode = AngularDampingMode.Euler,
+            RotationDamping = Vector3.one,
+            QuaternionDamping = 1
+        };
+    }
+
+    /// <summary>
+    /// Helpers for TrackerSettings
+    /// </summary>
+    public static class TrackerSettingsExtensions
+    {
+        /// <summary>
+        /// Called from OnValidate().  Makes sure the settings are sensible.
+        /// </summary>
+        public static void Validate(this TrackerSettings s)
+        {
+            s.PositionDamping.x = Mathf.Max(0, s.PositionDamping.x);
+            s.PositionDamping.y = Mathf.Max(0, s.PositionDamping.y);
+            s.PositionDamping.z = Mathf.Max(0, s.PositionDamping.z);
+            s.RotationDamping.x = Mathf.Max(0, s.RotationDamping.x);
+            s.RotationDamping.y = Mathf.Max(0, s.RotationDamping.y);
+            s.RotationDamping.z = Mathf.Max(0, s.RotationDamping.z);
+            s.QuaternionDamping = Mathf.Max(0, s.QuaternionDamping);
+        }
+
+        /// <summary>
+        /// Report maximum damping time needed for the current binding mode.
+        /// </summary>
+        /// <returns>Highest damping setting in this mode</returns>
+        static public float GetMaxDampTime(this TrackerSettings s) 
+        { 
+            var d = s.GetEffectivePositionDamping();
+            var d2 = s.AngularDampingMode == AngularDampingMode.Euler 
+                ? s.GetEffectiveRotationDamping() : new Vector3(s.QuaternionDamping, 0, 0);
+            var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z)); 
+            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
+            return Mathf.Max(a, b); 
+        }
+        
+        /// <summary>
+        /// Get the effective position damping setting for current binding mode.
+        /// For some binding modes, some axes are not damped.
+        /// </summary>
+        /// <param name="binding">The binding mode in question</param>
+        /// <returns>The damping settings applicable for this binding mode</returns>
+        internal static Vector3 GetEffectivePositionDamping(this TrackerSettings s)
+        {
+            return s.BindingMode == BindingMode.SimpleFollowWithWorldUp 
+                ? new Vector3(0, s.PositionDamping.y, s.PositionDamping.z) : s.PositionDamping;
+        }
+
+        /// <summary>
+        /// Get the effective rotation damping setting for current binding mode.
+        /// For some binding modes, some axes are not damped.
+        /// </summary>
+        /// <returns>The damping settings applicable for this binding mode</returns>
+        internal static Vector3 GetEffectiveRotationDamping(this TrackerSettings s)
+        {
+            switch (s.BindingMode)
+            {
+                case BindingMode.LockToTargetNoRoll:
+                    return new Vector3(s.RotationDamping.x, s.RotationDamping.y, 0);
+                case BindingMode.LockToTargetWithWorldUp:
+                    return new Vector3(0, s.RotationDamping.y, 0);
+                case BindingMode.WorldSpace:
+                case BindingMode.SimpleFollowWithWorldUp:
+                    return Vector3.zero;
+                default:
+                    return s.RotationDamping;
+            }
+        }
+    }
+
     /// <summary>
     /// Helper object for implementing target following with damping
     /// </summary>
-    public struct TargetTracker
+    internal struct Tracker
     {
-        /// <summary>
-        /// The coordinate space to use when interpreting the offset from the target
-        /// </summary>
-        public enum BindingMode
-        {
-            /// <summary>
-            /// Camera will be bound to the Follow target using a frame of reference consisting
-            /// of the target's local frame at the moment when the virtual camera was enabled,
-            /// or when the target was assigned.
-            /// </summary>
-            LockToTargetOnAssign = 0,
-            /// <summary>
-            /// Camera will be bound to the Follow target using a frame of reference consisting
-            /// of the target's local frame, with the tilt and roll zeroed out.
-            /// </summary>
-            LockToTargetWithWorldUp = 1,
-            /// <summary>
-            /// Camera will be bound to the Follow target using a frame of reference consisting
-            /// of the target's local frame, with the roll zeroed out.
-            /// </summary>
-            LockToTargetNoRoll = 2,
-            /// <summary>
-            /// Camera will be bound to the Follow target using the target's local frame.
-            /// </summary>
-            LockToTarget = 3,
-            /// <summary>Camera will be bound to the Follow target using a world space offset.</summary>
-            WorldSpace = 4,
-            /// <summary>Offsets will be calculated relative to the target, using Camera-local axes</summary>
-            SimpleFollowWithWorldUp = 5
-        }
-
-        /// <summary>How to calculate the angular damping for the target orientation</summary>
-        public enum AngularDampingMode
-        {
-            /// <summary>Use Euler angles to specify damping values.
-            /// Subject to gimbal-lock fwhen pitch is steep.</summary>
-            Euler,
-            /// <summary>
-            /// Use quaternions to calculate angular damping.
-            /// No per-channel control, but not susceptible to gimbal-lock</summary>
-            Quaternion
-        }
-
         /// <summary>State information for damping</summary>
         public Vector3 PreviousTargetPosition { get; private set; }
 
@@ -133,29 +253,25 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">Current camera up</param>
         /// <param name="desiredCameraOffset">Where we want to put the camera relative to the follow target</param>
-        /// <param name="positionDamping">Positional damping amount</param>
-        /// <param name="eulerDamping">Damping amount for euler rotation damping</param>
-        /// <param name="quatDamping">Damping amount for quaternion rotation damping</param>
-        /// <param name="rotationDampingMode">Damping mode: euler or quaternion</param>
+        /// <param name="damping">Damping settings</param>
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
         public void TrackTarget(
             CinemachineComponentBase component, 
-            BindingMode bindingMode, 
             float deltaTime, Vector3 up, Vector3 desiredCameraOffset,
-            Vector3 positionDamping, Vector3 eulerDamping, float quatDamping, 
-            AngularDampingMode rotationDampingMode,
+            in TrackerSettings settings,
             out Vector3 outTargetPosition, out Quaternion outTargetOrient)
         {
-            var targetOrientation = GetReferenceOrientation(component, bindingMode, up);
+            var targetOrientation = GetReferenceOrientation(component, settings.BindingMode, up);
             var dampedOrientation = targetOrientation;
             bool prevStateValid = deltaTime >= 0 && component.VirtualCamera.PreviousStateIsValid;
             if (prevStateValid)
             {
-                if (rotationDampingMode == AngularDampingMode.Quaternion
-                    && bindingMode == BindingMode.LockToTarget)
+                if (settings.AngularDampingMode == AngularDampingMode.Quaternion
+                    && settings.BindingMode == BindingMode.LockToTarget)
                 {
-                    float t = component.VirtualCamera.DetachedFollowTargetDamp(1, quatDamping, deltaTime);
+                    float t = component.VirtualCamera.DetachedFollowTargetDamp(
+                        1, settings.QuaternionDamping, deltaTime);
                     dampedOrientation = Quaternion.Slerp(
                         PreviousReferenceOrientation, targetOrientation, t);
                 }
@@ -170,7 +286,8 @@ namespace Cinemachine
                         else if (relative[i] > 180)
                             relative[i] -= 360;
                     }
-                    relative = component.VirtualCamera.DetachedFollowTargetDamp(relative, eulerDamping, deltaTime);
+                    relative = component.VirtualCamera.DetachedFollowTargetDamp(
+                        relative, settings.GetEffectiveRotationDamping(), deltaTime);
                     dampedOrientation = PreviousReferenceOrientation * Quaternion.Euler(relative);
                 }
             }
@@ -195,7 +312,8 @@ namespace Cinemachine
                     ? component.VcamState.RawOrientation 
                     : Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
                 var localDelta = Quaternion.Inverse(dampingSpace) * positionDelta;
-                localDelta = component.VirtualCamera.DetachedFollowTargetDamp(localDelta, positionDamping, deltaTime);
+                localDelta = component.VirtualCamera.DetachedFollowTargetDamp(
+                    localDelta, settings.GetEffectivePositionDamping(), deltaTime);
                 positionDelta = dampingSpace * localDelta;
             }
             currentPosition += positionDelta;

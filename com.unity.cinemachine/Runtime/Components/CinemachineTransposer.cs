@@ -1,6 +1,5 @@
-using System;
-using Cinemachine.Utility;
 using UnityEngine;
+using Cinemachine.TargetTracking;
 
 namespace Cinemachine
 {
@@ -21,7 +20,7 @@ namespace Cinemachine
         /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
         [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
             + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
-        public TargetTracker.BindingMode m_BindingMode = TargetTracker.BindingMode.LockToTargetWithWorldUp;
+        public BindingMode m_BindingMode = BindingMode.LockToTargetWithWorldUp;
 
         /// <summary>The distance which the transposer will attempt to maintain from the transposer subject</summary>
         [Tooltip("The distance vector that the transposer will attempt to maintain from the Follow target")]
@@ -63,7 +62,7 @@ namespace Cinemachine
         /// <summary>How to calculate the angular damping for the target orientation.
         /// Use Quaternion if you expect the target to take on very steep pitches, which would
         /// be subject to gimbal lock if Eulers are used.</summary>
-        public TargetTracker.AngularDampingMode m_AngularDampingMode = TargetTracker.AngularDampingMode.Euler;
+        public AngularDampingMode m_AngularDampingMode = AngularDampingMode.Euler;
 
         /// <summary>How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
@@ -96,16 +95,26 @@ namespace Cinemachine
         /// <summary>
         /// Helper object that tracks the Follow target, with damping
         /// </summary>
-        protected TargetTracker m_TargetTracker;
+        Tracker m_TargetTracker;
+
+        /// <summary>Get the damping settings</summary>
+        protected TrackerSettings TrackerSettings => new TrackerSettings
+        {
+            BindingMode = m_BindingMode,
+            PositionDamping = new Vector3(m_XDamping, m_YDamping, m_ZDamping),
+            RotationDamping = new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping),
+            AngularDampingMode = m_AngularDampingMode,
+            QuaternionDamping = m_AngularDamping
+        };
 
         /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
-        protected virtual void OnValidate()
+        protected virtual void OnValidate() 
         {
             m_FollowOffset = EffectiveOffset;
         }
 
         /// <summary>Hide the offset in int inspector.  Used by FreeLook.</summary>
-        public bool HideOffsetInInspector { get; set; }
+        internal bool HideOffsetInInspector { get; set; }
 
         /// <summary>Get the target offset, with sanitization</summary>
         public Vector3 EffectiveOffset
@@ -113,7 +122,7 @@ namespace Cinemachine
             get
             {
                 Vector3 offset = m_FollowOffset;
-                if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                 {
                     offset.x = 0;
                     offset.z = -Mathf.Abs(offset.z);
@@ -133,15 +142,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            var d = Damping;
-            var d2 = m_AngularDampingMode == TargetTracker.AngularDampingMode.Euler 
-                ? AngularDamping : new Vector3(m_AngularDamping, 0, 0);
-            var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z)); 
-            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
-            return Mathf.Max(a, b); 
-        }
+        public override float GetMaxDampTime() => TrackerSettings.GetMaxDampTime();
 
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
@@ -153,8 +154,7 @@ namespace Cinemachine
             {
                 Vector3 offset = EffectiveOffset;
                 m_TargetTracker.TrackTarget(
-                    this, m_BindingMode, deltaTime, curState.ReferenceUp, offset, 
-                    Damping, AngularDamping, m_AngularDamping, m_AngularDampingMode, 
+                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                     out Vector3 pos, out Quaternion orient);
                 offset = orient * offset;
 
@@ -197,54 +197,22 @@ namespace Cinemachine
             return m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up);
         }
         
-        /// <summary>
-        /// Damping speeds for each of the 3 axes of the offset from target
-        /// </summary>
-        protected Vector3 Damping
-        {
-            get
-            {
-                switch (m_BindingMode)
-                {
-                    case TargetTracker.BindingMode.SimpleFollowWithWorldUp:
-                        return new Vector3(0, m_YDamping, m_ZDamping);
-                    default:
-                        return new Vector3(m_XDamping, m_YDamping, m_ZDamping);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Damping speeds for each of the 3 axes of the target's rotation
-        /// </summary>
-        protected Vector3 AngularDamping
-        {
-            get
-            {
-                switch (m_BindingMode)
-                {
-                    case TargetTracker.BindingMode.LockToTargetNoRoll:
-                        return new Vector3(m_PitchDamping, m_YawDamping, 0);
-                    case TargetTracker.BindingMode.LockToTargetWithWorldUp:
-                        return new Vector3(0, m_YawDamping, 0);
-                    case TargetTracker.BindingMode.LockToTargetOnAssign:
-                    case TargetTracker.BindingMode.WorldSpace:
-                    case TargetTracker.BindingMode.SimpleFollowWithWorldUp:
-                        return Vector3.zero;
-                    default:
-                        return new Vector3(m_PitchDamping, m_YawDamping, m_RollDamping);
-                }
-            }
-        }
-
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
         /// <param name="worldUp">Current effective world up</param>
         /// <returns>The position of the Follow target</returns>
-        public virtual Vector3 GetTargetCameraPosition(Vector3 worldUp)
+        internal virtual Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)
                 return Vector3.zero;
-            return FollowTargetPosition + m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, worldUp) * EffectiveOffset;
+            return FollowTargetPosition + m_TargetTracker.GetReferenceOrientation(
+                this, m_BindingMode, worldUp) * EffectiveOffset;
+        }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineFollow c)
+        {
+            c.FollowOffset = m_FollowOffset;
+            c.TrackerSettings = TrackerSettings;
         }
     }
 }

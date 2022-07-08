@@ -70,7 +70,7 @@ namespace Tests.Runtime
         public IEnumerator OrbTransposer()
         {
             var orbitalTransposer = m_Vcam.gameObject.AddComponent<CinemachineOrbitalFollow>();
-            orbitalTransposer.PositionDamping = Vector3.zero;
+            orbitalTransposer.TrackerSettings.PositionDamping = Vector3.zero;
             orbitalTransposer.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
             orbitalTransposer.Radius = 0;
             m_Vcam.Follow = m_FollowObject.transform;

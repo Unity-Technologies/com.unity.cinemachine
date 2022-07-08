@@ -7,6 +7,7 @@ using System;
 using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
+using Cinemachine.TargetTracking;
 
 namespace Cinemachine
 {
@@ -106,6 +107,11 @@ namespace Cinemachine
         [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
+        /// <summary>
+        /// Helper object that tracks the Follow target, with damping
+        /// </summary>
+        Tracker m_TargetTracker;
+
         /// <summary>Legacy support</summary>
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_Radius")] private float m_LegacyRadius = float.MaxValue;
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeightOffset")] private float m_LegacyHeightOffset = float.MaxValue;
@@ -156,7 +162,7 @@ namespace Cinemachine
         /// private AxisState object, and that AxisState object will be updated and
         /// used to calculate the heading.
         /// </summary>
-        internal UpdateHeadingDelegate HeadingUpdater
+        internal UpdateHeadingDelegate HeadingUpdater 
             = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
@@ -191,7 +197,7 @@ namespace Cinemachine
             float deltaTime, Vector3 up, ref AxisState axis,
             ref AxisState.Recentering recentering, bool isLive)
         {
-            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
             {
                 axis.m_MinValue = -180;
                 axis.m_MaxValue = 180;
@@ -206,7 +212,7 @@ namespace Cinemachine
             else if (axis.Update(deltaTime))
                 recentering.CancelRecentering();
 
-            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
             {
                 float finalHeading = axis.Value;
                 axis.Value = 0;
@@ -296,7 +302,7 @@ namespace Cinemachine
             m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
-                && m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp
+                && m_BindingMode != BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
@@ -320,7 +326,7 @@ namespace Cinemachine
             {
                 // Get the base camera placement
                 float heading = 0;
-                if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_Bias;
                 orient = orient *  Quaternion.AngleAxis(heading, up);
                 Vector3 targetPos = FollowTargetPosition;
@@ -357,7 +363,7 @@ namespace Cinemachine
             if (IsValid)
             {
                 // Calculate the heading
-                if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                     heading += m_Heading.m_Bias;
                 Quaternion headingRot = Quaternion.AngleAxis(heading, Vector3.up);
 
@@ -366,8 +372,7 @@ namespace Cinemachine
 
                 // Track the target, with damping
                 m_TargetTracker.TrackTarget(
-                    this, m_BindingMode, deltaTime, curState.ReferenceUp, offset, 
-                    Damping, AngularDamping, m_AngularDamping, m_AngularDampingMode,
+                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                     out Vector3 pos, out Quaternion orient);
 
                 // Place the camera
@@ -400,12 +405,12 @@ namespace Cinemachine
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
         /// <param name="worldUp">Current effective world up</param>
         /// <returns>The position of the Follow target</returns>
-        public override Vector3 GetTargetCameraPosition(Vector3 worldUp)
+        internal override Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)
                 return Vector3.zero;
             float heading = m_LastHeading;
-            if (m_BindingMode != TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 heading += m_Heading.m_Bias;
             Quaternion orient = Quaternion.AngleAxis(heading, Vector3.up);
             orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, worldUp) * orient;
@@ -420,7 +425,7 @@ namespace Cinemachine
         // Make sure this is calld only once per frame
         private float GetTargetHeading(float currentHeading, Quaternion targetOrientation)
         {
-            if (m_BindingMode == TargetTracker.BindingMode.SimpleFollowWithWorldUp)
+            if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
                 return 0;
             if (FollowTarget == null)
                 return currentHeading;
@@ -474,11 +479,7 @@ namespace Cinemachine
         // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineOrbitalFollow c)
         {
-            c.BindingMode = m_BindingMode;
-            c.RotationDampingMode = m_AngularDampingMode;
-            c.RotationDamping = new Vector3(m_YawDamping, m_PitchDamping, m_RollDamping);
-            c.QuaternionDamping = m_AngularDamping;
-            c.PositionDamping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            c.TrackerSettings = TrackerSettings;
             c.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
             c.Radius = -m_FollowOffset.z;
 

@@ -17,8 +17,8 @@ namespace Cinemachine.Editor
             switch (Target.m_BindingMode)
             {
                 default:
-                case TargetTracker.BindingMode.LockToTarget:
-                    if (Target.m_AngularDampingMode == TargetTracker.AngularDampingMode.Euler)
+                case TargetTracking.BindingMode.LockToTarget:
+                    if (Target.m_AngularDampingMode == TargetTracking.AngularDampingMode.Euler)
                         excluded.Add(FieldPath(x => x.m_AngularDamping));
                     else
                     {
@@ -27,26 +27,26 @@ namespace Cinemachine.Editor
                         excluded.Add(FieldPath(x => x.m_RollDamping));
                     }
                     break;
-                case TargetTracker.BindingMode.LockToTargetNoRoll:
+                case TargetTracking.BindingMode.LockToTargetNoRoll:
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case TargetTracker.BindingMode.LockToTargetWithWorldUp:
+                case TargetTracking.BindingMode.LockToTargetWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case TargetTracker.BindingMode.LockToTargetOnAssign:
-                case TargetTracker.BindingMode.WorldSpace:
+                case TargetTracking.BindingMode.LockToTargetOnAssign:
+                case TargetTracking.BindingMode.WorldSpace:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case TargetTracker.BindingMode.SimpleFollowWithWorldUp:
+                case TargetTracking.BindingMode.SimpleFollowWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_XDamping));
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
