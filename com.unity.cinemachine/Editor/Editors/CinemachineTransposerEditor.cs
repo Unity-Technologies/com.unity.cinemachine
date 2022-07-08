@@ -88,7 +88,18 @@ namespace Cinemachine.Editor
             if (transposer == null || !transposer.IsValid)
                 return;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer);
+            {
+                var property = new SerializedObject(Target).FindProperty(() => Target.m_FollowOffset);
+                var up = Target.VirtualCamera.State.ReferenceUp;
+                CinemachineSceneToolHelpers.FollowOffsetTool(
+                    Target.VirtualCamera, property, Target.GetTargetCameraPosition(up),
+                    Target.FollowTargetPosition, Target.GetReferenceOrientation(up), () =>
+                    {
+                        // Sanitize the offset
+                        property.vector3Value = Target.EffectiveOffset;
+                        property.serializedObject.ApplyModifiedProperties();
+                    });
+            }
         }
     }
 }

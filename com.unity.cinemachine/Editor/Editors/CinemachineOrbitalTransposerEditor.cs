@@ -69,6 +69,12 @@ namespace Cinemachine.Editor
             }
         }
 
+        protected virtual void OnEnable()
+        {
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
+        }
+        
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -121,30 +127,6 @@ namespace Cinemachine.Editor
                 currPoint = nextPoint;
             }
             Gizmos.matrix = prevMatrix;
-        }
-        
-        protected virtual void OnEnable()
-        {
-            for (int i = 0; i < targets.Length; ++i)
-                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
-
-            if (!Target.HideOffsetInInspector)
-                CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        }
-        
-        protected virtual void OnDisable()
-        {
-            if (!Target.HideOffsetInInspector)
-                CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
-        
-        void OnSceneGUI()
-        {
-            var orbitalTransposer = Target;
-            if (orbitalTransposer == null || !orbitalTransposer.IsValid || orbitalTransposer.HideOffsetInInspector)
-                return;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer);
         }
     }
 }

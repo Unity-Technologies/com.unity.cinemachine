@@ -15,7 +15,6 @@ namespace Cinemachine.Editor
 
             var modeProp = property.FindPropertyRelative(() => def.BindingMode);
             ux.Add(new PropertyField(modeProp));
-            ux.Add(new PropertyField(property.FindPropertyRelative(() => def.PositionDamping)));
 
             var rotDampingContainer = ux.AddChild(new VisualElement());
             var rotModeProp = property.FindPropertyRelative(() => def.AngularDampingMode);
@@ -24,6 +23,8 @@ namespace Cinemachine.Editor
                 new PropertyField(property.FindPropertyRelative(() => def.RotationDamping)));
             var quatDampingField = rotDampingContainer.AddChild(
                 new PropertyField(property.FindPropertyRelative(() => def.QuaternionDamping)));
+
+            ux.Add(new PropertyField(property.FindPropertyRelative(() => def.PositionDamping)));
 
             TrackBindingMode(modeProp);
             ux.TrackPropertyValue(modeProp, TrackBindingMode);
