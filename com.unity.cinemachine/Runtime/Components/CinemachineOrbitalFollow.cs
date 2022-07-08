@@ -241,6 +241,7 @@ namespace Cinemachine
                 if (m_OrbitCache.SettingsChanged(Orbits))
                     m_OrbitCache.UpdateOrbitCache(Orbits);
                 var v = m_OrbitCache.SplineValue(VerticalAxis.GetNormalizedValue());
+                v *= RadialAxis.Value;
                 pos = Quaternion.AngleAxis(HorizontalAxis.Value, Vector3.up) * v;
                 t = v.w;
             }
