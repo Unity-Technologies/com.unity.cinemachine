@@ -128,43 +128,23 @@ namespace Cinemachine.Editor
             for (int i = 0; i < targets.Length; ++i)
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
 
-#if UNITY_2021_2_OR_NEWER
             if (!Target.HideOffsetInInspector)
-            {
                 CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            }
-#endif
         }
         
         protected virtual void OnDisable()
         {
-#if UNITY_2021_2_OR_NEWER
             if (!Target.HideOffsetInInspector)
-            {
                 CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            }
-#endif
         }
         
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-
-        void DrawSceneTools()
         {
             var orbitalTransposer = Target;
             if (orbitalTransposer == null || !orbitalTransposer.IsValid || orbitalTransposer.HideOffsetInInspector)
-            {
                 return;
-            }
-            
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
                 CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer);
-            }
         }
-#endif
     }
 }

@@ -71,12 +71,7 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }
-#if UNITY_2021_2_OR_NEWER
-        void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-        
+
         protected virtual void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -87,19 +82,13 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
-        void DrawSceneTools()
+        void OnSceneGUI()
         {
             var transposer = Target;
             if (transposer == null || !transposer.IsValid)
-            {
                 return;
-            }
-
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
                 CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer);
-            }
         }
-#endif
     }
 }
