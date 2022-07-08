@@ -93,13 +93,11 @@ namespace Tests.Runtime
         }
 
         [UnityTest]
-        public IEnumerator Transposer()
+        public IEnumerator Follow()
         {
-            var transposer = m_Vcam.gameObject.AddComponent<CinemachineTransposer>();
-            transposer.m_XDamping = 0;
-            transposer.m_YDamping = 0;
-            transposer.m_ZDamping = 0;
-            transposer.m_FollowOffset = Vector3.zero;
+            var transposer = m_Vcam.gameObject.AddComponent<CinemachineFollow>();
+            transposer.TrackerSettings.PositionDamping = Vector3.zero;
+            transposer.FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;

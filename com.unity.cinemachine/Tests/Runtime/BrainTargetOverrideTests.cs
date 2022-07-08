@@ -119,11 +119,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator Transposer()
         {
-            var transposer = m_Vcam.gameObject.AddComponent<CinemachineTransposer>();
-            transposer.m_XDamping = 0;
-            transposer.m_YDamping = 0;
-            transposer.m_ZDamping = 0;
-            transposer.m_FollowOffset = Vector3.zero;
+            var transposer = m_Vcam.gameObject.AddComponent<CinemachineFollow>();
+            transposer.TrackerSettings.PositionDamping = Vector3.zero;
+            transposer.FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
