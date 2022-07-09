@@ -249,6 +249,8 @@ namespace Cinemachine.Editor
 
                     upgradedObjects.Add(go);
                     var convertedCopy = Object.Instantiate(go);
+                    // TODO: need to collect data here to help restore timeline references
+                    // TODO: exposed references or maybe go and converted copy? need to see TODO: below first at SynchronizeComponents
                     UpgradeObjectComponents(convertedCopy, null);
 
                     var conversionLink = new ConversionLink
@@ -308,7 +310,9 @@ namespace Cinemachine.Editor
                     var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
                         
                     // GML todo: do we need to do this recursively for child GameObjects?
+                    
                     SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
+                    // TODO: need to restore references here, what do we know here? what are we missing?
 
                     // Restore original scene state (prefab instance name, delete converted copies)
                     prefabInstance.name = conversionLink.originalName;
