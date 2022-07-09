@@ -622,7 +622,7 @@ namespace Cinemachine
                             composer.m_HorizontalDamping = composer.m_VerticalDamping = 0;
                             composer.m_ScreenX = 0.5f; composer.m_ScreenY = softCenterDefaultsV[i];
                             composer.m_DeadZoneWidth = composer.m_DeadZoneHeight = 0;
-                            composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0;
+                            composer.m_SoftZoneWidth = composer.m_SoftZoneHeight = 0.6f;
                             composer.m_BiasX = composer.m_BiasY = 0;
                         }
                     }
