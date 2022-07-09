@@ -229,6 +229,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                var timelineManager = new TimelineManager(scene);
 
                 var conversionLinks = new List<ConversionLink>();
                 conversionLinksPerScene.Add(m_SceneManager.GetScenePath(s), conversionLinks);
@@ -273,7 +274,7 @@ namespace Cinemachine.Editor
                 using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
                 {
                     var prefabContents = editingScope.prefabContentsRoot;
-
+                    var timelineManager = new TimelineManager(prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList());
                     // Note: this logic relies on the fact FreeLooks will be added first in the component list
                     var components = new List<Component>();
                     foreach (var type in upgradeComponentTypes)
@@ -286,7 +287,7 @@ namespace Cinemachine.Editor
                             continue; // is a backup copy
 
                         // GML todo: what about timelines embedded in the prefabs?  Need to patch those references
-                        UpgradeObjectComponents(c.gameObject, null);
+                        UpgradeObjectComponents(c.gameObject, timelineManager);
                         m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
                     }
                 }
@@ -496,15 +497,25 @@ namespace Cinemachine.Editor
         {
             Dictionary<PlayableDirector, List<CinemachineShot>> m_CmShotsToUpdate;
 
+            public TimelineManager(List<PlayableDirector> playableDirectors)
+            {
+                Initialize(playableDirectors);
+            }
+            
             public TimelineManager(Scene scene)
             {
-                m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
                 var playableDirectors = new List<PlayableDirector>();
 
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var go in rootObjects)
                     playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
-                
+
+                Initialize(playableDirectors);
+            }
+
+            void Initialize(List<PlayableDirector> playableDirectors)
+            {
+                m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
                 // collect all cmShots that may require a reference update
                 foreach (var playableDirector in playableDirectors)
                 {
