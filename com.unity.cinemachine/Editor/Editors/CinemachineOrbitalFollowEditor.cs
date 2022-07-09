@@ -198,7 +198,8 @@ namespace Cinemachine.Editor
                         if (m_UpdateCache)
                             m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
                         
-                        var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera, 
+                        var draggedRig = CinemachineSceneToolHelpers.ThreeOrbitRigHandle(
+                            orbitalFollow.VirtualCamera, orbitalFollow.GetReferenceOrientation(),
                             new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
                         m_UpdateCache = draggedRig < 0 || draggedRig > 2;
                         orbitalFollow.VerticalAxis.Value = draggedRig switch
@@ -239,7 +240,7 @@ namespace Cinemachine.Editor
                     var orient = orbital.GetReferenceOrientation();
                     var up = orient * Vector3.up;
                     var rotation = orbital.HorizontalAxis.Value;
-                    orient = Quaternion.AngleAxis(rotation, up);
+                    orient = Quaternion.AngleAxis(rotation, up) * orient;
                     var pos = orbital.FollowTargetPosition;
                     var scale = orbital.RadialAxis.Value;
 

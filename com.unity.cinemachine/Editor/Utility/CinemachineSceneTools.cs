@@ -466,7 +466,7 @@ namespace Cinemachine.Editor
         /// <returns>Index of the rig being edited, or -1 if none</returns>
         [Obsolete]
         public static int OrbitControlHandleFreelook(
-            CinemachineFreeLook vcam, SerializedProperty orbits)
+            CinemachineFreeLook vcam, Quaternion rotationFrame, SerializedProperty orbits)
         {
             var originalColor = Handles.color;
             var followPos = vcam.Follow.position;
@@ -478,11 +478,13 @@ namespace Cinemachine.Editor
                 var orbitHeight = orbit.FindPropertyRelative("m_Height");
                 var orbitRadius = orbit.FindPropertyRelative("m_Radius");
                 
-                if (OrbitHandles(orbits.serializedObject, orbitHeight, orbitRadius, followPos, 
-                        out var heightHandleId, out var radiusHandleId))
+                if (OrbitHandles(
+                    orbits.serializedObject, orbitHeight, orbitRadius, 
+                    followPos, rotationFrame,
+                    out var heightHandleId, out var radiusHandleId))
                 {
                     draggedRig = rigIndex;
-                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                    minIndex = Mathf.Min(heightHandleId, radiusHandleId);
                 }
             }
             SoloOnDrag(draggedRig != -1, vcam, minIndex);
@@ -495,33 +497,34 @@ namespace Cinemachine.Editor
         /// Draws Orbit handles for OrbitalFollow
         /// </summary>
         /// <returns>Index of the rig being edited, or -1 if none</returns>
-        static Cinemachine3OrbitRig.Settings s_Cinemachine3OrbitRigSettings = Cinemachine3OrbitRig.Settings.Default;
-        public static int OrbitControlHandleOrbitalFollow(
-            CinemachineVirtualCameraBase vcam, SerializedProperty orbitSetting)
+        public static int ThreeOrbitRigHandle(
+            CinemachineVirtualCameraBase vcam, Quaternion rotationFrame, SerializedProperty orbitSetting)
         {
+            Cinemachine3OrbitRig.Settings def = new();
+
             var originalColor = Handles.color;
             var followPos = vcam.Follow.position;
             var draggedRig = -1;
             var minIndex = 1;
             SerializedProperty[] orbits =
             {
-                orbitSetting.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top),
-                orbitSetting.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Center),
-                orbitSetting.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Bottom),
+                orbitSetting.FindPropertyRelative(() => def.Top),
+                orbitSetting.FindPropertyRelative(() => def.Center),
+                orbitSetting.FindPropertyRelative(() => def.Bottom),
             };
             for (var rigIndex = 0; rigIndex < orbits.Length; ++rigIndex)
             {
                 var orbit = orbits[rigIndex];
-                var orbitHeight = 
-                    orbit.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top.Height);
-                var orbitRadius = 
-                    orbit.FindPropertyRelative(() => s_Cinemachine3OrbitRigSettings.Top.Radius);
+                var orbitHeight = orbit.FindPropertyRelative(() => def.Top.Height);
+                var orbitRadius = orbit.FindPropertyRelative(() => def.Top.Radius);
                 
-                if (OrbitHandles(orbitSetting.serializedObject, orbitHeight, orbitRadius, followPos, 
-                        out var heightHandleId, out var radiusHandleId))
+                if (OrbitHandles(
+                    orbitSetting.serializedObject, orbitHeight, orbitRadius, 
+                    followPos, rotationFrame,
+                    out var heightHandleId, out var radiusHandleId))
                 {
                     draggedRig = rigIndex;
-                    minIndex = Mathf.Min(Mathf.Min(heightHandleId), radiusHandleId);
+                    minIndex = Mathf.Min(heightHandleId, radiusHandleId);
                 }
             }
             SoloOnDrag(draggedRig != -1, vcam, minIndex);
@@ -530,44 +533,46 @@ namespace Cinemachine.Editor
             return draggedRig;
         }
 
-        static bool OrbitHandles(SerializedObject orbit, 
-            SerializedProperty orbitHeight, SerializedProperty orbitRadius, Vector3 followPos,
+        static bool OrbitHandles(
+            SerializedObject orbit, 
+            SerializedProperty orbitHeight, SerializedProperty orbitRadius, 
+            Vector3 followPos, Quaternion rotationFrame,
             out int heightHandleId, out int radiusHandleId)
         {
+            var oldMatrix = Handles.matrix;
+            Handles.matrix = Matrix4x4.TRS(followPos, rotationFrame, Vector3.one);
+
             Handles.color = Handles.preselectionColor;
-                EditorGUI.BeginChangeCheck();
+            EditorGUI.BeginChangeCheck();
             
-                heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var heightHandlePos = followPos + Vector3.up * orbitHeight.floatValue;
-                var newHeightHandlePos = Handles.Slider(heightHandleId, heightHandlePos, Vector3.up, 
-                    CubeHandleCapSize(heightHandlePos), Handles.CubeHandleCap, 0.5f);
+            heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
+
+            var height = Vector3.up * orbitHeight.floatValue;
+            var newHeight = Handles.Slider(
+                heightHandleId, height, Vector3.up, CubeHandleCapSize(height), Handles.CubeHandleCap, 0.5f);
                 
-                var radiusHandleOffset = Vector3.right;
-                radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var radiusHandlePos = followPos + Vector3.up * orbitHeight.floatValue
-                    + radiusHandleOffset * orbitRadius.floatValue;
-                var newRadiusHandlePos = Handles.Slider(radiusHandleId, radiusHandlePos, radiusHandleOffset, 
-                    CubeHandleCapSize(radiusHandlePos), Handles.CubeHandleCap, 0.5f);
+            radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
+            var radius = Vector3.up * orbitHeight.floatValue + Vector3.right * orbitRadius.floatValue;
+            var newRadius = Handles.Slider(
+                radiusHandleId, radius, Vector3.right, CubeHandleCapSize(radius), Handles.CubeHandleCap, 0.5f);
 
-                if (EditorGUI.EndChangeCheck())
-                {
-                    orbitHeight.floatValue += 
-                        SliderHandleDelta(newHeightHandlePos, heightHandlePos, Vector3.up);
-                    orbitRadius.floatValue += 
-                        SliderHandleDelta(newRadiusHandlePos, radiusHandlePos, radiusHandleOffset);
-                    orbit.ApplyModifiedProperties();
-                }
+            if (EditorGUI.EndChangeCheck())
+            {
+                orbitHeight.floatValue += SliderHandleDelta(newHeight, height, Vector3.up);
+                orbitRadius.floatValue += SliderHandleDelta(newRadius, radius, Vector3.right);
+                orbit.ApplyModifiedProperties();
+            }
 
-                var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
-                Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId ||
-                    HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : HelperLineDefaultColor;
-                if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
-                    DrawLabel(heightHandlePos, orbitHeight.displayName + ": " + orbitHeight.floatValue);
-                if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
-                    DrawLabel(radiusHandlePos, orbitRadius.displayName + ": " + orbitRadius.floatValue);
-
-                Handles.DrawWireDisc(newHeightHandlePos, Vector3.up, orbitRadius.floatValue);
-                return isDragged;
+            var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
+            Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId 
+                || HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : HelperLineDefaultColor;
+            if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
+                DrawLabel(height, orbitHeight.displayName + ": " + orbitHeight.floatValue);
+            if (GUIUtility.hotControl == radiusHandleId || HandleUtility.nearestControl == radiusHandleId)
+                DrawLabel(radius, orbitRadius.displayName + ": " + orbitRadius.floatValue);
+            Handles.DrawWireDisc(newHeight, Vector3.up, orbitRadius.floatValue);
+            Handles.matrix = oldMatrix;
+            return isDragged;
         }
         
         static bool s_IsDragging;
