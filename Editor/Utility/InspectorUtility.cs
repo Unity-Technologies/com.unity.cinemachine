@@ -191,6 +191,8 @@ namespace Cinemachine.Editor
             return new GameObject(name, types);
 #endif
         }
+        
+        private static int m_lastRepaintFrame;
 
         /// <summary>
         /// Force a repaint of the Game View
@@ -198,6 +200,10 @@ namespace Cinemachine.Editor
         /// <param name="unused">Like it says</param>
         public static void RepaintGameView(UnityEngine.Object unused = null)
         {
+            if (m_lastRepaintFrame == Time.frameCount)
+                return;
+            m_lastRepaintFrame = Time.frameCount;
+
             EditorApplication.QueuePlayerLoopUpdate();
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
