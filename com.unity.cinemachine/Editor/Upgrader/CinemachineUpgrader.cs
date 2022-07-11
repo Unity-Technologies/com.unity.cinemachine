@@ -211,13 +211,14 @@ namespace Cinemachine.Editor
         
         /// <summary>
         /// Data to link original prefab data to upgraded prefab data for restoring prefab modifications.
+        /// timelineReferences are used to restore timelines that referenced vcams that needed to be upgraded
         /// </summary>
         struct ConversionLink
         {
             public string originalName;
             public string originalGUIDName;
             public string convertedGUIDName;
-            public List<ExposedReference<CinemachineVirtualCameraBase>> timelineReferences;
+            public Dictionary<PlayableDirector, List<ExposedReference<CinemachineVirtualCameraBase>>> timelineReferences;
         }
         
         void UpgradePrefabsAndPrefabInstances()
@@ -250,19 +251,17 @@ namespace Cinemachine.Editor
                         continue; 
                     upgradedObjects.Add(go);
                     
-                    var vcambase = go.GetComponent<CinemachineVirtualCameraBase>();
-                    var exposedReferences = timelineManager.GetTimelineReferences(vcambase);
+                    var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
+                    var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
 
                     var convertedCopy = Object.Instantiate(go);
-                    // TODO: need to collect data here to help restore timeline references
-                    // TODO: exposed references or maybe go and converted copy? need to see TODO: below first at SynchronizeComponents
                     UpgradeObjectComponents(convertedCopy, null);
                     var conversionLink = new ConversionLink
                     {
                         originalName = go.name,
                         originalGUIDName = GUID.Generate().ToString(),
                         convertedGUIDName = GUID.Generate().ToString(),
-                        timelineReferences = exposedReferences,
+                        timelineReferences = timelineReferences,
                     };
                     go.name = conversionLink.originalGUIDName;
                     convertedCopy.name = conversionLink.convertedGUIDName;
@@ -305,7 +304,6 @@ namespace Cinemachine.Editor
             for (int s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                // TODO: timeline manager does not add empty cmshots, but here we need them to restore refs!
                 var timelineManager = new TimelineManager(scene);
                 var conversionLinks = conversionLinksPerScene[m_SceneManager.GetScenePath(s)];
                 var allGameObjectsInScene = GetAllGameObjects();
@@ -314,14 +312,11 @@ namespace Cinemachine.Editor
                 {
                     var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                     var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
-                    Debug.Log("originalGUIDName:" + conversionLink.originalGUIDName + "| convertedGUIDName:" + conversionLink.convertedGUIDName);
-                        
+                 
                     // GML todo: do we need to do this recursively for child GameObjects?
-                    
                     SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
-                    var original = convertedCopy.GetComponent<CmCamera>();
                     var converted = prefabInstance.GetComponent<CmCamera>();
-                    timelineManager.UpdateTimelineReference(original, converted, conversionLink);
+                    timelineManager.UpdateTimelineReference(converted, conversionLink);
 
                     // Restore original scene state (prefab instance name, delete converted copies)
                     prefabInstance.name = conversionLink.originalName;
@@ -548,9 +543,10 @@ namespace Cinemachine.Editor
                                 {
                                     if (clip.asset is CinemachineShot cmShot)
                                     {
-                                        var exposedRef = cmShot.VirtualCamera;
-                                        var vcam = exposedRef.Resolve(playableDirector);
-                                        if (vcam != null)
+                                        
+                                        // var exposedRef = cmShot.VirtualCamera;
+                                        // var vcam = exposedRef.Resolve(playableDirector);
+                                        // if (vcam != null)
                                         {
                                             if (!m_CmShotsToUpdate.ContainsKey(playableDirector))
                                                 m_CmShotsToUpdate.Add(playableDirector, new List<CinemachineShot>());
@@ -620,48 +616,46 @@ namespace Cinemachine.Editor
                 }
             }
             
-            public void UpdateTimelineReference(CinemachineVirtualCameraBase oldComponent, 
-                CinemachineVirtualCameraBase upgraded, ConversionLink link)
+            public void UpdateTimelineReference(CinemachineVirtualCameraBase upgraded, ConversionLink link)
             {
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
+                    if (!link.timelineReferences.ContainsKey(director))
+                        continue;
+                    
+                    var references = link.timelineReferences[director];
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
-                        var vcam = exposedRef.Resolve(director);
-                        foreach (var reference in link.timelineReferences)
+                        foreach (var reference in references)
                         {
                             if (exposedRef.exposedName == reference.exposedName)
                             {
                                 director.SetReferenceValue(exposedRef.exposedName, upgraded);
                             }
                         }
-
-                        Debug.Log(">> timeline references vcam name:" + vcam.name);
-                        if (vcam == oldComponent)
-                            director.SetReferenceValue(exposedRef.exposedName, upgraded);
                     }
                 }
             }
 
-            public List<ExposedReference<CinemachineVirtualCameraBase>> GetTimelineReferences(CinemachineVirtualCameraBase vcam)
+            public Dictionary<PlayableDirector, List<ExposedReference<CinemachineVirtualCameraBase>>> 
+                GetTimelineReferences(CinemachineVirtualCameraBase vcam)
             {
-                var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
+                var d = new Dictionary<PlayableDirector, List<ExposedReference<CinemachineVirtualCameraBase>>>();
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
+                    Debug.Log(director.name + "-" + director.GetInstanceID());
+                    var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
-                        var resolved = exposedRef.Resolve(director);
-                        var equality = ReferenceEquals(resolved, vcam);
-                        if (vcam == resolved)
-                        {
+                        if (vcam == exposedRef.Resolve(director))
                             references.Add(exposedRef);
-                        }
                     }
+                    d.Add(director, references);
                 }
 
-                return references;
+                return d;
             }
         }
     }
