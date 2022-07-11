@@ -218,7 +218,7 @@ namespace Cinemachine.Editor
             public string originalName;
             public string originalGUIDName;
             public string convertedGUIDName;
-            public Dictionary<KeyValuePair<string, int>, List<ExposedReference<CinemachineVirtualCameraBase>>> timelineReferences;
+            public List<ExposedReference<CinemachineVirtualCameraBase>> timelineReferences;
         }
         
         void UpgradePrefabsAndPrefabInstances()
@@ -302,22 +302,15 @@ namespace Cinemachine.Editor
             // In each scene, restore modifications in all prefab instances by copying data
             // from the linked converted copy of the prefab instance.
             
-            Debug.Log("Prefab instance modification sync stage");
             for (int s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                Debug.Log("scene:"+ s);
                 var timelineManager = new TimelineManager(scene);
                 var conversionLinks = conversionLinksPerScene[m_SceneManager.GetScenePath(s)];
                 var allGameObjectsInScene = GetAllGameObjects();
 
                 foreach (var conversionLink in conversionLinks)
                 {
-                    foreach (var (director, references) in conversionLink.timelineReferences)
-                    {
-                        Debug.Log("conversionLink:" +director.Key + "-" + director.Value);
-                    }
-                    
                     var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                     var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
                  
@@ -628,13 +621,7 @@ namespace Cinemachine.Editor
             {
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
-                    var directorId = director.GetInstanceID();
-                    var key = new KeyValuePair<string, int>(director.name, directorId);
-                    Debug.Log("UpdateTimelineReference:" + key.Key + "-" + key.Value);
-                    if (!link.timelineReferences.ContainsKey(key))
-                        continue;
-                    
-                    var references = link.timelineReferences[key];
+                    var references = link.timelineReferences;
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
@@ -649,26 +636,19 @@ namespace Cinemachine.Editor
                 }
             }
 
-            public Dictionary<KeyValuePair<string, int>, List<ExposedReference<CinemachineVirtualCameraBase>>> 
-                GetTimelineReferences(CinemachineVirtualCameraBase vcam)
+            public List<ExposedReference<CinemachineVirtualCameraBase>> GetTimelineReferences(CinemachineVirtualCameraBase vcam)
             {
-                var d = new Dictionary<KeyValuePair<string, int>, List<ExposedReference<CinemachineVirtualCameraBase>>>();
-                Debug.Log("GetTimelineReferences:");
+                var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
-                    var id = director.GetInstanceID();
-                    Debug.Log(director.name + "-" + id);
-                    var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
                         if (vcam == exposedRef.Resolve(director))
                             references.Add(exposedRef);
                     }
-                    d.Add(new KeyValuePair<string, int>(director.name, id), references);
                 }
-
-                return d;
+                return references;
             }
         }
     }

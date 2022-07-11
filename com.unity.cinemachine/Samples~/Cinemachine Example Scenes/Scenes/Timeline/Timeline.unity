@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 539044446}
   - component: {fileID: 539044445}
   m_Layer: 0
-  m_Name: Shot B
+  m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -245,7 +245,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539044444}
-  m_LocalRotation: {x: 0.30075064, y: -0.63352996, z: 0.29323307, w: 0.64977175}
+  m_LocalRotation: {x: 0.3007507, y: -0.63352996, z: 0.29323307, w: 0.6497717}
   m_LocalPosition: {x: -259.9, y: 50.65, z: -10.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -436,6 +436,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5794751463739236536, guid: 00fbffd9dc2db4534b6992fb9d342f31, type: 3}
+      propertyPath: m_Name
+      value: B
+      objectReference: {fileID: 0}
+    - target: {fileID: 5794751464339138092, guid: 00fbffd9dc2db4534b6992fb9d342f31, type: 3}
+      propertyPath: m_Name
+      value: PrefabInstance
+      objectReference: {fileID: 0}
     - target: {fileID: 5794751464339138094, guid: 00fbffd9dc2db4534b6992fb9d342f31, type: 3}
       propertyPath: m_ExposedReferences.m_References.Array.data[1].second
       value: 
@@ -444,6 +452,18 @@ PrefabInstance:
       propertyPath: m_ExposedReferences.m_References.Array.data[2].second
       value: 
       objectReference: {fileID: 839075300}
+    - target: {fileID: 5794751464713235523, guid: 00fbffd9dc2db4534b6992fb9d342f31, type: 3}
+      propertyPath: m_Name
+      value: A
+      objectReference: {fileID: 0}
+    - target: {fileID: 5794751464860714391, guid: 00fbffd9dc2db4534b6992fb9d342f31, type: 3}
+      propertyPath: m_Name
+      value: C
+      objectReference: {fileID: 0}
+    - target: {fileID: 5794751465048193260, guid: 00fbffd9dc2db4534b6992fb9d342f31, type: 3}
+      propertyPath: m_Name
+      value: D
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -712,7 +732,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 55
+  field of view: 40
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -737,8 +757,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1147448570}
-  m_LocalRotation: {x: 0, y: -0.44568163, z: 0, w: 0.89519155}
-  m_LocalPosition: {x: -286.0345, y: 4.1, z: -19.395824}
+  m_LocalRotation: {x: 0.026468355, y: -0.71587884, z: 0.027177744, w: 0.6971932}
+  m_LocalPosition: {x: -144.4, y: 15.89, z: -5.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -756,7 +776,7 @@ GameObject:
   - component: {fileID: 1445212682}
   - component: {fileID: 1445212681}
   m_Layer: 0
-  m_Name: Shot D
+  m_Name: 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -936,7 +956,7 @@ GameObject:
   - component: {fileID: 1565101941}
   - component: {fileID: 1565101940}
   m_Layer: 0
-  m_Name: Shot C
+  m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1067,7 +1087,7 @@ GameObject:
   - component: {fileID: 1779639977}
   - component: {fileID: 1779639976}
   m_Layer: 0
-  m_Name: Shot A
+  m_Name: 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1307,7 +1327,7 @@ GameObject:
   - component: {fileID: 2086726859}
   - component: {fileID: 2086726858}
   m_Layer: 0
-  m_Name: TIMELINE Select me!
+  m_Name: Not prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
