@@ -44,6 +44,7 @@ namespace Cinemachine.Editor
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+            typeof(CinemachinePipeline),
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
 #endif

@@ -316,8 +316,7 @@ namespace Cinemachine.Editor
                  
                     // GML todo: do we need to do this recursively for child GameObjects?
                     SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
-                    var converted = prefabInstance.GetComponent<CmCamera>();
-                    timelineManager.UpdateTimelineReference(converted, conversionLink);
+                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
 
                     // Restore original scene state (prefab instance name, delete converted copies)
                     prefabInstance.name = conversionLink.originalName;
@@ -627,7 +626,6 @@ namespace Cinemachine.Editor
                         var exposedRef = cmShot.VirtualCamera;
                         foreach (var reference in references)
                         {
-                            // find linked pair
                             if (exposedRef.exposedName == reference.exposedName)
                             {
                                 // update reference if it needs to be updated <=> null
