@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Blending speed was not set correctly when blending back and forth between the same cameras.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 - Bugfix: SensorSize is not saved when not using physical camera.
+- Bugfix: No redundant RepaintAllViews calls.
 
 
 ## [2.9.0-pre.6] - 2022-01-12
