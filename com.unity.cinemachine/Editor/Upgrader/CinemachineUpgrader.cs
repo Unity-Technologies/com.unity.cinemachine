@@ -217,7 +217,9 @@ namespace Cinemachine.Editor
             public string originalName;
             public string originalGUIDName;
             public string convertedGUIDName;
+            public List<ExposedReference<CinemachineVirtualCameraBase>> timelineReferences;
         }
+        
         void UpgradePrefabsAndPrefabInstances()
         {
             var upgradeComponentTypes = m_ObjectUpgrader.RootUpgradeComponentTypes;
@@ -246,18 +248,21 @@ namespace Cinemachine.Editor
                     // Ignore if already converted (this can happen in nested prefabs)
                     if (upgradedObjects.Contains(go))
                         continue; 
-
                     upgradedObjects.Add(go);
+                    
+                    var vcambase = go.GetComponent<CinemachineVirtualCameraBase>();
+                    var exposedReferences = timelineManager.GetTimelineReferences(vcambase);
+
                     var convertedCopy = Object.Instantiate(go);
                     // TODO: need to collect data here to help restore timeline references
                     // TODO: exposed references or maybe go and converted copy? need to see TODO: below first at SynchronizeComponents
                     UpgradeObjectComponents(convertedCopy, null);
-
                     var conversionLink = new ConversionLink
                     {
                         originalName = go.name,
                         originalGUIDName = GUID.Generate().ToString(),
                         convertedGUIDName = GUID.Generate().ToString(),
+                        timelineReferences = exposedReferences,
                     };
                     go.name = conversionLink.originalGUIDName;
                     convertedCopy.name = conversionLink.convertedGUIDName;
@@ -288,7 +293,6 @@ namespace Cinemachine.Editor
                         if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
                             continue; // is a backup copy
 
-                        // GML todo: what about timelines embedded in the prefabs?  Need to patch those references
                         UpgradeObjectComponents(c.gameObject, timelineManager);
                         m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
                     }
@@ -301,6 +305,8 @@ namespace Cinemachine.Editor
             for (int s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                // TODO: timeline manager does not add empty cmshots, but here we need them to restore refs!
+                var timelineManager = new TimelineManager(scene);
                 var conversionLinks = conversionLinksPerScene[m_SceneManager.GetScenePath(s)];
                 var allGameObjectsInScene = GetAllGameObjects();
 
@@ -308,11 +314,14 @@ namespace Cinemachine.Editor
                 {
                     var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                     var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
+                    Debug.Log("originalGUIDName:" + conversionLink.originalGUIDName + "| convertedGUIDName:" + conversionLink.convertedGUIDName);
                         
                     // GML todo: do we need to do this recursively for child GameObjects?
                     
                     SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
-                    // TODO: need to restore references here, what do we know here? what are we missing?
+                    var original = convertedCopy.GetComponent<CmCamera>();
+                    var converted = prefabInstance.GetComponent<CmCamera>();
+                    timelineManager.UpdateTimelineReference(original, converted, conversionLink);
 
                     // Restore original scene state (prefab instance name, delete converted copies)
                     prefabInstance.name = conversionLink.originalName;
@@ -596,8 +605,8 @@ namespace Cinemachine.Editor
             /// vcam is upgraded, but before the obsolete component is deleted.
             /// </summary>
             /// <param name="upgraded"></param>
-            public void UpdateTimelineReference(
-                CinemachineVirtualCameraBase oldComponent, CinemachineVirtualCameraBase upgraded)
+            public void UpdateTimelineReference(CinemachineVirtualCameraBase oldComponent, 
+                CinemachineVirtualCameraBase upgraded)
             {
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
@@ -609,6 +618,50 @@ namespace Cinemachine.Editor
                             director.SetReferenceValue(exposedRef.exposedName, upgraded);
                     }
                 }
+            }
+            
+            public void UpdateTimelineReference(CinemachineVirtualCameraBase oldComponent, 
+                CinemachineVirtualCameraBase upgraded, ConversionLink link)
+            {
+                foreach (var (director, cmShots) in m_CmShotsToUpdate)
+                {
+                    foreach (var cmShot in cmShots)
+                    {
+                        var exposedRef = cmShot.VirtualCamera;
+                        var vcam = exposedRef.Resolve(director);
+                        foreach (var reference in link.timelineReferences)
+                        {
+                            if (exposedRef.exposedName == reference.exposedName)
+                            {
+                                director.SetReferenceValue(exposedRef.exposedName, upgraded);
+                            }
+                        }
+
+                        Debug.Log(">> timeline references vcam name:" + vcam.name);
+                        if (vcam == oldComponent)
+                            director.SetReferenceValue(exposedRef.exposedName, upgraded);
+                    }
+                }
+            }
+
+            public List<ExposedReference<CinemachineVirtualCameraBase>> GetTimelineReferences(CinemachineVirtualCameraBase vcam)
+            {
+                var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
+                foreach (var (director, cmShots) in m_CmShotsToUpdate)
+                {
+                    foreach (var cmShot in cmShots)
+                    {
+                        var exposedRef = cmShot.VirtualCamera;
+                        var resolved = exposedRef.Resolve(director);
+                        var equality = ReferenceEquals(resolved, vcam);
+                        if (vcam == resolved)
+                        {
+                            references.Add(exposedRef);
+                        }
+                    }
+                }
+
+                return references;
             }
         }
     }
