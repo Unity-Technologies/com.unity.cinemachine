@@ -73,8 +73,8 @@ namespace Cinemachine
         [HideFoldout]
         public ScreenComposerSettings Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
 
-        /// <summary>If checked, then then soft zone will be unlimited in size</summary>
-        [Tooltip("If checked, then then soft zone will be unlimited in size.")]
+        /// <summary>If enabled, then then soft zone will be unlimited in size</summary>
+        [Tooltip("If enabled, then then soft zone will be unlimited in size.")]
         public bool UnlimitedSoftZone = false;
 
         /// <summary>Force target to center of screen when this camera activates.  
