@@ -1,9 +1,9 @@
-using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineTransposer))]
     [CanEditMultipleObjects]
     internal class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
@@ -17,8 +17,8 @@ namespace Cinemachine.Editor
             switch (Target.m_BindingMode)
             {
                 default:
-                case CinemachineTransposer.BindingMode.LockToTarget:
-                    if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
+                case TargetTracking.BindingMode.LockToTarget:
+                    if (Target.m_AngularDampingMode == TargetTracking.AngularDampingMode.Euler)
                         excluded.Add(FieldPath(x => x.m_AngularDamping));
                     else
                     {
@@ -27,26 +27,26 @@ namespace Cinemachine.Editor
                         excluded.Add(FieldPath(x => x.m_RollDamping));
                     }
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
+                case TargetTracking.BindingMode.LockToTargetNoRoll:
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
+                case TargetTracking.BindingMode.LockToTargetWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetOnAssign:
-                case CinemachineTransposer.BindingMode.WorldSpace:
+                case TargetTracking.BindingMode.LockToTargetOnAssign:
+                case TargetTracking.BindingMode.WorldSpace:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
+                case TargetTracking.BindingMode.SimpleFollowWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_XDamping));
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
@@ -71,12 +71,7 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }
-#if UNITY_2021_2_OR_NEWER
-        void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-        
+
         protected virtual void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -87,19 +82,24 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
-        void DrawSceneTools()
+        void OnSceneGUI()
         {
             var transposer = Target;
             if (transposer == null || !transposer.IsValid)
-            {
                 return;
-            }
-
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(transposer);
+                var property = new SerializedObject(Target).FindProperty(() => Target.m_FollowOffset);
+                var up = Target.VirtualCamera.State.ReferenceUp;
+                CinemachineSceneToolHelpers.FollowOffsetTool(
+                    Target.VirtualCamera, property, Target.GetTargetCameraPosition(up),
+                    Target.FollowTargetPosition, Target.GetReferenceOrientation(up), () =>
+                    {
+                        // Sanitize the offset
+                        property.vector3Value = Target.EffectiveOffset;
+                        property.serializedObject.ApplyModifiedProperties();
+                    });
             }
         }
-#endif
     }
 }

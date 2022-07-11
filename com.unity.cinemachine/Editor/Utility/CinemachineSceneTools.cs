@@ -418,44 +418,37 @@ namespace Cinemachine.Editor
             Handles.color = originalColor;
         }
 
-        public static void TransposerFollowOffsetTool(CinemachineTransposer cmComponent)
+        public static void FollowOffsetTool(
+            CinemachineVirtualCameraBase vcam, SerializedProperty offsetProperty, 
+            Vector3 camPos, Vector3 targetPosition, Quaternion targetRotation, 
+            Action OnChanged = null)
         {
             var originalColor = Handles.color;
             
-            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cmComponent.VirtualCamera);
-            var up = brain != null ? brain.DefaultWorldUp : Vector3.up;
-            var camPos = cmComponent.GetTargetCameraPosition(up);
-            var camRot = cmComponent.GetReferenceOrientation(up);
-        
             EditorGUI.BeginChangeCheck();
             var foHandleIds = Handles.PositionHandleIds.@default;
-            var newPos = Handles.PositionHandle(foHandleIds, camPos, camRot);
+            var newPos = Handles.PositionHandle(foHandleIds, camPos, targetRotation);
             var foHandleMinId = foHandleIds.x - 1;
             var foHandleMaxId = foHandleIds.xyz + 1;
 
             if (EditorGUI.EndChangeCheck())
             {
-                var so = new SerializedObject(cmComponent);
-                var followOffset = so.FindProperty(() => cmComponent.m_FollowOffset);
-                followOffset.vector3Value += PositionHandleDelta(camRot, newPos, camPos);
-                so.ApplyModifiedProperties();
-                followOffset.vector3Value = cmComponent.EffectiveOffset;
-                so.ApplyModifiedProperties();
+                offsetProperty.vector3Value += PositionHandleDelta(targetRotation, newPos, camPos);
+                offsetProperty.serializedObject.ApplyModifiedProperties();
+                OnChanged?.Invoke();
             }
         
-            var followOffsetHandleIsDragged = 
-                foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-            var followOffsetHandleIsDraggedOrHovered = followOffsetHandleIsDragged || 
+            var offset = offsetProperty.vector3Value;
+            var isDragged = foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
+            var isDraggedOrHovered = isDragged || 
                 foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
-            if (followOffsetHandleIsDraggedOrHovered)
-            {
-                DrawLabel(camPos, "Follow offset " + cmComponent.m_FollowOffset.ToString("F1"));
-            }
+            if (isDraggedOrHovered)
+                DrawLabel(camPos, offsetProperty.displayName + " " + offset.ToString("F1"));
         
-            Handles.color = followOffsetHandleIsDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
-            Handles.DrawDottedLine(cmComponent.FollowTargetPosition, camPos, k_DottedLineSpacing);
+            Handles.color = isDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
+            Handles.DrawDottedLine(targetPosition, camPos, k_DottedLineSpacing);
             
-            SoloOnDrag(followOffsetHandleIsDragged, cmComponent.VirtualCamera, foHandleMaxId);
+            SoloOnDrag(isDragged, vcam, foHandleMaxId);
             
             Handles.color = originalColor;
         }

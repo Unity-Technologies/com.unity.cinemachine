@@ -35,6 +35,7 @@ namespace Cinemachine.Editor
             typeof(CinemachineVirtualCamera),
             typeof(CinemachineFreeLook),
             typeof(CinemachineComposer),
+            typeof(CinemachineTransposer),
             typeof(CinemachineFramingTransposer),
             typeof(CinemachinePOV),
             typeof(CinemachineOrbitalTransposer),
@@ -86,6 +87,8 @@ namespace Cinemachine.Editor
                 // Upgrade the pipeline components (there will be more of these...)
                 if (ReplaceComponent<CinemachineComposer, CinemachineRotationComposer>(go))
                      go.GetComponent<CinemachineComposer>().UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
+                if (ReplaceComponent<CinemachineTransposer, CinemachineFollow>(go))
+                     go.GetComponent<CinemachineTransposer>().UpgradeToCm3(go.GetComponent<CinemachineFollow>());
                 if (ReplaceComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go))
                      go.GetComponent<CinemachineFramingTransposer>().UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
                 if (ReplaceComponent<CinemachinePOV, CinemachinePanTilt>(go))
@@ -439,8 +442,8 @@ namespace Cinemachine.Editor
             // Do we need a modifier?
             var topDamping = new Vector3(top.m_XDamping, top.m_YDamping, top.m_ZDamping);
             var bottomDamping = new Vector3(bottom.m_XDamping, bottom.m_YDamping, bottom.m_ZDamping);
-            if (!(orbital.PositionDamping - topDamping).AlmostZero()
-                || !(orbital.PositionDamping - bottomDamping).AlmostZero())
+            if (!(orbital.TrackerSettings.PositionDamping - topDamping).AlmostZero()
+                || !(orbital.TrackerSettings.PositionDamping - bottomDamping).AlmostZero())
             {
                 freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.PositionDampingModifier
                 {
