@@ -58,7 +58,7 @@ namespace Cinemachine
         /// The opacity of the image.  0 is transparent, 1 is opaque
         /// </summary>
         [Tooltip("The opacity of the image.  0 is transparent, 1 is opaque")]
-        [Range(0, 1)]
+        [RangeSlider(0, 1)]
         public float m_Alpha = 1;
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Cinemachine
         /// <summary>
         /// Wipe the image on and off horizontally
         /// </summary>
-        [Range(-1, 1)]
+        [RangeSlider(-1, 1)]
         [Tooltip("Wipe the image on and off horizontally")]
         public float m_SplitView = 0f;
 

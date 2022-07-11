@@ -57,6 +57,7 @@ namespace Cinemachine
     {
         /// <summary>The current value of the axis.  You can drive this directly from a script</summary>
         [Tooltip("The current value of the axis.  You can drive this directly from a script.")]
+        [NoSaveDuringPlay]
         public float Value;
 
         /// <summary>The current value of the axis.  You can drive this directly from a script</summary>
@@ -128,6 +129,7 @@ namespace Cinemachine
     {
         /// <summary>If set, will enable automatic recentering of the axis</summary>
         [Tooltip("If set, will enable automatic recentering of the axis")]
+        [NoSaveDuringPlay]
         public bool Enabled;
 
         /// <summary>If no user input has been detected on the axis for this man
@@ -157,6 +159,7 @@ namespace Cinemachine
     {
         /// <summary>The value of the user input for this frame.</summary>
         [Tooltip("The value of the user input for this frame")]
+        [NoSaveDuringPlay]
         public float InputValue;
 
         /// <summary>The amount of time in seconds it takes to accelerate to

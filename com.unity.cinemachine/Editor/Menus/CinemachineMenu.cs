@@ -47,7 +47,7 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, true);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            Undo.AddComponent<CinemachineTransposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineFollow>(vcam.gameObject);
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
         }
 
@@ -160,7 +160,7 @@ namespace Cinemachine.Editor
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             Undo.AddComponent<CinemachineGroupComposer>(vcam.gameObject);
-            Undo.AddComponent<CinemachineTransposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineFollow>(vcam.gameObject);
 
             var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
                 "Target Group", command.context as GameObject, true);

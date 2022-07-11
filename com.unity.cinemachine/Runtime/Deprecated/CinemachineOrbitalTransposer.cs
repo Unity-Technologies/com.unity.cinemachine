@@ -7,6 +7,7 @@ using System;
 using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
+using Cinemachine.TargetTracking;
 
 namespace Cinemachine
 {
@@ -61,7 +62,7 @@ namespace Cinemachine
 
             /// <summary>Size of the velocity sampling window for target heading filter.
             /// Used only if deriving heading from target's movement</summary>
-            [Range(0, 10)]
+            [RangeSlider(0, 10)]
             [Tooltip("Size of the velocity sampling window for target heading filter.  This filters out "
                 + "irregularities in the target's movement.  Used only if deriving heading from target's "
                 + "movement (PositionDelta or Velocity)")]
@@ -69,7 +70,7 @@ namespace Cinemachine
 
             /// <summary>Additional Y rotation applied to the target heading.
             /// When this value is 0, the camera will be placed behind the target</summary>
-            [Range(-180f, 180f)]
+            [RangeSlider(-180f, 180f)]
             [FormerlySerializedAs("m_HeadingBias")]
             [Tooltip("Where the camera is placed when the X-axis value is zero.  This is a rotation in "
                 + "degrees around the Y axis.  When this value is 0, the camera will be placed behind "
@@ -105,6 +106,11 @@ namespace Cinemachine
             + "in response to the player's input.")]
         [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
+
+        /// <summary>
+        /// Helper object that tracks the Follow target, with damping
+        /// </summary>
+        Tracker m_TargetTracker;
 
         /// <summary>Legacy support</summary>
         [SerializeField] [HideInInspector] [FormerlySerializedAs("m_Radius")] private float m_LegacyRadius = float.MaxValue;
@@ -156,7 +162,7 @@ namespace Cinemachine
         /// private AxisState object, and that AxisState object will be updated and
         /// used to calculate the heading.
         /// </summary>
-        internal UpdateHeadingDelegate HeadingUpdater
+        internal UpdateHeadingDelegate HeadingUpdater 
             = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
@@ -255,7 +261,7 @@ namespace Cinemachine
         private Transform m_PreviousTarget;
         private Vector3 m_LastCameraPosition;
 
-        /// <summary>This is called to notify the us that a target got warped,
+        /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
@@ -296,7 +302,7 @@ namespace Cinemachine
             m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
-                && m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp
+                && m_BindingMode != BindingMode.SimpleFollowWithWorldUp
                 && transitionParams.m_InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
@@ -366,8 +372,7 @@ namespace Cinemachine
 
                 // Track the target, with damping
                 m_TargetTracker.TrackTarget(
-                    this, m_BindingMode, deltaTime, curState.ReferenceUp, offset, 
-                    Damping, AngularDamping, m_AngularDamping, m_AngularDampingMode,
+                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                     out Vector3 pos, out Quaternion orient);
 
                 // Place the camera
@@ -400,7 +405,7 @@ namespace Cinemachine
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
         /// <param name="worldUp">Current effective world up</param>
         /// <returns>The position of the Follow target</returns>
-        public override Vector3 GetTargetCameraPosition(Vector3 worldUp)
+        internal override Vector3 GetTargetCameraPosition(Vector3 worldUp)
         {
             if (!IsValid)
                 return Vector3.zero;
@@ -474,11 +479,7 @@ namespace Cinemachine
         // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineOrbitalFollow c)
         {
-            c.BindingMode = m_BindingMode;
-            c.RotationDampingMode = m_AngularDampingMode;
-            c.RotationDamping = new Vector3(m_YawDamping, m_PitchDamping, m_RollDamping);
-            c.QuaternionDamping = m_AngularDamping;
-            c.PositionDamping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
+            c.TrackerSettings = TrackerSettings;
             c.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
             c.Radius = -m_FollowOffset.z;
 

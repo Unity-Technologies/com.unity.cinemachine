@@ -73,8 +73,8 @@ namespace Cinemachine
         [HideFoldout]
         public ScreenComposerSettings Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
 
-        /// <summary>If checked, then then soft zone will be unlimited in size</summary>
-        [Tooltip("If checked, then then soft zone will be unlimited in size.")]
+        /// <summary>If enabled, then then soft zone will be unlimited in size</summary>
+        [Tooltip("If enabled, then then soft zone will be unlimited in size.")]
         public bool UnlimitedSoftZone = false;
 
         /// <summary>Force target to center of screen when this camera activates.  
@@ -268,7 +268,7 @@ namespace Cinemachine
         /// <summary>Internal API for inspector</summary>
         internal Vector3 TrackedPoint { get; private set; }
 
-        /// <summary>This is called to notify the us that a target got warped,
+        /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
