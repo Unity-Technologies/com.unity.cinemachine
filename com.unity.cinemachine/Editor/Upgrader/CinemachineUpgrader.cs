@@ -218,7 +218,7 @@ namespace Cinemachine.Editor
             public string originalName;
             public string originalGUIDName;
             public string convertedGUIDName;
-            public Dictionary<PlayableDirector, List<ExposedReference<CinemachineVirtualCameraBase>>> timelineReferences;
+            public Dictionary<KeyValuePair<string, int>, List<ExposedReference<CinemachineVirtualCameraBase>>> timelineReferences;
         }
         
         void UpgradePrefabsAndPrefabInstances()
@@ -253,7 +253,7 @@ namespace Cinemachine.Editor
                     
                     var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
                     var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
-
+                    
                     var convertedCopy = Object.Instantiate(go);
                     UpgradeObjectComponents(convertedCopy, null);
                     var conversionLink = new ConversionLink
@@ -301,15 +301,23 @@ namespace Cinemachine.Editor
 
             // In each scene, restore modifications in all prefab instances by copying data
             // from the linked converted copy of the prefab instance.
+            
+            Debug.Log("Prefab instance modification sync stage");
             for (int s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                Debug.Log("scene:"+ s);
                 var timelineManager = new TimelineManager(scene);
                 var conversionLinks = conversionLinksPerScene[m_SceneManager.GetScenePath(s)];
                 var allGameObjectsInScene = GetAllGameObjects();
 
                 foreach (var conversionLink in conversionLinks)
                 {
+                    foreach (var (director, references) in conversionLink.timelineReferences)
+                    {
+                        Debug.Log("conversionLink:" +director.Key + "-" + director.Value);
+                    }
+                    
                     var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                     var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
                  
@@ -620,10 +628,13 @@ namespace Cinemachine.Editor
             {
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
-                    if (!link.timelineReferences.ContainsKey(director))
+                    var directorId = director.GetInstanceID();
+                    var key = new KeyValuePair<string, int>(director.name, directorId);
+                    Debug.Log("UpdateTimelineReference:" + key.Key + "-" + key.Value);
+                    if (!link.timelineReferences.ContainsKey(key))
                         continue;
                     
-                    var references = link.timelineReferences[director];
+                    var references = link.timelineReferences[key];
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
@@ -638,13 +649,15 @@ namespace Cinemachine.Editor
                 }
             }
 
-            public Dictionary<PlayableDirector, List<ExposedReference<CinemachineVirtualCameraBase>>> 
+            public Dictionary<KeyValuePair<string, int>, List<ExposedReference<CinemachineVirtualCameraBase>>> 
                 GetTimelineReferences(CinemachineVirtualCameraBase vcam)
             {
-                var d = new Dictionary<PlayableDirector, List<ExposedReference<CinemachineVirtualCameraBase>>>();
+                var d = new Dictionary<KeyValuePair<string, int>, List<ExposedReference<CinemachineVirtualCameraBase>>>();
+                Debug.Log("GetTimelineReferences:");
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
-                    Debug.Log(director.name + "-" + director.GetInstanceID());
+                    var id = director.GetInstanceID();
+                    Debug.Log(director.name + "-" + id);
                     var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
                     foreach (var cmShot in cmShots)
                     {
@@ -652,7 +665,7 @@ namespace Cinemachine.Editor
                         if (vcam == exposedRef.Resolve(director))
                             references.Add(exposedRef);
                     }
-                    d.Add(director, references);
+                    d.Add(new KeyValuePair<string, int>(director.name, id), references);
                 }
 
                 return d;
