@@ -235,7 +235,6 @@ namespace Cinemachine.Editor
                 var timelineManager = new TimelineManager(scene);
 
                 var conversionLinks = new List<ConversionLink>();
-                conversionLinksPerScene.Add(m_SceneManager.GetScenePath(s), conversionLinks);
                     
                 List<GameObject> allPrefabInstances = new List<GameObject>();
                 for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
@@ -269,6 +268,7 @@ namespace Cinemachine.Editor
                     PrefabUtility.RecordPrefabInstancePropertyModifications(go); // record name change
                 }
 
+                conversionLinksPerScene.Add(m_SceneManager.GetScenePath(s), conversionLinks);
                 // save changes (i.e. converted prefab instances)
                 EditorSceneManager.SaveScene(scene); 
             }
@@ -627,9 +627,12 @@ namespace Cinemachine.Editor
                         var exposedRef = cmShot.VirtualCamera;
                         foreach (var reference in references)
                         {
+                            // find linked pair
                             if (exposedRef.exposedName == reference.exposedName)
                             {
-                                director.SetReferenceValue(exposedRef.exposedName, upgraded);
+                                // update reference if it needs to be updated <=> null
+                                if (exposedRef.Resolve(director) == null)
+                                    director.SetReferenceValue(exposedRef.exposedName, upgraded);
                             }
                         }
                     }
