@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
+- Bugfix: SensorSize is not saved when not using physical camera.
 
 
 ## [2.8.6] - 2022-05-03

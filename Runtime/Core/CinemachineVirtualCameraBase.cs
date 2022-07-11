@@ -28,7 +28,7 @@ namespace Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
+    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera, ISerializationCallbackReceiver
     {
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
@@ -858,5 +858,23 @@ namespace Cinemachine
         /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
+
+        /// <summary>Pre-Serialization handler - delegates to derived classes</summary>
+        void ISerializationCallbackReceiver.OnBeforeSerialize() => OnBeforeSerialize();
+
+        /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                LegacyUpgrade(m_StreamingVersion);
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
+        }
+        
+        /// <summary>
+        /// Override this to handle any upgrades necessitated by a streaming version change
+        /// </summary>
+        /// <param name="streamedVersion">The version that was streamed</param>
+        internal protected virtual void LegacyUpgrade(int streamedVersion) {}
+        internal virtual void OnBeforeSerialize() {}
     }
 }
