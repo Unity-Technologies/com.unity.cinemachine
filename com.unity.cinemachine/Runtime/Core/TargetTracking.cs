@@ -39,7 +39,7 @@ namespace Cinemachine.TargetTracking
     public enum AngularDampingMode
     {
         /// <summary>Use Euler angles to specify damping values.
-        /// Subject to gimbal-lock fwhen pitch is steep.</summary>
+        /// Subject to gimbal-lock when pitch is steep.</summary>
         Euler,
         /// <summary>
         /// Use quaternions to calculate angular damping.
@@ -107,6 +107,7 @@ namespace Cinemachine.TargetTracking
         /// <summary>
         /// Called from OnValidate().  Makes sure the settings are sensible.
         /// </summary>
+        /// <param name="s">The tracker settings</param>
         public static void Validate(this TrackerSettings s)
         {
             s.PositionDamping.x = Mathf.Max(0, s.PositionDamping.x);
@@ -121,8 +122,9 @@ namespace Cinemachine.TargetTracking
         /// <summary>
         /// Report maximum damping time needed for the current binding mode.
         /// </summary>
+        /// <param name="s">The tracker settings</param>
         /// <returns>Highest damping setting in this mode</returns>
-        static public float GetMaxDampTime(this TrackerSettings s) 
+        public static float GetMaxDampTime(this TrackerSettings s) 
         { 
             var d = s.GetEffectivePositionDamping();
             var d2 = s.AngularDampingMode == AngularDampingMode.Euler 
@@ -136,7 +138,7 @@ namespace Cinemachine.TargetTracking
         /// Get the effective position damping setting for current binding mode.
         /// For some binding modes, some axes are not damped.
         /// </summary>
-        /// <param name="binding">The binding mode in question</param>
+        /// <param name="s">The tracker settings</param>
         /// <returns>The damping settings applicable for this binding mode</returns>
         internal static Vector3 GetEffectivePositionDamping(this TrackerSettings s)
         {
@@ -148,6 +150,7 @@ namespace Cinemachine.TargetTracking
         /// Get the effective rotation damping setting for current binding mode.
         /// For some binding modes, some axes are not damped.
         /// </summary>
+        /// <param name="s">The tracker settings</param>
         /// <returns>The damping settings applicable for this binding mode</returns>
         internal static Vector3 GetEffectiveRotationDamping(this TrackerSettings s)
         {
@@ -169,7 +172,7 @@ namespace Cinemachine.TargetTracking
     /// <summary>
     /// Helper object for implementing target following with damping
     /// </summary>
-    internal struct Tracker
+    struct Tracker
     {
         /// <summary>State information for damping</summary>
         public Vector3 PreviousTargetPosition { get; private set; }
@@ -179,7 +182,7 @@ namespace Cinemachine.TargetTracking
 
         Quaternion m_TargetOrientationOnAssign;
         Vector3 m_PreviousOffset;
-        Transform m_previousTarget;
+        Transform m_PreviousTarget;
         
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
         /// <param name="component">The component caller</param>
@@ -191,9 +194,9 @@ namespace Cinemachine.TargetTracking
             BindingMode bindingMode, Vector3 up)
         {
             bool prevStateValid = deltaTime >= 0 && component.VirtualCamera.PreviousStateIsValid;
-            if (m_previousTarget != component.FollowTarget || !prevStateValid)
+            if (m_PreviousTarget != component.FollowTarget || !prevStateValid)
             {
-                m_previousTarget = component.FollowTarget;
+                m_PreviousTarget = component.FollowTarget;
                 m_TargetOrientationOnAssign = component.FollowTargetRotation;
             }
             if (!prevStateValid)
@@ -249,11 +252,10 @@ namespace Cinemachine.TargetTracking
 
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="component">The component caller</param>
-        /// <param name="bindingMode">Current binding mode for damping and offset</param>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">Current camera up</param>
         /// <param name="desiredCameraOffset">Where we want to put the camera relative to the follow target</param>
-        /// <param name="damping">Damping settings</param>
+        /// <param name="settings">Ttracker settings</param>
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
         public void TrackTarget(
@@ -365,7 +367,7 @@ namespace Cinemachine.TargetTracking
             return posOffset;
         }
 
-        /// <summary>This is called to notify the us that a target got warped,
+        /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="positionDelta">The amount the target's position changed</param>

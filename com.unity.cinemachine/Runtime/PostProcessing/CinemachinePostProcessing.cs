@@ -57,7 +57,7 @@ namespace Cinemachine.PostFX
         /// number in order to ensure that it overrides other volumes for the active vcam.
         /// You can change this value if necessary to work with other systems.
         /// </summary>
-        static public float s_VolumePriority = 1000f;
+        public static float s_VolumePriority = 1000f;
 
         /// <summary>This is obsolete, please use m_FocusTracking</summary>
         [HideInInspector]

@@ -194,7 +194,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>This is called to notify the us that a target got warped,
+        /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
