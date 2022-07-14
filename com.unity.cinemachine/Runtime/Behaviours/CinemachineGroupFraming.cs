@@ -125,15 +125,15 @@ namespace Cinemachine
 
         class VcamExtraState
         {
-            public Vector3 posAdjustment;
-            public Vector2 rotAdjustment;
-            public float fovAdjustment;
+            public Vector3 PosAdjustment;
+            public Vector2 RotAdjustment;
+            public float FovAdjustment;
 
             public void Reset()
             {
-                posAdjustment = Vector3.zero;
-                rotAdjustment = Vector2.zero;
-                fovAdjustment = 0;
+                PosAdjustment = Vector3.zero;
+                RotAdjustment = Vector2.zero;
+                FovAdjustment = 0;
             }
         };
 
@@ -185,8 +185,8 @@ namespace Cinemachine
             var camPos = GroupBounds.center; 
             camPos.z = 0; // don't change the camera's distance from the group
 
-            extra.posAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.posAdjustment, damping, deltaTime);
-            state.RawPosition += state.RawOrientation * extra.posAdjustment;
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
+            state.RawPosition += state.RawOrientation * extra.PosAdjustment;
             
             // Ortho size adjustment
             var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, state.Lens.Aspect) * 0.5f;
@@ -194,8 +194,8 @@ namespace Cinemachine
 
             var lens = state.Lens;
             var deltaFov = targetHeight - lens.OrthographicSize;
-            extra.fovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.fovAdjustment, damping, deltaTime);
-            lens.OrthographicSize += extra.fovAdjustment;
+            extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
+            lens.OrthographicSize += extra.FovAdjustment;
             state.Lens = lens;
         }
 
@@ -237,18 +237,18 @@ namespace Cinemachine
             // Apply the adjustments
             var lens = state.Lens;
             var deltaFov = fov - lens.FieldOfView;
-            extra.fovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.fovAdjustment, damping, deltaTime);
-            lens.FieldOfView += extra.fovAdjustment;
+            extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
+            lens.FieldOfView += extra.FovAdjustment;
             state.Lens = lens;
 
             var deltaRot = state.RawOrientation.GetCameraRotationToTarget(camRot * Vector3.forward, up);
-            extra.rotAdjustment.x += vcam.DetachedFollowTargetDamp(deltaRot.x - extra.rotAdjustment.x, damping, deltaTime);
-            extra.rotAdjustment.y += vcam.DetachedFollowTargetDamp(deltaRot.y - extra.rotAdjustment.y, damping, deltaTime);
-            state.OrientationCorrection = state.OrientationCorrection * Quaternion.identity.ApplyCameraRotation(extra.rotAdjustment, up);
+            extra.RotAdjustment.x += vcam.DetachedFollowTargetDamp(deltaRot.x - extra.RotAdjustment.x, damping, deltaTime);
+            extra.RotAdjustment.y += vcam.DetachedFollowTargetDamp(deltaRot.y - extra.RotAdjustment.y, damping, deltaTime);
+            state.OrientationCorrection = state.OrientationCorrection * Quaternion.identity.ApplyCameraRotation(extra.RotAdjustment, up);
 
             var deltaPos = Quaternion.Inverse(state.RawOrientation) * (camPos - state.RawPosition);
-            extra.posAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.posAdjustment, damping, deltaTime);
-            state.PositionCorrection += state.RawOrientation * extra.posAdjustment;
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.PosAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
         }
 
         void AdjustSize(
