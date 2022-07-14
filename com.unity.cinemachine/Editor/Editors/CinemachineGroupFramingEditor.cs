@@ -36,8 +36,8 @@ namespace Cinemachine.Editor
             var sizeAdjustmentProperty = serializedTarget.FindProperty(() => Target.SizeAdjustment);
             m_PerspectiveControls.Add(new PropertyField(sizeAdjustmentProperty));
             m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.LateralAdjustment)));
-            var dollyRange = m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
             var fovRange = m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
+            var dollyRange = m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
 
             m_OrthoControls = ux.AddChild(new VisualElement());
             m_OrthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));

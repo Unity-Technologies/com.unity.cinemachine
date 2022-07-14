@@ -73,15 +73,17 @@ namespace Cinemachine
         [Tooltip("How to adjust the camera to get the desired horizontal and vertical framing.")]
         public LateralAdjustmentModes LateralAdjustment = LateralAdjustmentModes.ChangePosition;
         
-        /// <summary>Allowable range for the camera to move.  0 is the undollied position</summary>
-        [Tooltip("Allowable range for the camera to move.  0 is the undollied position.")]
-        [Vector2AsRange]
-        public Vector2 DollyRange = new Vector2(-100, 100);
-
         /// <summary>Allowable FOV range, if adjusting FOV</summary>
         [Tooltip("Allowable FOV range, if adjusting FOV.")]
-        [Vector2AsRange]
+        [MinMaxRangeSlider(1, 179)]
         public Vector2 FovRange = new Vector2(1, 100);
+
+        /// <summary>Allowable range for the camera to move.  0 is the undollied position.  
+        /// Negative values move the camera closer to the target.</summary>
+        [Tooltip("Allowable range for the camera to move.  0 is the undollied position.  "
+            + "Negative values move the camera closer to the target.")]
+        [Vector2AsRange]
+        public Vector2 DollyRange = new Vector2(-100, 100);
 
         /// <summary>Allowable orthographic size range, if adjusting orthographic size</summary>
         [Tooltip("Allowable orthographic size range, if adjusting orthographic size.")]
