@@ -51,6 +51,7 @@ namespace Cinemachine.Editor
                 dollyRange.SetVisible(haveDolly);
             });
             
+            UpdateVisibility();
             return ux;
         }
 
