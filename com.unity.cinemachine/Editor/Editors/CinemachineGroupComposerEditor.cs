@@ -9,10 +9,11 @@ namespace Cinemachine.Editor
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineGroupComposer))]
-    internal class CinemachineGroupComposerEditor : CinemachineComposerEditor
+    class CinemachineGroupComposerEditor : CinemachineComposerEditor
     {
         // Specialization
-        private CinemachineGroupComposer MyTarget { get { return target as CinemachineGroupComposer; } }
+        CinemachineGroupComposer MyTarget => target as CinemachineGroupComposer;
+
         protected string FieldPath<TValue>(Expression<Func<CinemachineGroupComposer, TValue>> expr)
         {
             return ReflectionHelpers.GetFieldPath(expr);
@@ -68,7 +69,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupComposer))]
-        private static void DrawGroupComposerGizmos(CinemachineGroupComposer target, GizmoType selectionType)
+        static void DrawGroupComposerGizmos(CinemachineGroupComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
             if (target.AbstractLookAtTargetGroup != null)
