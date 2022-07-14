@@ -52,9 +52,7 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            var noTargetHelp = ux.AddChild(new HelpBox(
-                "A Tracking target is required.  Change Position Control to None if you don't want a Tracking target.", 
-                HelpBoxMessageType.Warning));
+            var noTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));

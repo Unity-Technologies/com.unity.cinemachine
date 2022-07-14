@@ -356,6 +356,9 @@ namespace Cinemachine
             if (!RigsAreCreated)
                 return;
 
+            if (deltaTime < 0)
+                PreviousStateIsValid = false;
+
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
             ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);

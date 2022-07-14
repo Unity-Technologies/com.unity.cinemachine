@@ -186,11 +186,11 @@ namespace Cinemachine
             Bounds b;
             if (isOrthographic)
             {
-                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix, true);
                 groupCenter = LastBoundsMatrix.MultiplyPoint3x4(b.center);
                 fwd = (groupCenter - cameraPos).normalized;
                 LastBoundsMatrix = Matrix4x4.TRS(cameraPos, Quaternion.LookRotation(fwd, up), Vector3.one);
-                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix, true);
                 LastBounds = b;
             }
             else
@@ -305,7 +305,7 @@ namespace Cinemachine
             group.GetViewSpaceAngularBounds(observer, out var minAngles, out var maxAngles, out var zRange);
             var shift = (minAngles + maxAngles) / 2;
 
-            newFwd = Quaternion.identity.ApplyCameraRotation(new Vector2(-shift.x, shift.y), Vector3.up) * Vector3.forward;
+            newFwd = Quaternion.identity.ApplyCameraRotation(shift, Vector3.up) * Vector3.forward;
             newFwd = observer.MultiplyVector(newFwd);
 
             // For width and height (in camera space) of the bounding box, we use the values at the center of the box.

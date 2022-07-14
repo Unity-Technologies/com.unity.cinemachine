@@ -201,6 +201,8 @@ namespace Cinemachine
 
             FollowTargetAttachment = 1;
             LookAtTargetAttachment = 1;
+            if (deltaTime < 0)
+                PreviousStateIsValid = false;
 
             // Initialize the camera state, in case the game object got moved in the editor
             m_State = PullStateFromVirtualCamera(worldUp, ref Lens);
@@ -312,7 +314,7 @@ namespace Cinemachine
         /// <summary>Get the component set for a specific stage in the pipeline.</summary>
         /// <param name="stage">The stage for which we want the component</param>
         /// <returns>The Cinemachine component for that stage, or null if not present.</returns>
-        public CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
+        public override CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
         {
             UpdatePipelineCache();
             var i = (int)stage;
