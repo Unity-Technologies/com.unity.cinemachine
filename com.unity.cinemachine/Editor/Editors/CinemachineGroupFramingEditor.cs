@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineGroupFraming))]
     [CanEditMultipleObjects]
-    internal class CinemachineGroupFramingEditor : UnityEditor.Editor
+    class CinemachineGroupFramingEditor : UnityEditor.Editor
     {
         CinemachineGroupFraming Target => target as CinemachineGroupFraming;
 
@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupFraming))]
-        private static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
+        static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
             if (target.enabled && target.VirtualCamera.AbstractFollowTargetGroup != null)

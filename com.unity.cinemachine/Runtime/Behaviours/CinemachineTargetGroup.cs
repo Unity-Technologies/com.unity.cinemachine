@@ -37,7 +37,7 @@ namespace Cinemachine
         Bounds GetViewSpaceBoundingBox(Matrix4x4 observer, bool includeBehind);
 
         /// <summary>
-        /// Get the local-space angular bounds of the group, from a spoecific point of view.
+        /// Get the local-space angular bounds of the group, from a specific point of view.
         /// Also returns the z depth range of the members.
         /// Members behind the observer (negative z) will be ignored.
         /// </summary>
@@ -220,6 +220,7 @@ namespace Cinemachine
 
         /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
         /// <param name="observer">The frame of reference in which to compute the bounding box</param>
+        /// <param name="includeBehind">If true, members behind the observer (negative z) will be included</param>
         /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
         public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer, bool includeBehind)
         {
