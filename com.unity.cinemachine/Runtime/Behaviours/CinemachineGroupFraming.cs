@@ -231,7 +231,7 @@ namespace Cinemachine
             // Approximate looking at the group center, then correct for actual center
             ComputeCameraViewGroupBounds(group, ref camPos, ref camRot, moveCamera);
 
-            AdjustSize(group, state.Lens.Aspect, up, ref camPos, ref camRot, ref fov, ref dollyAmount);
+            AdjustSize(group, state.Lens.Aspect, ref camPos, ref camRot, ref fov, ref dollyAmount);
 
             // Apply the adjustments
             var lens = state.Lens;
@@ -251,7 +251,7 @@ namespace Cinemachine
         }
 
         void AdjustSize(
-            ICinemachineTargetGroup group, float aspect, Vector3 up,
+            ICinemachineTargetGroup group, float aspect,
             ref Vector3 camPos, ref Quaternion camRot, ref float fov, ref float dollyAmount)
         {
             // Dolly mode: Adjust camera distance
