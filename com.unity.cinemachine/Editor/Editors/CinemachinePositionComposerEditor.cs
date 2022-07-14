@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePositionComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachinePositionComposerEditor : UnityEditor.Editor
+    class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
@@ -19,11 +19,11 @@ namespace Cinemachine.Editor
         protected virtual void OnEnable()
         {
             m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
-            m_ScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
-            m_ScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
+            m_ScreenGuideEditor.GetHardGuide = () => Target.HardGuideRect;
+            m_ScreenGuideEditor.GetSoftGuide = () => Target.SoftGuideRect;
             m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
             m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
-            m_ScreenGuideEditor.Target = () => { return serializedObject; };
+            m_ScreenGuideEditor.Target = () => serializedObject;
 
             m_GameViewEventCatcher = new GameViewEventCatcher();
             m_GameViewEventCatcher.OnEnable();
