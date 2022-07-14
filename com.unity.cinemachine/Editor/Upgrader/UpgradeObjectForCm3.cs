@@ -388,11 +388,8 @@ namespace Cinemachine.Editor
                 {
                     freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.LensModifier
                     {
-                        Lens = new CinemachineFreeLookModifier.TopBottomRigs<LensSettings>
-                        {
-                            Top = freelook.GetRig(0).m_Lens,
-                            Bottom = freelook.GetRig(2).m_Lens,
-                        }
+                        Top = freelook.GetRig(0).m_Lens,
+                        Bottom = freelook.GetRig(2).m_Lens
                     });
                 }
             }

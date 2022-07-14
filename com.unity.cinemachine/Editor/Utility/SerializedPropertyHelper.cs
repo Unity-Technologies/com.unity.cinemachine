@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using Cinemachine.Utility;
 using UnityEditor;
 
 namespace Cinemachine.Editor
@@ -63,10 +64,18 @@ namespace Cinemachine.Editor
         public static object GetPropertyValue(SerializedProperty property)
         {
             var targetObject = property.serializedObject.targetObject;
-            var targetObjectClassType = targetObject.GetType();
-            var field = targetObjectClassType.GetField(property.propertyPath);
+            var field = targetObject.GetType().GetField(property.propertyPath);
             if (field != null)
                 return field.GetValue(targetObject);
+
+            var paths = property.propertyPath.Split('.');
+            if (paths.Length > 1)
+            {
+                var fieldOwner = ReflectionHelpers.GetParentObject(property.propertyPath, targetObject);
+                field = fieldOwner.GetType().GetField(paths[paths.Length-1]);
+                if (field != null)
+                    return field.GetValue(fieldOwner);
+            }
             return null;
         }
     }

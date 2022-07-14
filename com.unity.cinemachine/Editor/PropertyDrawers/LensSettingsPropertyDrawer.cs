@@ -20,8 +20,14 @@ using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
+    [CustomPropertyDrawer(typeof(LensSettingsHideModeOverridePropertyAttribute))]
+    internal class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
+    {
+        public LensSettingsHideModeOverridePropertyDrawer() => HideModeOverride = true;
+    }
+
     [CustomPropertyDrawer(typeof(LensSettings))]
-    internal sealed class LensSettingsPropertyDrawer : PropertyDrawer
+    internal class LensSettingsPropertyDrawer : PropertyDrawer
     {
         static LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 
@@ -61,6 +67,8 @@ namespace Cinemachine.Editor
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
         static string m_EditPresetsLabel = "Edit Presets...";
+
+        protected bool HideModeOverride { get; set; }
 
         void InitPresetOptions()
         {
@@ -117,11 +125,6 @@ namespace Cinemachine.Editor
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FarClipPlane)));
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch)));
 
-            //var physicalNote = foldout.AddChild(new InspectorUtility.LeftRightContainer());
-            //physicalNote.Left.Add(new Label("Physical Camera") { style = { alignSelf = Align.Center }});
-            //physicalNote.Right.Add(new Label("(using setting in Unity Camera)")
-            //        { style = { alignSelf = Align.Center, unityFontStyleAndWeight = FontStyle.Italic }});
-
             var physical = foldout.AddChild(new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded });
             physical.RegisterValueChangedCallback((evt) => 
             {
@@ -157,11 +160,16 @@ namespace Cinemachine.Editor
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism)));
 #endif
 
-            var modeOverrideProperty = property.FindPropertyRelative("ModeOverride");
-            var modeHelp = foldout.AddChild(
-                new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
-                    HelpBoxMessageType.Warning));
-            foldout.Add(new PropertyField(modeOverrideProperty));
+            SerializedProperty modeOverrideProperty = null;
+            VisualElement modeHelp = null;
+            if (!HideModeOverride)
+            {
+                modeOverrideProperty = property.FindPropertyRelative("ModeOverride");
+                modeHelp = foldout.AddChild(
+                    new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
+                        HelpBoxMessageType.Warning));
+                foldout.Add(new PropertyField(modeOverrideProperty));
+            }
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
             DoUpdate();
@@ -172,14 +180,16 @@ namespace Cinemachine.Editor
                     return; // target deleted
                 bool isPhysical = IsPhysical(property);
                 physical.SetVisible(isPhysical);
-                //physicalNote.SetVisible(modeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None);
                 fovControl.Update(true);
                 fovControl2.Update(false);
 
-                var brainHasModeOverride = CinemachineCore.Instance.BrainCount > 0 
-                    && CinemachineCore.Instance.GetActiveBrain(0).LensModeOverride.Enabled;
-                modeHelp.SetVisible(!brainHasModeOverride
-                    && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
+                if (!HideModeOverride)
+                {
+                    var brainHasModeOverride = CinemachineCore.Instance.BrainCount > 0 
+                        && CinemachineCore.Instance.GetActiveBrain(0).LensModeOverride.Enabled;
+                    modeHelp.SetVisible(!brainHasModeOverride
+                        && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
+                }
             }
 
             return ux;
@@ -776,20 +786,22 @@ namespace Cinemachine.Editor
                         --EditorGUI.indentLevel;
                     }
                 }
-                rect.y += rect.height + vSpace;
-                s_AdvancedLensExpanded = EditorGUI.Foldout(rect, s_AdvancedLensExpanded, AdvancedLabel);
-                if (s_AdvancedLensExpanded)
+                if (!HideModeOverride)
                 {
-                    ++EditorGUI.indentLevel;
                     rect.y += rect.height + vSpace;
-                    var r = EditorGUI.IndentedRect(rect); r.height *= 2;
-                    EditorGUI.HelpBox(r, AdvancedHelpboxMessage, MessageType.Info);
+                    s_AdvancedLensExpanded = EditorGUI.Foldout(rect, s_AdvancedLensExpanded, AdvancedLabel);
+                    if (s_AdvancedLensExpanded)
+                    {
+                        ++EditorGUI.indentLevel;
+                        rect.y += rect.height + vSpace;
+                        var r = EditorGUI.IndentedRect(rect); r.height *= 2;
+                        EditorGUI.HelpBox(r, AdvancedHelpboxMessage, MessageType.Info);
 
-                    rect.y += r.height + vSpace;
-                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride));
-                    --EditorGUI.indentLevel;
+                        rect.y += r.height + vSpace;
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_LensSettingsDef.ModeOverride));
+                        --EditorGUI.indentLevel;
+                    }
                 }
-
                 --EditorGUI.indentLevel;
             }
             property.serializedObject.ApplyModifiedProperties();
@@ -816,10 +828,13 @@ namespace Cinemachine.Editor
 #endif
                 }
             }
-            // Advanced section
-            numLines += 1;
-            if (s_AdvancedLensExpanded)
-                numLines += 3;  // not correct but try to make it big enough to hold the help box
+            if (!HideModeOverride)
+            {
+                // Advanced section
+                numLines += 1;
+                if (s_AdvancedLensExpanded)
+                    numLines += 3;  // not correct but try to make it big enough to hold the help box
+            }
             return lineHeight + numLines * (lineHeight + vSpace);
         }
     }

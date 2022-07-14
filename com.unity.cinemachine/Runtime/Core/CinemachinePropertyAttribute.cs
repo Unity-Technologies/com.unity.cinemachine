@@ -79,6 +79,12 @@ namespace Cinemachine
     }
 
     /// <summary>
+    /// Property applied to LensSetting properties.  
+    /// Will cause the property drawer to hide the ModeOverride setting.
+    /// </summary>
+    public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute { }
+
+    /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }

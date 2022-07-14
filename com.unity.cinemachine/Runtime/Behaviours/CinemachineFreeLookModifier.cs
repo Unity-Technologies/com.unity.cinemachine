@@ -194,22 +194,30 @@ public class CinemachineFreeLookModifier : CinemachineExtension
     public class LensModifier : Modifier
     {
         /// <summary>Values for the top and bottom rigs</summary>
-        [HideFoldout]
-        public TopBottomRigs<LensSettings> Lens;
+        /// <summary>Settings for top orbit</summary>
+        [Tooltip("Value to take at the top of the axis range")]
+        [LensSettingsHideModeOverrideProperty]
+        public LensSettings Top;
 
+        /// <summary>Settings for bottom orbit</summary>
+        [Tooltip("Value to take at the bottom of the axis range")]
+        [LensSettingsHideModeOverrideProperty]
+        public LensSettings Bottom;
+        
         /// <summary>Called from OnValidate to calidate this component</summary>
         /// <param name="vcam">the virtual camera owner</param>
         public override void Validate(CinemachineVirtualCameraBase vcam) 
         {
-            Lens.Top.Validate();
-            Lens.Bottom.Validate();
+            Top.Validate();
+            Bottom.Validate();
         }
 
         /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
         /// <param name="vcam">the virtual camera owner</param>
         public override void Reset(CinemachineVirtualCameraBase vcam) 
         {
-            Lens.Top = Lens.Bottom = vcam == null ? LensSettings.Default : vcam.State.Lens;
+            Top = Bottom = vcam == null ? LensSettings.Default : vcam.State.Lens;
+            Top.ModeOverride = Bottom.ModeOverride = LensSettings.OverrideModes.None;
         }
 
         /// <summary>
@@ -226,10 +234,13 @@ public class CinemachineFreeLookModifier : CinemachineExtension
             CinemachineVirtualCameraBase vcam, 
             ref CameraState state, float deltaTime, float modifierValue) 
         {
+            Top.SnapshotCameraReadOnlyProperties(ref state.Lens);
+            Bottom.SnapshotCameraReadOnlyProperties(ref state.Lens);
+            Top.ModeOverride = Bottom.ModeOverride = LensSettings.OverrideModes.None;
             if (modifierValue >= 0)
-                state.Lens.Lerp(Lens.Top, modifierValue);
+                state.Lens.Lerp(Top, modifierValue);
             else
-                state.Lens.Lerp(Lens.Bottom, -modifierValue);
+                state.Lens.Lerp(Bottom, -modifierValue);
         }
     }
     
