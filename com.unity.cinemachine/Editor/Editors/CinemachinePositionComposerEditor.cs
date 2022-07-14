@@ -75,8 +75,8 @@ namespace Cinemachine.Editor
         {
             if (Target == null || m_NoTargetHelp == null)
                 return;
-            bool noTarget = false;
-            for (int i = 0; i < targets.Length; ++i)
+            var noTarget = false;
+            for (var i = 0; i < targets.Length; ++i)
                 noTarget |= targets[i] != null && (targets[i] as CinemachinePositionComposer).FollowTarget == null;
             m_NoTargetHelp.SetVisible(noTarget);
         }
