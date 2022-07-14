@@ -57,7 +57,6 @@ namespace Cinemachine.Editor
         }
 
         static bool s_PhysicalExapnded;
-        static bool s_AdvancedLensExpanded;
 
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
@@ -159,16 +158,10 @@ namespace Cinemachine.Editor
 #endif
 
             var modeOverrideProperty = property.FindPropertyRelative("ModeOverride");
-            var advanced = foldout.AddChild(new Foldout() { text = "Advanced", value = s_AdvancedLensExpanded });
-            advanced.RegisterValueChangedCallback((evt) => 
-            {
-                s_AdvancedLensExpanded = evt.newValue;
-                evt.StopPropagation();
-            });
-            var modeHelp = advanced.AddChild(
+            var modeHelp = foldout.AddChild(
                 new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
-                    HelpBoxMessageType.Info));
-            advanced.Add(new PropertyField(modeOverrideProperty));
+                    HelpBoxMessageType.Warning));
+            foldout.Add(new PropertyField(modeOverrideProperty));
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
             DoUpdate();
@@ -182,7 +175,11 @@ namespace Cinemachine.Editor
                 //physicalNote.SetVisible(modeOverrideProperty.intValue == (int)LensSettings.OverrideModes.None);
                 fovControl.Update(true);
                 fovControl2.Update(false);
-                modeHelp.SetVisible(s_AdvancedLensExpanded && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
+
+                var brainHasModeOverride = CinemachineCore.Instance.BrainCount > 0 
+                    && CinemachineCore.Instance.GetActiveBrain(0).LensModeOverride.Enabled;
+                modeHelp.SetVisible(!brainHasModeOverride
+                    && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
             }
 
             return ux;
@@ -521,6 +518,8 @@ namespace Cinemachine.Editor
         static readonly GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
         static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
         static readonly string AdvancedHelpboxMessage = "Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect";
+
+        static bool s_AdvancedLensExpanded;
 
         struct Snapshot
         {
