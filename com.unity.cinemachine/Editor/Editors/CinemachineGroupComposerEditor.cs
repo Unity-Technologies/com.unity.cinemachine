@@ -25,7 +25,7 @@ namespace Cinemachine.Editor
         {
             base.GetExcludedPropertiesInInspector(excluded);
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(MyTarget.VirtualCamera);
-            bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
+            var ortho = brain != null && brain.OutputCamera.orthographic;
             if (ortho)
             {
                 excluded.Add(FieldPath(x => x.m_AdjustmentMode));
