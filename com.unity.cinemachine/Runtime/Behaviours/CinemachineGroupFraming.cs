@@ -1,5 +1,6 @@
 ﻿using Cinemachine.Utility;
 using UnityEngine;
+
 namespace Cinemachine
 {
     /// <summary>
