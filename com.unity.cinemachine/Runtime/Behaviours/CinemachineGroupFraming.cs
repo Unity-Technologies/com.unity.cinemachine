@@ -90,11 +90,11 @@ namespace Cinemachine
         [Vector2AsRange]
         public Vector2 OrthoSizeRange = new Vector2(1, 1000);
 
-        const float kMinimumGroupSize = 0.01f;
+        const float k_MinimumGroupSize = 0.01f;
 
         void OnValidate()
         {
-            FramingSize = Mathf.Max(kMinimumGroupSize, FramingSize);
+            FramingSize = Mathf.Max(k_MinimumGroupSize, FramingSize);
             Damping = Mathf.Max(0, Damping);
             DollyRange.y = Mathf.Max(DollyRange.x, DollyRange.y);
             FovRange.x = Mathf.Clamp(FovRange.x, 1, 179);
@@ -116,7 +116,7 @@ namespace Cinemachine
             OrthoSizeRange = new Vector2(1, 1000);
         }
 
-        /// <summary>For editor visulaization of the calculated bounding box of the group</summary>
+        /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         internal Bounds GroupBounds;
 
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
@@ -124,15 +124,15 @@ namespace Cinemachine
 
         class VcamExtraState
         {
-            public Vector3 m_PosAdjustment;
-            public Vector2 m_RotAdjustment;
-            public float m_FovAdjustment;
+            public Vector3 posAdjustment;
+            public Vector2 rotAdjustment;
+            public float fovAdjustment;
 
             public void Reset()
             {
-                m_PosAdjustment = Vector3.zero;
-                m_RotAdjustment = Vector2.zero;
-                m_FovAdjustment = 0;
+                posAdjustment = Vector3.zero;
+                rotAdjustment = Vector2.zero;
+                fovAdjustment = 0;
             }
         };
 
@@ -159,7 +159,7 @@ namespace Cinemachine
                 return;
 
             var group = vcam.AbstractFollowTargetGroup;
-            if (group == null || group.Sphere.radius < kMinimumGroupSize)
+            if (group == null || group.Sphere.radius < k_MinimumGroupSize)
                 return;
 
             var extra = GetExtraState<VcamExtraState>(vcam);
@@ -182,10 +182,10 @@ namespace Cinemachine
             GroupBoundsMatrix = Matrix4x4.TRS(state.RawPosition, state.RawOrientation, Vector3.one);
             GroupBounds = group.GetViewSpaceBoundingBox(GroupBoundsMatrix, true);
             var camPos = GroupBounds.center; 
-            camPos.z = 0; // don't change the camera's distance from the goup
+            camPos.z = 0; // don't change the camera's distance from the group
 
-            extra.m_PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.m_PosAdjustment, damping, deltaTime);
-            state.RawPosition += state.RawOrientation * extra.m_PosAdjustment;
+            extra.posAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.posAdjustment, damping, deltaTime);
+            state.RawPosition += state.RawOrientation * extra.posAdjustment;
             
             // Ortho size adjustment
             var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, state.Lens.Aspect) * 0.5f;
@@ -193,8 +193,8 @@ namespace Cinemachine
 
             var lens = state.Lens;
             var deltaFov = targetHeight - lens.OrthographicSize;
-            extra.m_FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.m_FovAdjustment, damping, deltaTime);
-            lens.OrthographicSize += extra.m_FovAdjustment;
+            extra.fovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.fovAdjustment, damping, deltaTime);
+            lens.OrthographicSize += extra.fovAdjustment;
             state.Lens = lens;
         }
 
@@ -208,7 +208,6 @@ namespace Cinemachine
             var camRot = state.RawOrientation;
             var up = camRot * Vector3.up;
             var fov = state.Lens.FieldOfView;
-            float dollyAmount;
 
             // Get a naive bounds for the group, and pull the camera out as far as we can
             // to see as many members as possible.  Group members behind the camera will be ignored.
@@ -226,7 +225,7 @@ namespace Cinemachine
                     camRot = Quaternion.LookRotation(fwd, up);
             }
             const float slush = 5;  // avoid the members getting too close to the camera
-            dollyAmount = Mathf.Clamp(Mathf.Min(0, b.center.z) - b.extents.z - slush, dollyRange.x, dollyRange.y);
+            var dollyAmount = Mathf.Clamp(Mathf.Min(0, b.center.z) - b.extents.z - slush, dollyRange.x, dollyRange.y);
             camPos += camRot * new Vector3(0, 0, dollyAmount);
 
             // Approximate looking at the group center, then correct for actual center
@@ -237,18 +236,18 @@ namespace Cinemachine
             // Apply the adjustments
             var lens = state.Lens;
             var deltaFov = fov - lens.FieldOfView;
-            extra.m_FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.m_FovAdjustment, damping, deltaTime);
-            lens.FieldOfView += extra.m_FovAdjustment;
+            extra.fovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.fovAdjustment, damping, deltaTime);
+            lens.FieldOfView += extra.fovAdjustment;
             state.Lens = lens;
 
             var deltaRot = state.RawOrientation.GetCameraRotationToTarget(camRot * Vector3.forward, up);
-            extra.m_RotAdjustment.x += vcam.DetachedFollowTargetDamp(deltaRot.x - extra.m_RotAdjustment.x, damping, deltaTime);
-            extra.m_RotAdjustment.y += vcam.DetachedFollowTargetDamp(deltaRot.y - extra.m_RotAdjustment.y, damping, deltaTime);
-            state.OrientationCorrection = state.OrientationCorrection * Quaternion.identity.ApplyCameraRotation(extra.m_RotAdjustment, up);
+            extra.rotAdjustment.x += vcam.DetachedFollowTargetDamp(deltaRot.x - extra.rotAdjustment.x, damping, deltaTime);
+            extra.rotAdjustment.y += vcam.DetachedFollowTargetDamp(deltaRot.y - extra.rotAdjustment.y, damping, deltaTime);
+            state.OrientationCorrection = state.OrientationCorrection * Quaternion.identity.ApplyCameraRotation(extra.rotAdjustment, up);
 
             var deltaPos = Quaternion.Inverse(state.RawOrientation) * (camPos - state.RawPosition);
-            extra.m_PosAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.m_PosAdjustment, damping, deltaTime);
-            state.PositionCorrection += state.RawOrientation * extra.m_PosAdjustment;
+            extra.posAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.posAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.posAdjustment;
         }
 
         void AdjustSize(
@@ -353,7 +352,7 @@ namespace Cinemachine
                     h = Mathf.Max(Mathf.Max(Epsilon, boundsSize.x) / aspect, Mathf.Max(Epsilon, boundsSize.y));
                     break;
             }
-            return Mathf.Max(h, kMinimumGroupSize);
+            return Mathf.Max(h, k_MinimumGroupSize);
         }
     }
 }
