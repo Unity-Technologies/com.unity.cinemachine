@@ -12,6 +12,7 @@ namespace Cinemachine.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
+        VisualElement m_NoTargetHelp;
 
         CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
@@ -34,6 +35,8 @@ namespace Cinemachine.Editor
             
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
+
+            EditorApplication.update += UpdateVisibility;
         }
 
         protected virtual void OnDisable()
@@ -45,6 +48,8 @@ namespace Cinemachine.Editor
 
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
+
+            EditorApplication.update -= UpdateVisibility;
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -52,7 +57,7 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            var noTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
+            m_NoTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
@@ -63,53 +68,17 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.UnlimitedSoftZone)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
 
-            var groupFraming = ux.AddChild(new VisualElement());
-            groupFraming.AddSpace();
-
-            groupFraming.Add(new PropertyField(serializedTarget.FindProperty(() => Target.GroupFramingMode)));
-            groupFraming.Add(new PropertyField(serializedTarget.FindProperty(() => Target.GroupFramingSize)));
-
-            var nonOrthoControls = groupFraming.AddChild(new VisualElement());
-
-            var adjustmentModeProperty = serializedTarget.FindProperty(() => Target.AdjustmentMode);
-            nonOrthoControls.Add(new PropertyField(adjustmentModeProperty));
-
-            var dollyRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
-            var distanceRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.TargetDistanceRange)));
-            var fovRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
-
-            var orthoControls = groupFraming.AddChild(new VisualElement());
-            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));
-
-            ux.TrackPropertyValue(adjustmentModeProperty, (prop) =>
-            {
-                bool haveDolly = prop.intValue != (int)CinemachinePositionComposer.AdjustmentModes.ZoomOnly;
-                bool haveZoom = prop.intValue != (int)CinemachinePositionComposer.AdjustmentModes.DollyOnly;
-
-                fovRange.SetVisible(haveZoom);
-                dollyRange.SetVisible(haveDolly);
-                distanceRange.SetVisible(haveDolly);
-            });
-            
-            // GML: This is rather evil.  Is there a better (event-driven) way?
-            UpdateVisibility();
-            ux.schedule.Execute(UpdateVisibility).Every(250);
-
-            void UpdateVisibility()
-            {
-                groupFraming.SetVisible(Target.AbstractFollowTargetGroup != null);
-
-                bool ortho = Target.VcamState.Lens.Orthographic;
-                nonOrthoControls.SetVisible(!ortho);
-                orthoControls.SetVisible(ortho);
-
-                bool noTarget = false;
-                for (int i = 0; i < targets.Length; ++i)
-                    noTarget |= targets[i] != null && (targets[i] as CinemachinePositionComposer).FollowTarget == null;
-                if (noTargetHelp != null)
-                    noTargetHelp.SetVisible(noTarget);
-            }
             return ux;
+        }
+
+        void UpdateVisibility()
+        {
+            if (Target == null || m_NoTargetHelp == null)
+                return;
+            bool noTarget = false;
+            for (int i = 0; i < targets.Length; ++i)
+                noTarget |= targets[i] != null && (targets[i] as CinemachinePositionComposer).FollowTarget == null;
+            m_NoTargetHelp.SetVisible(noTarget);
         }
 
         protected virtual void OnGUI()
@@ -149,32 +118,6 @@ namespace Cinemachine.Editor
                         GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
                     }
                 }
-            }
-        }
-
-        [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachinePositionComposer))]
-        private static void DrawGroupComposerGizmos(CinemachinePositionComposer target, GizmoType selectionType)
-        {
-            // Show the group bounding box, as viewed from the camera position
-            if (target.AbstractFollowTargetGroup != null
-                && target.GroupFramingMode != CinemachinePositionComposer.FramingModes.None)
-            {
-                Matrix4x4 m = Gizmos.matrix;
-                Bounds b = target.LastBounds;
-                Gizmos.matrix = target.LastBoundsMatrix;
-                Gizmos.color = Color.yellow;
-                if (target.VcamState.Lens.Orthographic)
-                    Gizmos.DrawWireCube(b.center, b.size);
-                else
-                {
-                    float z = b.center.z;
-                    Vector3 e = b.extents;
-                    Gizmos.DrawFrustum(
-                        Vector3.zero,
-                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2,
-                        z + e.z, z - e.z, e.x / e.y);
-                }
-                Gizmos.matrix = m;
             }
         }
 

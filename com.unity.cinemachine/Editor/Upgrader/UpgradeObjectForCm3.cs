@@ -35,6 +35,7 @@ namespace Cinemachine.Editor
             typeof(CinemachineVirtualCamera),
             typeof(CinemachineFreeLook),
             typeof(CinemachineComposer),
+            typeof(CinemachineGroupComposer),
             typeof(CinemachineTransposer),
             typeof(CinemachineFramingTransposer),
             typeof(CinemachinePOV),
@@ -87,10 +88,32 @@ namespace Cinemachine.Editor
                 // Upgrade the pipeline components (there will be more of these...)
                 if (ReplaceComponent<CinemachineComposer, CinemachineRotationComposer>(go))
                      go.GetComponent<CinemachineComposer>().UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
+                if (ReplaceComponent<CinemachineGroupComposer, CinemachineRotationComposer>(go))
+                {
+                    var gc = go.GetComponent<CinemachineGroupComposer>();
+                    gc.UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
+                    if (!go.TryGetComponent<CinemachineGroupFraming>(out var _))
+                    {
+                        var framer = Undo.AddComponent<CinemachineGroupFraming>(go);
+                        go.GetComponent<CmCamera>().AddExtension(framer);
+                        gc.UpgradeToCm3(framer);
+                    }
+                }
                 if (ReplaceComponent<CinemachineTransposer, CinemachineFollow>(go))
                      go.GetComponent<CinemachineTransposer>().UpgradeToCm3(go.GetComponent<CinemachineFollow>());
                 if (ReplaceComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go))
-                     go.GetComponent<CinemachineFramingTransposer>().UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
+                {
+                    var ft = go.GetComponent<CinemachineFramingTransposer>();
+                    ft.UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
+                    if (ft.AbstractFollowTargetGroup != null 
+                        && ft.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None
+                        && !go.TryGetComponent<CinemachineGroupFraming>(out var _))
+                    {
+                        var framer = Undo.AddComponent<CinemachineGroupFraming>(go);
+                        go.GetComponent<CmCamera>().AddExtension(framer);
+                        ft.UpgradeToCm3(framer);
+                    }
+                }
                 if (ReplaceComponent<CinemachinePOV, CinemachinePanTilt>(go))
                 {
                      var pov = go.GetComponent<CinemachinePOV>();
