@@ -2,7 +2,6 @@
 using UnityEditor;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using System.IO;
 
 namespace Cinemachine.Editor
 {
@@ -26,14 +25,14 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_CameraCutEvent));
-            excluded.Add(FieldPath(x => x.m_CameraActivatedEvent));
-            excluded.Add(FieldPath(x => x.m_CustomBlends));
+            excluded.Add(FieldPath(x => x.CameraCutEvent));
+            excluded.Add(FieldPath(x => x.CameraActivatedEvent));
+            excluded.Add(FieldPath(x => x.CustomBlends));
         }
 
         private void OnEnable()
         {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(FieldPath(x => x.m_CustomBlends), this);
+            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(FieldPath(x => x.CustomBlends), this);
             m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) => { InspectorUtility.RepaintGameView(); };
         }
 
@@ -73,8 +72,8 @@ namespace Cinemachine.Editor
                 mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
                 if (mEventsExpanded)
                 {
-                    EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));
-                    EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraActivatedEvent));
+                    EditorGUILayout.PropertyField(FindProperty(x => x.CameraCutEvent));
+                    EditorGUILayout.PropertyField(FindProperty(x => x.CameraActivatedEvent));
                 }
                 serializedObject.ApplyModifiedProperties(); 
             }
@@ -83,7 +82,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]
         private static void DrawBrainGizmos(CinemachineBrain brain, GizmoType drawType)
         {
-            if (brain.OutputCamera != null && brain.m_ShowCameraFrustum && brain.isActiveAndEnabled)
+            if (brain.OutputCamera != null && brain.ShowCameraFrustum && brain.isActiveAndEnabled)
             {
                 DrawCameraFrustumGizmo(
                     brain, LensSettings.FromCamera(brain.OutputCamera),
@@ -134,6 +133,8 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
+            const string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
+
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
                 return;
@@ -154,36 +155,5 @@ namespace Cinemachine.Editor
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
         }
-
-#if UNITY_2019_1_OR_NEWER
-        static string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
-#else
-        static string kGizmoFileName = "Cinemachine/cm_logo_lg.png";
-        [InitializeOnLoad]
-        static class InstallGizmos
-        {
-            static InstallGizmos()
-            {
-                string srcFile = ScriptableObjectUtility.CinemachineInstallPath + "/Gizmos/" + kGizmoFileName;
-                if (File.Exists(srcFile))
-                {
-                    string dstFile = Application.dataPath + "/Gizmos";
-                    if (!Directory.Exists(dstFile))
-                        Directory.CreateDirectory(dstFile);
-                    dstFile += "/" + kGizmoFileName;
-                    if (!File.Exists(dstFile)
-                        || (File.GetLastWriteTime(dstFile) < File.GetLastWriteTime(srcFile)
-                            && (File.GetAttributes(dstFile) & FileAttributes.ReadOnly) == 0))
-                    {
-                        if (!Directory.Exists(Path.GetDirectoryName(dstFile)))
-                            Directory.CreateDirectory(Path.GetDirectoryName(dstFile));
-                        File.Copy(srcFile, dstFile, true);
-                        File.SetAttributes(
-                            dstFile, File.GetAttributes(dstFile) & ~FileAttributes.ReadOnly);
-                    }
-                }
-            }
-        }
-#endif
     }
 }
