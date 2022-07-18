@@ -87,6 +87,7 @@ namespace Cinemachine
     /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
+    /// GML TODO: delete this
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
 
     /// <summary>
