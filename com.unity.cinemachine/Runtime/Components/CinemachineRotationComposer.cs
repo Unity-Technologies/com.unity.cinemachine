@@ -217,7 +217,7 @@ namespace Cinemachine
                     dir = Quaternion.Euler(curState.PositionDampingBypass) * dir;
                     rigOrientation = Quaternion.LookRotation(dir, curState.ReferenceUp);
                     rigOrientation = rigOrientation.ApplyCameraRotation(
-                        m_ScreenOffsetPrevFrame, curState.ReferenceUp);
+                        -m_ScreenOffsetPrevFrame, curState.ReferenceUp);
                 }
 
                 // Move target through the soft zone, with damping
