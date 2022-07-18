@@ -6,10 +6,9 @@ using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
 
-#pragma warning disable 618 // CinemachineVirtualCamera obsolete
-
 namespace Cinemachine.Editor
 {
+    [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
     internal class CinemachineVirtualCameraEditor
