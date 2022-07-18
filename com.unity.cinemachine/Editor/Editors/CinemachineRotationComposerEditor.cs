@@ -124,8 +124,10 @@ namespace Cinemachine.Editor
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(composer, 
-                    new SerializedObject(composer).FindProperty(() => composer.TrackedObjectOffset));
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
+                    Target.VirtualCamera, 
+                    new SerializedObject(Target).FindProperty(() => Target.TrackedObjectOffset),
+                    CinemachineCore.Stage.Aim);
             }
         }
     }

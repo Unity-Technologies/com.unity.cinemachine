@@ -205,13 +205,7 @@ namespace Cinemachine.Editor
             }
         }
 
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-        
-        void DrawSceneTools()
         {
             var framingTransposer = Target;
             if (framingTransposer == null || !framingTransposer.IsValid)
@@ -221,8 +215,10 @@ namespace Cinemachine.Editor
             
             if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(framingTransposer, 
-                    new SerializedObject(framingTransposer).FindProperty(() => framingTransposer.m_TrackedObjectOffset));
+                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
+                    Target.VirtualCamera, 
+                    new SerializedObject(Target).FindProperty(() => Target.m_TrackedObjectOffset),
+                    CinemachineCore.Stage.Body);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -263,6 +259,5 @@ namespace Cinemachine.Editor
                 Handles.color = originalColor;
             }
         }
-#endif
     }
 }

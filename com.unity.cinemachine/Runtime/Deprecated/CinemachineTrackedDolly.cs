@@ -45,7 +45,7 @@ namespace Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in a direction "
             + "perpendicular to the path.  Small numbers are more responsive, rapidly translating "
             + "the camera to keep the target's x-axis offset.  Larger numbers give a more heavy "
@@ -57,7 +57,7 @@ namespace Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in the path-local up direction.  "
             + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
             + "y-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different "
@@ -68,7 +68,7 @@ namespace Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the
         /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in a direction parallel to the path.  "
             + "Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  "
             + "Larger numbers give a more heavy slowly responding camera. Using different settings per axis "
@@ -97,21 +97,21 @@ namespace Cinemachine
 
         /// <summary>"How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are "
             + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_PitchDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are "
             + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_YawDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Range(0f, 20f)]
+        [RangeSlider(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers "
             + "are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
@@ -331,10 +331,23 @@ namespace Cinemachine
             c.Damping.Enabled = true;
             c.Damping.Position = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.Damping.Angular = Mathf.Max(m_YawDamping, Mathf.Max(m_RollDamping, m_PitchDamping));
-            c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp;
-            c.AutomaticDolly.Enabled = m_AutoDolly.m_Enabled;
-            c.AutomaticDolly.PositionOffset = m_AutoDolly.m_PositionOffset;
+            c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp; // enum values match
+            if (m_AutoDolly.m_Enabled)
+            {
+                c.AutomaticDolly = new SplineAutoDolly.NearestPointToTarget
+                {
+                    PositionOffset = m_AutoDolly.m_PositionOffset,
+                    SearchResolution = m_AutoDolly.m_SearchResolution,
+                    SearchIteration = 2
+                };
+            }
             c.CameraPosition = m_PathPosition;
+            switch (m_PositionUnits)
+            {
+                case CinemachinePathBase.PositionUnits.PathUnits: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
+                case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
+                case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
+            }
             c.SplineOffset = m_PathOffset;
             if (m_Path != null)
                 c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();

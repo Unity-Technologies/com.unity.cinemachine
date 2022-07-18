@@ -47,7 +47,7 @@ namespace Cinemachine
 
         /// <summary>Specifies which shoulder (left, right, or in-between) the camera is on.</summary>
         [Tooltip("Specifies which shoulder (left, right, or in-between) the camera is on")]
-        [Range(0, 1)]
+        [RangeSlider(0, 1)]
         public float CameraSide;
 
         /// <summary>How far behind the hand the camera will be placed.</summary>
@@ -73,14 +73,14 @@ namespace Cinemachine
         /// Specifies how close the camera can get to obstacles
         /// </summary>
         [Tooltip("Specifies how close the camera can get to obstacles")]
-        [Range(0, 1)]
+        [RangeSlider(0, 1)]
         public float CameraRadius;
         
         /// <summary>
         /// How gradually the camera moves to correct for occlusions.  
         /// Higher numbers will move the camera more gradually.
         /// </summary>
-        [Range(0, 10)]
+        [RangeSlider(0, 10)]
         [Tooltip("How gradually the camera moves to correct for occlusions.  " +
             "Higher numbers will move the camera more gradually.")]
         public float DampingIntoCollision;
@@ -89,7 +89,7 @@ namespace Cinemachine
         /// How gradually the camera returns to its normal position after having been corrected by the built-in
         /// collision resolution system. Higher numbers will move the camera more gradually back to normal.
         /// </summary>
-        [Range(0, 10)]
+        [RangeSlider(0, 10)]
         [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
             "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
         public float DampingFromCollision;
@@ -194,7 +194,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>This is called to notify the us that a target got warped,
+        /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>

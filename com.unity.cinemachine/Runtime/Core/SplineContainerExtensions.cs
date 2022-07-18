@@ -7,8 +7,13 @@ namespace Cinemachine
     /// <summary>
     /// A collection of helpers for UnityEngine Spline.
     /// </summary>
-    public static class SplineContainerExtensions
+    internal static class SplineContainerExtensions
     {
+        /// <summary>Check spline container and child spline for null</summary>
+        /// <param name="spline">spline continer to check</param>
+        /// <returns>true if container holds a non-null spline</returns>
+        public static bool IsValid(this SplineContainer spline) => spline != null && spline.Spline != null;
+
         /// <summary>
         /// Apply to a <see cref="SplineContainer"/>additional roll from <see cref="CinemachineSplineRoll"/>
         /// </summary>
@@ -66,6 +71,31 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Get the maximum value for the spline position.  Minimum value is always 0.
+        /// </summary>
+        /// <param name="spline">The spline in question</param>
+        /// <param name="unit">The spline position is expressed in these units</param>
+        /// <param name="splineLength">The length of the spline, in distance units.  
+        /// Passed as parameter for efficienacy because length calculation is slow.
+        /// If a negative value is passed, length will be calculated.</param>
+        /// <returns></returns>
+        public static float GetMaxPosition(
+            this Spline spline, PathIndexUnit unit, float splineLength = -1)
+        {
+            switch (unit)
+            {
+                case PathIndexUnit.Distance: 
+                    return splineLength < 0 ? spline.GetLength() : splineLength;
+                case PathIndexUnit.Knot: 
+                {
+                    var knotCount = spline.Count;
+                    return (!spline.Closed || knotCount < 2) ? Mathf.Max(0, knotCount - 1) : knotCount;
+                }
+            }
+            return 1;
+        }
+        
+        /// <summary>
         /// Clamp spline position to min and max values, respecting loop wraparound for closed paths.
         /// </summary>
         /// <param name="spline">The spline in question</param>
@@ -75,52 +105,15 @@ namespace Cinemachine
         /// Passed as parameter for efficienacy because length calculation is slow.
         /// If a negative value is passed, length will be calculated.</param>
         /// <returns></returns>
-        public static float StandardizeSplinePosition(
+        public static float StandardizePosition(
             this Spline spline, float t, PathIndexUnit unit, float splineLength = -1)
         {
-            switch (unit)
-            {
-                case PathIndexUnit.Distance:
-                {
-                    if (splineLength < 0)
-                        splineLength = spline.GetLength();
-                    if (!spline.Closed)
-                        t = Mathf.Clamp(t, 0, splineLength);
-                    else 
-                    {
-                        t %= splineLength;
-                        if (t < 0)
-                            t += splineLength;
-                    }
-                    break;
-                }
-                case PathIndexUnit.Knot:
-                {
-                    var knotCount = spline.Count;
-                    if (!spline.Closed || knotCount < 2)
-                        t = Mathf.Clamp(t, 0, knotCount);
-                    else 
-                    {
-                        t %= knotCount + 1;
-                        if (t < 0)
-                            t += knotCount;
-                    }
-                    break;
-                }
-                default:
-                case PathIndexUnit.Normalized:
-                {
-                    if (!spline.Closed)
-                        t = Mathf.Clamp01(t);
-                    else
-                    {
-                        t -= Mathf.Floor(t);
-                        if (t < 0)
-                            t += 1f;
-                    }
-                    break;
-                }
-            }
+            var max = spline.GetMaxPosition(unit, splineLength);
+            if (!spline.Closed)
+                return Mathf.Clamp(t, 0, max);
+            t %= max;
+            if (t < 0)
+                t += max;
             return t;
         }
     }

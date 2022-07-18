@@ -32,23 +32,13 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            var modeProp = serializedObject.FindProperty(() => Target.BindingMode);
-            var rotModeProp = serializedObject.FindProperty(() => Target.RotationDampingMode);
-            var orbitModeProp = serializedObject.FindProperty(() => Target.OrbitStyle);
+            m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Tracking target.", HelpBoxMessageType.Warning));
 
-            m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Follow target.", HelpBoxMessageType.Warning));
-
-            ux.Add(new PropertyField(modeProp));
-            var rotDampingContainer = ux.AddChild(new VisualElement());
-            rotDampingContainer.Add(new PropertyField(rotModeProp));
-            var rotDampingField = rotDampingContainer.AddChild(
-                new PropertyField(serializedObject.FindProperty(() => Target.RotationDamping)));
-            var quatDampingField = rotDampingContainer.AddChild(
-                new PropertyField(serializedObject.FindProperty(() => Target.QuaternionDamping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PositionDamping)));
-
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OrbitStyle)));
+
+            var orbitModeProp = serializedObject.FindProperty(() => Target.OrbitStyle);
+            ux.Add(new PropertyField(orbitModeProp));
             var m_Radius = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Radius)));
             var m_Orbits = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Orbits)));
 
@@ -77,27 +67,6 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.HorizontalAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.RadialAxis)));
-
-            TrackBindingMode(modeProp);
-            ux.TrackPropertyValue(modeProp, TrackBindingMode);
-
-            void TrackBindingMode(SerializedProperty modeProp)
-            {
-                var mode = (CinemachineTransposer.BindingMode)modeProp.intValue;
-                bool hideRot = mode == CinemachineTransposer.BindingMode.WorldSpace 
-                    || mode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp;
-                rotDampingContainer.SetVisible(!hideRot);
-            }
-
-            TrackRotDampingMode(rotModeProp);
-            ux.TrackPropertyValue(rotModeProp, TrackRotDampingMode);
-
-            void TrackRotDampingMode(SerializedProperty modeProp)
-            {
-                var mode = (CinemachineTransposer.AngularDampingMode)modeProp.intValue;
-                quatDampingField.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Quaternion);
-                rotDampingField.SetVisible(mode == CinemachineTransposer.AngularDampingMode.Euler);
-            }
 
             TrackOrbitMode(orbitModeProp);
             ux.TrackPropertyValue(orbitModeProp, TrackOrbitMode);
@@ -198,7 +167,8 @@ namespace Cinemachine.Editor
                         if (m_UpdateCache)
                             m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
                         
-                        var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleOrbitalFollow(orbitalFollow.VirtualCamera, 
+                        var draggedRig = CinemachineSceneToolHelpers.ThreeOrbitRigHandle(
+                            orbitalFollow.VirtualCamera, orbitalFollow.GetReferenceOrientation(),
                             new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
                         m_UpdateCache = draggedRig < 0 || draggedRig > 2;
                         orbitalFollow.VerticalAxis.Value = draggedRig switch
@@ -239,7 +209,7 @@ namespace Cinemachine.Editor
                     var orient = orbital.GetReferenceOrientation();
                     var up = orient * Vector3.up;
                     var rotation = orbital.HorizontalAxis.Value;
-                    orient = Quaternion.AngleAxis(rotation, up);
+                    orient = Quaternion.AngleAxis(rotation, up) * orient;
                     var pos = orbital.FollowTargetPosition;
                     var scale = orbital.RadialAxis.Value;
 

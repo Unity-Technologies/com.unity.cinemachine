@@ -2,6 +2,7 @@ using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
+using Cinemachine.TargetTracking;
 
 namespace Cinemachine
 {
@@ -20,37 +21,8 @@ namespace Cinemachine
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
     {
-        /// <summary>The coordinate space to use when interpreting the offset from the target</summary>
-        [Tooltip("The coordinate space to use when interpreting the offset from the target.  This is also "
-            + "used to set the camera's Up vector, which will be maintained when aiming the camera.")]
-        public CinemachineTransposer.BindingMode BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
-
-        /// <summary>How to calculate the angular damping for the target orientation.
-        /// Use Quaternion if you expect the target to take on very steep pitches, which would
-        /// be subject to gimbal lock if Eulers are used.</summary>
-        public CinemachineTransposer.AngularDampingMode RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
-        
-        /// <summary>How aggressively the camera tries to track the target's orientation.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Tooltip("How aggressively the camera tries to track the target's orientation.  "
-            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public Vector3 RotationDamping = new Vector3(1, 1, 1);
-
-        /// <summary>How aggressively the camera tries to track the target's orientation.
-        /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [Tooltip("How aggressively the camera tries to track the target's orientation.  "
-            + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-        public float QuaternionDamping = 1;
-
-        /// <summary>How aggressively the camera tries to maintain the offset.
-        /// Small numbers are more responsive, rapidly translating the camera to keep the
-        /// target's offset.  Larger numbers give a more heavy slowly responding camera.
-        /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [Tooltip("How aggressively the camera tries to maintain the offset in the Z-axis.  "
-            + "Small numbers are more responsive, rapidly translating the camera to keep the "
-            + "target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. "
-            + "Using different settings per axis can yield a wide range of camera behaviors.")]
-        public Vector3 PositionDamping = new Vector3(1, 1, 1);
+        /// <summary>Settings to control damping for target tracking.</summary>
+        public TrackerSettings TrackerSettings = TrackerSettings.Default;
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
         public enum OrbitStyles
@@ -98,7 +70,7 @@ namespace Cinemachine
         Vector3 m_PreviousWorldOffset;
 
         // Helper object to track the Follow target
-        CinemachineTransposer.TargetTracker m_TargetTracker;
+        Tracker m_TargetTracker;
 
         // 3-rig orbit implementation
         Cinemachine3OrbitRig.OrbitSplineCache m_OrbitCache;
@@ -111,9 +83,7 @@ namespace Cinemachine
         void OnValidate()
         {
             Radius = Mathf.Max(0, Radius);
-            PositionDamping = PositiveVector3(PositionDamping);
-            RotationDamping = PositiveVector3(PositionDamping);
-            QuaternionDamping = Mathf.Max(0, QuaternionDamping);
+            TrackerSettings.Validate();
             HorizontalAxis.Validate();
             VerticalAxis.Validate();
             RadialAxis.Validate();
@@ -121,11 +91,7 @@ namespace Cinemachine
 
         void Reset()
         {
-            BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
-            RotationDampingMode = CinemachineTransposer.AngularDampingMode.Euler;
-            PositionDamping = new Vector3(1, 1, 1);
-            RotationDamping = new Vector3(1, 1, 1);
-            QuaternionDamping = 1f;
+            TrackerSettings = TrackerSettings.Default;
             OrbitStyle = OrbitStyles.Sphere;
             Radius = 10;
             Orbits = Cinemachine3OrbitRig.Settings.Default;
@@ -134,40 +100,9 @@ namespace Cinemachine
             RadialAxis = DefaultRadial;
         }
         
-        /// <summary>
-        /// PositionDamping speeds for each of the 3 axes of the offset from target
-        /// </summary>
-        Vector3 EffectivePositionDamping =>
-            BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp 
-                ? new Vector3(0, PositionDamping.y, PositionDamping.z) : PositionDamping;
-
-        /// <summary>
-        /// PositionDamping speeds for each of the 3 axes of the target's rotation
-        /// </summary>
-        Vector3 EffectiveRotationDamping
-        {
-            get
-            {
-                switch (BindingMode)
-                {
-                    case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
-                        return new Vector3(RotationDamping.x, RotationDamping.y, 0);
-                    case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
-                        return new Vector3(0, RotationDamping.y, 0);
-                    case CinemachineTransposer.BindingMode.WorldSpace:
-                    case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
-                        return Vector3.zero;
-                    default:
-                        return RotationDamping;
-                }
-            }
-        }
-        
         static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
         static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f };
         static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 5), Wrap = false, Center = 1 };
-
-        static Vector3 PositiveVector3(Vector3 v) => new Vector3(Mathf.Max(0, v.x), Mathf.Max(0, v.y), Mathf.Max(0, v.z));
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid => enabled && FollowTarget != null;
@@ -180,15 +115,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            var d = EffectivePositionDamping;
-            var d2 = RotationDampingMode == CinemachineTransposer.AngularDampingMode.Euler 
-                ? EffectiveRotationDamping : new Vector3(QuaternionDamping, 0, 0);
-            var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z)); 
-            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
-            return Mathf.Max(a, b); 
-        }
+        public override float GetMaxDampTime() => TrackerSettings.GetMaxDampTime();
 
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
@@ -214,8 +141,8 @@ namespace Cinemachine
 
         Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
         {
-            get => PositionDamping;
-            set => PositionDamping = value;
+            get => TrackerSettings.PositionDamping;
+            set => TrackerSettings.PositionDamping = value;
         }
 
         float CinemachineFreeLookModifier.IModifiableDistance.Distance
@@ -241,6 +168,7 @@ namespace Cinemachine
                 if (m_OrbitCache.SettingsChanged(Orbits))
                     m_OrbitCache.UpdateOrbitCache(Orbits);
                 var v = m_OrbitCache.SplineValue(VerticalAxis.GetNormalizedValue());
+                v *= RadialAxis.Value;
                 pos = Quaternion.AngleAxis(HorizontalAxis.Value, Vector3.up) * v;
                 t = v.w;
             }
@@ -250,7 +178,7 @@ namespace Cinemachine
                 pos = rot * new Vector3(0, 0, -Radius * RadialAxis.Value);
                 t = VerticalAxis.GetNormalizedValue() * 2 - 1;
             }
-            if (BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp)
                 pos.z = -Mathf.Abs(pos.z);
 
             return new Vector4(pos.x, pos.y, pos.z, t);
@@ -286,7 +214,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
-            m_TargetTracker.ForceCameraPosition(this, BindingMode, pos, rot, GetCameraPoint());
+            m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
 
             m_ResetHandler?.Invoke();
 
@@ -297,17 +225,17 @@ namespace Cinemachine
             {
                 // GML TODO: handle ThreeRing mode
                 var up = VirtualCamera.State.ReferenceUp;
-                var orient = m_TargetTracker.GetReferenceOrientation(this, BindingMode, up);
+                var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
                 dir /= distance;
                 var localDir = orient * dir;
                 var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-                VerticalAxis.Value = BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
+                VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
                 HorizontalAxis.Value = r.y;
             }
             RadialAxis.Value = distance / Radius;
         }
 
-        /// <summary>This is called to notify the us that a target got warped,
+        /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
@@ -324,7 +252,7 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            m_TargetTracker.InitStateInfo(this, deltaTime, BindingMode, curState.ReferenceUp);
+            m_TargetTracker.InitStateInfo(this, deltaTime, TrackerSettings.BindingMode, curState.ReferenceUp);
             if (!IsValid)
                 return;
 
@@ -332,7 +260,7 @@ namespace Cinemachine
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+            if (TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 HorizontalAxis.Restrictions 
                     &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
             else
@@ -342,8 +270,7 @@ namespace Cinemachine
                     |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
             }
             m_TargetTracker.TrackTarget(
-                this, BindingMode, deltaTime, curState.ReferenceUp, offset, 
-                EffectivePositionDamping, EffectiveRotationDamping, QuaternionDamping, RotationDampingMode,
+                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera

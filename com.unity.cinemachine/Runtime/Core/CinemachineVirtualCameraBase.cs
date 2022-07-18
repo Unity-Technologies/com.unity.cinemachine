@@ -110,7 +110,7 @@ namespace Cinemachine
         // Legacy streaming support
 
         [HideInInspector, SerializeField, NoSaveDuringPlay]
-        private int m_StreamingVersion = CinemachineCore.kStreamingVersion;
+        private int m_StreamingVersion;
 
         /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
         void ISerializationCallbackReceiver.OnAfterDeserialize()
@@ -121,7 +121,11 @@ namespace Cinemachine
         }
 
         /// <summary>Pre-Serialization handler - delegates to derived classes</summary>
-        void ISerializationCallbackReceiver.OnBeforeSerialize() => OnBeforeSerialize();
+        void ISerializationCallbackReceiver.OnBeforeSerialize() 
+        {
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
+            OnBeforeSerialize();
+        }
 
         /// <summary>
         /// Override this to handle any upgrades necessitated by a streaming version change

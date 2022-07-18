@@ -37,10 +37,8 @@ namespace Cinemachine.Editor
             EditorApplication.update += m_CameraUtility.SortComponents;
             Undo.undoRedoPerformed += ResetTarget;
 
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
-#endif
         }
 
         void OnDisable()
@@ -49,10 +47,8 @@ namespace Cinemachine.Editor
             m_CameraUtility.OnDisable();
             Undo.undoRedoPerformed -= ResetTarget;
             
-#if UNITY_2021_2_OR_NEWER
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
-#endif
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -81,7 +77,6 @@ namespace Cinemachine.Editor
             return ux;
         }
 
-#if UNITY_2021_2_OR_NEWER
         void OnSceneGUI()
         {
             var cmCam = Target;
@@ -103,6 +98,5 @@ namespace Cinemachine.Editor
             }
             Handles.color = originalColor;
         }
-#endif
     }
 }

@@ -27,8 +27,8 @@ namespace Cinemachine.Editor
             switch (Target.m_BindingMode)
             {
                 default:
-                case CinemachineTransposer.BindingMode.LockToTarget:
-                    if (Target.m_AngularDampingMode == CinemachineTransposer.AngularDampingMode.Euler)
+                case TargetTracking.BindingMode.LockToTarget:
+                    if (Target.m_AngularDampingMode == TargetTracking.AngularDampingMode.Euler)
                         excluded.Add(FieldPath(x => x.m_AngularDamping));
                     else
                     {
@@ -37,26 +37,26 @@ namespace Cinemachine.Editor
                         excluded.Add(FieldPath(x => x.m_RollDamping));
                     }
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetNoRoll:
+                case TargetTracking.BindingMode.LockToTargetNoRoll:
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetWithWorldUp:
+                case TargetTracking.BindingMode.LockToTargetWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.LockToTargetOnAssign:
-                case CinemachineTransposer.BindingMode.WorldSpace:
+                case TargetTracking.BindingMode.LockToTargetOnAssign:
+                case TargetTracking.BindingMode.WorldSpace:
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
                     excluded.Add(FieldPath(x => x.m_RollDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp:
+                case TargetTracking.BindingMode.SimpleFollowWithWorldUp:
                     excluded.Add(FieldPath(x => x.m_XDamping));
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
@@ -69,6 +69,12 @@ namespace Cinemachine.Editor
             }
         }
 
+        protected virtual void OnEnable()
+        {
+            for (int i = 0; i < targets.Length; ++i)
+                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
+        }
+        
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -80,7 +86,7 @@ namespace Cinemachine.Editor
                     "Orbital Transposer requires a Follow target.",
                     MessageType.Warning);
             Target.m_XAxis.ValueRangeLocked
-                = (Target.m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp);
+                = (Target.m_BindingMode == TargetTracking.BindingMode.SimpleFollowWithWorldUp);
             DrawRemainingPropertiesInInspector();
         }
         
@@ -122,49 +128,5 @@ namespace Cinemachine.Editor
             }
             Gizmos.matrix = prevMatrix;
         }
-        
-        protected virtual void OnEnable()
-        {
-            for (int i = 0; i < targets.Length; ++i)
-                (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
-
-#if UNITY_2021_2_OR_NEWER
-            if (!Target.HideOffsetInInspector)
-            {
-                CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            }
-#endif
-        }
-        
-        protected virtual void OnDisable()
-        {
-#if UNITY_2021_2_OR_NEWER
-            if (!Target.HideOffsetInInspector)
-            {
-                CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            }
-#endif
-        }
-        
-#if UNITY_2021_2_OR_NEWER
-        void OnSceneGUI()
-        {
-            DrawSceneTools();
-        }
-
-        void DrawSceneTools()
-        {
-            var orbitalTransposer = Target;
-            if (orbitalTransposer == null || !orbitalTransposer.IsValid || orbitalTransposer.HideOffsetInInspector)
-            {
-                return;
-            }
-            
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
-                CinemachineSceneToolHelpers.TransposerFollowOffsetTool(orbitalTransposer);
-            }
-        }
-#endif
     }
 }

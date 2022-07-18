@@ -87,7 +87,7 @@ namespace Cinemachine.Editor
             /// This is the camera view in vertical degrees. For cinematic people, a 50mm lens
             /// on a super-35mm sensor would equal a 19.6 degree FOV
             /// </summary>
-            [Range(1f, 179f)]
+            [RangeSlider(1f, 179f)]
             [Tooltip("This is the camera view in vertical degrees. For cinematic people, "
                 + " a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
             public float m_FieldOfView;
@@ -118,14 +118,14 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_HDRP
             public int Iso;
             public float ShutterSpeed;
-            [Range(Camera.kMinAperture, Camera.kMaxAperture)]
+            [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
             public float Aperture;
-            [Range(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
+            [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
             public int BladeCount;
             public Vector2 Curvature;
-            [Range(0, 1)]
+            [RangeSlider(0, 1)]
             public float BarrelClipping;
-            [Range(-1, 1)]
+            [RangeSlider(-1, 1)]
             public float Anamorphism;
 #endif
         }
