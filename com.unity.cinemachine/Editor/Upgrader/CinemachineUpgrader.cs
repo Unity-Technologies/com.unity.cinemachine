@@ -139,7 +139,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                var upgradable = GetUpgradableObjects(scene.GetRootGameObjects());
+                var upgradable = GetUpgradeCandidates(scene.GetRootGameObjects());
                 foreach (var go in upgradable)
                     m_ObjectUpgrader.DeleteObsoleteComponents(go);
                 if (upgradable.Count > 0)
@@ -147,7 +147,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        List<GameObject> GetUpgradableObjects(GameObject[] rootObjects)
+        List<GameObject> GetUpgradeCandidates(GameObject[] rootObjects)
         {
             var components = new List<Component>();
             if (rootObjects != null)
@@ -185,7 +185,7 @@ namespace Cinemachine.Editor
                 var timelineManager = new TimelineManager(scene);
                     
                 var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = GetUpgradableObjects(scene.GetRootGameObjects());
+                var upgradable = GetUpgradeCandidates(scene.GetRootGameObjects());
                 foreach (var go in upgradable)
                 {
                     // Skip prefab instances (we'll do them later)
@@ -242,7 +242,7 @@ namespace Cinemachine.Editor
                         scene, m_PrefabManager.GetPrefabAssetPath(p)));
 
                 var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = GetUpgradableObjects(allPrefabInstances.ToArray());
+                var upgradable = GetUpgradeCandidates(allPrefabInstances.ToArray());
                 foreach (var go in upgradable)
                 {
                     // Ignore if already converted (this can happen in nested prefabs)
