@@ -12,6 +12,7 @@ namespace Cinemachine.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
+        VisualElement m_NoTargetHelp;
 
         CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
@@ -33,6 +34,7 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
    
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
+            EditorApplication.update += UpdateVisibility;
         }
 
         protected virtual void OnDisable()
@@ -43,6 +45,7 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
   
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
+            EditorApplication.update -= UpdateVisibility;
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -50,9 +53,7 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            var noTargetHelp = ux.AddChild(new HelpBox(
-                "A Tracking target is required.  Change Rotation Control to None if you don't want a Tracking or LookAt target.", 
-                HelpBoxMessageType.Warning));
+            m_NoTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
@@ -60,19 +61,20 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
 
-            // GML: This is rather evil.  Is there a better (event-driven) way?
-            UpdateNoTargetHelp();
-            ux.schedule.Execute(UpdateNoTargetHelp).Every(250);
-
-            void UpdateNoTargetHelp()
-            {
-                bool noTarget = false;
-                for (int i = 0; i < targets.Length; ++i)
-                    noTarget |= targets[i] != null && (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
-                if (noTargetHelp != null)
-                    noTargetHelp.SetVisible(noTarget);
-            }
+            UpdateVisibility();
             return ux;
+        }
+
+        void UpdateVisibility()
+        {
+            if (Target == null || m_NoTargetHelp == null)
+                return;
+
+            bool noTarget = false;
+            for (int i = 0; i < targets.Length; ++i)
+                noTarget |= targets[i] != null && (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
+            if (m_NoTargetHelp != null)
+                m_NoTargetHelp.SetVisible(noTarget);
         }
 
         protected virtual void OnGUI()
