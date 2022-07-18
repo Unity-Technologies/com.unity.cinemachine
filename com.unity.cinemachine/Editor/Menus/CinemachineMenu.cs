@@ -159,8 +159,9 @@ namespace Cinemachine.Editor
                 "Cm Camera", command.context as GameObject, false);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
-            Undo.AddComponent<CinemachineGroupComposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             Undo.AddComponent<CinemachineFollow>(vcam.gameObject);
+            Undo.AddComponent<CinemachineGroupFraming>(vcam.gameObject);
 
             var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
                 "Target Group", command.context as GameObject, true);
