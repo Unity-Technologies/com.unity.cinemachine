@@ -627,7 +627,7 @@ namespace Cinemachine
             {
                 if (vcamComponents[i].enabled && vcamComponents[i] != this)
                 {
-                    Debug.LogError(Name
+                    Debug.LogWarning(Name
                         + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling "
                         + GetType().Name + ".");
                     enabled = false;
