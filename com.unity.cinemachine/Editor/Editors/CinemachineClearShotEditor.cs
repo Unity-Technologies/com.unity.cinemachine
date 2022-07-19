@@ -184,7 +184,7 @@ namespace Cinemachine.Editor
 
                     SerializedObject obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
-                    SerializedProperty priorityProp = obj.FindProperty(() => Target.CameraPriority);
+                    SerializedProperty priorityProp = obj.FindProperty(() => Target.CameraPriority).FindPropertyRelative("Priority");
                     float oldWidth = EditorGUIUtility.labelWidth;
                     EditorGUIUtility.labelWidth = hSpace * 2;
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" "));
