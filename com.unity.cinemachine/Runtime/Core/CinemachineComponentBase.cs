@@ -6,7 +6,6 @@ namespace Cinemachine
     /// <summary>
     /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
     /// </summary>
-    // GML todo: rename this to CinemachinePipelineComponent ?
     [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
     {
@@ -18,15 +17,17 @@ namespace Cinemachine
         {
             get
             {
-                if (m_vcamOwner == null)
-                    m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+                if (m_VcamOwner == null)
+                    m_VcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+
                 // GML todo: remove this
-                if (m_vcamOwner == null && transform.parent != null)
-                    m_vcamOwner = transform.parent.GetComponent<CinemachineVirtualCameraBase>();
-                return m_vcamOwner;
+                if (m_VcamOwner == null && transform.parent != null)
+                    m_VcamOwner = transform.parent.GetComponent<CinemachineVirtualCameraBase>();
+
+                return m_VcamOwner;
             }
         }
-        CinemachineVirtualCameraBase m_vcamOwner;
+        CinemachineVirtualCameraBase m_VcamOwner;
 
         /// <summary>
         /// Standard OnEnable call.  Derived classes should call the base class implementation.
@@ -183,7 +184,7 @@ namespace Cinemachine
 
         /// <summary>Special for Body Stage compoments that want to be applied after Aim 
         /// stage because they use the aim as inout for the procedural placement</summary>
-        public virtual bool BodyAppliesAfterAim { get { return false; } }
+        public virtual bool BodyAppliesAfterAim => false;
 
         /// <summary>Mutates the camera state.  This state will later be applied to the camera.</summary>
         /// <param name="curState">Input state that must be mutated</param>
@@ -223,9 +224,5 @@ namespace Cinemachine
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
         public virtual float GetMaxDampTime() { return 0; }
-
-        /// <summary>Components that require user input should implement this and return true.</summary>
-        // GML todo: remove this
-        public virtual bool RequiresUserInput => false;
     }
 }

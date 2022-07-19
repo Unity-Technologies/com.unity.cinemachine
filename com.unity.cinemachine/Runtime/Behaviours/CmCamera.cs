@@ -223,17 +223,6 @@ namespace Cinemachine
             // Signal that it's all done
             PreviousStateIsValid = true;
         }
-        
-        /// <summary>
-        /// Returns true, when the vcam has extensions or components that require input.
-        /// </summary>
-        // GML todo: delete this
-        internal override bool RequiresUserInput()
-        {
-            UpdatePipelineCache();
-            return base.RequiresUserInput() ||
-                m_Pipeline != null && m_Pipeline.Any(t => t != null && t.RequiresUserInput);
-        }
 
         CameraState InvokeComponentPipeline(ref CameraState state, float deltaTime)
         {

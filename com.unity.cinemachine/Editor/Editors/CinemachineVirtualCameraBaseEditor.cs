@@ -185,13 +185,15 @@ namespace Cinemachine.Editor
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
         /// Does nothing if Input package not installed.
         /// </summary>
+#pragma warning disable 618 // using obsolete stuff
         protected void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
             for (int i = 0; !needsButton && i < targets.Length; ++i)
             {
                 var vcam = (CinemachineVirtualCameraBase)targets[i];
-                if (vcam.RequiresUserInput() && vcam.GetComponent<AxisState.IInputAxisProvider>() == null)
+                var requirer = vcam as AxisState.IRequiresInput;
+                if (requirer != null && requirer.RequiresInput() && !vcam.TryGetComponent<AxisState.IInputAxisProvider>(out _))
                     needsButton = true;
             }
             if (!needsButton)
@@ -215,6 +217,7 @@ namespace Cinemachine.Editor
                 });
             EditorGUILayout.Space();
         }
+#pragma warning restore 618
 #else
         /// <summary>
         /// Draw a message prompting the user to add a CinemachineInputProvider.  

@@ -155,9 +155,6 @@ namespace Cinemachine
             return false;
         }
         
-        /// <summary>POV is controlled by input.</summary>
-        public override bool RequiresUserInput => false;
-
         void SetAxesForRotation(Quaternion targetRot)
         {
             m_ResetHandler?.Invoke(); // Reset the axes

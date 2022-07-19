@@ -563,14 +563,6 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Returns true, when the vcam has an extension that requires user input.
-        /// </summary>
-        internal virtual bool RequiresUserInput()
-        {
-            return mExtensions != null && mExtensions.Any(extension => extension != null && extension.RequiresUserInput); 
-        }
-
-        /// <summary>
         /// Called on inactive object when being artificially activated by timeline.
         /// This is necessary because Awake() isn't called on inactive gameObjects.
         /// </summary>
@@ -595,22 +587,6 @@ namespace Cinemachine
                 vcam.LookAtTargetChanged = vcam.FollowTargetChanged = true;
         }
 #endif
-
-        /// <summary>
-        /// Locate the first component that implements AxisState.IInputAxisProvider.
-        /// </summary>
-        /// <returns>The first AxisState.IInputAxisProvider or null if none</returns>
-        public AxisState.IInputAxisProvider GetInputAxisProvider()
-        {
-            var components = GetComponentsInChildren<MonoBehaviour>();
-            for (int i = 0; i < components.Length; ++i)
-            {
-                var provider = components[i] as AxisState.IInputAxisProvider;
-                if (provider != null)
-                    return provider;
-            }
-            return null;
-        }
 
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
