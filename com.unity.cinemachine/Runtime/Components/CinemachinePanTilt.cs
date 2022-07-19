@@ -15,7 +15,7 @@ namespace Cinemachine
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachinePanTilt 
-        : CinemachineComponentBase, IInputAxisTarget
+        : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>Defines the reference frame against which pan and tilt rotations are made.</summary>
@@ -53,7 +53,7 @@ namespace Cinemachine
         /// <summary>
         /// Input axis controller registers here a delegate to call when the camera is reset
         /// </summary>
-        IInputAxisTarget.ResetHandler m_ResetHandler;
+        IInputAxisResetSource.ResetHandler m_ResetHandler;
 
         void OnValidate()
         {
@@ -75,19 +75,19 @@ namespace Cinemachine
         
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
-        void IInputAxisTarget.GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
+        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = PanAxis, Name = "Pan", AxisIndex = 0 });
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = TiltAxis, Name = "Tilt", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = PanAxis, Name = "Pan", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = TiltAxis, Name = "Tilt", AxisIndex = 1 });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to register</param>
-        void IInputAxisTarget.RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
+        void IInputAxisResetSource.RegisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to unregister</param>
-        void IInputAxisTarget.UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
+        void IInputAxisResetSource.UnregisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler -= handler;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
         {
