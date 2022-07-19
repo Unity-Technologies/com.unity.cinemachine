@@ -62,7 +62,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
             ux.Add(m_BlendsEditor.CreateInspectorGUI(
                 serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty, false));
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty));
 
             var foldout = ux.AddChild(new Foldout 
             { 

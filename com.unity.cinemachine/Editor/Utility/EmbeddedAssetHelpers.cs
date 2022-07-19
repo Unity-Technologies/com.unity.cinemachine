@@ -38,8 +38,10 @@ namespace Cinemachine.Editor
 
         UnityEditor.Editor m_Editor = null;
         InspectorUtility.LeftRightContainer m_UnassignedUx;
-        InspectorElement m_EmbeddedInspectorElement;
         VisualElement m_AssignedUx;
+        VisualElement m_EmbeddedInspectorParent;
+        InspectorElement m_EmbeddedInspectorElement;
+        static bool s_CustomBlendsExpanded;
 
         const int kIndentOffset = 3;
 
@@ -151,12 +153,21 @@ namespace Cinemachine.Editor
 
             var target = property.objectReferenceValue;
             if (m_Editor != null && m_Editor.target != target)
+            {
+                if (m_EmbeddedInspectorElement != null)
+                    m_EmbeddedInspectorElement.RemoveFromHierarchy();
                 DestroyEditor();
+            }
             if (target != null)
             {
-                m_Editor = UnityEditor.Editor.CreateEditor(target);
-                if (OnCreateEditor != null)
-                    OnCreateEditor(m_Editor);
+                if (m_Editor == null)
+                {
+                    m_Editor = UnityEditor.Editor.CreateEditor(target);
+                    if (OnCreateEditor != null)
+                        OnCreateEditor(m_Editor);
+                }
+                if (m_EmbeddedInspectorParent != null)
+                    m_EmbeddedInspectorElement = m_EmbeddedInspectorParent.AddChild(new InspectorElement(m_Editor));
             }
             if (m_UnassignedUx != null)
                 m_UnassignedUx.SetVisible(target == null);
@@ -170,8 +181,7 @@ namespace Cinemachine.Editor
         /// </summary>
         public VisualElement CreateInspectorGUI(
             SerializedProperty property,
-            string title, string defaultName, string extension, string message,
-            bool indent)
+            string title, string defaultName, string extension, string message)
         {
             var ux = new VisualElement();
 
@@ -197,63 +207,34 @@ namespace Cinemachine.Editor
                 tooltip = "Create a new shared settings asset"
             });
 
-            m_AssignedUx = ux.AddChild(new VisualElement());
+            var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip, value = s_CustomBlendsExpanded };
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                s_CustomBlendsExpanded = evt.newValue;
+                evt.StopPropagation();
+            });
+            m_EmbeddedInspectorParent = new VisualElement();
+            m_AssignedUx = ux.AddChild(new InspectorUtility.FoldoutWithOverlay(
+                foldout, new PropertyField(property, ""), null) { style = { flexGrow = 1 }});
+            foldout.Add(new PropertyField(property, "Asset"));
+            foldout.AddSpace();
 
-            // GML todo: surround with a nice box
-            //EditorGUILayout.BeginVertical(GUI.skin.box);
+            Color borderColor = Color.grey;
+            float borderWidth = 2;
+            float borderRadius = 5;
+            m_EmbeddedInspectorParent = foldout.AddChild(new VisualElement() { 
+            style = 
+            { 
+                borderTopColor = borderColor, borderTopWidth = borderWidth, borderTopLeftRadius = borderRadius,
+                borderBottomColor = borderColor, borderBottomWidth = borderWidth, borderBottomLeftRadius = borderRadius,
+                borderLeftColor = borderColor, borderLeftWidth = borderWidth, borderTopRightRadius = borderRadius,
+                borderRightColor = borderColor, borderRightWidth = borderWidth, borderBottomRightRadius = borderRadius,
+            }});
 
-            m_AssignedUx.Add(new PropertyField(property));
+            m_EmbeddedInspectorParent.Add(new HelpBox(
+                "This is a shared asset.  Changes made here will apply to all users of this asset.", 
+                HelpBoxMessageType.Info));
 
-            // GML todo: how to draw an embedded editor?
-            //m_EmbeddedInspectorElement = m_AssignedUx.AddChild(new InspectorElement(m_Editor));
-            //m_EmbeddedInspectorElement.Bind(null);
-
-#if false // GML todo: how to draw an embedded editor?
-                Rect rect = EditorGUILayout.GetControlRect(true);
-                rect.height = EditorGUIUtility.singleLineHeight;
-                EditorGUI.BeginChangeCheck();
-                EditorGUI.PropertyField(rect, property);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    property.serializedObject.ApplyModifiedProperties();
-                    UpdateEditor(property);
-                }
-                if (m_Editor != null)
-                {
-                    Rect foldoutRect = new Rect(
-                        rect.x - kIndentOffset, rect.y, rect.width + kIndentOffset, rect.height);
-                    property.isExpanded = EditorGUI.Foldout(
-                        foldoutRect, property.isExpanded, GUIContent.none, true);
-
-                    bool canEditAsset = AssetDatabase.IsOpenForEdit(m_Editor.target, StatusQueryOptions.UseCachedIfPossible);
-                    GUI.enabled = canEditAsset;
-                    if (property.isExpanded)
-                    {
-                        EditorGUILayout.Separator();
-                        EditorGUILayout.HelpBox(
-                            "This is a shared asset.  Changes made here will apply to all users of this asset.", 
-                            MessageType.Info);
-                        EditorGUI.BeginChangeCheck();
-                        if (indent)
-                            ++EditorGUI.indentLevel;
-                        m_Editor.OnInspectorGUI();
-                        if (indent)
-                            --EditorGUI.indentLevel;
-                        if (EditorGUI.EndChangeCheck() && (OnChanged != null))
-                            OnChanged(property.objectReferenceValue as T);
-                    }
-                    GUI.enabled = true;
-                    if (m_Editor.target != null)
-                    {
-                        if (!canEditAsset && GUILayout.Button("Check out"))
-                        {
-                            Task task = Provider.Checkout(AssetDatabase.GetAssetPath(m_Editor.target), CheckoutMode.Asset);
-                            task.Wait();
-                        }
-                    }
-                }
-                EditorGUILayout.EndVertical();
-#endif
             UpdateEditor(property);
             ux.TrackPropertyValue(property, (p) => UpdateEditor(p));
 
