@@ -23,10 +23,7 @@ namespace Cinemachine.Editor
 
         void OnEnable()
         {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
-            {
-                OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView()
-            };
+            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>();
             EditorApplication.update += UpdateVisibility;
         }
 
