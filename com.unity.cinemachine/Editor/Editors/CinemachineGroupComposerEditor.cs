@@ -12,7 +12,6 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = base.CreateInspectorGUI();
 
             ux.AddSpace();
@@ -20,25 +19,25 @@ namespace Cinemachine.Editor
                 "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup.", 
                 HelpBoxMessageType.Info));
 
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_FramingMode)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_GroupFramingSize)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_FrameDamping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_FramingMode)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_GroupFramingSize)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_FrameDamping)));
 
             var nonOrthoControls = ux.AddChild(new VisualElement());
 
-            var adjustmentModeProperty = serializedTarget.FindProperty(() => Target.m_AdjustmentMode);
+            var adjustmentModeProperty = serializedObject.FindProperty(() => Target.m_AdjustmentMode);
             nonOrthoControls.Add(new PropertyField(adjustmentModeProperty));
 
-            var maxDollyIn = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaxDollyIn)));
-            var maxDollyOut = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaxDollyOut)));
-            var minDistance = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumDistance)));
-            var maxDistance = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumDistance)));
-            var minFov = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumFOV)));
-            var maxFov = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumFOV)));
+            var maxDollyIn = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.m_MaxDollyIn)));
+            var maxDollyOut = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.m_MaxDollyOut)));
+            var minDistance = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.m_MinimumDistance)));
+            var maxDistance = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.m_MaximumDistance)));
+            var minFov = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.m_MinimumFOV)));
+            var maxFov = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.m_MaximumFOV)));
 
             var orthoControls = ux.AddChild(new VisualElement());
-            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_MinimumOrthoSize)));
-            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_MaximumOrthoSize)));
+            orthoControls.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_MinimumOrthoSize)));
+            orthoControls.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_MaximumOrthoSize)));
 
             nonOrthoControls.TrackPropertyValue(adjustmentModeProperty, (prop) =>
             {

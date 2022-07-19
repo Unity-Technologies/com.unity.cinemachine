@@ -33,18 +33,16 @@ namespace Cinemachine.Editor
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(
-                    FieldPath(x => x.m_CustomBlends), this);
-            m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) =>
-                {
-                    InspectorUtility.RepaintGameView();
-                };
-            m_BlendsEditor.OnCreateEditor = (UnityEditor.Editor ed) =>
+            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
+            {
+                OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
+                OnCreateEditor = (UnityEditor.Editor ed) => 
                 {
                     CinemachineBlenderSettingsEditor editor = ed as CinemachineBlenderSettingsEditor;
                     if (editor != null)
-                        editor.GetAllVirtualCameras = () => { return Target.ChildCameras; };
-                };
+                        editor.GetAllVirtualCameras = () => Target.ChildCameras;
+                }
+            };
             mChildList = null;
             mInstructionList = null;
         }
@@ -93,9 +91,9 @@ namespace Cinemachine.Editor
 
             // Blends
             m_BlendsEditor.DrawEditorCombo(
+                FindProperty(x => x.m_CustomBlends),
                 "Create New Blender Asset",
-                Target.gameObject.name + " Blends", "asset", string.Empty,
-                "Custom Blends", false);
+                Target.gameObject.name + " Blends", "asset", string.Empty, false);
 
             // Instructions
             EditorGUI.BeginChangeCheck();

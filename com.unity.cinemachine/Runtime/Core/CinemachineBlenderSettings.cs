@@ -26,7 +26,6 @@ namespace Cinemachine
             public string m_To;
 
             /// <summary>Blend curve definition</summary>
-            [CinemachineBlendDefinitionProperty]
             [Tooltip("Blend curve definition")]
             public CinemachineBlendDefinition m_Blend;
         }

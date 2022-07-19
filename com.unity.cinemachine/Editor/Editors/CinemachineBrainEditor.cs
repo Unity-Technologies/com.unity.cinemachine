@@ -2,6 +2,8 @@
 using UnityEditor;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -10,10 +12,14 @@ namespace Cinemachine.Editor
     /// </summary>
     [CustomEditor(typeof(CinemachineBrain))]
     [CanEditMultipleObjects]
-    public sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
+    class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
     {
-        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        bool mEventsExpanded = false;
+        //EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
+        ObjectField m_LiveCamera;
+        TextField m_LiveBlend;
+
+
+        bool m_EventsExpanded = false;
 
         /// <summary>Obsolete, do not use.  Use the overload, which is more performant</summary>
         /// <returns>List of property names to exclude</returns>
@@ -30,101 +36,87 @@ namespace Cinemachine.Editor
             excluded.Add(FieldPath(x => x.CustomBlends));
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(FieldPath(x => x.CustomBlends), this);
-            m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) => { InspectorUtility.RepaintGameView(); };
+            //m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
+            //{
+            //    OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView()
+            //};
+            EditorApplication.update += UpdateVisibility;
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
-            if (m_BlendsEditor != null)
-                m_BlendsEditor.OnDisable();
+            //if (m_BlendsEditor != null)
+            //    m_BlendsEditor.OnDisable();
+            EditorApplication.update -= UpdateVisibility;
         }
 
-        /// <summary>Create the contents of the inspector panel</summary>
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
+            var ux = new VisualElement();
 
             // Show the active camera and blend
-            GUI.enabled = false;
-            ICinemachineCamera vcam = Target.ActiveVirtualCamera;
-            Transform activeCam = (vcam != null && vcam.VirtualCameraGameObject != null)
-                ? vcam.VirtualCameraGameObject.transform : null;
-            EditorGUILayout.ObjectField("Live Camera", activeCam, typeof(Transform), true);
-            EditorGUILayout.DelayedTextField(
-                "Live Blend", Target.ActiveBlend != null
-                ? Target.ActiveBlend.Description : string.Empty);
-            GUI.enabled = true;
+            var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            row.Left.Add(new Label("Live Camera")
+                { tooltip = "The Cm Camera that is currently active", style = { alignSelf = Align.Center, flexGrow = 1 }});
+            m_LiveCamera = row.Right.AddChild(new ObjectField("") 
+                { objectType = typeof(CinemachineVirtualCameraBase), style = { flexGrow = 1 }});
+            row.SetEnabled(false);
 
-            // Normal properties
-            DrawRemainingPropertiesInInspector();
+            row = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            row.Left.Add(new Label("Live Blend")
+                { tooltip = "The state of currently active blend, if any", style = { alignSelf = Align.Center, flexGrow = 1 }});
+            m_LiveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
+            row.SetEnabled(false);
 
-            if (targets.Length == 1)
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowDebugText)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowCameraFrustum)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.IgnoreTimeScale)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.WorldUpOverride)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
+
+            // GML todo: make an embedded asset editor
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
+
+            var foldout = ux.AddChild(new Foldout 
+            { 
+                text = "Events", 
+                tooltip = "Add handlers for these events, if desired", 
+                value = m_EventsExpanded 
+            });
+            foldout.RegisterValueChangedCallback((evt) => 
             {
-                // Blender
-                m_BlendsEditor.DrawEditorCombo(
-                    "Create New Blender Asset",
-                    Target.gameObject.name + " Blends", "asset", string.Empty,
-                    "Custom Blends", false);
+                m_EventsExpanded = evt.newValue;
+                evt.StopPropagation();
+            });
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
 
-                mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
-                if (mEventsExpanded)
-                {
-                    EditorGUILayout.PropertyField(FindProperty(x => x.CameraCutEvent));
-                    EditorGUILayout.PropertyField(FindProperty(x => x.CameraActivatedEvent));
-                }
-                serializedObject.ApplyModifiedProperties(); 
-            }
+            return ux;
+        }
+
+        void UpdateVisibility()
+        {
+            if (Target == null || m_LiveCamera == null)
+                return;
+            m_LiveCamera.value = Target.ActiveVirtualCamera as CinemachineVirtualCameraBase;
+            m_LiveBlend.value = Target.ActiveBlend != null ? Target.ActiveBlend.Description : string.Empty;
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]
-        private static void DrawBrainGizmos(CinemachineBrain brain, GizmoType drawType)
+        static void DrawBrainGizmos(CinemachineBrain brain, GizmoType drawType)
         {
             if (brain.OutputCamera != null && brain.ShowCameraFrustum && brain.isActiveAndEnabled)
             {
                 DrawCameraFrustumGizmo(
-                    brain, LensSettings.FromCamera(brain.OutputCamera),
+                    LensSettings.FromCamera(brain.OutputCamera),
                     brain.transform.localToWorldMatrix,
                     Color.white); // GML why is this color hardcoded?
             }
-        }
-
-        internal static void DrawCameraFrustumGizmo(
-            CinemachineBrain brain, LensSettings lens,
-            Matrix4x4 transform, Color color)
-        {
-            float aspect = 1;
-            bool ortho = false;
-            if (brain != null)
-            {
-                aspect = brain.OutputCamera.aspect;
-                ortho = brain.OutputCamera.orthographic;
-            }
-
-            Matrix4x4 originalMatrix = Gizmos.matrix;
-            Color originalGizmoColour = Gizmos.color;
-            
-            Gizmos.color = color;
-            Gizmos.matrix = transform;
-            if (ortho)
-            {
-                Vector3 size = new Vector3(
-                        aspect * lens.OrthographicSize * 2,
-                        lens.OrthographicSize * 2,
-                        lens.FarClipPlane - lens.NearClipPlane);
-                Gizmos.DrawWireCube(
-                    new Vector3(0, 0, (size.z / 2) + lens.NearClipPlane), size);
-            }
-            else
-            {
-                Gizmos.DrawFrustum(
-                        Vector3.zero, lens.FieldOfView,
-                        lens.FarClipPlane, lens.NearClipPlane, aspect);
-            }
-            Gizmos.matrix = originalMatrix;
-            Gizmos.color = originalGizmoColour;
         }
 
         /// <summary>Draw the gizmo for a virtual camera in the scene view</summary>
@@ -142,11 +134,10 @@ namespace Cinemachine.Editor
             if (vcam.ParentCamera != null && (selectionType & GizmoType.Active) == 0)
                 return;
 
-            CameraState state = vcam.State;
+            var state = vcam.State;
             Gizmos.DrawIcon(state.FinalPosition, kGizmoFileName, true);
 
             DrawCameraFrustumGizmo(
-                CinemachineCore.Instance.FindPotentialTargetBrain(vcam),
                 state.Lens,
                 Matrix4x4.TRS(
                     state.FinalPosition,
@@ -154,6 +145,34 @@ namespace Cinemachine.Editor
                 CinemachineCore.Instance.IsLive(vcam)
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
+        }
+
+        public static void DrawCameraFrustumGizmo(LensSettings lens, Matrix4x4 transform, Color color)
+        {
+            var aspect = lens.Aspect;
+            var ortho = lens.Orthographic;
+
+            var originalMatrix = Gizmos.matrix;
+            var originalGizmoColour = Gizmos.color;
+            
+            Gizmos.color = color;
+            Gizmos.matrix = transform;
+            if (ortho)
+            {
+                var size = new Vector3(
+                    aspect * lens.OrthographicSize * 2,
+                    lens.OrthographicSize * 2,
+                    lens.FarClipPlane - lens.NearClipPlane);
+                Gizmos.DrawWireCube(new Vector3(0, 0, (size.z / 2) + lens.NearClipPlane), size);
+            }
+            else
+            {
+                Gizmos.DrawFrustum(
+                        Vector3.zero, lens.FieldOfView,
+                        lens.FarClipPlane, lens.NearClipPlane, aspect);
+            }
+            Gizmos.matrix = originalMatrix;
+            Gizmos.color = originalGizmoColour;
         }
     }
 }
