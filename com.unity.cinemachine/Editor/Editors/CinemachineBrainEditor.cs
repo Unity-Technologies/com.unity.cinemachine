@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
     {
         CinemachineBrain Target => target as CinemachineBrain;
 
-        //EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
+        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         ObjectField m_LiveCamera;
         TextField m_LiveBlend;
 
@@ -23,17 +23,17 @@ namespace Cinemachine.Editor
 
         void OnEnable()
         {
-            //m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
-            //{
-            //    OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView()
-            //};
+            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
+            {
+                OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView()
+            };
             EditorApplication.update += UpdateVisibility;
         }
 
         void OnDisable()
         {
-            //if (m_BlendsEditor != null)
-            //    m_BlendsEditor.OnDisable();
+            if (m_BlendsEditor != null)
+                m_BlendsEditor.OnDisable();
             EditorApplication.update -= UpdateVisibility;
         }
 
@@ -63,9 +63,9 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-
-            // GML todo: make an embedded asset editor
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
+            ux.Add(m_BlendsEditor.CreateInspectorGUI(
+                serializedObject.FindProperty(() => Target.CustomBlends),
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty, false));
 
             var foldout = ux.AddChild(new Foldout 
             { 

@@ -38,6 +38,7 @@ namespace Cinemachine.Editor
 
         UnityEditor.Editor m_Editor = null;
         InspectorUtility.LeftRightContainer m_UnassignedUx;
+        InspectorElement m_EmbeddedInspectorElement;
         VisualElement m_AssignedUx;
 
         const int kIndentOffset = 3;
@@ -163,7 +164,6 @@ namespace Cinemachine.Editor
                 m_AssignedUx.SetVisible(target != null);
         }
 
-#if false // todo: how to display an embedded editor in UIElements?
         /// <summary>
         /// Call this to create the inspector GUI.  Will draw the asset reference field, and
         /// the embedded editor, or a Create Asset button, if no asset is set.
@@ -203,6 +203,10 @@ namespace Cinemachine.Editor
             //EditorGUILayout.BeginVertical(GUI.skin.box);
 
             m_AssignedUx.Add(new PropertyField(property));
+
+            // GML todo: how to draw an embedded editor?
+            //m_EmbeddedInspectorElement = m_AssignedUx.AddChild(new InspectorElement(m_Editor));
+            //m_EmbeddedInspectorElement.Bind(null);
 
 #if false // GML todo: how to draw an embedded editor?
                 Rect rect = EditorGUILayout.GetControlRect(true);
@@ -255,7 +259,5 @@ namespace Cinemachine.Editor
 
             return ux;
         }
-#endif
-
     }
 }
