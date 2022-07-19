@@ -12,29 +12,15 @@ namespace Cinemachine.Editor
     /// </summary>
     [CustomEditor(typeof(CinemachineBrain))]
     [CanEditMultipleObjects]
-    class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
+    class CinemachineBrainEditor : UnityEditor.Editor
     {
+        CinemachineBrain Target => target as CinemachineBrain;
+
         //EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         ObjectField m_LiveCamera;
         TextField m_LiveBlend;
 
-
         bool m_EventsExpanded = false;
-
-        /// <summary>Obsolete, do not use.  Use the overload, which is more performant</summary>
-        /// <returns>List of property names to exclude</returns>
-        protected override List<string> GetExcludedPropertiesInInspector() 
-            { return base.GetExcludedPropertiesInInspector(); }
-
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.CameraCutEvent));
-            excluded.Add(FieldPath(x => x.CameraActivatedEvent));
-            excluded.Add(FieldPath(x => x.CustomBlends));
-        }
 
         void OnEnable()
         {
