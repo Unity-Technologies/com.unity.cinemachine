@@ -108,7 +108,7 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("When enabled, the cameras will always respond in real-time to user input "
             + "and damping, even if the game is running in slow motion")]
-        [FormerlySerializedAs("IgnoreTimeScale")]
+        [FormerlySerializedAs("m_IgnoreTimeScale")]
         public bool IgnoreTimeScale = false;
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Cinemachine
             + "during FixedUpdate (e.g. RigidBodies), LateUpdate if all your targets are animated "
             + "during the normal Update loop, and SmartUpdate if you want Cinemachine to do the "
             + "appropriate thing on a per-target basis.  SmartUpdate is the recommended setting")]
-        [FormerlySerializedAs("UpdateMethod")]
+        [FormerlySerializedAs("m_UpdateMethod")]
         public UpdateMethods UpdateMethod = UpdateMethods.SmartUpdate;
 
         /// <summary>This enum defines the options available for the update method.</summary>
@@ -160,7 +160,7 @@ namespace Cinemachine
         /// brain's transform is updated.</summary>
         [Tooltip("The update time for the Brain, i.e. when the blends are evaluated and "
             + "the brain's transform is updated")]
-        [FormerlySerializedAs("BlendUpdateMethod")]
+        [FormerlySerializedAs("m_BlendUpdateMethod")]
         public BrainUpdateMethods BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
 
         /// <summary>Defines the settings for Lens Mode overriding</summary>
@@ -184,10 +184,9 @@ namespace Cinemachine
         /// <summary>
         /// The blend which is used if you don't explicitly define a blend between two Virtual Cameras.
         /// </summary>
-        [CinemachineBlendDefinitionProperty]
         [Tooltip("The blend that is used in cases where you haven't explicitly defined a "
             + "blend between two Virtual Cameras")]
-        [FormerlySerializedAs("DefaultBlend")]
+        [FormerlySerializedAs("m_DefaultBlend")]
         public CinemachineBlendDefinition DefaultBlend
             = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
 
@@ -196,7 +195,7 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("This is the asset that contains custom settings for blends between "
             + "specific virtual cameras in your scene")]
-        [FormerlySerializedAs("CustomBlends")]
+        [FormerlySerializedAs("m_CustomBlends")]
         public CinemachineBlenderSettings CustomBlends = null;
 
         /// <summary>Event with a CinemachineBrain parameter</summary>
@@ -210,7 +209,7 @@ namespace Cinemachine
 
         /// <summary>This event will fire whenever a virtual camera goes live and there is no blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live and there is no blend")]
-        [FormerlySerializedAs("CameraCutEvent")]
+        [FormerlySerializedAs("m_CameraCutEvent")]
         public BrainEvent CameraCutEvent = new BrainEvent();
 
         /// <summary>This event will fire whenever a virtual camera goes live.  If a blend is involved,
@@ -219,9 +218,8 @@ namespace Cinemachine
         /// The Parameters are (incoming_vcam, outgoing_vcam), in that order.</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is "
             + "involved, then the event will fire on the first frame of the blend.")]
-        [FormerlySerializedAs("CameraActivatedEvent")]
+        [FormerlySerializedAs("m_CameraActivatedEvent")]
         public VcamActivatedEvent CameraActivatedEvent = new VcamActivatedEvent();
-
 
         Camera m_OutputCamera = null; // never use directly - use accessor
         GameObject m_TargetOverride = null; // never use directly - use accessor
@@ -263,7 +261,25 @@ namespace Cinemachine
         ICinemachineCamera m_ActiveCameraPreviousFrame;
         GameObject m_ActiveCameraPreviousFrameGameObject;
 
+        void OnValidate()
+        {
+            DefaultBlend.m_Time = Mathf.Max(0, DefaultBlend.m_Time);
+        }
 
+        void Reset()
+        {
+            ShowDebugText = false;
+            ShowCameraFrustum = true;
+            IgnoreTimeScale = false;
+            WorldUpOverride = null;
+            UpdateMethod = UpdateMethods.SmartUpdate;
+            BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
+            LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
+            DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+            CustomBlends = null;
+            CameraCutEvent = new BrainEvent();
+            CameraActivatedEvent = new VcamActivatedEvent();
+        }
 
         /// <summary>
         /// Get the Unity Camera that is attached to this GameObject.  This is the camera
