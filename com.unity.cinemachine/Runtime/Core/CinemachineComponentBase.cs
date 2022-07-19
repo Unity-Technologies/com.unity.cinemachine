@@ -72,19 +72,14 @@ namespace Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        /// GML todo: rename this
-        public ICinemachineTargetGroup AbstractFollowTargetGroup 
+        public ICinemachineTargetGroup FollowTargetAsGroup 
         {
             get
             {
                 CinemachineVirtualCameraBase vcam = VirtualCamera;
-                return vcam == null ? null : vcam.AbstractFollowTargetGroup;
+                return vcam == null ? null : vcam.FollowTargetAsGroup;
             }
         }
-
-        /// <summary>Get Follow target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
-        /// GML todo: remove this
-        public CinemachineTargetGroup FollowTargetGroup => AbstractFollowTargetGroup as CinemachineTargetGroup;
 
         /// <summary>Get the position of the Follow target.  Special handling: If the Follow target is
         /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
@@ -120,11 +115,7 @@ namespace Cinemachine
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, or null if target is not a group</summary>
         /// GML todo: rename this
-        public ICinemachineTargetGroup AbstractLookAtTargetGroup => VirtualCamera.AbstractLookAtTargetGroup;
-
-        /// <summary>Get LookAt target as CinemachineTargetGroup, or null if target is not a CinemachineTargetGroup</summary>
-        /// GML todo: remove this
-        public CinemachineTargetGroup LookAtTargetGroup => AbstractLookAtTargetGroup as CinemachineTargetGroup;
+        public ICinemachineTargetGroup LookAtTargetAsGroup => VirtualCamera.LookAtTargetAsGroup;
 
         /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is
         /// a VirtualCamera, returns the vcam State's position, not the transform's position</summary>
@@ -175,7 +166,6 @@ namespace Cinemachine
         /// Base class implementation does nothing.</summary>
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">Current effective deltaTime</param>
-        // GML todo: should this just be another stage in the pipeline?
         public virtual void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime) {}
 
         /// <summary>What part of the pipeline this fits into</summary>
@@ -200,8 +190,7 @@ namespace Cinemachine
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public virtual bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
-        { return false; }
+            ref CinemachineVirtualCameraBase.TransitionParams transitionParams) => false;
 
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera
@@ -223,6 +212,6 @@ namespace Cinemachine
         /// Only used in editor for timeline scrubbing.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public virtual float GetMaxDampTime() { return 0; }
+        public virtual float GetMaxDampTime() => 0;
     }
 }

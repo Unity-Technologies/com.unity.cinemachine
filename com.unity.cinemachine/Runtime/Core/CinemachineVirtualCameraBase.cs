@@ -857,7 +857,7 @@ namespace Cinemachine
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, 
         /// or null if target is not a ICinemachineTargetGroup</summary>
-        public ICinemachineTargetGroup AbstractFollowTargetGroup => m_CachedFollowTargetGroup;
+        public ICinemachineTargetGroup FollowTargetAsGroup => m_CachedFollowTargetGroup;
 
         /// <summary>Get Follow target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
@@ -865,7 +865,7 @@ namespace Cinemachine
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, 
         /// or null if target is not a ICinemachineTargetGroup</summary>
-        public ICinemachineTargetGroup AbstractLookAtTargetGroup => m_CachedLookAtTargetGroup;
+        public ICinemachineTargetGroup LookAtTargetAsGroup => m_CachedLookAtTargetGroup;
 
         /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
