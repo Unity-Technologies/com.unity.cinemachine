@@ -170,7 +170,7 @@ namespace Cinemachine
             bool forceUpdate = false;
 
             // Cant't inherit position if already live, because there will be a pop
-            if (Transitions.m_InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if (Transitions.InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
                 ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
             
             UpdatePipelineCache();
@@ -187,8 +187,8 @@ namespace Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
 
-            if (Transitions.m_OnCameraLive != null)
-                Transitions.m_OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.OnCameraLive != null)
+                Transitions.OnCameraLive.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
@@ -211,7 +211,7 @@ namespace Cinemachine
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.FinalPosition : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, Transitions.m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.

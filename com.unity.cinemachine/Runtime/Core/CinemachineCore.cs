@@ -181,7 +181,7 @@ namespace Cinemachine
             if (!m_ActiveCamerasAreSorted && mActiveCameras.Count > 1)
             {
                 mActiveCameras.Sort((x, y) => 
-                    x.Priority == y.Priority ? y.m_ActivationId - x.m_ActivationId : y.Priority - x.Priority);
+                    x.Priority == y.Priority ? y.ActivationId - x.ActivationId : y.Priority - x.Priority);
                 m_ActiveCamerasAreSorted = true;
             }
             return mActiveCameras[index];
@@ -191,7 +191,7 @@ namespace Cinemachine
         internal void AddActiveCamera(CinemachineVirtualCameraBase vcam)
         {
             Assert.IsFalse(mActiveCameras.Contains(vcam));
-            vcam.m_ActivationId = m_ActivationSequence++;
+            vcam.ActivationId = m_ActivationSequence++;
             mActiveCameras.Add(vcam);
             m_ActiveCamerasAreSorted = false;
         }
@@ -272,7 +272,7 @@ namespace Cinemachine
                         sublist.RemoveAt(j);
                         continue; // deleted
                     }
-                    if (vcam.m_StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
+                    if (vcam.StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
                         || IsLive(vcam))
                     {
                         // Skip this vcam if it's not on the layer mask
@@ -282,7 +282,7 @@ namespace Cinemachine
                     else if (currentRoundRobin == null
                         && mRoundRobinVcamLastFrame != vcam
                         && canUpdateStandby
-                        && vcam.m_StandbyUpdate != CinemachineVirtualCameraBase.StandbyUpdateMode.Never
+                        && vcam.StandbyUpdate != CinemachineVirtualCameraBase.StandbyUpdateMode.Never
                         && vcam.isActiveAndEnabled)
                     {
                         // Do the round-robin update
