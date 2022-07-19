@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.VersionControl;
-using System;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
@@ -13,8 +12,7 @@ namespace Cinemachine.Editor
     class EmbeddeAssetEditor<T> where T : ScriptableObject
     {
         /// <summary>
-        /// Called after the asset editor is created, in case it needs
-        /// to be customized
+        /// Called after the asset editor is created, in case it needs to be customized
         /// </summary>
         public OnCreateEditorDelegate OnCreateEditor;
         public delegate void OnCreateEditorDelegate(UnityEditor.Editor editor);
