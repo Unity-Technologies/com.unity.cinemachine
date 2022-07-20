@@ -99,7 +99,7 @@ namespace Cinemachine
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the ClearShot camera were active.</summary>
-        public ICinemachineCamera LiveChild { get; set; }
+        public CinemachineVirtualCameraBase LiveChild { get; set; }
 
         /// <summary>The CameraState of the currently live child</summary>
         public override CameraState State { get { return m_State; } }
@@ -275,7 +275,7 @@ namespace Cinemachine
 
         float mActivationTime = 0;
         float mPendingActivationTime = 0;
-        ICinemachineCamera mPendingCamera;
+        CinemachineVirtualCameraBase mPendingCamera;
         private CinemachineBlend mActiveBlend = null;
 
         void InvalidateListOfChildren()
@@ -315,7 +315,7 @@ namespace Cinemachine
         private bool mRandomizeNow = false;
         private  CinemachineVirtualCameraBase[] m_RandomizedChilden = null;
 
-        private ICinemachineCamera ChooseCurrentCamera(Vector3 worldUp)
+        private CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp)
         {
             if (m_ChildCameras == null || m_ChildCameras.Length == 0)
             {
@@ -333,9 +333,9 @@ namespace Cinemachine
                 childCameras = m_RandomizedChilden;
             }
 
-            if (LiveChild != null && !LiveChild.VirtualCameraGameObject.activeSelf)
+            if (LiveChild != null && !LiveChild.gameObject.activeSelf)
                 LiveChild = null;
-            ICinemachineCamera best = LiveChild;
+            var best = LiveChild;
             for (int i = 0; i < childCameras.Length; ++i)
             {
                 CinemachineVirtualCameraBase vcam = childCameras[i];
@@ -345,7 +345,7 @@ namespace Cinemachine
                     if (best == null
                         || vcam.State.ShotQuality > best.State.ShotQuality
                         || (vcam.State.ShotQuality == best.State.ShotQuality && vcam.Priority > best.Priority)
-                        || (m_RandomizeChoice && mRandomizeNow && (ICinemachineCamera)vcam != LiveChild
+                        || (m_RandomizeChoice && mRandomizeNow && vcam != LiveChild
                             && vcam.State.ShotQuality == best.State.ShotQuality
                             && vcam.Priority == best.Priority))
                     {
