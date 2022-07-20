@@ -198,7 +198,7 @@ namespace Cinemachine
             if (stage == m_ApplyAfter && deltaTime >= 0)
             {
                 bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.FinalPosition, m_Use2DDistance, m_ChannelMask, 
+                    state.GetFinalPosition(), m_Use2DDistance, m_ChannelMask, 
                     out var impulsePos, out var impulseRot);
                 bool haveReaction = m_ReactionSettings.GetReaction(
                     deltaTime, impulsePos, out var reactionPos, out var reactionRot);

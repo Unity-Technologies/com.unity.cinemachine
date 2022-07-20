@@ -462,7 +462,7 @@ namespace Cinemachine
                 TrackedPoint = p;
             }
 
-            if (!curState.HasLookAt)
+            if (!curState.HasLookAt())
                 curState.ReferenceLookAt = followTargetPosition;
 
             // Adjust the desired depth for group framing

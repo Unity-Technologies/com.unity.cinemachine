@@ -84,7 +84,7 @@ namespace Cinemachine
                 mNoiseTime = TargetPositionCache.CurrentTime * m_FrequencyGain;
             else
                 mNoiseTime += deltaTime * m_FrequencyGain;
-            curState.PositionCorrection += curState.CorrectedOrientation * NoiseSettings.GetCombinedFilterResults(
+            curState.PositionCorrection += curState.GetCorrectedOrientation() * NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain;
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
                     m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
@@ -93,7 +93,7 @@ namespace Cinemachine
                 Matrix4x4 m = Matrix4x4.Translate(-m_PivotOffset);
                 m = Matrix4x4.Rotate(rotNoise) * m;
                 m = Matrix4x4.Translate(m_PivotOffset) * m;
-                curState.PositionCorrection += curState.CorrectedOrientation * m.MultiplyPoint(Vector3.zero);
+                curState.PositionCorrection += curState.GetCorrectedOrientation() * m.MultiplyPoint(Vector3.zero);
             }
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
         }

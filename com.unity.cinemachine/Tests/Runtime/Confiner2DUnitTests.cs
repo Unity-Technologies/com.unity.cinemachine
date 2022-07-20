@@ -64,23 +64,23 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.CorrectedPosition, Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
             m_Vcam.transform.position = Vector2.up * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
             m_Vcam.transform.position = Vector2.right * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
             m_Vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
 
         [UnityTest, TestCaseSource(nameof(ColliderTestCases))]
@@ -108,23 +108,23 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.CorrectedPosition, Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
             m_Vcam.transform.position = Vector2.up * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
             m_Vcam.transform.position = Vector2.right * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
 
             m_Vcam.transform.position = Vector2.down * 2f;
             yield return null; // wait one frame
-            Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
     }
 #endif

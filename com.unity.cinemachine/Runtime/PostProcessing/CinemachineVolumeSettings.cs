@@ -53,7 +53,7 @@ namespace Cinemachine.PostFX
         /// number in order to ensure that it overrides other volumes for the active vcam.
         /// You can change this value if necessary to work with other systems.
         /// </summary>
-        static public static float s_VolumePriority = 1000f;
+        static public float s_VolumePriority = 1000f;
 
         /// <summary>This is obsolete, please use m_FocusTracking</summary>
         [HideInInspector]
@@ -187,7 +187,7 @@ namespace Cinemachine.PostFX
                         {
                             float focusDistance = m_FocusOffset;
                             if (m_FocusTracking == FocusTrackingMode.LookAtTarget)
-                                focusDistance += (state.FinalPosition - state.ReferenceLookAt).magnitude;
+                                focusDistance += (state.GetFinalPosition()- state.ReferenceLookAt).magnitude;
                             else
                             {
                                 Transform focusTarget = null;
@@ -198,7 +198,7 @@ namespace Cinemachine.PostFX
                                     case FocusTrackingMode.CustomTarget: focusTarget = m_FocusTarget; break;
                                 }
                                 if (focusTarget != null)
-                                    focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
+                                    focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
                             focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
@@ -209,7 +209,7 @@ namespace Cinemachine.PostFX
                         }
                     }
                     // Apply the post-processing
-                    state.AddCustomBlendable(new CameraState.CustomBlendable(profile, 1));
+                    state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item { Custom = profile, Weight = 1 });
                 }
             }
         }
@@ -244,7 +244,7 @@ namespace Cinemachine.PostFX
         static void ApplyPostFX(CinemachineBrain brain)
         {
             CameraState state = brain.CurrentCameraState;
-            int numBlendables = state.NumCustomBlendables;
+            int numBlendables = state.GetNumCustomBlendables();
             var volumes = GetDynamicBrainVolumes(brain, numBlendables);
             for (int i = 0; i < volumes.Count; ++i)
             {
@@ -257,7 +257,7 @@ namespace Cinemachine.PostFX
             for (int i = 0; i < numBlendables; ++i)
             {
                 var b = state.GetCustomBlendable(i);
-                var profile = b.m_Custom as VolumeProfile;
+                var profile = b.Custom as VolumeProfile;
                 if (!(profile == null)) // in case it was deleted
                 {
                     var v = volumes[i];
@@ -266,7 +266,7 @@ namespace Cinemachine.PostFX
                     v.sharedProfile = profile;
                     v.isGlobal = true;
                     v.priority = s_VolumePriority - (numBlendables - i) - 1;
-                    v.weight = b.m_Weight;
+                    v.weight = b.Weight;
                     ++numPPblendables;
                 }
 #if true // set this to true to force first weight to 1

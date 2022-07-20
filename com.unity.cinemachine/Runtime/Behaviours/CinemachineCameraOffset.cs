@@ -45,13 +45,13 @@ public class CinemachineCameraOffset : CinemachineExtension
         if (stage == m_ApplyAfter)
         {
             bool preserveAim = m_PreserveComposition
-                && state.HasLookAt && stage > CinemachineCore.Stage.Body;
+                && state.HasLookAt() && stage > CinemachineCore.Stage.Body;
 
             Vector3 screenOffset = Vector2.zero;
             if (preserveAim)
             {
                 screenOffset = state.RawOrientation.GetCameraRotationToTarget(
-                    state.ReferenceLookAt - state.CorrectedPosition, state.ReferenceUp);
+                    state.ReferenceLookAt - state.GetCorrectedPosition(), state.ReferenceUp);
             }
 
             Vector3 offset = state.RawOrientation * m_Offset;
@@ -61,7 +61,7 @@ public class CinemachineCameraOffset : CinemachineExtension
             else
             {
                 var q = Quaternion.LookRotation(
-                    state.ReferenceLookAt - state.CorrectedPosition, state.ReferenceUp);
+                    state.ReferenceLookAt - state.GetCorrectedPosition(), state.ReferenceUp);
                 q = q.ApplyCameraRotation(-screenOffset, state.ReferenceUp);
                 state.RawOrientation = q;
             }
