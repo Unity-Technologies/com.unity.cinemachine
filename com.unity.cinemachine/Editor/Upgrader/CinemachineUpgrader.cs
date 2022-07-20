@@ -523,7 +523,8 @@ namespace Cinemachine.Editor
 
             void Initialize(List<PlayableDirector> playableDirectors)
             {
-                m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
+                m_CmShotsToUpdate = new ();
+
                 // collect all cmShots that may require a reference update
                 foreach (var playableDirector in playableDirectors)
                 {

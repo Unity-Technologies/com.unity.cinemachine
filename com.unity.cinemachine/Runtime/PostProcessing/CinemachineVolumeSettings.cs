@@ -3,8 +3,9 @@
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;
     using UnityEngine.Rendering;
-    #if CINEMACHINE_HDRP_7_3_1
-        using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.Serialization;
+#if CINEMACHINE_HDRP_7_3_1
+using UnityEngine.Rendering.HighDefinition;
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
@@ -53,11 +54,7 @@ namespace Cinemachine.PostFX
         /// number in order to ensure that it overrides other volumes for the active vcam.
         /// You can change this value if necessary to work with other systems.
         /// </summary>
-        static public static float s_VolumePriority = 1000f;
-
-        /// <summary>This is obsolete, please use m_FocusTracking</summary>
-        [HideInInspector]
-        public bool m_FocusTracksTarget;
+        static public float s_VolumePriority = 1000f;
 
         /// <summary>The reference object for focus tracking</summary>
         public enum FocusTrackingMode
@@ -80,27 +77,35 @@ namespace Cinemachine.PostFX
         [Tooltip("If the profile has the appropriate overrides, will set the base focus "
             + "distance to be the distance from the selected target to the camera."
             + "The Focus Offset field will then modify that distance.")]
-        public FocusTrackingMode m_FocusTracking;
+        [FormerlySerializedAs("m_FocusTracking")]
+        public FocusTrackingMode FocusTracking;
 
         /// <summary>The target to use if Focus Tracks Target is set to Custom Target</summary>
         [Tooltip("The target to use if Focus Tracks Target is set to Custom Target")]
-        public Transform m_FocusTarget;
+        [FormerlySerializedAs("m_FocusTarget")]
+        public Transform FocusTarget;
 
         /// <summary>Offset from target distance, to be used with Focus Tracks Target.  
         /// Offsets the sharpest point away from the focus target</summary>
         [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  "
             + "Offsets the sharpest point away from the focus target.")]
-        public float m_FocusOffset;
+        [FormerlySerializedAs("m_FocusOffset")]
+        public float FocusOffset;
 
         /// <summary>
         /// This profile will be applied whenever this virtual camera is live
         /// </summary>
         [Tooltip("This profile will be applied whenever this virtual camera is live")]
-        public VolumeProfile m_Profile;
+        [FormerlySerializedAs("m_Profile")]
+        public VolumeProfile Profile;
+
+        /// <summary>This is obsolete, please use m_FocusTracking</summary>
+        [HideInInspector, SerializeField, FormerlySerializedAs("m_FocusTracksTarget")]
+        bool m_LegacyFocusTracksTarget;
 
         class VcamExtraState
         {
-            public VolumeProfile mProfileCopy;
+            public VolumeProfile ProfileCopy;
 
             public void CreateProfileCopy(VolumeProfile source)
             {
@@ -115,19 +120,19 @@ namespace Cinemachine.PostFX
                         profile.isDirty = true;
                     }
                 }
-                mProfileCopy = profile;
+                ProfileCopy = profile;
             }
 
             public void DestroyProfileCopy()
             {
-                if (mProfileCopy != null)
-                    RuntimeUtility.DestroyObject(mProfileCopy);
-                mProfileCopy = null;
+                if (ProfileCopy != null)
+                    RuntimeUtility.DestroyObject(ProfileCopy);
+                ProfileCopy = null;
             }
         }
 
         /// <summary>True if the profile is enabled and nontrivial</summary>
-        public bool IsValid { get { return m_Profile != null && m_Profile.components.Count > 0; } }
+        public bool IsValid => Profile != null && Profile.components.Count > 0;
 
         /// <summary>Called by the editor when the shared asset has been edited</summary>
         public void InvalidateCachedProfile()
@@ -142,12 +147,12 @@ namespace Cinemachine.PostFX
             base.OnEnable();
 
             // Map legacy m_FocusTracksTarget to focus mode
-            if (m_FocusTracksTarget)
+            if (m_LegacyFocusTracksTarget)
             {
-                m_FocusTracking = VirtualCamera.LookAt != null 
+                FocusTracking = VirtualCamera.LookAt != null 
                     ? FocusTrackingMode.LookAtTarget : FocusTrackingMode.Camera;
             }
-            m_FocusTracksTarget = false;
+            m_LegacyFocusTracksTarget = false;
         }
 
         protected override void OnDestroy()
@@ -173,29 +178,29 @@ namespace Cinemachine.PostFX
                     extra.DestroyProfileCopy();
                 else
                 {
-                    var profile = m_Profile;
+                    var profile = Profile;
 
                     // Handle Follow Focus
-                    if (m_FocusTracking == FocusTrackingMode.None)
+                    if (FocusTracking == FocusTrackingMode.None)
                         extra.DestroyProfileCopy();
                     else
                     {
-                        if (extra.mProfileCopy == null)
-                            extra.CreateProfileCopy(m_Profile);
-                        profile = extra.mProfileCopy;
+                        if (extra.ProfileCopy == null)
+                            extra.CreateProfileCopy(Profile);
+                        profile = extra.ProfileCopy;
                         if (profile.TryGet(out DepthOfField dof))
                         {
-                            float focusDistance = m_FocusOffset;
-                            if (m_FocusTracking == FocusTrackingMode.LookAtTarget)
+                            float focusDistance = FocusOffset;
+                            if (FocusTracking == FocusTrackingMode.LookAtTarget)
                                 focusDistance += (state.FinalPosition - state.ReferenceLookAt).magnitude;
                             else
                             {
                                 Transform focusTarget = null;
-                                switch (m_FocusTracking)
+                                switch (FocusTracking)
                                 {
                                     default: break;
                                     case FocusTrackingMode.FollowTarget: focusTarget = VirtualCamera.Follow; break;
-                                    case FocusTrackingMode.CustomTarget: focusTarget = m_FocusTarget; break;
+                                    case FocusTrackingMode.CustomTarget: focusTarget = FocusTarget; break;
                                 }
                                 if (focusTarget != null)
                                     focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
