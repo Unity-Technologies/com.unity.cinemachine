@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -16,33 +17,37 @@ namespace Cinemachine
     [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineIndependentImpulseListener.html")]
     public class CinemachineIndependentImpulseListener : MonoBehaviour
     {
-        private Vector3 impulsePosLastFrame;
-        private Quaternion impulseRotLastFrame;
+        Vector3 m_ImpulsePosLastFrame;
+        Quaternion m_ImpulseRotLastFrame;
 
         /// <summary>
         /// Impulse events on channels not included in the mask will be ignored.
         /// </summary>
         [Tooltip("Impulse events on channels not included in the mask will be ignored.")]
         [CinemachineImpulseChannelProperty]
-        public int m_ChannelMask;
+        [FormerlySerializedAs("m_ChannelMask")]
+        public int ChannelMask;
 
         /// <summary>
         /// Gain to apply to the Impulse signal.
         /// </summary>
         [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  Setting this to 0 completely mutes the signal.")]
-        public float m_Gain;
+        [FormerlySerializedAs("m_Gain")]
+        public float Gain;
 
         /// <summary>
         /// Enable this to perform distance calculation in 2D (ignore Z).
         /// </summary>
         [Tooltip("Enable this to perform distance calculation in 2D (ignore Z)")]
-        public bool m_Use2DDistance;
+        [FormerlySerializedAs("m_Use2DDistance")]
+        public bool Use2DDistance;
 
         /// <summary>
         /// Enable this to process all impulse signals in camera space.
         /// </summary>
         [Tooltip("Enable this to process all impulse signals in camera space")]
-        public bool m_UseLocalSpace;
+        [FormerlySerializedAs("m_UseLocalSpace")]
+        public bool UseLocalSpace;
 
         /// <summary>
         /// This controls the secondary reaction of the listener to the incoming impulse.  
@@ -56,33 +61,34 @@ namespace Cinemachine
             + "be a vibration whose amplitude and duration is controlled by the size of the "
             + "original impulse.  This allows different listeners to respond in different ways "
             + "to the same impulse signal.")]
-        public CinemachineImpulseListener.ImpulseReaction m_ReactionSettings;
+        [FormerlySerializedAs("m_ReactionSettings")]
+        public CinemachineImpulseListener.ImpulseReaction ReactionSettings;
 
         private void Reset()
         {
-            m_ChannelMask = 1;
-            m_Gain = 1;
-            m_Use2DDistance = false;
-            m_UseLocalSpace = true;
-            m_ReactionSettings = new CinemachineImpulseListener.ImpulseReaction 
+            ChannelMask = 1;
+            Gain = 1;
+            Use2DDistance = false;
+            UseLocalSpace = true;
+            ReactionSettings = new CinemachineImpulseListener.ImpulseReaction 
             { 
-                m_AmplitudeGain = 1, 
-                m_FrequencyGain = 1,
-                m_Duration = 1f
+                AmplitudeGain = 1, 
+                FrequencyGain = 1,
+                Duration = 1f
             };
         }
 
         private void OnEnable()
         {
-            impulsePosLastFrame = Vector3.zero;
-            impulseRotLastFrame = Quaternion.identity;
+            m_ImpulsePosLastFrame = Vector3.zero;
+            m_ImpulseRotLastFrame = Quaternion.identity;
         }
 
         private void Update()
         {
             // Unapply previous shake
-            transform.position -= impulsePosLastFrame;
-            transform.rotation = transform.rotation * Quaternion.Inverse(impulseRotLastFrame);
+            transform.position -= m_ImpulsePosLastFrame;
+            transform.rotation = transform.rotation * Quaternion.Inverse(m_ImpulseRotLastFrame);
         }
 
         // We do this in LateUpdate specifically to support attaching this script to the
@@ -91,29 +97,29 @@ namespace Cinemachine
         {
             // Apply the shake
             bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                transform.position, m_Use2DDistance, m_ChannelMask, 
-                out impulsePosLastFrame, out impulseRotLastFrame);
-            bool haveReaction = m_ReactionSettings.GetReaction(
-                Time.deltaTime, impulsePosLastFrame, out var reactionPos, out var reactionRot);
+                transform.position, Use2DDistance, ChannelMask, 
+                out m_ImpulsePosLastFrame, out m_ImpulseRotLastFrame);
+            bool haveReaction = ReactionSettings.GetReaction(
+                Time.deltaTime, m_ImpulsePosLastFrame, out var reactionPos, out var reactionRot);
 
             if (haveImpulse)
             {
-                impulseRotLastFrame = Quaternion.SlerpUnclamped(
-                    Quaternion.identity, impulseRotLastFrame, m_Gain);
-                impulsePosLastFrame *= m_Gain;
+                m_ImpulseRotLastFrame = Quaternion.SlerpUnclamped(
+                    Quaternion.identity, m_ImpulseRotLastFrame, Gain);
+                m_ImpulsePosLastFrame *= Gain;
             }
             if (haveReaction)
             {
-                impulsePosLastFrame += reactionPos;
-                impulseRotLastFrame *= reactionRot;
+                m_ImpulsePosLastFrame += reactionPos;
+                m_ImpulseRotLastFrame *= reactionRot;
             }
             if (haveImpulse || haveReaction)
             {
-                if (m_UseLocalSpace)
-                    impulsePosLastFrame = transform.rotation * impulsePosLastFrame;
+                if (UseLocalSpace)
+                    m_ImpulsePosLastFrame = transform.rotation * m_ImpulsePosLastFrame;
 
-                transform.position += impulsePosLastFrame;
-                transform.rotation = transform.rotation * impulseRotLastFrame;
+                transform.position += m_ImpulsePosLastFrame;
+                transform.rotation = transform.rotation * m_ImpulseRotLastFrame;
             }
         }
     }
