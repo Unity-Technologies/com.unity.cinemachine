@@ -47,8 +47,8 @@ namespace Cinemachine
         }
         
 #if CINEMACHINE_PHYSICS
-        private static RaycastHit[] s_HitBuffer = new RaycastHit[16];
-        private static int[] s_PenetrationIndexBuffer = new int[16];
+        static RaycastHit[] s_HitBuffer = new RaycastHit[16];
+        static int[] s_PenetrationIndexBuffer = new int[16];
 
         /// <summary>
         /// Perform a raycast, but pass through any objects that have a given tag
@@ -185,8 +185,8 @@ namespace Cinemachine
             return false;
         }
 
-        private static SphereCollider s_ScratchCollider;
-        private static GameObject s_ScratchColliderGameObject;
+        static SphereCollider s_ScratchCollider;
+        static GameObject s_ScratchColliderGameObject;
 
         internal static SphereCollider GetScratchCollider()
         {
