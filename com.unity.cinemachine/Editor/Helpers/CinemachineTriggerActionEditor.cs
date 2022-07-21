@@ -12,29 +12,28 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineTriggerAction))]
-    internal class CinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
+    class CinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
     {
-        CinemachineTriggerAction.ActionSettings def
-            = new CinemachineTriggerAction.ActionSettings(); // to access name strings
+        CinemachineTriggerAction.ActionSettings m_Def = new(); // to access name strings
 
-        static bool mEnterExpanded;
-        static bool mExitExpanded;
+        static bool s_EnterExpanded;
+        static bool s_ExitExpanded;
 
-        SerializedProperty[] mRepeatProperties = new SerializedProperty[2];
-        GUIContent mRepeatLabel;
-        GUIContent[] mRepeatSubLabels = new GUIContent[2];
+        SerializedProperty[] m_RepeatProperties = new SerializedProperty[2];
+        GUIContent m_RepeatLabel;
+        GUIContent[] m_RepeatSubLabels = new GUIContent[2];
 
-        GUIStyle mFoldoutStyle;
+        GUIStyle m_FoldoutStyle;
 
-        private void OnEnable()
+        void OnEnable()
         {
-            mRepeatProperties[0] = FindProperty(x => x.SkipFirst);
-            mRepeatProperties[1] = FindProperty(x => x.Repeating);
-            mRepeatLabel = new GUIContent(
-                mRepeatProperties[0].displayName, mRepeatProperties[0].tooltip);
-            mRepeatSubLabels[0] = GUIContent.none;
-            mRepeatSubLabels[1] = new GUIContent(
-                mRepeatProperties[1].displayName, mRepeatProperties[1].tooltip);
+            m_RepeatProperties[0] = FindProperty(x => x.SkipFirst);
+            m_RepeatProperties[1] = FindProperty(x => x.Repeating);
+            m_RepeatLabel = new GUIContent(
+                m_RepeatProperties[0].displayName, m_RepeatProperties[0].tooltip);
+            m_RepeatSubLabels[0] = GUIContent.none;
+            m_RepeatSubLabels[1] = new GUIContent(
+                m_RepeatProperties[1].displayName, m_RepeatProperties[1].tooltip);
         }
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
@@ -53,44 +52,44 @@ namespace Cinemachine.Editor
             BeginInspector();
             DrawRemainingPropertiesInInspector();
             InspectorUtility.MultiPropertyOnLine(
-                EditorGUILayout.GetControlRect(), mRepeatLabel,
-                mRepeatProperties, mRepeatSubLabels);
+                EditorGUILayout.GetControlRect(), m_RepeatLabel,
+                m_RepeatProperties, m_RepeatSubLabels);
             EditorGUILayout.Space();
-            mEnterExpanded = DrawActionSettings(FindProperty(x => x.OnObjectEnter), mEnterExpanded);
-            mExitExpanded = DrawActionSettings(FindProperty(x => x.OnObjectExit), mExitExpanded);
+            s_EnterExpanded = DrawActionSettings(FindProperty(x => x.OnObjectEnter), s_EnterExpanded);
+            s_ExitExpanded = DrawActionSettings(FindProperty(x => x.OnObjectExit), s_ExitExpanded);
         }
 
         bool DrawActionSettings(SerializedProperty property, bool expanded)
         {
-            if (mFoldoutStyle == null)
-                mFoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
+            if (m_FoldoutStyle == null)
+                m_FoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
 
             Rect r = EditorGUILayout.GetControlRect();
-            expanded = EditorGUI.Foldout(r, expanded, property.displayName, true, mFoldoutStyle);
+            expanded = EditorGUI.Foldout(r, expanded, property.displayName, true, m_FoldoutStyle);
             if (expanded)
             {
-                SerializedProperty actionProp = property.FindPropertyRelative(() => def.Action);
+                SerializedProperty actionProp = property.FindPropertyRelative(() => m_Def.Action);
                 EditorGUILayout.PropertyField(actionProp);
 
-                SerializedProperty targetProp = property.FindPropertyRelative(() => def.Target);
+                SerializedProperty targetProp = property.FindPropertyRelative(() => m_Def.Target);
                 bool isCustom = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Custom);
                 if (!isCustom)
                     EditorGUILayout.PropertyField(targetProp);
 
                 bool isBoost = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.PriorityBoost;
                 if (isBoost)
-                    EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.BoostAmount));
+                    EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_Def.BoostAmount));
 
 #if CINEMACHINE_TIMELINE
                 bool isPlay = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Play;
                 if (isPlay)
                 {
-                    SerializedProperty[] props = new SerializedProperty[2]
+                    var props = new SerializedProperty[2]
                     {
-                        property.FindPropertyRelative(() => def.StartTime),
-                        property.FindPropertyRelative(() => def.Mode)
+                        property.FindPropertyRelative(() => m_Def.StartTime),
+                        property.FindPropertyRelative(() => m_Def.Mode)
                     };
-                    GUIContent[] sublabels = new GUIContent[2]
+                    var sublabels = new GUIContent[2]
                     {
                         GUIContent.none, new GUIContent("s", props[1].tooltip)
                     };
@@ -134,13 +133,13 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("This event will be invoked.  Add calls to custom methods here:");
-                EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.Event));
+                EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_Def.Event));
             }
             property.serializedObject.ApplyModifiedProperties();
             return expanded;
         }
 
-        T GetTargetComponent<T>(UnityEngine.Object obj) where T : Behaviour
+        static T GetTargetComponent<T>(UnityEngine.Object obj) where T : Behaviour
         {
             UnityEngine.Object currentTarget = obj;
             if (currentTarget != null)

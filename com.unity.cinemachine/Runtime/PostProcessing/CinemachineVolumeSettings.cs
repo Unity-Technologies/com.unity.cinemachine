@@ -54,7 +54,7 @@ namespace Cinemachine.PostFX
         /// number in order to ensure that it overrides other volumes for the active vcam.
         /// You can change this value if necessary to work with other systems.
         /// </summary>
-        static public float s_VolumePriority = 1000f;
+        public static float s_VolumePriority = 1000f;
 
         /// <summary>The reference object for focus tracking</summary>
         public enum FocusTrackingMode
@@ -285,7 +285,7 @@ namespace Cinemachine.PostFX
         }
 
         static string sVolumeOwnerName = "__CMVolumes";
-        static  List<Volume> sVolumes = new List<Volume>();
+        static List<Volume> sVolumes = new List<Volume>();
         static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes)
         {
             // Locate the camera's child object that holds our dynamic volumes
@@ -346,7 +346,7 @@ namespace Cinemachine.PostFX
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule()
         {
-            // Afetr the brain pushes the state to the camera, hook in to the PostFX
+            // After the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
             CinemachineCore.CameraCutEvent.RemoveListener(OnCameraCut);
