@@ -102,7 +102,7 @@ namespace Cinemachine.Editor
                 {
                     var ft = go.GetComponent<CinemachineFramingTransposer>();
                     ft.UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
-                    if (ft.AbstractFollowTargetGroup != null 
+                    if (ft.FollowTargetAsGroup != null 
                         && ft.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None
                         && !go.TryGetComponent<CinemachineGroupFraming>(out var _))
                     {

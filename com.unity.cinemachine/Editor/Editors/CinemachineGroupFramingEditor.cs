@@ -62,7 +62,7 @@ namespace Cinemachine.Editor
 
             ICinemachineTargetGroup group = null;
             for (int i = 0; group == null && i < targets.Length; ++i)
-                group = (targets[i] as CinemachineGroupFraming).VirtualCamera.AbstractFollowTargetGroup;
+                group = (targets[i] as CinemachineGroupFraming).VirtualCamera.FollowTargetAsGroup;
             m_NoTargetHelp.SetVisible(group == null);
             m_GroupSizeIsZeroHelp.SetVisible(group != null && group.Sphere.radius < 0.01f);
 
@@ -75,7 +75,7 @@ namespace Cinemachine.Editor
         static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.enabled && target.VirtualCamera.AbstractFollowTargetGroup != null)
+            if (target.enabled && target.VirtualCamera.FollowTargetAsGroup != null)
             {
                 var oldM = Gizmos.matrix;
                 var oldC = Gizmos.color;

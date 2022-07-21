@@ -159,7 +159,7 @@ namespace Cinemachine
             if (stage != CinemachineCore.Stage.Noise)
                 return;
 
-            var group = vcam.AbstractFollowTargetGroup;
+            var group = vcam.FollowTargetAsGroup;
             if (group == null || group.Sphere.radius < k_MinimumGroupSize)
                 return;
 
