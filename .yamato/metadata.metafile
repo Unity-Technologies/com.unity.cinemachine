@@ -13,17 +13,9 @@ all_platforms:
     flavor: b1.large
 
 all_tests:
-  - name: integration_tests
-    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
-    args: --type package-tests
-    variables:
   - name: isolation_tests
-    editors: [2020.3, 2021.2, 2022.1, trunk]
+    editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type isolation-tests --enable-load-and-test-isolation
-    variables:
-  - name: coverage
-    editors: [trunk]
-    args: --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Cinemachine,+com.unity.cinemachine.editor'
     variables:
   - name: vetting_tests
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
@@ -34,14 +26,29 @@ all_tests:
     editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
     args: --type promotion-audit --platform editmode
     variables:
-     - "UPMCI_PROMOTION: 1"
+      - "UPMCI_PROMOTION: 1"
+
+all_testprojects:
+    - name: URP
+      path: Projects/URP
+      editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    - name: Standalone
+      path: Projects/Standalone
+      editors: [2019.4, 2020.3, 2021.2, 2022.1, trunk]
+    - name: HDRP
+      path: Projects/HDRP
+      editors: [2020.3, 2021.2, 2022.1, trunk]
+    - name: HDRP2019.4
+      path: Projects/HDRP2019.4
+      editors: [2019.4]
+
 
 all_configurations:
   ci:
-    test_names: [integration_tests, isolation_tests, coverage]
+    test_names: [isolation_tests]
     platform_names: [ubuntu]
   publish:
-    test_names: [integration_tests, isolation_tests, vetting_tests]
+    test_names: [isolation_tests, vetting_tests]
     platform_names: [windows, macOS, ubuntu]
   promote:
     test_names: [promotion_tests, vetting_tests]
