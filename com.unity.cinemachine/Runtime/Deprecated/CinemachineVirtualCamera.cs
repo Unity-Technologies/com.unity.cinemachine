@@ -591,9 +591,9 @@ namespace Cinemachine
         /// </summary>
         bool AxisState.IRequiresInput.RequiresInput() 
         {
-            if (mExtensions != null)
-                for (int i = 0; i < mExtensions.Count; ++i)
-                    if (mExtensions[i] is AxisState.IRequiresInput)
+            if (Extensions != null)
+                for (int i = 0; i < Extensions.Count; ++i)
+                    if (Extensions[i] is AxisState.IRequiresInput)
                         return true;
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             if (m_ComponentPipeline != null)

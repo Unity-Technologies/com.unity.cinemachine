@@ -322,7 +322,7 @@ namespace Cinemachine.PostFX
             if (found && !ReferenceEquals(layer, null))
             {
                 // layer is a deleted object
-                brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+                brain.CameraCutEvent.RemoveListener(OnCameraCut);
                 mBrainToLayer.Remove(brain);
                 layer = null;
                 found = false;
@@ -333,7 +333,7 @@ namespace Cinemachine.PostFX
             brain.TryGetComponent(out layer);
             if (layer != null)
             {
-                brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
+                brain.CameraCutEvent.AddListener(OnCameraCut); // valid layer
                 mBrainToLayer[brain] = layer;
             }
 #else
@@ -364,7 +364,7 @@ namespace Cinemachine.PostFX
             {
                 var brain = iter.Current.Key;
                 if (brain != null)
-                    brain.m_CameraCutEvent.RemoveListener(OnCameraCut);
+                    brain.CameraCutEvent.RemoveListener(OnCameraCut);
             }
             mBrainToLayer.Clear();
         }

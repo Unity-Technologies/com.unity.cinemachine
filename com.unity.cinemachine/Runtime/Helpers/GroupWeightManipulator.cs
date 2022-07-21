@@ -72,8 +72,8 @@ namespace Cinemachine
 
         void UpdateWeights()
         {
-            var targets = m_group.m_Targets;
-            int last = targets.Length - 1;
+            var targets = m_group.Targets;
+            int last = targets.Count - 1;
             if (last < 0) return; targets[0].Weight = Weight0;
             if (last < 1) return; targets[1].Weight = Weight1;
             if (last < 2) return; targets[2].Weight = Weight2;
