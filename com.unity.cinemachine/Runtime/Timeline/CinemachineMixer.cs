@@ -1,16 +1,11 @@
-#if !UNITY_2019_1_OR_NEWER
-#define CINEMACHINE_TIMELINE
-#endif
 #if CINEMACHINE_TIMELINE
 
 using UnityEngine;
 using UnityEngine.Playables;
-using Cinemachine;
 using System.Collections.Generic;
 
-//namespace Cinemachine.Timeline
-//{
-
+namespace Cinemachine
+{
     internal sealed class CinemachineMixer : PlayableBehaviour
     {
         public delegate PlayableDirector MasterDirectorDelegate();
@@ -18,11 +13,11 @@ using System.Collections.Generic;
         public static MasterDirectorDelegate GetMasterPlayableDirector;
 
         // The brain that this track controls
-        private ICameraOverrideStack m_BrainOverrideStack;
-        private int m_BrainOverrideId = -1;
-        private bool m_PreviewPlay;
+        ICameraOverrideStack m_BrainOverrideStack;
+        int m_BrainOverrideId = -1;
+        bool m_PreviewPlay;
 
-#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
+#if UNITY_EDITOR
         class ScrubbingCacheHelper
         {
             // Remember the active clips of the previous frame so we can track camera cuts
@@ -137,7 +132,7 @@ using System.Collections.Generic;
         ScrubbingCacheHelper m_ScrubbingCacheHelper;
 #endif
 
-#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
+#if UNITY_EDITOR
         public override void OnGraphStart(Playable playable)
         {
             base.OnGraphStart(playable);
@@ -150,7 +145,7 @@ using System.Collections.Generic;
             if (m_BrainOverrideStack != null)
                 m_BrainOverrideStack.ReleaseCameraOverride(m_BrainOverrideId); // clean up
             m_BrainOverrideId = -1;
-#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
+#if UNITY_EDITOR
             m_ScrubbingCacheHelper = null;
 #endif
         }
@@ -158,7 +153,7 @@ using System.Collections.Generic;
         public override void PrepareFrame(Playable playable, FrameData info)
         {
             m_PreviewPlay = false;
-#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
+#if UNITY_EDITOR
             var cacheMode = TargetPositionCache.Mode.Disabled;
             if (!Application.isPlaying)
             {
@@ -257,7 +252,7 @@ using System.Collections.Generic;
             m_BrainOverrideId = m_BrainOverrideStack.SetCameraOverride(
                 m_BrainOverrideId, camA, camB, weightB, GetDeltaTime(info.deltaTime));
 
-#if UNITY_EDITOR && UNITY_2019_2_OR_NEWER
+#if UNITY_EDITOR
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
             {
                 bool isNewB = (m_ScrubbingCacheHelper.ActivePlayableA != clipIndexB 
@@ -291,5 +286,5 @@ using System.Collections.Generic;
             return -1;
         }
     }
-//}
+}
 #endif

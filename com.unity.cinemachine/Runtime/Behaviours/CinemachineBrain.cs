@@ -786,8 +786,7 @@ namespace Cinemachine
                 PushStateToUnityCamera(ref state);
             }
             m_ActiveCameraPreviousFrame = activeCamera;
-            m_ActiveCameraPreviousFrameGameObject 
-                = activeCamera == null ? null : activeCamera.VirtualCameraGameObject;
+            m_ActiveCameraPreviousFrameGameObject = activeCamera as CinemachineVirtualCameraBase;
         }
 
         void UpdateFrame0(float deltaTime)

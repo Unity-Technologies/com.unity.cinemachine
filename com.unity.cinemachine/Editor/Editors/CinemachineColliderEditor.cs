@@ -12,7 +12,7 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineCollider))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
+    sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -49,7 +49,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineCollider))]
-        private static void DrawColliderGizmos(CinemachineCollider collider, GizmoType type)
+        static void DrawColliderGizmos(CinemachineCollider collider, GizmoType type)
         {
             CinemachineVirtualCameraBase vcam = (collider != null) ? collider.VirtualCamera : null;
             if (vcam != null && collider.enabled)

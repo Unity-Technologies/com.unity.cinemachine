@@ -266,11 +266,9 @@ namespace Cinemachine
 
         public string Name { get; private set; }
         public string Description { get { return ""; }}
-        public int Priority { get; set; }
         public Transform LookAt { get; set; }
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
-        public GameObject VirtualCameraGameObject { get { return null; } }
         public bool IsValid { get { return true; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
@@ -292,11 +290,9 @@ namespace Cinemachine
 
         public string Name { get { return "Mid-blend"; }}
         public string Description { get { return Blend == null ? "(null)" : Blend.Description; }}
-        public int Priority { get; set; }
         public Transform LookAt { get; set; }
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
-        public GameObject VirtualCameraGameObject { get { return null; } }
         public bool IsValid { get { return Blend != null && Blend.IsValid; } }
         public ICinemachineCamera ParentCamera { get { return null; } }
         public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)

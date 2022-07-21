@@ -49,12 +49,12 @@ namespace Cinemachine
         /// from state.ReferenceLookAt due to camera offset from player origin.</summary>
         public Vector3 AimTarget { get; private set; }
 
-        private void OnValidate()
+        void OnValidate()
         {
             AimDistance = Mathf.Max(1, AimDistance);
         }
 
-        private void Reset()
+        void Reset()
         {
             AimCollisionFilter = 1;
             IgnoreTag = string.Empty;
@@ -125,24 +125,31 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == CinemachineCore.Stage.Body)
+            switch (stage)
             {
-                // Raycast to establish what we're actually aiming at
-                var player = vcam.Follow;
-                if (player != null)
+                case CinemachineCore.Stage.Body:
                 {
-                    state.ReferenceLookAt = ComputeLookAtPoint(state.GetCorrectedPosition(), player);
-                    AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
+                    // Raycast to establish what we're actually aiming at
+                    var player = vcam.Follow;
+                    if (player != null)
+                    {
+                        state.ReferenceLookAt = ComputeLookAtPoint(state.CorrectedPosition, player);
+                        AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
+                    }
+
+                    break;
                 }
-            }
-            if (stage == CinemachineCore.Stage.Finalize)
-            {
-                // Stabilize the LookAt point in the center of the screen
-                var dir = state.ReferenceLookAt - state.GetFinalPosition();
-                if (dir.sqrMagnitude > 0.01f)
+                case CinemachineCore.Stage.Finalize:
                 {
-                    state.RawOrientation = Quaternion.LookRotation(dir, state.ReferenceUp);
-                    state.OrientationCorrection = Quaternion.identity;
+                    // Stabilize the LookAt point in the center of the screen
+                    var dir = state.ReferenceLookAt - state.FinalPosition;
+                    if (dir.sqrMagnitude > 0.01f)
+                    {
+                        state.RawOrientation = Quaternion.LookRotation(dir, state.ReferenceUp);
+                        state.OrientationCorrection = Quaternion.identity;
+                    }
+
+                    break;
                 }
             }
         }
