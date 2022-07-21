@@ -145,7 +145,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement;
                 if (m_ConfineScreenEdges && state.Lens.Orthographic)
-                    displacement = ConfineScreenEdges(vcam, ref state);
+                    displacement = ConfineScreenEdges(ref state);
                 else
                     displacement = ConfinePoint(state.CorrectedPosition);
 
@@ -275,8 +275,9 @@ namespace Cinemachine
         }
 
         // Camera must be orthographic
-        private Vector3 ConfineScreenEdges(CinemachineVirtualCameraBase vcam, ref CameraState state)
+        Vector3 ConfineScreenEdges(ref CameraState state)
         {
+<<<<<<< HEAD:Runtime/Behaviours/CinemachineConfiner.cs
             Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
             float dy = state.Lens.OrthographicSize;
             float dx = dy * state.Lens.Aspect;
@@ -286,10 +287,22 @@ namespace Cinemachine
             Vector3 displacement = Vector3.zero;
             Vector3 camPos = state.CorrectedPosition;
             Vector3 lastD = Vector3.zero;
+=======
+            var rot = state.GetCorrectedOrientation();
+            var dy = state.Lens.OrthographicSize;
+            var dx = dy * state.Lens.Aspect;
+            var vx = (rot * Vector3.right) * dx;
+            var vy = (rot * Vector3.up) * dy;
+
+            var displacement = Vector3.zero;
+            var camPos = state.GetCorrectedPosition();
+            var lastD = Vector3.zero;
+
+>>>>>>> 53730dc2 (CMCL-1070: Confiner 3D was not confining correctly when the camera was rotated (#507)):com.unity.cinemachine/Runtime/Behaviours/CinemachineConfiner.cs
             const int kMaxIter = 12;
-            for (int i = 0; i < kMaxIter; ++i)
+            for (var i = 0; i < kMaxIter; ++i)
             {
-                Vector3 d = ConfinePoint((camPos - vy) - vx);
+                var d = ConfinePoint((camPos - vy) - vx);
                 if (d.AlmostZero())
                     d = ConfinePoint((camPos + vy) + vx);
                 if (d.AlmostZero())

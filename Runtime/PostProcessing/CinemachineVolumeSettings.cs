@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;
+<<<<<<< HEAD:Runtime/PostProcessing/CinemachineVolumeSettings.cs
     using UnityEngine.Rendering;
     #if CINEMACHINE_HDRP_7_0_0
+=======
+    using UnityEngine.Rendering;s
+    #if CINEMACHINE_HDRP_7_3_1
+>>>>>>> 53730dc2 (CMCL-1070: Confiner 3D was not confining correctly when the camera was rotated (#507)):com.unity.cinemachine/Runtime/PostProcessing/CinemachineVolumeSettings.cs
         using UnityEngine.Rendering.HighDefinition;
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
