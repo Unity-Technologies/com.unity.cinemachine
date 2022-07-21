@@ -558,14 +558,6 @@ namespace Cinemachine
         }
         
         /// <summary>
-        /// Returns true, when the vcam has an extension that requires user input.
-        /// </summary>
-        internal virtual bool RequiresUserInput()
-        {
-            return Extensions != null && Extensions.Any(extension => extension != null && extension.RequiresUserInput); 
-        }
-
-        /// <summary>
         /// Called on inactive object when being artificially activated by timeline.
         /// This is necessary because Awake() isn't called on inactive gameObjects.
         /// </summary>
@@ -590,22 +582,6 @@ namespace Cinemachine
                 vcam.LookAtTargetChanged = vcam.FollowTargetChanged = true;
         }
 #endif
-
-        /// <summary>
-        /// Locate the first component that implements AxisState.IInputAxisProvider.
-        /// </summary>
-        /// <returns>The first AxisState.IInputAxisProvider or null if none</returns>
-        public AxisState.IInputAxisProvider GetInputAxisProvider()
-        {
-            var components = GetComponentsInChildren<MonoBehaviour>();
-            for (int i = 0; i < components.Length; ++i)
-            {
-                var provider = components[i] as AxisState.IInputAxisProvider;
-                if (provider != null)
-                    return provider;
-            }
-            return null;
-        }
 
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
@@ -866,7 +842,7 @@ namespace Cinemachine
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, 
         /// or null if target is not a ICinemachineTargetGroup</summary>
-        public ICinemachineTargetGroup AbstractFollowTargetGroup => m_CachedFollowTargetGroup;
+        public ICinemachineTargetGroup FollowTargetAsGroup => m_CachedFollowTargetGroup;
 
         /// <summary>Get Follow target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
@@ -874,7 +850,7 @@ namespace Cinemachine
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, 
         /// or null if target is not a ICinemachineTargetGroup</summary>
-        public ICinemachineTargetGroup AbstractLookAtTargetGroup => m_CachedLookAtTargetGroup;
+        public ICinemachineTargetGroup LookAtTargetAsGroup => m_CachedLookAtTargetGroup;
 
         /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>

@@ -16,7 +16,7 @@ namespace Cinemachine
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
-    public class CinemachineFreeLook : CinemachineVirtualCameraBase
+    public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -199,11 +199,11 @@ namespace Cinemachine
         /// <summary>
         /// API for the inspector.  Internal use only
         /// </summary>
-        public void UpdateInputAxisProvider()
+        internal void UpdateInputAxisProvider()
         {
             m_XAxis.SetInputAxisProvider(0, null);
             m_YAxis.SetInputAxisProvider(1, null);
-            var provider = GetInputAxisProvider();
+            var provider = GetComponent<AxisState.IInputAxisProvider>();
             if (provider != null)
             {
                 m_XAxis.SetInputAxisProvider(0, provider);
@@ -430,13 +430,7 @@ namespace Cinemachine
                 m_Transitions.OnCameraLive.Invoke(this, fromCam);
         }
         
-        /// <summary>
-        /// Returns true, because FreeLook requires input.
-        /// </summary>
-        internal override bool RequiresUserInput()
-        {
-            return true;
-        }
+        bool AxisState.IRequiresInput.RequiresInput() => true;
 
         float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up)
         {

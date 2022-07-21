@@ -379,7 +379,7 @@ namespace Cinemachine
             var verticalFOV = lens.FieldOfView;
 
             // Compute group bounds and adjust follow target for group framing
-            ICinemachineTargetGroup group = AbstractFollowTargetGroup;
+            ICinemachineTargetGroup group = FollowTargetAsGroup;
             bool isGroupFraming = group != null && GroupFramingMode != FramingModes.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);

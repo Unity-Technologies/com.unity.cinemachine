@@ -142,7 +142,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
-    public class CinemachineOrbitalTransposer : CinemachineTransposer
+    public class CinemachineOrbitalTransposer : CinemachineTransposer, AxisState.IRequiresInput
     {
         /// <summary>
         /// How the "forward" direction is defined.  Orbital offset is in relation to the forward
@@ -363,15 +363,17 @@ namespace Cinemachine
             UpdateInputAxisProvider();
         }
 
+        bool AxisState.IRequiresInput.RequiresInput() => true;
+
         /// <summary>
         /// API for the inspector.  Internal use only
         /// </summary>
-        public void UpdateInputAxisProvider()
+        internal void UpdateInputAxisProvider()
         {
             m_XAxis.SetInputAxisProvider(0, null);
             if (!m_HeadingIsSlave && VirtualCamera != null)
             {
-                var provider = VirtualCamera.GetInputAxisProvider();
+                var provider = VirtualCamera.GetComponent<AxisState.IInputAxisProvider>();
                 if (provider != null)
                     m_XAxis.SetInputAxisProvider(0, provider);
             }
@@ -542,9 +544,6 @@ namespace Cinemachine
             pos += m_LastTargetPosition;
             return pos;
         }
-
-        /// <summary>OrbitalTransposer is controlled by input.</summary>
-        public override bool RequiresUserInput => true;
 
         // Make sure this is calld only once per frame
         private float GetTargetHeading(float currentHeading, Quaternion targetOrientation)

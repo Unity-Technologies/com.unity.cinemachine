@@ -15,7 +15,7 @@ namespace Cinemachine
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
-    public class CinemachineVirtualCamera : CinemachineVirtualCameraBase
+    public class CinemachineVirtualCamera : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>The object that the camera wants to look at (the Aim target).
         /// The Aim component of the CinemachineComponent pipeline
@@ -589,11 +589,18 @@ namespace Cinemachine
         /// <summary>
         /// Returns true, when the vcam has an extension or components that require input.
         /// </summary>
-        internal override bool RequiresUserInput()
+        bool AxisState.IRequiresInput.RequiresInput() 
         {
-            if (base.RequiresUserInput())
-                return true;
-            return m_ComponentPipeline != null && m_ComponentPipeline.Any(c => c != null && c.RequiresUserInput);
+            if (mExtensions != null)
+                for (int i = 0; i < mExtensions.Count; ++i)
+                    if (mExtensions[i] is AxisState.IRequiresInput)
+                        return true;
+            UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
+            if (m_ComponentPipeline != null)
+                for (int i = 0; i < m_ComponentPipeline.Length; ++i)
+                    if (m_ComponentPipeline[i] is AxisState.IRequiresInput)
+                        return true;
+            return false;
         }
     }
 }

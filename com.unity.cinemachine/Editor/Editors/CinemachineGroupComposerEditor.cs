@@ -65,7 +65,7 @@ namespace Cinemachine.Editor
 
                 bool noTarget = false;
                 for (int i = 0; i < targets.Length; ++i)
-                    noTarget |= targets[i] != null && (targets[i] as CinemachineGroupComposer).AbstractLookAtTargetGroup == null;
+                    noTarget |= targets[i] != null && (targets[i] as CinemachineGroupComposer).LookAtTargetAsGroup == null;
                 if (notGroupHelp != null)
                     notGroupHelp.SetVisible(noTarget);
             }
@@ -77,7 +77,7 @@ namespace Cinemachine.Editor
         private static void DrawGroupComposerGizmos(CinemachineGroupComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.AbstractLookAtTargetGroup != null)
+            if (target.LookAtTargetAsGroup != null)
             {
                 Matrix4x4 m = Gizmos.matrix;
                 Bounds b = target.LastBounds;
