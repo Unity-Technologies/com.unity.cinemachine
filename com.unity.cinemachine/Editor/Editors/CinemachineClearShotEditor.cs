@@ -1,8 +1,3 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-#endif
-
 using UnityEditor;
 using UnityEngine;
 
@@ -11,13 +6,12 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineClearShot))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineClearShotEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
+    class CinemachineClearShotEditor : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         ColliderState m_ColliderState;
 
-        private UnityEditorInternal.ReorderableList mChildList;
+        private UnityEditorInternal.ReorderableList m_ChildList;
 
         protected override void OnEnable()
         {
@@ -27,12 +21,12 @@ namespace Cinemachine.Editor
                 OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
                 OnCreateEditor = (UnityEditor.Editor ed) =>
                 {
-                    CinemachineBlenderSettingsEditor editor = ed as CinemachineBlenderSettingsEditor;
+                    var editor = ed as CinemachineBlenderSettingsEditor;
                     if (editor != null)
-                        editor.GetAllVirtualCameras = () => Target.ChildCameras;
+                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
                 }
             };
-            mChildList = null;
+            m_ChildList = null;
         }
 
         protected override void OnDisable()
@@ -45,7 +39,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (mChildList == null)
+            if (m_ChildList == null)
                 SetupChildList();
 
             m_ColliderState = GetColliderState();
@@ -56,30 +50,35 @@ namespace Cinemachine.Editor
                     break;
                 case ColliderState.NoCollider:
                     EditorGUILayout.HelpBox(
-                        "ClearShot requires a Collider extension to rank the shots.  Either add one to the ClearShot itself, or to each of the child cameras.",
+                        "ClearShot requires a Collider extension to rank the shots.  "
+                            + "Either add one to the ClearShot itself, or to each of the child cameras.",
                         MessageType.Warning);
                     break;
                 case ColliderState.ColliderOnSomeChildren:
                     EditorGUILayout.HelpBox(
-                        "Some child cameras do not have a Collider extension.  ClearShot requires a Collider on all the child cameras, or alternatively on the ClearShot iself.",
+                        "Some child cameras do not have a Collider extension.  ClearShot requires a "
+                            + "Collider on all the child cameras, or alternatively on the ClearShot iself.",
                         MessageType.Warning);
                     break;
                 case ColliderState.ColliderOnChildrenAndParent:
                     EditorGUILayout.HelpBox(
-                        "There is a Collider extension on the ClearShot camera, and also on some of its child cameras.  You can't have both.",
+                        "There is a Collider extension on the ClearShot camera, and also on some "
+                            + "of its child cameras.  You can't have both.",
                         MessageType.Error);
                     break;
             }
 
+            var children = Target.ChildCameras; // force the child cache to rebuild
+
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
+            DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
             DrawRemainingPropertiesInInspector();
 
             // Blends
             m_BlendsEditor.DrawEditorCombo(
-                FindProperty(x => x.m_CustomBlends),
+                FindProperty(x => x.CustomBlends),
                 "Create New Blender Asset",
                 Target.gameObject.name + " Blends", "asset", string.Empty, false);
 
@@ -89,7 +88,7 @@ namespace Cinemachine.Editor
             if (Selection.objects.Length == 1)
             {
                 EditorGUI.BeginChangeCheck();
-                mChildList.DoLayoutList();
+                m_ChildList.DoLayoutList();
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
             }
@@ -113,12 +112,11 @@ namespace Cinemachine.Editor
 
         ColliderState GetColliderState()
         {
-            int numChildren = 0;
             int numColliderChildren = 0;
             bool colliderOnParent = ObjectHasCollider(Target);
 
             var children = Target.m_ChildCameras;
-            numChildren = children == null ? 0 : children.Length;
+            var numChildren = children == null ? 0 : children.Count;
             for (int i = 0; i < numChildren; ++i)
                 if (ObjectHasCollider(children[i]))
                     ++numColliderChildren;
@@ -144,10 +142,10 @@ namespace Cinemachine.Editor
             float hSpace = 3;
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
-            mChildList = new UnityEditorInternal.ReorderableList(
+            m_ChildList = new UnityEditorInternal.ReorderableList(
                     serializedObject, FindProperty(x => x.m_ChildCameras), true, true, true, true);
 
-            mChildList.drawHeaderCallback = (Rect rect) =>
+            m_ChildList.drawHeaderCallback = (Rect rect) =>
                 {
                     EditorGUI.LabelField(rect, "Virtual Camera Children");
                     GUIContent priorityText = new GUIContent("Priority");
@@ -156,13 +154,13 @@ namespace Cinemachine.Editor
                     rect.width = textDimensions.x;
                     EditorGUI.LabelField(rect, priorityText);
                 };
-            mChildList.drawElementCallback
+            m_ChildList.drawElementCallback
                 = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     rect.y += vSpace;
                     rect.width -= floatFieldWidth + hSpace;
                     rect.height = EditorGUIUtility.singleLineHeight;
-                    SerializedProperty element = mChildList.serializedProperty.GetArrayElementAtIndex(index);
+                    SerializedProperty element = m_ChildList.serializedProperty.GetArrayElementAtIndex(index);
                     if (m_ColliderState == ColliderState.ColliderOnSomeChildren
                         || m_ColliderState == ColliderState.ColliderOnChildrenAndParent)
                     {
@@ -178,7 +176,9 @@ namespace Cinemachine.Editor
                             width -= rect.width; rect.x += rect.width; rect.width = width;
                         }
                     }
+                    GUI.enabled = false;
                     EditorGUI.PropertyField(rect, element, GUIContent.none);
+                    GUI.enabled = true;
 
                     SerializedObject obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
@@ -189,7 +189,7 @@ namespace Cinemachine.Editor
                     EditorGUIUtility.labelWidth = oldWidth;
                     obj.ApplyModifiedProperties();
                 };
-            mChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     if (l.index < 0 || l.index >= l.serializedProperty.arraySize)
                         return;
@@ -200,17 +200,16 @@ namespace Cinemachine.Editor
                     if (vcam != null)
                         vcam.transform.SetSiblingIndex(l.index);
                 };
-            mChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera();
-                    Undo.SetTransformParent(vcam.transform, Target.transform, "");
+                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
                     var collider = Undo.AddComponent<CinemachineCollider>(vcam.gameObject);
                     collider.m_AvoidObstacles = false;
                     Undo.RecordObject(collider, "create ClearShot child");
                     vcam.transform.SetSiblingIndex(index);
                 };
-            mChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     Object o = l.serializedProperty.GetArrayElementAtIndex(
                             l.index).objectReferenceValue;

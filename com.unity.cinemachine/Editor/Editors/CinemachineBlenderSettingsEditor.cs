@@ -12,6 +12,7 @@ namespace Cinemachine.Editor
         const string k_NoneLabel = "(none)";
         string[] m_CameraCandidates;
         Dictionary<string, int> m_CameraIndexLookup;
+        List<CinemachineVirtualCameraBase> m_AllCameras = new();
 
         /// <summary>
         /// Called when building the Camera popup menus, to get the domain of possible
@@ -19,7 +20,7 @@ namespace Cinemachine.Editor
         /// virtual cameras in the scene.
         /// </summary>
         public GetAllVirtualCamerasDelegate GetAllVirtualCameras;
-        public delegate CinemachineVirtualCameraBase[] GetAllVirtualCamerasDelegate();
+        public delegate void GetAllVirtualCamerasDelegate(List<CinemachineVirtualCameraBase> list);
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -47,22 +48,20 @@ namespace Cinemachine.Editor
             var vcams = new List<string>();
             m_CameraIndexLookup = new Dictionary<string, int>();
 
-            CinemachineVirtualCameraBase[] candidates;
+            m_AllCameras.Clear();
             if (GetAllVirtualCameras != null)
-                candidates = GetAllVirtualCameras();
+                GetAllVirtualCameras(m_AllCameras);
             else
             {
                 // Get all top-level (i.e. non-slave) virtual cameras
-                candidates = Resources.FindObjectsOfTypeAll(
-                        typeof(CinemachineVirtualCameraBase)) as CinemachineVirtualCameraBase[];
-
+                var candidates = Resources.FindObjectsOfTypeAll<CinemachineVirtualCameraBase>();
                 for (var i = 0; i < candidates.Length; ++i)
-                    if (candidates[i].ParentCamera != null)
-                        candidates[i] = null;
+                    if (candidates[i].ParentCamera == null)
+                        m_AllCameras.Add(candidates[i]);
             }
             vcams.Add(k_NoneLabel);
             vcams.Add(CinemachineBlenderSettings.kBlendFromAnyCameraLabel);
-            foreach (CinemachineVirtualCameraBase c in candidates)
+            foreach (var c in m_AllCameras)
                 if (c != null && !vcams.Contains(c.Name))
                     vcams.Add(c.Name);
 
