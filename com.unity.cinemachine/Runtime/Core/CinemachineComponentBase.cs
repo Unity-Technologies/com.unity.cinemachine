@@ -89,7 +89,7 @@ namespace Cinemachine
             {
                 var vcam = VirtualCamera.FollowTargetAsVcam;
                 if (vcam != null)
-                    return vcam.State.FinalPosition;
+                    return vcam.State.GetFinalPosition();
                 Transform target = FollowTarget;
                 if (target != null)
                     return TargetPositionCache.GetTargetPosition(target);
@@ -105,7 +105,7 @@ namespace Cinemachine
             {
                 var vcam = VirtualCamera.FollowTargetAsVcam;
                 if (vcam != null)
-                    return vcam.State.FinalOrientation;
+                    return vcam.State.GetFinalOrientation();
                 Transform target = FollowTarget;
                 if (target != null)
                     return TargetPositionCache.GetTargetRotation(target);
@@ -125,7 +125,7 @@ namespace Cinemachine
             {
                 var vcam = VirtualCamera.LookAtTargetAsVcam;
                 if (vcam != null)
-                    return vcam.State.FinalPosition;
+                    return vcam.State.GetFinalPosition();
                 Transform target = LookAtTarget;
                 if (target != null)
                     return TargetPositionCache.GetTargetPosition(target);
@@ -141,7 +141,7 @@ namespace Cinemachine
             {
                 var vcam = VirtualCamera.LookAtTargetAsVcam;
                 if (vcam != null)
-                    return vcam.State.FinalOrientation;
+                    return vcam.State.GetFinalOrientation();
                 Transform target = LookAtTarget;
                 if (target != null)
                     return TargetPositionCache.GetTargetRotation(target);

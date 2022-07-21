@@ -978,9 +978,9 @@ namespace Cinemachine
             CurrentCameraState = state;
             var target = ControlledObject.transform;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
-                target.position = state.FinalPosition;
+                target.position = state.GetFinalPosition();
             if ((state.BlendHint & CameraState.BlendHintValue.NoOrientation) == 0)
-                target.rotation = state.FinalOrientation;
+                target.rotation = state.GetFinalOrientation();
             if ((state.BlendHint & CameraState.BlendHintValue.NoLens) == 0)
             {
                 Camera cam = OutputCamera;

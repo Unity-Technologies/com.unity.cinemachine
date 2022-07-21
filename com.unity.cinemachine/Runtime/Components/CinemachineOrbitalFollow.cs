@@ -196,7 +196,7 @@ namespace Cinemachine
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
             if (fromCam != null
-                && transitionParams.m_InheritPosition
+                && transitionParams.InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 var state = fromCam.State;

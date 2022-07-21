@@ -27,37 +27,41 @@ namespace Cinemachine
         [Tooltip("The asset containing the Noise Profile.  Define the frequencies and amplitudes "
             + "there to make a characteristic noise profile.  Make your own or just use one of the many presets.")]
         [FormerlySerializedAs("m_Definition")]
+        [FormerlySerializedAs("m_NoiseProfile")]
         [NoiseSettingsProperty]
-        public NoiseSettings m_NoiseProfile;
+        public NoiseSettings NoiseProfile;
 
         /// <summary>
         /// When rotating the camera, offset the camera's pivot position by this much (camera space)
         /// </summary>
         [Tooltip("When rotating the camera, offset the camera's pivot position by this much (camera space)")]
-        public Vector3 m_PivotOffset = Vector3.zero;
+        [FormerlySerializedAs("m_PivotOffset")]
+        public Vector3 PivotOffset = Vector3.zero;
 
         /// <summary>
         /// Gain to apply to the amplitudes defined in the settings asset.
         /// </summary>
         [Tooltip("Gain to apply to the amplitudes defined in the NoiseSettings asset.  1 is normal.  "
             + "Setting this to 0 completely mutes the noise.")]
-        public float m_AmplitudeGain = 1f;
+        [FormerlySerializedAs("m_AmplitudeGain")]
+        public float AmplitudeGain = 1f;
 
         /// <summary>
         /// Scale factor to apply to the frequencies defined in the settings asset.
         /// </summary>
         [Tooltip("Scale factor to apply to the frequencies defined in the NoiseSettings asset.  1 is normal.  "
             + "Larger magnitudes will make the noise shake more rapidly.")]
-        public float m_FrequencyGain = 1f;
+        [FormerlySerializedAs("m_FrequencyGain")]
+        public float FrequencyGain = 1f;
 
         (float, float) CinemachineFreeLookModifier.IModifiableNoise.NoiseAmplitudeFrequency 
         { 
-            get => (m_AmplitudeGain, m_FrequencyGain);
-            set { m_AmplitudeGain = value.Item1; m_FrequencyGain = value.Item2; }
+            get => (AmplitudeGain, FrequencyGain);
+            set { AmplitudeGain = value.Item1; FrequencyGain = value.Item2; }
         }
 
         /// <summary>True if the component is valid, i.e. it has a noise definition and is enabled.</summary>
-        public override bool IsValid { get { return enabled && m_NoiseProfile != null; } }
+        public override bool IsValid { get { return enabled && NoiseProfile != null; } }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Noise stage</summary>
@@ -81,19 +85,19 @@ namespace Cinemachine
 
             if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
                     && TargetPositionCache.HasCurrentTime)
-                mNoiseTime = TargetPositionCache.CurrentTime * m_FrequencyGain;
+                mNoiseTime = TargetPositionCache.CurrentTime * FrequencyGain;
             else
-                mNoiseTime += deltaTime * m_FrequencyGain;
-            curState.PositionCorrection += curState.CorrectedOrientation * NoiseSettings.GetCombinedFilterResults(
-                    m_NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain;
+                mNoiseTime += deltaTime * FrequencyGain;
+            curState.PositionCorrection += curState.GetCorrectedOrientation() * NoiseSettings.GetCombinedFilterResults(
+                    NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * AmplitudeGain;
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
-                    m_NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * m_AmplitudeGain);
-            if (m_PivotOffset != Vector3.zero)
+                    NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * AmplitudeGain);
+            if (PivotOffset != Vector3.zero)
             {
-                Matrix4x4 m = Matrix4x4.Translate(-m_PivotOffset);
+                Matrix4x4 m = Matrix4x4.Translate(-PivotOffset);
                 m = Matrix4x4.Rotate(rotNoise) * m;
-                m = Matrix4x4.Translate(m_PivotOffset) * m;
-                curState.PositionCorrection += curState.CorrectedOrientation * m.MultiplyPoint(Vector3.zero);
+                m = Matrix4x4.Translate(PivotOffset) * m;
+                curState.PositionCorrection += curState.GetCorrectedOrientation() * m.MultiplyPoint(Vector3.zero);
             }
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
         }
@@ -116,7 +120,7 @@ namespace Cinemachine
         void Initialize()
         {
             mInitialized = true;
-            mNoiseTime = CinemachineCore.CurrentTime * m_FrequencyGain;
+            mNoiseTime = CinemachineCore.CurrentTime * FrequencyGain;
             if (mNoiseOffsets == Vector3.zero)
                 ReSeed();
         }

@@ -11,6 +11,130 @@ using Cinemachine.TargetTracking;
 
 namespace Cinemachine
 {
+    /// <summary>Tracks an object's velocity with a filter to determine a reasonably
+    /// steady direction for the object's current trajectory.</summary>
+    [Obsolete]
+    public class HeadingTracker
+    {
+        struct Item
+        {
+            public Vector3 velocity;
+            public float weight;
+            public float time;
+        };
+        Item[] mHistory;
+        int mTop;
+        int mBottom;
+        int mCount;
+
+        Vector3 mHeadingSum;
+        float mWeightSum = 0;
+        float mWeightTime = 0;
+
+        Vector3 mLastGoodHeading = Vector3.zero;
+
+        /// <summary>Construct a heading tracker with a given filter size</summary>
+        /// <param name="filterSize">The size of the filter.  The larger the filter, the
+        /// more constanct (and laggy) is the heading.  30 is pretty big.</param>
+        public HeadingTracker(int filterSize)
+        {
+            mHistory = new Item[filterSize];
+            float historyHalfLife = filterSize / 5f; // somewhat arbitrarily
+            mDecayExponent = -Mathf.Log(2f) / historyHalfLife;
+            ClearHistory();
+        }
+
+        /// <summary>Get the current filter size</summary>
+        public int FilterSize { get { return mHistory.Length; } }
+
+        void ClearHistory()
+        {
+            mTop = mBottom = mCount = 0;
+            mWeightSum = 0;
+            mHeadingSum = Vector3.zero;
+        }
+
+        static float mDecayExponent;
+        static float Decay(float time) { return Mathf.Exp(time * mDecayExponent); }
+
+        /// <summary>Add a new velocity frame.  This should be called once per frame,
+        /// unless the velocity is zero</summary>
+        /// <param name="velocity">The object's velocity this frame</param>
+        public void Add(Vector3 velocity)
+        {
+            if (FilterSize == 0)
+            {
+                mLastGoodHeading = velocity;
+                return;
+            }
+            float weight = velocity.magnitude;
+            if (weight > UnityVectorExtensions.Epsilon)
+            {
+                Item item = new Item();
+                item.velocity = velocity;
+                item.weight = weight;
+                item.time = CinemachineCore.CurrentTime;
+                if (mCount == FilterSize)
+                    PopBottom();
+                ++mCount;
+                mHistory[mTop] = item;
+                if (++mTop == FilterSize)
+                    mTop = 0;
+
+                mWeightSum *= Decay(item.time - mWeightTime);
+                mWeightTime = item.time;
+                mWeightSum += weight;
+                mHeadingSum += item.velocity;
+            }
+        }
+
+        void PopBottom()
+        {
+            if (mCount > 0)
+            {
+                float time = CinemachineCore.CurrentTime;
+                Item item = mHistory[mBottom];
+                if (++mBottom == FilterSize)
+                    mBottom = 0;
+                --mCount;
+
+                float decay = Decay(time - item.time);
+                mWeightSum -= item.weight * decay;
+                mHeadingSum -= item.velocity * decay;
+                if (mWeightSum <= UnityVectorExtensions.Epsilon || mCount == 0)
+                    ClearHistory();
+            }
+        }
+
+        /// <summary>Decay the history.  This should be called every frame.</summary>
+        public void DecayHistory()
+        {
+            float time = CinemachineCore.CurrentTime;
+            float decay = Decay(time - mWeightTime);
+            mWeightSum *= decay;
+            mWeightTime = time;
+            if (mWeightSum < UnityVectorExtensions.Epsilon)
+                ClearHistory();
+            else
+                mHeadingSum = mHeadingSum * decay;
+        }
+
+        /// <summary>Get the filtered heading.</summary>
+        /// <returns>The filtered direction of motion</returns>
+        public Vector3 GetReliableHeading()
+        {
+            // Update Last Good Heading
+            if (mWeightSum > UnityVectorExtensions.Epsilon
+                && (mCount == mHistory.Length || mLastGoodHeading.AlmostZero()))
+            {
+                Vector3  h = mHeadingSum / mWeightSum;
+                if (!h.AlmostZero())
+                    mLastGoodHeading = h.normalized;
+            }
+            return mLastGoodHeading;
+        }
+    }
+
     /// <summary>
     /// This is a deprecated component.  Use CinemachineOrbitalFollow instead.
     /// </summary>
@@ -305,7 +429,7 @@ namespace Cinemachine
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != BindingMode.SimpleFollowWithWorldUp
-                && transitionParams.m_InheritPosition
+                && transitionParams.InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);

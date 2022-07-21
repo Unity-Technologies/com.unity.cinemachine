@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -10,15 +11,18 @@ namespace Cinemachine
     {
         /// <summary>The raw signal shape along the X axis</summary>
         [Tooltip("The raw signal shape along the X axis")]
-        public AnimationCurve m_XCurve;
+        [FormerlySerializedAs("m_XCurve")]
+        public AnimationCurve XCurve;
 
         /// <summary>The raw signal shape along the Y axis</summary>
         [Tooltip("The raw signal shape along the Y axis")]
-        public AnimationCurve m_YCurve;
+        [FormerlySerializedAs("m_YCurve")]
+        public AnimationCurve YCurve;
 
         /// <summary>The raw signal shape along the Z axis</summary>
         [Tooltip("The raw signal shape along the Z axis")]
-        public AnimationCurve m_ZCurve;
+        [FormerlySerializedAs("m_ZCurve")]
+        public AnimationCurve ZCurve;
 
         /// <summary>
         /// Returns the length on seconds of the signal.  
@@ -29,8 +33,8 @@ namespace Cinemachine
             get
             {
                 return Mathf.Max(
-                    AxisDuration(m_XCurve), 
-                    Mathf.Max(AxisDuration(m_YCurve), AxisDuration(m_ZCurve)));
+                    AxisDuration(XCurve), 
+                    Mathf.Max(AxisDuration(YCurve), AxisDuration(ZCurve)));
             }
         }
 
@@ -53,9 +57,9 @@ namespace Cinemachine
         {
             rot = Quaternion.identity;
             pos = new Vector3(
-                AxisValue(m_XCurve, timeSinceSignalStart),
-                AxisValue(m_YCurve, timeSinceSignalStart),
-                AxisValue(m_ZCurve, timeSinceSignalStart));
+                AxisValue(XCurve, timeSinceSignalStart),
+                AxisValue(YCurve, timeSinceSignalStart),
+                AxisValue(ZCurve, timeSinceSignalStart));
         }
 
         float AxisValue(AnimationCurve axis, float time)

@@ -80,16 +80,6 @@ namespace Cinemachine.Editor
         protected override List<string> GetExcludedPropertiesInInspector() 
             { return base.GetExcludedPropertiesInInspector(); }
 
-        /// <summary>Get the property names to exclude in the inspector.  
-        /// Implementation should call the base class implementation</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            if (Target.m_ExcludedPropertiesInInspector != null)
-                excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
-        }
-
         /// <summary>Update state information on undo/redo</summary>
         void UpdateCameraState() 
         { 
@@ -294,7 +284,7 @@ namespace Cinemachine.Editor
             
             // Is the camera navel-gazing?
             CameraState state = Target.State;
-            if (state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero())
+            if (state.HasLookAt() && (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero())
                 EditorGUILayout.HelpBox(
                     "The camera is positioned on the same point at which it is trying to look.",
                     MessageType.Warning);

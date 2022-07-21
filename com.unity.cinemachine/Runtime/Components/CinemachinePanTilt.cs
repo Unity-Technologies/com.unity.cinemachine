@@ -146,7 +146,7 @@ namespace Cinemachine
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
             m_ResetHandler?.Invoke(); // Cancel recentering
-            if (fromCam != null && transitionParams.m_InheritPosition  
+            if (fromCam != null && transitionParams.InheritPosition  
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);

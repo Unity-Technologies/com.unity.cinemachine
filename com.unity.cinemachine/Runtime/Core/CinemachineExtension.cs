@@ -10,6 +10,9 @@ namespace Cinemachine
     /// </summary>
     public abstract class CinemachineExtension : MonoBehaviour
     {
+        CinemachineVirtualCameraBase m_VcamOwner;
+        Dictionary<ICinemachineCamera, System.Object> m_ExtraState;
+
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
 
@@ -18,19 +21,19 @@ namespace Cinemachine
         {
             get
             {
-                if (m_vcamOwner == null)
-                    m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
-                return m_vcamOwner;
+                if (m_VcamOwner == null)
+                    m_VcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+                return m_VcamOwner;
             }
         }
-        CinemachineVirtualCameraBase m_vcamOwner;
 
         /// <summary>Connect to virtual camera pipeline.
         /// Override implementations must call this base implementation</summary>
-        protected virtual void Awake()
-        {
-            ConnectToVcam(true);
-        }
+        protected virtual void Awake() => ConnectToVcam(true);
+
+        /// <summary>Disconnect from virtual camera pipeline.
+        /// Override implementations must call this base implementation</summary>
+        protected virtual void OnDestroy() => ConnectToVcam(false);
 
         /// <summary>Does nothing.  It's here for the little checkbox in the inspector.</summary>
         protected virtual void OnEnable() {}
@@ -45,14 +48,7 @@ namespace Cinemachine
                 e.ConnectToVcam(true);
         }
 #endif
-        /// <summary>Disconnect from virtual camera pipeline.
-        /// Override implementations must call this base implementation</summary>
-        protected virtual void OnDestroy()
-        {
-            ConnectToVcam(false);
-        }
-
-        internal void EnsureStarted() { ConnectToVcam(true); }
+        internal void EnsureStarted() => ConnectToVcam(true);
 
         /// <summary>Connect to virtual camera.  Implementation must be safe to be called
         /// redundantly.  Override implementations must call this base implementation</summary>
@@ -68,7 +64,7 @@ namespace Cinemachine
                 else
                     VirtualCamera.RemoveExtension(this);
             }
-            mExtraState = null;
+            m_ExtraState = null;
         }
 
         /// <summary>Override this to do such things as offset the RefereceLookAt.
@@ -126,14 +122,14 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         /// <returns>True to request a vcam update of internal state</returns>
         public virtual bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) { return false; }
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) => false;
 
         /// <summary>
         /// Report maximum damping time needed for this extension.
         /// Only used in editor for timeline scrubbing.
         /// </summary>
         /// <returns>Highest damping setting in this extension</returns>
-        public virtual float GetMaxDampTime() { return 0; }
+        public virtual float GetMaxDampTime() => 0;
         
         /// <summary>Because extensions can be placed on manager cams and will in that
         /// case be called for all the vcam children, vcam-specific state information
@@ -144,11 +140,10 @@ namespace Cinemachine
         /// <returns>The extra state, cast as type T</returns>
         protected T GetExtraState<T>(ICinemachineCamera vcam) where T : class, new()
         {
-            if (mExtraState == null)
-                mExtraState = new Dictionary<ICinemachineCamera, System.Object>();
-            System.Object extra = null;
-            if (!mExtraState.TryGetValue(vcam, out extra))
-                extra = mExtraState[vcam] = new T();
+            if (m_ExtraState == null)
+                m_ExtraState = new Dictionary<ICinemachineCamera, System.Object>();
+            if (!m_ExtraState.TryGetValue(vcam, out var extra))
+                extra = m_ExtraState[vcam] = new T();
             return extra as T;
         }
 
@@ -160,12 +155,10 @@ namespace Cinemachine
         protected List<T> GetAllExtraStates<T>() where T : class, new()
         {
             var list = new List<T>();
-            if (mExtraState != null)
-                foreach (var v in mExtraState)
+            if (m_ExtraState != null)
+                foreach (var v in m_ExtraState)
                     list.Add(v.Value as T);
             return list;
         }
-
-        private Dictionary<ICinemachineCamera, System.Object> mExtraState;
     }
 }

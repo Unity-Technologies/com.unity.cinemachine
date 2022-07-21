@@ -361,7 +361,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            if (fromCam != null && transitionParams.m_InheritPosition
+            if (fromCam != null && transitionParams.InheritPosition
                  && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
@@ -462,7 +462,7 @@ namespace Cinemachine
                 TrackedPoint = p;
             }
 
-            if (!curState.HasLookAt)
+            if (!curState.HasLookAt())
                 curState.ReferenceLookAt = followTargetPosition;
 
             // Adjust the desired depth for group framing
