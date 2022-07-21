@@ -142,14 +142,14 @@ namespace Cinemachine.Editor
                 return;
 
             CameraState state = vcam.State;
-            Gizmos.DrawIcon(state.FinalPosition, kGizmoFileName, true);
+            Gizmos.DrawIcon(state.GetFinalPosition(), kGizmoFileName, true);
 
             DrawCameraFrustumGizmo(
                 CinemachineCore.Instance.FindPotentialTargetBrain(vcam),
                 state.Lens,
                 Matrix4x4.TRS(
-                    state.FinalPosition,
-                    UnityQuaternionExtensions.Normalized(state.FinalOrientation), Vector3.one),
+                    state.GetFinalPosition(),
+                    UnityQuaternionExtensions.Normalized(state.GetFinalOrientation()), Vector3.one),
                 CinemachineCore.Instance.IsLive(vcam)
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);

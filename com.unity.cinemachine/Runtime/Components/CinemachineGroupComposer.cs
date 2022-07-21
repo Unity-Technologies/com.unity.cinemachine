@@ -157,7 +157,7 @@ namespace Cinemachine
                 return;
             }
 
-            if (!IsValid || !curState.HasLookAt)
+            if (!IsValid || !curState.HasLookAt())
             {
                 m_prevFramingDistance = 0;
                 m_prevFOV = 0;
