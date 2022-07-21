@@ -37,7 +37,7 @@ namespace Tests.Editor
             base.SetUp();
             var mainCamera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_Brain = mainCamera.GetComponent<CinemachineBrain>();
-            m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate;
+            m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
             CinemachineCore.UniformDeltaTimeOverride = 0.1f;
         }
 

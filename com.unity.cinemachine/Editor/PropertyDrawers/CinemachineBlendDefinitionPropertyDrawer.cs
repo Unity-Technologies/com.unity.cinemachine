@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomPropertyDrawer(typeof(CinemachineBlendDefinitionPropertyAttribute))]
+    [CustomPropertyDrawer(typeof(CinemachineBlendDefinition))]
     internal sealed class CinemachineBlendDefinitionPropertyDrawer : PropertyDrawer
     {
         CinemachineBlendDefinition myClass = new CinemachineBlendDefinition(); // to access name strings
@@ -51,6 +53,37 @@ namespace Cinemachine.Editor
                     timeProp.floatValue = Mathf.Max(timeProp.floatValue, 0);
                 EditorGUIUtility.labelWidth = oldWidth;
             }
+        }
+
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+
+            var row = new InspectorUtility.LeftRightContainer();
+            row.Left.Add(new Label(property.displayName)
+                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
+
+            var styleProp = property.FindPropertyRelative(() => myClass.m_Style);
+            row.Right.Add(new PropertyField(styleProp, "")
+                { style = { flexGrow = 1, flexBasis = floatFieldWidth }});
+
+            var curveProp = property.FindPropertyRelative(() => myClass.m_CustomCurve);
+            var curveWidget = row.Right.AddChild(new PropertyField(curveProp, "")
+                { style = { flexGrow = 0, flexBasis = floatFieldWidth }});
+
+            var timeProp = property.FindPropertyRelative(() => myClass.m_Time);
+            var timeWidget = row.Right.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
+                { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 5 }});
+
+            OnStyleChanged(styleProp);
+            row.TrackPropertyValue(styleProp, OnStyleChanged);
+            void OnStyleChanged(SerializedProperty p)
+            {
+                curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Style.Custom);
+                timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Style.Cut);
+            }
+
+            return row;
         }
     }
 }

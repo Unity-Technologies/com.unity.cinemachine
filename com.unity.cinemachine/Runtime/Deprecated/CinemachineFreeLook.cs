@@ -16,7 +16,7 @@ namespace Cinemachine
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
-    public class CinemachineFreeLook : CinemachineVirtualCameraBase
+    public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -142,7 +142,7 @@ namespace Cinemachine
             }
             if (m_LegacyBlendHint != BlendHint.None)
             {
-                m_Transitions.m_BlendHint = m_LegacyBlendHint;
+                m_Transitions.BlendHint = m_LegacyBlendHint;
                 m_LegacyBlendHint = BlendHint.None;
             }
         }
@@ -199,11 +199,11 @@ namespace Cinemachine
         /// <summary>
         /// API for the inspector.  Internal use only
         /// </summary>
-        public void UpdateInputAxisProvider()
+        internal void UpdateInputAxisProvider()
         {
             m_XAxis.SetInputAxisProvider(0, null);
             m_YAxis.SetInputAxisProvider(1, null);
-            var provider = GetInputAxisProvider();
+            var provider = GetComponent<AxisState.IInputAxisProvider>();
             if (provider != null)
             {
                 m_XAxis.SetInputAxisProvider(0, provider);
@@ -356,9 +356,12 @@ namespace Cinemachine
             if (!RigsAreCreated)
                 return;
 
+            if (deltaTime < 0)
+                PreviousStateIsValid = false;
+
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, m_Transitions.BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it
@@ -403,7 +406,7 @@ namespace Cinemachine
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
 //            m_YAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.m_InheritPosition 
+            if (fromCam != null && m_Transitions.InheritPosition 
                 && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
@@ -416,7 +419,7 @@ namespace Cinemachine
                     if (orbital != null)
                         cameraPos = orbital.GetTargetCameraPosition(worldUp);
                 }
-                ForceCameraPosition(cameraPos, fromCam.State.FinalOrientation);
+                ForceCameraPosition(cameraPos, fromCam.State.GetFinalOrientation());
             }
             if (forceUpdate)
             {
@@ -426,17 +429,11 @@ namespace Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (m_Transitions.m_OnCameraLive != null)
-                m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
+            if (m_Transitions.OnCameraLive != null)
+                m_Transitions.OnCameraLive.Invoke(this, fromCam);
         }
         
-        /// <summary>
-        /// Returns true, because FreeLook requires input.
-        /// </summary>
-        internal override bool RequiresUserInput()
-        {
-            return true;
-        }
+        bool AxisState.IRequiresInput.RequiresInput() => true;
 
         float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up)
         {
@@ -719,7 +716,7 @@ namespace Cinemachine
                             orbital.HeadingUpdater = UpdateXAxisHeading;
                             orbital.m_RecenterToTargetHeading.m_enabled = false;
 
-                            vcam.m_StandbyUpdate = m_StandbyUpdate;
+                            vcam.StandbyUpdate = StandbyUpdate;
                             rigs.Add(vcam);
                         }
                     }
@@ -770,7 +767,7 @@ namespace Cinemachine
                         Follow = m_Rigs[i].Follow;
                 }
                 m_Rigs[i].Follow = null;
-                m_Rigs[i].m_StandbyUpdate = m_StandbyUpdate;
+                m_Rigs[i].StandbyUpdate = StandbyUpdate;
                 m_Rigs[i].FollowTargetAttachment = FollowTargetAttachment;
                 m_Rigs[i].LookAtTargetAttachment = LookAtTargetAttachment;
                 if (!PreviousStateIsValid)

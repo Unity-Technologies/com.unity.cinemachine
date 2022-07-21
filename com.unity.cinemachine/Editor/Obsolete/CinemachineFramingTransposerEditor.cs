@@ -25,7 +25,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_BiasX));
                 excluded.Add(FieldPath(x => x.m_BiasY));
             }
-            ICinemachineTargetGroup group = Target.AbstractFollowTargetGroup;
+            ICinemachineTargetGroup group = Target.FollowTargetAsGroup;
             if (group == null || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
             {
                 excluded.Add(FieldPath(x => x.m_GroupFramingSize));
@@ -183,7 +183,7 @@ namespace Cinemachine.Editor
         private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.AbstractFollowTargetGroup != null
+            if (target.FollowTargetAsGroup != null
                 && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
             {
                 Matrix4x4 m = Gizmos.matrix;
@@ -224,7 +224,7 @@ namespace Cinemachine.Editor
             {
                 var originalColor = Handles.color;
                 var camPos = framingTransposer.VcamState.RawPosition;
-                var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var targetForward = framingTransposer.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);

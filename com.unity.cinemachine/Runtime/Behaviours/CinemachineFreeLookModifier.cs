@@ -184,7 +184,7 @@ public class CinemachineFreeLookModifier : CinemachineExtension
 
             // Tilt in local X
             var qTilted = state.RawOrientation * Quaternion.AngleAxis(tilt, Vector3.right);
-            state.OrientationCorrection = Quaternion.Inverse(state.CorrectedOrientation) * qTilted;
+            state.OrientationCorrection = Quaternion.Inverse(state.GetCorrectedOrientation()) * qTilted;
         }
     }
 

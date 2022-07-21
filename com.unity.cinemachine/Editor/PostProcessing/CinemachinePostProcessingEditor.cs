@@ -10,7 +10,7 @@ using UnityEditor.Rendering.PostProcessing;
 namespace Cinemachine.PostFX.Editor
 {
     [CustomEditor(typeof(CinemachinePostProcessing))]
-    public sealed class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
+    sealed class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
     {
 #if !CINEMACHINE_POST_PROCESSING_V2
         public override void OnInspectorGUI()
@@ -40,11 +40,11 @@ namespace Cinemachine.PostFX.Editor
                      + "/Editor/EditorResources/PostProcessLayer.png");
             m_ProfileLabel = new GUIContent("Profile", texture, "A reference to a profile asset");
 
-            m_FocusTracking = FindProperty(x => x.m_FocusTracking);
-            m_Profile = FindProperty(x => x.m_Profile);
+            m_FocusTracking = FindProperty(x => x.FocusTracking);
+            m_Profile = FindProperty(x => x.Profile);
 
             m_EffectList = new EffectListEditor(this);
-            RefreshEffectListEditor(Target.m_Profile);
+            RefreshEffectListEditor(Target.Profile);
         }
 
         void OnDisable()
@@ -69,10 +69,10 @@ namespace Cinemachine.PostFX.Editor
             base.GetExcludedPropertiesInInspector(excluded);
             var mode = (CinemachinePostProcessing.FocusTrackingMode)m_FocusTracking.intValue;
             if (mode != CinemachinePostProcessing.FocusTrackingMode.CustomTarget)
-                excluded.Add(FieldPath(x => x.m_FocusTarget));
+                excluded.Add(FieldPath(x => x.FocusTarget));
             if (mode == CinemachinePostProcessing.FocusTrackingMode.None)
-                excluded.Add(FieldPath(x => x.m_FocusOffset));
-            excluded.Add(FieldPath(x => x.m_Profile));
+                excluded.Add(FieldPath(x => x.FocusOffset));
+            excluded.Add(FieldPath(x => x.Profile));
         }
 
         public override void OnInspectorGUI()
@@ -90,7 +90,7 @@ namespace Cinemachine.PostFX.Editor
             {
                 bool valid = false;
                 DepthOfField dof;
-                if (Target.m_Profile != null && Target.m_Profile.TryGetSettings(out dof))
+                if (Target.Profile != null && Target.Profile.TryGetSettings(out dof))
                     valid = dof.enabled && dof.active && dof.focusDistance.overrideState;
                 if (!valid)
                     EditorGUILayout.HelpBox(
@@ -202,8 +202,7 @@ namespace Cinemachine.PostFX.Editor
         // Copied from UnityEditor.Rendering.PostProcessing.ProfileFactory.CreatePostProcessProfile() because it's internal
         static PostProcessProfile CreatePostProcessProfile(UnityEngine.SceneManagement.Scene scene, string targetName)
         {
-            var path = string.Empty;
-
+            string path;
             if (string.IsNullOrEmpty(scene.path))
             {
                 path = "Assets/";

@@ -1,29 +1,18 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.VersionControl;
-using System;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
     /// <summary>
     /// Helper for drawing embedded asset editors
     /// </summary>
-    internal class EmbeddeAssetEditor<T> where T : ScriptableObject
+    class EmbeddeAssetEditor<T> where T : ScriptableObject
     {
         /// <summary>
-        /// Create in OnEnable()
-        /// </summary>
-        public EmbeddeAssetEditor(string propertyName, UnityEditor.Editor owner)
-        {
-            m_PropertyName = propertyName;
-            m_Owner = owner;
-            m_CreateButtonGUIContent = new GUIContent(
-                    "Create Asset", "Create a new shared settings asset");
-        }
-
-        /// <summary>
-        /// Called after the asset editor is created, in case it needs
-        /// to be customized
+        /// Called after the asset editor is created, in case it needs to be customized
         /// </summary>
         public OnCreateEditorDelegate OnCreateEditor;
         public delegate void OnCreateEditorDelegate(UnityEditor.Editor editor);
@@ -40,17 +29,17 @@ namespace Cinemachine.Editor
         public void OnDisable()
         {
             DestroyEditor();
-            m_Owner = null;
         }
 
-        /// <summary>
-        /// Customize this after creation if you want
-        /// </summary>
-        public GUIContent m_CreateButtonGUIContent;
+        GUIContent m_CreateButtonGUIContent 
+            = new GUIContent("Create Asset", "Create a new shared settings asset");
 
-        private string m_PropertyName;
-        private UnityEditor.Editor m_Editor = null;
-        private UnityEditor.Editor m_Owner = null;
+        UnityEditor.Editor m_Editor = null;
+        InspectorUtility.LeftRightContainer m_UnassignedUx;
+        VisualElement m_AssignedUx;
+        VisualElement m_EmbeddedInspectorParent;
+        InspectorElement m_EmbeddedInspectorElement;
+        static bool s_CustomBlendsExpanded;
 
         const int kIndentOffset = 3;
 
@@ -59,10 +48,10 @@ namespace Cinemachine.Editor
         /// the embedded editor, or a Create Asset button, if no asset is set.
         /// </summary>
         public void DrawEditorCombo(
+            SerializedProperty property,
             string title, string defaultName, string extension, string message,
-            string showLabel, bool indent)
+            bool indent)
         {
-            SerializedProperty property = m_Owner.serializedObject.FindProperty(m_PropertyName);
             if (m_Editor == null)
                 UpdateEditor(property);
             if (m_Editor == null)
@@ -76,7 +65,7 @@ namespace Cinemachine.Editor
                 EditorGUI.PropertyField(rect, property);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    m_Owner.serializedObject.ApplyModifiedProperties();
+                    property.serializedObject.ApplyModifiedProperties();
                     UpdateEditor(property);
                 }
                 if (m_Editor != null)
@@ -117,7 +106,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        private void AssetFieldWithCreateButton(
+        void AssetFieldWithCreateButton(
             SerializedProperty property,
             string title, string defaultName, string extension, string message)
         {
@@ -137,17 +126,17 @@ namespace Cinemachine.Editor
                 {
                     T asset = ScriptableObjectUtility.CreateAt<T>(newAssetPath);
                     property.objectReferenceValue = asset;
-                    m_Owner.serializedObject.ApplyModifiedProperties();
+                    property.serializedObject.ApplyModifiedProperties();
                 }
             }
             if (EditorGUI.EndChangeCheck())
             {
-                m_Owner.serializedObject.ApplyModifiedProperties();
+                property.serializedObject.ApplyModifiedProperties();
                 UpdateEditor(property);
             }
         }
 
-        public void DestroyEditor()
+        void DestroyEditor()
         {
             if (m_Editor != null)
             {
@@ -156,17 +145,98 @@ namespace Cinemachine.Editor
             }
         }
         
-        public void UpdateEditor(SerializedProperty property)
+        void UpdateEditor(SerializedProperty property)
         {
+            property.serializedObject.ApplyModifiedProperties();
+
             var target = property.objectReferenceValue;
             if (m_Editor != null && m_Editor.target != target)
+            {
+                if (m_EmbeddedInspectorElement != null)
+                    m_EmbeddedInspectorElement.RemoveFromHierarchy();
                 DestroyEditor();
+            }
             if (target != null)
             {
-                m_Editor = UnityEditor.Editor.CreateEditor(target);
-                if (OnCreateEditor != null)
-                    OnCreateEditor(m_Editor);
+                if (m_Editor == null)
+                {
+                    m_Editor = UnityEditor.Editor.CreateEditor(target);
+                    if (OnCreateEditor != null)
+                        OnCreateEditor(m_Editor);
+                }
+                if (m_EmbeddedInspectorParent != null)
+                    m_EmbeddedInspectorElement = m_EmbeddedInspectorParent.AddChild(new InspectorElement(m_Editor));
             }
+            if (m_UnassignedUx != null)
+                m_UnassignedUx.SetVisible(target == null);
+            if (m_AssignedUx != null)
+                m_AssignedUx.SetVisible(target != null);
+        }
+
+        /// <summary>
+        /// Call this to create the inspector GUI.  Will draw the asset reference field, and
+        /// the embedded editor, or a Create Asset button, if no asset is set.
+        /// </summary>
+        public VisualElement CreateInspectorGUI(
+            SerializedProperty property,
+            string title, string defaultName, string extension, string message)
+        {
+            var ux = new VisualElement();
+
+            // Asset field with create button
+            m_UnassignedUx = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            m_UnassignedUx.Left.Add(new Label(property.displayName) 
+                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0 }});
+            m_UnassignedUx.Right.Add(new PropertyField(property, "") 
+                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0, marginRight = 5 }});
+            m_UnassignedUx.Right.Add(new Button(() =>
+            {
+                string newAssetPath = EditorUtility.SaveFilePanelInProject(
+                        title, defaultName, extension, message);
+                if (!string.IsNullOrEmpty(newAssetPath))
+                {
+                    T asset = ScriptableObjectUtility.CreateAt<T>(newAssetPath);
+                    property.objectReferenceValue = asset;
+                    property.serializedObject.ApplyModifiedProperties();
+                }
+            })
+            {
+                text = "Create Asset",
+                tooltip = "Create a new shared settings asset"
+            });
+
+            var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip, value = s_CustomBlendsExpanded };
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                s_CustomBlendsExpanded = evt.newValue;
+                evt.StopPropagation();
+            });
+            m_EmbeddedInspectorParent = new VisualElement();
+            m_AssignedUx = ux.AddChild(new InspectorUtility.FoldoutWithOverlay(
+                foldout, new PropertyField(property, ""), null) { style = { flexGrow = 1 }});
+            foldout.Add(new PropertyField(property, "Asset"));
+            foldout.AddSpace();
+
+            Color borderColor = Color.grey;
+            float borderWidth = 2;
+            float borderRadius = 5;
+            m_EmbeddedInspectorParent = foldout.AddChild(new VisualElement() { 
+            style = 
+            { 
+                borderTopColor = borderColor, borderTopWidth = borderWidth, borderTopLeftRadius = borderRadius,
+                borderBottomColor = borderColor, borderBottomWidth = borderWidth, borderBottomLeftRadius = borderRadius,
+                borderLeftColor = borderColor, borderLeftWidth = borderWidth, borderTopRightRadius = borderRadius,
+                borderRightColor = borderColor, borderRightWidth = borderWidth, borderBottomRightRadius = borderRadius,
+            }});
+
+            m_EmbeddedInspectorParent.Add(new HelpBox(
+                "This is a shared asset.  Changes made here will apply to all users of this asset.", 
+                HelpBoxMessageType.Info));
+
+            UpdateEditor(property);
+            ux.TrackPropertyValue(property, (p) => UpdateEditor(p));
+
+            return ux;
         }
     }
 }

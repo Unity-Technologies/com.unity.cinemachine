@@ -142,7 +142,7 @@ namespace Cinemachine
             UpdateRenderCanvas();
 
             if (m_ShowImage)
-                state.AddCustomBlendable(new CameraState.CustomBlendable(this, 1));
+                state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item { Custom = this, Weight = 1});
             if (m_MuteCamera)
                 state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
         }
@@ -294,7 +294,7 @@ namespace Cinemachine
         {
             if (ci.mRawImage != null && ci.mViewport != null)
             {
-                Rect screen = new Rect(0, 0, Screen.width, Screen.height);
+                var screen = new Rect(0, 0, Screen.width, Screen.height);
                 if (ci.mCanvasParent.OutputCamera != null)
                     screen = ci.mCanvasParent.OutputCamera.pixelRect;
                 screen.x -= (float)Screen.width/2;
@@ -303,7 +303,7 @@ namespace Cinemachine
                 // Apply Split View
                 float wipeAmount = -Mathf.Clamp(m_SplitView, -1, 1) * screen.width;
 
-                Vector3 pos = screen.center;
+                var pos = screen.center;
                 pos.x -= wipeAmount/2;
                 ci.mViewport.localPosition = pos;
                 ci.mViewport.localRotation = Quaternion.identity;
@@ -311,7 +311,7 @@ namespace Cinemachine
                 ci.mViewport.ForceUpdateRectTransforms();
                 ci.mViewport.sizeDelta = new Vector2(screen.width + 1 - Mathf.Abs(wipeAmount), screen.height + 1);
 
-                Vector2 scale = Vector2.one;
+                var scale = Vector2.one;
                 if (m_Image != null
                     && m_Image.width > 0 && m_Image.width > 0
                     && screen.width > 0 && screen.height > 0)
@@ -339,7 +339,7 @@ namespace Cinemachine
                 scale.y *= m_SyncScale ? m_Scale.x : m_Scale.y;
 
                 ci.mRawImage.texture = m_Image;
-                Color tintColor = Color.white;
+                var tintColor = Color.white;
                 tintColor.a = m_Alpha * alpha;
                 ci.mRawImage.color = tintColor;
 
@@ -355,13 +355,13 @@ namespace Cinemachine
 
         static void StaticBlendingHandler(CinemachineBrain brain)
         {
-            CameraState state = brain.CurrentCameraState;
-            int numBlendables = state.NumCustomBlendables;
+            var state = brain.CurrentCameraState;
+            int numBlendables = state.GetNumCustomBlendables();
             for (int i = 0; i < numBlendables; ++i)
             {
                 var b = state.GetCustomBlendable(i);
-                CinemachineStoryboard src = b.m_Custom as CinemachineStoryboard;
-                if (!(src == null)) // in case it was deleted
+                var src = b.Custom as CinemachineStoryboard;
+                if (src != null) // in case it was deleted
                 {
                     bool showIt = true;
                     int layer = 1 << src.gameObject.layer;
@@ -369,9 +369,9 @@ namespace Cinemachine
                         showIt = false;
                     if (s_StoryboardGlobalMute)
                         showIt = false;
-                    CanvasInfo ci = src.LocateMyCanvas(brain, showIt);
+                    var ci = src.LocateMyCanvas(brain, showIt);
                     if (ci != null)
-                        src.PlaceImage(ci, b.m_Weight);
+                        src.PlaceImage(ci, b.Weight);
                 }
             }
         }

@@ -142,7 +142,7 @@ namespace Cinemachine
                 if (m_ConfineScreenEdges && state.Lens.Orthographic)
                     displacement = ConfineScreenEdges(ref state);
                 else
-                    displacement = ConfinePoint(state.CorrectedPosition);
+                    displacement = ConfinePoint(state.GetCorrectedPosition());
 
                 if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
@@ -250,12 +250,12 @@ namespace Cinemachine
                 int numPoints = m_pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][numPoints - 1] 
-                                                                            + m_BoundingShape2D.offset);
+                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(
+                        m_pathCache[i][numPoints - 1] + m_BoundingShape2D.offset);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][j] 
-                                                                               + m_BoundingShape2D.offset);
+                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(
+                            m_pathCache[i][j] + m_BoundingShape2D.offset);
                         Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)
@@ -283,6 +283,7 @@ namespace Cinemachine
             var displacement = Vector3.zero;
             var camPos = state.CorrectedPosition;
             var lastD = Vector3.zero;
+
             const int kMaxIter = 12;
             for (var i = 0; i < kMaxIter; ++i)
             {

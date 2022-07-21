@@ -127,7 +127,7 @@ namespace Cinemachine
                     return; // invalid path
                 }
                 
-                var oldCameraPos = state.CorrectedPosition;
+                var oldCameraPos = state.GetCorrectedPosition();
                 var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 var currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
@@ -147,7 +147,7 @@ namespace Cinemachine
                 var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
-                var fwd = state.CorrectedOrientation * Vector3.forward;
+                var fwd = state.GetCorrectedOrientation() * Vector3.forward;
                 newCameraPos -= fwd * Vector3.Dot(fwd, newCameraPos - oldCameraPos);
 
                 // Remember the desired displacement for next frame

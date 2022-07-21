@@ -37,6 +37,7 @@ namespace Cinemachine.Editor
             typeof(CinemachineVirtualCamera),
             typeof(CinemachineFreeLook),
             typeof(CinemachineComposer),
+            typeof(CinemachineGroupComposer),
             typeof(CinemachineTransposer),
             typeof(CinemachineFramingTransposer),
             typeof(CinemachinePOV),
@@ -84,10 +85,32 @@ namespace Cinemachine.Editor
                 // Upgrade the pipeline components (there will be more of these...)
                 if (ReplaceComponent<CinemachineComposer, CinemachineRotationComposer>(go))
                      go.GetComponent<CinemachineComposer>().UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
+                if (ReplaceComponent<CinemachineGroupComposer, CinemachineRotationComposer>(go))
+                {
+                    var gc = go.GetComponent<CinemachineGroupComposer>();
+                    gc.UpgradeToCm3(go.GetComponent<CinemachineRotationComposer>());
+                    if (!go.TryGetComponent<CinemachineGroupFraming>(out var _))
+                    {
+                        var framer = Undo.AddComponent<CinemachineGroupFraming>(go);
+                        go.GetComponent<CmCamera>().AddExtension(framer);
+                        gc.UpgradeToCm3(framer);
+                    }
+                }
                 if (ReplaceComponent<CinemachineTransposer, CinemachineFollow>(go))
                      go.GetComponent<CinemachineTransposer>().UpgradeToCm3(go.GetComponent<CinemachineFollow>());
                 if (ReplaceComponent<CinemachineFramingTransposer, CinemachinePositionComposer>(go))
-                     go.GetComponent<CinemachineFramingTransposer>().UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
+                {
+                    var ft = go.GetComponent<CinemachineFramingTransposer>();
+                    ft.UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
+                    if (ft.FollowTargetAsGroup != null 
+                        && ft.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None
+                        && !go.TryGetComponent<CinemachineGroupFraming>(out var _))
+                    {
+                        var framer = Undo.AddComponent<CinemachineGroupFraming>(go);
+                        go.GetComponent<CmCamera>().AddExtension(framer);
+                        ft.UpgradeToCm3(framer);
+                    }
+                }
                 if (ReplaceComponent<CinemachinePOV, CinemachinePanTilt>(go))
                 {
                      var pov = go.GetComponent<CinemachinePOV>();
@@ -330,8 +353,8 @@ namespace Cinemachine.Editor
                 // noise then any specific settings differences can be accounted for in
                 // the FreeLookModifier by setting amplitude to 0
                 return a == null || b == null ||
-                    ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile)
-                        && a.m_PivotOffset == b.m_PivotOffset);
+                    ((a.NoiseProfile == null || b.NoiseProfile == null || a.NoiseProfile == b.NoiseProfile)
+                        && a.PivotOffset == b.PivotOffset);
             }
 
             static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b, params string[] ignoreList)
@@ -489,17 +512,17 @@ namespace Cinemachine.Editor
             var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            var template = middle != null && middle.m_NoiseProfile != null 
-                ? middle : (top != null && top.m_NoiseProfile != null? top : bottom);
-            if (template == null || template.m_NoiseProfile == null)
+            var template = middle != null && middle.NoiseProfile != null 
+                ? middle : (top != null && top.NoiseProfile != null? top : bottom);
+            if (template == null || template.NoiseProfile == null)
                 return;
 
             var middleNoise = Undo.AddComponent<CinemachineBasicMultiChannelPerlin>(go);
             CopyValues(template, middleNoise);
 
             var middleSettings = GetNoiseSettings(middle);
-            middleNoise.m_AmplitudeGain = middleSettings.Amplitude;
-            middleNoise.m_FrequencyGain = middleSettings.Frequency;
+            middleNoise.AmplitudeGain = middleSettings.Amplitude;
+            middleNoise.FrequencyGain = middleSettings.Frequency;
 
             var topSettings = GetNoiseSettings(top);
             var bottomSettings = GetNoiseSettings(bottom);
@@ -523,8 +546,8 @@ namespace Cinemachine.Editor
                 var settings = new CinemachineFreeLookModifier.NoiseModifier.NoiseSettings();
                 if (noise != null)
                 {
-                    settings.Amplitude = noise.m_AmplitudeGain;
-                    settings.Frequency = noise.m_FrequencyGain;
+                    settings.Amplitude = noise.AmplitudeGain;
+                    settings.Frequency = noise.FrequencyGain;
                 }
                 return settings;
             }

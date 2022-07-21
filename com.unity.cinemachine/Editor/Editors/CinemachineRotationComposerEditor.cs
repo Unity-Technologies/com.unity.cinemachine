@@ -50,16 +50,15 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
             m_NoTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
 
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
 
             UpdateVisibility();
             return ux;

@@ -12,7 +12,7 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineCollider))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
+    sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -40,7 +40,7 @@ namespace Cinemachine.Editor
             BeginInspector();
 
             if (Target.m_AvoidObstacles && Target.VirtualCamera != null
-                    && !Target.VirtualCamera.State.HasLookAt)
+                    && !Target.VirtualCamera.State.HasLookAt())
                 EditorGUILayout.HelpBox(
                     "Avoid Obstacles requires a LookAt target.",
                     MessageType.Warning);
@@ -49,14 +49,14 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineCollider))]
-        private static void DrawColliderGizmos(CinemachineCollider collider, GizmoType type)
+        static void DrawColliderGizmos(CinemachineCollider collider, GizmoType type)
         {
             CinemachineVirtualCameraBase vcam = (collider != null) ? collider.VirtualCamera : null;
             if (vcam != null && collider.enabled)
             {
                 Color oldColor = Gizmos.color;
-                Vector3 pos = vcam.State.FinalPosition;
-                if (collider.m_AvoidObstacles && vcam.State.HasLookAt)
+                Vector3 pos = vcam.State.GetFinalPosition();
+                if (collider.m_AvoidObstacles && vcam.State.HasLookAt())
                 {
                     Gizmos.color = CinemachineColliderPrefs.FeelerColor;
                     if (collider.m_CameraRadius > 0)

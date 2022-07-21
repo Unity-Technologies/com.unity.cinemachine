@@ -303,7 +303,7 @@ namespace Cinemachine
                     // to the target for a while, to reduce popping in and out on bumpy objects
                     if (m_SmoothingTime > Epsilon)
                     {
-                        Vector3 pos = state.CorrectedPosition + displacement;
+                        Vector3 pos = state.GetCorrectedPosition() + displacement;
                         Vector3 dir = pos - state.ReferenceLookAt;
                         float distance = dir.magnitude;
                         if (distance > Epsilon)
@@ -320,9 +320,9 @@ namespace Cinemachine
                         extra.ResetDistanceSmoothing(m_SmoothingTime);
 
                     // Apply additional correction due to camera radius
-                    var cameraPos = state.CorrectedPosition + displacement;
+                    var cameraPos = state.GetCorrectedPosition() + displacement;
                     displacement += RespectCameraRadius(
-                        cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
+                        cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
                     if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
@@ -351,9 +351,9 @@ namespace Cinemachine
 
                 float nearnessBoost = 0;
                 const float kMaxNearBoost = 0.2f;
-                if (m_OptimalTargetDistance > 0 && state.HasLookAt)
+                if (m_OptimalTargetDistance > 0 && state.HasLookAt())
                 {
-                    float distance = Vector3.Magnitude(state.ReferenceLookAt - state.FinalPosition);
+                    float distance = Vector3.Magnitude(state.ReferenceLookAt - state.GetFinalPosition());
                     if (distance <= m_OptimalTargetDistance)
                     {
                         float threshold = m_OptimalTargetDistance / 2;
@@ -376,10 +376,10 @@ namespace Cinemachine
         Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra)
         {
             Vector3 displacement = Vector3.zero;
-            if (state.HasLookAt && m_CollideAgainst != 0
+            if (state.HasLookAt() && m_CollideAgainst != 0
                 && m_CollideAgainst != m_TransparentLayers)
             {
-                Vector3 cameraPos = state.CorrectedPosition;
+                Vector3 cameraPos = state.GetCorrectedPosition();
                 Vector3 lookAtPos = state.ReferenceLookAt;
                 RaycastHit hitInfo = new RaycastHit();
                 displacement = PullCameraInFrontOfNearestObstacle(
@@ -717,10 +717,10 @@ namespace Cinemachine
 
         bool CheckForTargetObstructions(CameraState state)
         {
-            if (state.HasLookAt)
+            if (state.HasLookAt())
             {
                 Vector3 lookAtPos = state.ReferenceLookAt;
-                Vector3 pos = state.CorrectedPosition;
+                Vector3 pos = state.GetCorrectedPosition();
                 Vector3 dir = lookAtPos - pos;
                 float distance = dir.magnitude;
                 if (distance < Mathf.Max(m_MinimumDistanceFromTarget, Epsilon))
@@ -736,10 +736,10 @@ namespace Cinemachine
 
         static bool IsTargetOffscreen(CameraState state)
         {
-            if (state.HasLookAt)
+            if (state.HasLookAt())
             {
-                Vector3 dir = state.ReferenceLookAt - state.CorrectedPosition;
-                dir = Quaternion.Inverse(state.CorrectedOrientation) * dir;
+                Vector3 dir = state.ReferenceLookAt - state.GetCorrectedPosition();
+                dir = Quaternion.Inverse(state.GetCorrectedOrientation()) * dir;
                 if (state.Lens.Orthographic)
                 {
                     if (Mathf.Abs(dir.y) > state.Lens.OrthographicSize)

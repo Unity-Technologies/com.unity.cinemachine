@@ -68,7 +68,6 @@ namespace Cinemachine
         public bool m_RandomizeChoice = false;
 
         /// <summary>The blend which is used if you don't explicitly define a blend between two Virtual Cameras</summary>
-        [CinemachineBlendDefinitionProperty]
         [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Cameras")]
         public CinemachineBlendDefinition m_DefaultBlend
             = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);
@@ -99,7 +98,7 @@ namespace Cinemachine
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the ClearShot camera were active.</summary>
-        public ICinemachineCamera LiveChild { get; set; }
+        public CinemachineVirtualCameraBase LiveChild { get; set; }
 
         /// <summary>The CameraState of the currently live child</summary>
         public override CameraState State { get { return m_State; } }
@@ -110,7 +109,7 @@ namespace Cinemachine
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
-            return vcam == LiveChild || (mActiveBlend != null && mActiveBlend.Uses(vcam));
+            return vcam == (ICinemachineCamera)LiveChild || (mActiveBlend != null && mActiveBlend.Uses(vcam));
         }
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
@@ -164,7 +163,7 @@ namespace Cinemachine
         {
             // Choose the best camera
             UpdateListOfChildren();
-            ICinemachineCamera previousCam = LiveChild;
+            var previousCam = LiveChild;
             LiveChild = ChooseCurrentCamera(worldUp);
 
             // Are we transitioning cameras?
@@ -275,7 +274,7 @@ namespace Cinemachine
 
         float mActivationTime = 0;
         float mPendingActivationTime = 0;
-        ICinemachineCamera mPendingCamera;
+        CinemachineVirtualCameraBase mPendingCamera;
         private CinemachineBlend mActiveBlend = null;
 
         void InvalidateListOfChildren()
@@ -315,7 +314,7 @@ namespace Cinemachine
         private bool mRandomizeNow = false;
         private  CinemachineVirtualCameraBase[] m_RandomizedChilden = null;
 
-        private ICinemachineCamera ChooseCurrentCamera(Vector3 worldUp)
+        private CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp)
         {
             if (m_ChildCameras == null || m_ChildCameras.Length == 0)
             {
@@ -333,9 +332,9 @@ namespace Cinemachine
                 childCameras = m_RandomizedChilden;
             }
 
-            if (LiveChild != null && !LiveChild.VirtualCameraGameObject.activeSelf)
+            if (LiveChild != null && !LiveChild.gameObject.activeSelf)
                 LiveChild = null;
-            ICinemachineCamera best = LiveChild;
+            var best = LiveChild;
             for (int i = 0; i < childCameras.Length; ++i)
             {
                 CinemachineVirtualCameraBase vcam = childCameras[i];
@@ -345,7 +344,7 @@ namespace Cinemachine
                     if (best == null
                         || vcam.State.ShotQuality > best.State.ShotQuality
                         || (vcam.State.ShotQuality == best.State.ShotQuality && vcam.Priority > best.Priority)
-                        || (m_RandomizeChoice && mRandomizeNow && (ICinemachineCamera)vcam != LiveChild
+                        || (m_RandomizeChoice && mRandomizeNow && vcam != LiveChild
                             && vcam.State.ShotQuality == best.State.ShotQuality
                             && vcam.Priority == best.Priority))
                     {

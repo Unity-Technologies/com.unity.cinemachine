@@ -4,18 +4,13 @@ using Cinemachine.Utility;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a CinemachineComponent in the Aim section of the component pipeline.
-    /// Its job is to aim the camera at a target object, with configurable offsets, damping,
-    /// and composition rules.
-    ///
-    /// In addition, if the target is a ICinemachineTargetGroup, the behaviour
-    /// will adjust the FOV and the camera distance to ensure that the entire group of targets
-    /// is framed properly.
+    /// This is a deprecated component.  Use CinemachineRotationComposer and CinemachineGroupFraming instead.
     /// </summary>
+    [System.Obsolete("CinemachineFramingTransposer has been deprecated. Use CinemachineRotationComposer and CinemachineGroupFraming instead")]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    public class CinemachineGroupComposer : CinemachineRotationComposer
+    public class CinemachineGroupComposer : CinemachineComposer
     {
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
         [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  "
@@ -150,14 +145,14 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             // Can't do anything without a group to look at
-            ICinemachineTargetGroup group = AbstractLookAtTargetGroup;
+            ICinemachineTargetGroup group = LookAtTargetAsGroup;
             if (group == null)
             {
                 base.MutateCameraState(ref curState, deltaTime);
                 return;
             }
 
-            if (!IsValid || !curState.HasLookAt)
+            if (!IsValid || !curState.HasLookAt())
             {
                 m_prevFramingDistance = 0;
                 m_prevFOV = 0;
@@ -186,11 +181,11 @@ namespace Cinemachine
             Bounds b;
             if (isOrthographic)
             {
-                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix, true);
                 groupCenter = LastBoundsMatrix.MultiplyPoint3x4(b.center);
                 fwd = (groupCenter - cameraPos).normalized;
                 LastBoundsMatrix = Matrix4x4.TRS(cameraPos, Quaternion.LookRotation(fwd, up), Vector3.one);
-                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+                b = group.GetViewSpaceBoundingBox(LastBoundsMatrix, true);
                 LastBounds = b;
             }
             else
@@ -305,7 +300,7 @@ namespace Cinemachine
             group.GetViewSpaceAngularBounds(observer, out var minAngles, out var maxAngles, out var zRange);
             var shift = (minAngles + maxAngles) / 2;
 
-            newFwd = Quaternion.identity.ApplyCameraRotation(new Vector2(-shift.x, shift.y), Vector3.up) * Vector3.forward;
+            newFwd = Quaternion.identity.ApplyCameraRotation(shift, Vector3.up) * Vector3.forward;
             newFwd = observer.MultiplyVector(newFwd);
 
             // For width and height (in camera space) of the bounding box, we use the values at the center of the box.
@@ -316,6 +311,19 @@ namespace Cinemachine
             return new Bounds(
                 new Vector3(0, 0, d/2),
                 new Vector3(Mathf.Tan(angles.y) * d, Mathf.Tan(angles.x) * d, zRange.y - zRange.x));
+        }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineGroupFraming c)
+        {
+            c.FramingMode = (CinemachineGroupFraming.FramingModes)m_FramingMode; // values are the same
+            c.FramingSize = m_GroupFramingSize;
+            c.Damping = m_FrameDamping;
+            c.SizeAdjustment = (CinemachineGroupFraming.SizeAdjustmentModes)m_AdjustmentMode; // values are the same
+            c.LateralAdjustment = CinemachineGroupFraming.LateralAdjustmentModes.ChangeRotation;
+            c.DollyRange = new Vector2(-m_MaxDollyIn, m_MaxDollyOut);
+            c.FovRange = new Vector2(m_MinimumFOV, m_MaximumFOV);
+            c.OrthoSizeRange = new Vector2(m_MinimumOrthoSize, m_MaximumOrthoSize);
         }
     }
 }
