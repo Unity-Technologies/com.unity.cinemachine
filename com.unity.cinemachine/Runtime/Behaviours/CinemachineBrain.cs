@@ -259,7 +259,7 @@ namespace Cinemachine
         WaitForFixedUpdate m_WaitForFixedUpdate = new WaitForFixedUpdate();
 
         ICinemachineCamera m_ActiveCameraPreviousFrame;
-        GameObject m_ActiveCameraPreviousFrameGameObject;
+        CinemachineVirtualCameraBase m_ActiveCameraPreviousFrameGameObject;
 
         void OnValidate()
         {

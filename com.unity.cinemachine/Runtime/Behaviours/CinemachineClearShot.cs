@@ -109,7 +109,7 @@ namespace Cinemachine
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
-            return vcam == LiveChild || (mActiveBlend != null && mActiveBlend.Uses(vcam));
+            return vcam == (ICinemachineCamera)LiveChild || (mActiveBlend != null && mActiveBlend.Uses(vcam));
         }
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
@@ -163,7 +163,7 @@ namespace Cinemachine
         {
             // Choose the best camera
             UpdateListOfChildren();
-            ICinemachineCamera previousCam = LiveChild;
+            var previousCam = LiveChild;
             LiveChild = ChooseCurrentCamera(worldUp);
 
             // Are we transitioning cameras?
