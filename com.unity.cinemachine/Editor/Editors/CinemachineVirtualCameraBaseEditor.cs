@@ -80,16 +80,6 @@ namespace Cinemachine.Editor
         protected override List<string> GetExcludedPropertiesInInspector() 
             { return base.GetExcludedPropertiesInInspector(); }
 
-        /// <summary>Get the property names to exclude in the inspector.  
-        /// Implementation should call the base class implementation</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            if (Target.m_ExcludedPropertiesInInspector != null)
-                excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
-        }
-
         /// <summary>Update state information on undo/redo</summary>
         void UpdateCameraState() 
         { 
@@ -130,7 +120,7 @@ namespace Cinemachine.Editor
         {
             Undo.undoRedoPerformed -= UpdateCameraState;
             
-            if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
+            if (CinemachineBrain.SoloCamera == Target)
             {
                 CinemachineBrain.SoloCamera = null;
                 InspectorUtility.RepaintGameView();
@@ -160,19 +150,15 @@ namespace Cinemachine.Editor
 #if true // For testing only - do not release with this because no undo and no animation fixup
                 if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Convert to CmCamera")))
                 {
-                    var upgrader = new CinemachineUpgradeManager();
                     Undo.SetCurrentGroupName("Convert to CmCamera");
                     for (int i = 0; i < targets.Length; ++i)
-                    {
-                        upgrader.Upgrade(((CinemachineVirtualCameraBase)targets[i]).gameObject);
-                    }
+                        CinemachineUpgradeManager.UpgradeSingleObject(((CinemachineVirtualCameraBase)targets[i]).gameObject);
                     GUIUtility.ExitGUI();
                 }
 #endif
                 if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Upgrade Project to Cinemachine 3")))
                 {
-                    var upgrader = new CinemachineUpgradeManager();
-                    upgrader.UpgradeAll();
+                    CinemachineUpgradeManager.UpgradeProject();
                     GUIUtility.ExitGUI();
                 }
                 EditorGUILayout.Space();
@@ -189,13 +175,15 @@ namespace Cinemachine.Editor
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
         /// Does nothing if Input package not installed.
         /// </summary>
+#pragma warning disable 618 // using obsolete stuff
         protected void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
             for (int i = 0; !needsButton && i < targets.Length; ++i)
             {
                 var vcam = (CinemachineVirtualCameraBase)targets[i];
-                if (vcam.RequiresUserInput() && vcam.GetComponent<AxisState.IInputAxisProvider>() == null)
+                var requirer = vcam as AxisState.IRequiresInput;
+                if (requirer != null && requirer.RequiresInput() && !vcam.TryGetComponent<AxisState.IInputAxisProvider>(out _))
                     needsButton = true;
             }
             if (!needsButton)
@@ -219,6 +207,7 @@ namespace Cinemachine.Editor
                 });
             EditorGUILayout.Space();
         }
+#pragma warning restore 618
 #else
         /// <summary>
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
@@ -295,7 +284,7 @@ namespace Cinemachine.Editor
             
             // Is the camera navel-gazing?
             CameraState state = Target.State;
-            if (state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero())
+            if (state.HasLookAt() && (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero())
                 EditorGUILayout.HelpBox(
                     "The camera is positioned on the same point at which it is trying to look.",
                     MessageType.Warning);
@@ -311,7 +300,7 @@ namespace Cinemachine.Editor
             rect.x += rectLabel.width;
 
             Color color = GUI.color;
-            bool isSolo = (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target);
+            bool isSolo = (CinemachineBrain.SoloCamera == Target);
             if (isSolo)
                 GUI.color = CinemachineBrain.GetSoloGUIColor();
 

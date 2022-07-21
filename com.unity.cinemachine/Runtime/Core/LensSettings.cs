@@ -238,7 +238,7 @@ namespace Cinemachine
                     m_SensorSize = new Vector2(camera.aspect, 1f);
                 LensShift = Vector2.zero;
             }
-#if UNITY_EDITOR && UNITY_2019_1_OR_NEWER
+#if UNITY_EDITOR
             // This should really be a global setting, but for now there is no better way than this!
             var p = new UnityEditor.SerializedObject(camera).FindProperty("m_FOVAxisMode");
             UseHorizontalFOV = (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);

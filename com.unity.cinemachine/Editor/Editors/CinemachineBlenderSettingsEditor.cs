@@ -6,9 +6,12 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlenderSettings))]
-    internal sealed class CinemachineBlenderSettingsEditor : BaseEditor<CinemachineBlenderSettings>
+    sealed class CinemachineBlenderSettingsEditor : BaseEditor<CinemachineBlenderSettings>
     {
-        private ReorderableList mBlendList;
+        ReorderableList m_BlendList;
+        const string k_NoneLabel = "(none)";
+        string[] m_CameraCandidates;
+        Dictionary<string, int> m_CameraIndexLookup;
 
         /// <summary>
         /// Called when building the Camera popup menus, to get the domain of possible
@@ -23,29 +26,26 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_CustomBlends));
+            excluded.Add(FieldPath(x => x.CustomBlends));
         }
 
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (mBlendList == null)
+            if (m_BlendList == null)
                 SetupBlendList();
 
             DrawRemainingPropertiesInInspector();
 
             UpdateCameraCandidates();
-            mBlendList.DoLayoutList();
+            m_BlendList.DoLayoutList();
             serializedObject.ApplyModifiedProperties();
         }
 
-        private const string kNoneLabel = "(none)";
-        private string[] mCameraCandidates;
-        private Dictionary<string, int> mCameraIndexLookup;
-        private void UpdateCameraCandidates()
+        void UpdateCameraCandidates()
         {
-            List<string> vcams = new List<string>();
-            mCameraIndexLookup = new Dictionary<string, int>();
+            var vcams = new List<string>();
+            m_CameraIndexLookup = new Dictionary<string, int>();
 
             CinemachineVirtualCameraBase[] candidates;
             if (GetAllVirtualCameras != null)
@@ -56,28 +56,19 @@ namespace Cinemachine.Editor
                 candidates = Resources.FindObjectsOfTypeAll(
                         typeof(CinemachineVirtualCameraBase)) as CinemachineVirtualCameraBase[];
 
-                for (int i = 0; i < candidates.Length; ++i)
+                for (var i = 0; i < candidates.Length; ++i)
                     if (candidates[i].ParentCamera != null)
                         candidates[i] = null;
             }
-            vcams.Add(kNoneLabel);
+            vcams.Add(k_NoneLabel);
             vcams.Add(CinemachineBlenderSettings.kBlendFromAnyCameraLabel);
             foreach (CinemachineVirtualCameraBase c in candidates)
                 if (c != null && !vcams.Contains(c.Name))
                     vcams.Add(c.Name);
 
-            mCameraCandidates = vcams.ToArray();
-            for (int i = 0; i < mCameraCandidates.Length; ++i)
-                mCameraIndexLookup[mCameraCandidates[i]] = i;
-        }
-
-        private int GetCameraIndex(string name)
-        {
-            if (name == null || mCameraIndexLookup == null)
-                return 0;
-            if (!mCameraIndexLookup.ContainsKey(name))
-                return 0;
-            return mCameraIndexLookup[name];
+            m_CameraCandidates = vcams.ToArray();
+            for (int i = 0; i < m_CameraCandidates.Length; ++i)
+                m_CameraIndexLookup[m_CameraCandidates[i]] = i;
         }
 
         void DrawVcamSelector(Rect r, SerializedProperty prop)
@@ -89,29 +80,38 @@ namespace Cinemachine.Editor
                 GUI.color = new Color(1, 193.0f/255.0f, 7.0f/255.0f); // the "warning" icon color
             EditorGUI.PropertyField(r, prop, GUIContent.none);
             r.x += r.width; r.width = EditorGUIUtility.singleLineHeight;
-            int sel = EditorGUI.Popup(r, current, mCameraCandidates);
+            int sel = EditorGUI.Popup(r, current, m_CameraCandidates);
             if (current != sel)
-                prop.stringValue = (mCameraCandidates[sel] == kNoneLabel) 
-                    ? string.Empty : mCameraCandidates[sel];
+                prop.stringValue = (m_CameraCandidates[sel] == k_NoneLabel) 
+                    ? string.Empty : m_CameraCandidates[sel];
             GUI.color = oldColor;
+            
+            int GetCameraIndex(string propName)
+            {
+                if (propName == null || m_CameraIndexLookup == null)
+                    return 0;
+                if (!m_CameraIndexLookup.ContainsKey(propName))
+                    return 0;
+                return m_CameraIndexLookup[propName];
+            }
         }
         
         void SetupBlendList()
         {
-            mBlendList = new ReorderableList(serializedObject,
-                    serializedObject.FindProperty(() => Target.m_CustomBlends),
+            m_BlendList = new ReorderableList(serializedObject,
+                    serializedObject.FindProperty(() => Target.CustomBlends),
                     true, true, true, true);
 
             // Needed for accessing string names of fields
-            CinemachineBlenderSettings.CustomBlend def = new CinemachineBlenderSettings.CustomBlend();
-            CinemachineBlendDefinition def2 = new CinemachineBlendDefinition();
+            var def = new CinemachineBlenderSettings.CustomBlend();
+            var def2 = new CinemachineBlendDefinition();
 
-            float vSpace = 2;
-            float hSpace = 3;
+            const float vSpace = 2f;
+            const float hSpace = 3f;
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            mBlendList.drawHeaderCallback = (Rect rect) =>
+            m_BlendList.drawHeaderCallback = (Rect rect) =>
                 {
-                    rect.width -= (EditorGUIUtility.singleLineHeight + 2 * hSpace);
+                    rect.width -= EditorGUIUtility.singleLineHeight + 2 * hSpace;
                     rect.width /= 3;
                     rect.x += EditorGUIUtility.singleLineHeight;
                     EditorGUI.LabelField(rect, "From");
@@ -126,31 +126,31 @@ namespace Cinemachine.Editor
                     EditorGUI.LabelField(rect, "Time");
                 };
 
-            mBlendList.drawElementCallback
+            m_BlendList.drawElementCallback
                 = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     SerializedProperty element
-                        = mBlendList.serializedProperty.GetArrayElementAtIndex(index);
+                        = m_BlendList.serializedProperty.GetArrayElementAtIndex(index);
 
                     rect.y += vSpace;
                     rect.height = EditorGUIUtility.singleLineHeight;
                     rect.width -= 2 * hSpace; rect.width /= 3;
-                    DrawVcamSelector(rect, element.FindPropertyRelative(() => def.m_From));
+                    DrawVcamSelector(rect, element.FindPropertyRelative(() => def.From));
 
                     rect.x += rect.width + hSpace;
-                    DrawVcamSelector(rect, element.FindPropertyRelative(() => def.m_To));
+                    DrawVcamSelector(rect, element.FindPropertyRelative(() => def.To));
 
-                    SerializedProperty blendProp = element.FindPropertyRelative(() => def.m_Blend);
+                    SerializedProperty blendProp = element.FindPropertyRelative(() => def.Blend);
                     rect.x += rect.width + hSpace;
                     EditorGUI.PropertyField(rect, blendProp, GUIContent.none);
                 };
 
-            mBlendList.onAddCallback = (ReorderableList l) =>
+            m_BlendList.onAddCallback = (ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
                     ++l.serializedProperty.arraySize;
                     SerializedProperty blendProp = l.serializedProperty.GetArrayElementAtIndex(
-                            index).FindPropertyRelative(() => def.m_Blend);
+                            index).FindPropertyRelative(() => def.Blend);
 
                     blendProp.FindPropertyRelative(() => def2.m_Style).enumValueIndex
                         = (int)CinemachineBlendDefinition.Style.EaseInOut;

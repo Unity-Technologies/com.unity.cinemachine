@@ -99,7 +99,6 @@ namespace Cinemachine
         /// <summary>
         /// The blend which is used if you don't explicitly define a blend between two Virtual Camera children.
         /// </summary>
-        [CinemachineBlendDefinitionProperty]
         [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
         public CinemachineBlendDefinition m_DefaultBlend
             = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 0.5f);

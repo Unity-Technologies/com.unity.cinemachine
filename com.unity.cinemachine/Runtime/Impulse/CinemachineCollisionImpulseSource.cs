@@ -1,15 +1,10 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-#endif
-
 using Cinemachine.Utility;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
 #if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
-    // Workaround for Unity scripting bug
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource {}
 #else
@@ -29,73 +24,87 @@ namespace Cinemachine
         /// <summary>Only collisions with objects on these layers will generate Impulse events.</summary>
         [Header("Trigger Object Filter")]
         [Tooltip("Only collisions with objects on these layers will generate Impulse events")]
-        public LayerMask m_LayerMask = 1;
+        [FormerlySerializedAs("m_LayerMask")]
+        public LayerMask LayerMask = 1;
 
         /// <summary>No Impulse evemts will be generated for collisions with objects having these tags</summary>
         [TagField]
         [Tooltip("No Impulse evemts will be generated for collisions with objects having these tags")]
-        public string m_IgnoreTag = string.Empty;
+        [FormerlySerializedAs("m_IgnoreTag")]
+        public string IgnoreTag = string.Empty;
 
         /// <summary>If checked, signal direction will be affected by the direction of impact</summary>
         [Header("How To Generate The Impulse")]
         [Tooltip("If checked, signal direction will be affected by the direction of impact")]
-        public bool m_UseImpactDirection = false;
+        [FormerlySerializedAs("m_UseImpactDirection")]
+        public bool UseImpactDirection = false;
 
         /// <summary>If checked, signal amplitude will be multiplied by the mass of the impacting object</summary>
         [Tooltip("If checked, signal amplitude will be multiplied by the mass of the impacting object")]
-        public bool m_ScaleImpactWithMass = false;
+        [FormerlySerializedAs("m_ScaleImpactWithMass")]
+        public bool ScaleImpactWithMass = false;
 
         /// <summary>If checked, signal amplitude will be multiplied by the speed of the impacting object</summary>
         [Tooltip("If checked, signal amplitude will be multiplied by the speed of the impacting object")]
-        public bool m_ScaleImpactWithSpeed = false;
+        [FormerlySerializedAs("m_ScaleImpactWithSpeed")]
+        public bool ScaleImpactWithSpeed = false;
 
 #if CINEMACHINE_PHYSICS
-        Rigidbody mRigidBody;
+        Rigidbody m_RigidBody;
 #endif
 #if CINEMACHINE_PHYSICS_2D
-        Rigidbody2D mRigidBody2D;
+        Rigidbody2D m_RigidBody2D;
 #endif
 
-        private void Start()
+        void Reset()
+        {
+            LayerMask = 1;
+            IgnoreTag = string.Empty;
+            UseImpactDirection = false;
+            ScaleImpactWithMass = false;
+            ScaleImpactWithSpeed = false;
+        }
+
+        void Start()
         {
 #if CINEMACHINE_PHYSICS
-            mRigidBody = GetComponent<Rigidbody>();
+            m_RigidBody = GetComponent<Rigidbody>();
 #endif
 #if CINEMACHINE_PHYSICS_2D
-            mRigidBody2D = GetComponent<Rigidbody2D>();
+            m_RigidBody2D = GetComponent<Rigidbody2D>();
 #endif
         }
 
-        private void OnEnable() {} // For the Enabled checkbox
+        void OnEnable() {} // For the Enabled checkbox
 
 #if CINEMACHINE_PHYSICS
-        private void OnCollisionEnter(Collision c)
+        void OnCollisionEnter(Collision c)
         {
             GenerateImpactEvent(c.collider, c.relativeVelocity);
         }
 
-        private void OnTriggerEnter(Collider c)
+        void OnTriggerEnter(Collider c)
         {
             GenerateImpactEvent(c, Vector3.zero);
         }
 
-        private float GetMassAndVelocity(Collider other, ref Vector3 vel)
+        float GetMassAndVelocity(Collider other, ref Vector3 vel)
         {
             bool getVelocity = vel == Vector3.zero;
             float mass = 1;
-            if (m_ScaleImpactWithMass || m_ScaleImpactWithSpeed || m_UseImpactDirection)
+            if (ScaleImpactWithMass || ScaleImpactWithSpeed || UseImpactDirection)
             {
-                if (mRigidBody != null)
+                if (m_RigidBody != null)
                 {
-                    if (m_ScaleImpactWithMass)
-                        mass *= mRigidBody.mass;
+                    if (ScaleImpactWithMass)
+                        mass *= m_RigidBody.mass;
                     if (getVelocity)
-                        vel = -mRigidBody.velocity;
+                        vel = -m_RigidBody.velocity;
                 }
                 var rb = other != null ? other.attachedRigidbody : null;
                 if (rb != null)
                 {
-                    if (m_ScaleImpactWithMass)
+                    if (ScaleImpactWithMass)
                         mass *= rb.mass;
                     if (getVelocity)
                         vel += rb.velocity;
@@ -104,7 +113,7 @@ namespace Cinemachine
             return mass;
         }
 
-        private void GenerateImpactEvent(Collider other, Vector3 vel)
+        void GenerateImpactEvent(Collider other, Vector3 vel)
         {
             // Check the filters
             if (!enabled)
@@ -113,18 +122,18 @@ namespace Cinemachine
             if (other != null)
             {
                 int layer = other.gameObject.layer;
-                if (((1 << layer) & m_LayerMask) == 0)
+                if (((1 << layer) & LayerMask) == 0)
                     return;
-                if (m_IgnoreTag.Length != 0 && other.CompareTag(m_IgnoreTag))
+                if (IgnoreTag.Length != 0 && other.CompareTag(IgnoreTag))
                     return;
             }
 
             // Calculate the signal direction and magnitude
             float mass = GetMassAndVelocity(other, ref vel);
-            if (m_ScaleImpactWithSpeed)
+            if (ScaleImpactWithSpeed)
                 mass *= Mathf.Sqrt(vel.magnitude);
-            Vector3 dir = m_DefaultVelocity;
-            if (m_UseImpactDirection && !vel.AlmostZero())
+            Vector3 dir = DefaultVelocity;
+            if (UseImpactDirection && !vel.AlmostZero())
                 dir = -vel.normalized * dir.magnitude;
 
             // Fire it off!
@@ -133,34 +142,34 @@ namespace Cinemachine
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
-        private void OnCollisionEnter2D(Collision2D c)
+        void OnCollisionEnter2D(Collision2D c)
         {
             GenerateImpactEvent2D(c.collider, c.relativeVelocity);
         }
 
-        private void OnTriggerEnter2D(Collider2D c)
+        void OnTriggerEnter2D(Collider2D c)
         {
             GenerateImpactEvent2D(c, Vector3.zero);
         }
 
-        private float GetMassAndVelocity2D(Collider2D other2d, ref Vector3 vel)
+        float GetMassAndVelocity2D(Collider2D other2d, ref Vector3 vel)
         {
             bool getVelocity = vel == Vector3.zero;
             float mass = 1;
-            if (m_ScaleImpactWithMass || m_ScaleImpactWithSpeed || m_UseImpactDirection)
+            if (ScaleImpactWithMass || ScaleImpactWithSpeed || UseImpactDirection)
             {
-                if (mRigidBody2D != null)
+                if (m_RigidBody2D != null)
                 {
-                    if (m_ScaleImpactWithMass)
-                        mass *= mRigidBody2D.mass;
+                    if (ScaleImpactWithMass)
+                        mass *= m_RigidBody2D.mass;
                     if (getVelocity)
-                        vel = -mRigidBody2D.velocity;
+                        vel = -m_RigidBody2D.velocity;
                 }
 
                 var rb2d = other2d != null ? other2d.attachedRigidbody : null;
                 if (rb2d != null)
                 {
-                    if (m_ScaleImpactWithMass)
+                    if (ScaleImpactWithMass)
                         mass *= rb2d.mass;
                     if (getVelocity)
                     {
@@ -172,7 +181,7 @@ namespace Cinemachine
             return mass;
         }
 
-        private void GenerateImpactEvent2D(Collider2D other2d, Vector3 vel)
+        void GenerateImpactEvent2D(Collider2D other2d, Vector3 vel)
         {
             // Check the filters
             if (!enabled)
@@ -181,18 +190,18 @@ namespace Cinemachine
             if (other2d != null)
             {
                 int layer = other2d.gameObject.layer;
-                if (((1 << layer) & m_LayerMask) == 0)
+                if (((1 << layer) & LayerMask) == 0)
                     return;
-                if (m_IgnoreTag.Length != 0 && other2d.CompareTag(m_IgnoreTag))
+                if (IgnoreTag.Length != 0 && other2d.CompareTag(IgnoreTag))
                     return;
             }
 
             // Calculate the signal direction and magnitude
             float mass = GetMassAndVelocity2D(other2d, ref vel);
-            if (m_ScaleImpactWithSpeed)
+            if (ScaleImpactWithSpeed)
                 mass *= Mathf.Sqrt(vel.magnitude);
-            Vector3 dir = m_DefaultVelocity;
-            if (m_UseImpactDirection && !vel.AlmostZero())
+            Vector3 dir = DefaultVelocity;
+            if (UseImpactDirection && !vel.AlmostZero())
                 dir = -vel.normalized * dir.magnitude;
 
             // Fire it off!

@@ -226,7 +226,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            if (fromCam != null && transitionParams.m_InheritPosition
+            if (fromCam != null && transitionParams.InheritPosition
                  && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
@@ -304,12 +304,8 @@ namespace Cinemachine
                 TrackedPoint = p;
             }
 
-            if (!curState.HasLookAt)
+            if (!curState.HasLookAt())
                 curState.ReferenceLookAt = followTargetPosition;
-
-            // Adjust the desired depth for group framing
-            float targetDistance = CameraDistance;
-            bool isOrthographic = lens.Orthographic;
 
             // Allow undamped camera orientation change
             Quaternion localToWorld = curState.RawOrientation;
@@ -329,8 +325,8 @@ namespace Cinemachine
 
             // Move along camera z
             Vector3 cameraOffset = Vector3.zero;
-            float cameraMin = Mathf.Max(kMinimumCameraDistance, targetDistance - DeadZoneDepth/2);
-            float cameraMax = Mathf.Max(cameraMin, targetDistance + DeadZoneDepth/2);
+            float cameraMin = Mathf.Max(kMinimumCameraDistance, CameraDistance - DeadZoneDepth/2);
+            float cameraMax = Mathf.Max(cameraMin, CameraDistance + DeadZoneDepth/2);
             float targetZ = Mathf.Min(targetPos.z, lookAtPos.z);
             if (targetZ < cameraMin)
                 cameraOffset.z = targetZ - cameraMin;

@@ -72,18 +72,17 @@ namespace Cinemachine
                 }
             }
         }
-        static Dictionary<Transform, UpdateStatus> mUpdateStatus 
-            = new Dictionary<Transform, UpdateStatus>();
+        static Dictionary<Transform, UpdateStatus> m_UpdateStatus  = new();
 
         [RuntimeInitializeOnLoadMethod]
-        static void InitializeModule() { mUpdateStatus.Clear(); }
+        static void InitializeModule() => m_UpdateStatus.Clear();
         
-        static List<Transform> sToDelete = new List<Transform>();
+        static List<Transform> sToDelete = new();
         static void UpdateTargets(UpdateClock currentClock)
         {
             // Update the registry for all known targets
             int now = Time.frameCount;
-            var iter = mUpdateStatus.GetEnumerator();
+            var iter = m_UpdateStatus.GetEnumerator();
             while (iter.MoveNext())
             {
                 var current = iter.Current;
@@ -93,7 +92,7 @@ namespace Cinemachine
                     current.Value.OnUpdate(now, currentClock, current.Key.localToWorldMatrix);
             }
             for (int i = sToDelete.Count-1; i >= 0; --i)
-                mUpdateStatus.Remove(sToDelete[i]);
+                m_UpdateStatus.Remove(sToDelete[i]);
             sToDelete.Clear();
         }
 
@@ -101,8 +100,7 @@ namespace Cinemachine
         {
             if (Application.isPlaying && target != null)
             {
-                UpdateStatus status;
-                if (mUpdateStatus.TryGetValue(target, out status))
+                if (m_UpdateStatus.TryGetValue(target, out var status))
                     return status.PreferredUpdate;
 
                 // Add the target to the registry
@@ -111,19 +109,19 @@ namespace Cinemachine
 #else
                 status = new UpdateStatus(Time.frameCount, target.localToWorldMatrix);
 #endif
-                mUpdateStatus.Add(target, status);
+                m_UpdateStatus.Add(target, status);
             }
             return UpdateClock.Late;
         }
 
-        static float mLastUpdateTime;
+        static float m_LastUpdateTime;
         public static void OnUpdate(UpdateClock currentClock)
         {
             // Do something only if we are the first controller processing this frame
             float now = CinemachineCore.CurrentTime;
-            if (now != mLastUpdateTime)
+            if (now != m_LastUpdateTime)
             {
-                mLastUpdateTime = now;
+                m_LastUpdateTime = now;
                 UpdateTargets(currentClock);
             }
         }

@@ -4,8 +4,6 @@ using UnityEditor;
 using UnityEngine;
 namespace Cinemachine.Editor
 {
-    
-#pragma warning disable CS0618 // disable obsolete warning for tracked dolly
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
@@ -72,5 +70,4 @@ namespace Cinemachine.Editor
             }
         }
     }
-#pragma warning restore CS0618
 }

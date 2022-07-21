@@ -29,7 +29,7 @@ namespace Cinemachine.Editor
                     GameObject go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
                     var group = go.GetComponent<CinemachineTargetGroup>();
                    
-                    group.m_RotationMode = CinemachineTargetGroup.RotationMode.GroupAverage;
+                    group.RotationMode = CinemachineTargetGroup.RotationModes.GroupAverage;
                     group.AddMember(target, 1, 1);
                     property.objectReferenceValue = group.Transform;
                     property.serializedObject.ApplyModifiedProperties();
@@ -61,7 +61,7 @@ namespace Cinemachine.Editor
                         var group = go.GetComponent<CinemachineTargetGroup>();
                         var target = property.objectReferenceValue as Transform;
                    
-                        group.m_RotationMode = CinemachineTargetGroup.RotationMode.GroupAverage;
+                        group.RotationMode = CinemachineTargetGroup.RotationModes.GroupAverage;
                         group.AddMember(target, 1, 1);
                         property.objectReferenceValue = group.Transform;
                         property.serializedObject.ApplyModifiedProperties();

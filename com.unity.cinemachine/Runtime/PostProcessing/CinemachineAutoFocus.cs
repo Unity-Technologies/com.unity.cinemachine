@@ -142,7 +142,7 @@ namespace Cinemachine.PostFX
                     default: 
                         break;
                     case FocusTrackingMode.LookAtTarget: 
-                        focusDistance = (state.FinalPosition - state.ReferenceLookAt).magnitude; 
+                        focusDistance = (state.GetFinalPosition() - state.ReferenceLookAt).magnitude; 
                         break;
                     case FocusTrackingMode.FollowTarget: 
                         focusTarget = VirtualCamera.Follow; 
@@ -157,7 +157,7 @@ namespace Cinemachine.PostFX
                         break;
                 }
                 if (focusTarget != null)
-                    focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
+                    focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
 
                 focusDistance = Mathf.Max(0, focusDistance + FocusOffset);
 

@@ -54,19 +54,18 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
             m_NoTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
 
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraDistance)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.DeadZoneDepth)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.UnlimitedSoftZone)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DeadZoneDepth)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UnlimitedSoftZone)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
 
             return ux;
         }
@@ -139,7 +138,7 @@ namespace Cinemachine.Editor
 
                 var originalColor = Handles.color;
                 var camPos = Target.VcamState.RawPosition;
-                var targetForward = Target.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var targetForward = Target.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);

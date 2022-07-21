@@ -26,17 +26,17 @@ namespace Cinemachine.Examples
         void Update()
         {
             // iterate through each target in the targetGroup
-            for (var index = 0; index < m_TargetGroup.m_Targets.Length; index++)
+            for (var index = 0; index < m_TargetGroup.Targets.Count; index++)
             {
                 // skip null targets
-                if (m_TargetGroup.m_Targets[index].target != null)
+                if (m_TargetGroup.Targets[index].Object != null)
                 {
                     // calculate the distance between target and the LowerPlatform along the Y axis
-                    var distanceBelow = LowerPlatform.position.y - m_TargetGroup.m_Targets[index].target.position.y;
+                    var distanceBelow = LowerPlatform.position.y - m_TargetGroup.Targets[index].Object.position.y;
 
                     // weight goes to 0 if it's farther below than LoseSightAtRange
                     var weight = Mathf.Clamp(1 - distanceBelow / Mathf.Max(0.001f, LoseSightAtRange), 0, 1);
-                    m_TargetGroup.m_Targets[index].weight = weight;
+                    m_TargetGroup.Targets[index].Weight = weight;
                 }
             }
         }

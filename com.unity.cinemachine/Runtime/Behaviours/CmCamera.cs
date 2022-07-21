@@ -170,9 +170,11 @@ namespace Cinemachine
             bool forceUpdate = false;
 
             // Cant't inherit position if already live, because there will be a pop
-            if (Transitions.m_InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
-                ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
-            
+            if (Transitions.InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
+            {
+                var state = fromCam.State;
+                ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());
+            }
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
                 if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref Transitions))
@@ -187,8 +189,8 @@ namespace Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
 
-            if (Transitions.m_OnCameraLive != null)
-                Transitions.m_OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.OnCameraLive != null)
+                Transitions.OnCameraLive.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
@@ -211,9 +213,9 @@ namespace Cinemachine
             var lookAt = LookAt;
             if (lookAt != null)
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
-                    ? LookAtTargetAsVcam.State.FinalPosition : TargetPositionCache.GetTargetPosition(lookAt);
+                    ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, Transitions.m_BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -224,17 +226,6 @@ namespace Cinemachine
             
             // Signal that it's all done
             PreviousStateIsValid = true;
-        }
-        
-        /// <summary>
-        /// Returns true, when the vcam has extensions or components that require input.
-        /// </summary>
-        // GML todo: delete this
-        internal override bool RequiresUserInput()
-        {
-            UpdatePipelineCache();
-            return base.RequiresUserInput() ||
-                m_Pipeline != null && m_Pipeline.Any(t => t != null && t.RequiresUserInput);
         }
 
         CameraState InvokeComponentPipeline(ref CameraState state, float deltaTime)
@@ -302,11 +293,14 @@ namespace Cinemachine
                 var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
                 {
+                    if (components[i].enabled)
+                    {
 #if UNITY_EDITOR
-                    if (m_Pipeline[(int)components[i].Stage] != null)
-                        Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
+                        if (m_Pipeline[(int)components[i].Stage] != null)
+                            Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
 #endif
-                    m_Pipeline[(int)components[i].Stage] = components[i];
+                        m_Pipeline[(int)components[i].Stage] = components[i];
+                    }
                 }
             }
         }

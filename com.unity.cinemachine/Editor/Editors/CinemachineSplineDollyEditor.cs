@@ -13,23 +13,22 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
 
-            var splineProp = serializedTarget.FindProperty(() => Target.Spline);
+            var splineProp = serializedObject.FindProperty(() => Target.Spline);
             ux.Add(new PropertyField(splineProp));
 
             var row = ux.AddChild(InspectorUtility.CreatePropertyRow(
-                serializedTarget.FindProperty(() => Target.CameraPosition), out _));
-            row.Right.Add(new PropertyField(serializedTarget.FindProperty(() => Target.PositionUnits), "") 
+                serializedObject.FindProperty(() => Target.CameraPosition), out _));
+            row.Right.Add(new PropertyField(serializedObject.FindProperty(() => Target.PositionUnits), "") 
                 { style = { flexGrow = 2, flexBasis = 0 }});
 
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.SplineOffset)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraUp)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.AutomaticDolly)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraUp)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticDolly)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
 
             TrackSpline(splineProp);
             ux.TrackPropertyValue(splineProp, TrackSpline);

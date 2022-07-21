@@ -20,11 +20,13 @@ namespace Cinemachine.Editor
         /// </summary>
         public readonly List<Type> RootUpgradeComponentTypes = new()
         {
-            typeof(CinemachineVirtualCamera),
-            typeof(CinemachineFreeLook),
+            // Put the paths first so any vcam references to them will convert
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
+            typeof(CinemachineFreeLook),
+            typeof(CinemachineVirtualCamera),
         };
 
         /// <summary>
@@ -44,6 +46,7 @@ namespace Cinemachine.Editor
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+            typeof(CinemachinePipeline),
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
 #endif
@@ -64,17 +67,11 @@ namespace Cinemachine.Editor
             GameObject notUpgradable = null;
 
             // Is it a DollyCart?
-            CinemachinePathBase path;
             if (ReplaceComponent<CinemachineDollyCart, CinemachineSplineCart>(go))
-            {
                 go.GetComponent<CinemachineDollyCart>().UpgradeToCm3(go.GetComponent<CinemachineSplineCart>());
-                path = go.GetComponent<CinemachineDollyCart>().m_Path;
-                if (path != null)
-                    go.GetComponent<CinemachineSplineCart>().Spline = UpgradePath(path);
-            }
 
             // Is it a path?
-            if (go.TryGetComponent(out path))
+            if (go.TryGetComponent(out CinemachinePathBase path))
                 UpgradePath(path);
             else
             {
@@ -128,13 +125,7 @@ namespace Cinemachine.Editor
                      ConvertInputAxis(go, "Horizontal", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
                 }
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
-                {
-                    var dolly = go.GetComponent<CinemachineTrackedDolly>();
-                    dolly.UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
-                    path = dolly.m_Path;
-                    if (path != null)
-                        go.GetComponent<CinemachineSplineDolly>().Spline = UpgradePath(path);
-                }
+                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
             }
             return notUpgradable;
         }
@@ -293,6 +284,7 @@ namespace Cinemachine.Editor
             {
                 notUpgradable = Object.Instantiate(go);
                 notUpgradable.SetActive(false);
+                notUpgradable.AddComponent<CinemachineDoNotUpgrade>();
                 Undo.RegisterCreatedObjectUndo(notUpgradable, "Upgrader: clone of non upgradable");
             }
 
@@ -361,8 +353,8 @@ namespace Cinemachine.Editor
                 // noise then any specific settings differences can be accounted for in
                 // the FreeLookModifier by setting amplitude to 0
                 return a == null || b == null ||
-                    ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile)
-                        && a.m_PivotOffset == b.m_PivotOffset);
+                    ((a.NoiseProfile == null || b.NoiseProfile == null || a.NoiseProfile == b.NoiseProfile)
+                        && a.PivotOffset == b.PivotOffset);
             }
 
             static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b, params string[] ignoreList)
@@ -411,11 +403,8 @@ namespace Cinemachine.Editor
                 {
                     freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.LensModifier
                     {
-                        Lens = new CinemachineFreeLookModifier.TopBottomRigs<LensSettings>
-                        {
-                            Top = freelook.GetRig(0).m_Lens,
-                            Bottom = freelook.GetRig(2).m_Lens,
-                        }
+                        Top = freelook.GetRig(0).m_Lens,
+                        Bottom = freelook.GetRig(2).m_Lens
                     });
                 }
             }
@@ -523,17 +512,17 @@ namespace Cinemachine.Editor
             var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            var template = middle != null && middle.m_NoiseProfile != null 
-                ? middle : (top != null && top.m_NoiseProfile != null? top : bottom);
-            if (template == null || template.m_NoiseProfile == null)
+            var template = middle != null && middle.NoiseProfile != null 
+                ? middle : (top != null && top.NoiseProfile != null? top : bottom);
+            if (template == null || template.NoiseProfile == null)
                 return;
 
             var middleNoise = Undo.AddComponent<CinemachineBasicMultiChannelPerlin>(go);
             CopyValues(template, middleNoise);
 
             var middleSettings = GetNoiseSettings(middle);
-            middleNoise.m_AmplitudeGain = middleSettings.Amplitude;
-            middleNoise.m_FrequencyGain = middleSettings.Frequency;
+            middleNoise.AmplitudeGain = middleSettings.Amplitude;
+            middleNoise.FrequencyGain = middleSettings.Frequency;
 
             var topSettings = GetNoiseSettings(top);
             var bottomSettings = GetNoiseSettings(bottom);
@@ -557,8 +546,8 @@ namespace Cinemachine.Editor
                 var settings = new CinemachineFreeLookModifier.NoiseModifier.NoiseSettings();
                 if (noise != null)
                 {
-                    settings.Amplitude = noise.m_AmplitudeGain;
-                    settings.Frequency = noise.m_FrequencyGain;
+                    settings.Amplitude = noise.AmplitudeGain;
+                    settings.Frequency = noise.FrequencyGain;
                 }
                 return settings;
             }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,7 +10,7 @@ namespace Cinemachine.Utility
 {
     /// <summary>An ad-hoc collection of helpers for reflection, used by Cinemachine
     /// or its editor tools in various places</summary>
-    public static class ReflectionHelpers
+    internal static class ReflectionHelpers
     {
         /// <summary>Copy the fields from one object to another</summary>
         /// <param name="src">The source object to copy from</param>
@@ -191,15 +192,31 @@ namespace Cinemachine.Utility
         public static object GetParentObject(string path, object obj)
         {
             var fields = path.Split('.');
-            if (fields.Length == 1)
+            if (fields.Length <= 1)
                 return obj;
 
-            var info = obj.GetType().GetField(
-                    fields[0], System.Reflection.BindingFlags.Public 
-                        | System.Reflection.BindingFlags.NonPublic 
-                        | System.Reflection.BindingFlags.Instance);
-            obj = info.GetValue(obj);
-
+            var type = obj.GetType();
+            if (type.IsArray || typeof(IList).IsAssignableFrom(type))
+            {
+                var elements = fields[1].Split('[');
+                if (elements.Length > 1)
+                {
+                    if (type.IsArray)
+                        obj = (obj as Array).GetValue(Int32.Parse(elements[1].Trim(']')));
+                    else
+                        obj = (obj as IList)[Int32.Parse(elements[1].Trim(']'))];
+                    if (fields.Length <= 3)
+                        return obj;
+                }
+            }
+            else
+            {
+                var info = type.GetField(
+                        fields[0], System.Reflection.BindingFlags.Public 
+                            | System.Reflection.BindingFlags.NonPublic 
+                            | System.Reflection.BindingFlags.Instance);
+                obj = info.GetValue(obj);
+            }
             return GetParentObject(string.Join(".", fields, 1, fields.Length - 1), obj);
         }
 

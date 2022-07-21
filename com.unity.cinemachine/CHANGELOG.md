@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Lens Mode Override property to CM Brain.  When enabled, it allows CM cameras to override the lens mode (Perspective vs Ortho vs Physical).
 - Added Unity Spline support.  Old Cinemachine Paths are deprecated in favour of Unity Splines.
 - Added customizable Auto Dolly to cameras and Spline Cart.
+- Bugfix: No redundant RepaintAllViews calls.
 
 
 ## UNRELEASED

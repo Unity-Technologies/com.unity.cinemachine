@@ -77,7 +77,7 @@ namespace Cinemachine
             DrawInputProviderButtonInInspector();
             DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
+            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
             DrawPropertyInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
@@ -127,9 +127,7 @@ namespace Cinemachine
 
             var freelook = Target;
             if (freelook == null || !freelook.IsValid)
-            {
                 return;
-            }
 
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
@@ -146,10 +144,16 @@ namespace Cinemachine
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleFreelook(freelook,
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
-                if (draggedRig >= 0)
-                    SetSelectedRig(Target, draggedRig);
+                var middleRig = freelook.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+                if (middleRig != null)
+                {
+                    var referenceFrame = middleRig.GetReferenceOrientation(freelook.State.ReferenceUp);
+                    var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleFreelook(
+                        freelook, referenceFrame,
+                        new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
+                    if (draggedRig >= 0)
+                        SetSelectedRig(Target, draggedRig);
+                }
             }
             Handles.color = originalColor;
         }
@@ -282,14 +286,12 @@ namespace Cinemachine
 
             if (vcam.Follow != null)
             {
-                Vector3 pos = vcam.Follow.position;
-                Vector3 up = vcam.State.ReferenceUp;
-
-                var MiddleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                if (MiddleRig != null)
+                var pos = vcam.Follow.position;
+                var middleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
+                if (middleRig != null)
                 {
-                    Quaternion orient = MiddleRig.GetReferenceOrientation(up);
-                    up = orient * Vector3.up;
+                    Quaternion orient = middleRig.GetReferenceOrientation(vcam.State.ReferenceUp);
+                    var up = orient * Vector3.up;
                     float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
                     orient = Quaternion.AngleAxis(rotation, up) * orient;
 

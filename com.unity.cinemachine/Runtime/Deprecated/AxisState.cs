@@ -6,10 +6,10 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// Axis state for defining how to react to player input.
-    /// The settings here control the responsiveness of the axis to player input.
+    /// AxisState is deprecated.  Use InputAxis instead.
     /// </summary>
     [Serializable]
+    [Obsolete("AxisState is deprecated.  Use InputAxis instead")]
     public struct AxisState
     {
         /// <summary>The current value of the axis</summary>
@@ -168,6 +168,7 @@ namespace Cinemachine
         /// If a befaviour implementing this interface is attached to a Cinemachine virtual camera that 
         /// requires input, that interface will be polled for input instead of the standard Input system.
         /// </summary>
+        [Obsolete("IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead")]
         public interface IInputAxisProvider
         {
             /// <summary>Get the value of the input axis</summary>
@@ -177,6 +178,15 @@ namespace Cinemachine
         }
         IInputAxisProvider m_InputAxisProvider;
         int m_InputAxisIndex;
+
+        /// <summary>
+        /// IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead.
+        /// </summary>
+        [Obsolete("IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead")]
+        public interface IRequiresInput 
+        {
+            bool RequiresInput();
+        }
 
         /// <summary>
         /// Set an input provider for this axis.  If an input provider is set, the 
@@ -350,6 +360,7 @@ namespace Cinemachine
         public bool HasRecentering { get; set; }
 
         /// <summary>Helper for automatic axis recentering</summary>
+        [Obsolete("AxisState.Recentering is deprecated.  Use InputAxis and InputAxisController instead")]
         [Serializable]
         public struct Recentering
         {

@@ -37,7 +37,7 @@ namespace Cinemachine.Editor
             EditorApplication.update -= UpdateCameraStatus;
             EditorApplication.update -= RefreshPipelinDropdowns;
             Undo.undoRedoPerformed -= UpdateCameraState;
-            if (Target != null && CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
+            if (Target != null && CinemachineBrain.SoloCamera == Target)
             {
                 CinemachineBrain.SoloCamera = null;
                 InspectorUtility.RepaintGameView();
@@ -71,7 +71,7 @@ namespace Cinemachine.Editor
             var target = Target; // capture for lambda
             m_SoloButton.RegisterCallback<ClickEvent>((evt) => 
             {
-                var isSolo = CinemachineBrain.SoloCamera != (ICinemachineCamera)target;
+                var isSolo = CinemachineBrain.SoloCamera != target;
                 CinemachineBrain.SoloCamera = isSolo ? Target : null;
                 InspectorUtility.RepaintGameView();
             });
@@ -91,11 +91,11 @@ namespace Cinemachine.Editor
             {
                 CameraState state = Target.State;
                 bool isNavelGazing = Target.PreviousStateIsValid 
-                    && state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero();
+                    && state.HasLookAt() && (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero();
                 m_NavelGazeMessage.style.display = isNavelGazing ? DisplayStyle.Flex : DisplayStyle.None;
             }
 
-            bool isSolo = CinemachineBrain.SoloCamera == (ICinemachineCamera)Target;
+            bool isSolo = CinemachineBrain.SoloCamera == Target;
             var color = isSolo ? CinemachineBrain.GetSoloGUIColor() : GUI.color; // GML fixme: what is the right way to get default color?
             if (m_StatusText != null)
             {

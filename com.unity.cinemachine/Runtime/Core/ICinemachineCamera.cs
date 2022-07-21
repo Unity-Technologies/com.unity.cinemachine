@@ -19,12 +19,6 @@ namespace Cinemachine
         string Description { get; }
 
         /// <summary>
-        /// Gets the priority of this <c>ICinemachineCamera</c>. The virtual camera
-        /// will be inserted into the global priority stack based on this value.
-        /// </summary>
-        int Priority { get; set; }
-
-        /// <summary>
         /// The thing the camera wants to look at (aim).  May be null.
         /// </summary>
         Transform LookAt { get; set; }
@@ -38,11 +32,6 @@ namespace Cinemachine
         /// Camera state at the current time.
         /// </summary>
         CameraState State { get; }
-
-        /// <summary>
-        /// Gets the virtual camera game attached to this class.
-        /// </summary>
-        GameObject VirtualCameraGameObject { get; }
 
         /// <summary>
         /// Will return false if this references a deleted object

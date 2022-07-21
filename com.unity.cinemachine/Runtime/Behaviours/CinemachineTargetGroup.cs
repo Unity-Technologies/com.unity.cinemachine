@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
 using Cinemachine.Utility;
+using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 namespace Cinemachine
 {
@@ -61,26 +63,29 @@ namespace Cinemachine
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineTargetGroup.html")]
-    public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
+    public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup, ISerializationCallbackReceiver
     {
         /// <summary>Holds the information that represents a member of the group</summary>
-        [Serializable] public struct Target
+        [Serializable] public class Target
         {
-            /// <summary>The target objects.  This object's position and orientation will contribute to the
-            /// group's average position and orientation, in accordance with its weight</summary>
-            [Tooltip("The target objects.  This object's position and orientation will contribute to the "
-                + "group's average position and orientation, in accordance with its weight")]
-            public Transform target;
+            /// <summary>The target object.  This object's position and rotation will contribute to the
+            /// group's average position and rotation, in accordance with its weight</summary>
+            [Tooltip("The target object.  This object's position and rotation will contribute to the "
+                + "group's average position and rotation, in accordance with its weight")]
+            [FormerlySerializedAs("target")]
+            public Transform Object;
             /// <summary>How much weight to give the target when averaging.  Cannot be negative</summary>
             [Tooltip("How much weight to give the target when averaging.  Cannot be negative")]
-            public float weight;
+            [FormerlySerializedAs("weight")]
+            public float Weight;
             /// <summary>The radius of the target, used for calculating the bounding box.  Cannot be negative</summary>
             [Tooltip("The radius of the target, used for calculating the bounding box.  Cannot be negative")]
-            public float radius;
+            [FormerlySerializedAs("radius")]
+            public float Radius;
         }
 
         /// <summary>How the group's position is calculated</summary>
-        public enum PositionMode
+        public enum PositionModes
         {
             ///<summary>Group position will be the center of the group's axis-aligned bounding box</summary>
             GroupCenter,
@@ -91,10 +96,11 @@ namespace Cinemachine
         /// <summary>How the group's position is calculated</summary>
         [Tooltip("How the group's position is calculated.  Select GroupCenter for the center of the bounding box, "
             + "and GroupAverage for a weighted average of the positions of the members.")]
-        public PositionMode m_PositionMode = PositionMode.GroupCenter;
+        [FormerlySerializedAs("m_PositionMode")]
+        public PositionModes PositionMode = PositionModes.GroupCenter;
 
         /// <summary>How the group's orientation is calculated</summary>
-        public enum RotationMode
+        public enum RotationModes
         {
             /// <summary>Manually set in the group's transform</summary>
             Manual,
@@ -105,10 +111,11 @@ namespace Cinemachine
         /// <summary>How the group's orientation is calculated</summary>
         [Tooltip("How the group's rotation is calculated.  Select Manual to use the value in the group's transform, "
             + "and GroupAverage for a weighted average of the orientations of the members.")]
-        public RotationMode m_RotationMode = RotationMode.Manual;
+        [FormerlySerializedAs("m_RotationMode")]
+        public RotationModes RotationMode = RotationModes.Manual;
 
         /// <summary>This enum defines the options available for the update method.</summary>
-        public enum UpdateMethod
+        public enum UpdateMethods
         {
             /// <summary>Updated in normal MonoBehaviour Update.</summary>
             Update,
@@ -120,19 +127,67 @@ namespace Cinemachine
 
         /// <summary>When to update the group's transform based on the position of the group members</summary>
         [Tooltip("When to update the group's transform based on the position of the group members")]
-        public UpdateMethod m_UpdateMethod = UpdateMethod.LateUpdate;
+        [FormerlySerializedAs("m_UpdateMethod")]
+        public UpdateMethods UpdateMethod = UpdateMethods.LateUpdate;
 
         /// <summary>The target objects, together with their weights and radii, that will
         /// contribute to the group's average position, orientation, and size</summary>
         [NoSaveDuringPlay]
         [Tooltip("The target objects, together with their weights and radii, that will contribute to the "
             + "group's average position, orientation, and size.")]
-        public Target[] m_Targets = new Target[0];
+        public List<Target> Targets = new ();
+
+
+        float m_MaxWeight;
+        Vector3 m_AveragePos;
+        BoundingSphere m_BoundingSphere;
+        
+        void OnValidate()
+        {
+            for (int i = 0; i < Targets.Count; ++i)
+            {
+                Targets[i].Weight = Mathf.Max(0, Targets[i].Weight);
+                Targets[i].Radius = Mathf.Max(0, Targets[i].Radius);
+            }
+        }
+
+        void Reset()
+        {
+            PositionMode = PositionModes.GroupCenter;
+            RotationMode = RotationModes.Manual;
+            UpdateMethod = UpdateMethods.LateUpdate;
+            Targets.Clear();
+        }
+
+        //============================================
+        // Legacy support 
+
+        [SerializeField, FormerlySerializedAs("m_Targets")]
+        Target[] m_LegacyTargets;
+
+        /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            if (m_LegacyTargets != null && m_LegacyTargets.Length > 0)
+                Targets.AddRange(m_LegacyTargets);
+            m_LegacyTargets = null;
+        }
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize() {}
+
+        [Obsolete("m_Targets is obsolete.  Please use Targets instead")]
+        public Target[] m_Targets
+        {
+            get => Targets.ToArray();
+            set { Targets.Clear(); Targets.AddRange(value); }
+        }
+
+        //============================================
 
         /// <summary>
         /// Get the MonoBehaviour's Transform
         /// </summary>
-        public Transform Transform { get { return transform; } }
+        public Transform Transform => transform;
 
         /// <summary>The axis-aligned bounding box of the group, computed using the
         /// targets positions and radii</summary>
@@ -147,8 +202,8 @@ namespace Cinemachine
         {
             get
             {
-                for (int i = 0; i < m_Targets.Length; ++i)
-                    if (m_Targets[i].target != null && m_Targets[i].weight > UnityVectorExtensions.Epsilon)
+                for (int i = 0; i < Targets.Count; ++i)
+                    if (Targets[i].Object != null && Targets[i].Weight > UnityVectorExtensions.Epsilon)
                         return false;
                 return true;
             }
@@ -160,19 +215,7 @@ namespace Cinemachine
         /// <param name="radius">The new member's radius</param>
         public void AddMember(Transform t, float weight, float radius)
         {
-            int index = 0;
-            if (m_Targets == null)
-                m_Targets = new Target[1];
-            else
-            {
-                index = m_Targets.Length;
-                var oldTargets = m_Targets;
-                m_Targets = new Target[index + 1];
-                Array.Copy(oldTargets, m_Targets, index);
-            }
-            m_Targets[index].target = t;
-            m_Targets[index].weight = weight;
-            m_Targets[index].radius = radius;
+            Targets.Add(new Target { Object = t, Weight = weight, Radius = radius });
         }
 
         /// <summary>Remove a member from the group</summary>
@@ -181,14 +224,7 @@ namespace Cinemachine
         {
             int index = FindMember(t);
             if (index >= 0)
-            {
-                var oldTargets = m_Targets;
-                m_Targets = new Target[m_Targets.Length - 1];
-                if (index > 0)
-                    Array.Copy(oldTargets, m_Targets, index);
-                if (index < oldTargets.Length - 1)
-                    Array.Copy(oldTargets, index + 1, m_Targets, index, oldTargets.Length - index - 1);
-            }
+                Targets.RemoveAt(index);
         }
 
         /// <summary>Locate a member's index in the group.</summary>
@@ -196,12 +232,9 @@ namespace Cinemachine
         /// <returns>Member index, or -1 if not a member</returns>
         public int FindMember(Transform t)
         {
-            if (m_Targets != null)
-            {
-                for (int i = m_Targets.Length-1; i >= 0; --i)
-                    if (m_Targets[i].target == t)
-                        return i;
-            }
+            for (int i = Targets.Count-1; i >= 0; --i)
+                if (Targets[i].Object == t)
+                    return i;
             return -1;
         }
 
@@ -213,9 +246,9 @@ namespace Cinemachine
         /// <returns>The weighted bounding sphere</returns>
         public BoundingSphere GetWeightedBoundsForMember(int index)
         {
-            if (index < 0 || index >= m_Targets.Length)
+            if (index < 0 || index >= Targets.Count)
                 return Sphere;
-            return WeightedMemberBounds(m_Targets[index], m_AveragePos, m_MaxWeight);
+            return WeightedMemberBounds(Targets[index], m_AveragePos, m_MaxWeight);
         }
 
         /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
@@ -227,10 +260,10 @@ namespace Cinemachine
             var inverseView = observer;
             if (!Matrix4x4.Inverse3DAffine(observer, ref inverseView))
                 inverseView = observer.inverse;
-            Bounds b = new Bounds(inverseView.MultiplyPoint3x4(m_AveragePos), Vector3.zero);
+            var b = new Bounds(inverseView.MultiplyPoint3x4(m_AveragePos), Vector3.zero);
             bool gotOne = false;
             var unit = 2 * Vector3.one;
-            for (int i = 0; i < m_Targets.Length; ++i)
+            for (int i = 0; i < Targets.Count; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);
                 s.position = inverseView.MultiplyPoint3x4(s.position);
@@ -250,22 +283,18 @@ namespace Cinemachine
             Target t, Vector3 avgPos, float maxWeight)
         {
             float w = 0;
-            Vector3 pos = avgPos;
-            if (t.target != null)
+            var pos = avgPos;
+            if (t.Object != null)
             {
-                pos = TargetPositionCache.GetTargetPosition(t.target);
-                w = Mathf.Max(0, t.weight);
+                pos = TargetPositionCache.GetTargetPosition(t.Object);
+                w = Mathf.Max(0, t.Weight);
                 if (maxWeight > UnityVectorExtensions.Epsilon && w < maxWeight)
                     w /= maxWeight;
                 else
                     w = 1;
             }
-            return new BoundingSphere(Vector3.Lerp(avgPos, pos, w), t.radius * w);
+            return new BoundingSphere(Vector3.Lerp(avgPos, pos, w), t.Radius * w);
         }
-
-        private float m_MaxWeight;
-        private Vector3 m_AveragePos;
-        private BoundingSphere m_BoundingSphere;
 
         /// <summary>
         /// Update the group's transform right now, depending on the transforms of the members.
@@ -277,21 +306,21 @@ namespace Cinemachine
             BoundingBox = CalculateBoundingBox(m_AveragePos, m_MaxWeight);
             m_BoundingSphere = CalculateBoundingSphere(m_MaxWeight);
 
-            switch (m_PositionMode)
+            switch (PositionMode)
             {
-                case PositionMode.GroupCenter:
+                case PositionModes.GroupCenter:
                     transform.position = Sphere.position;
                     break;
-                case PositionMode.GroupAverage:
+                case PositionModes.GroupAverage:
                     transform.position = m_AveragePos;
                     break;
             }
 
-            switch (m_RotationMode)
+            switch (RotationMode)
             {
-                case RotationMode.Manual:
+                case RotationModes.Manual:
                     break;
-                case RotationMode.GroupAverage:
+                case RotationModes.GroupAverage:
                     transform.rotation = CalculateAverageOrientation();
                     break;
             }
@@ -307,11 +336,11 @@ namespace Cinemachine
             var sphere = new BoundingSphere { position = transform.position };
             bool gotOne = false;
 
-            for (int i = 0; i < m_Targets.Length; ++i)
+            for (int i = 0; i < Targets.Count; ++i)
             {
-                if (m_Targets[i].target == null || m_Targets[i].weight < UnityVectorExtensions.Epsilon)
+                if (Targets[i].Object == null || Targets[i].Weight < UnityVectorExtensions.Epsilon)
                     continue;
-                BoundingSphere s = WeightedMemberBounds(m_Targets[i], m_AveragePos, maxWeight);
+                BoundingSphere s = WeightedMemberBounds(Targets[i], m_AveragePos, maxWeight);
                 if (!gotOne)
                 {
                     gotOne = true;
@@ -334,14 +363,14 @@ namespace Cinemachine
             var pos = Vector3.zero;
             float weight = 0;
             maxWeight = 0;
-            for (int i = 0; i < m_Targets.Length; ++i)
+            for (int i = 0; i < Targets.Count; ++i)
             {
-                if (m_Targets[i].target != null)
+                if (Targets[i].Object != null)
                 {
-                    weight += m_Targets[i].weight;
-                    pos += TargetPositionCache.GetTargetPosition(m_Targets[i].target) 
-                        * m_Targets[i].weight;
-                    maxWeight = Mathf.Max(maxWeight, m_Targets[i].weight);
+                    weight += Targets[i].Weight;
+                    pos += TargetPositionCache.GetTargetPosition(Targets[i].Object) 
+                        * Targets[i].Weight;
+                    maxWeight = Mathf.Max(maxWeight, Targets[i].Weight);
                 }
             }
             if (weight > UnityVectorExtensions.Epsilon)
@@ -360,12 +389,12 @@ namespace Cinemachine
             
             float weightedAverage = 0;
             Quaternion r = Quaternion.identity;
-            for (int i = 0; i < m_Targets.Length; ++i)
+            for (int i = 0; i < Targets.Count; ++i)
             {
-                if (m_Targets[i].target != null)
+                if (Targets[i].Object != null)
                 {
-                    var scaledWeight = m_Targets[i].weight / m_MaxWeight;
-                    var rot = TargetPositionCache.GetTargetRotation(m_Targets[i].target);
+                    var scaledWeight = Targets[i].Weight / m_MaxWeight;
+                    var rot = TargetPositionCache.GetTargetRotation(Targets[i].Object);
                     r *= Quaternion.Slerp(Quaternion.identity, rot, scaledWeight);
                     weightedAverage += scaledWeight;
                 }
@@ -378,11 +407,11 @@ namespace Cinemachine
             Bounds b = new Bounds(avgPos, Vector3.zero);
             if (maxWeight > UnityVectorExtensions.Epsilon)
             {
-                for (int i = 0; i < m_Targets.Length; ++i)
+                for (int i = 0; i < Targets.Count; ++i)
                 {
-                    if (m_Targets[i].target != null)
+                    if (Targets[i].Object != null)
                     {
-                        var s = WeightedMemberBounds(m_Targets[i], m_AveragePos, maxWeight);
+                        var s = WeightedMemberBounds(Targets[i], m_AveragePos, maxWeight);
                         b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
                     }
                 }
@@ -390,30 +419,21 @@ namespace Cinemachine
             return b;
         }
 
-        private void OnValidate()
-        {
-            for (int i = 0; i < m_Targets.Length; ++i)
-            {
-                m_Targets[i].weight = Mathf.Max(0, m_Targets[i].weight);
-                m_Targets[i].radius = Mathf.Max(0, m_Targets[i].radius);
-            }
-        }
-
         void FixedUpdate()
         {
-            if (m_UpdateMethod == UpdateMethod.FixedUpdate)
+            if (UpdateMethod == UpdateMethods.FixedUpdate)
                 DoUpdate();
         }
 
         void Update()
         {
-            if (!Application.isPlaying || m_UpdateMethod == UpdateMethod.Update)
+            if (!Application.isPlaying || UpdateMethod == UpdateMethods.Update)
                 DoUpdate();
         }
 
         void LateUpdate()
         {
-            if (m_UpdateMethod == UpdateMethod.LateUpdate)
+            if (UpdateMethod == UpdateMethods.LateUpdate)
                 DoUpdate();
         }
 
@@ -436,7 +456,7 @@ namespace Cinemachine
             zRange = Vector2.zero;
             var b = new Bounds();
             bool haveOne = false;
-            for (int i = 0; i < m_Targets.Length; ++i)
+            for (int i = 0; i < Targets.Count; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);
                 Vector3 p = world2local.MultiplyPoint3x4(s.position);

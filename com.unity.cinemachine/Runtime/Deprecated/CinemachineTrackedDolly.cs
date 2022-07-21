@@ -349,6 +349,8 @@ namespace Cinemachine
                 case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
             }
             c.SplineOffset = m_PathOffset;
+            if (m_Path != null)
+                c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
         }
     }
 }

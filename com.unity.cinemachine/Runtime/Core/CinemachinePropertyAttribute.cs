@@ -79,14 +79,16 @@ namespace Cinemachine
     }
 
     /// <summary>
-    /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
+    /// Property applied to LensSetting properties.  
+    /// Will cause the property drawer to hide the ModeOverride setting.
     /// </summary>
-    public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
+    public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute { }
 
     /// <summary>
-    /// Property applied to CinemachineBlendDefinition.  Used for custom drawing in the inspector.
+    /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
-    public sealed class CinemachineBlendDefinitionPropertyAttribute : PropertyAttribute {}
+    /// GML TODO: delete this
+    public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
 
     /// <summary>
     /// Invoke play-mode-save for a class.  This class's fields will be scanned

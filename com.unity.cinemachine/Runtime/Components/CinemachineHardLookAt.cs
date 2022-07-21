@@ -25,9 +25,9 @@ namespace Cinemachine
         /// zero, then target will snap to the center of the dead zone.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (IsValid && curState.HasLookAt)
+            if (IsValid && curState.HasLookAt())
             {
-                Vector3 dir = (curState.ReferenceLookAt - curState.CorrectedPosition);
+                Vector3 dir = (curState.ReferenceLookAt - curState.GetCorrectedPosition());
                 if (dir.magnitude > Epsilon)
                 {
                     if (Vector3.Cross(dir.normalized, curState.ReferenceUp).magnitude < Epsilon)

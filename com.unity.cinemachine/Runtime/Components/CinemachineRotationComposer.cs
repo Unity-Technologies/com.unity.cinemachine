@@ -152,7 +152,7 @@ namespace Cinemachine
         /// <param name="deltaTime">Current effective deltaTime</param>
         public override void PrePipelineMutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (IsValid && curState.HasLookAt)
+            if (IsValid && curState.HasLookAt())
                 curState.ReferenceLookAt = GetLookAtPointAndSetTrackedPoint(
                     curState.ReferenceLookAt, curState.ReferenceUp, deltaTime);
         }
@@ -163,14 +163,14 @@ namespace Cinemachine
         /// zero, then target will snap to the center of the dead zone.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            if (!IsValid || !curState.HasLookAt)
+            if (!IsValid || !curState.HasLookAt())
                 return;
 
             // Correct the tracked point in the event that it's behind the camera
             // while the real target is in front
             if (!(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
             {
-                Vector3 mid = Vector3.Lerp(curState.CorrectedPosition, curState.ReferenceLookAt, 0.5f);
+                Vector3 mid = Vector3.Lerp(curState.GetCorrectedPosition(), curState.ReferenceLookAt, 0.5f);
                 Vector3 toLookAt = curState.ReferenceLookAt - mid;
                 Vector3 toTracked = TrackedPoint - mid;
                 if (Vector3.Dot(toLookAt, toTracked) < 0)
@@ -181,7 +181,7 @@ namespace Cinemachine
                 }
             }
 
-            float targetDistance = (TrackedPoint - curState.CorrectedPosition).magnitude;
+            float targetDistance = (TrackedPoint - curState.GetCorrectedPosition()).magnitude;
             if (targetDistance < Epsilon)
             {
                 if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
@@ -232,11 +232,11 @@ namespace Cinemachine
                         ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
             }
 
-            m_CameraPosPrevFrame = curState.CorrectedPosition;
+            m_CameraPosPrevFrame = curState.GetCorrectedPosition();
             m_LookAtPrevFrame = TrackedPoint;
             m_CameraOrientationPrevFrame = UnityQuaternionExtensions.Normalized(rigOrientation);
             m_ScreenOffsetPrevFrame = m_CameraOrientationPrevFrame.GetCameraRotationToTarget(
-                m_LookAtPrevFrame - curState.CorrectedPosition, curState.ReferenceUp);
+                m_LookAtPrevFrame - curState.GetCorrectedPosition(), curState.ReferenceUp);
 
             curState.RawOrientation = m_CameraOrientationPrevFrame;
         }
@@ -377,7 +377,7 @@ namespace Cinemachine
             ref CameraState state, Rect screenRect, Vector3 trackedPoint,
             ref Quaternion rigOrientation, float fov, float fovH, float deltaTime)
         {
-            Vector3 targetDir = trackedPoint - state.CorrectedPosition;
+            Vector3 targetDir = trackedPoint - state.GetCorrectedPosition();
             Vector2 rotToRect = rigOrientation.GetCameraRotationToTarget(targetDir, state.ReferenceUp);
 
             // Bring it to the edge of screenRect, if outside.  Leave it alone if inside.

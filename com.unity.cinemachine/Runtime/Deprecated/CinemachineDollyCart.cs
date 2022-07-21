@@ -90,6 +90,8 @@ namespace Cinemachine
             }
             c.AutomaticDolly = new SplineAutoDolly.FixedSpeed { Speed = m_Speed };
             c.SplinePosition = m_Position;
+            if (m_Path != null)
+                c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
         }
     }
 }

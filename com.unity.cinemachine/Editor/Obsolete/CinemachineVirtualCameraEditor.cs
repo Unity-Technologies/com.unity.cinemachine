@@ -6,10 +6,9 @@ using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
 
-#pragma warning disable 618 // CinemachineVirtualCamera obsolete
-
 namespace Cinemachine.Editor
 {
+    [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
     internal class CinemachineVirtualCameraEditor
@@ -37,6 +36,16 @@ namespace Cinemachine.Editor
             vcam.m_Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
         }
         
+        /// <summary>Get the property names to exclude in the inspector.  
+        /// Implementation should call the base class implementation</summary>
+        /// <param name="excluded">Add the names to this list</param>
+        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        {
+            base.GetExcludedPropertiesInInspector(excluded);
+            if (Target.m_ExcludedPropertiesInInspector != null)
+                excluded.AddRange(Target.m_ExcludedPropertiesInInspector);
+        }
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -159,7 +168,7 @@ namespace Cinemachine.Editor
             DrawHeaderInInspector();
             DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.m_StandbyUpdate));
+            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_Lens));
             DrawRemainingPropertiesInInspector();
             m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
