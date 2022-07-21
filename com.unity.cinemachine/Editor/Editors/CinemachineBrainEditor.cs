@@ -14,7 +14,7 @@ namespace Cinemachine.Editor
     public sealed class CinemachineBrainEditor : BaseEditor<CinemachineBrain>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        bool mEventsExpanded = false;
+        bool m_EventsExpanded = false;
 
         /// <summary>Obsolete, do not use.  Use the overload, which is more performant</summary>
         /// <returns>List of property names to exclude</returns>
@@ -31,13 +31,15 @@ namespace Cinemachine.Editor
             excluded.Add(FieldPath(x => x.m_CustomBlends));
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(FieldPath(x => x.m_CustomBlends), this);
-            m_BlendsEditor.OnChanged = (CinemachineBlenderSettings b) => { InspectorUtility.RepaintGameView(); };
+            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>(FieldPath(x => x.m_CustomBlends), this)
+            {
+                OnChanged = (CinemachineBlenderSettings b) => { InspectorUtility.RepaintGameView(); }
+            };
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             if (m_BlendsEditor != null)
                 m_BlendsEditor.OnDisable();
@@ -70,8 +72,8 @@ namespace Cinemachine.Editor
                     Target.gameObject.name + " Blends", "asset", string.Empty,
                     "Custom Blends", false);
 
-                mEventsExpanded = EditorGUILayout.Foldout(mEventsExpanded, "Events", true);
-                if (mEventsExpanded)
+                m_EventsExpanded = EditorGUILayout.Foldout(m_EventsExpanded, "Events", true);
+                if (m_EventsExpanded)
                 {
                     EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraCutEvent));
                     EditorGUILayout.PropertyField(FindProperty(x => x.m_CameraActivatedEvent));
@@ -81,7 +83,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]
-        private static void DrawBrainGizmos(CinemachineBrain brain, GizmoType drawType)
+        static void DrawBrainGizmos(CinemachineBrain brain, GizmoType drawType)
         {
             if (brain.OutputCamera != null && brain.m_ShowCameraFrustum && brain.isActiveAndEnabled)
             {
@@ -104,14 +106,14 @@ namespace Cinemachine.Editor
                 ortho = brain.OutputCamera.orthographic;
             }
 
-            Matrix4x4 originalMatrix = Gizmos.matrix;
-            Color originalGizmoColour = Gizmos.color;
+            var originalMatrix = Gizmos.matrix;
+            var originalGizmoColour = Gizmos.color;
             
             Gizmos.color = color;
             Gizmos.matrix = transform;
             if (ortho)
             {
-                Vector3 size = new Vector3(
+                var size = new Vector3(
                         aspect * lens.OrthographicSize * 2,
                         lens.OrthographicSize * 2,
                         lens.FarClipPlane - lens.NearClipPlane);
@@ -142,7 +144,7 @@ namespace Cinemachine.Editor
                 return;
 
             CameraState state = vcam.State;
-            Gizmos.DrawIcon(state.FinalPosition, kGizmoFileName, true);
+            Gizmos.DrawIcon(state.FinalPosition, s_GizmoFileName, true);
 
             DrawCameraFrustumGizmo(
                 CinemachineCore.Instance.FindPotentialTargetBrain(vcam),
@@ -156,21 +158,21 @@ namespace Cinemachine.Editor
         }
 
 #if UNITY_2019_1_OR_NEWER
-        static string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
+        static string s_GizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
 #else
-        static string kGizmoFileName = "Cinemachine/cm_logo_lg.png";
+        static string s_GizmoFileName = "Cinemachine/cm_logo_lg.png";
         [InitializeOnLoad]
         static class InstallGizmos
         {
             static InstallGizmos()
             {
-                string srcFile = ScriptableObjectUtility.CinemachineInstallPath + "/Gizmos/" + kGizmoFileName;
+                string srcFile = ScriptableObjectUtility.CinemachineInstallPath + "/Gizmos/" + s_GizmoFileName;
                 if (File.Exists(srcFile))
                 {
                     string dstFile = Application.dataPath + "/Gizmos";
                     if (!Directory.Exists(dstFile))
                         Directory.CreateDirectory(dstFile);
-                    dstFile += "/" + kGizmoFileName;
+                    dstFile += "/" + s_GizmoFileName;
                     if (!File.Exists(dstFile)
                         || (File.GetLastWriteTime(dstFile) < File.GetLastWriteTime(srcFile)
                             && (File.GetAttributes(dstFile) & FileAttributes.ReadOnly) == 0))
