@@ -274,7 +274,7 @@ namespace Cinemachine
         // Camera must be orthographic
         private Vector3 ConfineScreenEdges(CinemachineVirtualCameraBase vcam, ref CameraState state)
         {
-            Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
+            Quaternion rot = state.CorrectedOrientation;
             float dy = state.Lens.OrthographicSize;
             float dx = dy * state.Lens.Aspect;
             Vector3 vx = (rot * Vector3.right) * dx;
