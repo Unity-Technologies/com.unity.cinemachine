@@ -19,7 +19,8 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("How much time it takes for the aim to catch up to the target's rotation")]
         [FormerlySerializedAs("m_AngularDamping")]
-        public float m_Damping = 0;
+        [FormerlySerializedAs("m_Damping")]
+        public float Damping = 0;
 
         Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
 
@@ -34,7 +35,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() { return m_Damping; }
+        public override float GetMaxDampTime() { return Damping; }
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
@@ -47,7 +48,7 @@ namespace Cinemachine
             Quaternion dampedOrientation = FollowTargetRotation;
             if (deltaTime >= 0)
             {
-                float t = VirtualCamera.DetachedFollowTargetDamp(1, m_Damping, deltaTime);
+                float t = VirtualCamera.DetachedFollowTargetDamp(1, Damping, deltaTime);
                 dampedOrientation = Quaternion.Slerp(
                     m_PreviousReferenceOrientation, FollowTargetRotation, t);
             }
