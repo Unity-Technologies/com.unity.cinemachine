@@ -1,7 +1,8 @@
 ﻿using System;
 using Cinemachine.Utility;
 using UnityEngine;
- 
+using UnityEngine.Serialization;
+
 namespace Cinemachine
 {
     /// <summary>
@@ -21,33 +22,38 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("When to apply the impulse reaction.  Default is after the Noise stage.  "
             + "Modify this if necessary to influence the ordering of extension effects")]
-        public CinemachineCore.Stage m_ApplyAfter = CinemachineCore.Stage.Aim; // legacy compatibility setting
+        [FormerlySerializedAs("m_ApplyAfter")]
+        public CinemachineCore.Stage ApplyAfter = CinemachineCore.Stage.Aim; // legacy compatibility setting
 
         /// <summary>
         /// Impulse events on channels not included in the mask will be ignored.
         /// </summary>
         [Tooltip("Impulse events on channels not included in the mask will be ignored.")]
         [CinemachineImpulseChannelProperty]
-        public int m_ChannelMask;
+        [FormerlySerializedAs("m_ChannelMask")]
+        public int ChannelMask;
 
         /// <summary>
         /// Gain to apply to the Impulse signal.
         /// </summary>
         [Tooltip("Gain to apply to the Impulse signal.  1 is normal strength.  "
             + "Setting this to 0 completely mutes the signal.")]
-        public float m_Gain;
+        [FormerlySerializedAs("m_Gain")]
+        public float Gain;
 
         /// <summary>
         /// Enable this to perform distance calculation in 2D (ignore Z).
         /// </summary>
         [Tooltip("Enable this to perform distance calculation in 2D (ignore Z)")]
-        public bool m_Use2DDistance;
+        [FormerlySerializedAs("m_Use2DDistance")]
+        public bool Use2DDistance;
 
         /// <summary>
         /// Enable this to process all impulse signals in camera space.
         /// </summary>
         [Tooltip("Enable this to process all impulse signals in camera space")]
-        public bool m_UseCameraSpace;
+        [FormerlySerializedAs("m_UseCameraSpace")]
+        public bool UseCameraSpace;
 
         /// <summary>
         /// This controls the secondary reaction of the listener to the incoming impulse.  
@@ -71,20 +77,23 @@ namespace Cinemachine
             /// </summary>
             [Tooltip("Gain to apply to the amplitudes defined in the signal source.  "  
                 + "1 is normal.  Setting this to 0 completely mutes the signal.")]
-            public float m_AmplitudeGain;
+            [FormerlySerializedAs("m_AmplitudeGain")]
+            public float AmplitudeGain;
         
             /// <summary>
             /// Scale factor to apply to the time axis.
             /// </summary>
             [Tooltip("Scale factor to apply to the time axis.  1 is normal.  "
                 + "Larger magnitudes will make the signal progress more rapidly.")]
-            public float m_FrequencyGain;
+           [FormerlySerializedAs("m_FrequencyGain")]
+           public float FrequencyGain;
 
             /// <summary>
             /// How long the secondary reaction lasts.
             /// </summary>
             [Tooltip("How long the secondary reaction lasts.")]
-            public float m_Duration;
+            [FormerlySerializedAs("m_Duration")]
+            public float Duration;
 
             float m_CurrentAmount;
             float m_CurrentTime;
@@ -121,7 +130,7 @@ namespace Cinemachine
                     m_Initialized = true;
                     m_CurrentAmount = 0;
                     m_CurrentDamping = 0;
-                    m_CurrentTime = CinemachineCore.CurrentTime * m_FrequencyGain;
+                    m_CurrentTime = CinemachineCore.CurrentTime * FrequencyGain;
                     if (m_NoiseOffsets == Vector3.zero)
                         ReSeed();
                 }
@@ -136,16 +145,16 @@ namespace Cinemachine
                 // Advance the current reaction time
                 if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
                         && TargetPositionCache.HasCurrentTime)
-                    m_CurrentTime = TargetPositionCache.CurrentTime * m_FrequencyGain;
+                    m_CurrentTime = TargetPositionCache.CurrentTime * FrequencyGain;
                 else
-                    m_CurrentTime += deltaTime * m_FrequencyGain;
+                    m_CurrentTime += deltaTime * FrequencyGain;
 
                 // Adjust the envelope height and duration of the secondary noise, 
                 // acording to the strength of the incoming signal
                 m_CurrentAmount = Mathf.Max(m_CurrentAmount, Mathf.Sqrt(sqrMag));
-                m_CurrentDamping = Mathf.Max(m_CurrentDamping, Mathf.Max(1, Mathf.Sqrt(m_CurrentAmount)) * m_Duration);
+                m_CurrentDamping = Mathf.Max(m_CurrentDamping, Mathf.Max(1, Mathf.Sqrt(m_CurrentAmount)) * Duration);
 
-                var gain = m_CurrentAmount * m_AmplitudeGain;
+                var gain = m_CurrentAmount * AmplitudeGain;
                 pos = NoiseSettings.GetCombinedFilterResults(
                         m_SecondaryNoise.PositionNoise, m_CurrentTime, m_NoiseOffsets) * gain;
                 rot = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
@@ -169,20 +178,21 @@ namespace Cinemachine
             + "be a vibration whose amplitude and duration is controlled by the size of the "
             + "original impulse.  This allows different listeners to respond in different ways "
             + "to the same impulse signal.")]
-        public ImpulseReaction m_ReactionSettings;
+        [FormerlySerializedAs("m_ReactionSettings")]
+        public ImpulseReaction ReactionSettings;
 
         private void Reset()
         {
-            m_ApplyAfter = CinemachineCore.Stage.Noise; // this is the default setting
-            m_ChannelMask = 1;
-            m_Gain = 1;
-            m_Use2DDistance = false;
-            m_UseCameraSpace = true;
-            m_ReactionSettings = new ImpulseReaction 
+            ApplyAfter = CinemachineCore.Stage.Noise; // this is the default setting
+            ChannelMask = 1;
+            Gain = 1;
+            Use2DDistance = false;
+            UseCameraSpace = true;
+            ReactionSettings = new ImpulseReaction 
             { 
-                m_AmplitudeGain = 1, 
-                m_FrequencyGain = 1,
-                m_Duration = 1f
+                AmplitudeGain = 1, 
+                FrequencyGain = 1,
+                Duration = 1f
             };
         }
 
@@ -195,18 +205,18 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (stage == m_ApplyAfter && deltaTime >= 0)
+            if (stage == ApplyAfter && deltaTime >= 0)
             {
                 bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.GetFinalPosition(), m_Use2DDistance, m_ChannelMask, 
+                    state.GetFinalPosition(), Use2DDistance, ChannelMask, 
                     out var impulsePos, out var impulseRot);
-                bool haveReaction = m_ReactionSettings.GetReaction(
+                bool haveReaction = ReactionSettings.GetReaction(
                     deltaTime, impulsePos, out var reactionPos, out var reactionRot);
 
                 if (haveImpulse)
                 {
-                    impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, m_Gain);
-                    impulsePos *= m_Gain;
+                    impulseRot = Quaternion.SlerpUnclamped(Quaternion.identity, impulseRot, Gain);
+                    impulsePos *= Gain;
                 }
                 if (haveReaction)
                 {
@@ -215,7 +225,7 @@ namespace Cinemachine
                 }
                 if (haveImpulse || haveReaction)
                 {
-                    if (m_UseCameraSpace)
+                    if (UseCameraSpace)
                         impulsePos = state.RawOrientation * impulsePos;
                     state.PositionCorrection += impulsePos;
                     state.OrientationCorrection = state.OrientationCorrection * impulseRot;
