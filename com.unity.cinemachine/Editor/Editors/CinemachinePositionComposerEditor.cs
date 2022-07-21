@@ -49,39 +49,38 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
             var noTargetHelp = ux.AddChild(new HelpBox(
                 "A Tracking target is required.  Change Position Control to None if you don't want a Tracking target.", 
                 HelpBoxMessageType.Warning));
 
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Lookahead)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraDistance)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.DeadZoneDepth)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.UnlimitedSoftZone)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CenterOnActivate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DeadZoneDepth)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UnlimitedSoftZone)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
 
             var groupFraming = ux.AddChild(new VisualElement());
             groupFraming.AddSpace();
 
-            groupFraming.Add(new PropertyField(serializedTarget.FindProperty(() => Target.GroupFramingMode)));
-            groupFraming.Add(new PropertyField(serializedTarget.FindProperty(() => Target.GroupFramingSize)));
+            groupFraming.Add(new PropertyField(serializedObject.FindProperty(() => Target.GroupFramingMode)));
+            groupFraming.Add(new PropertyField(serializedObject.FindProperty(() => Target.GroupFramingSize)));
 
             var nonOrthoControls = groupFraming.AddChild(new VisualElement());
 
-            var adjustmentModeProperty = serializedTarget.FindProperty(() => Target.AdjustmentMode);
+            var adjustmentModeProperty = serializedObject.FindProperty(() => Target.AdjustmentMode);
             nonOrthoControls.Add(new PropertyField(adjustmentModeProperty));
 
-            var dollyRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
-            var distanceRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.TargetDistanceRange)));
-            var fovRange = nonOrthoControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
+            var dollyRange = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.DollyRange)));
+            var distanceRange = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.TargetDistanceRange)));
+            var fovRange = nonOrthoControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.FovRange)));
 
             var orthoControls = groupFraming.AddChild(new VisualElement());
-            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));
+            orthoControls.Add(new PropertyField(serializedObject.FindProperty(() => Target.OrthoSizeRange)));
 
             ux.TrackPropertyValue(adjustmentModeProperty, (prop) =>
             {
@@ -99,7 +98,7 @@ namespace Cinemachine.Editor
 
             void UpdateVisibility()
             {
-                groupFraming.SetVisible(Target.AbstractFollowTargetGroup != null);
+                groupFraming.SetVisible(Target.FollowTargetAsGroup != null);
 
                 bool ortho = Target.VcamState.Lens.Orthographic;
                 nonOrthoControls.SetVisible(!ortho);
@@ -158,7 +157,7 @@ namespace Cinemachine.Editor
         private static void DrawGroupComposerGizmos(CinemachinePositionComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.AbstractFollowTargetGroup != null
+            if (target.FollowTargetAsGroup != null
                 && target.GroupFramingMode != CinemachinePositionComposer.FramingModes.None)
             {
                 Matrix4x4 m = Gizmos.matrix;
@@ -198,7 +197,7 @@ namespace Cinemachine.Editor
 
                 var originalColor = Handles.color;
                 var camPos = Target.VcamState.RawPosition;
-                var targetForward = Target.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var targetForward = Target.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);

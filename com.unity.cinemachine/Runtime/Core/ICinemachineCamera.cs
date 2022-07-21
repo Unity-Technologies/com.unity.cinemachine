@@ -22,6 +22,7 @@ namespace Cinemachine
         /// Gets the priority of this <c>ICinemachineCamera</c>. The virtual camera
         /// will be inserted into the global priority stack based on this value.
         /// </summary>
+        // GML TODO: Delete this
         int Priority { get; set; }
 
         /// <summary>
@@ -42,6 +43,7 @@ namespace Cinemachine
         /// <summary>
         /// Gets the virtual camera game attached to this class.
         /// </summary>
+        // GML TODO: Delete this
         GameObject VirtualCameraGameObject { get; }
 
         /// <summary>

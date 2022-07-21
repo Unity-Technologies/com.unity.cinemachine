@@ -62,7 +62,6 @@ namespace Cinemachine
             [Tooltip("How long to wait (in seconds) before activating the next virtual camera in the list (if any)")]
             public float m_Hold;
             /// <summary>How to blend to the next virtual camera in the list (if any)</summary>
-            [CinemachineBlendDefinitionProperty]
             [Tooltip("How to blend to the next virtual camera in the list (if any)")]
             public CinemachineBlendDefinition m_Blend;
         };

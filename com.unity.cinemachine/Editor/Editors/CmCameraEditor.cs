@@ -53,22 +53,21 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
             m_CameraUtility.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.m_StandbyUpdate)));
+            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.StandbyUpdate)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Transitions)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.CameraPriority)));
             
             ux.AddHeader("Camera");
-            var lensProperty = serializedTarget.FindProperty(() => Target.Lens);
+            var lensProperty = serializedObject.FindProperty(() => Target.Lens);
             ux.Add(new PropertyField(lensProperty));
 
             ux.AddHeader("Procedural Motion");
             m_CameraUtility.AddSaveDuringPlayToggle(ux);
             m_CameraUtility.AddGameViewGuidesToggle(ux);
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Target)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
             m_CameraUtility.AddPipelineDropdowns(ux);
 
             ux.AddSpace();

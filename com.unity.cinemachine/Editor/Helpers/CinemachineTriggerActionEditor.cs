@@ -14,7 +14,6 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineTriggerAction))]
     internal class CinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
     {
-        const int vSpace = 2;
         CinemachineTriggerAction.ActionSettings def
             = new CinemachineTriggerAction.ActionSettings(); // to access name strings
 
@@ -29,8 +28,8 @@ namespace Cinemachine.Editor
 
         private void OnEnable()
         {
-            mRepeatProperties[0] = FindProperty(x => x.m_SkipFirst);
-            mRepeatProperties[1] = FindProperty(x => x.m_Repeating);
+            mRepeatProperties[0] = FindProperty(x => x.SkipFirst);
+            mRepeatProperties[1] = FindProperty(x => x.Repeating);
             mRepeatLabel = new GUIContent(
                 mRepeatProperties[0].displayName, mRepeatProperties[0].tooltip);
             mRepeatSubLabels[0] = GUIContent.none;
@@ -43,10 +42,10 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_SkipFirst));
-            excluded.Add(FieldPath(x => x.m_Repeating));
-            excluded.Add(FieldPath(x => x.m_OnObjectEnter));
-            excluded.Add(FieldPath(x => x.m_OnObjectExit));
+            excluded.Add(FieldPath(x => x.SkipFirst));
+            excluded.Add(FieldPath(x => x.Repeating));
+            excluded.Add(FieldPath(x => x.OnObjectEnter));
+            excluded.Add(FieldPath(x => x.OnObjectExit));
         }
 
         public override void OnInspectorGUI()
@@ -57,8 +56,8 @@ namespace Cinemachine.Editor
                 EditorGUILayout.GetControlRect(), mRepeatLabel,
                 mRepeatProperties, mRepeatSubLabels);
             EditorGUILayout.Space();
-            mEnterExpanded = DrawActionSettings(FindProperty(x => x.m_OnObjectEnter), mEnterExpanded);
-            mExitExpanded = DrawActionSettings(FindProperty(x => x.m_OnObjectExit), mExitExpanded);
+            mEnterExpanded = DrawActionSettings(FindProperty(x => x.OnObjectEnter), mEnterExpanded);
+            mExitExpanded = DrawActionSettings(FindProperty(x => x.OnObjectExit), mExitExpanded);
         }
 
         bool DrawActionSettings(SerializedProperty property, bool expanded)
@@ -70,26 +69,26 @@ namespace Cinemachine.Editor
             expanded = EditorGUI.Foldout(r, expanded, property.displayName, true, mFoldoutStyle);
             if (expanded)
             {
-                SerializedProperty actionProp = property.FindPropertyRelative(() => def.m_Action);
+                SerializedProperty actionProp = property.FindPropertyRelative(() => def.Action);
                 EditorGUILayout.PropertyField(actionProp);
 
-                SerializedProperty targetProp = property.FindPropertyRelative(() => def.m_Target);
-                bool isCustom = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Custom);
+                SerializedProperty targetProp = property.FindPropertyRelative(() => def.Target);
+                bool isCustom = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Custom);
                 if (!isCustom)
                     EditorGUILayout.PropertyField(targetProp);
 
-                bool isBoost = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.PriorityBoost;
+                bool isBoost = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.PriorityBoost;
                 if (isBoost)
-                    EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.m_BoostAmount));
+                    EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.BoostAmount));
 
 #if CINEMACHINE_TIMELINE
-                bool isPlay = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Play;
+                bool isPlay = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Play;
                 if (isPlay)
                 {
                     SerializedProperty[] props = new SerializedProperty[2]
                     {
-                        property.FindPropertyRelative(() => def.m_StartTime),
-                        property.FindPropertyRelative(() => def.m_Mode)
+                        property.FindPropertyRelative(() => def.StartTime),
+                        property.FindPropertyRelative(() => def.Mode)
                     };
                     GUIContent[] sublabels = new GUIContent[2]
                     {
@@ -99,7 +98,7 @@ namespace Cinemachine.Editor
                         EditorGUILayout.GetControlRect(), null, props, sublabels);
                 }
 #endif
-                if (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Custom)
+                if (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Custom)
                 {
                     EditorGUILayout.HelpBox("Use the Event() list below to call custom methods", MessageType.Info);
                 }
@@ -110,8 +109,8 @@ namespace Cinemachine.Editor
                         EditorGUILayout.HelpBox("Target must be a CinemachineVirtualCameraBase in order to boost priority", MessageType.Warning);
                 }
 
-                bool isEnableDisable = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Enable
-                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Disable);
+                bool isEnableDisable = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Enable
+                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Disable);
                 if (isEnableDisable)
                 {
                     var value = targetProp.objectReferenceValue;
@@ -120,7 +119,7 @@ namespace Cinemachine.Editor
                 }
 #if CINEMACHINE_TIMELINE
                 bool isPlayStop = isPlay
-                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.Mode.Stop;
+                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Stop;
                 if (isPlayStop)
                 {
                     if (GetTargetComponent<Animator>(targetProp.objectReferenceValue) == null
@@ -135,7 +134,7 @@ namespace Cinemachine.Editor
 
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("This event will be invoked.  Add calls to custom methods here:");
-                EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.m_Event));
+                EditorGUILayout.PropertyField(property.FindPropertyRelative(() => def.Event));
             }
             property.serializedObject.ApplyModifiedProperties();
             return expanded;
