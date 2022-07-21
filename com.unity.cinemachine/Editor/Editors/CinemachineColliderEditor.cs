@@ -1,8 +1,3 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-#endif
-
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
@@ -19,19 +14,19 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            if (!Target.m_AvoidObstacles)
+            if (!Target.AvoidObstacles)
             {
-                excluded.Add(FieldPath(x => x.m_DistanceLimit));
-                excluded.Add(FieldPath(x => x.m_CameraRadius));
-                excluded.Add(FieldPath(x => x.m_Strategy));
-                excluded.Add(FieldPath(x => x.m_MaximumEffort));
-                excluded.Add(FieldPath(x => x.m_Damping));
-                excluded.Add(FieldPath(x => x.m_DampingWhenOccluded));
-                excluded.Add(FieldPath(x => x.m_SmoothingTime));
+                excluded.Add(FieldPath(x => x.DistanceLimit));
+                excluded.Add(FieldPath(x => x.CameraRadius));
+                excluded.Add(FieldPath(x => x.Strategy));
+                excluded.Add(FieldPath(x => x.MaximumEffort));
+                excluded.Add(FieldPath(x => x.Damping));
+                excluded.Add(FieldPath(x => x.DampingWhenOccluded));
+                excluded.Add(FieldPath(x => x.SmoothingTime));
             }
-            else if (Target.m_Strategy == CinemachineCollider.ResolutionStrategy.PullCameraForward)
+            else if (Target.Strategy == CinemachineCollider.ResolutionStrategy.PullCameraForward)
             {
-                excluded.Add(FieldPath(x => x.m_MaximumEffort));
+                excluded.Add(FieldPath(x => x.MaximumEffort));
             }
         }
 
@@ -39,7 +34,7 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
-            if (Target.m_AvoidObstacles && Target.VirtualCamera != null
+            if (Target.AvoidObstacles && Target.VirtualCamera != null
                     && !Target.VirtualCamera.State.HasLookAt())
                 EditorGUILayout.HelpBox(
                     "Avoid Obstacles requires a LookAt target.",
@@ -56,14 +51,14 @@ namespace Cinemachine.Editor
             {
                 Color oldColor = Gizmos.color;
                 Vector3 pos = vcam.State.GetFinalPosition();
-                if (collider.m_AvoidObstacles && vcam.State.HasLookAt())
+                if (collider.AvoidObstacles && vcam.State.HasLookAt())
                 {
                     Gizmos.color = CinemachineColliderPrefs.FeelerColor;
-                    if (collider.m_CameraRadius > 0)
-                        Gizmos.DrawWireSphere(pos, collider.m_CameraRadius);
+                    if (collider.CameraRadius > 0)
+                        Gizmos.DrawWireSphere(pos, collider.CameraRadius);
 
                     Vector3 forwardFeelerVector = (vcam.State.ReferenceLookAt - pos).normalized;
-                    float distance = collider.m_DistanceLimit;
+                    float distance = collider.DistanceLimit;
                     Gizmos.DrawLine(pos, pos + forwardFeelerVector * distance);
 
                     // Show the avoidance path, for debugging

@@ -1,7 +1,3 @@
-#if !UNITY_2019_1_OR_NEWER
-#define CINEMACHINE_UGUI
-#endif
-
 #if CINEMACHINE_UGUI
 using UnityEngine;
 using UnityEditor;
@@ -36,19 +32,19 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
+        const float k_FastWaveformUpdateInterval = 0.1f;
+        float m_LastSplitScreenEventTime = 0;
+        static bool s_AdvancedFoldout;
+        
         public void OnDisable()
         {
             WaveformWindow.SetDefaultUpdateInterval();
         }
 
-        const float FastWaveformUpdateInterval = 0.1f;
-        float mLastSplitScreenEventTime = 0;
-        static bool sAdvancedFoldout;
-        
         public override void OnInspectorGUI()
         {
             float now = Time.realtimeSinceStartup;
-            if (now - mLastSplitScreenEventTime > FastWaveformUpdateInterval * 5)
+            if (now - m_LastSplitScreenEventTime > k_FastWaveformUpdateInterval * 5)
                 WaveformWindow.SetDefaultUpdateInterval();
 
             BeginInspector();
@@ -64,22 +60,22 @@ namespace Cinemachine.Editor
             {
                 float width = rect.width;
                 rect.width = EditorGUIUtility.labelWidth + rect.height;
-                EditorGUI.PropertyField(rect, FindProperty(x => x.m_ShowImage));
+                EditorGUI.PropertyField(rect, FindProperty(x => x.ShowImage));
 
                 rect.x += rect.width; rect.width = width - rect.width;
-                EditorGUI.PropertyField(rect, FindProperty(x => x.m_Image), GUIContent.none);
+                EditorGUI.PropertyField(rect, FindProperty(x => x.Image), GUIContent.none);
 
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_Aspect));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_Alpha));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_Center));
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_Rotation));
+                EditorGUILayout.PropertyField(FindProperty(x => x.Aspect));
+                EditorGUILayout.PropertyField(FindProperty(x => x.Alpha));
+                EditorGUILayout.PropertyField(FindProperty(x => x.Center));
+                EditorGUILayout.PropertyField(FindProperty(x => x.Rotation));
 
                 rect = EditorGUILayout.GetControlRect(true);
                 EditorGUI.LabelField(rect, "Scale");
                 rect.x += EditorGUIUtility.labelWidth; rect.width -= EditorGUIUtility.labelWidth;
                 rect.width /= 3;
                 serializedObject.SetIsDifferentCacheDirty(); // prop.hasMultipleDifferentValues always results in false if the SO isn't refreshed here
-                var prop = FindProperty(x => x.m_SyncScale);
+                var prop = FindProperty(x => x.SyncScale);
                 var syncHasDifferentValues = prop.hasMultipleDifferentValues;
                 GUIContent syncLabel = new GUIContent("Sync", prop.tooltip);
                 EditorGUI.showMixedValue = syncHasDifferentValues;
@@ -88,7 +84,7 @@ namespace Cinemachine.Editor
                 rect.x += rect.width;
                 if (prop.boolValue || targets.Length > 1 && syncHasDifferentValues)
                 {
-                    prop = FindProperty(x => x.m_Scale);
+                    prop = FindProperty(x => x.Scale);
                     float[] values = new float[1] { prop.vector2Value.x };
                     EditorGUI.showMixedValue = prop.hasMultipleDifferentValues;
                     EditorGUI.MultiFloatField(rect, new GUIContent[1] { new GUIContent("X") }, values);
@@ -98,23 +94,23 @@ namespace Cinemachine.Editor
                 else
                 {
                     rect.width *= 2;
-                    prop = FindProperty(x => x.m_Scale);
+                    prop = FindProperty(x => x.Scale);
                     EditorGUI.showMixedValue = prop.hasMultipleDifferentValues;
                     EditorGUI.PropertyField(rect, prop, GUIContent.none);
                     EditorGUI.showMixedValue = false;
                 }
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_MuteCamera));
+                EditorGUILayout.PropertyField(FindProperty(x => x.MuteCamera));
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(FindProperty(x => x.m_SplitView));
+            EditorGUILayout.PropertyField(FindProperty(x => x.SplitView));
             if (EditorGUI.EndChangeCheck())
             {
-                mLastSplitScreenEventTime = now;
-                WaveformWindow.UpdateInterval = FastWaveformUpdateInterval;
+                m_LastSplitScreenEventTime = now;
+                WaveformWindow.UpdateInterval = k_FastWaveformUpdateInterval;
                 serializedObject.ApplyModifiedProperties();
             }
             rect = EditorGUILayout.GetControlRect(true);
@@ -126,18 +122,18 @@ namespace Cinemachine.Editor
                 WaveformWindow.OpenWindow();
 
             EditorGUILayout.Space();
-            sAdvancedFoldout = EditorGUILayout.Foldout(sAdvancedFoldout, "Advanced");
-            if (sAdvancedFoldout)
+            s_AdvancedFoldout = EditorGUILayout.Foldout(s_AdvancedFoldout, "Advanced");
+            if (s_AdvancedFoldout)
             {
                 ++EditorGUI.indentLevel;
                 
                 EditorGUI.BeginChangeCheck();
-                var renderModeProperty = FindProperty(x => x.m_RenderMode);
+                var renderModeProperty = FindProperty(x => x.RenderMode);
                 EditorGUILayout.PropertyField(renderModeProperty);
-                EditorGUILayout.PropertyField(FindProperty(x => x.m_SortingOrder));
+                EditorGUILayout.PropertyField(FindProperty(x => x.SortingOrder));
                 if (renderModeProperty.enumValueIndex == (int) RenderMode.ScreenSpaceCamera)
                 {
-                    EditorGUILayout.PropertyField(FindProperty(x => x.m_PlaneDistance));
+                    EditorGUILayout.PropertyField(FindProperty(x => x.PlaneDistance));
                 }
                 if (EditorGUI.EndChangeCheck())
                 {

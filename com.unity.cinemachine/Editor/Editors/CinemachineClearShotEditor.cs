@@ -1,8 +1,3 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-#endif
-
 using UnityEditor;
 using UnityEngine;
 
@@ -206,7 +201,7 @@ namespace Cinemachine.Editor
                     var vcam = CinemachineMenu.CreateDefaultVirtualCamera();
                     Undo.SetTransformParent(vcam.transform, Target.transform, "");
                     var collider = Undo.AddComponent<CinemachineCollider>(vcam.gameObject);
-                    collider.m_AvoidObstacles = false;
+                    collider.AvoidObstacles = false;
                     Undo.RecordObject(collider, "create ClearShot child");
                     vcam.transform.SetSiblingIndex(index);
                 };

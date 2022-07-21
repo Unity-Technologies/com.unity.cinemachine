@@ -42,7 +42,7 @@ namespace Cinemachine
         }
         SplineContainer m_SplineContainer;
 #endif
-        void OnEnable() {} // Needed, so we can disable it in the editor
+        void OnEnable() {} // Needed so we can disable it in the editor
     }
     
     [AttributeUsage(AttributeTargets.Field)]

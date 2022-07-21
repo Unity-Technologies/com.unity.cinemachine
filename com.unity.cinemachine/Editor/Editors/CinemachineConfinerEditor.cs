@@ -1,8 +1,3 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS
-#define CINEMACHINE_PHYSICS_2D
-#endif
-
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -23,12 +18,12 @@ namespace Cinemachine.Editor
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
             bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
             if (!ortho)
-                excluded.Add(FieldPath(x => x.m_ConfineScreenEdges));
+                excluded.Add(FieldPath(x => x.ConfineScreenEdges));
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
-            if (Target.m_ConfineMode == CinemachineConfiner.Mode.Confine2D)
-                excluded.Add(FieldPath(x => x.m_BoundingVolume));
+            if (Target.ConfineMode == CinemachineConfiner.Mode.Confine2D)
+                excluded.Add(FieldPath(x => x.BoundingVolume));
             else
-                excluded.Add(FieldPath(x => x.m_BoundingShape2D));
+                excluded.Add(FieldPath(x => x.BoundingShape2D));
 #endif
         }
 
@@ -36,22 +31,22 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
-            if (Target.m_ConfineMode == CinemachineConfiner.Mode.Confine2D)
+            if (Target.ConfineMode == CinemachineConfiner.Mode.Confine2D)
             {
 #endif
 #if CINEMACHINE_PHYSICS_2D
-                if (Target.m_BoundingShape2D == null)
+                if (Target.BoundingShape2D == null)
                     EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
-                else if (Target.m_BoundingShape2D.GetType() != typeof(PolygonCollider2D)
-                    && Target.m_BoundingShape2D.GetType() != typeof(CompositeCollider2D))
+                else if (Target.BoundingShape2D.GetType() != typeof(PolygonCollider2D)
+                    && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D))
                 {
                     EditorGUILayout.HelpBox(
                         "Must be a PolygonCollider2D or CompositeCollider2D.",
                         MessageType.Warning);
                 }
-                else if (Target.m_BoundingShape2D.GetType() == typeof(CompositeCollider2D))
+                else if (Target.BoundingShape2D.GetType() == typeof(CompositeCollider2D))
                 {
-                    CompositeCollider2D poly = Target.m_BoundingShape2D as CompositeCollider2D;
+                    CompositeCollider2D poly = Target.BoundingShape2D as CompositeCollider2D;
                     if (poly.geometryType != CompositeCollider2D.GeometryType.Polygons)
                     {
                         EditorGUILayout.HelpBox(
@@ -66,11 +61,11 @@ namespace Cinemachine.Editor
             {
 #endif
 #if CINEMACHINE_PHYSICS
-                if (Target.m_BoundingVolume == null)
+                if (Target.BoundingVolume == null)
                     EditorGUILayout.HelpBox("A Bounding Volume is required.", MessageType.Warning);
-                else if (Target.m_BoundingVolume.GetType() != typeof(BoxCollider)
-                    && Target.m_BoundingVolume.GetType() != typeof(SphereCollider)
-                    && Target.m_BoundingVolume.GetType() != typeof(CapsuleCollider))
+                else if (Target.BoundingVolume.GetType() != typeof(BoxCollider)
+                    && Target.BoundingVolume.GetType() != typeof(SphereCollider)
+                    && Target.BoundingVolume.GetType() != typeof(CapsuleCollider))
                 {
                     EditorGUILayout.HelpBox(
                         "Must be a BoxCollider, SphereCollider, or CapsuleCollider.",
@@ -94,27 +89,27 @@ namespace Cinemachine.Editor
                 Gizmos.color = Color.yellow;
 
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
-                if (confiner.m_ConfineMode == CinemachineConfiner.Mode.Confine3D)
+                if (confiner.ConfineMode == CinemachineConfiner.Mode.Confine3D)
                 {
 #endif
 #if CINEMACHINE_PHYSICS
-                    Transform t = confiner.m_BoundingVolume.transform;
+                    Transform t = confiner.BoundingVolume.transform;
                     Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, t.lossyScale);
 
-                    Type colliderType = confiner.m_BoundingVolume.GetType();
+                    Type colliderType = confiner.BoundingVolume.GetType();
                     if (colliderType == typeof(BoxCollider))
                     {
-                        BoxCollider c = confiner.m_BoundingVolume as BoxCollider;
+                        BoxCollider c = confiner.BoundingVolume as BoxCollider;
                         Gizmos.DrawWireCube(c.center, c.size);
                     }
                     else if (colliderType == typeof(SphereCollider))
                     {
-                        SphereCollider c = confiner.m_BoundingVolume as SphereCollider;
+                        SphereCollider c = confiner.BoundingVolume as SphereCollider;
                         Gizmos.DrawWireSphere(c.center, c.radius);
                     }
                     else if (colliderType == typeof(CapsuleCollider))
                     {
-                        CapsuleCollider c = confiner.m_BoundingVolume as CapsuleCollider;
+                        CapsuleCollider c = confiner.BoundingVolume as CapsuleCollider;
                         Vector3 size = Vector3.one * c.radius * 2;
                         switch (c.direction)
                         {
@@ -126,14 +121,14 @@ namespace Cinemachine.Editor
                     }
                     else if (colliderType == typeof(MeshCollider))
                     {
-                        MeshCollider c = confiner.m_BoundingVolume as MeshCollider;
+                        MeshCollider c = confiner.BoundingVolume as MeshCollider;
                         Gizmos.DrawWireMesh(c.sharedMesh);
                     }
                     else
                     {
                         // Just draw an AABB - not very nice!
                         Gizmos.matrix = oldMatrix;
-                        Bounds bounds = confiner.m_BoundingVolume.bounds;
+                        Bounds bounds = confiner.BoundingVolume.bounds;
                         Gizmos.DrawWireCube(t.position, bounds.extents * 2);
                     }
 #endif
@@ -143,19 +138,19 @@ namespace Cinemachine.Editor
                 {
 #endif
 #if CINEMACHINE_PHYSICS_2D
-                    Transform t = confiner.m_BoundingShape2D.transform;
+                    Transform t = confiner.BoundingShape2D.transform;
                     Gizmos.matrix = Matrix4x4.TRS(t.position, t.rotation, t.lossyScale);
 
-                    Type colliderType = confiner.m_BoundingShape2D.GetType();
+                    Type colliderType = confiner.BoundingShape2D.GetType();
                     if (colliderType == typeof(PolygonCollider2D))
                     {
-                        PolygonCollider2D poly = confiner.m_BoundingShape2D as PolygonCollider2D;
+                        PolygonCollider2D poly = confiner.BoundingShape2D as PolygonCollider2D;
                         for (int i = 0; i < poly.pathCount; ++i)
                             DrawPath(poly.GetPath(i), -1, poly.offset);
                     }
                     else if (colliderType == typeof(CompositeCollider2D))
                     {
-                        CompositeCollider2D poly = confiner.m_BoundingShape2D as CompositeCollider2D;
+                        CompositeCollider2D poly = confiner.BoundingShape2D as CompositeCollider2D;
                         Vector2[] path = new Vector2[poly.pointCount];
                         Vector2 revertCompositeColliderScale = new Vector2(1f / t.lossyScale.x, 1f / t.lossyScale.y);
                         for (int i = 0; i < poly.pathCount; ++i)
