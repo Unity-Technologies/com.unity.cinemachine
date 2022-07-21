@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;

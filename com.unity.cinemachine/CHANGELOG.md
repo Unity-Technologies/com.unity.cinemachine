@@ -4,6 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2022-08-01
+- Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
+
 
 ## [2.9.0-pre.7] - 2022-07-01
 - Bugfix: A memory leak no longer occurs with PostProcessing if no PP layer is present on the camera.
@@ -20,6 +23,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow now shows a warning message when no follow target is assigned like the rest of the body components.
 - Bugfix: The FadeOut sample scene shader was culling some objects incorrectly.
 - Bugfix: Freelook had the wrong heading at the first frame, which could cause a slight jitter.
+## ## [3.0.0-pre.1] - 2022-06-01
+- Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
+- VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
+- FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
+- Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
+- Add flag for custom priority setting.
+- HDRP only: Added FocusDistance setting to lens
+- HDRP only: New AutoFocus extension.  Use instead of VolumeSettings for Focus Tracking.  Includes Automatic mode that queries depth buffer instead of tracking a specific target.
+- Added Lens Mode Override property to CM Brain.  When enabled, it allows CM cameras to override the lens mode (Perspective vs Ortho vs Physical).
+- Added Unity Spline support.  Old Cinemachine Paths are deprecated in favour of Unity Splines.
+- Added customizable Auto Dolly to cameras and Spline Cart.
+- Bugfix: No redundant RepaintAllViews calls.
+
+
+## UNRELEASED
+- Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
+- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
+- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
+- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
 - Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
 - Bugfix: Fixed spurious Z rotations during spherical blend.
 - Regression fix: POV is relative to its parent transform.
