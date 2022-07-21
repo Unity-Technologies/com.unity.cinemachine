@@ -4,39 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-<<<<<<< HEAD:CHANGELOG.md
 ## [2.6.16] - 2022-07-01
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: CinemachineInputProvider stops providing input when the CinemachineInputProvider component is disabled
-=======
-
-## ## [3.0.0-pre.1] - 2022-06-01
-- Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
-- VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
-- FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
-- Combine Follow and LookAt Targets to single Tracking Target with optional LookAt Target.
-- Add flag for custom priority setting.
-- HDRP only: Added FocusDistance setting to lens
-- HDRP only: New AutoFocus extension.  Use instead of VolumeSettings for Focus Tracking.  Includes Automatic mode that queries depth buffer instead of tracking a specific target.
-- Added Lens Mode Override property to CM Brain.  When enabled, it allows CM cameras to override the lens mode (Perspective vs Ortho vs Physical).
-- Added Unity Spline support.  Old Cinemachine Paths are deprecated in favour of Unity Splines.
-- Added customizable Auto Dolly to cameras and Spline Cart.
-- Bugfix: No redundant RepaintAllViews calls.
-- Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
-
-
-## UNRELEASED
-- Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
-- Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
-- Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
-- Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
-- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
->>>>>>> 53730dc2 (CMCL-1070: Confiner 3D was not confining correctly when the camera was rotated (#507)):com.unity.cinemachine/CHANGELOG.md
 - Bugfix: Fixed spurious Z rotations during speherical blend.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Bugfix: No redundant RepaintAllViews calls.
+- Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
 
 
 ## [2.6.15] - 2022-05-26

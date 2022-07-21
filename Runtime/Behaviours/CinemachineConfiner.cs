@@ -277,28 +277,16 @@ namespace Cinemachine
         // Camera must be orthographic
         Vector3 ConfineScreenEdges(ref CameraState state)
         {
-<<<<<<< HEAD:Runtime/Behaviours/CinemachineConfiner.cs
-            Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
-            float dy = state.Lens.OrthographicSize;
-            float dx = dy * state.Lens.Aspect;
-            Vector3 vx = (rot * Vector3.right) * dx;
-            Vector3 vy = (rot * Vector3.up) * dy;
-
-            Vector3 displacement = Vector3.zero;
-            Vector3 camPos = state.CorrectedPosition;
-            Vector3 lastD = Vector3.zero;
-=======
-            var rot = state.GetCorrectedOrientation();
+            var rot = state.CorrectedOrientation;
             var dy = state.Lens.OrthographicSize;
             var dx = dy * state.Lens.Aspect;
             var vx = (rot * Vector3.right) * dx;
             var vy = (rot * Vector3.up) * dy;
 
             var displacement = Vector3.zero;
-            var camPos = state.GetCorrectedPosition();
+            var camPos = state.CorrectedPosition;
             var lastD = Vector3.zero;
 
->>>>>>> 53730dc2 (CMCL-1070: Confiner 3D was not confining correctly when the camera was rotated (#507)):com.unity.cinemachine/Runtime/Behaviours/CinemachineConfiner.cs
             const int kMaxIter = 12;
             for (var i = 0; i < kMaxIter; ++i)
             {
