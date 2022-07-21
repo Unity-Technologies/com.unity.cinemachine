@@ -34,12 +34,14 @@ namespace Cinemachine
 
         /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
         /// <param name="observer">The frame of reference in which to compute the bounding box</param>
+        /// <param name="includeBehind">If true, members behind the observer (negative z) will be included</param>
         /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
-        Bounds GetViewSpaceBoundingBox(Matrix4x4 observer);
+        Bounds GetViewSpaceBoundingBox(Matrix4x4 observer, bool includeBehind);
 
         /// <summary>
-        /// Get the local-space angular bounds of the group, from a spoecific point of view.
+        /// Get the local-space angular bounds of the group, from a specific point of view.
         /// Also returns the z depth range of the members.
+        /// Members behind the observer (negative z) will be ignored.
         /// </summary>
         /// <param name="observer">Point of view from which to calculate, and in whose
         /// space the return values are</param>
@@ -251,16 +253,28 @@ namespace Cinemachine
 
         /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
         /// <param name="observer">The frame of reference in which to compute the bounding box</param>
+        /// <param name="includeBehind">If true, members behind the observer (negative z) will be included</param>
         /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
-        public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer)
+        public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer, bool includeBehind)
         {
-            Matrix4x4 inverseView = observer.inverse;
-            Bounds b = new Bounds(inverseView.MultiplyPoint3x4(m_AveragePos), Vector3.zero);
+            var inverseView = observer;
+            if (!Matrix4x4.Inverse3DAffine(observer, ref inverseView))
+                inverseView = observer.inverse;
+            var b = new Bounds(inverseView.MultiplyPoint3x4(m_AveragePos), Vector3.zero);
+            bool gotOne = false;
+            var unit = 2 * Vector3.one;
             for (int i = 0; i < Targets.Count; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);
                 s.position = inverseView.MultiplyPoint3x4(s.position);
-                b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
+                if (s.position.z > 0 || includeBehind)
+                {
+                    if (gotOne)
+                        b.Encapsulate(new Bounds(s.position, s.radius * unit));
+                    else
+                        b = new Bounds(s.position, s.radius * unit);
+                    gotOne = true;
+                }
             }
             return b;
         }
@@ -269,7 +283,7 @@ namespace Cinemachine
             Target t, Vector3 avgPos, float maxWeight)
         {
             float w = 0;
-            Vector3 pos = avgPos;
+            var pos = avgPos;
             if (t.Object != null)
             {
                 pos = TargetPositionCache.GetTargetPosition(t.Object);
@@ -435,34 +449,36 @@ namespace Cinemachine
         public void GetViewSpaceAngularBounds(
             Matrix4x4 observer, out Vector2 minAngles, out Vector2 maxAngles, out Vector2 zRange)
         {
-            zRange = Vector2.zero;
+            var world2local = observer;
+            if (!Matrix4x4.Inverse3DAffine(observer, ref world2local))
+                world2local = observer.inverse;
 
-            Matrix4x4 inverseView = observer.inverse;
-            Bounds b = new Bounds();
+            zRange = Vector2.zero;
+            var b = new Bounds();
             bool haveOne = false;
             for (int i = 0; i < Targets.Count; ++i)
             {
                 BoundingSphere s = GetWeightedBoundsForMember(i);
-                Vector3 p = inverseView.MultiplyPoint3x4(s.position);
+                Vector3 p = world2local.MultiplyPoint3x4(s.position);
                 if (p.z < UnityVectorExtensions.Epsilon)
                     continue; // behind us
 
-                var r = s.radius / p.z;
-                var r2 = new Vector3(r, r, 0);
-                var p2 = p / p.z;
+                var rN = s.radius / p.z;
+                var rN2 = new Vector3(rN, rN, 0);
+                var pN = p / p.z;
                 if (!haveOne)
                 {
-                    b.center = p2;
-                    b.extents = r2;
-                    zRange = new Vector2(p.z - s.radius, p.z + s.radius);
+                    b.center = pN;
+                    b.extents = rN2;
+                    zRange = new Vector2(p.z, p.z);
                     haveOne = true;
                 }
                 else
                 {
-                    b.Encapsulate(p2 + r2);
-                    b.Encapsulate(p2 - r2);
-                    zRange.x = Mathf.Min(zRange.x, p.z - s.radius);
-                    zRange.y = Mathf.Max(zRange.y, p.z + s.radius);
+                    b.Encapsulate(pN + rN2);
+                    b.Encapsulate(pN - rN2);
+                    zRange.x = Mathf.Min(zRange.x, p.z);
+                    zRange.y = Mathf.Max(zRange.y, p.z);
                 }
             }
 
@@ -470,10 +486,10 @@ namespace Cinemachine
             var pMin = b.min;
             var pMax = b.max;
             minAngles = new Vector2(
-                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMin.y, 1), Vector3.left),
+                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMax.y, 1), Vector3.right),
                 Vector3.SignedAngle(Vector3.forward, new Vector3(pMin.x, 0, 1), Vector3.up));
             maxAngles = new Vector2(
-                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMax.y, 1), Vector3.left),
+                Vector3.SignedAngle(Vector3.forward, new Vector3(0, pMin.y, 1), Vector3.right),
                 Vector3.SignedAngle(Vector3.forward, new Vector3(pMax.x, 0, 1), Vector3.up));
         }
     }

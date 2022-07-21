@@ -341,7 +341,8 @@ namespace Cinemachine
             private Rect ScreenToFOV(Rect rScreen, float fov, float fovH, float aspect)
             {
                 Rect r = new Rect(rScreen);
-                Matrix4x4 persp = Matrix4x4.Perspective(fov, aspect, 0.0001f, 2f).inverse;
+                var persp = Matrix4x4.identity;
+                Matrix4x4.Inverse3DAffine(Matrix4x4.Perspective(fov, aspect, 0.0001f, 2f), ref persp);
 
                 Vector3 p = persp.MultiplyPoint(new Vector3(0, (r.yMin * 2f) - 1f, 0.5f)); p.z = -p.z;
                 float angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.left);

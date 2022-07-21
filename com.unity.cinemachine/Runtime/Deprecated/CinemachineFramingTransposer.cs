@@ -613,7 +613,7 @@ namespace Cinemachine
 
             // Get the bounding box from camera's direction in view space
             LastBoundsMatrix = Matrix4x4.TRS(cameraPos, curState.RawOrientation, Vector3.one);
-            Bounds b = group.GetViewSpaceBoundingBox(LastBoundsMatrix);
+            Bounds b = group.GetViewSpaceBoundingBox(LastBoundsMatrix, true);
             Vector3 groupCenter = LastBoundsMatrix.MultiplyPoint3x4(b.center);
             float boundsDepth = b.extents.z;
             if (!curState.Lens.Orthographic)
@@ -638,7 +638,7 @@ namespace Cinemachine
             group.GetViewSpaceAngularBounds(observer, out var minAngles, out var maxAngles, out var zRange);
             var shift = (minAngles + maxAngles) / 2;
 
-            var q = Quaternion.identity.ApplyCameraRotation(new Vector2(-shift.x, shift.y), Vector3.up);
+            var q = Quaternion.identity.ApplyCameraRotation(shift, Vector3.up);
             pos = q * new Vector3(0, 0, (zRange.y + zRange.x)/2);
             pos.z = 0;
             pos = observer.MultiplyPoint3x4(pos);
@@ -684,13 +684,18 @@ namespace Cinemachine
             };
             c.UnlimitedSoftZone = m_UnlimitedSoftZone;
             c.CenterOnActivate = m_CenterOnActivate;
-            c.GroupFramingMode = m_GroupFramingMode == FramingMode.None
-                ? CinemachinePositionComposer.FramingModes.None 
-                : (CinemachinePositionComposer.FramingModes)((int)m_GroupFramingMode + 1);
-            c.AdjustmentMode = (CinemachinePositionComposer.AdjustmentModes)m_AdjustmentMode;
-            c.GroupFramingSize = m_GroupFramingSize;
+        }
+
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineGroupFraming c)
+        {
+            c.FramingMode = (CinemachineGroupFraming.FramingModes)m_GroupFramingMode; // values are the same
+            c.FramingSize = m_GroupFramingSize;
+            c.Damping = m_ZDamping;
+            c.SizeAdjustment = (CinemachineGroupFraming.SizeAdjustmentModes)m_AdjustmentMode; // values are the same
+            c.LateralAdjustment = CinemachineGroupFraming.LateralAdjustmentModes.ChangePosition;
             c.DollyRange = new Vector2(-m_MaxDollyIn, m_MaxDollyOut);
-            c.TargetDistanceRange = new Vector2(m_MinimumDistance, m_MaximumDistance);
             c.FovRange = new Vector2(m_MinimumFOV, m_MaximumFOV);
             c.OrthoSizeRange = new Vector2(m_MinimumOrthoSize, m_MaximumOrthoSize);
         }
