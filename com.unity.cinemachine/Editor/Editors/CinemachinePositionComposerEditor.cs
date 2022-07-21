@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePositionComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachinePositionComposerEditor : UnityEditor.Editor
+    class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
@@ -155,7 +155,7 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachinePositionComposer))]
-        private static void DrawGroupComposerGizmos(CinemachinePositionComposer target, GizmoType selectionType)
+        static void DrawGroupComposerGizmos(CinemachinePositionComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
             if (target.AbstractFollowTargetGroup != null
