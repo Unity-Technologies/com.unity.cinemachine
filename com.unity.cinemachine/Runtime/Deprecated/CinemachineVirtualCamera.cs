@@ -417,10 +417,14 @@ namespace Cinemachine
         {
             if (child != null)
             {
+#if true
+                child.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+#else
                 if (CinemachineCore.sShowHiddenObjects)
                     child.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
                 else
                     child.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+#endif
             }
         }
 
@@ -445,7 +449,7 @@ namespace Cinemachine
             if (lookAtTarget != null)
             {
                 if (mCachedLookAtTargetVcam != null)
-                    state.ReferenceLookAt = mCachedLookAtTargetVcam.State.FinalPosition;
+                    state.ReferenceLookAt = mCachedLookAtTargetVcam.State.GetFinalPosition();
                 else
                     state.ReferenceLookAt = TargetPositionCache.GetTargetPosition(lookAtTarget);
             }
@@ -561,7 +565,7 @@ namespace Cinemachine
 
             if (m_Transitions.InheritPosition && fromCam != null
                  && !CinemachineCore.Instance.IsLiveInBlend(this))
-                ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
+                ForceCameraPosition(fromCam.State.GetFinalPosition(), fromCam.State.GetFinalOrientation());
 
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             if (m_ComponentPipeline != null)

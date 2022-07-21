@@ -9,8 +9,9 @@ namespace Cinemachine.Editor
         const int vSpace = 2;
         static bool mExpanded = true;
 
-        CinemachineImpulseManager.EnvelopeDefinition myClass
-            = new CinemachineImpulseManager.EnvelopeDefinition(); // to access name strings
+        #pragma warning disable 649 // variable never used
+        CinemachineImpulseManager.EnvelopeDefinition myClass; // to access name strings
+        #pragma warning restore 649
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
@@ -27,8 +28,8 @@ namespace Cinemachine.Editor
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
                 DrawCurveTimeProperty(
                     rect, new GUIContent("Attack", "The custom shape of the attack curve.  Leave it blank for a default shape"),
-                    property.FindPropertyRelative(() => myClass.m_AttackShape),
-                    property.FindPropertyRelative(() => myClass.m_AttackTime));
+                    property.FindPropertyRelative(() => myClass.AttackShape),
+                    property.FindPropertyRelative(() => myClass.AttackTime));
 
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
 #if false // with "forever" button... dangerous because signal never goes away!
@@ -38,16 +39,16 @@ namespace Cinemachine.Editor
                     new SerializedProperty[] { holdProp, property.FindPropertyRelative(() => myClass.m_HoldForever) },
                     new GUIContent[] { GUIContent.none, new GUIContent("forever") });
 #else
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.m_SustainTime));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.SustainTime));
 #endif
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
                 DrawCurveTimeProperty(
                     rect, new GUIContent("Decay", "The custom shape of the decay curve.  Leave it blank for a default shape"),
-                    property.FindPropertyRelative(() => myClass.m_DecayShape),
-                    property.FindPropertyRelative(() => myClass.m_DecayTime));
+                    property.FindPropertyRelative(() => myClass.DecayShape),
+                    property.FindPropertyRelative(() => myClass.DecayTime));
 
                 rect.y += EditorGUIUtility.singleLineHeight + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.m_ScaleWithImpact));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => myClass.ScaleWithImpact));
 
                 EditorGUIUtility.labelWidth = oldWidth;
             }

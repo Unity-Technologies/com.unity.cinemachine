@@ -171,8 +171,10 @@ namespace Cinemachine
 
             // Cant't inherit position if already live, because there will be a pop
             if (Transitions.InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
-                ForceCameraPosition(fromCam.State.FinalPosition, fromCam.State.FinalOrientation);
-            
+            {
+                var state = fromCam.State;
+                ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());
+            }
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
                 if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref Transitions))
@@ -209,7 +211,7 @@ namespace Cinemachine
             var lookAt = LookAt;
             if (lookAt != null)
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
-                    ? LookAtTargetAsVcam.State.FinalPosition : TargetPositionCache.GetTargetPosition(lookAt);
+                    ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
             ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
 

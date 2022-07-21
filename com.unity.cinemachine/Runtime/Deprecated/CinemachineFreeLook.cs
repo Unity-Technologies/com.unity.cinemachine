@@ -416,7 +416,7 @@ namespace Cinemachine
                     if (orbital != null)
                         cameraPos = orbital.GetTargetCameraPosition(worldUp);
                 }
-                ForceCameraPosition(cameraPos, fromCam.State.FinalOrientation);
+                ForceCameraPosition(cameraPos, fromCam.State.GetFinalOrientation());
             }
             if (forceUpdate)
             {

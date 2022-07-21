@@ -144,8 +144,8 @@ namespace Cinemachine.Editor
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
             
-            var camPos = vcam.State.FinalPosition;
-            var camRot = vcam.State.FinalOrientation;
+            var camPos = vcam.State.GetFinalPosition();
+            var camRot = vcam.State.GetFinalOrientation();
             var camForward = camRot * Vector3.forward;
                 
             EditorGUI.BeginChangeCheck();
@@ -213,8 +213,8 @@ namespace Cinemachine.Editor
             Handles.color = Handles.preselectionColor;
             
             var vcamState = vcam.State;
-            var camPos = vcamState.FinalPosition;
-            var camRot = vcamState.FinalOrientation;
+            var camPos = vcamState.GetFinalPosition();
+            var camRot = vcamState.GetFinalOrientation();
             var camForward = camRot * Vector3.forward;
             var nearClipPlane = lens.FindPropertyRelative("NearClipPlane");
             var farClipPlane = lens.FindPropertyRelative("FarClipPlane");
@@ -411,7 +411,7 @@ namespace Cinemachine.Editor
             
             Handles.color = isDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             Handles.DrawDottedLine(lookAtPos, trackedObjectPos, k_DottedLineSpacing);
-            Handles.DrawLine(trackedObjectPos, vcam.State.FinalPosition);
+            Handles.DrawLine(trackedObjectPos, vcam.State.GetFinalPosition());
 
             SoloOnDrag(isDragged, vcam, tooHandleMaxId);
             

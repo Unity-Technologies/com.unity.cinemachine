@@ -281,7 +281,7 @@ namespace Cinemachine.Editor
             
             // Is the camera navel-gazing?
             CameraState state = Target.State;
-            if (state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero())
+            if (state.HasLookAt() && (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero())
                 EditorGUILayout.HelpBox(
                     "The camera is positioned on the same point at which it is trying to look.",
                     MessageType.Warning);

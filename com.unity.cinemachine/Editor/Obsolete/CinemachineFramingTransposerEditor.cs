@@ -224,7 +224,7 @@ namespace Cinemachine.Editor
             {
                 var originalColor = Handles.color;
                 var camPos = framingTransposer.VcamState.RawPosition;
-                var targetForward = framingTransposer.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var targetForward = framingTransposer.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
