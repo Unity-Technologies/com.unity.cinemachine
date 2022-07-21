@@ -855,5 +855,10 @@ namespace Cinemachine
         /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
+
+        /// <summary>Get the component set for a specific stage in the pipeline.</summary>
+        /// <param name="stage">The stage for which we want the component</param>
+        /// <returns>The Cinemachine component for that stage, or null if not present.</returns>
+        public virtual CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage) => null;
     }
 }

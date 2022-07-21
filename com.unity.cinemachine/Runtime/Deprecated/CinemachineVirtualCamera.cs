@@ -118,6 +118,9 @@ namespace Cinemachine
         {
             UpdateTargetCache();
 
+            if (deltaTime < 0)
+                PreviousStateIsValid = false;
+
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
             ApplyPositionBlendMethod(ref m_State, m_Transitions.BlendHint);
@@ -284,7 +287,7 @@ namespace Cinemachine
         /// <summary>Get the component set for a specific stage.</summary>
         /// <param name="stage">The stage for which we want the component</param>
         /// <returns>The Cinemachine component for that stage, or null if not defined</returns>
-        public CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
+        public override CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage)
         {
             CinemachineComponentBase[] components = GetComponentPipeline();
             if (components != null)
