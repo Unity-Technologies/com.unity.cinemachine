@@ -142,7 +142,7 @@ namespace Cinemachine
                 if (m_ConfineScreenEdges && state.Lens.Orthographic)
                     displacement = ConfineScreenEdges(vcam, ref state);
                 else
-                    displacement = ConfinePoint(state.CorrectedPosition);
+                    displacement = ConfinePoint(state.GetCorrectedPosition());
 
                 if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
@@ -250,12 +250,12 @@ namespace Cinemachine
                 int numPoints = m_pathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][numPoints - 1] 
-                                                                            + m_BoundingShape2D.offset);
+                    Vector2 v0 = m_BoundingShape2D.transform.TransformPoint(
+                        m_pathCache[i][numPoints - 1] + m_BoundingShape2D.offset);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_pathCache[i][j] 
-                                                                               + m_BoundingShape2D.offset);
+                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(
+                            m_pathCache[i][j] + m_BoundingShape2D.offset);
                         Vector2 c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         float d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)
@@ -274,14 +274,14 @@ namespace Cinemachine
         // Camera must be orthographic
         private Vector3 ConfineScreenEdges(CinemachineVirtualCameraBase vcam, ref CameraState state)
         {
-            Quaternion rot = Quaternion.Inverse(state.CorrectedOrientation);
+            Quaternion rot = Quaternion.Inverse(state.GetCorrectedOrientation());
             float dy = state.Lens.OrthographicSize;
             float dx = dy * state.Lens.Aspect;
             Vector3 vx = (rot * Vector3.right) * dx;
             Vector3 vy = (rot * Vector3.up) * dy;
 
             Vector3 displacement = Vector3.zero;
-            Vector3 camPos = state.CorrectedPosition;
+            Vector3 camPos = state.GetCorrectedPosition();
             Vector3 lastD = Vector3.zero;
             const int kMaxIter = 12;
             for (int i = 0; i < kMaxIter; ++i)

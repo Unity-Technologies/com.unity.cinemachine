@@ -78,7 +78,7 @@ namespace Cinemachine
                 // Try to reproduce the target width
                 float targetWidth = Mathf.Max(m_Width, 0);
                 float fov = 179f;
-                float d = Vector3.Distance(state.CorrectedPosition, state.ReferenceLookAt);
+                float d = Vector3.Distance(state.GetCorrectedPosition(), state.ReferenceLookAt);
                 if (d > UnityVectorExtensions.Epsilon)
                 {
                     // Clamp targetWidth to FOV min/max
