@@ -16,7 +16,7 @@
 namespace Cinemachine.PostFX.Editor
 {
     [CustomEditor(typeof(CinemachineVolumeSettings))]
-    public sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
+    sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
         public override void OnInspectorGUI()
@@ -41,10 +41,10 @@ namespace Cinemachine.PostFX.Editor
             m_NewLabel = new GUIContent("New", "Create a new profile.");
             m_CloneLabel = new GUIContent("Clone", "Create a new profile and copy the content of the currently assigned profile.");
 
-            m_FocusTracking = FindProperty(x => x.m_FocusTracking);
-            m_Profile = FindProperty(x => x.m_Profile);
+            m_FocusTracking = FindProperty(x => x.FocusTracking);
+            m_Profile = FindProperty(x => x.Profile);
 
-            RefreshVolumeComponentEditor(Target.m_Profile);
+            RefreshVolumeComponentEditor(Target.Profile);
         }
 
         void OnDisable()
@@ -69,10 +69,10 @@ namespace Cinemachine.PostFX.Editor
             base.GetExcludedPropertiesInInspector(excluded);
             var mode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
             if (mode != CinemachineVolumeSettings.FocusTrackingMode.CustomTarget)
-                excluded.Add(FieldPath(x => x.m_FocusTarget));
+                excluded.Add(FieldPath(x => x.FocusTarget));
             if (mode == CinemachineVolumeSettings.FocusTrackingMode.None)
-                excluded.Add(FieldPath(x => x.m_FocusOffset));
-            excluded.Add(FieldPath(x => x.m_Profile));
+                excluded.Add(FieldPath(x => x.FocusOffset));
+            excluded.Add(FieldPath(x => x.Profile));
         }
 
         public override void OnInspectorGUI()
@@ -84,7 +84,7 @@ namespace Cinemachine.PostFX.Editor
             {
                 bool valid = false;
                 DepthOfField dof;
-                if (Target.m_Profile != null && Target.m_Profile.TryGet(out dof))
+                if (Target.Profile != null && Target.Profile.TryGet(out dof))
 #if CINEMACHINE_LWRP_7_3_1 && !CINEMACHINE_HDRP
                 {
                     valid = dof.active && dof.focusDistance.overrideState
@@ -210,7 +210,7 @@ namespace Cinemachine.PostFX.Editor
         // Copied from UnityEditor.Rendering.PostProcessing.ProfileFactory.CreateVolumeProfile() because it's internal
         static VolumeProfile CreateVolumeProfile(UnityEngine.SceneManagement.Scene scene, string targetName)
         {
-            var path = string.Empty;
+            string path;
 
             if (string.IsNullOrEmpty(scene.path))
             {
