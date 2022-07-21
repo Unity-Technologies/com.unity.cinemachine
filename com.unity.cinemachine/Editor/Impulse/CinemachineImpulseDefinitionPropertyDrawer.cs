@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            m_ImpulseTypeProperty = property.FindPropertyRelative(() => m_MyClass.m_ImpulseType);
+            m_ImpulseTypeProperty = property.FindPropertyRelative(() => m_MyClass.ImpulseType);
             var mode = (CinemachineImpulseDefinition.ImpulseTypes)m_ImpulseTypeProperty.intValue;
             if (mode == CinemachineImpulseDefinition.ImpulseTypes.Legacy)
                 return LegacyModeGetPropertyHeight(property, label);
@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
             int lines = 3;
 
             m_ShapePropertyHeight = EditorGUIUtility.singleLineHeight + vSpace;
-            m_ShapeProperty = property.FindPropertyRelative(() => m_MyClass.m_ImpulseShape);
+            m_ShapeProperty = property.FindPropertyRelative(() => m_MyClass.ImpulseShape);
             if (m_ShapeProperty.isExpanded)
             {
                 lines += kGraphHeight;
@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
             }
             m_ShapePropertyHeight -= vSpace;
 
-            m_DissipationRateProperty = property.FindPropertyRelative(() => m_MyClass.m_DissipationRate);
+            m_DissipationRateProperty = property.FindPropertyRelative(() => m_MyClass.DissipationRate);
             if (mode != CinemachineImpulseDefinition.ImpulseTypes.Uniform)
             {
                 m_SpreadPropertyHeight = EditorGUIUtility.singleLineHeight + vSpace;
@@ -74,7 +74,7 @@ namespace Cinemachine.Editor
             }
 
             rect.height = EditorGUIUtility.singleLineHeight;
-            EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_MyClass.m_ImpulseChannel));
+            EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_MyClass.ImpulseChannel));
                 rect.y += rect.height + vSpace;
 
             // Impulse type
@@ -85,12 +85,12 @@ namespace Cinemachine.Editor
                 // Propaation speed
                 if (mode == CinemachineImpulseDefinition.ImpulseTypes.Propagating)
                 {
-                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_MyClass.m_PropagationSpeed));
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_MyClass.PropagationSpeed));
                     rect.y += rect.height + vSpace;
                 }
 
                 // Dissipation
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_MyClass.m_DissipationDistance));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => m_MyClass.DissipationDistance));
                 rect.y += rect.height + vSpace;
 
                 // Spread combo
@@ -110,7 +110,7 @@ namespace Cinemachine.Editor
         {
             float floatFieldWidth = EditorGUIUtility.fieldWidth + 2;
 
-            SerializedProperty timeProp = property.FindPropertyRelative(() => m_MyClass.m_ImpulseDuration);
+            SerializedProperty timeProp = property.FindPropertyRelative(() => m_MyClass.ImpulseDuration);
             if (m_TimeText == null)
             {
                 m_TimeText = new GUIContent(" s", timeProp.tooltip);
@@ -143,7 +143,7 @@ namespace Cinemachine.Editor
             }
             if (isCustom)
             {
-                SerializedProperty curveProp = property.FindPropertyRelative(() => m_MyClass.m_CustomImpulseShape);
+                SerializedProperty curveProp = property.FindPropertyRelative(() => m_MyClass.CustomImpulseShape);
                 r.x += r.width;
                 r.width = 2 * r.height;
                 EditorGUI.BeginChangeCheck();
@@ -299,18 +299,18 @@ namespace Cinemachine.Editor
 
                 // Do we hide this property?
                 bool hide = false;
-                if (prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_RawSignal))
+                if (prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.RawSignal))
                     asset = prop.objectReferenceValue as SignalSourceAsset;
-                if (prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_RepeatMode))
+                if (prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.RepeatMode))
                     hide = asset == null || asset.SignalDuration <= 0;
-                else if (prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_Randomize))
+                else if (prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.Randomize))
                     hide = asset == null || asset.SignalDuration > 0;
                 else
                 {
-                    hide = prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_ImpulseShape)
-                        || prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_CustomImpulseShape)
-                        || prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_ImpulseDuration)
-                        || prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.m_DissipationRate);
+                    hide = prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.ImpulseShape)
+                        || prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.CustomImpulseShape)
+                        || prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.ImpulseDuration)
+                        || prop.name == SerializedPropertyHelper.PropertyName(() => m_MyClass.DissipationRate);
                 }
 
                 if (hide)

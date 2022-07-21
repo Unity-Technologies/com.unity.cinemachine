@@ -72,16 +72,16 @@ namespace Cinemachine
 
         void UpdateWeights()
         {
-            var targets = m_group.m_Targets;
-            int last = targets.Length - 1;
-            if (last < 0) return; targets[0].weight = Weight0;
-            if (last < 1) return; targets[1].weight = Weight1;
-            if (last < 2) return; targets[2].weight = Weight2;
-            if (last < 3) return; targets[3].weight = Weight3;
-            if (last < 4) return; targets[4].weight = Weight4;
-            if (last < 5) return; targets[5].weight = Weight5;
-            if (last < 6) return; targets[6].weight = Weight6;
-            if (last < 7) return; targets[7].weight = Weight7;
+            var targets = m_group.Targets;
+            int last = targets.Count - 1;
+            if (last < 0) return; targets[0].Weight = Weight0;
+            if (last < 1) return; targets[1].Weight = Weight1;
+            if (last < 2) return; targets[2].Weight = Weight2;
+            if (last < 3) return; targets[3].Weight = Weight3;
+            if (last < 4) return; targets[4].Weight = Weight4;
+            if (last < 5) return; targets[5].Weight = Weight5;
+            if (last < 6) return; targets[6].Weight = Weight6;
+            if (last < 7) return; targets[7].Weight = Weight7;
         }
     }
 }

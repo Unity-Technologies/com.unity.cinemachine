@@ -40,7 +40,7 @@ namespace Cinemachine.Editor
             BeginInspector();
 
             if (Target.m_AvoidObstacles && Target.VirtualCamera != null
-                    && !Target.VirtualCamera.State.HasLookAt)
+                    && !Target.VirtualCamera.State.HasLookAt())
                 EditorGUILayout.HelpBox(
                     "Avoid Obstacles requires a LookAt target.",
                     MessageType.Warning);
@@ -55,8 +55,8 @@ namespace Cinemachine.Editor
             if (vcam != null && collider.enabled)
             {
                 Color oldColor = Gizmos.color;
-                Vector3 pos = vcam.State.FinalPosition;
-                if (collider.m_AvoidObstacles && vcam.State.HasLookAt)
+                Vector3 pos = vcam.State.GetFinalPosition();
+                if (collider.m_AvoidObstacles && vcam.State.HasLookAt())
                 {
                     Gizmos.color = CinemachineColliderPrefs.FeelerColor;
                     if (collider.m_CameraRadius > 0)

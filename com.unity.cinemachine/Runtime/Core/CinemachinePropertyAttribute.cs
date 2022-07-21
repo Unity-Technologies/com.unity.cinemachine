@@ -87,12 +87,8 @@ namespace Cinemachine
     /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
+    /// GML TODO: delete this
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
-
-    /// <summary>
-    /// Property applied to CinemachineBlendDefinition.  Used for custom drawing in the inspector.
-    /// </summary>
-    public sealed class CinemachineBlendDefinitionPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Invoke play-mode-save for a class.  This class's fields will be scanned

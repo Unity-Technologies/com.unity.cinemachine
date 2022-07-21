@@ -2,15 +2,10 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
-    /// <summary>
-    /// Property applied to CinemachineImpulseManager.EnvelopeDefinition.
-    /// Used for custom drawing in the inspector.  This attribute is obsolete and not used.
-    /// </summary>
-    public sealed class CinemachineImpulseEnvelopePropertyAttribute : PropertyAttribute {}
-
     /// <summary>
     /// Property applied to CinemachineImpulseManager Channels.
     /// Used for custom drawing in the inspector.
@@ -24,24 +19,24 @@ namespace Cinemachine
     public class CinemachineImpulseManager
     {
         private CinemachineImpulseManager() {}
-        private static CinemachineImpulseManager sInstance = null;
+        private static CinemachineImpulseManager s_Instance = null;
 
         /// <summary>Get the singleton instance</summary>
         public static CinemachineImpulseManager Instance
         {
             get
             {
-                if (sInstance == null)
-                    sInstance = new CinemachineImpulseManager();
-                return sInstance;
+                if (s_Instance == null)
+                    s_Instance = new CinemachineImpulseManager();
+                return s_Instance;
             }
         }
 
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule()
         {
-            if (sInstance != null)
-                sInstance.Clear();
+            if (s_Instance != null)
+                s_Instance.Clear();
         }
 
         const float Epsilon = UnityVectorExtensions.Epsilon;
@@ -52,50 +47,50 @@ namespace Cinemachine
         public struct EnvelopeDefinition
         {
             /// <summary>Normalized curve defining the shape of the start of the envelope.</summary>
-            [Tooltip("Normalized curve defining the shape of the start of the envelope.  If blank a default curve will be used")]
-            public AnimationCurve m_AttackShape;
+            [Tooltip("Normalized curve defining the shape of the start of the envelope.  "
+                + "If blank a default curve will be used")]
+            [FormerlySerializedAs("m_AttackShape")]
+            public AnimationCurve AttackShape;
 
             /// <summary>Normalized curve defining the shape of the end of the envelope.</summary>
-            [Tooltip("Normalized curve defining the shape of the end of the envelope.  If blank a default curve will be used")]
-            public AnimationCurve m_DecayShape;
+            [Tooltip("Normalized curve defining the shape of the end of the envelope.  "
+                + "If blank a default curve will be used")]
+            [FormerlySerializedAs("m_DecayShape")]
+            public AnimationCurve DecayShape;
 
             /// <summary>Duration in seconds of the attack.  Attack curve will be scaled to fit.  Must be >= 0</summary>
             [Tooltip("Duration in seconds of the attack.  Attack curve will be scaled to fit.  Must be >= 0.")]
-            public float m_AttackTime; // Must be >= 0
+            [FormerlySerializedAs("m_AttackTime")]
+            public float AttackTime; // Must be >= 0
 
             /// <summary>Duration in seconds of the central fully-scaled part of the envelope.  Must be >= 0.</summary>
             [Tooltip("Duration in seconds of the central fully-scaled part of the envelope.  Must be >= 0.")]
-            public float m_SustainTime; // Must be >= 0
+            [FormerlySerializedAs("m_SustainTime")]
+            public float SustainTime; // Must be >= 0
 
             /// <summary>Duration in seconds of the decay.  Decay curve will be scaled to fit.  Must be >= 0.</summary>
             [Tooltip("Duration in seconds of the decay.  Decay curve will be scaled to fit.  Must be >= 0.")]
-            public float m_DecayTime; // Must be >= 0
+            [FormerlySerializedAs("m_DecayTime")]
+            public float DecayTime; // Must be >= 0
 
-            /// <summary>If checked, signal amplitude scaling will also be applied to the time envelope of the signal.  Bigger signals will last longer</summary>
-            [Tooltip("If checked, signal amplitude scaling will also be applied to the time envelope of the signal.  Stronger signals will last longer.")]
-            public bool m_ScaleWithImpact;
+            /// <summary>If checked, signal amplitude scaling will also be applied to the time 
+            /// envelope of the signal.  Bigger signals will last longer</summary>
+            [Tooltip("If checked, signal amplitude scaling will also be applied to the time "
+                + "envelope of the signal.  Stronger signals will last longer.")]
+            [FormerlySerializedAs("m_ScaleWithImpact")]
+            public bool ScaleWithImpact;
 
             /// <summary>If true, then duration is infinite.</summary>
             [Tooltip("If true, then duration is infinite.")]
-            public bool m_HoldForever;
+            [FormerlySerializedAs("m_HoldForever")]
+            public bool HoldForever;
 
             /// <summary>Get an envelope with default values.</summary>
             /// <returns>An event with default values</returns>
-            public static EnvelopeDefinition Default()
-            {
-                return new EnvelopeDefinition { m_DecayTime = 0.7f, m_SustainTime = 0.2f, m_ScaleWithImpact = true };
-            }
+            public static EnvelopeDefinition Default => new() { DecayTime = 0.7f, SustainTime = 0.2f, ScaleWithImpact = true };
 
             /// <summary>Duration of the envelope, in seconds.  If negative, then duration is infinite.</summary>
-            public float Duration
-            {
-                get
-                {
-                    if (m_HoldForever)
-                        return -1;
-                    return m_AttackTime + m_SustainTime + m_DecayTime;
-                }
-            }
+            public float Duration => HoldForever ? -1 : AttackTime + SustainTime + DecayTime;
 
             /// <summary>
             /// Get the value of the tenvelope at a given time relative to the envelope start.
@@ -106,21 +101,21 @@ namespace Cinemachine
             {
                 if (offset >= 0)
                 {
-                    if (offset < m_AttackTime && m_AttackTime > Epsilon)
+                    if (offset < AttackTime && AttackTime > Epsilon)
                     {
-                        if (m_AttackShape == null || m_AttackShape.length < 2)
-                            return Damper.Damp(1, m_AttackTime, offset);
-                        return m_AttackShape.Evaluate(offset / m_AttackTime);
+                        if (AttackShape == null || AttackShape.length < 2)
+                            return Damper.Damp(1, AttackTime, offset);
+                        return AttackShape.Evaluate(offset / AttackTime);
                     }
-                    offset -= m_AttackTime;
-                    if (m_HoldForever || offset < m_SustainTime)
+                    offset -= AttackTime;
+                    if (HoldForever || offset < SustainTime)
                         return 1;
-                    offset -= m_SustainTime;
-                    if (offset < m_DecayTime && m_DecayTime > Epsilon)
+                    offset -= SustainTime;
+                    if (offset < DecayTime && DecayTime > Epsilon)
                     {
-                        if (m_DecayShape == null || m_DecayShape.length < 2)
-                            return 1 - Damper.Damp(1, m_DecayTime, offset);
-                        return m_DecayShape.Evaluate(offset / m_DecayTime);
+                        if (DecayShape == null || DecayShape.length < 2)
+                            return 1 - Damper.Damp(1, DecayTime, offset);
+                        return DecayShape.Evaluate(offset / DecayTime);
                     }
                 }
                 return 0;
@@ -137,11 +132,11 @@ namespace Cinemachine
             {
                 if (offset < 0)
                     offset = 0;
-                if (offset < m_AttackTime)
-                    m_AttackTime = 0; // How to prevent pop? GML
-                m_SustainTime = offset - m_AttackTime;
+                if (offset < AttackTime)
+                    AttackTime = 0; // How to prevent pop? GML
+                SustainTime = offset - AttackTime;
                 if (forceNoDecay)
-                    m_DecayTime = 0;
+                    DecayTime = 0;
             }
 
             /// <summary>
@@ -149,8 +144,8 @@ namespace Cinemachine
             /// </summary>
             public void Clear()
             {
-                m_AttackShape = m_DecayShape = null;
-                m_AttackTime = m_SustainTime = m_DecayTime = 0;
+                AttackShape = DecayShape = null;
+                AttackTime = SustainTime = DecayTime = 0;
             }
 
             /// <summary>
@@ -158,9 +153,9 @@ namespace Cinemachine
             /// </summary>
             public void Validate()
             {
-                m_AttackTime = Mathf.Max(0, m_AttackTime);
-                m_DecayTime = Mathf.Max(0, m_DecayTime);
-                m_SustainTime = Mathf.Max(0, m_SustainTime);
+                AttackTime = Mathf.Max(0, AttackTime);
+                DecayTime = Mathf.Max(0, DecayTime);
+                SustainTime = Mathf.Max(0, SustainTime);
             }
         }
 
@@ -180,22 +175,22 @@ namespace Cinemachine
         public class ImpulseEvent
         {
             /// <summary>Start time of the event.</summary>
-            public float m_StartTime;
+            public float StartTime;
 
             /// <summary>Time-envelope of the signal.</summary>
-            public EnvelopeDefinition m_Envelope;
+            public EnvelopeDefinition Envelope;
 
             /// <summary>Raw signal source.  The ouput of this will be scaled to fit in the envelope.</summary>
-            public ISignalSource6D m_SignalSource;
+            public ISignalSource6D SignalSource;
 
             /// <summary>Worldspace origin of the signal.</summary>
-            public Vector3 m_Position;
+            public Vector3 Position;
 
             /// <summary>Radius around the signal origin that has full signal value.  Distance dissipation begins after this distance.</summary>
-            public float m_Radius;
+            public float Radius;
 
             /// <summary>How the signal behaves as the listener moves away from the origin.</summary>
-            public enum DirectionMode
+            public enum DirectionModes
             {
                 /// <summary>Signal direction remains constant everywhere.</summary>
                 Fixed,
@@ -203,13 +198,13 @@ namespace Cinemachine
                 RotateTowardSource
             }
             /// <summary>How the signal direction behaves as the listener moves away from the source.</summary>
-            public DirectionMode m_DirectionMode = DirectionMode.Fixed;
+            public DirectionModes DirectionMode = DirectionModes.Fixed;
 
             /// <summary>Channels on which this event will broadcast its signal.</summary>
-            public int m_Channel;
+            public int Channel;
 
             /// <summary>How the signal dissipates with distance.</summary>
-            public enum DissipationMode
+            public enum DissipationModes
             {
                 /// <summary>Simple linear interpolation to zero over the dissipation distance.</summary>
                 LinearDecay,
@@ -220,32 +215,32 @@ namespace Cinemachine
             }
 
             /// <summary>How the signal dissipates with distance.</summary>
-            public DissipationMode m_DissipationMode;
+            public DissipationModes DissipationMode;
 
             /// <summary>Distance over which the dissipation occurs.  Must be >= 0.</summary>
-            public float m_DissipationDistance;
+            public float DissipationDistance;
 
             /// <summary>
             /// How the effect fades with distance. 0 = no dissipation, 1 = rapid dissipation, -1 = off (legacy mode)
             /// </summary>
-            public float m_CustomDissipation;
+            public float CustomDissipation;
 
             /// <summary>
             /// The speed (m/s) at which the impulse propagates through space.  High speeds 
             /// allow listeners to react instantaneously, while slower speeds allow listeres in the 
             /// scene to react as if to a wave spreading from the source.  
             /// </summary>
-            public float m_PropagationSpeed;
+            public float PropagationSpeed;
 
             /// <summary>Returns true if the event is no longer generating a signal because its time has expired</summary>
             public bool Expired
             {
                 get
                 {
-                    var d = m_Envelope.Duration;
-                    var maxDistance = m_Radius + m_DissipationDistance;
-                    float time = Instance.CurrentTime - maxDistance / Mathf.Max(1, m_PropagationSpeed);
-                    return d > 0 && m_StartTime + d <= time;
+                    var d = Envelope.Duration;
+                    var maxDistance = Radius + DissipationDistance;
+                    float time = Instance.CurrentTime - maxDistance / Mathf.Max(1, PropagationSpeed);
+                    return d > 0 && StartTime + d <= time;
                 }
             }
 
@@ -255,8 +250,8 @@ namespace Cinemachine
             /// otherwise its envelope's decay curve will begin at the cancel time</param>
             public void Cancel(float time, bool forceNoDecay)
             {
-                m_Envelope.m_HoldForever = false;
-                m_Envelope.ChangeStopTime(time - m_StartTime, forceNoDecay);
+                Envelope.HoldForever = false;
+                Envelope.ChangeStopTime(time - StartTime, forceNoDecay);
             }
 
             /// <summary>Calculate the the decay applicable at a given distance from the impact point</summary>
@@ -264,23 +259,23 @@ namespace Cinemachine
             /// <returns>Scale factor 0...1</returns>
             public float DistanceDecay(float distance)
             {
-                float radius = Mathf.Max(m_Radius, 0);
+                float radius = Mathf.Max(Radius, 0);
                 if (distance < radius)
                     return 1;
                 distance -= radius;
-                if (distance >= m_DissipationDistance)
+                if (distance >= DissipationDistance)
                     return 0;
-                if (m_CustomDissipation >= 0)
-                    return EvaluateDissipationScale(m_CustomDissipation, distance / m_DissipationDistance);
-                switch (m_DissipationMode)
+                if (CustomDissipation >= 0)
+                    return EvaluateDissipationScale(CustomDissipation, distance / DissipationDistance);
+                switch (DissipationMode)
                 {
                     default:
-                    case DissipationMode.LinearDecay:
-                        return Mathf.Lerp(1, 0, distance / m_DissipationDistance);
-                    case DissipationMode.SoftDecay:
-                        return 0.5f * (1 + Mathf.Cos(Mathf.PI * (distance / m_DissipationDistance)));
-                    case DissipationMode.ExponentialDecay:
-                        return 1 - Damper.Damp(1, m_DissipationDistance, distance);
+                    case DissipationModes.LinearDecay:
+                        return Mathf.Lerp(1, 0, distance / DissipationDistance);
+                    case DissipationModes.SoftDecay:
+                        return 0.5f * (1 + Mathf.Cos(Mathf.PI * (distance / DissipationDistance)));
+                    case DissipationModes.ExponentialDecay:
+                        return 1 - Damper.Damp(1, DissipationDistance, distance);
                 }
             }
 
@@ -293,24 +288,24 @@ namespace Cinemachine
             public bool GetDecayedSignal(
                 Vector3 listenerPosition, bool use2D, out Vector3 pos, out Quaternion rot)
             {
-                if (m_SignalSource != null)
+                if (SignalSource != null)
                 {
-                    float distance = use2D ? Vector2.Distance(listenerPosition, m_Position)
-                        : Vector3.Distance(listenerPosition, m_Position);
-                    float time = Instance.CurrentTime - m_StartTime 
-                        - distance / Mathf.Max(1, m_PropagationSpeed);
-                    float scale = m_Envelope.GetValueAt(time) * DistanceDecay(distance);
+                    float distance = use2D ? Vector2.Distance(listenerPosition, Position)
+                        : Vector3.Distance(listenerPosition, Position);
+                    float time = Instance.CurrentTime - StartTime 
+                        - distance / Mathf.Max(1, PropagationSpeed);
+                    float scale = Envelope.GetValueAt(time) * DistanceDecay(distance);
                     if (scale != 0)
                     {
-                        m_SignalSource.GetSignal(time, out pos, out rot);
+                        SignalSource.GetSignal(time, out pos, out rot);
                         pos *= scale;
                         rot = Quaternion.SlerpUnclamped(Quaternion.identity, rot, scale);
-                        if (m_DirectionMode == DirectionMode.RotateTowardSource && distance > Epsilon)
+                        if (DirectionMode == DirectionModes.RotateTowardSource && distance > Epsilon)
                         {
-                            Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - m_Position);
-                            if (m_Radius > Epsilon)
+                            Quaternion q = Quaternion.FromToRotation(Vector3.up, listenerPosition - Position);
+                            if (Radius > Epsilon)
                             {
-                                float t = Mathf.Clamp01(distance / m_Radius);
+                                float t = Mathf.Clamp01(distance / Radius);
                                 q = Quaternion.Slerp(
                                     q, Quaternion.identity, Mathf.Cos(Mathf.PI * t / 2));
                             }
@@ -327,15 +322,15 @@ namespace Cinemachine
             /// <summary>Reset the event to a default state</summary>
             public void Clear()
             {
-                m_Envelope.Clear();
-                m_StartTime = 0;
-                m_SignalSource = null;
-                m_Position = Vector3.zero;
-                m_Channel = 0;
-                m_Radius = 0;
-                m_DissipationDistance = 100;
-                m_DissipationMode = DissipationMode.ExponentialDecay;
-                m_CustomDissipation = -1;
+                Envelope.Clear();
+                StartTime = 0;
+                SignalSource = null;
+                Position = Vector3.zero;
+                Channel = 0;
+                Radius = 0;
+                DissipationDistance = 100;
+                DissipationMode = DissipationModes.ExponentialDecay;
+                CustomDissipation = -1;
             }
 
             /// <summary>Don't create them yourself.  Use CinemachineImpulseManager.NewImpulseEvent().</summary>
@@ -377,7 +372,7 @@ namespace Cinemachine
                             m_ExpiredEvents.Add(e);
                         }
                     }
-                    else if ((e.m_Channel & channelMask) != 0)
+                    else if ((e.Channel & channelMask) != 0)
                     {
                         Vector3 pos0 = Vector3.zero;
                         Quaternion rot0 = Quaternion.identity;
@@ -408,7 +403,7 @@ namespace Cinemachine
         {
             ImpulseEvent e;
             if (m_ExpiredEvents == null || m_ExpiredEvents.Count == 0)
-                return new ImpulseEvent() { m_CustomDissipation = -1 };
+                return new ImpulseEvent() { CustomDissipation = -1 };
             e = m_ExpiredEvents[m_ExpiredEvents.Count-1];
             m_ExpiredEvents.RemoveAt(m_ExpiredEvents.Count-1);
             return e;
@@ -424,7 +419,7 @@ namespace Cinemachine
                 m_ActiveEvents = new List<ImpulseEvent>();
             if (e != null)
             {
-                e.m_StartTime = CurrentTime;
+                e.StartTime = CurrentTime;
                 m_ActiveEvents.Add(e);
             }
         }

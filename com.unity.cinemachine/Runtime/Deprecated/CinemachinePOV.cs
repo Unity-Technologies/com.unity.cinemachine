@@ -11,7 +11,7 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource
+    public class CinemachinePOV : CinemachineComponentBase, CinemachineFreeLookModifier.IModifierValueSource, AxisState.IRequiresInput
     {
         /// <summary>
         /// Defines the recentering target: Recentering goes here
@@ -95,16 +95,18 @@ namespace Cinemachine
             UpdateInputAxisProvider();
         }
         
+        bool AxisState.IRequiresInput.RequiresInput() => true;
+
         /// <summary>
         /// API for the inspector.  Internal use only
         /// </summary>
-        public void UpdateInputAxisProvider()
+        internal void UpdateInputAxisProvider()
         {
             m_HorizontalAxis.SetInputAxisProvider(0, null);
             m_VerticalAxis.SetInputAxisProvider(1, null);
             if (VirtualCamera != null)
             {
-                var provider = VirtualCamera.GetInputAxisProvider();
+                var provider = VirtualCamera.GetComponent<AxisState.IInputAxisProvider>();
                 if (provider != null)
                 {
                     m_HorizontalAxis.SetInputAxisProvider(0, provider);
@@ -209,7 +211,7 @@ namespace Cinemachine
             m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, -1, 0);
             m_HorizontalRecentering.CancelRecentering();
             m_VerticalRecentering.CancelRecentering();
-            if (fromCam != null && transitionParams.m_InheritPosition  
+            if (fromCam != null && transitionParams.InheritPosition  
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
@@ -218,9 +220,6 @@ namespace Cinemachine
             return false;
         }
         
-        /// <summary>POV is controlled by input.</summary>
-        public override bool RequiresUserInput => true;
-
         void SetAxesForRotation(Quaternion targetRot)
         {
             Vector3 up = VcamState.ReferenceUp;

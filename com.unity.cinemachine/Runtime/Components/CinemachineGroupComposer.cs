@@ -150,14 +150,14 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             // Can't do anything without a group to look at
-            ICinemachineTargetGroup group = AbstractLookAtTargetGroup;
+            ICinemachineTargetGroup group = LookAtTargetAsGroup;
             if (group == null)
             {
                 base.MutateCameraState(ref curState, deltaTime);
                 return;
             }
 
-            if (!IsValid || !curState.HasLookAt)
+            if (!IsValid || !curState.HasLookAt())
             {
                 m_prevFramingDistance = 0;
                 m_prevFOV = 0;

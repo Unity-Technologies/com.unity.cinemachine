@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
-    /// Components that hold InputAxisValue structs
+    /// Components that hold InputAxisValue structs must implement this interface to be discoverable.
     /// </summary>
-    public interface IInputAxisTarget
+    public interface IInputAxisSource
     {
         /// <summary>
         /// Desscribes an axis for an axis driver
@@ -29,7 +29,13 @@ namespace Cinemachine
         /// </summary>
         /// <param name="axes">Axes to drive</param>
         public void GetInputAxes(List<AxisDescriptor> axes);
+    }
 
+    /// <summary>
+    /// Components that can generate an input axis reset must implement this interface.
+    /// </summary>
+    public interface IInputAxisResetSource
+    {
         /// <summary>
         /// Delegate to be called when input needs to be reset and recentering cancelled.
         /// </summary>

@@ -16,7 +16,7 @@ namespace Cinemachine
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineOrbitalFollow 
-        : CinemachineComponentBase, IInputAxisTarget
+        : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
@@ -78,7 +78,7 @@ namespace Cinemachine
         /// <summary>
         /// Input axis controller registers here a delegate to call when the camera is reset
         /// </summary>
-        IInputAxisTarget.ResetHandler m_ResetHandler;
+        IInputAxisResetSource.ResetHandler m_ResetHandler;
         
         void OnValidate()
         {
@@ -119,20 +119,20 @@ namespace Cinemachine
 
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
-        void IInputAxisTarget.GetInputAxes(List<IInputAxisTarget.AxisDescriptor> axes)
+        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
-            axes.Add(new IInputAxisTarget.AxisDescriptor { Axis = RadialAxis, Name = "Radial", AxisIndex = 2 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = RadialAxis, Name = "Radial", AxisIndex = 2 });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to register</param>
-        void IInputAxisTarget.RegisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler += handler;
+        void IInputAxisResetSource.RegisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to unregister</param>
-        void IInputAxisTarget.UnregisterResetHandler(IInputAxisTarget.ResetHandler handler) => m_ResetHandler -= handler;
+        void IInputAxisResetSource.UnregisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler -= handler;
 
         /// <summary>Inspector checks this and displays warning if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;
@@ -196,7 +196,7 @@ namespace Cinemachine
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
             if (fromCam != null
-                && transitionParams.m_InheritPosition
+                && transitionParams.InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 var state = fromCam.State;
