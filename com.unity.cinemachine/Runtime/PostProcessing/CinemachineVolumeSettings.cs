@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;
-    using UnityEngine.Rendering;s
+    using UnityEngine.Rendering;
     #if CINEMACHINE_HDRP_7_3_1
         using UnityEngine.Rendering.HighDefinition;
     #else
