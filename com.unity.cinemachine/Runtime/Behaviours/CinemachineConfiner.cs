@@ -274,14 +274,14 @@ namespace Cinemachine
         // Camera must be orthographic
         Vector3 ConfineScreenEdges(ref CameraState state)
         {
-            var rot = state.CorrectedOrientation;
+            var rot = state.GetCorrectedOrientation();
             var dy = state.Lens.OrthographicSize;
             var dx = dy * state.Lens.Aspect;
             var vx = (rot * Vector3.right) * dx;
             var vy = (rot * Vector3.up) * dy;
 
             var displacement = Vector3.zero;
-            var camPos = state.CorrectedPosition;
+            var camPos = state.GetCorrectedPosition();
             var lastD = Vector3.zero;
 
             const int kMaxIter = 12;
