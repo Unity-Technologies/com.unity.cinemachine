@@ -108,6 +108,31 @@ namespace Cinemachine.Editor
         {
             const string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
 
+            // Don't draw gizmos on hidden stuff
+            if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
+                return;
+
+            if (vcam.ParentCamera != null && (selectionType & GizmoType.Active) == 0)
+                return;
+
+            var state = vcam.State;
+            Gizmos.DrawIcon(state.GetFinalPosition(), kGizmoFileName, true);
+
+            DrawCameraFrustumGizmo(
+                state.Lens,
+                Matrix4x4.TRS(
+                    state.GetFinalPosition(),
+                    UnityQuaternionExtensions.Normalized(state.GetFinalOrientation()), Vector3.one),
+                CinemachineCore.Instance.IsLive(vcam)
+                    ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
+                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
+        }
+
+        public static void DrawCameraFrustumGizmo(LensSettings lens, Matrix4x4 transform, Color color)
+        {
+            var aspect = lens.Aspect;
+            var ortho = lens.Orthographic;
+
             var originalMatrix = Gizmos.matrix;
             var originalGizmoColour = Gizmos.color;
             
