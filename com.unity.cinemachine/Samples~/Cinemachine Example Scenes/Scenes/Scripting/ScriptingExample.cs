@@ -12,8 +12,8 @@ public class ScriptingExample : MonoBehaviour
     {
         // Create a Cinemachine brain on the main camera
         var brain = GameObject.Find("Main Camera").AddComponent<CinemachineBrain>();
-        brain.m_ShowDebugText = true;
-        brain.m_DefaultBlend.m_Time = 1;
+        brain.ShowDebugText = true;
+        brain.DefaultBlend.m_Time = 1;
 
         // Create a virtual camera that looks at object "Cube", and set some settings
         vcam = new GameObject("VirtualCamera").AddComponent<CmCamera>();

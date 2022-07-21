@@ -29,7 +29,6 @@ namespace Cinemachine
             public string To;
 
             /// <summary>Blend curve definition</summary>
-            [CinemachineBlendDefinitionProperty]
             [Tooltip("Blend curve definition")]
             [FormerlySerializedAs("m_Blend")]
             public CinemachineBlendDefinition Blend;

@@ -452,7 +452,7 @@ namespace Cinemachine
                 {
                     var b = GetActiveBrain(i);
                     if (b != null && b.IsLive(vcam))
-                        b.m_CameraActivatedEvent.Invoke(vcam, vcamFrom);
+                        b.CameraActivatedEvent.Invoke(vcam, vcamFrom);
                 }
             }
         }
@@ -471,8 +471,8 @@ namespace Cinemachine
                     var b = GetActiveBrain(i);
                     if (b != null && b.IsLive(vcam))
                     {
-                        if (b.m_CameraCutEvent != null)
-                            b.m_CameraCutEvent.Invoke(b);
+                        if (b.CameraCutEvent != null)
+                            b.CameraCutEvent.Invoke(b);
                         if (CameraCutEvent != null)
                             CameraCutEvent.Invoke(b);
                     }

@@ -90,11 +90,6 @@ namespace Cinemachine
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
 
     /// <summary>
-    /// Property applied to CinemachineBlendDefinition.  Used for custom drawing in the inspector.
-    /// </summary>
-    public sealed class CinemachineBlendDefinitionPropertyAttribute : PropertyAttribute {}
-
-    /// <summary>
     /// Invoke play-mode-save for a class.  This class's fields will be scanned
     /// upon exiting play mode, and its property values will be applied to the scene object.
     /// This is a stopgap measure that will become obsolete once Unity implements

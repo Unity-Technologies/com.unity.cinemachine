@@ -68,7 +68,6 @@ namespace Cinemachine
         public bool m_RandomizeChoice = false;
 
         /// <summary>The blend which is used if you don't explicitly define a blend between two Virtual Cameras</summary>
-        [CinemachineBlendDefinitionProperty]
         [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Cameras")]
         public CinemachineBlendDefinition m_DefaultBlend
             = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0);

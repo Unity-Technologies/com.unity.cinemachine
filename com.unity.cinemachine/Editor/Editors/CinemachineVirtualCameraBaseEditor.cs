@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
         {
             Undo.undoRedoPerformed -= UpdateCameraState;
             
-            if (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target)
+            if (CinemachineBrain.SoloCamera == Target)
             {
                 CinemachineBrain.SoloCamera = null;
                 InspectorUtility.RepaintGameView();
@@ -300,7 +300,7 @@ namespace Cinemachine.Editor
             rect.x += rectLabel.width;
 
             Color color = GUI.color;
-            bool isSolo = (CinemachineBrain.SoloCamera == (ICinemachineCamera)Target);
+            bool isSolo = (CinemachineBrain.SoloCamera == Target);
             if (isSolo)
                 GUI.color = CinemachineBrain.GetSoloGUIColor();
 
