@@ -409,10 +409,14 @@ namespace Cinemachine
         {
             if (child != null)
             {
+#if true
+                child.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+#else
                 if (CinemachineCore.sShowHiddenObjects)
                     child.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
                 else
                     child.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+#endif
             }
         }
 

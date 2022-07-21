@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -19,23 +20,27 @@ namespace Cinemachine
         {
             /// <summary>When blending from this camera</summary>
             [Tooltip("When blending from this camera")]
-            public string m_From;
+            [FormerlySerializedAs("m_From")]
+            public string From;
 
             /// <summary>When blending to this camera</summary>
             [Tooltip("When blending to this camera")]
-            public string m_To;
+            [FormerlySerializedAs("m_To")]
+            public string To;
 
             /// <summary>Blend curve definition</summary>
             [CinemachineBlendDefinitionProperty]
             [Tooltip("Blend curve definition")]
-            public CinemachineBlendDefinition m_Blend;
+            [FormerlySerializedAs("m_Blend")]
+            public CinemachineBlendDefinition Blend;
         }
         /// <summary>The array containing explicitly defined blends between two Virtual Cameras</summary>
         [Tooltip("The array containing explicitly defined blends between two Virtual Cameras")]
-        public CustomBlend[] m_CustomBlends = null;
+        [FormerlySerializedAs("m_CustomBlends")]
+        public CustomBlend[] CustomBlends = null;
 
         /// <summary>Internal API for the inspector editopr: a label to represent any camera</summary>
-        public const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
+        internal const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
 
         /// <summary>
         /// Attempts to find a blend definition which matches the to and from cameras as specified.
@@ -52,36 +57,36 @@ namespace Cinemachine
             bool gotMeToAny = false;
             CinemachineBlendDefinition anyToMe = defaultBlend;
             CinemachineBlendDefinition meToAny = defaultBlend;
-            if (m_CustomBlends != null)
+            if (CustomBlends != null)
             {
-                for (int i = 0; i < m_CustomBlends.Length; ++i)
+                for (int i = 0; i < CustomBlends.Length; ++i)
                 {
                     // Attempt to find direct name first
-                    CustomBlend blendParams = m_CustomBlends[i];
-                    if ((blendParams.m_From == fromCameraName)
-                        && (blendParams.m_To == toCameraName))
+                    CustomBlend blendParams = CustomBlends[i];
+                    if ((blendParams.From == fromCameraName)
+                        && (blendParams.To == toCameraName))
                     {
-                        return blendParams.m_Blend;
+                        return blendParams.Blend;
                     }
                     // If we come across applicable wildcards, remember them
-                    if (blendParams.m_From == kBlendFromAnyCameraLabel)
+                    if (blendParams.From == kBlendFromAnyCameraLabel)
                     {
                         if (!string.IsNullOrEmpty(toCameraName)
-                            && blendParams.m_To == toCameraName)
+                            && blendParams.To == toCameraName)
                         {
                             if (!gotAnyToMe)
-                                anyToMe = blendParams.m_Blend;
+                                anyToMe = blendParams.Blend;
                             gotAnyToMe = true;
                         }
-                        else if (blendParams.m_To == kBlendFromAnyCameraLabel)
-                            defaultBlend = blendParams.m_Blend;
+                        else if (blendParams.To == kBlendFromAnyCameraLabel)
+                            defaultBlend = blendParams.Blend;
                     }
-                    else if (blendParams.m_To == kBlendFromAnyCameraLabel
+                    else if (blendParams.To == kBlendFromAnyCameraLabel
                              && !string.IsNullOrEmpty(fromCameraName)
-                             && blendParams.m_From == fromCameraName)
+                             && blendParams.From == fromCameraName)
                     {
                         if (!gotMeToAny)
-                            meToAny = blendParams.m_Blend;
+                            meToAny = blendParams.Blend;
                         gotMeToAny = true;
                     }
                 }
