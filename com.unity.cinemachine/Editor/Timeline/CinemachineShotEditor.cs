@@ -54,7 +54,7 @@ using Cinemachine;
         public static CinemachineVirtualCameraBase CreatePassiveVcamFromSceneView()
         {
             var vcam = CinemachineMenu.CreatePassiveVirtualCamera("Virtual Camera", null, false);
-            vcam.m_StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
+            vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
 
 #if false 
             // GML this is too bold.  What if timeline is a child of something moving?

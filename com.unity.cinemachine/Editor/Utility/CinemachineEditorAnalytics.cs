@@ -151,14 +151,14 @@ namespace Cinemachine.Editor
                 has_lookat_target = vcamBase.LookAt != null;
                 blend_hint = "";
                 inherit_position = false;
-                standby_update = vcamBase.m_StandbyUpdate.ToString();
+                standby_update = vcamBase.StandbyUpdate.ToString();
                 mode_overwrite = "";
                 body_component = "";
                 aim_component = "";
                 noise_component = "";
                 custom_component_count = 0;
                 custom_extension_count = 0;
-                var vcamExtensions = vcamBase.mExtensions;
+                var vcamExtensions = vcamBase.Extensions;
                 if (vcamExtensions != null)
                 {
                     extensions = new string[vcamExtensions.Count];
@@ -176,8 +176,8 @@ namespace Cinemachine.Editor
             public void SetTransitionsAndLens(
                 CinemachineVirtualCameraBase.TransitionParams transitions, LensSettings lens)
             {
-                blend_hint = transitions.m_BlendHint.ToString();
-                inherit_position = transitions.m_InheritPosition;
+                blend_hint = transitions.BlendHint.ToString();
+                inherit_position = transitions.InheritPosition;
                 mode_overwrite = lens.ModeOverride.ToString();
             }
 
