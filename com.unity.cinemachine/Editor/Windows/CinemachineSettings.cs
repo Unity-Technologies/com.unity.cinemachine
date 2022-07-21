@@ -370,9 +370,6 @@ namespace Cinemachine.Editor
 
             sScrollPosition = GUILayout.BeginScrollView(sScrollPosition);
 
-            //CinemachineCore.sShowHiddenObjects
-            //    = EditorGUILayout.Toggle("Show Hidden Objects", CinemachineCore.sShowHiddenObjects);
-
             ShowCoreSettings = EditorGUILayout.Foldout(ShowCoreSettings, "Runtime Settings", true);
             if (ShowCoreSettings)
             {

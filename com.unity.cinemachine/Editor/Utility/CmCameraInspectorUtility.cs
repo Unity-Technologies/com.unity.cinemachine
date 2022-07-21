@@ -91,7 +91,7 @@ namespace Cinemachine.Editor
             {
                 CameraState state = Target.State;
                 bool isNavelGazing = Target.PreviousStateIsValid 
-                    && state.HasLookAt && (state.ReferenceLookAt - state.CorrectedPosition).AlmostZero();
+                    && state.HasLookAt() && (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero();
                 m_NavelGazeMessage.style.display = isNavelGazing ? DisplayStyle.Flex : DisplayStyle.None;
             }
 

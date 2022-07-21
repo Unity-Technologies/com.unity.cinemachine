@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
 
             void UpdateVisibility()
             {
-                groupFraming.SetVisible(Target.AbstractFollowTargetGroup != null);
+                groupFraming.SetVisible(Target.FollowTargetAsGroup != null);
 
                 bool ortho = Target.VcamState.Lens.Orthographic;
                 nonOrthoControls.SetVisible(!ortho);
@@ -157,7 +157,7 @@ namespace Cinemachine.Editor
         private static void DrawGroupComposerGizmos(CinemachinePositionComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.AbstractFollowTargetGroup != null
+            if (target.FollowTargetAsGroup != null
                 && target.GroupFramingMode != CinemachinePositionComposer.FramingModes.None)
             {
                 Matrix4x4 m = Gizmos.matrix;
@@ -197,7 +197,7 @@ namespace Cinemachine.Editor
 
                 var originalColor = Handles.color;
                 var camPos = Target.VcamState.RawPosition;
-                var targetForward = Target.VirtualCamera.State.FinalOrientation * Vector3.forward;
+                var targetForward = Target.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);

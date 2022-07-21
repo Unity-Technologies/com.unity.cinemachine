@@ -312,7 +312,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            if (fromCam != null && transitionParams.m_InheritPosition
+            if (fromCam != null && transitionParams.InheritPosition
                  && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
@@ -379,7 +379,7 @@ namespace Cinemachine
             var verticalFOV = lens.FieldOfView;
 
             // Compute group bounds and adjust follow target for group framing
-            ICinemachineTargetGroup group = AbstractFollowTargetGroup;
+            ICinemachineTargetGroup group = FollowTargetAsGroup;
             bool isGroupFraming = group != null && GroupFramingMode != FramingModes.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
@@ -402,7 +402,7 @@ namespace Cinemachine
                 TrackedPoint = p;
             }
 
-            if (!curState.HasLookAt)
+            if (!curState.HasLookAt())
                 curState.ReferenceLookAt = followTargetPosition;
 
             // Adjust the desired depth for group framing

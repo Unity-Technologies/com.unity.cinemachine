@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine.Examples
 {
-    public class MoveAimTarget : MonoBehaviour
+    public class MoveAimTarget : MonoBehaviour, IInputAxisSource
     {
         public CinemachineBrain Brain;
         public RectTransform ReticleImage;
@@ -19,16 +20,22 @@ namespace Cinemachine.Examples
         public string IgnoreTag = string.Empty;
 
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
-        [Header("Axis Control")]
+        [Header("Input Axes")]
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        [AxisStateProperty]
-        public AxisState VerticalAxis;
+        public InputAxis VerticalAxis;
 
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        [AxisStateProperty]
-        public AxisState HorizontalAxis;
+        public InputAxis HorizontalAxis;
 
+        /// <summary>Report the available input axes</summary>
+        /// <param name="axes">Output list to which the axes will be added</param>
+        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        {
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
+        }
+        
         private void OnValidate()
         {
             VerticalAxis.Validate();
@@ -43,10 +50,8 @@ namespace Cinemachine.Examples
             CollideAgainst = 1;
             IgnoreTag = string.Empty;
 
-            VerticalAxis = new AxisState(-70, 70, false, false, 10f, 0.1f, 0.1f, "Mouse Y", true);
-            VerticalAxis.m_SpeedMode = AxisState.SpeedMode.InputValueGain;
-            HorizontalAxis = new AxisState(-180, 180, true, false, 10f, 0.1f, 0.1f, "Mouse X", false);
-            HorizontalAxis.m_SpeedMode = AxisState.SpeedMode.InputValueGain;
+            VerticalAxis = new InputAxis { Range = new Vector2(-70, 70) };
+            HorizontalAxis = new InputAxis { Range = new Vector2(-180, 180), Wrap = true };
         }
 
         private void OnEnable()
@@ -64,9 +69,6 @@ namespace Cinemachine.Examples
         {
             if (Brain == null)
                 return;
-
-            HorizontalAxis.Update(Time.deltaTime);
-            VerticalAxis.Update(Time.deltaTime);
 
             PlaceTarget();
         }

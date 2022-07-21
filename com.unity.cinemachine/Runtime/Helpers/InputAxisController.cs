@@ -11,7 +11,7 @@ using System.Linq;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a behaviour that is used to drive behaviours with IInputAxisTarget interface, 
+    /// This is a behaviour that is used to drive behaviours with IInputAxisSource interface, 
     /// which it discovers dynamically.  It is the bridge between the input system and 
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
     /// </summary>
@@ -86,10 +86,11 @@ namespace Cinemachine
         public List<Controller> Controllers = new List<Controller>();
 
         /// <summary>
-        /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisTarget"/>
+        /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisSource"/>
         /// </summary>
-        List<IInputAxisTarget.AxisDescriptor> m_Axes = new List<IInputAxisTarget.AxisDescriptor>();
-        List<IInputAxisTarget> m_AxisTargets = new List<IInputAxisTarget>();
+        List<IInputAxisSource.AxisDescriptor> m_Axes = new List<IInputAxisSource.AxisDescriptor>();
+        List<IInputAxisSource> m_AxisOwners = new List<IInputAxisSource>();
+        List<IInputAxisResetSource> m_AxisResetters = new List<IInputAxisResetSource>();
 
         void OnValidate()
         {
@@ -116,15 +117,15 @@ namespace Cinemachine
         }
 
 #if UNITY_EDITOR
-        static List<IInputAxisTarget> s_AxisTargetsCache = new List<IInputAxisTarget>();
+        static List<IInputAxisSource> s_AxisTargetsCache = new List<IInputAxisSource>();
         internal bool ConrollersAreValid()
         {
             s_AxisTargetsCache.Clear();
             GetComponentsInChildren(s_AxisTargetsCache);
             var count = s_AxisTargetsCache.Count;
-            bool isValid = count == m_AxisTargets.Count;
+            bool isValid = count == m_AxisOwners.Count;
             for (int i = 0; isValid && i < count; ++i)
-                if (s_AxisTargetsCache[i] != m_AxisTargets[i])
+                if (s_AxisTargetsCache[i] != m_AxisOwners[i])
                     isValid = false;
             return isValid;
         }
@@ -134,7 +135,7 @@ namespace Cinemachine
         void OnDisable()
         {
             m_Axes.Clear();
-            foreach (var t in m_AxisTargets)
+            foreach (var t in m_AxisResetters)
                 if ((t as UnityEngine.Object) != null)
                     t.UnregisterResetHandler(OnResetInput);
         }
@@ -142,21 +143,18 @@ namespace Cinemachine
         void CreateControllers()
         {
             m_Axes.Clear();
-            m_AxisTargets.Clear();
-            GetComponentsInChildren(m_AxisTargets);
+            m_AxisOwners.Clear();
+            GetComponentsInChildren(m_AxisOwners);
 
             // Trim excess controllers
             for (int i = Controllers.Count - 1; i >= 0; --i)
-                if (!m_AxisTargets.Contains(Controllers[i].Owner as IInputAxisTarget))
+                if (!m_AxisOwners.Contains(Controllers[i].Owner as IInputAxisSource))
                     Controllers.RemoveAt(i);
 
             // Rebuild the controller list, recycling existing ones to preserve the settings
             List<Controller> newControllers = new();
-            foreach (var t in m_AxisTargets)
+            foreach (var t in m_AxisOwners)
             {
-                t.UnregisterResetHandler(OnResetInput);
-                t.RegisterResetHandler(OnResetInput);
-
                 var startIndex = m_Axes.Count;
                 t.GetInputAxes(m_Axes);
                 for (int i = startIndex; i < m_Axes.Count; ++i)
@@ -173,10 +171,19 @@ namespace Cinemachine
             }
             Controllers = newControllers;
 
-            static int GetControllerIndex(List<Controller> list, IInputAxisTarget owner, string axisName)
+            // Rebuild the resetter list and register with them
+            m_AxisResetters.Clear();
+            GetComponentsInChildren(m_AxisResetters);
+            foreach (var t in m_AxisResetters)
+            {
+                t.UnregisterResetHandler(OnResetInput);
+                t.RegisterResetHandler(OnResetInput);
+            }
+
+            static int GetControllerIndex(List<Controller> list, IInputAxisSource owner, string axisName)
             {
                 for (int i = 0; i < list.Count; ++i)
-                    if (list[i].Owner as IInputAxisTarget == owner && list[i].Name == axisName)
+                    if (list[i].Owner as IInputAxisSource == owner && list[i].Name == axisName)
                         return i;
                 return -1;
             }
@@ -220,7 +227,7 @@ namespace Cinemachine
             }
         }
 
-        Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisTarget owner)
+        Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisSource owner)
         {
             var c = new Controller 
             {

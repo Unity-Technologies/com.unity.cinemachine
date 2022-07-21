@@ -131,14 +131,14 @@ namespace Cinemachine
                 var player = vcam.Follow;
                 if (player != null)
                 {
-                    state.ReferenceLookAt = ComputeLookAtPoint(state.CorrectedPosition, player);
+                    state.ReferenceLookAt = ComputeLookAtPoint(state.GetCorrectedPosition(), player);
                     AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
                 }
             }
             if (stage == CinemachineCore.Stage.Finalize)
             {
                 // Stabilize the LookAt point in the center of the screen
-                var dir = state.ReferenceLookAt - state.FinalPosition;
+                var dir = state.ReferenceLookAt - state.GetFinalPosition();
                 if (dir.sqrMagnitude > 0.01f)
                 {
                     state.RawOrientation = Quaternion.LookRotation(dir, state.ReferenceUp);

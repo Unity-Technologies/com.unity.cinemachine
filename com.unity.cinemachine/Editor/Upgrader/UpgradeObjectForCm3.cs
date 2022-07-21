@@ -330,8 +330,8 @@ namespace Cinemachine.Editor
                 // noise then any specific settings differences can be accounted for in
                 // the FreeLookModifier by setting amplitude to 0
                 return a == null || b == null ||
-                    ((a.m_NoiseProfile == null || b.m_NoiseProfile == null || a.m_NoiseProfile == b.m_NoiseProfile)
-                        && a.m_PivotOffset == b.m_PivotOffset);
+                    ((a.NoiseProfile == null || b.NoiseProfile == null || a.NoiseProfile == b.NoiseProfile)
+                        && a.PivotOffset == b.PivotOffset);
             }
 
             static bool PublicFieldsEqual(CinemachineComponentBase a, CinemachineComponentBase b, params string[] ignoreList)
@@ -489,17 +489,17 @@ namespace Cinemachine.Editor
             var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            var template = middle != null && middle.m_NoiseProfile != null 
-                ? middle : (top != null && top.m_NoiseProfile != null? top : bottom);
-            if (template == null || template.m_NoiseProfile == null)
+            var template = middle != null && middle.NoiseProfile != null 
+                ? middle : (top != null && top.NoiseProfile != null? top : bottom);
+            if (template == null || template.NoiseProfile == null)
                 return;
 
             var middleNoise = Undo.AddComponent<CinemachineBasicMultiChannelPerlin>(go);
             CopyValues(template, middleNoise);
 
             var middleSettings = GetNoiseSettings(middle);
-            middleNoise.m_AmplitudeGain = middleSettings.Amplitude;
-            middleNoise.m_FrequencyGain = middleSettings.Frequency;
+            middleNoise.AmplitudeGain = middleSettings.Amplitude;
+            middleNoise.FrequencyGain = middleSettings.Frequency;
 
             var topSettings = GetNoiseSettings(top);
             var bottomSettings = GetNoiseSettings(bottom);
@@ -523,8 +523,8 @@ namespace Cinemachine.Editor
                 var settings = new CinemachineFreeLookModifier.NoiseModifier.NoiseSettings();
                 if (noise != null)
                 {
-                    settings.Amplitude = noise.m_AmplitudeGain;
-                    settings.Frequency = noise.m_FrequencyGain;
+                    settings.Amplitude = noise.AmplitudeGain;
+                    settings.Frequency = noise.FrequencyGain;
                 }
                 return settings;
             }
