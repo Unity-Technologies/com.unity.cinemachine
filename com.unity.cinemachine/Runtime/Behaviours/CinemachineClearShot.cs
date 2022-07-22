@@ -69,12 +69,9 @@ namespace Cinemachine
         List<CinemachineVirtualCameraBase> m_RandomizedChilden = null;
         ICinemachineCamera m_TransitioningFrom;
 
-        void Reset()
+        protected override void Reset()
         {
-            DefaultTarget = default;
-            ShowDebugText = false;
-            InvalidateCameraCache();
-
+            base.Reset();
             ActivateAfter = 0;
             MinDuration = 0;
             RandomizeChoice = false;

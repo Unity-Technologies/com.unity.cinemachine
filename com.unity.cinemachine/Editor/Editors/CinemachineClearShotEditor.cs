@@ -115,7 +115,7 @@ namespace Cinemachine.Editor
             int numColliderChildren = 0;
             bool colliderOnParent = ObjectHasCollider(Target);
 
-            var children = Target.m_ChildCameras;
+            var children = Target.ChildCameras;
             var numChildren = children == null ? 0 : children.Count;
             for (int i = 0; i < numChildren; ++i)
                 if (ObjectHasCollider(children[i]))

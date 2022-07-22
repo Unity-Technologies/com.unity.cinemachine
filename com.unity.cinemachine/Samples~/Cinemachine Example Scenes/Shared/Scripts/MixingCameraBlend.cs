@@ -19,7 +19,7 @@ public class MixingCameraBlend : MonoBehaviour
         if (followTarget)
         {
             vcam = GetComponent<CinemachineMixingCamera>();
-            vcam.m_Weight0 = initialBottomWeight;
+            vcam.SetWeight(0, initialBottomWeight);
         }
     }
 
@@ -30,15 +30,15 @@ public class MixingCameraBlend : MonoBehaviour
             switch (axisToTrack)
             {
                 case (AxisEnum.X):
-                    vcam.m_Weight1 = Mathf.Abs(followTarget.transform.position.x);
+                    vcam.SetWeight(1, Mathf.Abs(followTarget.transform.position.x));
                     break;
                 case (AxisEnum.Z):
-                    vcam.m_Weight1 = Mathf.Abs(followTarget.transform.position.z);
+                    vcam.SetWeight(1, Mathf.Abs(followTarget.transform.position.z));
                     break;
                 case (AxisEnum.XZ):
-                    vcam.m_Weight1 =
+                    vcam.SetWeight(1,
                         Mathf.Abs(Mathf.Abs(followTarget.transform.position.x) +
-                                  Mathf.Abs(followTarget.transform.position.z));
+                                  Mathf.Abs(followTarget.transform.position.z)));
                     break;
             }
         }

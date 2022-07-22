@@ -42,10 +42,18 @@ namespace Cinemachine
         public bool ShowDebugText;
 
         /// <summary>
-        /// For the inspector only.  Does not really need to be serialized other than for the inspector
+        /// For the inspector ONLY.  Does not really need to be serialized other than for the inspector.
+        /// GML todo: make this go away
         /// </summary>
         [SerializeField, HideInInspector, NoSaveDuringPlay] internal List<CinemachineVirtualCameraBase> m_ChildCameras;
 
+        protected virtual void Reset()
+        {
+            DefaultTarget = default;
+            ShowDebugText = false;
+            InvalidateCameraCache();
+        }
+        
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
         public List<CinemachineVirtualCameraBase> ChildCameras 
         { 
@@ -92,7 +100,7 @@ namespace Cinemachine
 
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominat live child</param>
+        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
@@ -181,16 +189,18 @@ namespace Cinemachine
         }
 
         /// <summary>Rebuild the camera cache if it's been invalidated</summary>
-        protected void UpdateCameraCache()
+        /// <returns>True if a cache requild was performed, false if cache is up to date.</returns>
+        protected virtual bool UpdateCameraCache()
         {
             if (m_ChildCameras != null)
-                return;
+                return false;
             PreviousStateIsValid = false;
             m_ChildCameras = new();
             GetComponentsInChildren(m_ChildCameras);
             for (int i = m_ChildCameras.Count-1; i >= 0; --i)
                 if (m_ChildCameras[i].transform.parent != transform)
                     m_ChildCameras.RemoveAt(i);
+            return true;
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>

@@ -113,12 +113,9 @@ namespace Cinemachine
         Dictionary<int, int> m_StateParentLookup;
         List<AnimatorClipInfo>  m_clipInfoList = new List<AnimatorClipInfo>();
 
-        void Reset()
+        protected override void Reset()
         {
-            DefaultTarget = default;
-            ShowDebugText = false;
-            InvalidateCameraCache();
-
+            base.Reset();
             Instructions = null;
             AnimatedTarget = null;
             LayerIndex = 0;
@@ -305,12 +302,13 @@ namespace Cinemachine
 
         CinemachineVirtualCameraBase ChooseCurrentCamera()
         {
-            if (m_ChildCameras == null || m_ChildCameras.Count == 0)
+            var children = ChildCameras;
+            if (children == null || children.Count == 0)
             {
                 m_ActivationTime = 0;
                 return null;
             }
-            var defaultCam = m_ChildCameras[0];
+            var defaultCam = children[0];
             if (AnimatedTarget == null || !AnimatedTarget.gameObject.activeSelf
                 || AnimatedTarget.runtimeAnimatorController == null
                 || LayerIndex < 0 || !AnimatedTarget.hasBoundPlayables

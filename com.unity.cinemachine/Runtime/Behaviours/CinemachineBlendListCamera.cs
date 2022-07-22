@@ -57,11 +57,9 @@ namespace Cinemachine
         float m_ActivationTime = -1; // The time at which the current instruction went live
         int m_CurrentInstruction = 0;
 
-        void Reset()
+        protected override void Reset()
         {
-            DefaultTarget = default;
-            ShowDebugText = false;
-            InvalidateCameraCache();
+            base.Reset();
             Loop = false;
             Instructions = null;
         }
