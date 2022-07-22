@@ -205,7 +205,7 @@ namespace Cinemachine.Editor
                     var index = l.serializedProperty.arraySize;
                     var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
                     var collider = Undo.AddComponent<CinemachineCollider>(vcam.gameObject);
-                    collider.m_AvoidObstacles = false;
+                    collider.AvoidObstacles = false;
                     Undo.RecordObject(collider, "create ClearShot child");
                     vcam.transform.SetSiblingIndex(index);
                 };

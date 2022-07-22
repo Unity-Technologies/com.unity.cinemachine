@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -10,7 +10,7 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// <para>
-    /// An add-on module for Cinemachine Virtual Camera that post-processes the final position 
+    /// An add-on module for Cinemachine Camera that post-processes the final position 
     /// of the virtual camera.  It will confine the camera's position such that the screen edges stay 
     /// within a shape defined by a 2D polygon.  This will work for orthographic or perspective cameras, 
     /// provided that the camera's forward vector remains parallel to the bounding shape's normal, 
@@ -63,12 +63,14 @@ namespace Cinemachine
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained.  " +
                  "Can be a 2D polygon or 2D composite collider.")]
-        public Collider2D m_BoundingShape2D;
+        [FormerlySerializedAs("m_BoundingShape2D")]
+        public Collider2D BoundingShape2D;
 
         /// <summary>Damping applied automatically around corners to avoid jumps.</summary>
         [Tooltip("Damping applied around corners to avoid jumps.  Higher numbers are more gradual.")]
         [RangeSlider(0, 5)]
-        public float m_Damping;
+        [FormerlySerializedAs("m_Damping")]
+        public float Damping;
 
         /// <summary>
         /// To optimize computation and memory costs, set this to the largest view size that the camera 
@@ -83,14 +85,26 @@ namespace Cinemachine
             + "confiner plane (for orthographic cameras, this is just the orthographic size).  If set "
             + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
             + "potential window sizes.")]
-        public float m_MaxWindowSize;
+        [FormerlySerializedAs("m_MaxWindowSize")]
+        public float MaxWindowSize;
 
-        float m_MaxComputationTimePerFrameInSeconds = 1f / 120f;
+        void OnValidate()
+        {
+            const float k_MaxComputationTimePerFrameInSeconds = 1f / 120f;
+            Damping = Mathf.Max(0, Damping);
+            m_ShapeCache.m_maxComputationTimePerFrameInSeconds = k_MaxComputationTimePerFrameInSeconds;
+        }
+
+        void Reset()
+        {
+            Damping = 0.5f;
+            MaxWindowSize = -1;
+        }
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
         {
-            m_shapeCache.Invalidate();
+            m_ShapeCache.Invalidate();
         }
 
         /// <summary>Validates cache</summary>
@@ -98,7 +112,7 @@ namespace Cinemachine
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidateCache(float cameraAspectRatio)
         {
-            return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
+            return m_ShapeCache.ValidateCache(BoundingShape2D, MaxWindowSize, cameraAspectRatio, out _);
         }
 
         const float k_cornerAngleTreshold = 10f;
@@ -117,51 +131,50 @@ namespace Cinemachine
             if (stage == CinemachineCore.Stage.Body)
             {
                 var aspectRatio = state.Lens.Aspect;
-                if (!m_shapeCache.ValidateCache(
-                    m_BoundingShape2D, m_MaxWindowSize, aspectRatio, out bool confinerStateChanged))
+                if (!m_ShapeCache.ValidateCache(
+                    BoundingShape2D, MaxWindowSize, aspectRatio, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
                 
                 var oldCameraPos = state.GetCorrectedPosition();
-                var cameraPosLocal = m_shapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
+                var cameraPosLocal = m_ShapeCache.m_DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 var currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
-                var bakedSpaceFrustumHeight = currentFrustumHeight * 
-                                              m_shapeCache.m_DeltaWorldToBaked.lossyScale.x;
+                var bakedSpaceFrustumHeight = currentFrustumHeight * m_ShapeCache.m_DeltaWorldToBaked.lossyScale.x;
 
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.m_vcam = vcam;
-                if (confinerStateChanged || extra.m_BakedSolution == null 
-                    || !extra.m_BakedSolution.IsValid())
+                extra.Vcam = vcam;
+                if (confinerStateChanged || extra.BakedSolution == null 
+                    || !extra.BakedSolution.IsValid())
                 {
-                    extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
+                    extra.BakedSolution = m_ShapeCache.m_confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
 
-                cameraPosLocal = extra.m_BakedSolution.ConfinePoint(cameraPosLocal);
-                var newCameraPos = m_shapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
+                cameraPosLocal = extra.BakedSolution.ConfinePoint(cameraPosLocal);
+                var newCameraPos = m_ShapeCache.m_DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
                 newCameraPos -= fwd * Vector3.Dot(fwd, newCameraPos - oldCameraPos);
 
                 // Remember the desired displacement for next frame
-                var prev = extra.m_PreviousDisplacement;
+                var prev = extra.PreviousDisplacement;
                 var displacement = newCameraPos - oldCameraPos;
-                extra.m_PreviousDisplacement = displacement;
+                extra.PreviousDisplacement = displacement;
 
-                if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || m_Damping <= 0)
-                    extra.m_DampedDisplacement = Vector3.zero;
+                if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || Damping <= 0)
+                    extra.DampedDisplacement = Vector3.zero;
                 else
                 {
                     // If a big change from previous frame's desired displacement is detected, 
                     // assume we are going around a corner and extract that difference for damping
                     if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, displacement) > k_cornerAngleTreshold)
-                        extra.m_DampedDisplacement += displacement - prev;
+                        extra.DampedDisplacement += displacement - prev;
 
-                    extra.m_DampedDisplacement -= Damper.Damp(extra.m_DampedDisplacement, m_Damping, deltaTime);
-                    displacement -= extra.m_DampedDisplacement;
+                    extra.DampedDisplacement -= Damper.Damp(extra.DampedDisplacement, Damping, deltaTime);
+                    displacement -= extra.DampedDisplacement;
                 }
                 state.PositionCorrection += displacement;
             }
@@ -193,13 +206,13 @@ namespace Cinemachine
 
         class VcamExtraState
         {
-            public Vector3 m_PreviousDisplacement;
-            public Vector3 m_DampedDisplacement;
-            public ConfinerOven.BakedSolution m_BakedSolution;
-            public CinemachineVirtualCameraBase m_vcam;
+            public Vector3 PreviousDisplacement;
+            public Vector3 DampedDisplacement;
+            public ConfinerOven.BakedSolution BakedSolution;
+            public CinemachineVirtualCameraBase Vcam;
         };
 
-        ShapeCache m_shapeCache; 
+        ShapeCache m_ShapeCache; 
 
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
@@ -344,44 +357,33 @@ namespace Cinemachine
             }
         }
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         // Used by editor gizmo drawer
         internal bool GetGizmoPaths(
             out List<List<Vector2>> originalPath,
             ref List<List<Vector2>> currentPath,
             out Matrix4x4 pathLocalToWorld)
         {
-            originalPath = m_shapeCache.m_OriginalPath;
-            pathLocalToWorld = m_shapeCache.m_DeltaBakedToWorld;
+            originalPath = m_ShapeCache.m_OriginalPath;
+            pathLocalToWorld = m_ShapeCache.m_DeltaBakedToWorld;
             currentPath.Clear();
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
             for (var i = 0; i < allExtraStates.Count; ++i)
             {
                 var e = allExtraStates[i];
-                if (e.m_BakedSolution != null)
+                if (e.BakedSolution != null)
                 {
-                    currentPath.AddRange(e.m_BakedSolution.GetBakedPath());
+                    currentPath.AddRange(e.BakedSolution.GetBakedPath());
                 }
             }
             return originalPath != null;
         }
 
-        internal float BakeProgress() => m_shapeCache.m_confinerOven != null ? m_shapeCache.m_confinerOven.bakeProgress : 0f;
-        internal bool ConfinerOvenTimedOut() => m_shapeCache.m_confinerOven != null && 
-            m_shapeCache.m_confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
+        internal float BakeProgress() => m_ShapeCache.m_confinerOven != null ? m_ShapeCache.m_confinerOven.bakeProgress : 0f;
+        internal bool ConfinerOvenTimedOut() => m_ShapeCache.m_confinerOven != null && 
+            m_ShapeCache.m_confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
 #endif
 
-        void OnValidate()
-        {
-            m_Damping = Mathf.Max(0, m_Damping);
-            m_shapeCache.m_maxComputationTimePerFrameInSeconds = m_MaxComputationTimePerFrameInSeconds;
-        }
-
-        void Reset()
-        {
-            m_Damping = 0.5f;
-            m_MaxWindowSize = -1;
-        }
     }
 #endif
 }

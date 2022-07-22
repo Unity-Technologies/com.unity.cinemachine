@@ -53,9 +53,9 @@ namespace Tests.Runtime
         public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_PolygonCollider2D(Vector2[] testPoints)
         {
             var polygonCollider2D = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D)).GetComponent<PolygonCollider2D>();
-            m_Confiner2D.m_BoundingShape2D = polygonCollider2D;
-            m_Confiner2D.m_Damping = 0;
-            m_Confiner2D.m_MaxWindowSize = 0;
+            m_Confiner2D.BoundingShape2D = polygonCollider2D;
+            m_Confiner2D.Damping = 0;
+            m_Confiner2D.MaxWindowSize = 0;
 
             // clockwise
             polygonCollider2D.points = testPoints;
@@ -98,9 +98,9 @@ namespace Tests.Runtime
             polyHolder.transform.parent = compositeHolder.transform;
             var polygonCollider2D = polyHolder.GetComponent<PolygonCollider2D>();
             polygonCollider2D.usedByComposite = true;
-            m_Confiner2D.m_BoundingShape2D = compositeCollider2D;
-            m_Confiner2D.m_Damping = 0;
-            m_Confiner2D.m_MaxWindowSize = 0;
+            m_Confiner2D.BoundingShape2D = compositeCollider2D;
+            m_Confiner2D.Damping = 0;
+            m_Confiner2D.MaxWindowSize = 0;
             
             // clockwise
             polygonCollider2D.points = testPoints;
