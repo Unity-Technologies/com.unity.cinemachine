@@ -160,7 +160,7 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement;
                 if (ConfineScreenEdges && state.Lens.Orthographic)
-                    displacement = ConfineOrthoCameraToScreenEdges(vcam, ref state);
+                    displacement = ConfineOrthoCameraToScreenEdges(ref state);
                 else
                     displacement = ConfinePoint(state.GetCorrectedPosition());
 
@@ -289,10 +289,10 @@ namespace Cinemachine
             return closest - p;
 #endif
         }
-
-        Vector3 ConfineOrthoCameraToScreenEdges(CinemachineVirtualCameraBase vcam, ref CameraState state)
+        
+        Vector3 ConfineOrthoCameraToScreenEdges(ref CameraState state)
         {
-            var rot = Quaternion.Inverse(state.GetCorrectedOrientation());
+            var rot = state.GetCorrectedOrientation();
             var dy = state.Lens.OrthographicSize;
             var dx = dy * state.Lens.Aspect;
             var vx = (rot * Vector3.right) * dx;
@@ -301,8 +301,9 @@ namespace Cinemachine
             var displacement = Vector3.zero;
             var camPos = state.GetCorrectedPosition();
             var lastD = Vector3.zero;
+
             const int kMaxIter = 12;
-            for (int i = 0; i < kMaxIter; ++i)
+            for (var i = 0; i < kMaxIter; ++i)
             {
                 var d = ConfinePoint((camPos - vy) - vx);
                 if (d.AlmostZero())

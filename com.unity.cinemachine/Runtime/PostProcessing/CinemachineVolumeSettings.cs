@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;
     using UnityEngine.Rendering;
-using UnityEngine.Serialization;
-#if CINEMACHINE_HDRP_7_3_1
-using UnityEngine.Rendering.HighDefinition;
+    #if CINEMACHINE_HDRP_7_3_1
+        using UnityEngine.Rendering.HighDefinition;
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
