@@ -4,16 +4,8 @@ using System;
 
 namespace Cinemachine.Editor
 {
-#if !UNITY_2021_2_OR_NEWER
-    [InitializeOnLoad]
-    internal sealed class CinemachineSettings
-#else
     internal sealed class CinemachineSettings : AssetPostprocessor
-#endif
-    
     {
-
-#if UNITY_2021_2_OR_NEWER
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
         {
             if (didDomainReload)
@@ -21,7 +13,6 @@ namespace Cinemachine.Editor
                 EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
             }
         }
-#endif
 
         public static class CinemachineCoreSettings
         {
@@ -267,37 +258,6 @@ namespace Cinemachine.Editor
         private static readonly string kComposerSettingsFoldKey = "CNMCN_Composer_Folded";
 
         internal static event Action AdditionalCategories = null;
-
-#if !UNITY_2021_2_OR_NEWER
-        [InitializeOnLoadMethod]
-        /// Ensures that CM Brain logo is added to the Main Camera
-        /// after adding a virtual camera to the project for the first time
-        static void OnPackageLoadedInEditor()
-        {
-            // Nothing to load in the context of a secondary process.
-            if ((int)UnityEditor.MPE.ProcessService.level == 2 /*UnityEditor.MPE.ProcessLevel.Secondary*/)
-                return;
-            if (CinemachineLogoTexture == null) 
-            {
-                // After adding the CM to a project, we need to wait for one update cycle for the assets to load
-                EditorApplication.update -= OnPackageLoadedInEditor;
-                EditorApplication.update += OnPackageLoadedInEditor; 
-            }
-            else
-            {
-                EditorApplication.update -= OnPackageLoadedInEditor;
-                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI; // Update hierarchy with CM Brain logo
-            }
-        }
-
-        static CinemachineSettings()
-        {
-            if (CinemachineLogoTexture != null)
-            {
-                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
-            }
-        }
-#endif
 
         class Styles {
             //private static readonly GUIContent sCoreShowHiddenObjectsToggle = new GUIContent("Show Hidden Objects", "If checked, Cinemachine hidden objects will be shown in the inspector.  This might be necessary to repair broken script mappings when upgrading from a pre-release version");
