@@ -8,11 +8,6 @@
     "category": "cinematography",
     "dependencies": {
     },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Unity-Technologies/upm-package-cinemachine",
-        "revision": "679387cb1fa822190b530bdbb8ea0945f508b5f6"
-    },
     "samples": [
         {
             "displayName": "Cinemachine Example Scenes",
