@@ -1,10 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
-
-#if UNITY_2019_2_OR_NEWER
 using UnityEngine.UIElements;
-#endif
 
 namespace Cinemachine.Editor
 {
@@ -31,13 +28,6 @@ namespace Cinemachine.Editor
         }
     }
     
-#if !UNITY_2019_2_OR_NEWER
-    internal class GameViewEventCatcher
-    {
-        public void OnEnable() {}
-        public void OnDisable() {}
-    }
-#else
     // This is necessary because in 2019.3 we don't get mouse events in the game view in Edit mode
     internal class GameViewEventCatcher
     {
@@ -109,7 +99,6 @@ namespace Cinemachine.Editor
             mDraggers = null;
         }
     }
-#endif
 
     /// <summary>
     /// Use an instance of this class to draw screen composer guides in the game view.

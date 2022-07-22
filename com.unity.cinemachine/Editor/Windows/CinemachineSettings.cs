@@ -1,7 +1,3 @@
-#if !UNITY_2019_1_OR_NEWER
-#define CINEMACHINE_UGUI
-#endif
-
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -278,11 +274,9 @@ namespace Cinemachine.Editor
         /// after adding a virtual camera to the project for the first time
         static void OnPackageLoadedInEditor()
         {
-#if UNITY_2020_3_OR_NEWER
             // Nothing to load in the context of a secondary process.
             if ((int)UnityEditor.MPE.ProcessService.level == 2 /*UnityEditor.MPE.ProcessLevel.Secondary*/)
                 return;
-#endif
             if (CinemachineLogoTexture == null) 
             {
                 // After adding the CM to a project, we need to wait for one update cycle for the assets to load
@@ -324,7 +318,6 @@ namespace Cinemachine.Editor
         static GUIContent sGlobalMuteText = new GUIContent("Storyboard Global Mute", "If checked, all storyboards " +
             "are globally muted.");
 
-#if UNITY_2019_1_OR_NEWER
         [SettingsProvider]
         static SettingsProvider CreateProjectSettingsProvider()
         {
@@ -333,9 +326,6 @@ namespace Cinemachine.Editor
             provider.guiHandler = (sarchContext) => OnGUI();
             return provider;
         }
-#else
-        [PreferenceItem("Cinemachine")]
-#endif
         private static void OnGUI()
         {
             if (CinemachineHeader != null)

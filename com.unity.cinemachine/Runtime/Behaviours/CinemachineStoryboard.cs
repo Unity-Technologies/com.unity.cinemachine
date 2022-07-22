@@ -1,7 +1,4 @@
-﻿#if !UNITY_2019_1_OR_NEWER
-#define CINEMACHINE_UGUI
-#endif
-using UnityEngine;
+﻿using UnityEngine;
 
 #if CINEMACHINE_UGUI
 using System.Collections.Generic;

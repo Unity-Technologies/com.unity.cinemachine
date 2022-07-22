@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEditor;
 
@@ -53,7 +52,6 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
-#if UNITY_2021_2_OR_NEWER
         protected virtual void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -66,16 +64,9 @@ namespace Cinemachine.Editor
         
         void OnSceneGUI()
         {
-            DrawSceneTools();
-        }
-
-        void DrawSceneTools()
-        {
             var thirdPerson = Target;
             if (thirdPerson == null || !thirdPerson.IsValid)
-            {
                 return;
-            }
 
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -89,17 +80,12 @@ namespace Cinemachine.Editor
                     followTargetRotation, thirdPerson.VirtualCamera.State.ReferenceUp);
 
                 EditorGUI.BeginChangeCheck();
+
                 // shoulder handle
-#if UNITY_2022_2_OR_NEWER
                 var sHandleIds = Handles.PositionHandleIds.@default;
                 var newShoulderPosition = Handles.PositionHandle(sHandleIds, shoulderPosition, heading);
                 var sHandleMinId = sHandleIds.x - 1;
                 var sHandleMaxId = sHandleIds.xyz + 1;
-#else
-                var sHandleMinId = GUIUtility.GetControlID(FocusType.Passive);
-                var newShoulderPosition = Handles.PositionHandle(shoulderPosition, heading);
-                var sHandleMaxId = GUIUtility.GetControlID(FocusType.Passive);
-#endif
 
                 Handles.color = Handles.preselectionColor;
                 // arm handle
@@ -171,7 +157,6 @@ namespace Cinemachine.Editor
                 return handleIsDragged;
             }
         }
-#endif
     }
 }
 
