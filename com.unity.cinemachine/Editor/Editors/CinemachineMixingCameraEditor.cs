@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
                 excluded.Add(WeightPropertyName(i));
         }
 
-        static string WeightPropertyName(int i) { return "m_Weight" + i; }
+        static string WeightPropertyName(int i) { return "Weight" + i; }
 
         public override void OnInspectorGUI()
         {
