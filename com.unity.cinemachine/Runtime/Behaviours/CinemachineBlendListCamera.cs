@@ -1,7 +1,3 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_UNITY_IMGUI
-#endif
-
 using Cinemachine.Utility;
 using System;
 using System.Collections.Generic;

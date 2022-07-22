@@ -31,7 +31,7 @@ namespace Tests.Runtime
             m_ClearShot = clearShotHolder.GetComponent<CinemachineClearShot>();
             m_ClearShot.LookAt = m_Character.transform;
             var clearShotCollider = clearShotHolder.GetComponent<CinemachineCollider>();
-            clearShotCollider.m_MinimumDistanceFromTarget = 0.1f;
+            clearShotCollider.MinimumDistanceFromTarget = 0.1f;
 
             // a stationary vcam1 with a hard lookat
             var vcam1Holder = CreateGameObject("CM Vcam1", typeof(CmCamera));

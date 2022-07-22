@@ -117,7 +117,7 @@ namespace Cinemachine.Editor
 
             // We give the camera a child as an example setup
             var childVcam = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
-            Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).m_AvoidObstacles = false;
+            Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).AvoidObstacles = false;
         }
 #endif
 

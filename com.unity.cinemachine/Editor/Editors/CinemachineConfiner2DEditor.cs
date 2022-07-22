@@ -1,9 +1,4 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_PHYSICS_2D
-#endif
-
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 
@@ -27,12 +22,12 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_MaxWindowSize));
+            excluded.Add(FieldPath(x => x.MaxWindowSize));
         }
 
         private void OnEnable()
         {
-            m_MaxWindowSizeProperty = FindProperty(x => x.m_MaxWindowSize);
+            m_MaxWindowSizeProperty = FindProperty(x => x.MaxWindowSize);
             m_MaxWindowSizeLabel = new GUIContent(
                 m_MaxWindowSizeProperty.displayName, 
                 "To optimize computation and memory costs, set this to the largest view size that the "
@@ -47,18 +42,18 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
-            if (Target.m_BoundingShape2D == null)
+            if (Target.BoundingShape2D == null)
                 EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
-            else if (Target.m_BoundingShape2D.GetType() != typeof(PolygonCollider2D)
-                && Target.m_BoundingShape2D.GetType() != typeof(CompositeCollider2D))
+            else if (Target.BoundingShape2D.GetType() != typeof(PolygonCollider2D)
+                && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D))
             {
                 EditorGUILayout.HelpBox(
                     "Must be a PolygonCollider2D or CompositeCollider2D.",
                     MessageType.Warning);
             }
-            else if (Target.m_BoundingShape2D.GetType() == typeof(CompositeCollider2D))
+            else if (Target.BoundingShape2D.GetType() == typeof(CompositeCollider2D))
             {
-                CompositeCollider2D poly = Target.m_BoundingShape2D as CompositeCollider2D;
+                CompositeCollider2D poly = Target.BoundingShape2D as CompositeCollider2D;
                 if (poly.geometryType != CompositeCollider2D.GeometryType.Polygons)
                 {
                     EditorGUILayout.HelpBox(
