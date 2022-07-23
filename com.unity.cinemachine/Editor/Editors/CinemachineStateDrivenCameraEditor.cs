@@ -129,7 +129,7 @@ namespace Cinemachine.Editor
         {
             // Scrape the Animator Controller for states
             var ac = GetControllerFromAnimator(Target.AnimatedTarget);
-            StateCollector collector = new StateCollector();
+            var collector = new StateCollector();
             collector.CollectStates(ac, Target.LayerIndex);
             m_TargetStates = collector.States.ToArray();
             m_TargetStateNames = collector.StateNames.ToArray();
@@ -265,7 +265,7 @@ namespace Cinemachine.Editor
         {
             if (obj == null || m_CameraIndexLookup == null)
                 return 0;
-            CinemachineVirtualCameraBase vcam = obj as CinemachineVirtualCameraBase;
+            var vcam = obj as CinemachineVirtualCameraBase;
             if (vcam == null)
                 return 0;
             if (!m_CameraIndexLookup.ContainsKey(vcam))
@@ -282,10 +282,10 @@ namespace Cinemachine.Editor
             // Needed for accessing field names as strings
             CinemachineStateDrivenCamera.Instruction def = new();
 
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
             m_InstructionList.drawHeaderCallback = (Rect rect) =>
                 {
                     float sharedWidth = rect.width - EditorGUIUtility.singleLineHeight
@@ -356,7 +356,7 @@ namespace Cinemachine.Editor
                     {
                         CinemachineStateDrivenCamera target = Target;
                         int len = m_InstructionList.serializedProperty.arraySize;
-                        for (int i = 0; i < m_TargetStates.Length; ++i)
+                        for (var i = 0; i < m_TargetStates.Length; ++i)
                         {
                             int hash = m_TargetStates[i];
                             if (hash == 0)
@@ -388,10 +388,10 @@ namespace Cinemachine.Editor
 
         void SetupChildList()
         {
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
 
             m_ChildList = new UnityEditorInternal.ReorderableList(serializedObject,
                     serializedObject.FindProperty(() => Target.m_ChildCameras),
@@ -400,7 +400,7 @@ namespace Cinemachine.Editor
             m_ChildList.drawHeaderCallback = (Rect rect) =>
                 {
                     EditorGUI.LabelField(rect, "Virtual Camera Children");
-                    GUIContent priorityText = new GUIContent("Priority");
+                    var priorityText = new GUIContent("Priority");
                     var textDimensions = GUI.skin.label.CalcSize(priorityText);
                     rect.x += rect.width - textDimensions.x;
                     rect.width = textDimensions.x;
@@ -418,9 +418,9 @@ namespace Cinemachine.Editor
 
                     float oldWidth = EditorGUIUtility.labelWidth;
                     EditorGUIUtility.labelWidth = hBigSpace;
-                    SerializedObject obj = new SerializedObject(element.objectReferenceValue);
+                    var obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
-                    SerializedProperty priorityProp = obj.FindProperty(
+                    var priorityProp = obj.FindProperty(
                         () => Target.CameraPriority).FindPropertyRelative("Priority");
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
                     EditorGUIUtility.labelWidth = oldWidth;
