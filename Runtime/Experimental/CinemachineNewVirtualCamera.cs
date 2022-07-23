@@ -444,6 +444,13 @@ namespace Cinemachine
                 }
             }
         }
+        
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
+        }
     }
 }
 #endif

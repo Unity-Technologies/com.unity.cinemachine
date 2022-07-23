@@ -58,7 +58,7 @@ namespace Cinemachine
 
         /// <summary>Override settings for top and bottom rigs</summary>
         [Serializable]
-        public class Rig
+        public class Rig : ISerializationCallbackReceiver
         {
             public bool m_CustomLens;
             public LensSettings m_Lens;
@@ -204,6 +204,15 @@ namespace Cinemachine
                     p.m_FrequencyGain = m_FrequencyGain;
                 }
             }
+
+            // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+            void ISerializationCallbackReceiver.OnBeforeSerialize()
+            {
+                if (!m_Lens.IsPhysicalCamera) 
+                    m_Lens.SensorSize = Vector2.one;
+            }
+
+            void ISerializationCallbackReceiver.OnAfterDeserialize() {}
         }
 
         [SerializeField]

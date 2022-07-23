@@ -646,7 +646,8 @@ namespace Cinemachine
 
         private int LocateExistingRigs(string[] rigNames, bool forceOrbital)
         {
-            m_CachedXAxisHeading = 0;
+            m_CachedXAxisHeading = m_XAxis.Value;
+            m_LastHeadingUpdateFrame = -1;
             mOrbitals = new CinemachineOrbitalTransposer[rigNames.Length];
             m_Rigs = new CinemachineVirtualCamera[rigNames.Length];
             int rigsFound = 0;
@@ -682,13 +683,17 @@ namespace Cinemachine
         }
 
         float m_CachedXAxisHeading;
+        float m_LastHeadingUpdateFrame;
 
         float UpdateXAxisHeading(CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
         {
             if (this == null)   
                 return 0; // deleted
-            if (mOrbitals != null && mOrbitals[1] == orbital)
+
+            // Update the axis only once per frame
+            if (m_LastHeadingUpdateFrame != Time.frameCount)
             {
+                m_LastHeadingUpdateFrame = Time.frameCount;
                 var oldValue = m_XAxis.Value;
                 m_CachedXAxisHeading = orbital.UpdateHeading(
                     PreviousStateIsValid ? deltaTime : -1, up,
@@ -835,6 +840,13 @@ namespace Cinemachine
                     m_CachedOrbits[i] = m_Orbits[i];
                 m_CachedTension = m_SplineCurvature;
             }
+        }
+        
+        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
+        internal override void OnBeforeSerialize()
+        {
+            if (!m_Lens.IsPhysicalCamera) 
+                m_Lens.SensorSize = Vector2.one;
         }
     }
 }
