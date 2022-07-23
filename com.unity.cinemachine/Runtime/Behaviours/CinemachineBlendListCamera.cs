@@ -23,7 +23,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Loop")]
         public bool Loop;
 
-        /// <summary>This represents a single entry in the instrunction list of the BlendListCamera.</summary>
+        /// <summary>This represents a single entry in the instruction list of the BlendListCamera.</summary>
         [Serializable]
         public struct Instruction
         {
@@ -64,7 +64,7 @@ namespace Cinemachine
             Instructions = null;
         }
         
-        internal protected override void LegacyUpgrade(int streamedVersion)
+        protected internal override void LegacyUpgrade(int streamedVersion)
         {
             base.LegacyUpgrade(streamedVersion);
             if (streamedVersion < 20220721)
@@ -197,8 +197,8 @@ namespace Cinemachine
         internal void ValidateInstructions()
         {
             if (Instructions == null)
-                Instructions = new Instruction[0];
-            for (int i = 0; i < Instructions.Length; ++i)
+                Instructions = Array.Empty<Instruction>();
+            for (var i = 0; i < Instructions.Length; ++i)
             {
                 if (Instructions[i].Camera != null
                     && Instructions[i].Camera.transform.parent != transform)
@@ -208,7 +208,7 @@ namespace Cinemachine
             }
         }
 
-        private void AdvanceCurrentInstruction(float deltaTime)
+        void AdvanceCurrentInstruction(float deltaTime)
         {
             if (ChildCameras == null || ChildCameras.Count == 0 
                 || m_ActivationTime < 0 || Instructions.Length == 0)

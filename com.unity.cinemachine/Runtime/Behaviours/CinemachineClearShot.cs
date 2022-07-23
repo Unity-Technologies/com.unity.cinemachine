@@ -66,7 +66,7 @@ namespace Cinemachine
         float m_PendingActivationTime = 0;
         CinemachineVirtualCameraBase m_PendingCamera;
         bool m_RandomizeNow = false;
-        List<CinemachineVirtualCameraBase> m_RandomizedChilden = null;
+        List<CinemachineVirtualCameraBase> m_RandomizedChildren = null;
         ICinemachineCamera m_TransitioningFrom;
 
         protected override void Reset()
@@ -79,7 +79,7 @@ namespace Cinemachine
             CustomBlends = null;
         }
 
-        internal protected override void LegacyUpgrade(int streamedVersion)
+        protected internal override void LegacyUpgrade(int streamedVersion)
         {
             base.LegacyUpgrade(streamedVersion);
             if (streamedVersion < 20220721)
@@ -122,7 +122,7 @@ namespace Cinemachine
             m_TransitioningFrom = fromCam;
             if (RandomizeChoice && m_ActiveBlend == null)
             {
-                m_RandomizedChilden = null;
+                m_RandomizedChildren = null;
                 m_LiveChild = null;
             }
             InternalUpdateCameraState(worldUp, deltaTime);
@@ -143,7 +143,7 @@ namespace Cinemachine
                 m_ActivationTime = 0;
                 m_PendingActivationTime = 0;
                 m_PendingCamera = null;
-                m_RandomizedChilden = null;
+                m_RandomizedChildren = null;
             }
 
             // Choose the best camera
@@ -202,7 +202,7 @@ namespace Cinemachine
         /// This is useful if you want to freshen up the shot.</summary>
         public void ResetRandomization()
         {
-            m_RandomizedChilden = null;
+            m_RandomizedChildren = null;
             m_RandomizeNow = true;
         }
 
@@ -216,18 +216,18 @@ namespace Cinemachine
 
             var allCameras = ChildCameras;
             if (!RandomizeChoice)
-                m_RandomizedChilden = null;
+                m_RandomizedChildren = null;
             else if (allCameras.Count> 1)
             {
-                if (m_RandomizedChilden == null)
-                    m_RandomizedChilden = Randomize(allCameras);
-                allCameras = m_RandomizedChilden;
+                if (m_RandomizedChildren == null)
+                    m_RandomizedChildren = Randomize(allCameras);
+                allCameras = m_RandomizedChildren;
             }
 
             if (m_LiveChild != null && !m_LiveChild.gameObject.activeSelf)
                 m_LiveChild = null;
             var best = m_LiveChild;
-            for (int i = 0; i < allCameras.Count; ++i)
+            for (var i = 0; i < allCameras.Count; ++i)
             {
                 var vcam = allCameras[i];
                 if (vcam != null && vcam.gameObject.activeInHierarchy)
@@ -269,7 +269,7 @@ namespace Cinemachine
                             && (now - m_ActivationTime) > MinDuration)
                         {
                             // Yes, activate it now
-                            m_RandomizedChilden = null; // reshuffle the children
+                            m_RandomizedChildren = null; // reshuffle the children
                             m_ActivationTime = now;
                             m_PendingActivationTime = 0;
                             m_PendingCamera = null;
@@ -296,23 +296,24 @@ namespace Cinemachine
                 }
             }
             // Activate now
-            m_RandomizedChilden = null; // reshuffle the children
+            m_RandomizedChildren = null; // reshuffle the children
             m_ActivationTime = now;
             return best;
         }
 
         struct Pair { public int a; public float b; }
-        List<CinemachineVirtualCameraBase> Randomize(List<CinemachineVirtualCameraBase> src)
+
+        static List<CinemachineVirtualCameraBase> Randomize(List<CinemachineVirtualCameraBase> src)
         {
-            List<Pair> pairs = new List<Pair>();
-            for (int i = 0; i < src.Count; ++i)
+            var pairs = new List<Pair>();
+            for (var i = 0; i < src.Count; ++i)
             {
                 var p = new Pair { a = i, b = Random.Range(0, 1000f) };
                 pairs.Add(p);
             }
             pairs.Sort((p1, p2) => (int)p1.b - (int)p2.b);
             var dst = new List<CinemachineVirtualCameraBase>(src.Count);
-            for (int i = 0; i < src.Count; ++i)
+            for (var i = 0; i < src.Count; ++i)
                 dst.Add(src[pairs[i].a]);
             return dst;
         }
