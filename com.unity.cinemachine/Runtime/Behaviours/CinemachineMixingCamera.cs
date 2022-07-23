@@ -155,13 +155,13 @@ namespace Cinemachine
         protected override void Reset()
         {
             base.Reset();
-            for (int i = 0; i < MaxCameras; ++i)
+            for (var i = 0; i < MaxCameras; ++i)
                 SetWeight(i, i == 0 ? 1 : 0);
         }
 
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
@@ -181,7 +181,7 @@ namespace Cinemachine
                 return false;
 
             m_IndexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
-            for (int i = 0; i < ChildCameras.Count; ++i)
+            for (var i = 0; i < ChildCameras.Count; ++i)
                 m_IndexMap.Add(ChildCameras[i], i);
             return true;
         }
@@ -203,7 +203,7 @@ namespace Cinemachine
             InternalUpdateCameraState(worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  Do not call this methid.
+        /// <summary>Internal use only.  Do not call this method.
         /// Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
         /// computes and caches the weighted blend of the tracked cameras.</summary>
@@ -222,7 +222,7 @@ namespace Cinemachine
             m_LiveChild = null;
             float highestWeight = 0;
             float totalWeight = 0;
-            for (int i = 0; i < MaxCameras && i < children.Count; ++i)
+            for (var i = 0; i < MaxCameras && i < children.Count; ++i)
             {
                 CinemachineVirtualCameraBase vcam = children[i];
                 if (vcam.isActiveAndEnabled)
