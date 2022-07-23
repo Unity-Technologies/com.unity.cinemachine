@@ -239,7 +239,7 @@ namespace Cinemachine
             {
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append(Name); sb.Append(": "); sb.Append(Description);
-                string text = sb.ToString();
+                var text = sb.ToString();
                 Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 CinemachineDebug.ReturnToPool(sb);
