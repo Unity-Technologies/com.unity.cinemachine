@@ -318,15 +318,6 @@ namespace Cinemachine.Utility
                 Mathf.LerpAngle(eA.z, eB.z, t));
         }
 
-        /// <summary>Normalize a quaternion</summary>
-        /// <param name="q"></param>
-        /// <returns>The normalized quaternion.  Unit length is 1.</returns>
-        public static Quaternion Normalized(this Quaternion q)
-        {
-            Vector4 v = new Vector4(q.x, q.y, q.z, q.w).normalized;
-            return new Quaternion(v.x, v.y, v.z, v.w);
-        }
-
         /// <summary>
         /// Get the rotations, first about world up, then about (travelling) local right,
         /// necessary to align the quaternion's forward with the target direction.

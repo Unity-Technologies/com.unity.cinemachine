@@ -1,5 +1,4 @@
 ﻿#if CINEMACHINE_PHYSICS
-
 using UnityEngine;
 
 namespace Cinemachine

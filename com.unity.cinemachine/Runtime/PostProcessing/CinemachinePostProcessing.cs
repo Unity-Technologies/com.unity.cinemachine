@@ -333,31 +333,12 @@ namespace Cinemachine.PostFX
             }
 
             // Brain is not in our lookup - add it.
-#if UNITY_2019_2_OR_NEWER
             brain.TryGetComponent(out layer);
             if (layer != null)
             {
                 brain.CameraCutEvent.AddListener(OnCameraCut); // valid layer
                 mBrainToLayer[brain] = layer;
             }
-#else
-            // In order to avoid calling GetComponent() every frame in the case
-            // where there is legitimately no layer on the brain, we will add
-            // null to the lookup table if no layer is present.
-            if (!found)
-            {
-                layer = brain.GetComponent<PostProcessLayer>();
-                if (layer != null)
-                    brain.m_CameraCutEvent.AddListener(OnCameraCut); // valid layer
-
-                // Exception: never add null in the case where user adds a layer while
-                // in the editor.  If we were to add null in this case, then the new
-                // layer would not be detected.  We are willing to live with
-                // calling GetComponent() every frame while in edit mode.
-                if (Application.isPlaying || layer != null)
-                    mBrainToLayer[brain] = layer;
-            }
-#endif
             return layer;
         }
 

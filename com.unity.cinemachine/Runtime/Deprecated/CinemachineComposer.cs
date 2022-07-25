@@ -290,7 +290,7 @@ namespace Cinemachine
 
             m_CameraPosPrevFrame = curState.GetCorrectedPosition();
             m_LookAtPrevFrame = TrackedPoint;
-            m_CameraOrientationPrevFrame = UnityQuaternionExtensions.Normalized(rigOrientation);
+            m_CameraOrientationPrevFrame = rigOrientation.normalized;
             m_ScreenOffsetPrevFrame = m_CameraOrientationPrevFrame.GetCameraRotationToTarget(
                 m_LookAtPrevFrame - curState.GetCorrectedPosition(), curState.ReferenceUp);
 

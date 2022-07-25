@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -17,7 +18,7 @@ namespace Cinemachine
     [ExcludeFromPreset]
     [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineMixingCamera.html")]
-    public class CinemachineMixingCamera : CinemachineVirtualCameraBase
+    public class CinemachineMixingCamera : CinemachineCameraManagerBase
     {
         /// <summary>The maximum number of tracked cameras.  If you want to add
         /// more cameras, do it here in the source code, and be sure to add the
@@ -28,28 +29,42 @@ namespace Cinemachine
 
         /// <summary>Weight of the first tracked camera</summary>
         [Tooltip("The weight of the first tracked camera")]
-        public float m_Weight0 = 0.5f;
+        [FormerlySerializedAs("m_Weight0")]
+        public float Weight0 = 0.5f;
         /// <summary>Weight of the second tracked camera</summary>
         [Tooltip("The weight of the second tracked camera")]
-        public float m_Weight1 = 0.5f;
+        [FormerlySerializedAs("m_Weight1")]
+        public float Weight1 = 0.5f;
         /// <summary>Weight of the third tracked camera</summary>
         [Tooltip("The weight of the third tracked camera")]
-        public float m_Weight2 = 0.5f;
+        [FormerlySerializedAs("m_Weight2")]
+        public float Weight2 = 0.5f;
         /// <summary>Weight of the fourth tracked camera</summary>
         [Tooltip("The weight of the fourth tracked camera")]
-        public float m_Weight3 = 0.5f;
+        [FormerlySerializedAs("m_Weight3")]
+        public float Weight3 = 0.5f;
         /// <summary>Weight of the fifth tracked camera</summary>
         [Tooltip("The weight of the fifth tracked camera")]
-        public float m_Weight4 = 0.5f;
+        [FormerlySerializedAs("m_Weight4")]
+        public float Weight4 = 0.5f;
         /// <summary>Weight of the sixth tracked camera</summary>
         [Tooltip("The weight of the sixth tracked camera")]
-        public float m_Weight5 = 0.5f;
+        [FormerlySerializedAs("m_Weight5")]
+        public float Weight5 = 0.5f;
         /// <summary>Weight of the seventh tracked camera</summary>
         [Tooltip("The weight of the seventh tracked camera")]
-        public float m_Weight6 = 0.5f;
+        [FormerlySerializedAs("m_Weight6")]
+        public float Weight6 = 0.5f;
         /// <summary>Weight of the eighth tracked camera</summary>
         [Tooltip("The weight of the eighth tracked camera")]
-        public float m_Weight7 = 0.5f;
+        [FormerlySerializedAs("m_Weight7")]
+        public float Weight7 = 0.5f;
+
+
+        CinemachineVirtualCameraBase m_LiveChild;
+        CinemachineBlend m_ActiveBlend;
+        CameraState m_State = CameraState.Default;
+        Dictionary<CinemachineVirtualCameraBase, int> m_IndexMap;
 
         /// <summary>Get the weight of the child at an index.</summary>
         /// <param name="index">The child index. Only immediate CinemachineVirtualCameraBase
@@ -59,14 +74,14 @@ namespace Cinemachine
         {
             switch (index)
             {
-                case 0: return m_Weight0;
-                case 1: return m_Weight1;
-                case 2: return m_Weight2;
-                case 3: return m_Weight3;
-                case 4: return m_Weight4;
-                case 5: return m_Weight5;
-                case 6: return m_Weight6;
-                case 7: return m_Weight7;
+                case 0: return Weight0;
+                case 1: return Weight1;
+                case 2: return Weight2;
+                case 3: return Weight3;
+                case 4: return Weight4;
+                case 5: return Weight5;
+                case 6: return Weight6;
+                case 7: return Weight7;
             }
             Debug.LogError("CinemachineMixingCamera: Invalid index: " + index);
             return 0;
@@ -80,14 +95,14 @@ namespace Cinemachine
         {
             switch (index)
             {
-                case 0: m_Weight0 = w; return;
-                case 1: m_Weight1 = w; return;
-                case 2: m_Weight2 = w; return;
-                case 3: m_Weight3 = w; return;
-                case 4: m_Weight4 = w; return;
-                case 5: m_Weight5 = w; return;
-                case 6: m_Weight6 = w; return;
-                case 7: m_Weight7 = w; return;
+                case 0: Weight0 = w; return;
+                case 1: Weight1 = w; return;
+                case 2: Weight2 = w; return;
+                case 3: Weight3 = w; return;
+                case 4: Weight4 = w; return;
+                case 5: Weight5 = w; return;
+                case 6: Weight6 = w; return;
+                case 7: Weight7 = w; return;
             }
             Debug.LogError("CinemachineMixingCamera: Invalid index: " + index);
         }
@@ -97,9 +112,8 @@ namespace Cinemachine
         /// <returns>The weight of the camera.  Valid only if camera is active and enabled.</returns>
         public float GetWeight(CinemachineVirtualCameraBase vcam)
         {
-            ValidateListOfChildren();
-            int index;
-            if (m_indexMap.TryGetValue(vcam, out index))
+            UpdateCameraCache();
+            if (m_IndexMap.TryGetValue(vcam, out var index))
                 return GetWeight(index);
             Debug.LogError("CinemachineMixingCamera: Invalid child: "
                 + ((vcam != null) ? vcam.Name : "(null)"));
@@ -111,69 +125,25 @@ namespace Cinemachine
         /// <param name="w">The weight to set.  Can be any non-negative number.</param>
         public void SetWeight(CinemachineVirtualCameraBase vcam, float w)
         {
-            ValidateListOfChildren();
-            int index;
-            if (m_indexMap.TryGetValue(vcam, out index))
+            UpdateCameraCache();
+            if (m_IndexMap.TryGetValue(vcam, out var index))
                 SetWeight(index, w);
             else
                 Debug.LogError("CinemachineMixingCamera: Invalid child: "
                     + ((vcam != null) ? vcam.Name : "(null)"));
         }
 
-        /// <summary>Blended camera state</summary>
-        private CameraState m_State = CameraState.Default;
-
-        /// <summary>Get the current "best" child virtual camera, which is nominally
-        /// the one with the greatest weight.</summary>
-        private ICinemachineCamera LiveChild { get; set; }
-
-        /// <summary>The blended CameraState</summary>
-        public override CameraState State { get { return m_State; } }
-
-        /// <summary>Not used</summary>
-        override public Transform LookAt { get; set; }
-
-        /// <summary>Not used</summary>
-        override public Transform Follow { get; set; }
-
-        /// <summary>This is called to notify the vcam that a target got warped,
-        /// so that the vcam can update its internal state to make the camera
-        /// also warp seamlessly.</summary>
-        /// <param name="target">The object that was warped</param>
-        /// <param name="positionDelta">The amount the target's position changed</param>
-        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
-        {
-            ValidateListOfChildren();
-            foreach (var vcam in m_ChildCameras)
-                vcam.OnTargetObjectWarped(target, positionDelta);
-            base.OnTargetObjectWarped(target, positionDelta);
-        }
+        /// <summary>Get the current "best" child virtual camera, that would be chosen
+        /// if the State Driven Camera were active.</summary>
+        public override ICinemachineCamera LiveChild => PreviousStateIsValid ? m_LiveChild : null;
 
         /// <summary>
-        /// Force the virtual camera to assume a given position and orientation
+        /// Get the current active blend in progress.  Will return null if no blend is in progress.
         /// </summary>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
-        public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
-        {
-            ValidateListOfChildren();
-            foreach (var vcam in m_ChildCameras)
-                vcam.ForceCameraPosition(pos, rot);
-            base.ForceCameraPosition(pos, rot);
-        }
-        
-        /// <summary>Makes sure the internal child cache is up to date</summary>
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            InvalidateListOfChildren();
-        }
+        public override CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_ActiveBlend : null;
 
-        /// <summary>Makes sure the internal child cache is up to date</summary>
-        public void OnTransformChildrenChanged()
-        {
-            InvalidateListOfChildren();
-        }
+        /// <summary>The State of the current live child</summary>
+        public override CameraState State => m_State;
 
         /// <summary>Makes sure the weights are non-negative</summary>
         void OnValidate()
@@ -182,60 +152,38 @@ namespace Cinemachine
                 SetWeight(i, Mathf.Max(0, GetWeight(i)));
         }
 
+        protected override void Reset()
+        {
+            base.Reset();
+            for (var i = 0; i < MaxCameras; ++i)
+                SetWeight(i, i == 0 ? 1 : 0);
+        }
+
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominat live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
-            CinemachineVirtualCameraBase[] children = ChildCameras;
-            for (int i = 0; i < MaxCameras && i < children.Length; ++i)
+            if (dominantChildOnly)
+                return (ICinemachineCamera)m_LiveChild == vcam;
+            var children = ChildCameras;
+            for (int i = 0; i < MaxCameras && i < children.Count; ++i)
                 if ((ICinemachineCamera)children[i] == vcam)
                     return GetWeight(i) > UnityVectorExtensions.Epsilon && children[i].isActiveAndEnabled;
             return false;
         }
 
-        private CinemachineVirtualCameraBase[] m_ChildCameras;
-        private Dictionary<CinemachineVirtualCameraBase, int> m_indexMap;
-
-        /// <summary>Get the cached list of child cameras.
-        /// These are just the immediate children in the hierarchy.
-        /// Note: only the first entries of this list participate in the
-        /// final blend, up to MaxCameras</summary>
-        public CinemachineVirtualCameraBase[] ChildCameras
-        {
-            get { ValidateListOfChildren(); return m_ChildCameras; }
-        }
-
-        /// <summary>Invalidate the cached list of child cameras.</summary>
-        protected void InvalidateListOfChildren()
-        {
-            m_ChildCameras = null;
-            m_indexMap = null;
-            LiveChild = null;
-        }
-
         /// <summary>Rebuild the cached list of child cameras.</summary>
-        protected void ValidateListOfChildren()
+        protected override bool UpdateCameraCache()
         {
-            if (m_ChildCameras != null)
-                return;
+            if (!base.UpdateCameraCache())
+                return false;
 
-            m_indexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
-            List<CinemachineVirtualCameraBase> list = new List<CinemachineVirtualCameraBase>();
-            CinemachineVirtualCameraBase[] kids
-                = GetComponentsInChildren<CinemachineVirtualCameraBase>(true);
-            foreach (CinemachineVirtualCameraBase k in kids)
-            {
-                if (k.transform.parent == transform)
-                {
-                    int index = list.Count;
-                    list.Add(k);
-                    if (index < MaxCameras)
-                        m_indexMap.Add(k, index);
-                }
-            }
-            m_ChildCameras = list.ToArray();
+            m_IndexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
+            for (var i = 0; i < ChildCameras.Count; ++i)
+                m_IndexMap.Add(ChildCameras[i], i);
+            return true;
         }
 
         /// <summary>Notification that this virtual camera is going live.</summary>
@@ -246,18 +194,16 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
-            CinemachineVirtualCameraBase[] children = ChildCameras;
-            for (int i = 0; i < MaxCameras && i < children.Length; ++i)
+            for (int i = 0; i < MaxCameras && i < ChildCameras.Count; ++i)
             {
-                CinemachineVirtualCameraBase vcam = children[i];
+                var vcam = ChildCameras[i];
                 if (vcam.isActiveAndEnabled && GetWeight(i) > UnityVectorExtensions.Epsilon)
                     vcam.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             }
             InternalUpdateCameraState(worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  Do not call this methid.
+        /// <summary>Internal use only.  Do not call this method.
         /// Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  This implementation
         /// computes and caches the weighted blend of the tracked cameras.</summary>
@@ -265,11 +211,18 @@ namespace Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            CinemachineVirtualCameraBase[] children = ChildCameras;
-            LiveChild = null;
+            UpdateCameraCache();
+            if (!PreviousStateIsValid)
+            {
+                m_LiveChild = null;
+                m_ActiveBlend = null;
+            }
+
+            var children = ChildCameras;
+            m_LiveChild = null;
             float highestWeight = 0;
             float totalWeight = 0;
-            for (int i = 0; i < MaxCameras && i < children.Length; ++i)
+            for (var i = 0; i < MaxCameras && i < children.Count; ++i)
             {
                 CinemachineVirtualCameraBase vcam = children[i];
                 if (vcam.isActiveAndEnabled)
@@ -286,13 +239,12 @@ namespace Cinemachine
                         if (weight > highestWeight)
                         {
                             highestWeight = weight;
-                            LiveChild = vcam;
+                            m_LiveChild = vcam;
                         }
                     }
                 }
             }
-            InvokePostPipelineStageCallback(
-                this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
 }

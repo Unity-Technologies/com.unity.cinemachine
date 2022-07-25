@@ -120,9 +120,7 @@ namespace Cinemachine.Editor
 
             DrawCameraFrustumGizmo(
                 state.Lens,
-                Matrix4x4.TRS(
-                    state.GetFinalPosition(),
-                    UnityQuaternionExtensions.Normalized(state.GetFinalOrientation()), Vector3.one),
+                Matrix4x4.TRS(state.GetFinalPosition(), state.GetFinalOrientation().normalized, Vector3.one),
                 CinemachineCore.Instance.IsLive(vcam)
                     ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
                     : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);

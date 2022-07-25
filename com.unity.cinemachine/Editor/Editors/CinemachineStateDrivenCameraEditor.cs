@@ -1,7 +1,3 @@
-#if !UNITY_2019_3_OR_NEWER
-#define CINEMACHINE_UNITY_ANIMATION
-#endif
-
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -13,22 +9,28 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_UNITY_ANIMATION
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
-    internal sealed class CinemachineStateDrivenCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineStateDrivenCamera>
+    class CinemachineStateDrivenCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineStateDrivenCamera>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
+        UnityEditorInternal.ReorderableList m_ChildList;
+        UnityEditorInternal.ReorderableList m_InstructionList;
+
+        string[] m_LayerNames;
+        int[] m_TargetStates;
+        string[] m_TargetStateNames;
+        Dictionary<int, int> m_StateIndexLookup;
+
+        string[] m_CameraCandidates;
+        Dictionary<CinemachineVirtualCameraBase, int> m_CameraIndexLookup;
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_CustomBlends));
-            excluded.Add(FieldPath(x => x.m_Instructions));
+            excluded.Add(FieldPath(x => x.CustomBlends));
+            excluded.Add(FieldPath(x => x.Instructions));
         }
-
-        private UnityEditorInternal.ReorderableList mChildList;
-        private UnityEditorInternal.ReorderableList mInstructionList;
 
         protected override void OnEnable()
         {
@@ -38,13 +40,13 @@ namespace Cinemachine.Editor
                 OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
                 OnCreateEditor = (UnityEditor.Editor ed) => 
                 {
-                    CinemachineBlenderSettingsEditor editor = ed as CinemachineBlenderSettingsEditor;
+                    var editor = ed as CinemachineBlenderSettingsEditor;
                     if (editor != null)
-                        editor.GetAllVirtualCameras = () => Target.ChildCameras;
+                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
                 }
             };
-            mChildList = null;
-            mInstructionList = null;
+            m_ChildList = null;
+            m_InstructionList = null;
         }
 
         protected override void OnDisable()
@@ -57,28 +59,28 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (mInstructionList == null)
+            if (m_InstructionList == null)
                 SetupInstructionList();
-            if (mChildList == null)
+            if (m_ChildList == null)
                 SetupChildList();
 
-            if (Target.m_AnimatedTarget == null)
+            if (Target.AnimatedTarget == null)
                 EditorGUILayout.HelpBox("An Animated Target is required", MessageType.Warning);
 
             // Ordinary properties
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.m_AnimatedTarget));
+            DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
+            DrawPropertyInInspector(FindProperty(x => x.AnimatedTarget));
 
             // Layer index
             EditorGUI.BeginChangeCheck();
             UpdateTargetStates();
             UpdateCameraCandidates();
-            SerializedProperty layerProp = FindAndExcludeProperty(x => x.m_LayerIndex);
+            SerializedProperty layerProp = FindAndExcludeProperty(x => x.LayerIndex);
             int currentLayer = layerProp.intValue;
-            int layerSelection = EditorGUILayout.Popup("Layer", currentLayer, mLayerNames);
+            int layerSelection = EditorGUILayout.Popup("Layer", currentLayer, m_LayerNames);
             if (currentLayer != layerSelection)
                 layerProp.intValue = layerSelection;
             if (EditorGUI.EndChangeCheck())
@@ -91,18 +93,18 @@ namespace Cinemachine.Editor
 
             // Blends
             m_BlendsEditor.DrawEditorCombo(
-                FindProperty(x => x.m_CustomBlends),
+                FindProperty(x => x.CustomBlends),
                 "Create New Blender Asset",
                 Target.gameObject.name + " Blends", "asset", string.Empty, false);
 
             // Instructions
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.Separator();
-            mInstructionList.DoLayoutList();
+            m_InstructionList.DoLayoutList();
 
             // vcam children
             EditorGUILayout.Separator();
-            mChildList.DoLayoutList();
+            m_ChildList.DoLayoutList();
             if (EditorGUI.EndChangeCheck())
             {
                 serializedObject.ApplyModifiedProperties();
@@ -123,54 +125,49 @@ namespace Cinemachine.Editor
             return animator.runtimeAnimatorController as AnimatorController;
         }
 
-        private string[] mLayerNames;
-        private int[] mTargetStates;
-        private string[] mTargetStateNames;
-        private Dictionary<int, int> mStateIndexLookup;
-        private void UpdateTargetStates()
+        void UpdateTargetStates()
         {
             // Scrape the Animator Controller for states
-            AnimatorController ac = GetControllerFromAnimator(Target.m_AnimatedTarget);
-            StateCollector collector = new StateCollector();
-            collector.CollectStates(ac, Target.m_LayerIndex);
-            mTargetStates = collector.mStates.ToArray();
-            mTargetStateNames = collector.mStateNames.ToArray();
-            mStateIndexLookup = collector.mStateIndexLookup;
+            var ac = GetControllerFromAnimator(Target.AnimatedTarget);
+            var collector = new StateCollector();
+            collector.CollectStates(ac, Target.LayerIndex);
+            m_TargetStates = collector.States.ToArray();
+            m_TargetStateNames = collector.StateNames.ToArray();
+            m_StateIndexLookup = collector.StateIndexLookup;
 
             if (ac == null)
-                mLayerNames = Array.Empty<string>();
+                m_LayerNames = Array.Empty<string>();
             else
             {
-                mLayerNames = new string[ac.layers.Length];
+                m_LayerNames = new string[ac.layers.Length];
                 for (int i = 0; i < ac.layers.Length; ++i)
-                    mLayerNames[i] = ac.layers[i].name;
+                    m_LayerNames[i] = ac.layers[i].name;
             }
 
             // Create the parent map in the target
-            List<CinemachineStateDrivenCamera.ParentHash> parents
-                = new List<CinemachineStateDrivenCamera.ParentHash>();
-            foreach (var i in collector.mStateParentLookup)
-                parents.Add(new CinemachineStateDrivenCamera.ParentHash(i.Key, i.Value));
-            Target.m_ParentHash = parents.ToArray();
+            List<CinemachineStateDrivenCamera.ParentHash> parents = new();
+            foreach (var i in collector.StateParentLookup)
+                parents.Add(new CinemachineStateDrivenCamera.ParentHash { Hash = i.Key, HashOfParent = i.Value });
+            Target.HashOfParent = parents.ToArray();
         }
 
         class StateCollector
         {
-            public List<int> mStates;
-            public List<string> mStateNames;
-            public Dictionary<int, int> mStateIndexLookup;
-            public Dictionary<int, int> mStateParentLookup;
+            public List<int> States;
+            public List<string> StateNames;
+            public Dictionary<int, int> StateIndexLookup;
+            public Dictionary<int, int> StateParentLookup;
 
             public void CollectStates(AnimatorController ac, int layerIndex)
             {
-                mStates = new List<int>();
-                mStateNames = new List<string>();
-                mStateIndexLookup = new Dictionary<int, int>();
-                mStateParentLookup = new Dictionary<int, int>();
+                States = new List<int>();
+                StateNames = new List<string>();
+                StateIndexLookup = new Dictionary<int, int>();
+                StateParentLookup = new Dictionary<int, int>();
 
-                mStateIndexLookup[0] = mStates.Count;
-                mStateNames.Add("(default)");
-                mStates.Add(0);
+                StateIndexLookup[0] = States.Count;
+                StateNames.Add("(default)");
+                States.Add(0);
 
                 if (ac != null && layerIndex >= 0 && layerIndex < ac.layers.Length)
                 {
@@ -217,13 +214,13 @@ namespace Cinemachine.Editor
             List<AnimationClip> CollectClips(Motion motion)
             {
                 var clips = new List<AnimationClip>();
-                AnimationClip clip = motion as AnimationClip;
+                var clip = motion as AnimationClip;
                 if (clip != null)
                     clips.Add(clip);
-                BlendTree tree = motion as BlendTree;
+                var tree = motion as BlendTree;
                 if (tree != null)
                 {
-                    ChildMotion[] children = tree.children;
+                    var children = tree.children;
                     foreach (var child in children)
                         clips.AddRange(CollectClips(child.motion));
                 }
@@ -233,65 +230,63 @@ namespace Cinemachine.Editor
             int AddState(int hash, int parentHash, string displayName)
             {
                 if (parentHash != 0)
-                    mStateParentLookup[hash] = parentHash;
-                mStateIndexLookup[hash] = mStates.Count;
-                mStateNames.Add(displayName);
-                mStates.Add(hash);
+                    StateParentLookup[hash] = parentHash;
+                StateIndexLookup[hash] = States.Count;
+                StateNames.Add(displayName);
+                States.Add(hash);
                 return hash;
             }
         }
 
-        private int GetStateHashIndex(int stateHash)
+         int GetStateHashIndex(int stateHash)
         {
             if (stateHash == 0)
                 return 0;
-            if (!mStateIndexLookup.ContainsKey(stateHash))
+            if (!m_StateIndexLookup.ContainsKey(stateHash))
                 return 0;
-            return mStateIndexLookup[stateHash];
+            return m_StateIndexLookup[stateHash];
         }
 
-        private string[] mCameraCandidates;
-        private Dictionary<CinemachineVirtualCameraBase, int> mCameraIndexLookup;
-        private void UpdateCameraCandidates()
+        void UpdateCameraCandidates()
         {
-            List<string> vcams = new List<string>();
-            mCameraIndexLookup = new Dictionary<CinemachineVirtualCameraBase, int>();
+            List<string> vcams = new();
+            m_CameraIndexLookup = new();
             vcams.Add("(none)");
-            CinemachineVirtualCameraBase[] children = Target.ChildCameras;
+            var children = Target.ChildCameras;
             foreach (var c in children)
             {
-                mCameraIndexLookup[c] = vcams.Count;
+                m_CameraIndexLookup[c] = vcams.Count;
                 vcams.Add(c.Name);
             }
-            mCameraCandidates = vcams.ToArray();
+            m_CameraCandidates = vcams.ToArray();
         }
 
-        private int GetCameraIndex(Object obj)
+        int GetCameraIndex(Object obj)
         {
-            if (obj == null || mCameraIndexLookup == null)
+            if (obj == null || m_CameraIndexLookup == null)
                 return 0;
-            CinemachineVirtualCameraBase vcam = obj as CinemachineVirtualCameraBase;
+            var vcam = obj as CinemachineVirtualCameraBase;
             if (vcam == null)
                 return 0;
-            if (!mCameraIndexLookup.ContainsKey(vcam))
+            if (!m_CameraIndexLookup.ContainsKey(vcam))
                 return 0;
-            return mCameraIndexLookup[vcam];
+            return m_CameraIndexLookup[vcam];
         }
 
         void SetupInstructionList()
         {
-            mInstructionList = new UnityEditorInternal.ReorderableList(serializedObject,
-                    serializedObject.FindProperty(() => Target.m_Instructions),
+            m_InstructionList = new UnityEditorInternal.ReorderableList(serializedObject,
+                    serializedObject.FindProperty(() => Target.Instructions),
                     true, true, true, true);
 
             // Needed for accessing field names as strings
-            CinemachineStateDrivenCamera.Instruction def = new CinemachineStateDrivenCamera.Instruction();
+            CinemachineStateDrivenCamera.Instruction def = new();
 
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
-            mInstructionList.drawHeaderCallback = (Rect rect) =>
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            m_InstructionList.drawHeaderCallback = (Rect rect) =>
                 {
                     float sharedWidth = rect.width - EditorGUIUtility.singleLineHeight
                         - 2 * (hBigSpace + floatFieldWidth) - hSpace;
@@ -308,25 +303,25 @@ namespace Cinemachine.Editor
                     EditorGUI.LabelField(rect, "Min");
                 };
 
-            mInstructionList.drawElementCallback
+            m_InstructionList.drawElementCallback
                 = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     SerializedProperty instProp
-                        = mInstructionList.serializedProperty.GetArrayElementAtIndex(index);
+                        = m_InstructionList.serializedProperty.GetArrayElementAtIndex(index);
                     float sharedWidth = rect.width - 2 * (hBigSpace + floatFieldWidth) - hSpace;
                     rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
 
                     rect.width = sharedWidth / 2;
-                    SerializedProperty stateSelProp = instProp.FindPropertyRelative(() => def.m_FullHash);
+                    SerializedProperty stateSelProp = instProp.FindPropertyRelative(() => def.FullHash);
                     int currentState = GetStateHashIndex(stateSelProp.intValue);
-                    int stateSelection = EditorGUI.Popup(rect, currentState, mTargetStateNames);
+                    int stateSelection = EditorGUI.Popup(rect, currentState, m_TargetStateNames);
                     if (currentState != stateSelection)
-                        stateSelProp.intValue = mTargetStates[stateSelection];
+                        stateSelProp.intValue = m_TargetStates[stateSelection];
 
                     rect.x += rect.width + hSpace;
-                    SerializedProperty vcamSelProp = instProp.FindPropertyRelative(() => def.m_VirtualCamera);
+                    SerializedProperty vcamSelProp = instProp.FindPropertyRelative(() => def.Camera);
                     int currentVcam = GetCameraIndex(vcamSelProp.objectReferenceValue);
-                    int vcamSelection = EditorGUI.Popup(rect, currentVcam, mCameraCandidates);
+                    int vcamSelection = EditorGUI.Popup(rect, currentVcam, m_CameraCandidates);
                     if (currentVcam != vcamSelection)
                         vcamSelProp.objectReferenceValue = (vcamSelection == 0)
                             ? null : Target.ChildCameras[vcamSelection - 1];
@@ -335,23 +330,23 @@ namespace Cinemachine.Editor
                     EditorGUIUtility.labelWidth = hBigSpace;
 
                     rect.x += rect.width; rect.width = floatFieldWidth + hBigSpace;
-                    SerializedProperty activeAfterProp = instProp.FindPropertyRelative(() => def.m_ActivateAfter);
+                    SerializedProperty activeAfterProp = instProp.FindPropertyRelative(() => def.ActivateAfter);
                     EditorGUI.PropertyField(rect, activeAfterProp, new GUIContent(" ", activeAfterProp.tooltip));
 
                     rect.x += rect.width;
-                    SerializedProperty minDurationProp = instProp.FindPropertyRelative(() => def.m_MinDuration);
+                    SerializedProperty minDurationProp = instProp.FindPropertyRelative(() => def.MinDuration);
                     EditorGUI.PropertyField(rect, minDurationProp, new GUIContent(" ", minDurationProp.tooltip));
 
                     EditorGUIUtility.labelWidth = oldWidth;
                 };
 
-            mInstructionList.onAddDropdownCallback = (Rect buttonRect, UnityEditorInternal.ReorderableList l) =>
+            m_InstructionList.onAddDropdownCallback = (Rect buttonRect, UnityEditorInternal.ReorderableList l) =>
                 {
                     var menu = new GenericMenu();
                     menu.AddItem(new GUIContent("New State"),
                         false, (object data) =>
                     {
-                        ++mInstructionList.serializedProperty.arraySize;
+                        ++m_InstructionList.serializedProperty.arraySize;
                         serializedObject.ApplyModifiedProperties();
                         Target.ValidateInstructions();
                     },
@@ -360,16 +355,16 @@ namespace Cinemachine.Editor
                         false, (object data) =>
                     {
                         CinemachineStateDrivenCamera target = Target;
-                        int len = mInstructionList.serializedProperty.arraySize;
-                        for (int i = 0; i < mTargetStates.Length; ++i)
+                        int len = m_InstructionList.serializedProperty.arraySize;
+                        for (var i = 0; i < m_TargetStates.Length; ++i)
                         {
-                            int hash = mTargetStates[i];
+                            int hash = m_TargetStates[i];
                             if (hash == 0)
                                 continue;
                             bool alreadyThere = false;
                             for (int j = 0; j < len; ++j)
                             {
-                                if (target.m_Instructions[j].m_FullHash == hash)
+                                if (target.Instructions[j].FullHash == hash)
                                 {
                                     alreadyThere = true;
                                     break;
@@ -377,10 +372,10 @@ namespace Cinemachine.Editor
                             }
                             if (!alreadyThere)
                             {
-                                int index = mInstructionList.serializedProperty.arraySize;
-                                ++mInstructionList.serializedProperty.arraySize;
-                                SerializedProperty p = mInstructionList.serializedProperty.GetArrayElementAtIndex(index);
-                                p.FindPropertyRelative(() => def.m_FullHash).intValue = hash;
+                                int index = m_InstructionList.serializedProperty.arraySize;
+                                ++m_InstructionList.serializedProperty.arraySize;
+                                SerializedProperty p = m_InstructionList.serializedProperty.GetArrayElementAtIndex(index);
+                                p.FindPropertyRelative(() => def.FullHash).intValue = hash;
                             }
                         }
                         serializedObject.ApplyModifiedProperties();
@@ -393,43 +388,45 @@ namespace Cinemachine.Editor
 
         void SetupChildList()
         {
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
 
-            mChildList = new UnityEditorInternal.ReorderableList(serializedObject,
+            m_ChildList = new UnityEditorInternal.ReorderableList(serializedObject,
                     serializedObject.FindProperty(() => Target.m_ChildCameras),
                     true, true, true, true);
 
-            mChildList.drawHeaderCallback = (Rect rect) =>
+            m_ChildList.drawHeaderCallback = (Rect rect) =>
                 {
                     EditorGUI.LabelField(rect, "Virtual Camera Children");
-                    GUIContent priorityText = new GUIContent("Priority");
+                    var priorityText = new GUIContent("Priority");
                     var textDimensions = GUI.skin.label.CalcSize(priorityText);
                     rect.x += rect.width - textDimensions.x;
                     rect.width = textDimensions.x;
                     EditorGUI.LabelField(rect, priorityText);
                 };
-            mChildList.drawElementCallback
+            m_ChildList.drawElementCallback
                 = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
                     rect.width -= floatFieldWidth + hBigSpace;
-                    SerializedProperty element = mChildList.serializedProperty.GetArrayElementAtIndex(index);
+                    SerializedProperty element = m_ChildList.serializedProperty.GetArrayElementAtIndex(index);
+                    GUI.enabled = false;
                     EditorGUI.PropertyField(rect, element, GUIContent.none);
+                    GUI.enabled = true;
 
                     float oldWidth = EditorGUIUtility.labelWidth;
                     EditorGUIUtility.labelWidth = hBigSpace;
-                    SerializedObject obj = new SerializedObject(element.objectReferenceValue);
+                    var obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
-                    SerializedProperty priorityProp = obj.FindProperty(
+                    var priorityProp = obj.FindProperty(
                         () => Target.CameraPriority).FindPropertyRelative("Priority");
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
                     EditorGUIUtility.labelWidth = oldWidth;
                     obj.ApplyModifiedProperties();
                 };
-            mChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     if (l.index < 0 || l.index >= l.serializedProperty.arraySize)
                         return;
@@ -440,14 +437,13 @@ namespace Cinemachine.Editor
                     if (vcam != null)
                         vcam.transform.SetSiblingIndex(l.index);
                 };
-            mChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera();
-                    Undo.SetTransformParent(vcam.transform, Target.transform, "");
+                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
                     vcam.transform.SetSiblingIndex(index);
                 };
-            mChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     Object o = l.serializedProperty.GetArrayElementAtIndex(
                             l.index).objectReferenceValue;
