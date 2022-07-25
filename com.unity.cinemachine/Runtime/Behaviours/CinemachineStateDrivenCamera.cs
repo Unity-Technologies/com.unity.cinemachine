@@ -38,7 +38,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_LayerIndex")]
         public int LayerIndex;
 
-        /// <summary>This represents a single instrunction to the StateDrivenCamera.  It associates
+        /// <summary>This represents a single instruction to the StateDrivenCamera.  It associates
         /// an state from the state machine with a child Virtual Camera, and also holds
         /// activation tuning parameters.</summary>
         [Serializable]
@@ -124,7 +124,7 @@ namespace Cinemachine
             CustomBlends = null;
         }
 
-        internal protected override void LegacyUpgrade(int streamedVersion)
+        protected internal override void LegacyUpgrade(int streamedVersion)
         {
             base.LegacyUpgrade(streamedVersion);
             if (streamedVersion < 20220721)
@@ -257,7 +257,7 @@ namespace Cinemachine
         int LookupFakeHash(int parentHash, AnimationClip clip)
         {
             if (m_HashCache == null)
-                m_HashCache = new();
+                m_HashCache = new Dictionary<AnimationClip, List<HashPair>>();
             if (!m_HashCache.TryGetValue(clip, out var list))
             {
                 list = new List<HashPair>();
@@ -276,7 +276,7 @@ namespace Cinemachine
         internal void ValidateInstructions()
         {
             if (Instructions == null)
-                Instructions = new Instruction[0];
+                Instructions = Array.Empty<Instruction>();
             m_InstructionDictionary = new Dictionary<int, int>();
             for (int i = 0; i < Instructions.Length; ++i)
             {
@@ -409,8 +409,8 @@ namespace Cinemachine
         int GetClipHash(int hash, List<AnimatorClipInfo> clips)
         {
             // Find the strongest-weighted animation clip substate
-            int bestClip = -1;
-            for (int i = 0; i < clips.Count; ++i)
+            var bestClip = -1;
+            for (var i = 0; i < clips.Count; ++i)
                 if (bestClip < 0 || clips[i].weight > clips[bestClip].weight)
                     bestClip = i;
 
@@ -428,8 +428,8 @@ namespace Cinemachine
             var blend = DefaultBlend;
             if (CustomBlends != null)
             {
-                string fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
-                string toCameraName = (toKey != null) ? toKey.Name : string.Empty;
+                var fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
+                var toCameraName = (toKey != null) ? toKey.Name : string.Empty;
                 blend = CustomBlends.GetBlendForVirtualCameras(
                         fromCameraName, toCameraName, blend);
             }

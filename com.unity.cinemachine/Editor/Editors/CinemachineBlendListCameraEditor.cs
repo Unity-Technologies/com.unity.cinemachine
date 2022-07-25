@@ -75,7 +75,7 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
-        private void UpdateCameraCandidates()
+        void UpdateCameraCandidates()
         {
             List<string> vcams = new List<string>();
             m_CameraIndexLookup = new Dictionary<CinemachineVirtualCameraBase, int>();
@@ -89,11 +89,11 @@ namespace Cinemachine.Editor
             m_CameraCandidates = vcams.ToArray();
         }
 
-        private int GetCameraIndex(Object obj)
+        int GetCameraIndex(Object obj)
         {
             if (obj == null || m_CameraIndexLookup == null)
                 return 0;
-            CinemachineVirtualCameraBase vcam = obj as CinemachineVirtualCameraBase;
+            var vcam = obj as CinemachineVirtualCameraBase;
             if (vcam == null)
                 return 0;
             if (!m_CameraIndexLookup.ContainsKey(vcam))
@@ -108,12 +108,12 @@ namespace Cinemachine.Editor
                     true, true, true, true);
 
             // Needed for accessing field names as strings
-            CinemachineBlendListCamera.Instruction def = new CinemachineBlendListCamera.Instruction();
+            var def = new CinemachineBlendListCamera.Instruction();
 
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
             m_InstructionList.drawHeaderCallback = (Rect rect) =>
                 {
                     float sharedWidth = rect.width - EditorGUIUtility.singleLineHeight
@@ -165,10 +165,10 @@ namespace Cinemachine.Editor
 
         void SetupChildList()
         {
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
 
             m_ChildList = new UnityEditorInternal.ReorderableList(serializedObject,
                     serializedObject.FindProperty(() => Target.m_ChildCameras),
@@ -177,7 +177,7 @@ namespace Cinemachine.Editor
             m_ChildList.drawHeaderCallback = (Rect rect) =>
                 {
                     EditorGUI.LabelField(rect, "Virtual Camera Children");
-                    GUIContent priorityText = new GUIContent("Priority");
+                    var priorityText = new GUIContent("Priority");
                     var textDimensions = GUI.skin.label.CalcSize(priorityText);
                     rect.x += rect.width - textDimensions.x;
                     rect.width = textDimensions.x;
@@ -194,9 +194,9 @@ namespace Cinemachine.Editor
                     GUI.enabled = true;
                     float oldWidth = EditorGUIUtility.labelWidth;
                     EditorGUIUtility.labelWidth = hBigSpace;
-                    SerializedObject obj = new SerializedObject(element.objectReferenceValue);
+                    var obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
-                    SerializedProperty priorityProp = obj.FindProperty(
+                    var priorityProp = obj.FindProperty(
                         () => Target.CameraPriority).FindPropertyRelative("Priority");
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
                     EditorGUIUtility.labelWidth = oldWidth;

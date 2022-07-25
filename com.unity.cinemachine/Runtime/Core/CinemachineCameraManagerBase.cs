@@ -78,7 +78,7 @@ namespace Cinemachine
         /// </summary>
         public abstract CinemachineBlend ActiveBlend { get; }
 
-        /// <summary>Gets a brief debug description of this virtual camera, for use when displayiong debug info</summary>
+        /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
         public override string Description
         {
             get
@@ -100,7 +100,7 @@ namespace Cinemachine
 
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
@@ -189,7 +189,7 @@ namespace Cinemachine
         }
 
         /// <summary>Rebuild the camera cache if it's been invalidated</summary>
-        /// <returns>True if a cache requild was performed, false if cache is up to date.</returns>
+        /// <returns>True if a cache rebuild was performed, false if cache is up to date.</returns>
         protected virtual bool UpdateCameraCache()
         {
             if (m_ChildCameras != null)
@@ -239,7 +239,7 @@ namespace Cinemachine
             {
                 var sb = CinemachineDebug.SBFromPool();
                 sb.Append(Name); sb.Append(": "); sb.Append(Description);
-                string text = sb.ToString();
+                var text = sb.ToString();
                 Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 CinemachineDebug.ReturnToPool(sb);
