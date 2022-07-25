@@ -218,7 +218,7 @@ namespace Cinemachine.Editor
             public string originalName;
             public string originalGUIDName;
             public string convertedGUIDName;
-            public List<ExposedReference<CinemachineVirtualCameraBase>> timelineReferences;
+            public List<Tuple<string, ExposedReference<CinemachineVirtualCameraBase>>> timelineReferences; // TODO: need to store director too, to update reference
         }
         
         void UpgradePrefabsAndPrefabInstances()
@@ -523,7 +523,7 @@ namespace Cinemachine.Editor
 
             void Initialize(List<PlayableDirector> playableDirectors)
             {
-                m_CmShotsToUpdate = new ();
+                m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
 
                 // collect all cmShots that may require a reference update
                 foreach (var playableDirector in playableDirectors)
@@ -621,13 +621,16 @@ namespace Cinemachine.Editor
             {
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
-                    var references = link.timelineReferences;
+                    var references = link.timelineReferences; // TODO: get timeline references for director only
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
                         foreach (var reference in references)
                         {
-                            if (exposedRef.exposedName == reference.exposedName)
+                            var a = director.ToString();
+                            if (reference.Item1 != director.ToString()) continue; // TODO: optimize
+                            
+                            if (exposedRef.exposedName == reference.Item2.exposedName)
                             {
                                 // update reference if it needs to be updated <=> null
                                 if (exposedRef.Resolve(director) == null)
@@ -638,16 +641,16 @@ namespace Cinemachine.Editor
                 }
             }
 
-            public List<ExposedReference<CinemachineVirtualCameraBase>> GetTimelineReferences(CinemachineVirtualCameraBase vcam)
+            public List<Tuple<string, ExposedReference<CinemachineVirtualCameraBase>>> GetTimelineReferences(CinemachineVirtualCameraBase vcam)
             {
-                var references = new List<ExposedReference<CinemachineVirtualCameraBase>>();
+                var references = new List<Tuple<string, ExposedReference<CinemachineVirtualCameraBase>>>();
                 foreach (var (director, cmShots) in m_CmShotsToUpdate)
                 {
                     foreach (var cmShot in cmShots)
                     {
                         var exposedRef = cmShot.VirtualCamera;
                         if (vcam == exposedRef.Resolve(director))
-                            references.Add(exposedRef);
+                            references.Add(new Tuple<string, ExposedReference<CinemachineVirtualCameraBase>>(director.ToString(), exposedRef));
                     }
                 }
                 return references;
