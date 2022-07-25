@@ -91,7 +91,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                var directors = TimelineManager.GetPlayableDirector(scene);
+                var directors = TimelineManager.GetPlayableDirectors(scene);
                 foreach (var director in directors)
                 {
                     var rename = new TimelineRename
@@ -111,7 +111,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                var directors = TimelineManager.GetPlayableDirector(scene);
+                var directors = TimelineManager.GetPlayableDirectors(scene);
                 foreach (var director in directors)
                 {
                     for (var i = 0; i < renames.Count; ++i)
@@ -567,10 +567,10 @@ namespace Cinemachine.Editor
 
             public TimelineManager(Scene scene)
             {
-                Initialize(GetPlayableDirector(scene));
+                Initialize(GetPlayableDirectors(scene));
             }
             
-            public static List<PlayableDirector> GetPlayableDirector(Scene scene)
+            public static List<PlayableDirector> GetPlayableDirectors(Scene scene)
             {
                 var playableDirectors = new List<PlayableDirector>();
 
