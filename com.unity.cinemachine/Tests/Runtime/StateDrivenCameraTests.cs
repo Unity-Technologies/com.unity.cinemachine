@@ -30,7 +30,7 @@ namespace Tests.Runtime
 
             // Create a state-driven camera with two vcams 
             var stateDrivenCamera = CreateGameObject("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
-            stateDrivenCamera.m_AnimatedTarget = character.GetComponent<Animator>();
+            stateDrivenCamera.AnimatedTarget = character.GetComponent<Animator>();
 
             var vcam1 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
             var vcam2 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
@@ -38,10 +38,10 @@ namespace Tests.Runtime
             vcam2.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
 
             // Map states to vcams
-            stateDrivenCamera.m_Instructions = new[]
+            stateDrivenCamera.Instructions = new[]
             {
-                new CinemachineStateDrivenCamera.Instruction() {m_FullHash = controller.layers[0].stateMachine.states[0].GetHashCode(), m_VirtualCamera = vcam1},
-                new CinemachineStateDrivenCamera.Instruction() {m_FullHash = controller.layers[0].stateMachine.states[1].GetHashCode(), m_VirtualCamera = vcam2}
+                new CinemachineStateDrivenCamera.Instruction() {FullHash = controller.layers[0].stateMachine.states[0].GetHashCode(), Camera = vcam1},
+                new CinemachineStateDrivenCamera.Instruction() {FullHash = controller.layers[0].stateMachine.states[1].GetHashCode(), Camera = vcam2}
             };
 
             this.m_StateDrivenCamera = stateDrivenCamera;

@@ -86,12 +86,12 @@ namespace Cinemachine.Editor
             childVcam2.Lens.FieldOfView = 10;
 
             // Set up initial instruction set
-            blendListCamera.m_Instructions = new CinemachineBlendListCamera.Instruction[2];
-            blendListCamera.m_Instructions[0].m_VirtualCamera = childVcam1;
-            blendListCamera.m_Instructions[0].m_Hold = 1f;
-            blendListCamera.m_Instructions[1].m_VirtualCamera = childVcam2;
-            blendListCamera.m_Instructions[1].m_Blend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
-            blendListCamera.m_Instructions[1].m_Blend.m_Time = 2f;
+            blendListCamera.Instructions = new CinemachineBlendListCamera.Instruction[2];
+            blendListCamera.Instructions[0].Camera = childVcam1;
+            blendListCamera.Instructions[0].Hold = 1f;
+            blendListCamera.Instructions[1].Camera = childVcam2;
+            blendListCamera.Instructions[1].Blend.m_Style = CinemachineBlendDefinition.Style.EaseInOut;
+            blendListCamera.Instructions[1].Blend.m_Time = 2f;
         }
 
 #if CINEMACHINE_UNITY_ANIMATION

@@ -99,11 +99,9 @@ namespace Cinemachine.Editor
             if (Target != null && Target.m_LockStageInInspector != null)
                foreach (var s in Target.m_LockStageInInspector)
                     m_PipelineSet.SetStageIsLocked(s);
-           
-#if UNITY_2021_2_OR_NEWER
+
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
-#endif
         }
 
         protected override void OnDisable()
@@ -111,30 +109,18 @@ namespace Cinemachine.Editor
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             m_PipelineSet.Shutdown();
             base.OnDisable();
-            
-#if UNITY_2021_2_OR_NEWER
+
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
-#endif
         }
 
         void OnSceneGUI()
         {
             m_PipelineSet.OnSceneGUI(); // call hidden editors' OnSceneGUI
             
-#if UNITY_2021_2_OR_NEWER
-            DrawSceneTools();
-#endif
-        }
-
-#if UNITY_2021_2_OR_NEWER
-        void DrawSceneTools()
-        {
             var vcam = Target;
             if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
-            {
                 return;
-            }
 
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
@@ -151,7 +137,6 @@ namespace Cinemachine.Editor
             }
             Handles.color = originalColor;
         }
-#endif
 
         public override void OnInspectorGUI()
         {

@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
                 excluded.Add(WeightPropertyName(i));
         }
 
-        static string WeightPropertyName(int i) { return "m_Weight" + i; }
+        static string WeightPropertyName(int i) { return "Weight" + i; }
 
         public override void OnInspectorGUI()
         {
@@ -28,8 +28,8 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
 
             float totalWeight = 0;
-            CinemachineVirtualCameraBase[] children = Target.ChildCameras;
-            int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Length);
+            var children = Target.ChildCameras;
+            int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
             for (int i = 0; i < numCameras; ++i)
                 if (children[i].isActiveAndEnabled)
                     totalWeight += Target.GetWeight(i);
@@ -51,9 +51,9 @@ namespace Cinemachine.Editor
                 if (totalWeight <= UnityVectorExtensions.Epsilon)
                     EditorGUILayout.HelpBox("No input channels are active", MessageType.Warning);
 
-                if (children.Length > numCameras)
+                if (children.Count > numCameras)
                     EditorGUILayout.HelpBox(
-                        "There are " + children.Length 
+                        "There are " + children.Count 
                         + " child cameras.  A maximum of " + numCameras + " is supported.", 
                         MessageType.Warning);
 
@@ -68,7 +68,7 @@ namespace Cinemachine.Editor
         }
 
         void DrawProportionIndicator(
-            CinemachineVirtualCameraBase[] children, int numCameras, float totalWeight)
+            List<CinemachineVirtualCameraBase> children, int numCameras, float totalWeight)
         {
             GUIStyle style = EditorStyles.centeredGreyMiniLabel;
             Color bkg = new Color(0.27f, 0.27f, 0.27f); // ack! no better way than this?

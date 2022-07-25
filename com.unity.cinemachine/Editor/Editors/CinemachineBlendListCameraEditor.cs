@@ -6,25 +6,27 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlendListCamera))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineBlendListCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineBlendListCamera>
+    class CinemachineBlendListCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineBlendListCamera>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.m_Instructions));
+            excluded.Add(FieldPath(x => x.Instructions));
         }
 
-        private UnityEditorInternal.ReorderableList mChildList;
-        private UnityEditorInternal.ReorderableList mInstructionList;
+        UnityEditorInternal.ReorderableList m_ChildList;
+        UnityEditorInternal.ReorderableList m_InstructionList;
+
+        string[] m_CameraCandidates;
+        Dictionary<CinemachineVirtualCameraBase, int> m_CameraIndexLookup;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            mChildList = null;
-            mInstructionList = null;
+            m_ChildList = null;
+            m_InstructionList = null;
         }
 
         protected override void OnDisable()
@@ -35,16 +37,16 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            if (mInstructionList == null)
+            if (m_InstructionList == null)
                 SetupInstructionList();
-            if (mChildList == null)
+            if (m_ChildList == null)
                 SetupChildList();
 
             // Ordinary properties
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
+            DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
             DrawRemainingPropertiesInInspector();
 
             if (targets.Length == 1)
@@ -53,11 +55,11 @@ namespace Cinemachine.Editor
                 UpdateCameraCandidates();
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.Separator();
-                mInstructionList.DoLayoutList();
+                m_InstructionList.DoLayoutList();
 
                 EditorGUILayout.Separator();
 
-                mChildList.DoLayoutList();
+                m_ChildList.DoLayoutList();
                 if (EditorGUI.EndChangeCheck())
                 {
                     serializedObject.ApplyModifiedProperties();
@@ -73,48 +75,46 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
-        private string[] mCameraCandidates;
-        private Dictionary<CinemachineVirtualCameraBase, int> mCameraIndexLookup;
-        private void UpdateCameraCandidates()
+        void UpdateCameraCandidates()
         {
             List<string> vcams = new List<string>();
-            mCameraIndexLookup = new Dictionary<CinemachineVirtualCameraBase, int>();
+            m_CameraIndexLookup = new Dictionary<CinemachineVirtualCameraBase, int>();
             vcams.Add("(none)");
-            CinemachineVirtualCameraBase[] children = Target.ChildCameras;
+            var children = Target.ChildCameras;
             foreach (var c in children)
             {
-                mCameraIndexLookup[c] = vcams.Count;
+                m_CameraIndexLookup[c] = vcams.Count;
                 vcams.Add(c.Name);
             }
-            mCameraCandidates = vcams.ToArray();
+            m_CameraCandidates = vcams.ToArray();
         }
 
-        private int GetCameraIndex(Object obj)
+        int GetCameraIndex(Object obj)
         {
-            if (obj == null || mCameraIndexLookup == null)
+            if (obj == null || m_CameraIndexLookup == null)
                 return 0;
-            CinemachineVirtualCameraBase vcam = obj as CinemachineVirtualCameraBase;
+            var vcam = obj as CinemachineVirtualCameraBase;
             if (vcam == null)
                 return 0;
-            if (!mCameraIndexLookup.ContainsKey(vcam))
+            if (!m_CameraIndexLookup.ContainsKey(vcam))
                 return 0;
-            return mCameraIndexLookup[vcam];
+            return m_CameraIndexLookup[vcam];
         }
 
         void SetupInstructionList()
         {
-            mInstructionList = new UnityEditorInternal.ReorderableList(serializedObject,
-                    serializedObject.FindProperty(() => Target.m_Instructions),
+            m_InstructionList = new UnityEditorInternal.ReorderableList(serializedObject,
+                    serializedObject.FindProperty(() => Target.Instructions),
                     true, true, true, true);
 
             // Needed for accessing field names as strings
-            CinemachineBlendListCamera.Instruction def = new CinemachineBlendListCamera.Instruction();
+            var def = new CinemachineBlendListCamera.Instruction();
 
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            float hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
-            mInstructionList.drawHeaderCallback = (Rect rect) =>
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+            m_InstructionList.drawHeaderCallback = (Rect rect) =>
                 {
                     float sharedWidth = rect.width - EditorGUIUtility.singleLineHeight
                         - floatFieldWidth - hSpace - hBigSpace;
@@ -128,33 +128,33 @@ namespace Cinemachine.Editor
                     EditorGUI.LabelField(rect, "Hold");
                 };
 
-            mInstructionList.drawElementCallback
+            m_InstructionList.drawElementCallback
                 = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
-                    SerializedProperty instProp = mInstructionList.serializedProperty.GetArrayElementAtIndex(index);
+                    SerializedProperty instProp = m_InstructionList.serializedProperty.GetArrayElementAtIndex(index);
                     float sharedWidth = rect.width - floatFieldWidth - hSpace - hBigSpace;
                     rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
 
                     rect.width = sharedWidth / 2;
-                    SerializedProperty vcamSelProp = instProp.FindPropertyRelative(() => def.m_VirtualCamera);
+                    SerializedProperty vcamSelProp = instProp.FindPropertyRelative(() => def.Camera);
                     int currentVcam = GetCameraIndex(vcamSelProp.objectReferenceValue);
-                    int vcamSelection = EditorGUI.Popup(rect, currentVcam, mCameraCandidates);
+                    int vcamSelection = EditorGUI.Popup(rect, currentVcam, m_CameraCandidates);
                     if (currentVcam != vcamSelection)
                         vcamSelProp.objectReferenceValue = (vcamSelection == 0)
                             ? null : Target.ChildCameras[vcamSelection - 1];
 
                     rect.x += rect.width + hSpace; rect.width = sharedWidth / 2;
-                    if (index > 0 || Target.m_Loop)
-                        EditorGUI.PropertyField(rect, instProp.FindPropertyRelative(() => def.m_Blend),
+                    if (index > 0 || Target.Loop)
+                        EditorGUI.PropertyField(rect, instProp.FindPropertyRelative(() => def.Blend),
                             GUIContent.none);
 
-                    if (index < mInstructionList.count - 1 || Target.m_Loop)
+                    if (index < m_InstructionList.count - 1 || Target.Loop)
                     {
                         float oldWidth = EditorGUIUtility.labelWidth;
                         EditorGUIUtility.labelWidth = hBigSpace;
 
                         rect.x += rect.width; rect.width = floatFieldWidth + hBigSpace;
-                        SerializedProperty holdProp = instProp.FindPropertyRelative(() => def.m_Hold);
+                        SerializedProperty holdProp = instProp.FindPropertyRelative(() => def.Hold);
                         EditorGUI.PropertyField(rect, holdProp, new GUIContent(" ", holdProp.tooltip));
                         holdProp.floatValue = Mathf.Max(holdProp.floatValue, 0);
 
@@ -165,26 +165,44 @@ namespace Cinemachine.Editor
 
         void SetupChildList()
         {
-            float vSpace = 2;
-            mChildList = new UnityEditorInternal.ReorderableList(serializedObject,
+            var vSpace = 2f;
+            var hSpace = 3f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
+
+            m_ChildList = new UnityEditorInternal.ReorderableList(serializedObject,
                     serializedObject.FindProperty(() => Target.m_ChildCameras),
                     true, true, true, true);
 
-            mChildList.drawHeaderCallback = (Rect rect) =>
+            m_ChildList.drawHeaderCallback = (Rect rect) =>
                 {
                     EditorGUI.LabelField(rect, "Virtual Camera Children");
+                    var priorityText = new GUIContent("Priority");
+                    var textDimensions = GUI.skin.label.CalcSize(priorityText);
+                    rect.x += rect.width - textDimensions.x;
+                    rect.width = textDimensions.x;
+                    EditorGUI.LabelField(rect, priorityText);
                 };
-            mChildList.drawElementCallback
+            m_ChildList.drawElementCallback
                 = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
-                    rect.y += vSpace;
-                    Vector2 pos = rect.position;
-                    rect.height = EditorGUIUtility.singleLineHeight;
-                    SerializedProperty element
-                        = mChildList.serializedProperty.GetArrayElementAtIndex(index);
+                    rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
+                    rect.width -= floatFieldWidth + hBigSpace;
+                    SerializedProperty element = m_ChildList.serializedProperty.GetArrayElementAtIndex(index);
+                    GUI.enabled = false;
                     EditorGUI.PropertyField(rect, element, GUIContent.none);
+                    GUI.enabled = true;
+                    float oldWidth = EditorGUIUtility.labelWidth;
+                    EditorGUIUtility.labelWidth = hBigSpace;
+                    var obj = new SerializedObject(element.objectReferenceValue);
+                    rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
+                    var priorityProp = obj.FindProperty(
+                        () => Target.CameraPriority).FindPropertyRelative("Priority");
+                    EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
+                    EditorGUIUtility.labelWidth = oldWidth;
+                    obj.ApplyModifiedProperties();
                 };
-            mChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     if (l.index < 0 || l.index >= l.serializedProperty.arraySize)
                         return;
@@ -195,14 +213,13 @@ namespace Cinemachine.Editor
                     if (vcam != null)
                         vcam.transform.SetSiblingIndex(l.index);
                 };
-            mChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera();
-                    Undo.SetTransformParent(vcam.transform, Target.transform, "");
+                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
                     vcam.transform.SetSiblingIndex(index);
                 };
-            mChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
+            m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     Object o = l.serializedProperty.GetArrayElementAtIndex(
                             l.index).objectReferenceValue;

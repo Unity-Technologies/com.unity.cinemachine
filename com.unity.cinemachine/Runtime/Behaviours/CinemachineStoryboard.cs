@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.Serialization;
-
-#if CINEMACHINE_UGUI
+﻿#if CINEMACHINE_UGUI
+using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
