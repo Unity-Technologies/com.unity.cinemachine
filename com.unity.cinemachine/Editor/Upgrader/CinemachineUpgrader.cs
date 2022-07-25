@@ -661,11 +661,11 @@ namespace Cinemachine.Editor
                         AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding\
                     }
 
-                    // TODO: we need to update bindings with new API (m_Lens -> Lens)
                     if (previousBinding.propertyName.Contains("m_"))
                     {
                         var propertyName = previousBinding.propertyName;
                         var newBinding = previousBinding;
+                        newBinding.type = typeof(CmCamera); // need to set type for correct binding
                         newBinding.propertyName = propertyName.Substring("m_".Length);
                         var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                         AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
