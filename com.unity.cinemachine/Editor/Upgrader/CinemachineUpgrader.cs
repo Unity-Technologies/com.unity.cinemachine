@@ -649,13 +649,24 @@ namespace Cinemachine.Editor
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
                 foreach (var previousBinding in existingEditorBindings)
                 {
-                    var path = previousBinding.path;
-                    if (path.Contains("cm"))
+                    // TODO: we need to update bindings with new API (m_Lens -> Lens)
+                    if (previousBinding.path.Contains("cm"))
                     {
+                        var path = previousBinding.path;
                         var newBinding = previousBinding;
                         //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
                         var index = Mathf.Max(0, path.IndexOf("cm") - 1);
                         newBinding.path = path.Substring(0, index);
+                        var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
+                        AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
+                        AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding\
+                    }
+
+                    if (previousBinding.propertyName.Contains("m_"))
+                    {
+                        var propertyName = previousBinding.propertyName;
+                        var newBinding = previousBinding;
+                        newBinding.propertyName = propertyName.Substring("m_".Length);
                         var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                         AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
                         AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
