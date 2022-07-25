@@ -16,6 +16,7 @@ namespace Cinemachine
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
     /// </summary>
     [ExecuteAlways]
+    [SaveDuringPlay]
     public class InputAxisController : MonoBehaviour
     {
         /// <summary>
@@ -36,7 +37,13 @@ namespace Cinemachine
             [InputAxisNameProperty]
             [Tooltip("Axis name for the Legacy Input system (if used).  "
                 + "This value will be used to control the axis.")]
-            public string InputName;
+            public string LegacyInput;
+
+            /// <summary>The LegacyInput value is multiplied by this amount prior to processing.
+            /// Controls the input power.  Set it to a negative value to invert the input</summary>
+            [Tooltip("The LegacyInput value is multiplied by this amount prior to processing.  "
+                + "Controls the input power.  Set it to a negative value to invert the input")]
+            public float LegacyGain;
 #endif
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -44,15 +51,15 @@ namespace Cinemachine
             [Tooltip("Action for the Input package (if used).")]
             public InputActionReference InputAction;
 
-            /// <summary>The actual action, resolved for player</summary>
-            internal InputAction m_CachedAction;
-#endif
             /// <summary>The input value is multiplied by this amount prior to processing.
             /// Controls the input power.  Set it to a negative value to invert the input</summary>
             [Tooltip("The input value is multiplied by this amount prior to processing.  "
                 + "Controls the input power.  Set it to a negative value to invert the input")]
             public float Gain;
 
+            /// <summary>The actual action, resolved for player</summary>
+            internal InputAction m_CachedAction;
+#endif
             /// <summary>Setting that control the way the input axis responds to user input</summary>
             [HideFoldout]
             public InputAxisControl Control;
@@ -94,7 +101,7 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            for (int i = Controllers.Count; i < Controllers.Count; ++i)
+            for (int i = 0; i < Controllers.Count; ++i)
             {
                 Controllers[i].Control.Validate();
                 Controllers[i].Recentering.Validate();
@@ -205,7 +212,10 @@ namespace Cinemachine
             for (int i = 0; i < Controllers.Count; ++i)
             {
                 var c = Controllers[i];
-
+#if ENABLE_LEGACY_INPUT_MANAGER
+                if (!string.IsNullOrEmpty(c.LegacyInput) && GetInputAxisValue != null)
+                    c.Control.InputValue = GetInputAxisValue(c.LegacyInput) * c.LegacyGain;
+#endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (c.InputAction != null && c.InputAction.action != null)
                 {
@@ -213,15 +223,15 @@ namespace Cinemachine
                     c.Control.InputValue = ReadInputAction(c, axis) * c.Gain;
                 }
 #endif
-#if ENABLE_LEGACY_INPUT_MANAGER
-                if (!string.IsNullOrEmpty(c.InputName) && GetInputAxisValue != null)
-                    c.Control.InputValue = GetInputAxisValue(c.InputName) * c.Gain;
-#endif
-                gotInput |= c.Driver.UpdateInput(deltaTime, m_Axes[i].Axis, ref c.Control);
+                c.Driver.ProcessInput(deltaTime, m_Axes[i].Axis, ref c.Control);
+                gotInput |= Mathf.Abs(c.Control.InputValue) > 0.001f;
             }
+
+            // Do recentering
             for (int i = 0; i < Controllers.Count; ++i)
             {
-                if (gotInput)
+                // If we got any input, cancel all recentering
+                if (gotInput && Controllers[i].Recentering.Wait > 0.01f)
                     Controllers[i].Driver.CancelRecentering();
                 Controllers[i].Driver.DoRecentering(deltaTime, m_Axes[i].Axis, Controllers[i].Recentering);
             }
@@ -233,29 +243,8 @@ namespace Cinemachine
             {
                 Name = m_Axes[axisIndex].Name,
                 Owner = owner as UnityEngine.Object,
-                Gain = (m_Axes[axisIndex].AxisIndex == 1) ? -1 : 1, // invert vertical axis by default
-                Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f },
-                Recentering = InputAxisRecenteringSettings.Default
             };
-
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            c.InputAction = GetDefaultInputAction(m_Axes[axisIndex].AxisIndex);
-            c.Gain *= 0.2f;
-#elif ENABLE_LEGACY_INPUT_MANAGER
-            c.InputName = GetDefaultInputName(m_Axes[axisIndex].AxisIndex);
-            c.Gain *= 3;
-
-            string GetDefaultInputName(int index)
-            {
-                switch (index)
-                {
-                    case 0: return "Mouse X";
-                    case 1: return "Mouse Y";
-                    case 2: return "Mouse ScrollWheel";
-                    default: return "";
-                }
-            }
-#endif
+            SetControlDefaults?.Invoke(m_Axes[axisIndex], ref c);
             return c;
         }
 
@@ -264,6 +253,16 @@ namespace Cinemachine
 
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
+
+        /// <summary>
+        /// Call this to trigger recentering immediately, regardless of whether recentering 
+        /// is enabled or the wait time has elapsed.
+        /// </summary>
+        public void RecenterNow()
+        {
+            for (int i = 0; i < Controllers.Count; ++i)
+                Controllers[i].Driver.RecenterNow();
+        }
 
         static float ReadLegacyInput(string axisName)
         {
@@ -278,10 +277,11 @@ namespace Cinemachine
             return value;
         }
 
+        internal delegate void SetControlDefaultsForAxis(
+            in IInputAxisSource.AxisDescriptor axis, ref Controller controller);
+        internal static SetControlDefaultsForAxis SetControlDefaults;
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        internal delegate InputActionReference GetDefaultLookActionDelegate(int axis);
-        internal static GetDefaultLookActionDelegate GetDefaultInputAction = (axis) => null;
-        
         float ReadInputAction(Controller c, int axis)
         {
             ResolveActionForPlayer(c, PlayerIndex);

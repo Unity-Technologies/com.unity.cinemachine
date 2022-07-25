@@ -9,31 +9,31 @@ namespace Cinemachine.Examples
         public RectTransform ReticleImage;
 
         [Tooltip("How far to raycast to place the aim target")]
-        public float AimDistance;
+        public float AimDistance = 200;
 
         [Tooltip("Objects on these layers will be detected")]
-        public LayerMask CollideAgainst;
+        public LayerMask CollideAgainst = 1;
 
         [TagField]
         [Tooltip("Obstacles with this tag will be ignored.  "
             + "It's a good idea to set this field to the player's tag")]
         public string IgnoreTag = string.Empty;
 
-        /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
-        [Header("Input Axes")]
-        [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        public InputAxis VerticalAxis;
-
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
+        [Header("Input Axes")]
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        public InputAxis HorizontalAxis;
+        public InputAxis HorizontalAxis = new InputAxis { Range = new Vector2(-180, 180), Wrap = true };
+
+        /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
+        [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
+        public InputAxis VerticalAxis = new InputAxis { Range = new Vector2(-70, 70) };
 
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Aim Look X", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Aim Look Y", AxisIndex = 1 });
         }
         
         private void OnValidate()
@@ -41,17 +41,6 @@ namespace Cinemachine.Examples
             VerticalAxis.Validate();
             HorizontalAxis.Validate();
             AimDistance = Mathf.Max(1, AimDistance);
-        }
-
-        private void Reset()
-        {
-            AimDistance = 200;
-            ReticleImage = null;
-            CollideAgainst = 1;
-            IgnoreTag = string.Empty;
-
-            VerticalAxis = new InputAxis { Range = new Vector2(-70, 70) };
-            HorizontalAxis = new InputAxis { Range = new Vector2(-180, 180), Wrap = true };
         }
 
         private void OnEnable()

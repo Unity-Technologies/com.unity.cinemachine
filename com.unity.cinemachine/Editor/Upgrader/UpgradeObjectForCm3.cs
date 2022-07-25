@@ -246,15 +246,16 @@ namespace Cinemachine.Editor
                 if (c.Name == name)
                 {
 #if ENABLE_LEGACY_INPUT_MANAGER
-                    c.InputName = axis.m_InputAxisName;
+                    c.LegacyInput = axis.m_InputAxisName;
+                    c.LegacyGain = axis.m_MaxSpeed;
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (provider != null)
                         c.InputAction = provider.XYAxis;
-#endif
                     c.Gain = axis.m_MaxSpeed;
                     if (axis.m_SpeedMode == AxisState.SpeedMode.MaxSpeed)
                         c.Gain /= 100; // very approx
+#endif
                     c.Control.AccelTime = axis.m_AccelTime;
                     c.Control.DecelTime = axis.m_DecelTime;
 

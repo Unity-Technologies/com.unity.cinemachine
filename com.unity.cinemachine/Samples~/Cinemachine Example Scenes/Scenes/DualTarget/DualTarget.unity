@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 73163985}
   - component: {fileID: 73163986}
+  - component: {fileID: 73163987}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -170,11 +171,86 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa14cc4c274b78b4c820064214bdbb60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 15
+  Speed: 10
   VelocityDamping: 0.5
-  JumpTime: 1
+  JumpStrength: 5
   InputForward: 0
   RotatePlayer: 1
+  MoveX:
+    Value: 0
+    Center: 0
+    Range: {x: -1, y: 1}
+    Wrap: 0
+    Restrictions: 0
+  MoveZ:
+    Value: 0
+    Center: 0
+    Range: {x: -1, y: 1}
+    Wrap: 0
+    Restrictions: 0
+  Jump:
+    Value: 0
+    Center: 0
+    Range: {x: 0, y: 1}
+    Wrap: 0
+    Restrictions: 0
+--- !u!114 &73163987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73163984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
+  Controllers:
+  - Name: Move X
+    Owner: {fileID: 73163986}
+    LegacyInput: Horizontal
+    LegacyGain: 200
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
+    Control:
+      InputValue: 0
+      AccelTime: 0
+      DecelTime: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
+  - Name: Move Z
+    Owner: {fileID: 73163986}
+    LegacyInput: Vertical
+    LegacyGain: 200
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
+    Control:
+      InputValue: 0
+      AccelTime: 0
+      DecelTime: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
+  - Name: Jump
+    Owner: {fileID: 73163986}
+    LegacyInput: Jump
+    LegacyGain: 200
+    InputAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
+    Control:
+      InputValue: 0
+      AccelTime: 0
+      DecelTime: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
 --- !u!1 &89020953
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,17 +288,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   IgnoreTag: 
-  VerticalAxis:
-    Value: 0
-    Center: 0
-    Range: {x: -70, y: 70}
-    Wrap: 0
-    Restrictions: 0
   HorizontalAxis:
     Value: 0
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
+    Restrictions: 0
+  VerticalAxis:
+    Value: 0
+    Center: 0
+    Range: {x: -70, y: 70}
+    Wrap: 0
     Restrictions: 0
 --- !u!4 &89020957
 Transform:
@@ -255,11 +331,12 @@ MonoBehaviour:
   PlayerIndex: -1
   AutoEnableInputs: 1
   Controllers:
-  - Name: Horizontal
+  - Name: Aim Look X
     Owner: {fileID: 89020954}
-    InputName: 
+    LegacyInput: Mouse X
+    LegacyGain: 200
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 0.2
+    Gain: 4
     Control:
       InputValue: 0
       AccelTime: 0.2
@@ -268,11 +345,12 @@ MonoBehaviour:
       Enabled: 0
       Wait: 1
       Time: 2
-  - Name: Vertical
+  - Name: Aim Look Y
     Owner: {fileID: 89020954}
-    InputName: 
+    LegacyInput: Mouse Y
+    LegacyGain: -200
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: -0.2
+    Gain: -4
     Control:
       InputValue: 0
       AccelTime: 0.2
@@ -383,8 +461,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 227433047}
-  m_LocalRotation: {x: -0.010564405, y: 0.00078192505, z: 0.000008261035, w: 0.9999439}
-  m_LocalPosition: {x: -0.023523154, y: 2.7810009, z: -15.040967}
+  m_LocalRotation: {x: -0.00990345, y: 0.0012022608, z: 0.000011907119, w: 0.9999503}
+  m_LocalPosition: {x: -0.03616243, y: 2.8008828, z: -15.038574}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -411,7 +489,7 @@ MonoBehaviour:
     IgnoreY: 0
   Damping: {x: 0, y: 0}
   Composition:
-    ScreenPosition: {x: 0, y: 0}
+    ScreenPosition: {x: -0.000724107, y: -0.001118567}
     DeadZoneSize: {x: 0.9, y: 0.9}
     SoftZoneSize: {x: 0.9, y: 0.9}
     Bias: {x: 0, y: 0}
@@ -444,13 +522,6 @@ MonoBehaviour:
     Bias: {x: 0, y: -0.26000008}
   UnlimitedSoftZone: 0
   CenterOnActivate: 1
-  GroupFramingMode: 3
-  AdjustmentMode: 0
-  GroupFramingSize: 0.8
-  DollyRange: {x: -5000, y: 5000}
-  TargetDistanceRange: {x: 1, y: 5000}
-  FovRange: {x: 3, y: 60}
-  OrthoSizeRange: {x: 1, y: 5000}
 --- !u!114 &227433052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,13 +534,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ExcludedPropertiesInInspector:
-  - m_Script
-  m_LockStageInInspector: 
   CameraPriority:
     Priority: 10
     UseCustomPriority: 1
-  m_StandbyUpdate: 2
+  StandbyUpdate: 2
   m_StreamingVersion: 20220201
   m_LegacyPriority: 10
   Target:
@@ -487,9 +555,9 @@ MonoBehaviour:
     GateFit: 2
     m_SensorSize: {x: 1, y: 1}
   Transitions:
-    m_BlendHint: 0
-    m_InheritPosition: 0
-    m_OnCameraLive:
+    BlendHint: 0
+    InheritPosition: 0
+    OnCameraLive:
       m_PersistentCalls:
         m_Calls: []
 --- !u!1 &487306131
@@ -846,8 +914,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: -0.010564405, y: 0.00078192505, z: 0.000008261035, w: 0.9999439}
-  m_LocalPosition: {x: -0.023523154, y: 2.7810009, z: -15.040967}
+  m_LocalRotation: {x: -0.00990345, y: 0.0012022608, z: 0.000011907119, w: 0.9999503}
+  m_LocalPosition: {x: -0.03616243, y: 2.8008828, z: -15.038574}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -866,16 +934,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ShowDebugText: 1
-  m_ShowCameraFrustum: 1
-  m_IgnoreTimeScale: 0
-  m_WorldUpOverride: {fileID: 0}
-  m_UpdateMethod: 2
-  m_BlendUpdateMethod: 1
+  ShowDebugText: 1
+  ShowCameraFrustum: 1
+  IgnoreTimeScale: 0
+  WorldUpOverride: {fileID: 0}
+  UpdateMethod: 2
+  BlendUpdateMethod: 1
   LensModeOverride:
     Enabled: 0
     DefaultMode: 2
-  m_DefaultBlend:
+  DefaultBlend:
     m_Style: 1
     m_Time: 5
     m_CustomCurve:
@@ -911,11 +979,11 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-  m_CustomBlends: {fileID: 0}
-  m_CameraCutEvent:
+  CustomBlends: {fileID: 0}
+  CameraCutEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_CameraActivatedEvent:
+  CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &990286185

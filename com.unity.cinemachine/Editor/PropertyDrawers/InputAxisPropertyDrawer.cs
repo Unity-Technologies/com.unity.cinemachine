@@ -87,6 +87,7 @@ namespace Cinemachine.Editor
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
             var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
             valueLabel.AddPropertyDragger(valueProp, valueField);
+
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
             foldout.Add(new PropertyField(valueProp));
