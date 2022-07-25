@@ -67,9 +67,64 @@ namespace Cinemachine.Editor
             {
                 var manager = new CinemachineUpgradeManager();
 
+                manager.MakeTimelineNamesUnique(out var renames);  
                 manager.UpgradeInScenes(); // non-prefabs first
                 manager.UpgradePrefabsAndPrefabInstances();
                 manager.DeleteObsoleteComponentsInScenes();
+                manager.RestoreTimelineNames(renames);
+            }
+        }
+
+        struct TimelineRename
+        {
+            public string original;
+            public string guid;
+        }
+
+        /// <summary>
+        /// We need to be able to tell timelines apart, and their name may not be unique. So we make them
+        /// unique here, and restore their original name when we are done with RestoreTimelineNames().
+        /// </summary>
+        void MakeTimelineNamesUnique(out List<TimelineRename> renames)
+        {
+            renames = new List<TimelineRename>();
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var directors = TimelineManager.GetPlayableDirector(scene);
+                foreach (var director in directors)
+                {
+                    var rename = new TimelineRename
+                    {
+                        original = director.name,
+                        guid = director.name = GUID.Generate().ToString()
+                    };
+                    renames.Add(rename);
+                }
+                EditorSceneManager.SaveScene(scene);
+            }
+        }
+        
+        
+        void RestoreTimelineNames(List<TimelineRename> renames)
+        {
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var directors = TimelineManager.GetPlayableDirector(scene);
+                foreach (var director in directors)
+                {
+                    for (var i = 0; i < renames.Count; ++i)
+                    {
+                        if (director.name == renames[i].guid)
+                        {
+                            director.name = renames[i].original;
+                            renames.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+                EditorSceneManager.SaveScene(scene);
             }
         }
 
@@ -509,16 +564,21 @@ namespace Cinemachine.Editor
             {
                 Initialize(playableDirectors);
             }
-            
+
             public TimelineManager(Scene scene)
+            {
+                Initialize(GetPlayableDirector(scene));
+            }
+            
+            public static List<PlayableDirector> GetPlayableDirector(Scene scene)
             {
                 var playableDirectors = new List<PlayableDirector>();
 
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var go in rootObjects)
                     playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
-
-                Initialize(playableDirectors);
+                
+                return playableDirectors;
             }
 
             void Initialize(List<PlayableDirector> playableDirectors)
@@ -627,8 +687,7 @@ namespace Cinemachine.Editor
                         var exposedRef = cmShot.VirtualCamera;
                         foreach (var reference in references)
                         {
-                            var a = director.ToString();
-                            if (reference.Item1 != director.ToString()) continue; // TODO: optimize
+                            if (reference.Item1 != director.name) continue;
                             
                             if (exposedRef.exposedName == reference.Item2.exposedName)
                             {
@@ -650,7 +709,7 @@ namespace Cinemachine.Editor
                     {
                         var exposedRef = cmShot.VirtualCamera;
                         if (vcam == exposedRef.Resolve(director))
-                            references.Add(new Tuple<string, ExposedReference<CinemachineVirtualCameraBase>>(director.ToString(), exposedRef));
+                            references.Add(new Tuple<string, ExposedReference<CinemachineVirtualCameraBase>>(director.name, exposedRef));
                     }
                 }
                 return references;
