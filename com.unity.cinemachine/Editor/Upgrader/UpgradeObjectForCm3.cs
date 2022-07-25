@@ -115,14 +115,14 @@ namespace Cinemachine.Editor
                 {
                      var pov = go.GetComponent<CinemachinePOV>();
                      pov.UpgradeToCm3(go.GetComponent<CinemachinePanTilt>());
-                     ConvertInputAxis(go, "Pan", ref pov.m_HorizontalAxis, ref pov.m_HorizontalRecentering);
-                     ConvertInputAxis(go, "Tilt", ref pov.m_VerticalAxis, ref pov.m_VerticalRecentering);
+                     ConvertInputAxis(go, "Look X (Pan)", ref pov.m_HorizontalAxis, ref pov.m_HorizontalRecentering);
+                     ConvertInputAxis(go, "Look Y (Tilt)", ref pov.m_VerticalAxis, ref pov.m_VerticalRecentering);
                 }
                 if (ReplaceComponent<CinemachineOrbitalTransposer, CinemachineOrbitalFollow>(go))
                 {
                      var orbital = go.GetComponent<CinemachineOrbitalTransposer>();
                      orbital.UpgradeToCm3(go.GetComponent<CinemachineOrbitalFollow>());
-                     ConvertInputAxis(go, "Horizontal", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
+                     ConvertInputAxis(go, "Look Orbit X", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
                 }
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                     go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
@@ -302,8 +302,8 @@ namespace Cinemachine.Editor
             ConvertFreelookAim(freelook, go, freeLookModifier);
             ConvertFreelookNoise(freelook, go, freeLookModifier);
 
-            ConvertInputAxis(go, "Horizontal", ref freelook.m_XAxis, ref freelook.m_RecenterToTargetHeading);
-            ConvertInputAxis(go, "Vertical", ref freelook.m_YAxis, ref freelook.m_YAxisRecentering);
+            ConvertInputAxis(go, "Look Orbit X", ref freelook.m_XAxis, ref freelook.m_RecenterToTargetHeading);
+            ConvertInputAxis(go, "Look Orbit Y", ref freelook.m_YAxis, ref freelook.m_YAxisRecentering);
 
             // Destroy the hidden child objects
             UnparentAndDestroy(topRig.GetComponentOwner());

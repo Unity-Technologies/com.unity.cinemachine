@@ -123,6 +123,102 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &153011854
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 153011857}
+  - component: {fileID: 153011855}
+  - component: {fileID: 153011856}
+  m_Layer: 0
+  m_Name: CM With Lookahead
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &153011855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153011854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraPriority:
+    Priority: 10
+    UseCustomPriority: 1
+  StandbyUpdate: 2
+  m_StreamingVersion: 20220721
+  m_LegacyPriority: 10
+  Target:
+    TrackingTarget: {fileID: 744369522}
+    LookAtTarget: {fileID: 744369522}
+    CustomLookAtTarget: 1
+  Lens:
+    FieldOfView: 40
+    OrthographicSize: 10
+    NearClipPlane: 0.1
+    FarClipPlane: 5000
+    Dutch: 0
+    ModeOverride: 0
+    LensShift: {x: 0, y: 0}
+    GateFit: 2
+    m_SensorSize: {x: 1, y: 1}
+  Transitions:
+    BlendHint: 0
+    InheritPosition: 0
+    OnCameraLive:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!114 &153011856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153011854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  Lookahead:
+    Enabled: 1
+    Time: 0.3
+    Smoothing: 10
+    IgnoreY: 0
+  Damping: {x: 0.1, y: 0.5}
+  Composition:
+    ScreenPosition: {x: 0, y: 0}
+    DeadZoneSize: {x: 0, y: 0}
+    SoftZoneSize: {x: 0.8, y: 0.8}
+    Bias: {x: 0, y: 0}
+  CenterOnActivate: 1
+--- !u!4 &153011857
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153011854}
+  m_LocalRotation: {x: 0.018130304, y: -0.6237444, z: 0.014474478, w: 0.781284}
+  m_LocalPosition: {x: 0, y: 3.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &457536436
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,7 +314,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 457536436}
-  m_LocalRotation: {x: 0.014317781, y: -0.6201945, z: 0.011322885, w: 0.78423566}
+  m_LocalRotation: {x: 0.018130304, y: -0.6237444, z: 0.014474478, w: 0.781284}
   m_LocalPosition: {x: 0, y: 3.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -249,7 +345,7 @@ MonoBehaviour:
     DefaultMode: 2
   DefaultBlend:
     m_Style: 1
-    m_Time: 2
+    m_Time: 0.5
     m_CustomCurve:
       serializedVersion: 2
       m_Curve: []
@@ -275,26 +371,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: Cinemachine Composer
-  m_Description: "Turn this window off by removing the script on Main Camera\n\nComposer
-    procedurally tracks any object using compositional \u2018screen space\u2019 framing. 
-    It works on the camera\u2019s ORIENTATION only - it does not translate the camera
-    - that\u2019s what Cinemachine Transposer is for. \n\nLook at: Is this target
-    you wish to compose (camera rotation)\nFollow: is the object you want the camera
-    body to follow (camera translation)\n\nComposer Module Settings\nTracked Object
-    Offset:  This allows for offsets from the center of your tracked object in LOCAL
-    space, for when you want to track the front right headlight of a car or the left
-    ear of your character or anywhere which isn\u2019t the object center\n\nSoft
-    Dampening:  This is how aggressively the camera tracks the subject.  It makes
-    the blue overlay zones \u2018squishy\u2019.  0 = fully hard tracking, it will
-    turn the blue zones into red zones - the target will not pass into them.  Increasing
-    the dampening value will cause the target to squish into the blue zones which
-    is the same thing as having the camera lag behind the motion.\n\nSoft/Hard settings: 
-    This is where you setup the screen based compositional controls.  Blue areas
-    are soft, red areas are hard - the target will never enter the red zones.  You
-    can create a \u2018dead\u2019 zone if you open up the soft settings which creates
-    an area on screen where the camera will ignore motion - great for looping character
-    animation cycles.\n"
+  ButtonText: Help
+  Position: {x: 30, y: 30}
+  HelpText: 
 --- !u!850595691 &730103970
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -484,6 +563,55 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &761309584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761309586}
+  - component: {fileID: 761309585}
+  m_Layer: 0
+  m_Name: Choose Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &761309585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761309584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34a26c780582d684cbae254e9d2c0b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Position: {x: 30, y: 30}
+  Priority: 100
+  Cameras:
+  - {fileID: 1543933885}
+  - {fileID: 153011855}
+--- !u!4 &761309586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761309584}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1543933881
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,7 +624,7 @@ GameObject:
   - component: {fileID: 1543933885}
   - component: {fileID: 1543933884}
   m_Layer: 0
-  m_Name: VirtualCamera1
+  m_Name: CM Without Lookahead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -509,13 +637,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1543933881}
-  m_LocalRotation: {x: 0.014317781, y: -0.6201945, z: 0.011322885, w: 0.78423566}
+  m_LocalRotation: {x: 0.018130304, y: -0.6237444, z: 0.014474478, w: 0.781284}
   m_LocalPosition: {x: 0, y: 3.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1543933884
 MonoBehaviour:
@@ -537,8 +665,8 @@ MonoBehaviour:
     IgnoreY: 0
   Damping: {x: 0.5, y: 0.5}
   Composition:
-    ScreenPosition: {x: -0.0051285923, y: 0.0068336725}
-    DeadZoneSize: {x: 0.1, y: 0.1}
+    ScreenPosition: {x: 0, y: 0}
+    DeadZoneSize: {x: 0, y: 0}
     SoftZoneSize: {x: 0.8, y: 0.8}
     Bias: {x: 0, y: 0}
   CenterOnActivate: 1
@@ -558,7 +686,7 @@ MonoBehaviour:
     Priority: 10
     UseCustomPriority: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20220201
+  m_StreamingVersion: 20220721
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 0}
@@ -594,7 +722,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3484644653844664847, guid: 383941fa398698b4eada52031ebe36fd, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3484644653844664847, guid: 383941fa398698b4eada52031ebe36fd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -641,97 +769,3 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 383941fa398698b4eada52031ebe36fd, type: 3}
---- !u!1 &1918625293
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1918625295}
-  - component: {fileID: 1918625294}
-  m_Layer: 0
-  m_Name: Directional light
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!108 &1918625294
-Light:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918625293}
-  m_Enabled: 1
-  serializedVersion: 10
-  m_Type: 1
-  m_Shape: 0
-  m_Color: {r: 0.9871935, g: 1, b: 0.9999693, a: 1}
-  m_Intensity: 1
-  m_Range: 10
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
-  m_Shadows:
-    m_Type: 2
-    m_Resolution: -1
-    m_CustomResolution: -1
-    m_Strength: 1
-    m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
-    m_CullingMatrixOverride:
-      e00: 1
-      e01: 0
-      e02: 0
-      e03: 0
-      e10: 0
-      e11: 1
-      e12: 0
-      e13: 0
-      e20: 0
-      e21: 0
-      e22: 1
-      e23: 0
-      e30: 0
-      e31: 0
-      e32: 0
-      e33: 1
-    m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 0}
-  m_DrawHalo: 0
-  m_Flare: {fileID: 0}
-  m_RenderMode: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingLayerMask: 1
-  m_Lightmapping: 4
-  m_LightShadowCasterMode: 0
-  m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 0
-  m_ColorTemperature: 6570
-  m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
-  m_ShadowRadius: 0
-  m_ShadowAngle: 0
---- !u!4 &1918625295
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918625293}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: -40.15918, y: -4.14, z: 119.52011}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}

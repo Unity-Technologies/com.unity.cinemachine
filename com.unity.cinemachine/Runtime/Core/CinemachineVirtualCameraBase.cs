@@ -54,6 +54,8 @@ namespace Cinemachine
         [FormerlySerializedAs("m_ActivationId")]
         internal int ActivationId;
 
+        int m_QueuePriority = int.MaxValue;
+
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
         /// attachment to the target.  Range is 0...1.  
@@ -658,7 +660,6 @@ namespace Cinemachine
             return follow;
         }
 
-        int m_QueuePriority = int.MaxValue;
         void UpdateVcamPoolStatus()
         {
             CinemachineCore.Instance.RemoveActiveCamera(this);
@@ -675,11 +676,22 @@ namespace Cinemachine
         /// new vcam is enabled: the most recent one goes to the top of the priority subqueue.
         /// Use this method to push a vcam to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
-        public void MoveToTopOfPrioritySubqueue()
+        [Obsolete("Please use Prioritize()")]
+        public void MoveToTopOfPrioritySubqueue() => Prioritize();
+
+        /// <summary>When multiple Cm Cameras have the highest priority, there is
+        /// sometimes the need to push one to the top, making it the current Live camera if
+        /// it shares the highest priority in the queue with its peers.
+        ///
+        /// This happens automatically when a
+        /// new CmCamera is enabled: the most recent one goes to the top of the priority subqueue.
+        /// Use this method to push a camera to the top of its priority peers.
+        /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
+        public void Prioritize()
         {
             UpdateVcamPoolStatus(); // Force a re-sort
         }
-
+        
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera
         /// also warp seamlessly.</summary>

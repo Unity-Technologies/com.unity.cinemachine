@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cinemachine.Utility;
 using UnityEngine;
 
 namespace Cinemachine.Examples
@@ -25,9 +26,12 @@ namespace Cinemachine.Examples
 
         void Update()
         {
-            var moveDir = new Vector3(MoveX.Value, 0, MoveZ.Value).normalized;
-            transform.position += transform.TransformDirection(moveDir) * Time.deltaTime * MovementSpeed;
-
+            var moveDir = new Vector3(MoveX.Value, 0, MoveZ.Value);
+            if (!moveDir.AlmostZero())
+            {
+                moveDir = moveDir.normalized;
+                transform.position += transform.TransformDirection(moveDir) * Time.deltaTime * MovementSpeed;
+            }
             var rot = transform.rotation.eulerAngles;
             rot.y = LookX.Value;
             transform.rotation = Quaternion.Euler(rot);
