@@ -649,10 +649,10 @@ namespace Cinemachine.Editor
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
                 foreach (var previousBinding in existingEditorBindings)
                 {
-                    var newBinding = previousBinding;
-                    var path = newBinding.path;
+                    var path = previousBinding.path;
                     if (path.Contains("cm"))
                     {
+                        var newBinding = previousBinding;
                         //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
                         var index = Mathf.Max(0, path.IndexOf("cm") - 1);
                         newBinding.path = path.Substring(0, index);
