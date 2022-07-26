@@ -9,6 +9,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.Splines;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
 
@@ -643,7 +644,25 @@ namespace Cinemachine.Editor
                     }
                 }
             }
-            
+
+            static readonly List<Tuple<Type, Type>> k_UpgradePaths = new()
+            {
+                new Tuple<Type, Type>(typeof(CinemachineVirtualCamera), typeof(CmCamera)),
+                new Tuple<Type, Type>(typeof(CinemachineFreeLook), typeof(CmCamera)),
+                new Tuple<Type, Type>(typeof(CinemachineComposer), typeof(CinemachineRotationComposer)),
+                new Tuple<Type, Type>(typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer)),
+                new Tuple<Type, Type>(typeof(CinemachineTransposer), typeof(CinemachineFollow)),
+                new Tuple<Type, Type>(typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer)),
+                new Tuple<Type, Type>(typeof(CinemachinePOV), typeof(CinemachinePanTilt)),
+                new Tuple<Type, Type>(typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow)),
+                new Tuple<Type, Type>(typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly)),
+                new Tuple<Type, Type>(typeof(CinemachinePath), typeof(SplineContainer)),
+                new Tuple<Type, Type>(typeof(CinemachineSmoothPath), typeof(SplineContainer)),
+                new Tuple<Type, Type>(typeof(CinemachineDollyCart), typeof(CinemachineSplineCart)),
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                new Tuple<Type, Type>(typeof(CinemachineInputProvider), typeof(InputAxisController)),
+#endif
+            };
             static void ProcessAnimationClip(AnimationClip animationClip)
             {
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
@@ -668,7 +687,14 @@ namespace Cinemachine.Editor
                         // TODO: type needs to be set to the correct upgraded component
                         // Vcam, Freelook -> CmCamera
                         // Composer -> RotationComposer... etc
-                        newBinding.type = typeof(CmCamera); // need to set type for correct binding
+                        foreach (var upgradePath in k_UpgradePaths)
+                        {
+                            if (upgradePath.Item1 == previousBinding.type)
+                            {
+                                newBinding.type = upgradePath.Item2;
+                                break;
+                            }
+                        }
                         newBinding.propertyName = propertyName.Replace("m_", string.Empty);
                         var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                         AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
