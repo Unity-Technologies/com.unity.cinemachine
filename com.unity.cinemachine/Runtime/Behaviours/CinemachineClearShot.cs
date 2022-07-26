@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS
     /// <summary>
     /// Cinemachine ClearShot is a "manager camera" that owns and manages a set of
     /// Virtual Camera gameObject children.  When Live, the ClearShot will check the
@@ -335,5 +334,4 @@ namespace Cinemachine
             return blend;
         }
     }
-#endif
 }

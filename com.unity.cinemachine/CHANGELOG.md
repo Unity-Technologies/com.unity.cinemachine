@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added customizable Auto Dolly to cameras and Spline Cart.
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
+- Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
 
 
 ## UNRELEASED
