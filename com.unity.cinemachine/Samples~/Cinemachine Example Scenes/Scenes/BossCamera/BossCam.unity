@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 166306520}
   - component: {fileID: 166306523}
   - component: {fileID: 166306522}
-  - component: {fileID: 166306521}
   m_Layer: 0
   m_Name: Mouth
   m_TagString: Untagged
@@ -157,27 +156,6 @@ Transform:
   m_Father: {fileID: 910832971}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &166306521
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 166306519}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &166306522
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -239,7 +217,6 @@ GameObject:
   - component: {fileID: 312859516}
   - component: {fileID: 312859519}
   - component: {fileID: 312859518}
-  - component: {fileID: 312859517}
   m_Layer: 0
   m_Name: Nose
   m_TagString: Untagged
@@ -262,27 +239,6 @@ Transform:
   m_Father: {fileID: 910832971}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &312859517
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 312859515}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &312859518
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -344,7 +300,6 @@ GameObject:
   - component: {fileID: 319330739}
   - component: {fileID: 319330742}
   - component: {fileID: 319330741}
-  - component: {fileID: 319330740}
   m_Layer: 0
   m_Name: EyeLeft
   m_TagString: Untagged
@@ -367,27 +322,6 @@ Transform:
   m_Father: {fileID: 910832971}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &319330740
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 319330738}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &319330741
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -497,9 +431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 592741a13a2c742df9e6c1d3a7d9da6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LookAt: {fileID: 0}
-  m_RotationX: 0
-  m_RotationZ: 0
+  Target: {fileID: 750841892}
 --- !u!1 &944951857
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,7 +549,7 @@ MonoBehaviour:
     Priority: 10
     UseCustomPriority: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20220201
+  m_StreamingVersion: 20220721
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 750841892}
@@ -723,9 +655,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: Boss Scene
-  m_Description: "This scene demonstrates how you can setup a camera system where
-    the camera follows the player, but looks at both the player and the boss.\n\nThis
+  ButtonText: Help
+  Position: {x: 30, y: 30}
+  HelpText: "This scene demonstrates how you can setup a camera system where the
+    camera follows the player, but looks at both the player and the boss.\n\nThis
     sample scene also has a custom extension to  lock the camera height (y position),
     found on Boss vcam. \n\nUse WASD or the arrow keys to move the character, and
     Space to jump.\n\nTurn this window off by disabling the Instructions object"
@@ -755,7 +688,6 @@ GameObject:
   - component: {fileID: 1797186513}
   - component: {fileID: 1797186512}
   - component: {fileID: 1797186511}
-  - component: {fileID: 1797186510}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -763,27 +695,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &1797186510
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1797186509}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1797186511
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1116,7 +1027,6 @@ GameObject:
   - component: {fileID: 2050273229}
   - component: {fileID: 2050273232}
   - component: {fileID: 2050273231}
-  - component: {fileID: 2050273230}
   m_Layer: 0
   m_Name: EyeRight
   m_TagString: Untagged
@@ -1139,27 +1049,6 @@ Transform:
   m_Father: {fileID: 910832971}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2050273230
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2050273228}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &2050273231
 MeshRenderer:
   m_ObjectHideFlags: 0

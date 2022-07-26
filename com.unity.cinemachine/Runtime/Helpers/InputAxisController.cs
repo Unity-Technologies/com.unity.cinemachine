@@ -101,7 +101,7 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            for (int i = 0; i < Controllers.Count; ++i)
+            for (var i = 0; i < Controllers.Count; ++i)
             {
                 Controllers[i].Control.Validate();
                 Controllers[i].Recentering.Validate();
@@ -260,7 +260,7 @@ namespace Cinemachine
         /// </summary>
         public void RecenterNow()
         {
-            for (int i = 0; i < Controllers.Count; ++i)
+            for (var i = 0; i < Controllers.Count; ++i)
                 Controllers[i].Driver.RecenterNow();
         }
 
