@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cinemachine.Editor
 {
@@ -61,7 +62,7 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     property = element.FindPropertyRelative("InputAction");
 #elif ENABLE_LEGACY_INPUT_MANAGER
-                    property = element.FindPropertyRelative("InputName");
+                    property = element.FindPropertyRelative("LegacyInput");
 #endif
                     if (property != null)
                     {
@@ -84,19 +85,68 @@ namespace Cinemachine.Editor
                 serializedObject.ApplyModifiedProperties();
         }
 
-#if CINEMACHINE_UNITY_INPUTSYSTEM
         [InitializeOnLoad]
-        class DefaultInputActionGetter
+        class DefaultControlInitializer
         {
-            static DefaultInputActionGetter()
+            static DefaultControlInitializer()
             {
-                InputAxisController.GetDefaultInputAction = (axis) => 
-                    (axis == 0 || axis == 1) ? ScriptableObjectUtility.DefaultLookAction : null;
+                InputAxisController.SetControlDefaults 
+                    = (in IInputAxisSource.AxisDescriptor axis, ref InputAxisController.Controller controller) => 
+                {
+                    var actionName = "";
+                    var inputName = "";
+                    var invertY = false;
+                    controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
+
+                    if (axis.Name.Contains("Look"))
+                    {
+                        actionName = "Player/Look";
+                        inputName = axis.AxisIndex == 0 ? "Mouse X" : (axis.AxisIndex == 1 ? "Mouse Y" : "");
+                        invertY = axis.AxisIndex == 1;
+                        controller.Recentering = InputAxisRecenteringSettings.Default;
+                        controller.Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f };
+                    }
+                    if (axis.Name.Contains("Move"))
+                    {
+                        actionName = "Player/Move";
+                        inputName = axis.AxisIndex == 0 ? "Horizontal" : (axis.AxisIndex == 1 ? "Vertical" : "");
+                    }
+                    if (axis.Name.Contains("Fire"))
+                    {
+                        actionName = "Player/Fire";
+                        inputName = "Fire";
+                    }
+                    if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
+                    {
+                        //actionName = "UI/ScrollWheel"; // best we can do - actually it doean't work because it'a Vector2 type
+                        inputName = "Mouse ScrollWheel";
+                    }
+                    if (axis.Name.Contains("Jump"))
+                    {
+                        actionName = "UI/RightClick"; // best we can do
+                        inputName = "Jump";
+                    }
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                    if (actionName.Length != 0)
+                    {
+                        controller.InputAction = (UnityEngine.InputSystem.InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").FirstOrDefault(
+                                x => x.name == actionName);
+                    }
+                    controller.Gain = 4f * (invertY ? -1 : 1);
+#endif
+#if ENABLE_LEGACY_INPUT_MANAGER
+                    controller.LegacyInput = inputName;
+                    controller.LegacyGain = 200 * (invertY ? -1 : 1);
+#endif
+                };
             }
         }
-#endif
-
     }
+
+
+
 #if false // GML incomplete code.  This is not working yet in UITK - stay in IMGUI for now
         public override VisualElement CreateInspectorGUI()
         {
