@@ -150,7 +150,7 @@ namespace Cinemachine.Editor
             where TOld : MonoBehaviour
             where TNew : MonoBehaviour
         {
-            if (go.TryGetComponent<TOld>(out var cOld))
+            if (go.TryGetComponent<TOld>(out var cOld) && cOld.GetType() == typeof(TOld))
             {
                 Undo.RecordObject(cOld, "Upgrader: disable obsolete");
                 cOld.enabled = false;
