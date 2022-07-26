@@ -93,9 +93,9 @@ namespace Cinemachine.Editor
                 InputAxisController.SetControlDefaults 
                     = (in IInputAxisSource.AxisDescriptor axis, ref InputAxisController.Controller controller) => 
                 {
-                    string actionName = "";
-                    string inputName = "";
-                    bool invertY = false;
+                    var actionName = "";
+                    var inputName = "";
+                    var invertY = false;
                     controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
 
                     if (axis.Name.Contains("Look"))
