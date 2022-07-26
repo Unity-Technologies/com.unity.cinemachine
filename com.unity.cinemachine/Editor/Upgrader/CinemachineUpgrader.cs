@@ -665,6 +665,9 @@ namespace Cinemachine.Editor
                     {
                         var propertyName = previousBinding.propertyName;
                         var newBinding = previousBinding;
+                        // TODO: type needs to be set to the correct upgraded component
+                        // Vcam, Freelook -> CmCamera
+                        // Composer -> RotationComposer... etc
                         newBinding.type = typeof(CmCamera); // need to set type for correct binding
                         newBinding.propertyName = propertyName.Replace("m_", string.Empty);
                         var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
