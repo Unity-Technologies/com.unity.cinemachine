@@ -666,7 +666,7 @@ namespace Cinemachine.Editor
                         var propertyName = previousBinding.propertyName;
                         var newBinding = previousBinding;
                         newBinding.type = typeof(CmCamera); // need to set type for correct binding
-                        newBinding.propertyName = propertyName.Substring(2); // "m_".Length == 2
+                        newBinding.propertyName = propertyName.Substring("m_".Length);
                         var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                         AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
                         AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
