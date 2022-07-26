@@ -645,61 +645,54 @@ namespace Cinemachine.Editor
                 }
             }
 
-            static readonly List<Tuple<Type, Type>> k_UpgradePaths = new()
+            static readonly Dictionary<Type, Type> k_UpgradePaths = new()
             {
-                new Tuple<Type, Type>(typeof(CinemachineVirtualCamera), typeof(CmCamera)),
-                new Tuple<Type, Type>(typeof(CinemachineFreeLook), typeof(CmCamera)),
-                new Tuple<Type, Type>(typeof(CinemachineComposer), typeof(CinemachineRotationComposer)),
-                new Tuple<Type, Type>(typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer)),
-                new Tuple<Type, Type>(typeof(CinemachineTransposer), typeof(CinemachineFollow)),
-                new Tuple<Type, Type>(typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer)),
-                new Tuple<Type, Type>(typeof(CinemachinePOV), typeof(CinemachinePanTilt)),
-                new Tuple<Type, Type>(typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow)),
-                new Tuple<Type, Type>(typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly)),
-                new Tuple<Type, Type>(typeof(CinemachinePath), typeof(SplineContainer)),
-                new Tuple<Type, Type>(typeof(CinemachineSmoothPath), typeof(SplineContainer)),
-                new Tuple<Type, Type>(typeof(CinemachineDollyCart), typeof(CinemachineSplineCart)),
+                {typeof(CinemachineVirtualCamera), typeof(CmCamera)},
+                {typeof(CinemachineFreeLook), typeof(CmCamera)},
+                {typeof(CinemachineComposer), typeof(CinemachineRotationComposer)},
+                {typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer)},
+                {typeof(CinemachineTransposer), typeof(CinemachineFollow)},
+                {typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer)},
+                {typeof(CinemachinePOV), typeof(CinemachinePanTilt)},
+                {typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow)},
+                {typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly)},
+                {typeof(CinemachinePath), typeof(SplineContainer)},
+                {typeof(CinemachineSmoothPath), typeof(SplineContainer)},
+                {typeof(CinemachineDollyCart), typeof(CinemachineSplineCart)},
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-                new Tuple<Type, Type>(typeof(CinemachineInputProvider), typeof(InputAxisController)),
+                {typeof(CinemachineInputProvider), typeof(InputAxisController)},
 #endif
             };
+
             static void ProcessAnimationClip(AnimationClip animationClip)
             {
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
                 foreach (var previousBinding in existingEditorBindings)
                 {
+                    var newBinding = previousBinding;
                     if (previousBinding.path.Contains("cm"))
                     {
                         var path = previousBinding.path;
-                        var newBinding = previousBinding;
                         //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
                         var index = Mathf.Max(0, path.IndexOf("cm") - 1);
                         newBinding.path = path.Substring(0, index);
-                        var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
-                        AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
-                        AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding\
+                    }
+
+                    if (k_UpgradePaths.ContainsKey(previousBinding.type))
+                    {
+                        newBinding.type = k_UpgradePaths[previousBinding.type];
                     }
 
                     if (previousBinding.propertyName.Contains("m_"))
                     {
+                        // TODO: some propertyNames have changed! For example BiasX and BiasY -> Bias.x, and Bias.y
                         var propertyName = previousBinding.propertyName;
-                        var newBinding = previousBinding;
-                        // TODO: type needs to be set to the correct upgraded component
-                        // Vcam, Freelook -> CmCamera
-                        // Composer -> RotationComposer... etc
-                        foreach (var upgradePath in k_UpgradePaths)
-                        {
-                            if (upgradePath.Item1 == previousBinding.type)
-                            {
-                                newBinding.type = upgradePath.Item2;
-                                break;
-                            }
-                        }
                         newBinding.propertyName = propertyName.Replace("m_", string.Empty);
-                        var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
-                        AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
-                        AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
                     }
+                    
+                    var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
+                    AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
+                    AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
                 }
             }
 
