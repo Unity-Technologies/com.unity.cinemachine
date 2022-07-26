@@ -232,7 +232,6 @@ GameObject:
   - component: {fileID: 457536438}
   - component: {fileID: 457536437}
   - component: {fileID: 457536442}
-  - component: {fileID: 457536443}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -359,21 +358,6 @@ MonoBehaviour:
   CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &457536443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 457536436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 30, y: 30}
-  HelpText: 
 --- !u!850595691 &730103970
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -573,6 +557,7 @@ GameObject:
   m_Component:
   - component: {fileID: 761309586}
   - component: {fileID: 761309585}
+  - component: {fileID: 761309587}
   m_Layer: 0
   m_Name: Choose Camera
   m_TagString: Untagged
@@ -612,6 +597,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &761309587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761309584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 30, y: 30}
+  HelpText: "Composer procedurally tracks any object using compositional \"screen
+    space\" framing.  It works on the camera\u2019s ROTATION only - it does not change
+    the camera position - that\u2019s what Cinemachine Follow is for. \r\n\r\nTracked
+    Object Offset tells the composer where to look at relative to the target object's
+    pivot point.  The offset is specified in larget-local coordinates.  For example,
+    if you want to track the front right headlight of a car or the left ear of your
+    character or anywhere which isn\u2019t the object center.\r\n\r\nSoft/Hard Settings: 
+    This is where you setup the screen based compositional controls.  Blue areas
+    are soft, red areas are hard - the target will never enter the red zones.  You
+    can create a \"dead zone\" if you open up the soft settings which creates an
+    area on screen where the camera will ignore motion - great for looping character
+    animation cycles.\r\n\r\nDamping: This controls how \"squishy\" the blue area
+    is.  Bigger values give more laggy camera movement, smaller values result in
+    a more aggressive camera.\r\n\r\nLookahead: Tells the camera to look at where
+    the object will be a short time into the future.  See the difference by toggling
+    between the camera using the on-screen buttons."
 --- !u!1 &1543933881
 GameObject:
   m_ObjectHideFlags: 0

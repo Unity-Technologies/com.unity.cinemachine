@@ -299,7 +299,7 @@ namespace Cinemachine
         }
 
         /// For the inspector
-        internal Quaternion GetReferenceOrientation() => m_TargetTracker.PreviousReferenceOrientation;
+        internal Quaternion GetReferenceOrientation() => m_TargetTracker.PreviousReferenceOrientation.normalized;
     }
 
     /// <summary>

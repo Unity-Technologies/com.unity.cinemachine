@@ -2281,7 +2281,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0, g: 1, b: 0.17340231, a: 1}
   m_Intensity: 1
-  m_Range: 119.75
+  m_Range: 98.18149
   m_SpotAngle: 114
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -2338,7 +2338,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1283955948}
   m_LocalRotation: {x: 0.6318753, y: 0.31738567, z: -0.31738567, w: 0.6318753}
-  m_LocalPosition: {x: 73.84, y: 34.921867, z: 55.56337}
+  m_LocalPosition: {x: 182.3, y: -28.5, z: -59.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2378,9 +2378,9 @@ RectTransform:
   m_Father: {fileID: 894711043}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 260, y: -40}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 80}
   m_SizeDelta: {x: 500, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1320899454
@@ -2410,7 +2410,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 2
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0

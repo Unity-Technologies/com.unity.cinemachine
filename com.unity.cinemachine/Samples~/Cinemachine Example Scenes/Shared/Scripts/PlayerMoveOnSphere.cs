@@ -12,7 +12,6 @@ namespace Cinemachine.Examples
         public float Speed = 10;
         public bool RotatePlayer = true;
         public float RotationDamping = 0.5f;
-
         public InputAxis MoveX = new InputAxis { Range = new Vector2(-1, 1) };
         public InputAxis MoveZ = new InputAxis { Range = new Vector2(-1, 1) };
 
