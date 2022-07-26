@@ -645,7 +645,7 @@ namespace Cinemachine.Editor
                 }
             }
 
-            static readonly Dictionary<Type, Type> k_UpgradePaths = new()
+            static readonly Dictionary<Type, Type> k_ClassUpgradeMaps = new()
             {
                 {typeof(CinemachineVirtualCamera), typeof(CmCamera)},
                 {typeof(CinemachineFreeLook), typeof(CmCamera)},
@@ -678,9 +678,9 @@ namespace Cinemachine.Editor
                         newBinding.path = path.Substring(0, index);
                     }
 
-                    if (k_UpgradePaths.ContainsKey(previousBinding.type))
+                    if (k_ClassUpgradeMaps.ContainsKey(previousBinding.type))
                     {
-                        newBinding.type = k_UpgradePaths[previousBinding.type];
+                        newBinding.type = k_ClassUpgradeMaps[previousBinding.type];
                     }
 
                     if (previousBinding.propertyName.Contains("m_"))
