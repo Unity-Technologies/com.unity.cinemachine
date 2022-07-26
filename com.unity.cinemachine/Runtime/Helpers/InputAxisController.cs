@@ -260,7 +260,7 @@ namespace Cinemachine
         /// </summary>
         public void RecenterNow()
         {
-            for (int i = 0; i < Controllers.Count; ++i)
+            for (var i = 0; i < Controllers.Count; ++i)
                 Controllers[i].Driver.RecenterNow();
         }
 
