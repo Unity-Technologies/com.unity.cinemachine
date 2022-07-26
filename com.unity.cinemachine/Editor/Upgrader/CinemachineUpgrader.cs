@@ -685,7 +685,9 @@ namespace Cinemachine.Editor
 
                     if (previousBinding.propertyName.Contains("m_"))
                     {
-                        // TODO: some propertyNames have changed! For example BiasX and BiasY -> Bias.x, and Bias.y
+                        // TODO: some propertyNames have changed!
+                        // TODO: For example CinemachineComposer.BiasX -> Composition.Bias.x
+                        // TODO: For example CinemachineComposer.BiasY -> Composition.Bias.y
                         var propertyName = previousBinding.propertyName;
                         newBinding.propertyName = propertyName.Replace("m_", string.Empty);
                     }
