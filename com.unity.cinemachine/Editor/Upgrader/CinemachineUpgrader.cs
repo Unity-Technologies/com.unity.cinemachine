@@ -588,8 +588,12 @@ namespace Cinemachine.Editor
                 return playableDirectors;
             }
 
+            const string k_Filename = "ApiUpgradeMapping.json";
             void Initialize(List<PlayableDirector> playableDirectors)
             {
+                var json = System.IO.File.ReadAllText(k_Filename);
+                var result = Newtonsoft.Json.JsonConvert.DeserializeObject(json, typeof(Dictionary<Type, Dictionary<string, Tuple<string, Type>>>));
+                s_ApiUpgradeMaps = (Dictionary<Type, Dictionary<string, Tuple<string, Type>>>) result;
                 m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
 
                 // collect all cmShots that may require a reference update
@@ -664,6 +668,8 @@ namespace Cinemachine.Editor
 #endif
             };
 
+            static Dictionary<Type, Dictionary<string, Tuple<string, Type>>> s_ApiUpgradeMaps;
+            
             static void ProcessAnimationClip(AnimationClip animationClip)
             {
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
@@ -677,21 +683,26 @@ namespace Cinemachine.Editor
                         var index = Mathf.Max(0, path.IndexOf("cm") - 1);
                         newBinding.path = path.Substring(0, index);
                     }
-
+                    if (previousBinding.propertyName.Contains("m_"))
+                    {
+                        var propertyName = previousBinding.propertyName;
+                        newBinding.propertyName = propertyName.Replace("m_", string.Empty);
+                    }
                     if (k_ClassUpgradeMaps.ContainsKey(previousBinding.type))
                     {
                         newBinding.type = k_ClassUpgradeMaps[previousBinding.type];
                     }
-
-                    if (previousBinding.propertyName.Contains("m_"))
-                    {
-                        // TODO: some propertyNames have changed!
-                        // TODO: For example CinemachineComposer.BiasX -> Composition.Bias.x
-                        // TODO: For example CinemachineComposer.BiasY -> Composition.Bias.y
-                        var propertyName = previousBinding.propertyName;
-                        newBinding.propertyName = propertyName.Replace("m_", string.Empty);
-                    }
                     
+                    // Check if previousBinding.type needs an API change
+                    if (s_ApiUpgradeMaps.ContainsKey(previousBinding.type) && 
+                        s_ApiUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
+                    {
+                        // find API mapping
+                        var mapping = s_ApiUpgradeMaps[previousBinding.type][newBinding.propertyName];
+                        newBinding.propertyName = mapping.Item1;
+                        newBinding.type = mapping.Item2;
+                    }
+
                     var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                     AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
                     AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
