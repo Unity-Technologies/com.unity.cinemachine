@@ -121,6 +121,18 @@
     "AngularDamping": {
       "Item1": "TrackerSettings.QuaternionDamping",
       "Item2": "Cinemachine.CinemachineOrbitalFollow, Cinemachine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+    },
+    "XAxis.Value": {
+      "Item1": "managedReferences[HorizontalAxis].Value",
+      "Item2": "Cinemachine.CinemachineOrbitalFollow, Cinemachine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+    },
+    "YAxis.Value": {
+      "Item1": "managedReferences[VerticalAxis].Value",
+      "Item2": "Cinemachine.CinemachineOrbitalFollow, Cinemachine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+    },
+    "ZAxis.Value": {
+      "Item1": "managedReferences[RadialAxis].Value",
+      "Item2": "Cinemachine.CinemachineOrbitalFollow, Cinemachine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
     }
   },
   "Cinemachine.CinemachineTransposer, Cinemachine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null": {

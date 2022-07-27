@@ -72,6 +72,7 @@ namespace Cinemachine.Editor
                 manager.UpgradeInScenes(); // non-prefabs first
                 manager.UpgradePrefabsAndPrefabInstances();
                 manager.DeleteObsoleteComponentsInScenes();
+                // TODO: AnimationTrack restoration
                 manager.RestoreTimelineNames(renames);
             }
         }
@@ -627,6 +628,7 @@ namespace Cinemachine.Editor
 
                             if (track is AnimationTrack animationTrack)
                             {
+                                var trackTarget = playableDirector.GetGenericBinding(track);
                                 if (animationTrack.inClipMode)
                                 {
                                     var clips = animationTrack.GetClips();
@@ -636,10 +638,10 @@ namespace Cinemachine.Editor
                                         .Select(asset => asset.clip); //finally we get an animation clip!
 
                                     foreach (var animationClip in animationClips)
-                                        ProcessAnimationClip(animationClip);
+                                        ProcessAnimationClip(animationClip, trackTarget);
                                 }
                                 else //uses recorded clip
-                                    ProcessAnimationClip(animationTrack.infiniteClip);
+                                    ProcessAnimationClip(animationTrack.infiniteClip, trackTarget);
                             }
                         }
                     }
@@ -693,7 +695,7 @@ namespace Cinemachine.Editor
             //  newBinding.propertyName = correctPropertyName;
             // }
 
-            static void ProcessAnimationClip(AnimationClip animationClip)
+            static void ProcessAnimationClip(AnimationClip animationClip, Object trackTarget)
             {
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
                 foreach (var previousBinding in existingEditorBindings)
@@ -722,8 +724,23 @@ namespace Cinemachine.Editor
                     {
                         // find API mapping
                         var mapping = s_ApiUpgradeMaps[previousBinding.type][newBinding.propertyName];
+                        
                         newBinding.propertyName = mapping.Item1;
                         newBinding.type = mapping.Item2;
+                        if (mapping.Item1.Contains("managedReferences"))
+                        {
+                            var propertyName = mapping.Item1;
+                            var start = propertyName.IndexOf("[");
+                            var end = propertyName.IndexOf("]");
+                            propertyName = propertyName.Substring(start, end - start);
+
+                            var goTarget = (GameObject) trackTarget;
+                            var realTarget = goTarget.GetComponent(mapping.Item2);
+                            
+                            var so = new SerializedObject(realTarget);
+                            var prop = so.FindProperty(propertyName);
+                            newBinding.propertyName  = "managedReferences[" + prop.managedReferenceId + "].Value";
+                        }
                     }
 
                     var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
