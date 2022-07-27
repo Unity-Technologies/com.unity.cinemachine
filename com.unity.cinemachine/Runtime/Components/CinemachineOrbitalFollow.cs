@@ -52,18 +52,21 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the up vector.")]
+        [SerializeReference]
         public InputAxis HorizontalAxis = DefaultHorizontal;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
         [Tooltip("Axis representing the current vertical rotation.  Value is in degrees "
             + "and represents a rotation about the right vector.")]
+        [SerializeReference]
         public InputAxis VerticalAxis = DefaultVertical;
 
         /// <summary>Axis controlling the scale of the current distance.  Value is a scalar
         /// multiplier and is applied to the specified camera distance</summary>
         [Tooltip("Axis controlling the scale of the current distance.  Value is a scalar "
             + "multiplier and is applied to the specified camera distance.")]
+        [SerializeReference]
         public InputAxis RadialAxis = DefaultRadial;
 
         // State information
