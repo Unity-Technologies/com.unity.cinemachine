@@ -71,6 +71,7 @@ namespace Cinemachine.Editor
                 manager.MakeTimelineNamesUnique(out var renames);  
                 manager.UpgradeInScenes(); // non-prefabs first
                 manager.UpgradePrefabsAndPrefabInstances();
+                manager.UpgradeAnimationTrackReferences();
                 manager.DeleteObsoleteComponentsInScenes();
                 // TODO: AnimationTrack restoration
                 manager.RestoreTimelineNames(renames);
@@ -435,6 +436,136 @@ namespace Cinemachine.Editor
                 }
             }
         }
+        
+        static readonly Dictionary<Type, Type> k_ClassUpgradeMaps = new()
+        {
+            { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
+            { typeof(CinemachineFreeLook), typeof(CmCamera) },
+            { typeof(CinemachineComposer), typeof(CinemachineRotationComposer) },
+            { typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer) },
+            { typeof(CinemachineTransposer), typeof(CinemachineFollow) },
+            { typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer) },
+            { typeof(CinemachinePOV), typeof(CinemachinePanTilt) },
+            { typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow) },
+            { typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly) },
+            { typeof(CinemachinePath), typeof(SplineContainer) },
+            { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
+            { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+                {typeof(CinemachineInputProvider), typeof(InputAxisController)},
+#endif
+        };
+        void UpgradeAnimationTrackReferences()
+        {
+            LoadApiMapping(out var apiUpgradMaps);
+            
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
+                // collect all cmShots that may require a reference update
+                foreach (var playableDirector in playableDirectors)
+                {
+                    if (playableDirector == null)
+                        continue;
+
+                    var playableAsset = playableDirector.playableAsset;
+                    if (playableAsset is TimelineAsset timelineAsset)
+                    {
+                        var tracks = timelineAsset.GetOutputTracks();
+                        foreach (var track in tracks)
+                        {
+                            if (track is AnimationTrack animationTrack)
+                            {
+                                var trackAnimator = playableDirector.GetGenericBinding(track) as Animator;
+                                if (animationTrack.inClipMode)
+                                {
+                                    var clips = animationTrack.GetClips();
+                                    var animationClips = clips
+                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
+                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
+                                        .Select(asset => asset.clip); //finally we get an animation clip!
+
+                                    foreach (var animationClip in animationClips)
+                                        ProcessAnimationClip(animationClip, trackAnimator);
+                                }
+                                else //uses recorded clip
+                                    ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
+                            }
+                        }
+                    }
+                }
+                
+                EditorSceneManager.SaveScene(scene);
+            }
+            
+            // local functions
+            static void LoadApiMapping(out Dictionary<Type, Dictionary<string, Tuple<string, Type>>> result)
+            {
+                var filename = ScriptableObjectUtility.CinemachineRelativeInstallPath +
+                    "/Editor/EditorResources/ApiUpgradeMapping.json";
+                var json = System.IO.File.ReadAllText(filename);
+                result = Newtonsoft.Json.JsonConvert
+                    .DeserializeObject<Dictionary<Type, Dictionary<string, Tuple<string, Type>>>>(json);
+            }
+            
+            void ProcessAnimationClip(AnimationClip animationClip, Animator trackAnimator)
+            {
+                var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
+                foreach (var previousBinding in existingEditorBindings)
+                {
+                    var newBinding = previousBinding;
+                    if (previousBinding.path.Contains("cm"))
+                    {
+                        var path = previousBinding.path;
+
+                        //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
+                        var index = Mathf.Max(0, path.IndexOf("cm") - 1);
+                        newBinding.path = path.Substring(0, index);
+                    }
+
+                    if (previousBinding.propertyName.Contains("m_"))
+                    {
+                        var propertyName = previousBinding.propertyName;
+                        newBinding.propertyName = propertyName.Replace("m_", string.Empty);
+                    }
+
+                    if (k_ClassUpgradeMaps.ContainsKey(previousBinding.type))
+                    {
+                        newBinding.type = k_ClassUpgradeMaps[previousBinding.type];
+                    }
+
+                    // Check if previousBinding.type needs an API change
+                    if (apiUpgradMaps.ContainsKey(previousBinding.type) &&
+                        apiUpgradMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
+                    {
+                        // find API mapping
+                        var mapping = apiUpgradMaps[previousBinding.type][newBinding.propertyName];
+
+                        newBinding.propertyName = mapping.Item1;
+                        newBinding.type = mapping.Item2;
+                        if (mapping.Item1.Contains("managedReferences"))
+                        {
+                            var propertyName = mapping.Item1;
+                            var start = propertyName.IndexOf("[") + 1;
+                            var end = propertyName.IndexOf("]");
+                            propertyName = propertyName.Substring(start, end - start);
+
+                            var goTarget = trackAnimator.transform.gameObject;
+                            var realTarget = goTarget.GetComponent(mapping.Item2);
+
+                            var so = new SerializedObject(realTarget);
+                            var prop = so.FindProperty(propertyName);
+                            newBinding.propertyName = "managedReferences[" + prop.managedReferenceId + "].Value";
+                        }
+                    }
+
+                    var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
+                    AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
+                    AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
+                }
+            }
+        }
 
         class SceneManager
         {
@@ -591,7 +722,6 @@ namespace Cinemachine.Editor
 
             void Initialize(List<PlayableDirector> playableDirectors)
             {
-                LoadApiMapping();
                 m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
 
                 // collect all cmShots that may require a reference update
@@ -613,139 +743,15 @@ namespace Cinemachine.Editor
                                 {
                                     if (clip.asset is CinemachineShot cmShot)
                                     {
-
-                                        // var exposedRef = cmShot.VirtualCamera;
-                                        // var vcam = exposedRef.Resolve(playableDirector);
-                                        // if (vcam != null)
-                                        {
-                                            if (!m_CmShotsToUpdate.ContainsKey(playableDirector))
-                                                m_CmShotsToUpdate.Add(playableDirector, new List<CinemachineShot>());
-                                            m_CmShotsToUpdate[playableDirector].Add(cmShot);
-                                        }
+                                        if (!m_CmShotsToUpdate.ContainsKey(playableDirector))
+                                            m_CmShotsToUpdate.Add(playableDirector, new List<CinemachineShot>());
+                                        
+                                        m_CmShotsToUpdate[playableDirector].Add(cmShot);
                                     }
                                 }
                             }
-
-                            if (track is AnimationTrack animationTrack)
-                            {
-                                var trackTarget = playableDirector.GetGenericBinding(track);
-                                if (animationTrack.inClipMode)
-                                {
-                                    var clips = animationTrack.GetClips();
-                                    var animationClips = clips
-                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
-                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
-                                        .Select(asset => asset.clip); //finally we get an animation clip!
-
-                                    foreach (var animationClip in animationClips)
-                                        ProcessAnimationClip(animationClip, trackTarget);
-                                }
-                                else //uses recorded clip
-                                    ProcessAnimationClip(animationTrack.infiniteClip, trackTarget);
-                            }
                         }
                     }
-                }
-
-                // local function
-                static void LoadApiMapping()
-                {
-                    if (s_ApiUpgradeMaps != null)
-                        return;
-
-                    var filename = ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                        "/Editor/EditorResources/ApiUpgradeMapping.json";
-                    var json = System.IO.File.ReadAllText(filename);
-                    s_ApiUpgradeMaps = Newtonsoft.Json.JsonConvert
-                        .DeserializeObject<Dictionary<Type, Dictionary<string, Tuple<string, Type>>>>(json);
-                }
-            }
-
-            static readonly Dictionary<Type, Type> k_ClassUpgradeMaps = new()
-            {
-                { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
-                { typeof(CinemachineFreeLook), typeof(CmCamera) },
-                { typeof(CinemachineComposer), typeof(CinemachineRotationComposer) },
-                { typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer) },
-                { typeof(CinemachineTransposer), typeof(CinemachineFollow) },
-                { typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer) },
-                { typeof(CinemachinePOV), typeof(CinemachinePanTilt) },
-                { typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow) },
-                { typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly) },
-                { typeof(CinemachinePath), typeof(SplineContainer) },
-                { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
-                { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-                {typeof(CinemachineInputProvider), typeof(InputAxisController)},
-#endif
-            };
-
-            static Dictionary<Type, Dictionary<string, Tuple<string, Type>>> s_ApiUpgradeMaps;
-
-            // TODO:
-            // Also need to pass in the target object of the AnimationTrack -> AnimationTarget
-            // If s_ApiUpgradeMaps is mapping to managedReferences[HorizontalAxis], then
-            // we need to find HorizontalAxis's managedReferenceId and replace it with ti
-            // if mapping.Item1.Contains("managedReferenceId")
-            // {
-            //  var propertyName = mapping.Item1.substring(indexOf("["), indexOf("]")); // HorizontalAxis
-            //  var so = new SerializedObject(AnimationTarget);
-            //  var prop = so.FindProperty(propertyName);
-            //  var correctPropertyName = "managedReferences[" + prop.managedReferenceId + "].Value";
-            //  newBinding.propertyName = correctPropertyName;
-            // }
-
-            static void ProcessAnimationClip(AnimationClip animationClip, Object trackTarget)
-            {
-                var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
-                foreach (var previousBinding in existingEditorBindings)
-                {
-                    var newBinding = previousBinding;
-                    if (previousBinding.path.Contains("cm"))
-                    {
-                        var path = previousBinding.path;
-                        //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
-                        var index = Mathf.Max(0, path.IndexOf("cm") - 1);
-                        newBinding.path = path.Substring(0, index);
-                    }
-                    if (previousBinding.propertyName.Contains("m_"))
-                    {
-                        var propertyName = previousBinding.propertyName;
-                        newBinding.propertyName = propertyName.Replace("m_", string.Empty);
-                    }
-                    if (k_ClassUpgradeMaps.ContainsKey(previousBinding.type))
-                    {
-                        newBinding.type = k_ClassUpgradeMaps[previousBinding.type];
-                    }
-                    
-                    // Check if previousBinding.type needs an API change
-                    if (s_ApiUpgradeMaps.ContainsKey(previousBinding.type) && 
-                        s_ApiUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
-                    {
-                        // find API mapping
-                        var mapping = s_ApiUpgradeMaps[previousBinding.type][newBinding.propertyName];
-                        
-                        newBinding.propertyName = mapping.Item1;
-                        newBinding.type = mapping.Item2;
-                        if (mapping.Item1.Contains("managedReferences"))
-                        {
-                            var propertyName = mapping.Item1;
-                            var start = propertyName.IndexOf("[");
-                            var end = propertyName.IndexOf("]");
-                            propertyName = propertyName.Substring(start, end - start);
-
-                            var goTarget = (GameObject) trackTarget;
-                            var realTarget = goTarget.GetComponent(mapping.Item2);
-                            
-                            var so = new SerializedObject(realTarget);
-                            var prop = so.FindProperty(propertyName);
-                            newBinding.propertyName  = "managedReferences[" + prop.managedReferenceId + "].Value";
-                        }
-                    }
-
-                    var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
-                    AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
-                    AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
                 }
             }
 
