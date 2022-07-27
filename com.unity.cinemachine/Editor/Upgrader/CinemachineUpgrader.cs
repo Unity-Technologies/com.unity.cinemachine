@@ -576,7 +576,7 @@ namespace Cinemachine.Editor
             {
                 Initialize(GetPlayableDirectors(scene));
             }
-            
+
             public static List<PlayableDirector> GetPlayableDirectors(Scene scene)
             {
                 var playableDirectors = new List<PlayableDirector>();
@@ -584,7 +584,7 @@ namespace Cinemachine.Editor
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var go in rootObjects)
                     playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
-                
+
                 return playableDirectors;
             }
 
@@ -596,7 +596,7 @@ namespace Cinemachine.Editor
                 // collect all cmShots that may require a reference update
                 foreach (var playableDirector in playableDirectors)
                 {
-                    if (playableDirector == null) 
+                    if (playableDirector == null)
                         continue;
 
                     var playableAsset = playableDirector.playableAsset;
@@ -612,7 +612,7 @@ namespace Cinemachine.Editor
                                 {
                                     if (clip.asset is CinemachineShot cmShot)
                                     {
-                                        
+
                                         // var exposedRef = cmShot.VirtualCamera;
                                         // var vcam = exposedRef.Resolve(playableDirector);
                                         // if (vcam != null)
@@ -644,14 +644,14 @@ namespace Cinemachine.Editor
                         }
                     }
                 }
-                
+
                 // local function
                 static void LoadApiMapping()
                 {
                     if (s_ApiUpgradeMaps != null)
                         return;
 
-                    var filename = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
+                    var filename = ScriptableObjectUtility.CinemachineRelativeInstallPath +
                         "/Editor/EditorResources/ApiUpgradeMapping.json";
                     var json = System.IO.File.ReadAllText(filename);
                     s_ApiUpgradeMaps = Newtonsoft.Json.JsonConvert
@@ -661,25 +661,38 @@ namespace Cinemachine.Editor
 
             static readonly Dictionary<Type, Type> k_ClassUpgradeMaps = new()
             {
-                {typeof(CinemachineVirtualCamera), typeof(CmCamera)},
-                {typeof(CinemachineFreeLook), typeof(CmCamera)},
-                {typeof(CinemachineComposer), typeof(CinemachineRotationComposer)},
-                {typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer)},
-                {typeof(CinemachineTransposer), typeof(CinemachineFollow)},
-                {typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer)},
-                {typeof(CinemachinePOV), typeof(CinemachinePanTilt)},
-                {typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow)},
-                {typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly)},
-                {typeof(CinemachinePath), typeof(SplineContainer)},
-                {typeof(CinemachineSmoothPath), typeof(SplineContainer)},
-                {typeof(CinemachineDollyCart), typeof(CinemachineSplineCart)},
+                { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
+                { typeof(CinemachineFreeLook), typeof(CmCamera) },
+                { typeof(CinemachineComposer), typeof(CinemachineRotationComposer) },
+                { typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer) },
+                { typeof(CinemachineTransposer), typeof(CinemachineFollow) },
+                { typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer) },
+                { typeof(CinemachinePOV), typeof(CinemachinePanTilt) },
+                { typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow) },
+                { typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly) },
+                { typeof(CinemachinePath), typeof(SplineContainer) },
+                { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
+                { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 {typeof(CinemachineInputProvider), typeof(InputAxisController)},
 #endif
             };
 
             static Dictionary<Type, Dictionary<string, Tuple<string, Type>>> s_ApiUpgradeMaps;
-            
+
+            // TODO:
+            // Also need to pass in the target object of the AnimationTrack -> AnimationTarget
+            // If s_ApiUpgradeMaps is mapping to managedReferences[HorizontalAxis], then
+            // we need to find HorizontalAxis's managedReferenceId and replace it with ti
+            // if mapping.Item1.Contains("managedReferenceId")
+            // {
+            //  var propertyName = mapping.Item1.substring(indexOf("["), indexOf("]")); // HorizontalAxis
+            //  var so = new SerializedObject(AnimationTarget);
+            //  var prop = so.FindProperty(propertyName);
+            //  var correctPropertyName = "managedReferences[" + prop.managedReferenceId + "].Value";
+            //  newBinding.propertyName = correctPropertyName;
+            // }
+
             static void ProcessAnimationClip(AnimationClip animationClip)
             {
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
