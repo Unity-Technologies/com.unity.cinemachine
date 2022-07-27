@@ -588,12 +588,9 @@ namespace Cinemachine.Editor
                 return playableDirectors;
             }
 
-            const string k_Filename = "ApiUpgradeMapping.json";
             void Initialize(List<PlayableDirector> playableDirectors)
             {
-                var json = System.IO.File.ReadAllText(k_Filename);
-                var result = Newtonsoft.Json.JsonConvert.DeserializeObject(json, typeof(Dictionary<Type, Dictionary<string, Tuple<string, Type>>>));
-                s_ApiUpgradeMaps = (Dictionary<Type, Dictionary<string, Tuple<string, Type>>>) result;
+                LoadApiMapping();
                 m_CmShotsToUpdate = new Dictionary<PlayableDirector, List<CinemachineShot>>();
 
                 // collect all cmShots that may require a reference update
@@ -646,6 +643,19 @@ namespace Cinemachine.Editor
                             }
                         }
                     }
+                }
+                
+                // local function
+                static void LoadApiMapping()
+                {
+                    if (s_ApiUpgradeMaps != null)
+                        return;
+
+                    var filename = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
+                        "/Editor/EditorResources/ApiUpgradeMapping.json";
+                    var json = System.IO.File.ReadAllText(filename);
+                    s_ApiUpgradeMaps = Newtonsoft.Json.JsonConvert
+                        .DeserializeObject<Dictionary<Type, Dictionary<string, Tuple<string, Type>>>>(json);
                 }
             }
 

@@ -95,7 +95,7 @@ namespace Cinemachine.Editor
             normal =
             {
                 background = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.
-                    CinemachineRealativeInstallPath + "/Editor/EditorResources/SceneToolsLabelBackground.png"),
+                    CinemachineRelativeInstallPath + "/Editor/EditorResources/SceneToolsLabelBackground.png"),
                 textColor = Handles.selectedColor,
             },
             fontStyle = FontStyle.Bold,
