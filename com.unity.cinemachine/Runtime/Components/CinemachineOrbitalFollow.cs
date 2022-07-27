@@ -121,9 +121,9 @@ namespace Cinemachine
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Horizontal", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Vertical", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = RadialAxis, Name = "Radial", AxisIndex = 2 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Look Orbit X", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Look Orbit Y", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = RadialAxis, Name = "Orbit Scale", AxisIndex = 2 });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
@@ -299,7 +299,7 @@ namespace Cinemachine
         }
 
         /// For the inspector
-        internal Quaternion GetReferenceOrientation() => m_TargetTracker.PreviousReferenceOrientation;
+        internal Quaternion GetReferenceOrientation() => m_TargetTracker.PreviousReferenceOrientation.normalized;
     }
 
     /// <summary>

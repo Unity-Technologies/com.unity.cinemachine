@@ -202,7 +202,9 @@ namespace Cinemachine.Editor
                         if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
                             continue;
                         var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
-                        inputProvider.XYAxis = ScriptableObjectUtility.DefaultLookAction;
+                        inputProvider.XYAxis = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").FirstOrDefault(
+                                x => x.name == "Player/Look");
                     }
                 });
             EditorGUILayout.Space();

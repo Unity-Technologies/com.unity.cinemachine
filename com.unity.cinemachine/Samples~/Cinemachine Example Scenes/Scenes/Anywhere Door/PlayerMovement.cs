@@ -1,43 +1,40 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine.Examples
 {
-    public class PlayerMovement : MonoBehaviour
+    [RequireComponent(typeof(InputAxisController))]
+    public class PlayerMovement : MonoBehaviour, IInputAxisSource
     {
-        public float movementSpeed = 10f;
-        public float lookatspeed = 5f;
+        public float MovementSpeed = 5;
+
+        public InputAxis MoveX = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveZ = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis LookX = new InputAxis { Range = new Vector2(-180, 180), Wrap = true };
+
+        /// Report the available input axes to the input axis controller.
+        /// We use the Input Axis Controller because it works with both the Input package
+        /// and the Legacy input system.  This is sample code and we
+        /// want it to work everywhere.
+        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        {
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = MoveX, Name = "Move X", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = MoveZ, Name = "Move Z", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = LookX, Name = "Look X", AxisIndex = 0 });
+        }
 
         void Update()
         {
-#if ENABLE_LEGACY_INPUT_MANAGER
-            if (Input.GetKey("w"))
+            var moveDir = new Vector3(MoveX.Value, 0, MoveZ.Value);
+            if (!moveDir.AlmostZero())
             {
-                transform.position += transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed;
+                moveDir = moveDir.normalized;
+                transform.position += transform.TransformDirection(moveDir) * Time.deltaTime * MovementSpeed;
             }
-            else if (Input.GetKey("s"))
-            {
-                transform.position -= transform.TransformDirection(Vector3.forward) * Time.deltaTime * movementSpeed;
-            }
-
-            if (Input.GetKey("a") && !Input.GetKey("d"))
-            {
-                transform.position += transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed;
-            }
-            else if (Input.GetKey("d") && !Input.GetKey("a"))
-            {
-                transform.position -= transform.TransformDirection(Vector3.left) * Time.deltaTime * movementSpeed;
-            }
-
-            //mouse look at
-            float horizontal = Input.GetAxis("Mouse X") * lookatspeed;
-            float vertical = Input.GetAxis("Mouse Y") * lookatspeed;
-
-            transform.Rotate(0f, horizontal, 0f, Space.World);
-
-            //transform.Rotate(-vertical, 0f, 0f, Space.Self);
-#else
-        InputSystemHelper.EnableBackendsWarningMessage();
-#endif
+            var rot = transform.rotation.eulerAngles;
+            rot.y = LookX.Value;
+            transform.rotation = Quaternion.Euler(rot);
         }
     }
 }
