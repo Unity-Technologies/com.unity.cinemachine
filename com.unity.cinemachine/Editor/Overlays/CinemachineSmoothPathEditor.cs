@@ -3,6 +3,10 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditorInternal;
+using System;
+using Cinemachine.Utility;
+using UnityEngine.Assertions;
+using System.Diagnostics;
 
 namespace Cinemachine.Editor
 {
@@ -152,7 +156,7 @@ namespace Cinemachine.Editor
                 {
                     Vector3 delta = Vector3.right;
                     if (indexA > 0)
-                        delta = Target.m_Waypoints[indexA].position - Target.m_Waypoints[indexA-1].position;
+                        delta = Target.m_Waypoints[indexA].position - Target.m_Waypoints[indexA - 1].position;
                     pos = Target.m_Waypoints[indexA].position + delta;
                     roll = Target.m_Waypoints[indexA].roll;
                 }
@@ -249,9 +253,131 @@ namespace Cinemachine.Editor
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSmoothPath))]
         static void DrawGizmos(CinemachineSmoothPath path, GizmoType selectionType)
         {
-            var isActive = Selection.activeGameObject == path.gameObject;
-            CinemachinePathEditor.DrawPathGizmo(path,
-                isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
-        }
-    }
+			int numSegments = path.m_Waypoints.Length - (path.Looped ? 0 : 1);
+
+			// *******************************************************************************************************************************************
+			SessionState.SetInt("CinemachineSplineSegmentCount", SessionState.GetInt("CinemachineSplineSegmentCount", 0) + numSegments);
+			SessionState.SetInt("CinemachineSplinePointCount", SessionState.GetInt("CinemachineSplinePointCount", 0) + (numSegments * path.m_Resolution));
+			Stopwatch stopwatch = Stopwatch.StartNew();
+			// *******************************************************************************************************************************************
+
+			var isActive = Selection.activeGameObject == path.gameObject;
+
+			// CinemachinePathEditor.DrawPathGizmo(path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
+
+			path.UpdateControlPoints();
+
+			// Pre-calculate the bezier weights for each step along a segment
+			float step = 1f / path.m_Resolution;
+            Vector4[] bezierWeights = new Vector4[path.m_Resolution + 1];
+            for(int stepNum = 0; stepNum <= path.m_Resolution; stepNum++)
+			{
+                float t = ((float)stepNum) / path.m_Resolution;
+                float d = 1.0f - t;
+                bezierWeights[stepNum] = new Vector4(d * d * d, 3f * d * d * t, 3f * d * t * t, t * t * t);
+			}
+
+
+            Vector3[] stepPoints = new Vector3[(path.m_Resolution * numSegments) + 1];
+
+            // Process each segment of the path
+            int stepPointIndex = 0;
+            for (int startWaypointIndex = 0; startWaypointIndex < numSegments; startWaypointIndex++)
+            {
+                int nextWaypointIndex = (startWaypointIndex + 1) % path.m_Waypoints.Length;
+
+                for (int stepNum = 0; stepNum < path.m_Resolution; stepNum++)
+                {
+                    stepPoints[stepPointIndex++] = (bezierWeights[stepNum].x * path.m_Waypoints[startWaypointIndex].position) +
+                        (bezierWeights[stepNum].y * path.m_ControlPoints1[startWaypointIndex].position) +
+                        (bezierWeights[stepNum].z * path.m_ControlPoints2[startWaypointIndex].position) +
+                        (bezierWeights[stepNum].w * path.m_Waypoints[nextWaypointIndex].position);
+
+                }
+            }
+
+            stepPoints[stepPointIndex] = path.Looped ? stepPoints[0] : path.m_Waypoints[path.m_Waypoints.Length - 1].position;
+
+            // Put into world space
+            path.transform.TransformPoints(new Span<Vector3>(stepPoints));
+
+			Color colorOld = Gizmos.color;
+			Gizmos.color = isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor;
+
+			if (!isActive || path.m_Appearance.width == 0)
+            {
+				SessionState.SetInt("CinemachineSplineNumInactiveRenders", SessionState.GetInt("CinemachineSplineNumInactiveRenders", 0) + 1);  // ******************
+
+                Gizmos.DrawLineStrip(new Span<Vector3>(stepPoints), false);
+
+            }
+            else
+            {
+				SessionState.SetInt("CinemachineSplineNumActiveRenders", SessionState.GetInt("CinemachineSplineNumActiveRenders", 0) + 1);  // ******************
+
+                Quaternion transformRot = path.transform.rotation;
+				Vector3 transformUp = transformRot * Vector3.up;
+
+                float halfWidth = path.m_Appearance.width * 0.5f;
+                Vector3 halfRight = Vector3.right * halfWidth;
+
+				Vector3[] leftRailPoints = new Vector3[(path.m_Resolution * numSegments) + (path.Looped ? 0 : 1)];
+				Vector3[] rightRailPoints = new Vector3[(path.m_Resolution * numSegments) + (path.Looped ? 0 : 1)];
+				Vector3[] sleeperPoints = new Vector3[(path.m_Resolution * numSegments * 2) + (path.Looped ? 0 : 2)];
+
+				stepPointIndex = 0;
+                int sleeperPointIndex = 0;
+				for (int startWaypointIndex = 0; startWaypointIndex < numSegments; startWaypointIndex++)
+                {
+                    int nextWaypointIndex = (startWaypointIndex + 1) % path.m_Waypoints.Length;
+
+                    float roll = path.m_Waypoints[startWaypointIndex].roll;
+                    Vector3 fwd = path.transform.TransformDirection(- 3.0f * path.m_Waypoints[startWaypointIndex].position + 3.0f * path.m_ControlPoints1[startWaypointIndex].position);
+                    Vector3 sideVector = ((!fwd.AlmostZero()) ? Quaternion.LookRotation(fwd, transformUp) * CinemachineSmoothPath.RollAroundForward(roll) : transformRot) * halfRight;
+
+                    // bool rollAlwaysZero = (path.m_Waypoints[startWaypointIndex].roll == 0.0f) && (path.m_ControlPoints1[startWaypointIndex].roll == 0.0f) && (path.m_ControlPoints2[startWaypointIndex].roll == 0.0f) && (path.m_Waypoints[nextWaypointIndex].roll == 0.0f);
+
+                    int numSteps = (path.Looped ? path.m_Resolution : ((startWaypointIndex < numSegments - 1) ? path.m_Resolution : (path.m_Resolution + 1)));
+                    for (int stepNum = 0; stepNum < numSteps; stepNum++)
+                    {
+                        Vector3 pointOnCurve = stepPoints[stepPointIndex];
+
+                        roll = (bezierWeights[stepNum].x * path.m_Waypoints[startWaypointIndex].roll) +
+					        (bezierWeights[stepNum].y * path.m_ControlPoints1[startWaypointIndex].roll) +
+						    (bezierWeights[stepNum].z * path.m_ControlPoints2[startWaypointIndex].roll) +
+						    (bezierWeights[stepNum].w * path.m_Waypoints[nextWaypointIndex].roll);
+
+						float t = ((float)stepNum) / path.m_Resolution;
+
+						fwd = SplineHelpers.BezierTangent3(t,
+					        path.m_Waypoints[startWaypointIndex].position, path.m_ControlPoints1[startWaypointIndex].position,
+                             path.m_ControlPoints2[startWaypointIndex].position, path.m_Waypoints[nextWaypointIndex].position);
+                        fwd = path.transform.TransformDirection(fwd);
+
+                        sideVector = ((!fwd.AlmostZero()) ? Quaternion.LookRotation(fwd, transformUp) * CinemachineSmoothPath.RollAroundForward(roll) : transformRot) * halfRight;
+
+						leftRailPoints[stepPointIndex] = pointOnCurve - sideVector;
+						rightRailPoints[stepPointIndex] = pointOnCurve + sideVector;
+						stepPointIndex++;
+
+						Vector3 elongatedSideVector = sideVector * 1.2f;
+                        sleeperPoints[sleeperPointIndex] = pointOnCurve - elongatedSideVector;
+                        sleeperPoints[sleeperPointIndex + 1] = pointOnCurve + elongatedSideVector;
+                        sleeperPointIndex += 2;
+                    }
+				}
+                Assert.AreEqual(sleeperPointIndex, sleeperPoints.Length);
+				Assert.AreEqual(stepPointIndex, leftRailPoints.Length);
+
+				Gizmos.DrawLineStrip(new Span<Vector3>(leftRailPoints), false);
+				Gizmos.DrawLineStrip(new Span<Vector3>(rightRailPoints), false);
+                Gizmos.DrawLineList(new Span<Vector3>(sleeperPoints));
+            }
+
+            int us10Taken = (int)(((double)stopwatch.ElapsedTicks) / Stopwatch.Frequency * 1000.0 * 100.0);
+            SessionState.SetInt("CinemachineSplineRenderUs10", SessionState.GetInt("CinemachineSplineRenderUs10", 0) + us10Taken);
+
+			Gizmos.color = colorOld;
+		}
+	}
 }

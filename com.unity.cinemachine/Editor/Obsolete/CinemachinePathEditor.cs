@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using Cinemachine.Utility;
 using System.Linq;
+using System;
 
 namespace Cinemachine.Editor
 {
@@ -389,23 +390,40 @@ namespace Cinemachine.Editor
         public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive)
         {
             // Draw the path
+
+            float step = 1f / path.m_Resolution;
+            float tEnd = path.MaxPos + step / 2;
+
+            int numSteps = (int)((tEnd - path.MinPos) / step);
+            Vector3[] stepPoints = new Vector3[numSteps + 1];
+            float t = path.MinPos;
+            for (int stepNum = 0; stepNum <= numSteps; stepNum++)
+            {
+                stepPoints[stepNum] = path.EvaluateCurvePosition(t);
+
+                t += step;
+            }
+
+            path.transform.TransformPoints(new Span<Vector3>(stepPoints));
+
             Color colorOld = Gizmos.color;
             Gizmos.color = pathColor;
-            float step = 1f / path.m_Resolution;
+
             float halfWidth = path.m_Appearance.width * 0.5f;
-            Vector3 lastPos = path.EvaluatePosition(path.MinPos);
-            Vector3 lastW = (path.EvaluateOrientation(path.MinPos)
-                             * Vector3.right) * halfWidth;
-            float tEnd = path.MaxPos + step / 2;
-            for (float t = path.MinPos + step; t <= tEnd; t += step)
+
+            if (!isActive || halfWidth == 0)
             {
-                Vector3 p = path.EvaluatePosition(t);
-                if (!isActive || halfWidth == 0)
+                Gizmos.DrawLineStrip(new Span<Vector3>(stepPoints), false);
+            }
+            else
+            {
+                Vector3 lastPos = stepPoints[0];
+				Vector3 lastW = (path.EvaluateOrientation(path.MinPos) * Vector3.right) * halfWidth;
+				t = path.MinPos + step;
+				for (int stepNum = 1; stepNum <= numSteps; stepNum++)
                 {
-                    Gizmos.DrawLine(p, lastPos);
-                }
-                else
-                {
+                    Vector3 p = stepPoints[stepNum];
+
                     Quaternion q = path.EvaluateOrientation(t);
                     Vector3 w = (q * Vector3.right) * halfWidth;
                     Vector3 w2 = w * 1.2f;
@@ -415,17 +433,18 @@ namespace Cinemachine.Editor
                     Gizmos.DrawLine(lastPos - lastW, p - w);
                     Gizmos.DrawLine(lastPos + lastW, p + w);
 #if false
-                    // Show the normals, for debugging
-                    Gizmos.color = Color.red;
-                    Vector3 y = (q * Vector3.up) * halfWidth;
-                    Gizmos.DrawLine(p, p + y);
-                    Gizmos.color = pathColor;
+                // Show the normals, for debugging
+                Gizmos.color = Color.red;
+                Vector3 y = (q * Vector3.up) * halfWidth;
+                Gizmos.DrawLine(p, p + y);
+                Gizmos.color = pathColor;
 #endif
                     lastW = w;
-                }
 
-                lastPos = p;
+                    lastPos = p;
+                }
             }
+
             Gizmos.color = colorOld;
         }
 
