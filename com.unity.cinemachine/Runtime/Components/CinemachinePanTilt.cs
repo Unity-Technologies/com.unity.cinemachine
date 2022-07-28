@@ -42,12 +42,14 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the Y axis.")]
+        [SerializeReference]
         public InputAxis PanAxis = DefaultPan;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
         [Tooltip("Axis representing the current vertical rotation.  Value is in degrees "
             + "and represents a rotation about the X axis.")]
+        [SerializeReference]
         public InputAxis TiltAxis = DefaultTilt;
 
         /// <summary>
