@@ -264,7 +264,7 @@ namespace Cinemachine.Editor
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSmoothPath))]
         static void DrawGizmos(CinemachineSmoothPath path, GizmoType selectionType)
         {
-			int numSegments = path.m_Waypoints.Length - (path.Looped ? 0 : 1);
+            int numSegments = path.m_Waypoints.Length - (path.Looped ? 0 : 1);
 
 			// *******************************************************************************************************************************************
 			SessionState.SetInt("CinemachineSplineSegmentCount", SessionState.GetInt("CinemachineSplineSegmentCount", 0) + numSegments);
@@ -273,8 +273,6 @@ namespace Cinemachine.Editor
 			// *******************************************************************************************************************************************
 
 			var isActive = Selection.activeGameObject == path.gameObject;
-
-			// CinemachinePathEditor.DrawPathGizmo(path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
 
 			path.UpdateControlPoints();
 
@@ -290,7 +288,8 @@ namespace Cinemachine.Editor
 			}
 
 
-            m_StepPoints = EnsureArraySize(m_StepPoints, (path.m_Resolution * numSegments) + 1);
+            int numStepPointsRequired = (path.m_Resolution * numSegments) + 1;
+            m_StepPoints = EnsureArraySize(m_StepPoints, numStepPointsRequired);
 
             // Process each segment of the path
             int stepPointIndex = 0;
@@ -323,7 +322,7 @@ namespace Cinemachine.Editor
             {
 				SessionState.SetInt("CinemachineSplineNumInactiveRenders", SessionState.GetInt("CinemachineSplineNumInactiveRenders", 0) + 1);  // ******************
 
-                Gizmos.DrawLineStrip(new Span<Vector3>(m_StepPoints), false);
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_StepPoints, 0, numStepPointsRequired), false);
             }
             else
             {
@@ -335,9 +334,12 @@ namespace Cinemachine.Editor
                 float halfWidth = path.m_Appearance.width * 0.5f;
                 Vector3 halfRight = Vector3.right * halfWidth;
 
-				m_LeftRailPoints = EnsureArraySize(m_LeftRailPoints, (path.m_Resolution * numSegments) + (path.Looped ? 0 : 1));
-				m_RightRailPoints = EnsureArraySize(m_RightRailPoints, (path.m_Resolution * numSegments) + (path.Looped ? 0 : 1));
-				m_SleeperPoints = EnsureArraySize(m_SleeperPoints, (path.m_Resolution * numSegments * 2) + (path.Looped ? 0 : 2));
+                int numRailPointsRequired = (path.m_Resolution * numSegments) + (path.Looped ? 0 : 1);
+                m_LeftRailPoints = EnsureArraySize(m_LeftRailPoints, numRailPointsRequired);
+				m_RightRailPoints = EnsureArraySize(m_RightRailPoints, numRailPointsRequired);
+
+                int numSleeperPointsRequired = (path.m_Resolution * numSegments * 2) + (path.Looped ? 0 : 2);
+                m_SleeperPoints = EnsureArraySize(m_SleeperPoints, numSleeperPointsRequired);
 
 				stepPointIndex = 0;
                 int sleeperPointIndex = 0;
@@ -387,12 +389,12 @@ namespace Cinemachine.Editor
                         sleeperPointIndex += 2;
                     }
 				}
-                Assert.AreEqual(sleeperPointIndex, m_SleeperPoints.Length);
-				Assert.AreEqual(stepPointIndex, m_LeftRailPoints.Length);
+                Assert.AreEqual(sleeperPointIndex, numSleeperPointsRequired);
+				Assert.AreEqual(stepPointIndex, numRailPointsRequired);
 
-				Gizmos.DrawLineStrip(new Span<Vector3>(m_LeftRailPoints), false);
-				Gizmos.DrawLineStrip(new Span<Vector3>(m_RightRailPoints), false);
-                Gizmos.DrawLineList(new Span<Vector3>(m_SleeperPoints));
+				Gizmos.DrawLineStrip(new Span<Vector3>(m_LeftRailPoints, 0, numRailPointsRequired), false);
+				Gizmos.DrawLineStrip(new Span<Vector3>(m_RightRailPoints, 0, numRailPointsRequired), false);
+                Gizmos.DrawLineList(new Span<Vector3>(m_SleeperPoints, 0, numSleeperPointsRequired));
             }
 
             int us10Taken = (int)(((double)stopwatch.ElapsedTicks) / Stopwatch.Frequency * 1000.0 * 100.0);
