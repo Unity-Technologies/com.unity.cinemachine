@@ -88,28 +88,25 @@ namespace Cinemachine.Editor
         /// We need to be able to tell timelines apart, and their name may not be unique. So we make them
         /// unique here, and restore their original name when we are done with RestoreTimelineNames().
         /// </summary>
-        void MakeTimelineNamesUnique(out List<TimelineRename> renames)
+        /// <param name="renames">Dictionary, Key = GUID name generated, Value = original name</param>
+        void MakeTimelineNamesUnique(out Dictionary<string, string> renames)
         {
-            renames = new List<TimelineRename>();
+            renames = new Dictionary<string, string>();
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
                 var directors = TimelineManager.GetPlayableDirectors(scene);
                 foreach (var director in directors)
                 {
-                    var rename = new TimelineRename
-                    {
-                        original = director.name,
-                        guid = director.name = GUID.Generate().ToString()
-                    };
-                    renames.Add(rename);
+                    var originalName = director.name;
+                    director.name = GUID.Generate().ToString();
+                    renames.Add(director.name, originalName); // key = guid, value = originalName
                 }
                 EditorSceneManager.SaveScene(scene);
             }
         }
         
-        
-        void RestoreTimelineNames(List<TimelineRename> renames)
+        void RestoreTimelineNames(Dictionary<string, string> renames)
         {
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
@@ -117,14 +114,9 @@ namespace Cinemachine.Editor
                 var directors = TimelineManager.GetPlayableDirectors(scene);
                 foreach (var director in directors)
                 {
-                    for (var i = 0; i < renames.Count; ++i)
+                    if (renames.ContainsKey(director.name)) // search based on guid name
                     {
-                        if (director.name == renames[i].guid)
-                        {
-                            director.name = renames[i].original;
-                            renames.RemoveAt(i);
-                            break;
-                        }
+                        director.name = renames[director.name]; // restore director name
                     }
                 }
                 EditorSceneManager.SaveScene(scene);
