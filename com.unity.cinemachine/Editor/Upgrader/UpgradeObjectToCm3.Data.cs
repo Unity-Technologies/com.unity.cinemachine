@@ -187,6 +187,13 @@ namespace Cinemachine.Editor
                     { "MaxDollyOut", new Tuple<string, Type>("DollyRange.y", typeof(CinemachineGroupFraming)) },
                     { "AdjustmentMode", new Tuple<string, Type>("SizeAdjustment", typeof(CinemachineGroupFraming)) }
                 }
+            },
+            {
+                typeof(CinemachinePOV), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "HorizontalAxis.Value", new Tuple<string, Type>("managedReferences[PanAxis].Value", typeof(CinemachinePanTilt))},
+                    { "VerticalAxis.Value", new Tuple<string, Type>("managedReferences[TiltAxis].Value", typeof(CinemachinePanTilt))},
+                }
             }
         };
     }
