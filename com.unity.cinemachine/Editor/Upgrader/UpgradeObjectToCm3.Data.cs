@@ -191,6 +191,13 @@ namespace Cinemachine.Editor
                     { "HorizontalAxis.Value", new("managedReferences[PanAxis].Value", typeof(CinemachinePanTilt)) },
                     { "VerticalAxis.Value", new("managedReferences[TiltAxis].Value", typeof(CinemachinePanTilt)) }
                 }
+            },
+            {
+                typeof(CinemachineFreeLook), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                    { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                }
             }
         };
     }

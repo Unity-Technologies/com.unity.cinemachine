@@ -105,9 +105,25 @@ namespace Cinemachine.Editor
                 {
                     var path = previousBinding.path;
 
-                    //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
+                    //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm, thus -1
                     var index = Mathf.Max(0, path.IndexOf("cm") - 1);
                     newBinding.path = path.Substring(0, index);
+                }
+
+                if (previousBinding.path.Contains("Rig"))
+                {
+                    var path = newBinding.path;
+                    //path is either xRig only, or someParent/someOtherParent/.../xRig. In the second case, we need to remove /xRig, thus -1
+                    newBinding.path = path.Substring(0, Mathf.Max(0, FindRig(path) - 1));
+
+                    static int FindRig(string path)
+                    {
+                        var rigs = CinemachineFreeLook.RigNames;
+                        var index = 0;
+                        foreach (var rig in rigs)
+                            index = Mathf.Max(index, path.IndexOf(rig));
+                        return index;
+                    }
                 }
 
                 // clean old convention
