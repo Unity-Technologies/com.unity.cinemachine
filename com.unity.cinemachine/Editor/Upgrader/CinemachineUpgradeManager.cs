@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Upgrades cm2 to cm3
     /// </summary>
-    class CinemachineUpgradeManager
+    partial class CinemachineUpgradeManager
     {
         const string k_UnupgradableTag = " BACKUP - not fully upgradable by CM";
 
@@ -73,15 +73,8 @@ namespace Cinemachine.Editor
                 manager.UpgradePrefabsAndPrefabInstances();
                 manager.UpgradeAnimationTrackReferences();
                 manager.DeleteObsoleteComponentsInScenes();
-                // TODO: AnimationTrack restoration
                 manager.RestoreTimelineNames(renames);
             }
-        }
-
-        struct TimelineRename
-        {
-            public string original;
-            public string guid;
         }
 
         /// <summary>
@@ -429,28 +422,8 @@ namespace Cinemachine.Editor
             }
         }
         
-        static readonly Dictionary<Type, Type> k_ClassUpgradeMaps = new()
-        {
-            { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
-            { typeof(CinemachineFreeLook), typeof(CmCamera) },
-            { typeof(CinemachineComposer), typeof(CinemachineRotationComposer) },
-            { typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer) },
-            { typeof(CinemachineTransposer), typeof(CinemachineFollow) },
-            { typeof(CinemachineFramingTransposer), typeof(CinemachinePositionComposer) },
-            { typeof(CinemachinePOV), typeof(CinemachinePanTilt) },
-            { typeof(CinemachineOrbitalTransposer), typeof(CinemachineOrbitalFollow) },
-            { typeof(CinemachineTrackedDolly), typeof(CinemachineSplineDolly) },
-            { typeof(CinemachinePath), typeof(SplineContainer) },
-            { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
-            { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-                {typeof(CinemachineInputProvider), typeof(InputAxisController)},
-#endif
-        };
         void UpgradeAnimationTrackReferences()
         {
-            LoadApiMapping(out var apiUpgradMaps);
-            
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
@@ -490,17 +463,7 @@ namespace Cinemachine.Editor
                 
                 EditorSceneManager.SaveScene(scene);
             }
-            
-            // local functions
-            static void LoadApiMapping(out Dictionary<Type, Dictionary<string, Tuple<string, Type>>> result)
-            {
-                var filename = ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                    "/Editor/EditorResources/ApiUpgradeMapping.json";
-                var json = System.IO.File.ReadAllText(filename);
-                result = Newtonsoft.Json.JsonConvert
-                    .DeserializeObject<Dictionary<Type, Dictionary<string, Tuple<string, Type>>>>(json);
-            }
-            
+
             void ProcessAnimationClip(AnimationClip animationClip, Animator trackAnimator)
             {
                 var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
@@ -528,11 +491,11 @@ namespace Cinemachine.Editor
                     }
 
                     // Check if previousBinding.type needs an API change
-                    if (apiUpgradMaps.ContainsKey(previousBinding.type) &&
-                        apiUpgradMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
+                    if (k_ApiUpgradeMaps.ContainsKey(previousBinding.type) &&
+                        k_ApiUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
                     {
                         // find API mapping
-                        var mapping = apiUpgradMaps[previousBinding.type][newBinding.propertyName];
+                        var mapping = k_ApiUpgradeMaps[previousBinding.type][newBinding.propertyName];
 
                         newBinding.propertyName = mapping.Item1;
                         newBinding.type = mapping.Item2;
