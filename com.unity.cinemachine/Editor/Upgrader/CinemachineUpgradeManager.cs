@@ -452,80 +452,16 @@ namespace Cinemachine.Editor
                                         .Select(asset => asset.clip); //finally we get an animation clip!
 
                                     foreach (var animationClip in animationClips)
-                                        ProcessAnimationClip(animationClip, trackAnimator);
+                                        m_ObjectUpgrader.ProcessAnimationClip(animationClip, trackAnimator);
                                 }
                                 else //uses recorded clip
-                                    ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
+                                    m_ObjectUpgrader.ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
                             }
                         }
                     }
                 }
                 
                 EditorSceneManager.SaveScene(scene);
-            }
-
-            void ProcessAnimationClip(AnimationClip animationClip, Animator trackAnimator)
-            {
-                var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
-                foreach (var previousBinding in existingEditorBindings)
-                {
-                    var newBinding = previousBinding;
-                    // clean path pointing to old structure where vcam components lived on a hidden child gameobject
-                    if (previousBinding.path.Contains("cm"))
-                    {
-                        var path = previousBinding.path;
-
-                        //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
-                        var index = Mathf.Max(0, path.IndexOf("cm") - 1);
-                        newBinding.path = path.Substring(0, index);
-                    }
-
-                    // clean old convention
-                    if (previousBinding.propertyName.Contains("m_"))
-                    {
-                        var propertyName = previousBinding.propertyName;
-                        newBinding.propertyName = propertyName.Replace("m_", string.Empty);
-                    }
-
-                    // upgrade type based on mapping
-                    if (m_ObjectUpgrader.classUpgradeMap.ContainsKey(previousBinding.type))
-                    {
-                        newBinding.type = m_ObjectUpgrader.classUpgradeMap[previousBinding.type];
-                    }
-
-                    // Check if previousBinding.type needs an API change
-                    if (m_ObjectUpgrader.apiUpgradeMaps.ContainsKey(previousBinding.type) &&
-                        m_ObjectUpgrader.apiUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
-                    {
-                        // find API mapping
-                        var mapping = m_ObjectUpgrader.apiUpgradeMaps[previousBinding.type][newBinding.propertyName];
-
-                        newBinding.propertyName = mapping.Item1;
-                        newBinding.type = mapping.Item2; // type could be different, because some components became several separate components
-                        
-                        // special handling for references
-                        if (mapping.Item1.Contains("managedReferences"))
-                        {
-                            // find property name of the reference
-                            var propertyName = mapping.Item1;
-                            var start = propertyName.IndexOf("[") + 1;
-                            var end = propertyName.IndexOf("]");
-                            propertyName = propertyName.Substring(start, end - start);
-
-                            // find animated target component
-                            var target = trackAnimator.transform.gameObject.GetComponent(mapping.Item2);
-
-                            // find reference id of the property that's being animated
-                            var so = new SerializedObject(target);
-                            var prop = so.FindProperty(propertyName);
-                            newBinding.propertyName = "managedReferences[" + prop.managedReferenceId + "].Value";
-                        }
-                    }
-
-                    var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
-                    AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
-                    AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
-                }
             }
         }
 

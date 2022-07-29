@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Maps class upgrades.
         /// </summary>
-        public readonly Dictionary<Type, Type> classUpgradeMap = new()
+        readonly Dictionary<Type, Type> m_ClassUpgradeMap = new()
         {
             { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
             { typeof(CinemachineFreeLook), typeof(CmCamera) },
@@ -74,7 +74,7 @@ namespace Cinemachine.Editor
         /// ManagedReferences also need special care, because instead of simply mapping to a propertyName, we need to map
         /// to the reference id. These are marked as ManagedReference[Propertyname].Value
         /// </summary>
-        public readonly Dictionary<Type, Dictionary<string, Tuple<string, Type>>> apiUpgradeMaps = new()
+        readonly Dictionary<Type, Dictionary<string, Tuple<string, Type>>> m_APIUpgradeMaps = new()
         {
             {
                 typeof(CinemachineFramingTransposer), new Dictionary<string, Tuple<string, Type>>
