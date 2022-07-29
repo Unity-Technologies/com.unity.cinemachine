@@ -3,13 +3,12 @@ using UnityEngine;
 
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineClearShot))]
     [CanEditMultipleObjects]
     class CinemachineClearShotEditor : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        ColliderState m_ColliderState;
+        EvaluatorState m_EvaluatorState;
 
         private UnityEditorInternal.ReorderableList m_ChildList;
 
@@ -36,34 +35,47 @@ namespace Cinemachine.Editor
                 m_BlendsEditor.OnDisable();
         }
 
+
+        static string GetAvailableQualityEvaluatorNames()
+        {
+            var names = InspectorUtility.GetAssignableBehaviourNames(typeof(IShotQualityEvaluator));
+            if (names == InspectorUtility.s_NoneString)
+                return "No Shot Quality Evaluator extensions are available.  This might be because the "
+                    + "physics module is disabled and all Shot Quality Evaluator implementations "
+                    + "depend on physics raycasts";
+            return "Available Shot Quality Evaluators are: " + names;
+        }
+
         public override void OnInspectorGUI()
         {
             BeginInspector();
             if (m_ChildList == null)
                 SetupChildList();
 
-            m_ColliderState = GetColliderState();
-            switch (m_ColliderState)
+            m_EvaluatorState = GetEvaluatorState();
+            switch (m_EvaluatorState)
             {
-                case ColliderState.ColliderOnParent:
-                case ColliderState.ColliderOnAllChildren:
+                case EvaluatorState.EvaluatorOnParent:
+                case EvaluatorState.EvaluatorOnAllChildren:
                     break;
-                case ColliderState.NoCollider:
+                case EvaluatorState.NoEvaluator:
                     EditorGUILayout.HelpBox(
-                        "ClearShot requires a Collider extension to rank the shots.  "
-                            + "Either add one to the ClearShot itself, or to each of the child cameras.",
+                        "ClearShot requires a Shot Quality Evaluator extension to rank the shots.  "
+                            + "Either add one to the ClearShot itself, or to each of the child cameras.  "
+                            + GetAvailableQualityEvaluatorNames(),
                         MessageType.Warning);
                     break;
-                case ColliderState.ColliderOnSomeChildren:
+                case EvaluatorState.EvaluatorOnSomeChildren:
                     EditorGUILayout.HelpBox(
-                        "Some child cameras do not have a Collider extension.  ClearShot requires a "
-                            + "Collider on all the child cameras, or alternatively on the ClearShot iself.",
+                        "Some child cameras do not have a Shot Quality Evaluator extension.  ClearShot requires a "
+                            + "Shot Quality Evaluator on all the child cameras, or alternatively on the ClearShot iself.  "
+                            + GetAvailableQualityEvaluatorNames(),
                         MessageType.Warning);
                     break;
-                case ColliderState.ColliderOnChildrenAndParent:
+                case EvaluatorState.EvaluatorOnChildrenAndParent:
                     EditorGUILayout.HelpBox(
-                        "There is a Collider extension on the ClearShot camera, and also on some "
-                            + "of its child cameras.  You can't have both.",
+                        "There is a Shot Quality Evaluator extension on the ClearShot camera, and also on some "
+                            + "of its child cameras.  You can't have both.  " + GetAvailableQualityEvaluatorNames(),
                         MessageType.Error);
                     break;
             }
@@ -101,39 +113,39 @@ namespace Cinemachine.Editor
             DrawExtensionsWidgetInInspector();
         }
 
-        enum ColliderState
+        enum EvaluatorState
         {
-            NoCollider,
-            ColliderOnAllChildren,
-            ColliderOnSomeChildren,
-            ColliderOnParent,
-            ColliderOnChildrenAndParent
+            NoEvaluator,
+            EvaluatorOnAllChildren,
+            EvaluatorOnSomeChildren,
+            EvaluatorOnParent,
+            EvaluatorOnChildrenAndParent
         }
 
-        ColliderState GetColliderState()
+        EvaluatorState GetEvaluatorState()
         {
-            int numColliderChildren = 0;
-            bool colliderOnParent = ObjectHasCollider(Target);
+            int numEvaluatorChildren = 0;
+            bool colliderOnParent = ObjectHasEvaluator(Target);
 
             var children = Target.ChildCameras;
             var numChildren = children == null ? 0 : children.Count;
-            for (int i = 0; i < numChildren; ++i)
-                if (ObjectHasCollider(children[i]))
-                    ++numColliderChildren;
+            for (var i = 0; i < numChildren; ++i)
+                if (ObjectHasEvaluator(children[i]))
+                    ++numEvaluatorChildren;
             if (colliderOnParent)
-                return (numColliderChildren > 0)
-                    ? ColliderState.ColliderOnChildrenAndParent : ColliderState.ColliderOnParent;
-            if (numColliderChildren > 0)
-                return (numColliderChildren == numChildren)
-                    ? ColliderState.ColliderOnAllChildren : ColliderState.ColliderOnSomeChildren;
-            return ColliderState.NoCollider;
+                return numEvaluatorChildren > 0
+                    ? EvaluatorState.EvaluatorOnChildrenAndParent : EvaluatorState.EvaluatorOnParent;
+            if (numEvaluatorChildren > 0)
+                return numEvaluatorChildren == numChildren
+                    ? EvaluatorState.EvaluatorOnAllChildren : EvaluatorState.EvaluatorOnSomeChildren;
+            return EvaluatorState.NoEvaluator;
         }
 
-        bool ObjectHasCollider(object obj)
+        bool ObjectHasEvaluator(object obj)
         {
-            CinemachineVirtualCameraBase vcam = obj as CinemachineVirtualCameraBase;
-            var collider = (vcam == null) ? null : vcam.GetComponent<CinemachineCollider>();
-            return (collider != null && collider.enabled);
+            var vcam = obj as CinemachineVirtualCameraBase;
+            var evaluator = vcam == null ? null : vcam.GetComponent<IShotQualityEvaluator>() as MonoBehaviour;
+            return evaluator != null && evaluator.enabled;
         }
 
         void SetupChildList()
@@ -161,12 +173,12 @@ namespace Cinemachine.Editor
                     rect.width -= floatFieldWidth + hSpace;
                     rect.height = EditorGUIUtility.singleLineHeight;
                     SerializedProperty element = m_ChildList.serializedProperty.GetArrayElementAtIndex(index);
-                    if (m_ColliderState == ColliderState.ColliderOnSomeChildren
-                        || m_ColliderState == ColliderState.ColliderOnChildrenAndParent)
+                    if (m_EvaluatorState == EvaluatorState.EvaluatorOnSomeChildren
+                        || m_EvaluatorState == EvaluatorState.EvaluatorOnChildrenAndParent)
                     {
-                        bool hasCollider = ObjectHasCollider(element.objectReferenceValue);
-                        if ((m_ColliderState == ColliderState.ColliderOnSomeChildren && !hasCollider)
-                            || (m_ColliderState == ColliderState.ColliderOnChildrenAndParent && hasCollider))
+                        bool hasEvaluator = ObjectHasEvaluator(element.objectReferenceValue);
+                        if ((m_EvaluatorState == EvaluatorState.EvaluatorOnSomeChildren && !hasEvaluator)
+                            || (m_EvaluatorState == EvaluatorState.EvaluatorOnChildrenAndParent && hasEvaluator))
                         {
                             float width = rect.width;
                             rect.width = rect.height;
@@ -204,9 +216,6 @@ namespace Cinemachine.Editor
                 {
                     var index = l.serializedProperty.arraySize;
                     var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
-                    var collider = Undo.AddComponent<CinemachineCollider>(vcam.gameObject);
-                    collider.AvoidObstacles = false;
-                    Undo.RecordObject(collider, "create ClearShot child");
                     vcam.transform.SetSiblingIndex(index);
                 };
             m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
@@ -220,5 +229,4 @@ namespace Cinemachine.Editor
                 };
         }
     }
-#endif
 }

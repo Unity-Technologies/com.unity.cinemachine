@@ -327,6 +327,8 @@ namespace Cinemachine.Editor
         }
 
         static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
+        internal const string s_NoneString = "(none)";
+
         internal static string GetAssignableBehaviourNames(Type inputType)
         {
             if (!s_AssignableTypes.ContainsKey(inputType))
@@ -341,7 +343,7 @@ namespace Cinemachine.Editor
                     s += sep + t.Name;
                 }
                 if (s.Length == 0)
-                    s = "(none)";
+                    s = s_NoneString;
                 s_AssignableTypes[inputType] = s;
             }
             return s_AssignableTypes[inputType];
