@@ -40,7 +40,7 @@ namespace Cinemachine.Editor
         {
             var names = InspectorUtility.GetAssignableBehaviourNames(typeof(IShotQualityEvaluator));
             if (names == InspectorUtility.s_NoneString)
-                return "Not Shot Quality Evaluator extensions are available.  This might be because the "
+                return "No Shot Quality Evaluator extensions are available.  This might be because the "
                     + "physics module is disabled and all Shot Quality Evaluator implementations "
                     + "depend on physics raycasts";
             return "Available Shot Quality Evaluators are: " + names;
@@ -124,28 +124,28 @@ namespace Cinemachine.Editor
 
         EvaluatorState GetEvaluatorState()
         {
-            int numEvaluatorChildren = 0;
+            var numEvaluatorChildren = 0;
             bool colliderOnParent = ObjectHasEvaluator(Target);
 
             var children = Target.ChildCameras;
             var numChildren = children == null ? 0 : children.Count;
-            for (int i = 0; i < numChildren; ++i)
+            for (var i = 0; i < numChildren; ++i)
                 if (ObjectHasEvaluator(children[i]))
                     ++numEvaluatorChildren;
             if (colliderOnParent)
-                return (numEvaluatorChildren > 0)
+                return numEvaluatorChildren > 0
                     ? EvaluatorState.EvaluatorOnChildrenAndParent : EvaluatorState.EvaluatorOnParent;
             if (numEvaluatorChildren > 0)
-                return (numEvaluatorChildren == numChildren)
+                return numEvaluatorChildren == numChildren
                     ? EvaluatorState.EvaluatorOnAllChildren : EvaluatorState.EvaluatorOnSomeChildren;
             return EvaluatorState.NoEvaluator;
         }
 
         bool ObjectHasEvaluator(object obj)
         {
-            CinemachineVirtualCameraBase vcam = obj as CinemachineVirtualCameraBase;
-            var evaluatoe = (vcam == null) ? null : vcam.GetComponent<IShotQualityEvaluator>() as MonoBehaviour;
-            return (evaluatoe != null && evaluatoe.enabled);
+            var vcam = obj as CinemachineVirtualCameraBase;
+            var evaluator = vcam == null ? null : vcam.GetComponent<IShotQualityEvaluator>() as MonoBehaviour;
+            return evaluator != null && evaluator.enabled;
         }
 
         void SetupChildList()
