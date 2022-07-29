@@ -1,15 +1,54 @@
-#pragma warning disable CS0618 // suppress obsolete warnings
+#pragma warning disable CS0618 // obsolete warnings
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
 {
-    partial class CinemachineUpgradeManager
+    partial class UpgradeObjectToCm3
     {
-        static readonly Dictionary<Type, Type> k_ClassUpgradeMaps = new()
+        /// <summary>
+        /// Search for these types to find GameObjects to upgrade
+        /// </summary>
+        public readonly List<Type> RootUpgradeComponentTypes = new()
+        {
+            // Put the paths first so any vcam references to them will convert
+            typeof(CinemachinePath),
+            typeof(CinemachineSmoothPath),
+            typeof(CinemachineDollyCart),
+            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
+            typeof(CinemachineFreeLook),
+            typeof(CinemachineVirtualCamera),
+        };
+        
+        /// <summary>
+        /// After the upgrade is complete, these components should be deleted
+        /// </summary>
+        public readonly List<Type> ObsoleteComponentTypesToDelete = new()
+        {
+            typeof(CinemachineVirtualCamera),
+            typeof(CinemachineFreeLook),
+            typeof(CinemachineComposer),
+            typeof(CinemachineGroupComposer),
+            typeof(CinemachineTransposer),
+            typeof(CinemachineFramingTransposer),
+            typeof(CinemachinePOV),
+            typeof(CinemachineOrbitalTransposer),
+            typeof(CinemachineTrackedDolly),
+            typeof(CinemachinePath),
+            typeof(CinemachineSmoothPath),
+            typeof(CinemachineDollyCart),
+            typeof(CinemachinePipeline),
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            typeof(CinemachineInputProvider),
+#endif
+        };
+        
+        /// <summary>
+        /// Maps class upgrades.
+        /// </summary>
+        public readonly Dictionary<Type, Type> classUpgradeMap = new()
         {
             { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
             { typeof(CinemachineFreeLook), typeof(CmCamera) },
@@ -24,11 +63,18 @@ namespace Cinemachine.Editor
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-                {typeof(CinemachineInputProvider), typeof(InputAxisController)},
+            { typeof(CinemachineInputProvider), typeof(InputAxisController) },
 #endif
         };
         
-        static readonly Dictionary<Type, Dictionary<string, Tuple<string, Type>>> k_ApiUpgradeMaps = new()
+        /// <summary>
+        /// Maps API changes.
+        /// Some API changes need special care, because type could be different for different properties,
+        /// because some components became several separate components.
+        /// ManagedReferences also need special care, because instead of simply mapping to a propertyName, we need to map
+        /// to the reference id. These are marked as ManagedReference[Propertyname].Value
+        /// </summary>
+        public readonly Dictionary<Type, Dictionary<string, Tuple<string, Type>>> apiUpgradeMaps = new()
         {
             {
                 typeof(CinemachineFramingTransposer), new Dictionary<string, Tuple<string, Type>>

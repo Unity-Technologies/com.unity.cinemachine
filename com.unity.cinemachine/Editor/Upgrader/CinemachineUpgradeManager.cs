@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Upgrades cm2 to cm3
     /// </summary>
-    partial class CinemachineUpgradeManager
+    class CinemachineUpgradeManager
     {
         const string k_UnupgradableTag = " BACKUP - not fully upgradable by CM";
 
@@ -488,17 +488,17 @@ namespace Cinemachine.Editor
                     }
 
                     // upgrade type based on mapping
-                    if (k_ClassUpgradeMaps.ContainsKey(previousBinding.type))
+                    if (m_ObjectUpgrader.classUpgradeMap.ContainsKey(previousBinding.type))
                     {
-                        newBinding.type = k_ClassUpgradeMaps[previousBinding.type];
+                        newBinding.type = m_ObjectUpgrader.classUpgradeMap[previousBinding.type];
                     }
 
                     // Check if previousBinding.type needs an API change
-                    if (k_ApiUpgradeMaps.ContainsKey(previousBinding.type) &&
-                        k_ApiUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
+                    if (m_ObjectUpgrader.apiUpgradeMaps.ContainsKey(previousBinding.type) &&
+                        m_ObjectUpgrader.apiUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
                     {
                         // find API mapping
-                        var mapping = k_ApiUpgradeMaps[previousBinding.type][newBinding.propertyName];
+                        var mapping = m_ObjectUpgrader.apiUpgradeMaps[previousBinding.type][newBinding.propertyName];
 
                         newBinding.propertyName = mapping.Item1;
                         newBinding.type = mapping.Item2; // type could be different, because some components became several separate components

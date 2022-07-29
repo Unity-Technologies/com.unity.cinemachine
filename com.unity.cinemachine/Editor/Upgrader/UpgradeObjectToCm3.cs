@@ -13,45 +13,8 @@ using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
 {
-    class UpgradeObjectToCm3
+    partial class UpgradeObjectToCm3
     {
-        /// <summary>
-        /// Search for these types to find GameObjects to upgrade
-        /// </summary>
-        public readonly List<Type> RootUpgradeComponentTypes = new()
-        {
-            // Put the paths first so any vcam references to them will convert
-            typeof(CinemachinePath),
-            typeof(CinemachineSmoothPath),
-            typeof(CinemachineDollyCart),
-            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
-            typeof(CinemachineFreeLook),
-            typeof(CinemachineVirtualCamera),
-        };
-
-        /// <summary>
-        /// After the upgrade is complete, these components should be deleted
-        /// </summary>
-        public readonly List<Type> ObsoleteComponentTypesToDelete = new()
-        {
-            typeof(CinemachineVirtualCamera),
-            typeof(CinemachineFreeLook),
-            typeof(CinemachineComposer),
-            typeof(CinemachineGroupComposer),
-            typeof(CinemachineTransposer),
-            typeof(CinemachineFramingTransposer),
-            typeof(CinemachinePOV),
-            typeof(CinemachineOrbitalTransposer),
-            typeof(CinemachineTrackedDolly),
-            typeof(CinemachinePath),
-            typeof(CinemachineSmoothPath),
-            typeof(CinemachineDollyCart),
-            typeof(CinemachinePipeline),
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            typeof(CinemachineInputProvider),
-#endif
-        };
-
         /// <summary>
         /// In-place upgrade a GameObject.  Obsolete components are disabled (not deleted), 
         /// and replacement components are added.  GameObject structure may be re-organized
@@ -240,7 +203,7 @@ namespace Cinemachine.Editor
                 iac.AutoEnableInputs = provider.AutoEnableInputs;
             }
 #endif
-            for (int i = 0; i < iac.Controllers.Count; ++i)
+            for (var i = 0; i < iac.Controllers.Count; ++i)
             {
                 var c = iac.Controllers[i];
                 if (c.Name == name)
@@ -267,7 +230,7 @@ namespace Cinemachine.Editor
                     };
                     break;
                 }
-           }
+            }
         }
         
         GameObject UpgradeFreelook(CinemachineFreeLook freelook)
