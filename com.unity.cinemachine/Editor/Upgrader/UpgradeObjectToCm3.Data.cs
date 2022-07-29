@@ -62,9 +62,6 @@ namespace Cinemachine.Editor
             { typeof(CinemachinePath), typeof(SplineContainer) },
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            { typeof(CinemachineInputProvider), typeof(InputAxisController) },
-#endif
         };
         
         /// <summary>
