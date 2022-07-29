@@ -79,120 +79,120 @@ namespace Cinemachine.Editor
             {
                 typeof(CinemachineFramingTransposer), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "LookaheadTime", new Tuple<string, Type>("Lookahead.Time", typeof(CinemachinePositionComposer)) },
-                    { "LookaheadSmoothing", new Tuple<string, Type>("Lookahead.Smoothing", typeof(CinemachinePositionComposer)) },
-                    { "LookaheadIgnoreY", new Tuple<string, Type>("Lookahead.IgnoreY", typeof(CinemachinePositionComposer)) },
-                    { "XDamping", new Tuple<string, Type>("Damping.x", typeof(CinemachinePositionComposer)) },
-                    { "YDamping", new Tuple<string, Type>("Damping.y", typeof(CinemachinePositionComposer)) },
-                    { "ZDamping", new Tuple<string, Type>("Damping.z", typeof(CinemachinePositionComposer)) },
-                    { "ScreenX", new Tuple<string, Type>("Composition.ScreenPosition.x", typeof(CinemachinePositionComposer)) },
-                    { "ScreenY", new Tuple<string, Type>("Composition.ScreenPosition.y", typeof(CinemachinePositionComposer)) },
-                    { "DeadZoneWidth", new Tuple<string, Type>("Composition.DeadZoneSize.x", typeof(CinemachinePositionComposer)) },
-                    { "DeadZoneHeight", new Tuple<string, Type>("Composition.DeadZoneSize.y", typeof(CinemachinePositionComposer)) },
-                    { "SoftZoneWidth", new Tuple<string, Type>("Composition.SoftZoneSize.x", typeof(CinemachinePositionComposer)) },
-                    { "SoftZoneHeight", new Tuple<string, Type>("Composition.SoftZoneSize.y", typeof(CinemachinePositionComposer)) },
-                    { "BiasX", new Tuple<string, Type>("Composition.Bias.x", typeof(CinemachinePositionComposer)) },
-                    { "BiasY", new Tuple<string, Type>("Composition.Bias.y", typeof(CinemachinePositionComposer)) },
-                    { "GroupFramingSize", new Tuple<string, Type>("FramingSize", typeof(CinemachineGroupFraming)) },
-                    { "FrameDamping", new Tuple<string, Type>("Damping", typeof(CinemachineGroupFraming)) },
-                    { "MinimumFOV", new Tuple<string, Type>("FovRange.x", typeof(CinemachineGroupFraming)) },
-                    { "MaximumFOV", new Tuple<string, Type>("FovRange.y", typeof(CinemachineGroupFraming)) },
-                    { "MaxDollyIn", new Tuple<string, Type>("DollyRange.x", typeof(CinemachineGroupFraming)) },
-                    { "MaxDollyOut", new Tuple<string, Type>("DollyRange.y", typeof(CinemachineGroupFraming)) },
-                    { "AdjustmentMode", new Tuple<string, Type>("SizeAdjustment", typeof(CinemachineGroupFraming)) }
+                    { "LookaheadTime", new("Lookahead.Time", typeof(CinemachinePositionComposer)) },
+                    { "LookaheadSmoothing", new("Lookahead.Smoothing", typeof(CinemachinePositionComposer)) },
+                    { "LookaheadIgnoreY", new("Lookahead.IgnoreY", typeof(CinemachinePositionComposer)) },
+                    { "XDamping", new("Damping.x", typeof(CinemachinePositionComposer)) },
+                    { "YDamping", new("Damping.y", typeof(CinemachinePositionComposer)) },
+                    { "ZDamping", new("Damping.z", typeof(CinemachinePositionComposer)) },
+                    { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachinePositionComposer)) },
+                    { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachinePositionComposer)) },
+                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachinePositionComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachinePositionComposer)) },
+                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachinePositionComposer)) },
+                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachinePositionComposer)) },
+                    { "BiasX", new("Composition.Bias.x", typeof(CinemachinePositionComposer)) },
+                    { "BiasY", new("Composition.Bias.y", typeof(CinemachinePositionComposer)) },
+                    { "GroupFramingSize", new("FramingSize", typeof(CinemachineGroupFraming)) },
+                    { "FrameDamping", new("Damping", typeof(CinemachineGroupFraming)) },
+                    { "MinimumFOV", new("FovRange.x", typeof(CinemachineGroupFraming)) },
+                    { "MaximumFOV", new("FovRange.y", typeof(CinemachineGroupFraming)) },
+                    { "MaxDollyIn", new("DollyRange.x", typeof(CinemachineGroupFraming)) },
+                    { "MaxDollyOut", new("DollyRange.y", typeof(CinemachineGroupFraming)) },
+                    { "AdjustmentMode", new("SizeAdjustment", typeof(CinemachineGroupFraming)) }
                 }
             },
             {
                 typeof(CinemachineOrbitalTransposer), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "XDamping", new Tuple<string, Type>("TrackerSettings.PositionDamping.x", typeof(CinemachineOrbitalFollow)) },
-                    { "YDamping", new Tuple<string, Type>("TrackerSettings.PositionDamping.y", typeof(CinemachineOrbitalFollow)) },
-                    { "ZDamping", new Tuple<string, Type>("TrackerSettings.PositionDamping.z", typeof(CinemachineOrbitalFollow)) },
-                    { "PitchDamping", new Tuple<string, Type>("TrackerSettings.RotationDamping.x", typeof(CinemachineOrbitalFollow)) },
-                    { "YawDamping", new Tuple<string, Type>("TrackerSettings.RotationDamping.y", typeof(CinemachineOrbitalFollow)) },
-                    { "RollDamping", new Tuple<string, Type>("TrackerSettings.RotationDamping.z", typeof(CinemachineOrbitalFollow)) },
-                    { "BindingMode", new Tuple<string, Type>("TrackerSettings.BindingMode", typeof(CinemachineOrbitalFollow)) },
-                    { "AngularDampingMode", new Tuple<string, Type>("TrackerSettings.AngularDampingMode", typeof(CinemachineOrbitalFollow)) },
-                    { "AngularDamping", new Tuple<string, Type>("TrackerSettings.QuaternionDamping", typeof(CinemachineOrbitalFollow)) },
-                    { "XAxis.Value", new Tuple<string, Type>("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "YAxis.Value", new Tuple<string, Type>("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "ZAxis.Value", new Tuple<string, Type>("managedReferences[RadialAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                    { "XDamping", new("TrackerSettings.PositionDamping.x", typeof(CinemachineOrbitalFollow)) },
+                    { "YDamping", new("TrackerSettings.PositionDamping.y", typeof(CinemachineOrbitalFollow)) },
+                    { "ZDamping", new("TrackerSettings.PositionDamping.z", typeof(CinemachineOrbitalFollow)) },
+                    { "PitchDamping", new("TrackerSettings.RotationDamping.x", typeof(CinemachineOrbitalFollow)) },
+                    { "YawDamping", new("TrackerSettings.RotationDamping.y", typeof(CinemachineOrbitalFollow)) },
+                    { "RollDamping", new("TrackerSettings.RotationDamping.z", typeof(CinemachineOrbitalFollow)) },
+                    { "BindingMode", new("TrackerSettings.BindingMode", typeof(CinemachineOrbitalFollow)) },
+                    { "AngularDampingMode", new("TrackerSettings.AngularDampingMode", typeof(CinemachineOrbitalFollow)) },
+                    { "AngularDamping", new("TrackerSettings.QuaternionDamping", typeof(CinemachineOrbitalFollow)) },
+                    { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                    { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                    { "ZAxis.Value", new("managedReferences[RadialAxis].Value", typeof(CinemachineOrbitalFollow)) }
                 }
             },
             {
                 typeof(CinemachineTransposer), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "XDamping", new Tuple<string, Type>("TrackerSettings.PositionDamping.x", typeof(CinemachineFollow)) },
-                    { "YDamping", new Tuple<string, Type>("TrackerSettings.PositionDamping.y", typeof(CinemachineFollow)) },
-                    { "ZDamping", new Tuple<string, Type>("TrackerSettings.PositionDamping.z", typeof(CinemachineFollow)) },
-                    { "PitchDamping", new Tuple<string, Type>("TrackerSettings.RotationDamping.x", typeof(CinemachineFollow)) },
-                    { "YawDamping", new Tuple<string, Type>("TrackerSettings.RotationDamping.y", typeof(CinemachineFollow)) },
-                    { "RollDamping", new Tuple<string, Type>("TrackerSettings.RotationDamping.z", typeof(CinemachineFollow)) },
-                    { "BindingMode", new Tuple<string, Type>("TrackerSettings.BindingMode", typeof(CinemachineFollow)) },
-                    { "AngularDampingMode", new Tuple<string, Type>("TrackerSettings.AngularDampingMode", typeof(CinemachineFollow)) },
-                    { "AngularDamping", new Tuple<string, Type>("TrackerSettings.QuaternionDamping", typeof(CinemachineFollow)) }
+                    { "XDamping", new("TrackerSettings.PositionDamping.x", typeof(CinemachineFollow)) },
+                    { "YDamping", new("TrackerSettings.PositionDamping.y", typeof(CinemachineFollow)) },
+                    { "ZDamping", new("TrackerSettings.PositionDamping.z", typeof(CinemachineFollow)) },
+                    { "PitchDamping", new("TrackerSettings.RotationDamping.x", typeof(CinemachineFollow)) },
+                    { "YawDamping", new("TrackerSettings.RotationDamping.y", typeof(CinemachineFollow)) },
+                    { "RollDamping", new("TrackerSettings.RotationDamping.z", typeof(CinemachineFollow)) },
+                    { "BindingMode", new("TrackerSettings.BindingMode", typeof(CinemachineFollow)) },
+                    { "AngularDampingMode", new("TrackerSettings.AngularDampingMode", typeof(CinemachineFollow)) },
+                    { "AngularDamping", new("TrackerSettings.QuaternionDamping", typeof(CinemachineFollow)) }
                 }
             },
             {
                 typeof(CinemachineTrackedDolly), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "PathOffset.x", new Tuple<string, Type>("SplineOffset.x", typeof(CinemachineSplineDolly)) },
-                    { "PathOffset.y", new Tuple<string, Type>("SplineOffset.y", typeof(CinemachineSplineDolly)) },
-                    { "PathOffset.z", new Tuple<string, Type>("SplineOffset.z", typeof(CinemachineSplineDolly)) },
-                    { "PathPosition", new Tuple<string, Type>("CameraPosition", typeof(CinemachineSplineDolly)) },
-                    { "XDamping", new Tuple<string, Type>("Damping.Position.x", typeof(CinemachineSplineDolly)) },
-                    { "YDamping", new Tuple<string, Type>("Damping.Position.y", typeof(CinemachineSplineDolly)) },
-                    { "ZDamping", new Tuple<string, Type>("Damping.Position.z", typeof(CinemachineSplineDolly)) }
+                    { "PathOffset.x", new("SplineOffset.x", typeof(CinemachineSplineDolly)) },
+                    { "PathOffset.y", new("SplineOffset.y", typeof(CinemachineSplineDolly)) },
+                    { "PathOffset.z", new("SplineOffset.z", typeof(CinemachineSplineDolly)) },
+                    { "PathPosition", new("CameraPosition", typeof(CinemachineSplineDolly)) },
+                    { "XDamping", new("Damping.Position.x", typeof(CinemachineSplineDolly)) },
+                    { "YDamping", new("Damping.Position.y", typeof(CinemachineSplineDolly)) },
+                    { "ZDamping", new("Damping.Position.z", typeof(CinemachineSplineDolly)) }
                 }
             },
             {
                 typeof(CinemachineComposer), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "LookaheadTime", new Tuple<string, Type>("Lookahead.Time", typeof(CinemachineRotationComposer)) },
-                    { "LookaheadSmoothing", new Tuple<string, Type>("Lookahead.Smoothing", typeof(CinemachineRotationComposer)) },
-                    { "LookaheadIgnoreY", new Tuple<string, Type>("Lookahead.IgnoreY", typeof(CinemachineRotationComposer)) },
-                    { "HorizontalDamping", new Tuple<string, Type>("Damping.x", typeof(CinemachineRotationComposer)) },
-                    { "VerticalDamping", new Tuple<string, Type>("Damping.y", typeof(CinemachineRotationComposer)) },
-                    { "ScreenX", new Tuple<string, Type>("Composition.ScreenPosition.x", typeof(CinemachineRotationComposer)) },
-                    { "ScreenY", new Tuple<string, Type>("Composition.ScreenPosition.y", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneWidth", new Tuple<string, Type>("Composition.DeadZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneHeight", new Tuple<string, Type>("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneWidth", new Tuple<string, Type>("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneHeight", new Tuple<string, Type>("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "BiasX", new Tuple<string, Type>("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
-                    { "BiasY", new Tuple<string, Type>("Composition.Bias.y", typeof(CinemachineRotationComposer)) }
+                    { "LookaheadTime", new("Lookahead.Time", typeof(CinemachineRotationComposer)) },
+                    { "LookaheadSmoothing", new("Lookahead.Smoothing", typeof(CinemachineRotationComposer)) },
+                    { "LookaheadIgnoreY", new("Lookahead.IgnoreY", typeof(CinemachineRotationComposer)) },
+                    { "HorizontalDamping", new("Damping.x", typeof(CinemachineRotationComposer)) },
+                    { "VerticalDamping", new("Damping.y", typeof(CinemachineRotationComposer)) },
+                    { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachineRotationComposer)) },
+                    { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachineRotationComposer)) },
+                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachineRotationComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
+                    { "BiasX", new("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
+                    { "BiasY", new("Composition.Bias.y", typeof(CinemachineRotationComposer)) }
                 }
             },
             {
                 typeof(CinemachineGroupComposer), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "LookaheadTime", new Tuple<string, Type>("Lookahead.Time", typeof(CinemachineRotationComposer)) },
-                    { "LookaheadSmoothing", new Tuple<string, Type>("Lookahead.Smoothing", typeof(CinemachineRotationComposer)) },
-                    { "LookaheadIgnoreY", new Tuple<string, Type>("Lookahead.IgnoreY", typeof(CinemachineRotationComposer)) },
-                    { "HorizontalDamping", new Tuple<string, Type>("Damping.x", typeof(CinemachineRotationComposer)) },
-                    { "VerticalDamping", new Tuple<string, Type>("Damping.y", typeof(CinemachineRotationComposer)) },
-                    { "ScreenX", new Tuple<string, Type>("Composition.ScreenPosition.x", typeof(CinemachineRotationComposer)) },
-                    { "ScreenY", new Tuple<string, Type>("Composition.ScreenPosition.y", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneWidth", new Tuple<string, Type>("Composition.DeadZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneHeight", new Tuple<string, Type>("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneWidth", new Tuple<string, Type>("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneHeight", new Tuple<string, Type>("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "BiasX", new Tuple<string, Type>("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
-                    { "BiasY", new Tuple<string, Type>("Composition.Bias.y", typeof(CinemachineRotationComposer)) },
-                    { "GroupFramingSize", new Tuple<string, Type>("FramingSize", typeof(CinemachineGroupFraming)) },
-                    { "FrameDamping", new Tuple<string, Type>("Damping", typeof(CinemachineGroupFraming)) },
-                    { "MinimumFOV", new Tuple<string, Type>("FovRange.x", typeof(CinemachineGroupFraming)) },
-                    { "MaximumFOV", new Tuple<string, Type>("FovRange.y", typeof(CinemachineGroupFraming)) },
-                    { "MaxDollyIn", new Tuple<string, Type>("DollyRange.x", typeof(CinemachineGroupFraming)) },
-                    { "MaxDollyOut", new Tuple<string, Type>("DollyRange.y", typeof(CinemachineGroupFraming)) },
-                    { "AdjustmentMode", new Tuple<string, Type>("SizeAdjustment", typeof(CinemachineGroupFraming)) }
+                    { "LookaheadTime", new("Lookahead.Time", typeof(CinemachineRotationComposer)) },
+                    { "LookaheadSmoothing", new("Lookahead.Smoothing", typeof(CinemachineRotationComposer)) },
+                    { "LookaheadIgnoreY", new("Lookahead.IgnoreY", typeof(CinemachineRotationComposer)) },
+                    { "HorizontalDamping", new("Damping.x", typeof(CinemachineRotationComposer)) },
+                    { "VerticalDamping", new("Damping.y", typeof(CinemachineRotationComposer)) },
+                    { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachineRotationComposer)) },
+                    { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachineRotationComposer)) },
+                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachineRotationComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
+                    { "BiasX", new("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
+                    { "BiasY", new("Composition.Bias.y", typeof(CinemachineRotationComposer)) },
+                    { "GroupFramingSize", new("FramingSize", typeof(CinemachineGroupFraming)) },
+                    { "FrameDamping", new("Damping", typeof(CinemachineGroupFraming)) },
+                    { "MinimumFOV", new("FovRange.x", typeof(CinemachineGroupFraming)) },
+                    { "MaximumFOV", new("FovRange.y", typeof(CinemachineGroupFraming)) },
+                    { "MaxDollyIn", new("DollyRange.x", typeof(CinemachineGroupFraming)) },
+                    { "MaxDollyOut", new("DollyRange.y", typeof(CinemachineGroupFraming)) },
+                    { "AdjustmentMode", new("SizeAdjustment", typeof(CinemachineGroupFraming)) }
                 }
             },
             {
                 typeof(CinemachinePOV), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "HorizontalAxis.Value", new Tuple<string, Type>("managedReferences[PanAxis].Value", typeof(CinemachinePanTilt))},
-                    { "VerticalAxis.Value", new Tuple<string, Type>("managedReferences[TiltAxis].Value", typeof(CinemachinePanTilt))},
+                    { "HorizontalAxis.Value", new("managedReferences[PanAxis].Value", typeof(CinemachinePanTilt)) },
+                    { "VerticalAxis.Value", new("managedReferences[TiltAxis].Value", typeof(CinemachinePanTilt)) }
                 }
             }
         };
