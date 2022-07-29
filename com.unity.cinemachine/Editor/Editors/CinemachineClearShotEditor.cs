@@ -124,7 +124,7 @@ namespace Cinemachine.Editor
 
         EvaluatorState GetEvaluatorState()
         {
-            var numEvaluatorChildren = 0;
+            int numEvaluatorChildren = 0;
             bool colliderOnParent = ObjectHasEvaluator(Target);
 
             var children = Target.ChildCameras;
