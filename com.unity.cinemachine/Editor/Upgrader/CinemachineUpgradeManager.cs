@@ -470,6 +470,7 @@ namespace Cinemachine.Editor
                 foreach (var previousBinding in existingEditorBindings)
                 {
                     var newBinding = previousBinding;
+                    // clean path pointing to old structure where vcam components lived on a hidden child gameobject
                     if (previousBinding.path.Contains("cm"))
                     {
                         var path = previousBinding.path;
@@ -479,12 +480,14 @@ namespace Cinemachine.Editor
                         newBinding.path = path.Substring(0, index);
                     }
 
+                    // clean old convention
                     if (previousBinding.propertyName.Contains("m_"))
                     {
                         var propertyName = previousBinding.propertyName;
                         newBinding.propertyName = propertyName.Replace("m_", string.Empty);
                     }
 
+                    // upgrade type based on mapping
                     if (k_ClassUpgradeMaps.ContainsKey(previousBinding.type))
                     {
                         newBinding.type = k_ClassUpgradeMaps[previousBinding.type];
@@ -498,18 +501,22 @@ namespace Cinemachine.Editor
                         var mapping = k_ApiUpgradeMaps[previousBinding.type][newBinding.propertyName];
 
                         newBinding.propertyName = mapping.Item1;
-                        newBinding.type = mapping.Item2;
+                        newBinding.type = mapping.Item2; // type could be different, because some components became several separate components
+                        
+                        // special handling for references
                         if (mapping.Item1.Contains("managedReferences"))
                         {
+                            // find property name of the reference
                             var propertyName = mapping.Item1;
                             var start = propertyName.IndexOf("[") + 1;
                             var end = propertyName.IndexOf("]");
                             propertyName = propertyName.Substring(start, end - start);
 
-                            var goTarget = trackAnimator.transform.gameObject;
-                            var realTarget = goTarget.GetComponent(mapping.Item2);
+                            // find animated target component
+                            var target = trackAnimator.transform.gameObject.GetComponent(mapping.Item2);
 
-                            var so = new SerializedObject(realTarget);
+                            // find reference id of the property that's being animated
+                            var so = new SerializedObject(target);
                             var prop = so.FindProperty(propertyName);
                             newBinding.propertyName = "managedReferences[" + prop.managedReferenceId + "].Value";
                         }
