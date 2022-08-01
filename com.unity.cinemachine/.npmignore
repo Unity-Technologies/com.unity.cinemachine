@@ -2,6 +2,7 @@ Documentation/ApiDocs/**
 .npmrc
 .npmignore
 .gitignore
+.buginfo
 QAReport.md
 QAReport.md.meta
 LICENSE
