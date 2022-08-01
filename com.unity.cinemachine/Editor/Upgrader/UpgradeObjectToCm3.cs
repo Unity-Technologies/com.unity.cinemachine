@@ -134,18 +134,18 @@ namespace Cinemachine.Editor
                 }
 
                 // upgrade type based on mapping
-                if (m_ClassUpgradeMap.ContainsKey(previousBinding.type)) newBinding.type = m_ClassUpgradeMap[previousBinding.type];
+                if (m_ClassUpgradeMap.ContainsKey(previousBinding.type)) 
+                    newBinding.type = m_ClassUpgradeMap[previousBinding.type];
 
                 // Check if previousBinding.type needs an API change
                 if (m_APIUpgradeMaps.ContainsKey(previousBinding.type) &&
                     m_APIUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
                 {
-                    // find API mapping
-                    var mapping = m_APIUpgradeMaps[previousBinding.type][newBinding.propertyName];
-
+                    var mapping = m_APIUpgradeMaps[previousBinding.type][newBinding.propertyName]; // API mapping
                     newBinding.propertyName = mapping.Item1;
-                    newBinding.type = mapping.Item2; // type could be different, because some components became several separate components
-
+                    // type can differ from previously set type, because some components became several separate ones
+                    newBinding.type = mapping.Item2; 
+                    
                     // special handling for references
                     if (mapping.Item1.Contains("managedReferences"))
                     {
@@ -153,7 +153,7 @@ namespace Cinemachine.Editor
                         var propertyName = mapping.Item1;
                         var start = propertyName.IndexOf("[") + 1;
                         var end = propertyName.IndexOf("]");
-                        propertyName = propertyName.Substring(start, end - start);
+                        propertyName = propertyName[start..end];
 
                         // find animated target component
                         var target = trackAnimator.transform.gameObject.GetComponent(mapping.Item2);
@@ -161,7 +161,8 @@ namespace Cinemachine.Editor
                         // find reference id of the property that's being animated
                         var so = new SerializedObject(target);
                         var prop = so.FindProperty(propertyName);
-                        newBinding.propertyName = "managedReferences[" + prop.managedReferenceId + "].Value";
+                        var newPropertyName = newBinding.propertyName;
+                        newBinding.propertyName = newPropertyName[..start] + prop.managedReferenceId + newPropertyName[end..];
                     }
                 }
 
