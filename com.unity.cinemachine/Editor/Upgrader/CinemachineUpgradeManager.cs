@@ -9,7 +9,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
-using UnityEngine.Splines;
 using UnityEngine.Timeline;
 using Object = UnityEngine.Object;
 
@@ -32,7 +31,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// GML Temporary helper method for testing.
         /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
-        /// Obsolete components are deleted.  Timeline referencs are not patched.
+        /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
         /// </summary>
         public static void UpgradeSingleObject(GameObject go)
@@ -285,9 +284,9 @@ namespace Cinemachine.Editor
 
                 var conversionLinks = new List<ConversionLink>();
                     
-                List<GameObject> allPrefabInstances = new List<GameObject>();
+                var allPrefabInstances = new List<GameObject>();
                 for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
-                    allPrefabInstances.AddRange(m_PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(
+                    allPrefabInstances.AddRange(PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(
                         scene, m_PrefabManager.GetPrefabAssetPath(p)));
 
                 var upgradedObjects = new HashSet<GameObject>();
@@ -351,7 +350,7 @@ namespace Cinemachine.Editor
             // In each scene, restore modifications in all prefab instances by copying data
             // from the linked converted copy of the prefab instance.
             
-            for (int s = 0; s < m_SceneManager.SceneCount; ++s)
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
@@ -469,7 +468,7 @@ namespace Cinemachine.Editor
         {
             List<string> m_AllScenePaths = new ();
 
-            public List<string> s_IgnoreList = new() {}; // TODO: expose this to the user
+            public List<string> s_IgnoreList = new() {}; // TODO: expose this to the user so they can ignore scenes they don't want to upgrade
 
             public int SceneCount => m_AllScenePaths.Count;
             public string GetScenePath(int index) => m_AllScenePaths[index];
@@ -479,12 +478,12 @@ namespace Cinemachine.Editor
                 var allSceneGuids = new List<string>();
                 allSceneGuids.AddRange(AssetDatabase.FindAssets("t:scene", new[] { "Assets" }));
 
-                for (int i = allSceneGuids.Count - 1; i >= 0; --i)
+                for (var i = allSceneGuids.Count - 1; i >= 0; --i)
                 {
                     var sceneGuid = allSceneGuids[i];
                     var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
                     var add = true;
-                    for (int j = 0; add && j < s_IgnoreList.Count; ++j)
+                    for (var j = 0; add && j < s_IgnoreList.Count; ++j)
                         if (scenePath.Contains(s_IgnoreList[j]))
                             add = false;
                     if (add)
@@ -574,7 +573,7 @@ namespace Cinemachine.Editor
 #endif
             }
 
-            public List<GameObject> FindAllInstancesOfPrefabEvenInNestedPrefabs(
+            public static List<GameObject> FindAllInstancesOfPrefabEvenInNestedPrefabs(
                 Scene scene, string prefabPath)
             {
                 var allInstances = new List<GameObject>();
@@ -657,7 +656,6 @@ namespace Cinemachine.Editor
             /// Updates timeline reference with the upgraded vcam. This is called after each 
             /// vcam is upgraded, but before the obsolete component is deleted.
             /// </summary>
-            /// <param name="upgraded"></param>
             public void UpdateTimelineReference(CinemachineVirtualCameraBase oldComponent, 
                 CinemachineVirtualCameraBase upgraded)
             {
