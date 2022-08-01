@@ -93,8 +93,8 @@ namespace Cinemachine
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
         
         /// <summary>
-        /// If non-negative, cinemachine willuse this value whenever it wants current game time.
-        /// Usage is for master timelines in manual update mode, for deterministic behaviour.
+        /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
+        /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
         /// </summary>
         public static float CurrentUnscaledTimeTimeOverride = -1;
         
