@@ -2,7 +2,6 @@
 #pragma warning disable CS0618 // obsolete warnings
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
 using UnityEditor;
@@ -104,7 +103,7 @@ namespace Cinemachine.Editor
             {
                 var newBinding = previousBinding;
 
-                // clean path pointing to old structure where vcam components lived on a hidden child gameobject
+                // clean path pointing to old structure where vcam components lived on a hidden child gameObject
                 if (previousBinding.path.Contains("cm"))
                 {
                     var path = previousBinding.path;
@@ -145,7 +144,7 @@ namespace Cinemachine.Editor
                 if (m_APIUpgradeMaps.ContainsKey(previousBinding.type) &&
                     m_APIUpgradeMaps[previousBinding.type].ContainsKey(newBinding.propertyName))
                 {
-                    var mapping = m_APIUpgradeMaps[previousBinding.type][newBinding.propertyName]; // API mapping
+                    var mapping = m_APIUpgradeMaps[previousBinding.type][newBinding.propertyName];
                     newBinding.propertyName = mapping.Item1;
                     // type can differ from previously set type, because some components became several separate ones
                     newBinding.type = mapping.Item2; 
@@ -192,7 +191,7 @@ namespace Cinemachine.Editor
         }
  
         /// Disable an obsolete component and add a replacement
-        bool ReplaceComponent<TOld, TNew>(GameObject go) 
+        static bool ReplaceComponent<TOld, TNew>(GameObject go) 
             where TOld : MonoBehaviour
             where TNew : MonoBehaviour
         {
@@ -214,7 +213,7 @@ namespace Cinemachine.Editor
             JsonUtility.FromJsonOverwrite(json, to);
         }
 
-        CmCamera UpgradeVcamBaseToCmCamera(CinemachineVirtualCameraBase vcam)
+        static CmCamera UpgradeVcamBaseToCmCamera(CinemachineVirtualCameraBase vcam)
         {
             var go = vcam.gameObject;
             if (!go.TryGetComponent(out CmCamera cmCamera)) // in case RequireComponent already added CmCamera
@@ -233,7 +232,7 @@ namespace Cinemachine.Editor
             return cmCamera;
         }
 
-        GameObject UpgradeVcam(CinemachineVirtualCamera vcam)
+        static GameObject UpgradeVcam(CinemachineVirtualCamera vcam)
         {
             var go = vcam.gameObject;
             var cmCamera = UpgradeVcamBaseToCmCamera(vcam);        
@@ -259,16 +258,16 @@ namespace Cinemachine.Editor
             return null;
         }
 
-        void UnparentAndDestroy(Transform child)
+        static void UnparentAndDestroy(Transform child)
         {
             if (child != null)
             {
-                Undo.SetTransformParent(child, null, "Upgrader: destory hidden child");
+                Undo.SetTransformParent(child, null, "Upgrader: destroy hidden child");
                 Undo.DestroyObjectImmediate(child.gameObject);
             }
         }
 
-        void ConvertInputAxis(
+        static void ConvertInputAxis(
             GameObject go, string name, 
             ref AxisState axis, ref AxisState.Recentering recentering)
         {
@@ -315,8 +314,8 @@ namespace Cinemachine.Editor
                 }
             }
         }
-        
-        GameObject UpgradeFreelook(CinemachineFreeLook freelook)
+
+        static GameObject UpgradeFreelook(CinemachineFreeLook freelook)
         {
             GameObject notUpgradable = null;
 
@@ -436,7 +435,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        void ConvertFreelookLens(
+        static void ConvertFreelookLens(
             CinemachineFreeLook freelook, 
             CmCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
@@ -457,7 +456,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        void ConvertFreelookBody(
+        static void ConvertFreelookBody(
             CinemachineFreeLook freelook, 
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
@@ -515,7 +514,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        void ConvertFreelookAim(
+        static void ConvertFreelookAim(
             CinemachineFreeLook freelook, 
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
@@ -551,7 +550,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        void ConvertFreelookNoise(
+        static void ConvertFreelookNoise(
             CinemachineFreeLook freelook, 
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
@@ -600,7 +599,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        SplineContainer UpgradePath(CinemachinePathBase pathBase)
+        static SplineContainer UpgradePath(CinemachinePathBase pathBase)
         {
             var go = pathBase.gameObject;
             if (go.TryGetComponent(out SplineContainer spline))
