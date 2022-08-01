@@ -93,6 +93,10 @@ namespace Cinemachine.Editor
             return notUpgradable;
         }
 
+        /// <summary>
+        /// Handles animation clip reference updates for the input animation clip.
+        /// Does not support Undo!
+        /// </summary>
         public void ProcessAnimationClip(AnimationClip animationClip, Animator trackAnimator)
         {
             var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
