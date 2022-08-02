@@ -8,7 +8,7 @@ using UnityEngine.Splines;
 namespace Cinemachine.Editor
 {
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
-    public class SplineRollTool : EditorTool, IDrawSelectedHandles
+    class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
         Color m_HandleColor = new(1f, 0.6f, 0f); // TODO: check with Swap
 
