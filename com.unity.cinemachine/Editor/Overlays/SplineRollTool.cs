@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
 
         bool m_DisableHandles;
         bool m_RollInUse;
+        bool m_IsSelected;
 
         void OnEnable()
         {
@@ -28,7 +29,6 @@ namespace Cinemachine.Editor
             };
         }
 
-        bool m_IsSelected;
         /// <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
         {
