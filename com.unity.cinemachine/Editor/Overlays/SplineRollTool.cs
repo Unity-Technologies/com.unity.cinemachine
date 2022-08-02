@@ -43,6 +43,7 @@ namespace Cinemachine.Editor
             m_IsSelected = false;
         }
 
+        const float k_UnselectedAlpha = 0.5f;
         public override void OnToolGUI(EditorWindow window)
         {
             var splineDataTarget = target as CinemachineSplineRoll;
@@ -50,14 +51,12 @@ namespace Cinemachine.Editor
                 return;
 
             var nativeSpline = new NativeSpline(splineDataTarget.Container.Spline, splineDataTarget.Container.transform.localToWorldMatrix);
-
+            
             Undo.RecordObject(splineDataTarget, "Modifying Roll SplineData");
-
             m_DisableHandles = false;
-
             var color = m_HandleColor;
             if (!m_IsSelected) 
-                color.a = 0.5f;
+                color.a = k_UnselectedAlpha;
             using (new Handles.DrawingScope(color))
             {
                 m_RollInUse = DrawRollDataPoints(nativeSpline, splineDataTarget.Roll);
@@ -80,7 +79,7 @@ namespace Cinemachine.Editor
             
             var color = m_HandleColor;
             if (!m_IsSelected) 
-                color.a = 0.5f;
+                color.a = k_UnselectedAlpha;
             using (new Handles.DrawingScope(color))
             {
                 DrawRollDataPoints(nativeSpline, splineDataTarget.Roll);
