@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
     public class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
         Color m_HandleColor = new(1f, 0.6f, 0f);
-        List<Vector3> m_LineSegments = new List<Vector3>();
+        List<Vector3> m_LineSegments = new();
 
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
@@ -159,17 +159,27 @@ namespace Cinemachine.Editor
                 while (currentOffset < spline.GetLength())
                 {
                     var t = currentOffset / spline.GetLength();
-                    spline.Evaluate(t, out float3 position, out float3 direction, out float3 up);
-                    var data = splineData.Evaluate(spline, t, PathIndexUnit.Normalized,
-                        new UnityEngine.Splines.Interpolators.LerpFloat());
+                    spline.Evaluate(t, out var position, out var tangent, out var up);
+                    var drawMatrix = Matrix4x4.identity;
+                    drawMatrix.SetTRS(position, Quaternion.LookRotation(tangent, up), Vector3.one);
+                    drawMatrix = Handles.matrix * drawMatrix;
+                    using (new Handles.DrawingScope(drawMatrix)) // use draw matrix, so we work in local space
+                    {
+                        var rollData = splineData.Evaluate(spline, t, PathIndexUnit.Normalized,
+                            new UnityEngine.Splines.Interpolators.LerpFloat());
+                        var handleRotationLocalSpace = Quaternion.Euler(0, rollData, 0);
+                        var handleRotationGlobalSpace = m_DefaultHandleOrientation * handleRotationLocalSpace;
 
-                    var localMatrix = Matrix4x4.identity;
-                    localMatrix.SetTRS(position, Quaternion.LookRotation(direction, up), Vector3.one);
-                    var pos = localMatrix.GetPosition();
-                    m_LineSegments.Add(pos);
-                    m_LineSegments.Add(pos + (Vector3)up * data);
+                        var localMatrix = Matrix4x4.identity;
+                        localMatrix.SetTRS(position, Quaternion.LookRotation(tangent, up), Vector3.one);
+                        var pos = localMatrix.GetPosition();
+                        m_LineSegments.Add(pos);
+                        var size = Mathf.Max(HandleUtility.GetHandleSize(Vector3.zero) / 2f,
+                            CinemachineSplineDollyPrefs.SplineWidth);
+                        m_LineSegments.Add(pos + handleRotationGlobalSpace * Vector3.up * size);
 
-                    currentOffset += k_DisplaySpace;
+                        currentOffset += k_DisplaySpace;
+                    }
                 }
             }
 
