@@ -139,7 +139,7 @@ namespace Cinemachine
 #if UNITY_EDITOR
             // need to tell CinemachineSplineRoll about its spline for gizmo drawing purposes
             if (m_RollCache != null)
-                m_RollCache.SplineContainer = Spline; 
+                m_RollCache.Container = Spline; 
 #endif
             // check if our spline has CinemachineSplineRoll
             if (Spline != null && m_RollCache == null)
