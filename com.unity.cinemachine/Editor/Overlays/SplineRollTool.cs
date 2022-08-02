@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Splines;
@@ -12,8 +10,7 @@ namespace Cinemachine.Editor
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
     public class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
-        Color m_HandleColor = new(1f, 0.6f, 0f);
-        List<Vector3> m_LineSegments = new();
+        Color m_HandleColor = new(1f, 0.6f, 0f); // TODO: check with Swap
 
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
@@ -23,12 +20,27 @@ namespace Cinemachine.Editor
 
         void OnEnable()
         {
-            m_IconContent = new GUIContent()
+            m_IconContent = new GUIContent
             {
                 image = EditorGUIUtility.IconContent("d_WheelCollider Icon").image, // TODO: create a proper image
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };
+        }
+
+        bool m_IsSelected;
+        /// <summary>This is called when the Tool is selected in the editor.</summary>
+        public override void OnActivated()
+        {
+            base.OnActivated();
+            m_IsSelected = true;
+        }
+
+        /// <summary>This is called when the Tool is deselected in the editor.</summary>
+        public override void OnWillBeDeactivated()
+        {
+            base.OnWillBeDeactivated();
+            m_IsSelected = false;
         }
 
         public override void OnToolGUI(EditorWindow window)
@@ -43,16 +55,14 @@ namespace Cinemachine.Editor
 
             m_DisableHandles = false;
 
-            var originalColor = Handles.color;
+            var color = m_HandleColor;
+            if (!m_IsSelected) 
+                color.a = 0.5f;
+            using (new Handles.DrawingScope(color))
             {
-                Handles.color = m_HandleColor;
-
                 m_RollInUse = DrawRollDataPoints(nativeSpline, splineDataTarget.Roll);
-                DrawRollSplineData(nativeSpline, splineDataTarget.Roll);
-                
                 nativeSpline.DataPointHandles(splineDataTarget.Roll);
             }
-            Handles.color = originalColor;
         }
 
         public void OnDrawHandles()
@@ -65,13 +75,16 @@ namespace Cinemachine.Editor
                 return;
 
             m_DisableHandles = true;
-
-            var nativeSpline = new NativeSpline(splineDataTarget.Container.Spline, splineDataTarget.Container.transform.localToWorldMatrix);
+            var nativeSpline = new NativeSpline(splineDataTarget.Container.Spline, 
+                splineDataTarget.Container.transform.localToWorldMatrix);
+            
             var color = m_HandleColor;
-            color.a = 0.5f;
-            Handles.color = color;
-            DrawRollDataPoints(nativeSpline, splineDataTarget.Roll);
-            DrawRollSplineData(nativeSpline, splineDataTarget.Roll);
+            if (!m_IsSelected) 
+                color.a = 0.5f;
+            using (new Handles.DrawingScope(color))
+            {
+                DrawRollDataPoints(nativeSpline, splineDataTarget.Roll);
+            }
         }
         
         // inverse pre-calculation optimization
@@ -84,7 +97,8 @@ namespace Cinemachine.Editor
             {
                 var dataPoint = rollSplineData[r];
 
-                var normalizedT = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, rollSplineData.PathIndexUnit);
+                var normalizedT =
+                    SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, rollSplineData.PathIndexUnit);
                 spline.Evaluate(normalizedT, out var position, out var tangent, out var up);
 
                 var id = m_DisableHandles ? -1 : GUIUtility.GetControlID(FocusType.Passive);
@@ -97,6 +111,7 @@ namespace Cinemachine.Editor
             }
             return inUse;
 
+            // local function
             bool DrawDataPoint(
                 int controlID, Vector3 position, Vector3 tangent, Vector3 up, float rollData, out float result)
             {
@@ -112,20 +127,17 @@ namespace Cinemachine.Editor
                 {
                     var handleRotationLocalSpace = Quaternion.Euler(0, rollData, 0);
                     var handleRotationGlobalSpace = m_DefaultHandleOrientation * handleRotationLocalSpace;
-
-                    var color = Handles.color;
-                    if (!m_RollInUse)
-                        color.a = 0.33f;
-
-                    using (new Handles.DrawingScope(color))
+                    
+                    var handleSize = Mathf.Max(
+                        HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth);
+                    using (new Handles.DrawingScope(m_RollInUse ? Handles.selectedColor : Handles.color))
                     {
-                        Handles.ArrowHandleCap(-1, Vector3.zero, handleRotationGlobalSpace, 1f, EventType.Repaint);
+                        Handles.ArrowHandleCap(
+                            -1, Vector3.zero, handleRotationGlobalSpace, handleSize, EventType.Repaint);
                     }
 
                     var newHandleRotationGlobalSpace = Handles.Disc(controlID, handleRotationGlobalSpace,
-                        Vector3.zero, Vector3.forward,
-                        Mathf.Max(HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth),
-                        false, 0);
+                        Vector3.zero, Vector3.forward, handleSize, false, 0);
                     if (GUIUtility.hotControl == controlID)
                     {
                         // Handles.Disc returns roll values in the [0, 360] range. Therefore, it works only in fixed ranges
@@ -147,48 +159,6 @@ namespace Cinemachine.Editor
 
                 return false;
             }
-        }
-        
-        const float k_DisplaySpace = 0.5f;
-        void DrawRollSplineData(NativeSpline spline, SplineData<float> splineData)
-        {
-            m_LineSegments.Clear();
-            if (GUIUtility.hotControl == 0 || m_RollInUse || !ToolManager.IsActiveTool(this) || Tools.viewToolActive)
-            {
-                var currentOffset = k_DisplaySpace;
-                while (currentOffset < spline.GetLength())
-                {
-                    var t = currentOffset / spline.GetLength();
-                    spline.Evaluate(t, out var position, out var tangent, out var up);
-                    var drawMatrix = Matrix4x4.identity;
-                    drawMatrix.SetTRS(position, Quaternion.LookRotation(tangent, up), Vector3.one);
-                    drawMatrix = Handles.matrix * drawMatrix;
-                    using (new Handles.DrawingScope(drawMatrix)) // use draw matrix, so we work in local space
-                    {
-                        var rollData = splineData.Evaluate(spline, t, PathIndexUnit.Normalized,
-                            new UnityEngine.Splines.Interpolators.LerpFloat());
-                        var handleRotationLocalSpace = Quaternion.Euler(0, rollData, 0);
-                        var handleRotationGlobalSpace = m_DefaultHandleOrientation * handleRotationLocalSpace;
-
-                        var localMatrix = Matrix4x4.identity;
-                        localMatrix.SetTRS(position, Quaternion.LookRotation(tangent, up), Vector3.one);
-                        var pos = localMatrix.GetPosition();
-                        m_LineSegments.Add(pos);
-                        var size = Mathf.Max(HandleUtility.GetHandleSize(Vector3.zero) / 2f,
-                            CinemachineSplineDollyPrefs.SplineWidth);
-                        m_LineSegments.Add(pos + handleRotationGlobalSpace * Vector3.up * size);
-
-                        currentOffset += k_DisplaySpace;
-                    }
-                }
-            }
-
-            var color = Handles.color;
-            if (!m_RollInUse)
-                color.a = 0.33f;
-
-            using (new Handles.DrawingScope(color))
-                Handles.DrawLines(m_LineSegments.ToArray());
         }
     }
 }
