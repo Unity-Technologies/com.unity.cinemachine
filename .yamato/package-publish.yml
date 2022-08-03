@@ -8,9 +8,10 @@ publish:
     flavor: b1.large
   variables:
     UPMCI_ENABLE_PACKAGE_SIGNING: 1
+    DRY-RUN: 0
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package publish --package-path com.unity.cinemachine 
+    - IF %IS_DRY_RUN% == 1 (upm-ci package publish --package-path com.unity.cinemachine --dry-run) ELSE (upm-ci package publish --package-path com.unity.cinemachine)
   triggers:
     tags:
       only:
