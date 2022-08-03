@@ -17,7 +17,7 @@ namespace Tests.Editor
         [Test]
         public void CinemachineInstallRelativePathIsValid()
         {
-            var relativePathToCmLogo = Path.Combine(ScriptableObjectUtility.CinemachineRealativeInstallPath, "Editor/EditorResources/cm_logo_sm.png");
+            var relativePathToCmLogo = Path.Combine(ScriptableObjectUtility.CinemachineRelativeInstallPath, "Editor/EditorResources/cm_logo_sm.png");
             var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));
         }

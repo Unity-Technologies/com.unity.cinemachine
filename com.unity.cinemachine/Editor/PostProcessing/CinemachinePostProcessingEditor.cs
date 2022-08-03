@@ -36,7 +36,7 @@ namespace Cinemachine.PostFX.Editor
         void OnEnable()
         {
             Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(
-                Cinemachine.Editor.ScriptableObjectUtility.CinemachineRealativeInstallPath
+                Cinemachine.Editor.ScriptableObjectUtility.CinemachineRelativeInstallPath
                      + "/Editor/EditorResources/PostProcessLayer.png");
             m_ProfileLabel = new GUIContent("Profile", texture, "A reference to a profile asset");
 

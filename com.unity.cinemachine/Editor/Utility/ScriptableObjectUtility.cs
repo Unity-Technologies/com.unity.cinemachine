@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>Get the relative Cinemachine package install path.</summary>
-        public static string CinemachineRealativeInstallPath
+        public static string CinemachineRelativeInstallPath
         {
             get
             {
