@@ -23,7 +23,7 @@ all_tests:
     variables:
      - "UPMCI_PROMOTION: 1"
   - name: promotion_tests
-    editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk
+    editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk]
     args: --type promotion-audit --platform editmode
     variables:
       - "UPMCI_PROMOTION: 1"
