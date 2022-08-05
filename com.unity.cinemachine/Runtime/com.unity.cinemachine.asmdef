@@ -19,7 +19,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [
-        "clipper_library.dll"
+        "cinemachine_clipper_library.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
