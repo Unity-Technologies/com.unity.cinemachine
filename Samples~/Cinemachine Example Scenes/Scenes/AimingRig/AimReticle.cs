@@ -1,3 +1,4 @@
+#if CINEMACHINE_UGUI
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -55,3 +56,4 @@ public class AimReticle : MonoBehaviour
         Bottom.rectTransform.position = screenCenterPoint + (Vector2.down * m_CurrentRadius);
     }
 }
+#endif
