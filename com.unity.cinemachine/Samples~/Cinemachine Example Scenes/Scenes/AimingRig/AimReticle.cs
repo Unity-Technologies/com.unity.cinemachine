@@ -1,3 +1,4 @@
+#if CINEMACHINE_UGUI
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -60,3 +61,4 @@ namespace Cinemachine.Examples
         }
     }
 }
+#endif
