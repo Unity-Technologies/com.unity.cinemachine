@@ -306,38 +306,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 546027855273aed40809fd72c01c960a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinAngle: -90
-  MaxAngle: 90
+  MinAngle: 0
+  MaxAngle: 0
   DistanceScale:
     serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.5
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.49992627
-      value: 1.0041615
-      inSlope: 2.1330702
-      outSlope: 2.1330702
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 2
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
+    m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -572,36 +545,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ButtonText: Help
   Position: {x: 30, y: 30}
-  HelpText: 'Use WASD to move the character, and the mouse to rotate.
-
-
-    The 3rdPerson
-    vcam is set up follow an invisible child of the player, which rotates itself
-    in response to mouse movement.
-
-
-    The 3rdPersonAim extension locks the camera
-    reticle to the first object that a raycast from the camera position intersects,
-    and this is stable even in the presence of some camera noise.
-
-
-    The secondary
-    (red dot) reticle shows what the player would hit if a shot were fired.  This
-    may be different from the outer reticle if a nearby obstacle obstructs the player
-    from seeing the object under the camera reticle. When the outer and inner recticles
-    are not on the same position, the outer reticle moves apart to show that the
-    aiming is inaccurate.
-
-
-    The dual reticle behaviour can be disabled by setting
-    the Aim Target reticle field to null in the 3rdPersonAim extension.
-
-
-    Finally,
-    the (optional - enable it to see what it does) ThirdPersonFollowDistanceModifier
-    component modifies the camera distance as a function of vertical camera angle,
-    mimicking the 3-orbit setup of the FreeLook by using a simple curve to modify
-    the distance.'
+  HelpText: 
 --- !u!4 &1134903601
 Transform:
   m_ObjectHideFlags: 0
@@ -3594,15 +3538,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7d68869689ce241999a4e22f40d026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxRadius: 30
-  BlendTime: 0.05
+  MaxRadius: 45
+  BlendTime: 0.1
   Top: {fileID: 2999251759889599543}
   Bottom: {fileID: 4008273981425034797}
   Left: {fileID: 8571848275073518753}
   Right: {fileID: 37578809700473673}
   AimTargetReticle: {fileID: 260066437471993806}
-  m_BlendVelocity: 0
-  m_CurrentRadius: 0
 --- !u!222 &2723113944719693837
 CanvasRenderer:
   m_ObjectHideFlags: 0
