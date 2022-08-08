@@ -16,12 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Lens Mode Override property to CM Brain.  When enabled, it allows CM cameras to override the lens mode (Perspective vs Ortho vs Physical).
 - Added Unity Spline support.  Old Cinemachine Paths are deprecated in favour of Unity Splines.
 - Added customizable Auto Dolly to cameras and Spline Cart.
+- Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
-- Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
-
-
-## UNRELEASED
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 - Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
@@ -31,7 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: SensorSize is not saved when not using physical camera.
-
+- AimingRig sample is only optionally dependent on UnityEngine.UI.
 
 ## [2.9.0-pre.7] - 2022-03-29
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera

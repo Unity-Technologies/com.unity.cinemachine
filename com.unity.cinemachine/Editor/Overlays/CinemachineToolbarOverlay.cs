@@ -78,7 +78,7 @@ namespace Cinemachine.Editor
         {
             m_State.refreshIcon = m_State.isProSkin != EditorGUIUtility.isProSkin;
             m_State.isProSkin = EditorGUIUtility.isProSkin;
-            return ScriptableObjectUtility.CinemachineRealativeInstallPath + "/Editor/EditorResources/Handles/" +
+            return ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Handles/" +
                 (m_State.isProSkin ? 
                     (m_State.isSelected ? "Dark-Selected" : "Dark") : 
                     (m_State.isSelected ? "Light-Selected" : "Light")) + "/";
@@ -191,11 +191,11 @@ namespace Cinemachine.Editor
             
             m_Icons = new Texture2D[]
             {
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
                     + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
                     + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRealativeInstallPath
+                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
                     + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
             };
         }

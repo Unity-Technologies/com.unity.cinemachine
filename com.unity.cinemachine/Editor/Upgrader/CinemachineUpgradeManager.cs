@@ -31,7 +31,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// GML Temporary helper method for testing.
         /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
-        /// Obsolete components are deleted.  Timeline referencs are not patched.
+        /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
         /// </summary>
         public static void UpgradeSingleObject(GameObject go)
@@ -70,15 +70,10 @@ namespace Cinemachine.Editor
                 manager.MakeTimelineNamesUnique(out var renames);  
                 manager.UpgradeInScenes(); // non-prefabs first
                 manager.UpgradePrefabsAndPrefabInstances();
+                manager.UpgradeAnimationTrackReferences();
                 manager.DeleteObsoleteComponentsInScenes();
                 manager.RestoreTimelineNames(renames);
             }
-        }
-
-        struct TimelineRename
-        {
-            public string original;
-            public string guid;
         }
 
         /// <summary>
@@ -102,7 +97,6 @@ namespace Cinemachine.Editor
                 EditorSceneManager.SaveScene(scene);
             }
         }
-        
         
         void RestoreTimelineNames(Dictionary<string, string> renames)
         {
@@ -290,9 +284,9 @@ namespace Cinemachine.Editor
 
                 var conversionLinks = new List<ConversionLink>();
                     
-                List<GameObject> allPrefabInstances = new List<GameObject>();
+                var allPrefabInstances = new List<GameObject>();
                 for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
-                    allPrefabInstances.AddRange(m_PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(
+                    allPrefabInstances.AddRange(PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(
                         scene, m_PrefabManager.GetPrefabAssetPath(p)));
 
                 var upgradedObjects = new HashSet<GameObject>();
@@ -356,7 +350,7 @@ namespace Cinemachine.Editor
             // In each scene, restore modifications in all prefab instances by copying data
             // from the linked converted copy of the prefab instance.
             
-            for (int s = 0; s < m_SceneManager.SceneCount; ++s)
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
@@ -426,12 +420,55 @@ namespace Cinemachine.Editor
                 }
             }
         }
+        
+        void UpgradeAnimationTrackReferences()
+        {
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
+                // collect all cmShots that may require a reference update
+                foreach (var playableDirector in playableDirectors)
+                {
+                    if (playableDirector == null)
+                        continue;
+
+                    var playableAsset = playableDirector.playableAsset;
+                    if (playableAsset is TimelineAsset timelineAsset)
+                    {
+                        var tracks = timelineAsset.GetOutputTracks();
+                        foreach (var track in tracks)
+                        {
+                            if (track is AnimationTrack animationTrack)
+                            {
+                                var trackAnimator = playableDirector.GetGenericBinding(track) as Animator;
+                                if (animationTrack.inClipMode)
+                                {
+                                    var clips = animationTrack.GetClips();
+                                    var animationClips = clips
+                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
+                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
+                                        .Select(asset => asset.clip); //finally we get an animation clip!
+
+                                    foreach (var animationClip in animationClips)
+                                        m_ObjectUpgrader.ProcessAnimationClip(animationClip, trackAnimator);
+                                }
+                                else //uses recorded clip
+                                    m_ObjectUpgrader.ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
+                            }
+                        }
+                    }
+                }
+                
+                EditorSceneManager.SaveScene(scene);
+            }
+        }
 
         class SceneManager
         {
             List<string> m_AllScenePaths = new ();
 
-            public List<string> s_IgnoreList = new() {}; // TODO: expose this to the user
+            public List<string> s_IgnoreList = new() {}; // TODO: expose this to the user so they can ignore scenes they don't want to upgrade
 
             public int SceneCount => m_AllScenePaths.Count;
             public string GetScenePath(int index) => m_AllScenePaths[index];
@@ -441,12 +478,12 @@ namespace Cinemachine.Editor
                 var allSceneGuids = new List<string>();
                 allSceneGuids.AddRange(AssetDatabase.FindAssets("t:scene", new[] { "Assets" }));
 
-                for (int i = allSceneGuids.Count - 1; i >= 0; --i)
+                for (var i = allSceneGuids.Count - 1; i >= 0; --i)
                 {
                     var sceneGuid = allSceneGuids[i];
                     var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
                     var add = true;
-                    for (int j = 0; add && j < s_IgnoreList.Count; ++j)
+                    for (var j = 0; add && j < s_IgnoreList.Count; ++j)
                         if (scenePath.Contains(s_IgnoreList[j]))
                             add = false;
                     if (add)
@@ -536,7 +573,7 @@ namespace Cinemachine.Editor
 #endif
             }
 
-            public List<GameObject> FindAllInstancesOfPrefabEvenInNestedPrefabs(
+            public static List<GameObject> FindAllInstancesOfPrefabEvenInNestedPrefabs(
                 Scene scene, string prefabPath)
             {
                 var allInstances = new List<GameObject>();
@@ -568,7 +605,7 @@ namespace Cinemachine.Editor
             {
                 Initialize(GetPlayableDirectors(scene));
             }
-            
+
             public static List<PlayableDirector> GetPlayableDirectors(Scene scene)
             {
                 var playableDirectors = new List<PlayableDirector>();
@@ -576,7 +613,7 @@ namespace Cinemachine.Editor
                 var rootObjects = scene.GetRootGameObjects();
                 foreach (var go in rootObjects)
                     playableDirectors.AddRange(go.GetComponentsInChildren<PlayableDirector>(true).ToList());
-                
+
                 return playableDirectors;
             }
 
@@ -587,7 +624,7 @@ namespace Cinemachine.Editor
                 // collect all cmShots that may require a reference update
                 foreach (var playableDirector in playableDirectors)
                 {
-                    if (playableDirector == null) 
+                    if (playableDirector == null)
                         continue;
 
                     var playableAsset = playableDirector.playableAsset;
@@ -603,55 +640,14 @@ namespace Cinemachine.Editor
                                 {
                                     if (clip.asset is CinemachineShot cmShot)
                                     {
+                                        if (!m_CmShotsToUpdate.ContainsKey(playableDirector))
+                                            m_CmShotsToUpdate.Add(playableDirector, new List<CinemachineShot>());
                                         
-                                        // var exposedRef = cmShot.VirtualCamera;
-                                        // var vcam = exposedRef.Resolve(playableDirector);
-                                        // if (vcam != null)
-                                        {
-                                            if (!m_CmShotsToUpdate.ContainsKey(playableDirector))
-                                                m_CmShotsToUpdate.Add(playableDirector, new List<CinemachineShot>());
-                                            m_CmShotsToUpdate[playableDirector].Add(cmShot);
-                                        }
+                                        m_CmShotsToUpdate[playableDirector].Add(cmShot);
                                     }
                                 }
                             }
-
-                            if (track is AnimationTrack animationTrack)
-                            {
-                                if (animationTrack.inClipMode)
-                                {
-                                    var clips = animationTrack.GetClips();
-                                    var animationClips = clips
-                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
-                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
-                                        .Select(asset => asset.clip); //finally we get an animation clip!
-
-                                    foreach (var animationClip in animationClips)
-                                        ProcessAnimationClip(animationClip);
-                                }
-                                else //uses recorded clip
-                                    ProcessAnimationClip(animationTrack.infiniteClip);
-                            }
                         }
-                    }
-                }
-            }
-            
-            static void ProcessAnimationClip(AnimationClip animationClip)
-            {
-                var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
-                foreach (var previousBinding in existingEditorBindings)
-                {
-                    var newBinding = previousBinding;
-                    var path = newBinding.path;
-                    if (path.Contains("cm"))
-                    {
-                        //path is either cm only, or someParent/someOtherParent/.../cm. In the second case, we need to remove /cm.
-                        var index = Mathf.Max(0, path.IndexOf("cm") - 1);
-                        newBinding.path = path.Substring(0, index);
-                        var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
-                        AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
-                        AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
                     }
                 }
             }
@@ -660,7 +656,6 @@ namespace Cinemachine.Editor
             /// Updates timeline reference with the upgraded vcam. This is called after each 
             /// vcam is upgraded, but before the obsolete component is deleted.
             /// </summary>
-            /// <param name="upgraded"></param>
             public void UpdateTimelineReference(CinemachineVirtualCameraBase oldComponent, 
                 CinemachineVirtualCameraBase upgraded)
             {

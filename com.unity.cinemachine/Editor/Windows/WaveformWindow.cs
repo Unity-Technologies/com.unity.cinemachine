@@ -128,11 +128,11 @@ namespace Cinemachine.Editor
             public WaveformGenerator()
             {
                 mWaveformCompute = AssetDatabase.LoadAssetAtPath<ComputeShader>(
-                        ScriptableObjectUtility.CinemachineRealativeInstallPath
+                        ScriptableObjectUtility.CinemachineRelativeInstallPath
                             + "/Editor/EditorResources/CMWaveform.compute");
                 mWaveformProperties = new MaterialPropertyBlock();
                 mWaveformMaterial = new Material(AssetDatabase.LoadAssetAtPath<Shader>(
-                    ScriptableObjectUtility.CinemachineRealativeInstallPath
+                    ScriptableObjectUtility.CinemachineRelativeInstallPath
                         + "/Editor/EditorResources/CMWaveform.shader"))
                 {
                     name = "CMWaveformMaterial",
