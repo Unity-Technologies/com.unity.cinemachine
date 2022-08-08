@@ -96,12 +96,12 @@ namespace Cinemachine
         /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
         /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
         /// </summary>
-        public static float CurrentUnscaledTimeTimeOverride = -1;
+        internal static float CurrentUnscaledTimeTimeOverride = -1;
         
         /// <summary>
         /// Replacement for Time.unscaledTime, taking CurrentUnscaledTimeTimeOverride into account.
         /// </summary>
-        public static float CurrentUnscaledTime => CurrentUnscaledTimeTimeOverride >= 0
+        internal static float CurrentUnscaledTime => CurrentUnscaledTimeTimeOverride >= 0
             ? CurrentUnscaledTimeTimeOverride
             : Time.unscaledTime;
 
