@@ -7,6 +7,7 @@
     "keywords": [ "camera", "follow", "rig", "fps", "cinematography", "aim", "orbit", "cutscene", "cinematic", "collision", "freelook", "cinemachine", "compose", "composition", "dolly", "track", "clearshot", "noise", "framing", "handheld", "lens", "impulse" ],
     "category": "cinematography",
     "dependencies": {
+        "com.unity.test-framework": "1.1.33"
     },
     "samples": [
         {
