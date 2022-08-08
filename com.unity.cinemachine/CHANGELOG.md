@@ -4,11 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.9.0] - 2022-08-01
+## [2.9.0] - 2022-08-15
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
-
-
-## [2.9.0-pre.7] - 2022-07-01
+- AimingRig sample is only optionally dependent on UnityEngine.UI.
+- Dependency on com.unity.test-framework added.
 - Bugfix: A memory leak no longer occurs with PostProcessing if no PP layer is present on the camera.
 - Bugfix: Standalone profiler no longer crashes with CM.
 - Bugfix: Cinemachine no longer produces a compiler error in Unity Editor versions older than 2020 when an Input System package is installed.
