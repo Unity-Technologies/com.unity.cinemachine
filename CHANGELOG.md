@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.8.7] - 2022-07-22
+## [2.8.8] - 2022-08-15
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
 - Bugfix: Fixed spurious Z rotations during speherical blend.
@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: SaveDuringPlay works with ILists now.
+- AimingRig sample is only optionally dependent on UnityEngine.UI.
+- Dependency on com.unity.test-framework added.
 
 
 ## [2.8.6] - 2022-05-03
