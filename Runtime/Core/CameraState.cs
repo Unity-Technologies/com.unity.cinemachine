@@ -381,29 +381,25 @@ namespace Cinemachine
                 }
                 else
                 {
-                    var blendUp = (state.BlendHint & BlendHintValue.CylindricalPositionBlend) != 0 
-                        ? state.ReferenceUp // the pre-blended up vectors
-                        : Vector3.Slerp(stateA.RawOrientation * Vector3.up, stateB.RawOrientation * Vector3.up, t);
-
                     // Rotate while preserving our lookAt target
-                    if (Vector3.Cross(dirTarget, blendUp).AlmostZero())
+                    if (Vector3.Cross(dirTarget, state.ReferenceUp).AlmostZero())
                     {
                         // Looking up or down at the pole
                         newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(
-                                stateA.RawOrientation, stateB.RawOrientation, t, blendUp);
+                                stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
                     }
                     else
                     {
                         // Put the target in the center
-                        newOrient = Quaternion.LookRotation(dirTarget, blendUp);
+                        newOrient = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
 
                         // Blend the desired offsets from center
                         Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
-                                stateA.ReferenceLookAt - stateA.CorrectedPosition, blendUp);
+                                stateA.ReferenceLookAt - stateA.CorrectedPosition, state.ReferenceUp);
                         Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
-                                stateB.ReferenceLookAt - stateB.CorrectedPosition, blendUp);
+                                stateB.ReferenceLookAt - stateB.CorrectedPosition, state.ReferenceUp);
                         newOrient = newOrient.ApplyCameraRotation(
-                                Vector2.Lerp(deltaA, deltaB, adjustedT), blendUp);
+                                Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
                     }
                 }
             }
