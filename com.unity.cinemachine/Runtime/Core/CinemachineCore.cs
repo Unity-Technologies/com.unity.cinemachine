@@ -91,6 +91,19 @@ namespace Cinemachine
         /// Replacement for Time.time, taking CurrentTimeTimeOverride into account.
         /// </summary>
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
+        
+        /// <summary>
+        /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
+        /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
+        /// </summary>
+        internal static float CurrentUnscaledTimeTimeOverride = -1;
+        
+        /// <summary>
+        /// Replacement for Time.unscaledTime, taking CurrentUnscaledTimeTimeOverride into account.
+        /// </summary>
+        internal static float CurrentUnscaledTime => CurrentUnscaledTimeTimeOverride >= 0
+            ? CurrentUnscaledTimeTimeOverride
+            : Time.unscaledTime;
 
         /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.

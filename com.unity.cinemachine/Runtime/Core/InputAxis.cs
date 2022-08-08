@@ -234,14 +234,15 @@ namespace Cinemachine
                 CancelRecentering();
         }
 
-        /// <summary>Call this to manage recentering axis valkue to axis center.</summary>
+        /// <summary>Call this to manage recentering axis value to axis center.</summary>
         /// <param name="deltaTime">Current deltaTime</param>
         /// <param name="axis">The axis to recenter</param>
         /// <param name="recentering">The recentering settings</param>
         public void DoRecentering(float deltaTime, InputAxis axis, in InputAxisRecenteringSettings recentering)
         {
-            if (m_ForceRecenter || (recentering.Enabled 
-                && CurrentTime - m_LastUpdateTime > recentering.Wait
+            if (m_ForceRecenter || 
+                (recentering.Enabled 
+                && CurrentTime - m_LastUpdateTime > recentering.Wait 
                 && (axis.Restrictions & InputAxis.RestrictionFlags.NoRecentering) == 0))
             {
                 var v = axis.ClampValue(axis.Value);
@@ -293,6 +294,6 @@ namespace Cinemachine
             m_ForceRecenter = false;
         }
 
-        float CurrentTime => Time.unscaledTime;
+        internal static float CurrentTime => CinemachineCore.CurrentUnscaledTime;
     }
 }
