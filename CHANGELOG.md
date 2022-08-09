@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: SaveDuringPlay works with ILists now.
+- Clipper library dependency is no longer conflicting with users.
 - AimingRig sample is only optionally dependent on UnityEngine.UI.
 - Dependency on com.unity.test-framework added.
 
