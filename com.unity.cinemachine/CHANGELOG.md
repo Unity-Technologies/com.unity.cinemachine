@@ -31,9 +31,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: No redundant RepaintAllViews calls.
 - Clipper library dependency is no longer conflicting with users.
 - AimingRig sample is only optionally dependent on UnityEngine.UI.
-
-
-## [2.9.0-pre.7] - 2022-03-29
 - Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
 - Bugfix: Standalone profiler no longer crashed with CM.
 - Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
