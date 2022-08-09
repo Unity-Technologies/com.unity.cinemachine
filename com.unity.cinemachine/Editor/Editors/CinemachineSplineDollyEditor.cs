@@ -54,7 +54,7 @@ namespace Cinemachine.Editor
 
         static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)
         {
-            var spline = splineRoll == null ? null : splineRoll.SplineContainer;
+            var spline = splineRoll == null ? null : splineRoll.Container;
             if (spline == null || spline.Spline == null || spline.Spline.Count == 0)
                 return;
 
