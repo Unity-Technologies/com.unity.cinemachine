@@ -236,7 +236,8 @@ namespace Cinemachine
 
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-        const float k_MinStepSize = 0.005f;
+        
+        internal float minStepSize = 0.005f; 
 
         Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
@@ -259,7 +260,7 @@ namespace Cinemachine
                 : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
             
             // Special case: we are shrank to the mid point of the original input confiner area.
-            if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
+            if (State == BakingState.BAKED && frustumHeight >= m_Cache.theoriticalMaxFrustumHeight)
             {
                 return new BakedSolution(
                     m_AspectStretcher.Aspect, frustumHeight, false,
@@ -350,6 +351,8 @@ namespace Cinemachine
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
             
             // Don't compute further than what is the theoretical max
+            Debug.Log("m_PolygonRect.width / aspectRatio = " + (m_PolygonRect.width / aspectRatio) / 2f);
+            Debug.Log("m_PolygonRect.height = " + m_PolygonRect.height / 2f);
             m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // Initialize clipper
@@ -481,7 +484,7 @@ namespace Cinemachine
                         polygons = candidate,
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
-                    m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
+                    m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, minStepSize);
                 }
                 else
                 {
@@ -494,13 +497,13 @@ namespace Cinemachine
                     // if we have not found right yet, then we don't need to decrease stepsize
                     if (!m_Cache.rightCandidate.IsNull)
                     {
-                        m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
+                        m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, minStepSize);
                     }
                 }
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (!m_Cache.rightCandidate.IsNull && m_Cache.stepSize <= k_MinStepSize)
+                if (!m_Cache.rightCandidate.IsNull && m_Cache.stepSize <= minStepSize)
                 {
                     // Add both states: one before the state change and one after
                     m_Cache.solutions.Add(m_Cache.leftCandidate);

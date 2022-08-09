@@ -75,6 +75,15 @@ namespace Cinemachine
         public float m_Damping;
 
         /// <summary>
+        /// Decrease this to increase confiner's precision. The lower the value, the more costly the algorithm.
+        /// </summary>
+        public float m_MinStepSize
+        {
+            set => m_shapeCache.m_confinerOven.minStepSize = value;
+            get => m_shapeCache.m_confinerOven.minStepSize;
+        }
+
+        /// <summary>
         /// To optimize computation and memory costs, set this to the largest view size that the camera 
         /// is expected to have.  The confiner will not compute a polygon cache for frustum sizes larger 
         /// than this.  This refers to the size in world units of the frustum at the confiner plane 
@@ -140,6 +149,7 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.m_BakedSolution == null 
                     || !extra.m_BakedSolution.IsValid())
                 {
+                    Debug.Log("bakedSpaceFrustumHeight:"+bakedSpaceFrustumHeight);
                     extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
 
