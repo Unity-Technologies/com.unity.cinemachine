@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: The FadeOut sample scene shader was culling some objects incorrectly.
 - Bugfix: Freelook had the wrong heading at the first frame, which could cause a slight jitter.
 - Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
-- Bugfix: Fixed spurious Z rotations during spherical blend.
+- Bugfix: Fixed spurious Z rotations during blend.
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: Blending speed was not set correctly when blending back and forth between the same cameras.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
