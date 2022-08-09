@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.8.8] - 2022-08-15
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
-- Bugfix: Fixed spurious Z rotations during speherical blend.
+- Bugfix: Fixed spurious Z rotations during blend.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
