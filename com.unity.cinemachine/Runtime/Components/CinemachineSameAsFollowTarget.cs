@@ -54,6 +54,7 @@ namespace Cinemachine
             }
             m_PreviousReferenceOrientation = dampedOrientation;
             curState.RawOrientation = dampedOrientation;
+            curState.ReferenceUp = dampedOrientation * Vector3.up;
         }
     }
 }
