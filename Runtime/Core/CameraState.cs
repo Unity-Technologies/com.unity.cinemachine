@@ -376,31 +376,27 @@ namespace Cinemachine
                     || ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.IgnoreLookAtTarget) != 0)
                 {
                     // Don't know what we're looking at - can only slerp
-                    newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(
-                            stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
+                    newOrient = Quaternion.Slerp(stateA.RawOrientation, stateB.RawOrientation, t);
                 }
                 else
                 {
                     // Rotate while preserving our lookAt target
-                    if (Vector3.Cross(dirTarget, state.ReferenceUp).AlmostZero())
+                    var up = state.ReferenceUp;
+                    dirTarget.Normalize();
+                    if (Vector3.Cross(dirTarget, up).AlmostZero())
                     {
                         // Looking up or down at the pole
-                        newOrient = UnityQuaternionExtensions.SlerpWithReferenceUp(
-                                stateA.RawOrientation, stateB.RawOrientation, t, state.ReferenceUp);
+                        newOrient = Quaternion.Slerp(stateA.RawOrientation, stateB.RawOrientation, t);
+                        up = newOrient * Vector3.up;
                     }
-                    else
-                    {
-                        // Put the target in the center
-                        newOrient = Quaternion.LookRotation(dirTarget, state.ReferenceUp);
 
-                        // Blend the desired offsets from center
-                        Vector2 deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
-                                stateA.ReferenceLookAt - stateA.CorrectedPosition, state.ReferenceUp);
-                        Vector2 deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
-                                stateB.ReferenceLookAt - stateB.CorrectedPosition, state.ReferenceUp);
-                        newOrient = newOrient.ApplyCameraRotation(
-                                Vector2.Lerp(deltaA, deltaB, adjustedT), state.ReferenceUp);
-                    }
+                    // Blend the desired offsets from center
+                    newOrient = Quaternion.LookRotation(dirTarget, up);
+                    var deltaA = -stateA.RawOrientation.GetCameraRotationToTarget(
+                            stateA.ReferenceLookAt - stateA.CorrectedPosition, up);
+                    var deltaB = -stateB.RawOrientation.GetCameraRotationToTarget(
+                            stateB.ReferenceLookAt - stateB.CorrectedPosition, up);
+                    newOrient = newOrient.ApplyCameraRotation(Vector2.Lerp(deltaA, deltaB, adjustedT), up);
                 }
             }
             state.RawOrientation = ApplyRotBlendHint(
