@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using Cinemachine.Utility;
 using NUnit.Framework;
@@ -12,9 +11,9 @@ namespace Tests.Runtime
 #if CINEMACHINE_PHYSICS_2D
     public class Confiner2DUnitTests : CinemachineFixtureBase
     {
-        private Camera m_Cam;
-        private CinemachineVirtualCamera m_Vcam;
-        private CinemachineConfiner2D m_Confiner2D;
+        Camera m_Cam;
+        CinemachineVirtualCamera m_Vcam;
+        CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
         public override void SetUp()
@@ -40,7 +39,7 @@ namespace Tests.Runtime
             base.TearDown();
         }
 
-        private static IEnumerable ColliderTestCases
+        static IEnumerable ColliderTestCases
         {
             get
             {

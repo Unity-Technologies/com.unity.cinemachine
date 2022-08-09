@@ -29,6 +29,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Bugfix: No redundant RepaintAllViews calls.
+- Clipper library dependency is no longer conflicting with users.
+- AimingRig sample is only optionally dependent on UnityEngine.UI.
+
+
+## [2.9.0-pre.7] - 2022-03-29
+- Bugfix: memory leak with PostProcessing if no PP layer is present on the camera
+- Bugfix: Standalone profiler no longer crashed with CM.
+- Bugfix: Cinemachine does not produce compiler error in unity editor versions older than 2020, when Input System package is installed.
+- Bugfix: EmbeddedAssetProperties were not displayed correctly in the editor.
+- Timeline guards added to scripts that rely on it.
+- Bugfix: SaveDuringPlay works with ILists now.
+- Bugfix: Paste VirtualCamera and FreeLook components onto prefab works for subcomponents
+- Bugfix: CinemachineInputProvider now correctly tracks enabled state of input action
+- Bugfix: POV orientation was incorrect with World Up override
+- Added AutoEnable option to CinemachineInputHandler
 
 
 ## [2.9.0-pre.6] - 2022-01-12
