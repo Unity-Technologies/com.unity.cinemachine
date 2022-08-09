@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.6.17] - 2022-08-15
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: CinemachineInputProvider stops providing input when the CinemachineInputProvider component is disabled
-- Bugfix: Fixed spurious Z rotations during speherical blend.
+- Bugfix: Fixed spurious Z rotations during blend.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 - Bugfix: AxisState.Recentering.RecenterNow() did not work reliably.
 - Bugfix: SensorSize is not saved when not using physical camera.
