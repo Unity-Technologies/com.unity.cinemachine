@@ -74,14 +74,12 @@ namespace Cinemachine
         [Range(0, 5)]
         public float m_Damping;
 
-        /// <summary>
-        /// Decrease this to increase confiner's precision. The lower the value, the more costly the algorithm.
-        /// </summary>
-        public float m_MinStepSize
-        {
-            set => m_shapeCache.m_confinerOven.minStepSize = value;
-            get => m_shapeCache.m_confinerOven.minStepSize;
-        }
+        /// <summary>The higher the value, the more precise and costly the algorithm. In most cases, one is enough.</summary>
+        [Tooltip("The higher the value, the more precise and costly the algorithm. In most cases, one is enough.")]
+        [Range(k_QualityMin, k_QualityMax)]
+        public float m_Quality = k_QualityMin;
+        const float k_QualityMin = 1f;
+        const float k_QualityMax = 10f;
 
         /// <summary>
         /// To optimize computation and memory costs, set this to the largest view size that the camera 
@@ -111,7 +109,7 @@ namespace Cinemachine
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidateCache(float cameraAspectRatio)
         {
-            return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
+            return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, m_Quality, cameraAspectRatio, out _);
         }
 
         const float k_cornerAngleTreshold = 10f;
@@ -131,7 +129,7 @@ namespace Cinemachine
             {
                 var aspectRatio = state.Lens.Aspect;
                 if (!m_shapeCache.ValidateCache(
-                    m_BoundingShape2D, m_MaxWindowSize, aspectRatio, out bool confinerStateChanged))
+                    m_BoundingShape2D, m_MaxWindowSize, m_Quality, aspectRatio, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -259,7 +257,7 @@ namespace Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(
-                Collider2D boundingShape2D, float maxWindowSize, 
+                Collider2D boundingShape2D, float maxWindowSize, float quality,
                 float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
@@ -326,8 +324,9 @@ namespace Cinemachine
                 {
                     return false; // input collider is invalid
                 }
-                
-                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize);
+
+                quality = (quality - k_QualityMin) / k_QualityMax; // normalize quality to [0-1]
+                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize, quality);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxWindowSize = maxWindowSize;

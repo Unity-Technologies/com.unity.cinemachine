@@ -244,9 +244,9 @@ namespace Cinemachine
 
         float m_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
-        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight, float quality)
         {
-            Initialize(inputPath, aspectRatio, maxFrustumHeight);
+            Initialize(inputPath, aspectRatio, maxFrustumHeight, quality);
         }
 
         /// <summary>
@@ -340,10 +340,11 @@ namespace Cinemachine
 
         BakingStateCache m_Cache;
 
-        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight, float quality)
         {
             m_Skeleton.Clear();
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
+            minStepSize = Mathf.Lerp(0.005f, 0.000005f, quality);
             m_MinFrustumHeightWithBones = float.MaxValue;
 
             // calculate mid point and use it as the most shrank down version
@@ -351,8 +352,6 @@ namespace Cinemachine
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
             
             // Don't compute further than what is the theoretical max
-            Debug.Log("m_PolygonRect.width / aspectRatio = " + (m_PolygonRect.width / aspectRatio) / 2f);
-            Debug.Log("m_PolygonRect.height = " + m_PolygonRect.height / 2f);
             m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // Initialize clipper
