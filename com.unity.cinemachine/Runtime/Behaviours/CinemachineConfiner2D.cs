@@ -147,7 +147,6 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.m_BakedSolution == null 
                     || !extra.m_BakedSolution.IsValid())
                 {
-                    Debug.Log("bakedSpaceFrustumHeight:"+bakedSpaceFrustumHeight);
                     extra.m_BakedSolution = m_shapeCache.m_confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
 
