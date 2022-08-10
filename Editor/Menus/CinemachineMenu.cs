@@ -80,6 +80,7 @@ namespace Cinemachine.Editor
             vcam.m_Instructions[1].m_Blend.m_Time = 2f;
         }
 
+#if CINEMACHINE_UNITY_ANIMATION
         [MenuItem("Cinemachine/Create State-Driven Camera", false, 1)]
         private static void CreateStateDivenCamera()
         {
@@ -95,7 +96,8 @@ namespace Cinemachine.Editor
             // Give it a child
             Undo.SetTransformParent(CreateDefaultVirtualCamera().transform, go.transform, "create state driven camera");
         }
-
+#endif
+        
 #if CINEMACHINE_PHYSICS
         [MenuItem("Cinemachine/Create ClearShot Camera", false, 1)]
         private static void CreateClearShotVirtualCamera()

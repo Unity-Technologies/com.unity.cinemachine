@@ -63,6 +63,11 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.0.0",
             "define": "CINEMACHINE_LWRP_7_0_0"
+        },
+        {
+            "name": "com.unity.modules.animation",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_ANIMATION"
         }
     ]
 }

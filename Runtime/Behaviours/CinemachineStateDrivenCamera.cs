@@ -1,3 +1,4 @@
+#if CINEMACHINE_UNITY_ANIMATION
 using Cinemachine.Utility;
 using System;
 using System.Collections.Generic;
@@ -557,3 +558,4 @@ namespace Cinemachine
         }
     }
 }
+#endif
