@@ -1,3 +1,4 @@
+#if CINEMACHINE_UNITY_ANIMATION
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -452,3 +453,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

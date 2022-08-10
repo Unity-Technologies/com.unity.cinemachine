@@ -1,5 +1,6 @@
 {
     "name": "Cinemachine",
+    "rootNamespace": "",
     "references": [
         "Unity.Timeline",
         "Unity.Postprocessing.Runtime",
@@ -77,6 +78,11 @@
             "name": "com.unity.inputsystem",
             "expression": "1.0.0-preview",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
+        },
+        {
+            "name": "com.unity.modules.animation",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_ANIMATION"
         }
     ],
     "noEngineReferences": false
