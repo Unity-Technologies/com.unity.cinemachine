@@ -78,8 +78,7 @@ namespace Cinemachine
         [Tooltip("The higher the value, the more precise and costly the algorithm. In most cases, one is enough.")]
         [Range(k_QualityMin, k_QualityMax)]
         public float m_Quality = k_QualityMin;
-        const float k_QualityMin = 1f;
-        const float k_QualityMax = 10f;
+        const float k_QualityMin = 1f, k_QualityMax = 10f;
 
         /// <summary>
         /// To optimize computation and memory costs, set this to the largest view size that the camera 
@@ -245,12 +244,13 @@ namespace Cinemachine
 
                 m_confinerOven = null;
             }
-            
+
             /// <summary>
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="boundingShape2D">Bounding shape</param>
             /// <param name="maxWindowSize">Max Window size</param>
+            /// <param name="quality">Defines the quality of the confiner</param>
             /// <param name="aspectRatio">Aspect ratio/param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>

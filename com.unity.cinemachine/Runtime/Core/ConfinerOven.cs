@@ -237,7 +237,8 @@ namespace Cinemachine
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
         
-        internal float minStepSize = 0.005f; 
+        float m_MinStepSize = k_MinStepSize;
+        const float k_MinStepSize = 0.005f, k_MaxStepSize = 0.000005f;
 
         Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
@@ -344,7 +345,7 @@ namespace Cinemachine
         {
             m_Skeleton.Clear();
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
-            minStepSize = Mathf.Lerp(0.005f, 0.000005f, quality);
+            m_MinStepSize = Mathf.Lerp(k_MinStepSize, k_MaxStepSize, quality);
             m_MinFrustumHeightWithBones = float.MaxValue;
 
             // calculate mid point and use it as the most shrank down version
@@ -483,7 +484,7 @@ namespace Cinemachine
                         polygons = candidate,
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
-                    m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, minStepSize);
+                    m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, m_MinStepSize);
                 }
                 else
                 {
@@ -496,13 +497,13 @@ namespace Cinemachine
                     // if we have not found right yet, then we don't need to decrease stepsize
                     if (!m_Cache.rightCandidate.IsNull)
                     {
-                        m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, minStepSize);
+                        m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, m_MinStepSize);
                     }
                 }
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
                 // then we have located a state change point
-                if (!m_Cache.rightCandidate.IsNull && m_Cache.stepSize <= minStepSize)
+                if (!m_Cache.rightCandidate.IsNull && m_Cache.stepSize <= m_MinStepSize)
                 {
                     // Add both states: one before the state change and one after
                     m_Cache.solutions.Add(m_Cache.leftCandidate);
