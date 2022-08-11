@@ -101,12 +101,11 @@ namespace Cinemachine.Editor
             var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
             foreach (var previousBinding in existingEditorBindings)
             {
-                var newBinding = previousBinding;
-                
                 // if type is not in class upgrade map, then we won't change binding
                 if (!m_ClassUpgradeMap.ContainsKey(previousBinding.type))
                     break;
                     
+                var newBinding = previousBinding;
                 // upgrade type based on mapping
                 newBinding.type = m_ClassUpgradeMap[previousBinding.type];
 
