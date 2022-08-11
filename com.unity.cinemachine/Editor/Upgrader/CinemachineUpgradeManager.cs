@@ -81,9 +81,9 @@ namespace Cinemachine.Editor
         /// </summary>
         struct ConversionLink
         {
-            public string originalName;
-            public string originalGUIDName;
-            public string convertedGUIDName;
+            public string originalName; // not guaranteed to be unique
+            public string originalGUIDName; // unique
+            public string convertedGUIDName; // unique
             public List<UniqueExposedReference> timelineReferences;
         }
 
@@ -100,7 +100,7 @@ namespace Cinemachine.Editor
         /// the prefab instances to lose their overrides.
         /// </summary>
         /// <returns>
-        /// A Per scene list of links between prefab instances and
+        /// A per scene list of links between prefab instances and
         /// their upgraded copies that contain the original prefab modifications.
         /// </returns>
         Dictionary<string, List<ConversionLink>> CopyPrefabInstances()
