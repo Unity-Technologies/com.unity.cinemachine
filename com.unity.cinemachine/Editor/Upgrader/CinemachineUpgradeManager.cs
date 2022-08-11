@@ -100,12 +100,12 @@ namespace Cinemachine.Editor
         /// the prefab instances to lose their overrides.
         /// </summary>
         /// <returns>
-        /// A per scene list of links between prefab instances and
+        /// A per scene (scene index) list of links between prefab instances and
         /// their upgraded copies that contain the original prefab modifications.
         /// </returns>
-        Dictionary<string, List<ConversionLink>> CopyPrefabInstances()
+        Dictionary<int, List<ConversionLink>> CopyPrefabInstances()
         {
-            var conversionLinksPerScene = new Dictionary<string, List<ConversionLink>>();
+            var conversionLinksPerScene = new Dictionary<int, List<ConversionLink>>();
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
                     PrefabUtility.RecordPrefabInstancePropertyModifications(go); // record name change
                 }
 
-                conversionLinksPerScene.Add(m_SceneManager.GetScenePath(s), conversionLinks);
+                conversionLinksPerScene.Add(s, conversionLinks);
                 // save changes (i.e. converted prefab instances)
                 EditorSceneManager.SaveScene(scene); 
             }
@@ -188,11 +188,11 @@ namespace Cinemachine.Editor
         /// 1. prefab instances using Conversion link,
         /// 2. non-prefabs,
         /// 3. cleans obsolete components,
-        /// 4  updates animation references.
+        /// 4. updates animation references.
         /// </summary>
-        /// <param name="conversionLinksPerScene">Link between prefab instances and their upgraded copies that contain
-        /// the original prefab modifications.</param>
-        void UpgradeAllScenes(Dictionary<string, List<ConversionLink>> conversionLinksPerScene)
+        /// <param name="conversionLinksPerScene">A per scene (scene index) list of links between prefab instances
+        /// and their upgraded copies that contain the original prefab modifications.</param>
+        void UpgradeAllScenes(Dictionary<int, List<ConversionLink>> conversionLinksPerScene)
         {
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
@@ -202,7 +202,7 @@ namespace Cinemachine.Editor
                 var upgradables = GetUpgradeCandidates(scene.GetRootGameObjects());
                 
                 // 1. Prefab instances
-                UpgradePrefabInstances(conversionLinksPerScene[m_SceneManager.GetScenePath(s)], timelineManager);
+                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager);
 
                 // 2. Non-prefabs
                 UpgradeNonPrefabs(upgradables, timelineManager);
