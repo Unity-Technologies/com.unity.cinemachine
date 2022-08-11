@@ -81,20 +81,20 @@ namespace Cinemachine
         protected internal override void LegacyUpgrade(int streamedVersion)
         {
             base.LegacyUpgrade(streamedVersion);
-            if (streamedVersion < 20220721)
-            {
-                DefaultTarget = new DefaultTargetSettings 
-                { 
-                    Enabled = m_LegacyLookAt != null || m_LegacyFollow != null,
-                    Target = new CameraTarget
-                    {
-                        LookAtTarget = m_LegacyLookAt, 
-                        TrackingTarget = m_LegacyFollow, 
-                        CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
-                    }
-                };
-                m_LegacyLookAt = m_LegacyFollow = null;
-            }
+            // if (streamedVersion < 20220721)
+            // {
+            //     DefaultTarget = new DefaultTargetSettings 
+            //     { 
+            //         Enabled = m_LegacyLookAt != null || m_LegacyFollow != null,
+            //         Target = new CameraTarget
+            //         {
+            //             LookAtTarget = m_LegacyLookAt, 
+            //             TrackingTarget = m_LegacyFollow, 
+            //             CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
+            //         }
+            //     };
+            //     m_LegacyLookAt = m_LegacyFollow = null;
+            // }
         }
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
