@@ -86,8 +86,18 @@ namespace Cinemachine.Editor
                      orbital.UpgradeToCm3(go.GetComponent<CinemachineOrbitalFollow>());
                      ConvertInputAxis(go, "Look Orbit X", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
                 }
+
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
-                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
+                {
+                    var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();
+                    SplineContainer splineContainer = null;
+                    if (obsoleteDolly.m_Path != null && !obsoleteDolly.m_Path.TryGetComponent(out splineContainer)) 
+                        splineContainer = UpgradePath(obsoleteDolly.m_Path);
+
+                    var splineDolly = go.GetComponent<CinemachineSplineDolly>();
+                    obsoleteDolly.UpgradeToCm3(splineDolly);
+                    if (splineContainer != null) splineDolly.Spline = splineContainer;
+                }
             }
             return notUpgradable;
         }
