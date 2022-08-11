@@ -122,9 +122,8 @@ namespace Cinemachine.Editor
                 var upgradable = GetUpgradeCandidates(allPrefabInstances.ToArray());
                 foreach (var go in upgradable)
                 {
-                    // Ignore if already converted (this can happen in nested prefabs)
                     if (upgradedObjects.Contains(go))
-                        continue; 
+                        continue; // Ignore if already converted (this can happen in nested prefabs)
                     upgradedObjects.Add(go);
                     
                     var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
@@ -255,12 +254,10 @@ namespace Cinemachine.Editor
                 return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
                     && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
             }
-
             static GameObject Find(string name, List<GameObject> gos)
             {
                 return gos.FirstOrDefault(go => go != null && go.name.Equals(name));
             }
-
             static void SynchronizeComponents(GameObject prefabInstance, GameObject convertedCopy, List<Type> noDeleteList)
             {
                 // Transfer values from converted to the instance
@@ -451,22 +448,6 @@ namespace Cinemachine.Editor
             return notUpgradable;
         }
 
-        /// <summary>
-        /// Last conversion stage, after all objects have been converted.  Deletes the obsolete components.
-        /// </summary>
-        void DeleteObsoleteComponentsInScenes()
-        {
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var upgradable = GetUpgradeCandidates(scene.GetRootGameObjects());
-                foreach (var go in upgradable)
-                    m_ObjectUpgrader.DeleteObsoleteComponents(go);
-                if (upgradable.Count > 0)
-                    EditorSceneManager.SaveScene(scene); 
-            }
-        }
-
         List<GameObject> GetUpgradeCandidates(GameObject[] rootObjects)
         {
             var components = new List<Component>();
@@ -497,50 +478,6 @@ namespace Cinemachine.Editor
             return !(c is CinemachineFreeLook) && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
         }
         
-        
-        void UpgradeAnimationTrackReferences()
-        {
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
-                // collect all cmShots that may require a reference update
-                foreach (var playableDirector in playableDirectors)
-                {
-                    if (playableDirector == null)
-                        continue;
-
-                    var playableAsset = playableDirector.playableAsset;
-                    if (playableAsset is TimelineAsset timelineAsset)
-                    {
-                        var tracks = timelineAsset.GetOutputTracks();
-                        foreach (var track in tracks)
-                        {
-                            if (track is AnimationTrack animationTrack)
-                            {
-                                var trackAnimator = playableDirector.GetGenericBinding(track) as Animator;
-                                if (animationTrack.inClipMode)
-                                {
-                                    var clips = animationTrack.GetClips();
-                                    var animationClips = clips
-                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
-                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
-                                        .Select(asset => asset.clip); //finally we get an animation clip!
-
-                                    foreach (var animationClip in animationClips)
-                                        m_ObjectUpgrader.ProcessAnimationClip(animationClip, trackAnimator);
-                                }
-                                else //uses recorded clip
-                                    m_ObjectUpgrader.ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
-                            }
-                        }
-                    }
-                }
-                
-                EditorSceneManager.SaveScene(scene);
-            }
-        }
-
         class SceneManager
         {
             List<string> m_AllScenePaths = new ();
