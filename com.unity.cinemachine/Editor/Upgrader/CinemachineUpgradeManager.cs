@@ -67,12 +67,10 @@ namespace Cinemachine.Editor
             {
                 var manager = new CinemachineUpgradeManager();
 
-                manager.MakeTimelineNamesUnique(out var renames);
-
+                var renames = manager.MakeTimelineNamesUnique();
                 var conversionLinksPerScene = manager.CopyPrefabInstances();
                 manager.UpgradePrefabAssets();
                 manager.UpgradeAllScenes(conversionLinksPerScene);
-
                 manager.RestoreTimelineNames(renames);
             }
         }
@@ -96,13 +94,14 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Copies and upgrades all prefab instances, leaving the original intact. Creates a link between original
-        /// and upgraded copy.
+        /// Iterates through all scenes, and copies and upgrades all prefab instances, leaving the original intact.
+        /// Creates a link between original and upgraded copy.
         /// This is to capture local prefab override settings before the prefab asset is upgraded, which can cause
         /// the prefab instances to lose their overrides.
         /// </summary>
         /// <returns>
-        /// Link between prefab instances and their upgraded copies that contain the original prefab modifications.
+        /// A Per scene list of links between prefab instances and
+        /// their upgraded copies that contain the original prefab modifications.
         /// </returns>
         Dictionary<string, List<ConversionLink>> CopyPrefabInstances()
         {
@@ -154,9 +153,7 @@ namespace Cinemachine.Editor
             return conversionLinksPerScene;
         }
         
-        /// <summary>
-        /// Upgrades all prefab assets.
-        /// </summary>
+        /// <summary>Upgrades all prefab assets.</summary>
         void UpgradePrefabAssets()
         {
             var upgradeComponentTypes = m_ObjectUpgrader.RootUpgradeComponentTypes;
@@ -192,7 +189,7 @@ namespace Cinemachine.Editor
         /// 1. prefab instances using Conversion link,
         /// 2. non-prefabs,
         /// 3. cleans obsolete components,
-        /// 4 updates animation references.
+        /// 4  updates animation references.
         /// </summary>
         /// <param name="conversionLinksPerScene">Link between prefab instances and their upgraded copies that contain
         /// the original prefab modifications.</param>
@@ -228,7 +225,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// First, restores modifications in all prefab instances in the current scene by copying data from the linked
         /// converted copy of the prefab instance.
-        /// Then, restore timeline references to any of these upgraded instances.
+        /// Then, restores timeline references to any of these upgraded instances.
         /// </summary>
         /// <param name="conversionLinks">Conversion links for the current scene</param>
         /// <param name="timelineManager">Timeline manager for the current scene</param>
@@ -293,7 +290,7 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
-        /// Upgrades all instances that are not part of any prefab.
+        /// Upgrades all instances that are not part of any prefab and restores timeline references.
         /// </summary>
         /// <param name="gos">Gameobjects to upgrade in the current scene</param>
         /// <param name="timelineManager">Timeline manager for the current scene</param>
@@ -357,10 +354,10 @@ namespace Cinemachine.Editor
         /// We need to be able to tell timelines apart, and their name may not be unique. So we make them
         /// unique here, and restore their original name when we are done with RestoreTimelineNames().
         /// </summary>
-        /// <param name="renames">Dictionary, Key = GUID name generated, Value = original name</param>
-        void MakeTimelineNamesUnique(out Dictionary<string, string> renames)
+        /// <returns>Mapping from the GUID name to the original name.</returns>
+        Dictionary<string, string> MakeTimelineNamesUnique()
         {
-            renames = new Dictionary<string, string>();
+            var renames = new Dictionary<string, string>();
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
@@ -373,8 +370,11 @@ namespace Cinemachine.Editor
                 }
                 EditorSceneManager.SaveScene(scene);
             }
+            return renames;
         }
         
+        /// <summary>Restore timelines' names to the original name.</summary>
+        /// <param name="renames">Mapping from the GUID name to the original name.</param>
         void RestoreTimelineNames(Dictionary<string, string> renames)
         {
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
