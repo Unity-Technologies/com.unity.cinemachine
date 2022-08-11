@@ -102,6 +102,13 @@ namespace Cinemachine.Editor
             foreach (var previousBinding in existingEditorBindings)
             {
                 var newBinding = previousBinding;
+                
+                // if type is not in class upgrade map, then we won't change binding
+                if (!m_ClassUpgradeMap.ContainsKey(previousBinding.type))
+                    break;
+                    
+                // upgrade type based on mapping
+                newBinding.type = m_ClassUpgradeMap[previousBinding.type];
 
                 // clean path pointing to old structure where vcam components lived on a hidden child gameObject
                 if (previousBinding.path.Contains("cm"))
@@ -135,10 +142,6 @@ namespace Cinemachine.Editor
                     var propertyName = previousBinding.propertyName;
                     newBinding.propertyName = propertyName.Replace("m_", string.Empty);
                 }
-
-                // upgrade type based on mapping
-                if (m_ClassUpgradeMap.ContainsKey(previousBinding.type)) 
-                    newBinding.type = m_ClassUpgradeMap[previousBinding.type];
 
                 // Check if previousBinding.type needs an API change
                 if (m_APIUpgradeMaps.ContainsKey(previousBinding.type) &&
