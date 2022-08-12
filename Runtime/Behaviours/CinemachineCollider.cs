@@ -194,6 +194,7 @@ namespace Cinemachine
         /// </summary>
         class VcamExtraState
         {
+            public Vector3 previousCorrectedPosition;
             public Vector3 previousDisplacement;
             public bool targetObscured;
             public float occlusionStartTime;
@@ -326,17 +327,37 @@ namespace Cinemachine
                     displacement += RespectCameraRadius(
                         cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
 
-                    // Apply damping
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    if (m_Strategy != ResolutionStrategy.PullCameraForward)
                     {
-                        displacement = extra.previousDisplacement + Damper.Damp(
-                            displacement - extra.previousDisplacement, 
-                            displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
-                            deltaTime);
+                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                        {
+                            displacement = extra.previousDisplacement + Damper.Damp(
+                                displacement - extra.previousDisplacement, 
+                                displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
+                                deltaTime);
+                        }
+                    }
+                    else
+                    {
+                        var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
+                        var delta = undampedCameraPosition - extra.previousCorrectedPosition;
+                        Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.red);
+                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                        {
+                            delta = Damper.Damp(
+                                delta, 
+                                displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
+                                deltaTime);
+                            Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.blue);
+                        }
+                    
+                        displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
+                        Debug.DrawLine(state.RawPosition, state.RawPosition + displacement, Color.green);
                     }
 
                     extra.previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
+                    extra.previousCorrectedPosition = state.CorrectedPosition;
                 }
             }
             // Rate the shot after the aim was set
