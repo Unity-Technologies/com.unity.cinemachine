@@ -324,23 +324,17 @@ namespace Cinemachine
 
                     // Apply additional correction due to camera radius
                     var cameraPos = state.CorrectedPosition + displacement;
-                    displacement += RespectCameraRadius(
-                        cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
+                    displacement += RespectCameraRadius(cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
                     
                     var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
                     var delta = undampedCameraPosition - extra.previousCorrectedPosition;
-                    Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.red);
+                    // Apply damping
                     if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     {
-                        delta = Damper.Damp(
-                            delta,
-                            displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
-                            deltaTime);
-                        Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.blue);
+                        var isBigger = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude;
+                        delta = Damper.Damp(delta, isBigger ? m_DampingWhenOccluded : m_Damping, deltaTime);
                     }
-
                     displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
-                    Debug.DrawLine(state.RawPosition, state.RawPosition + displacement, Color.green);
 
                     extra.previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
