@@ -328,7 +328,7 @@ namespace Cinemachine
 
                     var displacementSqrMagnitude = displacement.sqrMagnitude;
                     var prevDisplacementSqrMagnitude = extra.previousDisplacement.sqrMagnitude;
-                    if (displacementSqrMagnitude > Epsilon || prevDisplacementSqrMagnitude > Epsilon)
+                    if (displacementSqrMagnitude > Epsilon && prevDisplacementSqrMagnitude > Epsilon)
                     {
                         var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
                         var delta = undampedCameraPosition - extra.previousCorrectedPosition;
@@ -336,11 +336,21 @@ namespace Cinemachine
                         // Apply damping
                         if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                         {
-                            var isBigger = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude;
+                            var isBigger = displacementSqrMagnitude > prevDisplacementSqrMagnitude;
                             delta = Damper.Damp(delta, isBigger ? m_DampingWhenOccluded : m_Damping, deltaTime);
                         }
 
                         displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
+                    }
+                    else
+                    {
+                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                        {
+                            var isBigger = displacementSqrMagnitude > prevDisplacementSqrMagnitude;
+                            displacement = extra.previousDisplacement + 
+                                Damper.Damp(displacement - extra.previousDisplacement, 
+                                    isBigger ? m_DampingWhenOccluded : m_Damping, deltaTime);
+                        }
                     }
 
                     extra.previousDisplacement = displacement;
