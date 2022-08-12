@@ -325,16 +325,23 @@ namespace Cinemachine
                     // Apply additional correction due to camera radius
                     var cameraPos = state.CorrectedPosition + displacement;
                     displacement += RespectCameraRadius(cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
-                    
-                    var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
-                    var delta = undampedCameraPosition - extra.previousCorrectedPosition;
-                    // Apply damping
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+
+                    var displacementSqrMagnitude = displacement.sqrMagnitude;
+                    var prevDisplacementSqrMagnitude = extra.previousDisplacement.sqrMagnitude;
+                    if (displacementSqrMagnitude > Epsilon || prevDisplacementSqrMagnitude > Epsilon)
                     {
-                        var isBigger = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude;
-                        delta = Damper.Damp(delta, isBigger ? m_DampingWhenOccluded : m_Damping, deltaTime);
+                        var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
+                        var delta = undampedCameraPosition - extra.previousCorrectedPosition;
+
+                        // Apply damping
+                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                        {
+                            var isBigger = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude;
+                            delta = Damper.Damp(delta, isBigger ? m_DampingWhenOccluded : m_Damping, deltaTime);
+                        }
+
+                        displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
                     }
-                    displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
 
                     extra.previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
