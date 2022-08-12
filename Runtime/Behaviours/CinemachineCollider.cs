@@ -333,7 +333,7 @@ namespace Cinemachine
                         var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
                         var delta = undampedCameraPosition - extra.previousCorrectedPosition;
 
-                        // Apply damping
+                        // Apply damping when colliding
                         if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                         {
                             var isBigger = displacementSqrMagnitude > prevDisplacementSqrMagnitude;
@@ -344,6 +344,7 @@ namespace Cinemachine
                     }
                     else
                     {
+                        // Apply damping when no longer colliding
                         if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                         {
                             var isBigger = displacementSqrMagnitude > prevDisplacementSqrMagnitude;
