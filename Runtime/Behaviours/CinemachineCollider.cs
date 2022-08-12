@@ -326,34 +326,21 @@ namespace Cinemachine
                     var cameraPos = state.CorrectedPosition + displacement;
                     displacement += RespectCameraRadius(
                         cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
-
-                    if (m_Strategy != ResolutionStrategy.PullCameraForward)
-                    {
-                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-                        {
-                            displacement = extra.previousDisplacement + Damper.Damp(
-                                displacement - extra.previousDisplacement, 
-                                displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
-                                deltaTime);
-                        }
-                    }
-                    else
-                    {
-                        var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
-                        var delta = undampedCameraPosition - extra.previousCorrectedPosition;
-                        Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.red);
-                        if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-                        {
-                            delta = Damper.Damp(
-                                delta, 
-                                displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
-                                deltaTime);
-                            Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.blue);
-                        }
                     
-                        displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
-                        Debug.DrawLine(state.RawPosition, state.RawPosition + displacement, Color.green);
+                    var undampedCameraPosition = state.RawPosition + state.PositionCorrection + displacement;
+                    var delta = undampedCameraPosition - extra.previousCorrectedPosition;
+                    Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.red);
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    {
+                        delta = Damper.Damp(
+                            delta,
+                            displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
+                            deltaTime);
+                        Debug.DrawLine(extra.previousCorrectedPosition, extra.previousCorrectedPosition + delta, Color.blue);
                     }
+
+                    displacement = (extra.previousCorrectedPosition + delta) - state.CorrectedPosition;
+                    Debug.DrawLine(state.RawPosition, state.RawPosition + displacement, Color.green);
 
                     extra.previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
