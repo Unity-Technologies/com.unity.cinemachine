@@ -333,7 +333,7 @@ namespace Cinemachine
                     {
                         // To ease the transition between damped and undamped regions, we damp the damp time
                         dampTime = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping;
-                        if (displacement.sqrMagnitude < 0.01f)
+                        if (displacement.sqrMagnitude < Epsilon)
                             dampTime = extra.previousDampTime - Damper.Damp(extra.previousDampTime, dampTime, deltaTime);
 
                         var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - state.CorrectedPosition);
@@ -343,11 +343,11 @@ namespace Cinemachine
                     state.PositionCorrection += displacement;
 
                     // Adjust the damping bypass to account for the displacement
-                    if (state.HasLookAt)
+                    if (state.HasLookAt && VirtualCamera.PreviousStateIsValid)
                     {
                         var dir0 = extra.previousCameraPosition - state.ReferenceLookAt;
                         var dir1 = state.CorrectedPosition - state.ReferenceLookAt;
-                        if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
+                        if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
                             state.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                                 dir0, dir1, state.ReferenceUp).eulerAngles;
                     }
