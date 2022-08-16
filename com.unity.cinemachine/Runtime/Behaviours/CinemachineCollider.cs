@@ -195,6 +195,8 @@ namespace Cinemachine
         class VcamExtraState
         {
             public Vector3 previousDisplacement;
+            public Vector3 previousCameraPosition;
+            public float previousDampTime;
             public bool targetObscured;
             public float occlusionStartTime;
             public List<Vector3> debugResolutionPath;
@@ -280,8 +282,8 @@ namespace Cinemachine
                 if (m_AvoidObstacles)
                 {
                     // Rotate the previous collision correction along with the camera
-                    extra.previousDisplacement 
-                        = Quaternion.Euler(state.PositionDampingBypass) * extra.previousDisplacement;
+                    var dampingBypass = Quaternion.Euler(state.PositionDampingBypass);
+                    extra.previousDisplacement = dampingBypass * extra.previousDisplacement;
 
                     // Calculate the desired collision correction
                     Vector3 displacement = PreserveLineOfSight(ref state, ref extra);
@@ -326,16 +328,32 @@ namespace Cinemachine
                         cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    float dampTime = m_DampingWhenOccluded;
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid && m_DampingWhenOccluded + m_Damping > Epsilon)
                     {
-                        displacement = extra.previousDisplacement + Damper.Damp(
-                            displacement - extra.previousDisplacement, 
-                            displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping,
-                            deltaTime);
+                        // To ease the transition between damped and undamped regions, we damp the damp time
+                        dampTime = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping;
+                        if (displacement.sqrMagnitude < 0.01f)
+                            dampTime = extra.previousDampTime - Damper.Damp(extra.previousDampTime, dampTime, deltaTime);
+
+                        var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - state.CorrectedPosition);
+                        displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
                     }
 
-                    extra.previousDisplacement = displacement;
                     state.PositionCorrection += displacement;
+
+                    // Adjust the damping bypass to account for the displacement
+                    if (state.HasLookAt)
+                    {
+                        var dir0 = extra.previousCameraPosition - state.ReferenceLookAt;
+                        var dir1 = state.CorrectedPosition - state.ReferenceLookAt;
+                        if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
+                            state.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                                dir0, dir1, state.ReferenceUp).eulerAngles;
+                    }
+                    extra.previousDisplacement = displacement;
+                    extra.previousCameraPosition = state.CorrectedPosition;
+                    extra.previousDampTime = dampTime;
                 }
             }
             // Rate the shot after the aim was set
