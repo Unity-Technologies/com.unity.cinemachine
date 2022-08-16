@@ -71,7 +71,7 @@ namespace Cinemachine
             {
                 DefaultTarget = new DefaultTargetSettings 
                 { 
-                    Enabled = true,
+                    Enabled = m_LegacyLookAt != null || m_LegacyFollow != null,
                     Target = new CameraTarget
                     {
                         LookAtTarget = m_LegacyLookAt, 
