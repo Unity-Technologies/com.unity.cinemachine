@@ -16,12 +16,6 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [
-        {
-            "name": "com.unity.ext.nunit",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_NUNIT"
-        }
-    ],
+    "versionDefines": [],
     "noEngineReferences": false
 }

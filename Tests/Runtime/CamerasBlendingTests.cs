@@ -1,4 +1,3 @@
-#if CINEMACHINE_NUNIT
 using System.Collections;
 using UnityEngine;
 using Cinemachine;
@@ -154,4 +153,3 @@ public class CamerasBlendingTests
     }
     
 }
-#endif
