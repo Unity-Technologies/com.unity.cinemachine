@@ -128,7 +128,7 @@ namespace Tests.Runtime
         {
             m_Collider.SmoothingTime = 0;
             m_Collider.Damping = 1;
-            m_Collider.DampingWhenOccluded = 0;
+            m_Collider.DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
 
             yield return null; 
@@ -152,10 +152,10 @@ namespace Tests.Runtime
             m_Brain.ManualUpdate();
             
             // camera has moved and it is not yet back at its original position
-            Assert.That(previousPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
-            Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
-            
-            Assert.That(new Vector3(0, 0, -4.621426f), Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
+            var finalPosition = m_Vcam.State.GetFinalPosition();
+            Assert.That(previousPosition, Is.Not.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.That(originalCamPosition, Is.Not.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.That(new Vector3(0, 0, -4.89327908f), Is.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
         }
     }
 #endif
