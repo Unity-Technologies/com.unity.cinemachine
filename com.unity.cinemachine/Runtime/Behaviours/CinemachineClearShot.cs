@@ -78,10 +78,11 @@ namespace Cinemachine
             CustomBlends = null;
         }
 
-        protected internal override void LegacyUpgrade(int streamedVersion)
+        private void Awake()
         {
-            base.LegacyUpgrade(streamedVersion);
-            if (streamedVersion < 20220721)
+            // We can't check for null in LegacyUpgrade() because it's not guaranteed
+            // to be called from the main thread, so we do the work here.
+            if (m_LegacyLookAt != null ||  m_LegacyFollow != null)
             {
                 DefaultTarget = new DefaultTargetSettings 
                 { 
@@ -96,6 +97,7 @@ namespace Cinemachine
                 m_LegacyLookAt = m_LegacyFollow = null;
             }
         }
+
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the State Driven Camera were active.</summary>
