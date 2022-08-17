@@ -339,10 +339,20 @@ namespace Cinemachine
                         if (dispSqrMag < Epsilon)
                             dampTime = extra.previousDampTime - Damper.Damp(extra.previousDampTime, dampTime, deltaTime);
 
-                        var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - initialCamPos);
-                        displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
-                    }
+                        if (dampTime > 0)
+                        {
+                            bool bodyAfterAim = false;
+                            if (vcam is CinemachineVirtualCamera)
+                            {
+                                var body = (vcam as CinemachineVirtualCamera).GetCinemachineComponent(CinemachineCore.Stage.Body);
+                                bodyAfterAim = body != null && body.BodyAppliesAfterAim;
+                            }
 
+                            var prevDisplacement = bodyAfterAim ? extra.previousDisplacement
+                                : Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - initialCamPos);
+                            displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
+                        }
+                    }
                     state.PositionCorrection += displacement;
                     cameraPos = state.CorrectedPosition;
 
