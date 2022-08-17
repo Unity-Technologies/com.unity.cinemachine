@@ -281,6 +281,8 @@ namespace Cinemachine
             
                 if (m_AvoidObstacles)
                 {
+                    var initialCamPos = state.CorrectedPosition;
+
                     // Rotate the previous collision correction along with the camera
                     var dampingBypass = Quaternion.Euler(state.PositionDampingBypass);
                     extra.previousDisplacement = dampingBypass * extra.previousDisplacement;
@@ -306,7 +308,7 @@ namespace Cinemachine
                     // to the target for a while, to reduce popping in and out on bumpy objects
                     if (m_SmoothingTime > Epsilon)
                     {
-                        Vector3 pos = state.CorrectedPosition + displacement;
+                        Vector3 pos = initialCamPos + displacement;
                         Vector3 dir = pos - state.ReferenceLookAt;
                         float distance = dir.magnitude;
                         if (distance > Epsilon)
@@ -323,7 +325,7 @@ namespace Cinemachine
                         extra.ResetDistanceSmoothing(m_SmoothingTime);
 
                     // Apply additional correction due to camera radius
-                    var cameraPos = state.CorrectedPosition + displacement;
+                    var cameraPos = initialCamPos + displacement;
                     displacement += RespectCameraRadius(
                         cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
 
@@ -332,27 +334,29 @@ namespace Cinemachine
                     if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid && m_DampingWhenOccluded + m_Damping > Epsilon)
                     {
                         // To ease the transition between damped and undamped regions, we damp the damp time
-                        dampTime = displacement.sqrMagnitude > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping;
-                        if (displacement.sqrMagnitude < Epsilon)
+                        var dispSqrMag = displacement.sqrMagnitude;
+                        dampTime = dispSqrMag > extra.previousDisplacement.sqrMagnitude ? m_DampingWhenOccluded : m_Damping;
+                        if (dispSqrMag < Epsilon)
                             dampTime = extra.previousDampTime - Damper.Damp(extra.previousDampTime, dampTime, deltaTime);
 
-                        var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - state.CorrectedPosition);
+                        var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - initialCamPos);
                         displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
                     }
 
                     state.PositionCorrection += displacement;
+                    cameraPos = state.CorrectedPosition;
 
                     // Adjust the damping bypass to account for the displacement
                     if (state.HasLookAt && VirtualCamera.PreviousStateIsValid)
                     {
                         var dir0 = extra.previousCameraPosition - state.ReferenceLookAt;
-                        var dir1 = state.CorrectedPosition - state.ReferenceLookAt;
+                        var dir1 = cameraPos - state.ReferenceLookAt;
                         if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
                             state.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                                 dir0, dir1, state.ReferenceUp).eulerAngles;
                     }
                     extra.previousDisplacement = displacement;
-                    extra.previousCameraPosition = state.CorrectedPosition;
+                    extra.previousCameraPosition = cameraPos;
                     extra.previousDampTime = dampTime;
                 }
             }

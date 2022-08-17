@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Bugfix: Collider damping is mre robust with extreme FreeLook configurations
+- Bugfix: Collider damping is more robust with extreme FreeLook configurations
 
 ## [2.9.0] - 2022-08-15
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
