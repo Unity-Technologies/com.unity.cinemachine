@@ -2,18 +2,29 @@
     "name": "com.unity.cinemachine.EditorTests",
     "references": [
         "Cinemachine",
-        "com.unity.cinemachine.editor"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "com.unity.cinemachine.editor",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": []
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.ext.nunit",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_NUNIT"
+        }
+    ],
+    "noEngineReferences": false
 }

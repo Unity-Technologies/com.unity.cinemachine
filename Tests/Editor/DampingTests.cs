@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.TestTools;
+﻿#if CINEMACHINE_NUNIT
+using UnityEngine;
 using NUnit.Framework;
-using System.Collections;
 
 [TestFixture]
 public class DampingTests
@@ -36,4 +35,4 @@ public class DampingTests
         }
 	}
 }
-
+#endif

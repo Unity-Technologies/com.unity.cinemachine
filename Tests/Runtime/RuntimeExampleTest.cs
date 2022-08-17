@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.TestTools;
+﻿#if CINEMACHINE_NUNIT
+using UnityEngine;
 using NUnit.Framework;
-using System.Collections;
 
 public class RuntimeDampingTest
 {
@@ -46,3 +45,4 @@ public class RuntimeDampingTest
 	}
 */
 }
+#endif
