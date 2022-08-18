@@ -6,19 +6,16 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": [
-        "nunit.framework.dll"
-    ],
+    "precompiledReferences": [],
     "autoReferenced": false,
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
-    ],
-    "versionDefines": [],
-    "noEngineReferences": false
+    ]
 }
