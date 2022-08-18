@@ -6,7 +6,9 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
-    "optionalUnityReferences": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "includePlatforms": [
         "Editor"
     ],
