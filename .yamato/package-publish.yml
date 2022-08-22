@@ -8,10 +8,11 @@ publish:
     image: package-ci/win10:stable
     flavor: b1.large
   variables:
+    IS_DRY_RUN: 0
     UPMCI_ENABLE_PACKAGE_SIGNING: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package publish
+    - IF %IS_DRY_RUN% == 1 (upm-ci package publish --dry-run) ELSE (upm-ci package publish)
   triggers:
     tags:
       only:
@@ -21,19 +22,5 @@ publish:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/package-pack.yml#pack
-    {% for config_name in publish_configurations %}
-    {% for config in all_configurations %}
-    {% if config.name == config_name %}
-    {% for platform_name in publish_platforms %}
-    {% for platform in all_platforms %}
-    {% if platform.name == platform_name %}
-    {% for editor in config.editors %}
-    - .yamato/package-test.yml#test_{{config.name}}_{{platform.name}}_{{editor}}
-    {% endfor %}
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
+    - .yamato/package-pack.yml#pack   
+    - .yamato/package-test.yml#test_promotion_tests_windows_2018.4
