@@ -18,7 +18,7 @@ all_configurations:
     platforms: [windows, macOS, ubuntu]
     args: --type package-tests
   - name: isolation_tests
-    editors: [2018.4, 2019.4, 2020.3, 2021.2]
+    editors: [2019.4, 2020.3, 2021.2]
     platforms: [windows, macOS, ubuntu]
     args: --type package-tests --enable-load-and-test-isolation
   - name: coverage
