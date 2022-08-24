@@ -2,10 +2,20 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine;
-using Cinemachine.ClipperLib;
 
 namespace Cinemachine
 {
+    using IntPoint = ClipperLib.IntPoint;
+    using Clipper = ClipperLib.Clipper;
+    using ClipperOffset = ClipperLib.ClipperOffset;
+    using ClipperBase = ClipperLib.ClipperBase;
+    using IntRect = ClipperLib.IntRect;
+    using JoinType = ClipperLib.JoinType;
+    using EndType = ClipperLib.EndType;
+    using PolyType = ClipperLib.PolyType;
+    using PolyFillType = ClipperLib.PolyFillType;
+    using ClipType = ClipperLib.ClipType;
+
     /// <summary>
     /// Responsible for baking confiners via BakeConfiner function.
     /// </summary>
