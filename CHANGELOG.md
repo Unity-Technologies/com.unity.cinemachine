@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.8.8] - 2022-08-15
+## [2.8.9] - 2022-08-24
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
 - Bugfix: Fixed spurious Z rotations during blend.
