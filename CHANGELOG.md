@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+- Bugfix: Tranpsoser with LockToTarget binding could have gimbal lock
+
+
 ## [2.6.17] - 2022-08-15
 - Regression fix: POV is relative to its parent transform.
 - Bugfix: CinemachineInputProvider stops providing input when the CinemachineInputProvider component is disabled
