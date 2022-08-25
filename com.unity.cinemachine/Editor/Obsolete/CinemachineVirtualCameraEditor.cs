@@ -164,7 +164,7 @@ namespace Cinemachine.Editor
         {
             if (!IsPropertyExcluded("Header"))
             {
-                DrawUpgradeButton();
+                UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CmCamera");
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
                 DrawInputProviderButtonInInspector();

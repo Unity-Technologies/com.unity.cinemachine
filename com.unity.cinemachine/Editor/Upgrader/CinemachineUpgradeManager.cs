@@ -50,6 +50,45 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
+        /// GML Temporary helper method for testing.
+        /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
+        /// Obsolete components are deleted.  Timeline references are not patched.
+        /// Undo is supported.
+        /// </summary>
+        public static void UpgradeObjectsInCurrentScene()
+        {
+            if (EditorUtility.DisplayDialog(
+                "Upgrade objects in the current scene to Cinemachine 3",
+                "This operation will not upgrade prefab instances or touch any timeline assets, "
+                + "which can result in an incomplete upgrade.  To do a complete upgrade,  "
+                + "you must choose the \"Upgrade Project\" option.\n\n"
+                + "Upgrade scene?",
+                "Upgrade", "Cancel"))
+            {
+                var manager = new CinemachineUpgradeManager();
+                var scene = EditorSceneManager.GetActiveScene();
+                var upgradedObjects = new HashSet<GameObject>();
+                var upgradable = manager.GetUpgradeCandidates(scene.GetRootGameObjects());
+                foreach (var go in upgradable)
+                {
+                    // Skip prefab instances (we'll do them later)
+                    if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
+                        continue;
+
+                    // Don't upgrade twice
+                    if (upgradedObjects.Contains(go))
+                        continue;
+
+                    upgradedObjects.Add(go);
+                    manager.UpgradeObjectComponents(go, null);
+                }
+
+                foreach (var go in upgradedObjects)
+                    manager.m_ObjectUpgrader.DeleteObsoleteComponents(go);
+            }
+        }
+        
+        /// <summary>
         /// Upgrades all objects in all scenes and prefabs
         /// </summary>
         public static void UpgradeProject()
@@ -57,11 +96,16 @@ namespace Cinemachine.Editor
             if (EditorUtility.DisplayDialog(
                 "Upgrade Project to Cinemachine 3",
                 "This project contains objects created with Cinemachine 2, "
-                + "which need to be upgraded to Cinemachine 3 equivalents.  "
+                + "which can be upgraded to Cinemachine 3 equivalents.  "
                 + "This can mostly be done automatically, but it is possible that "
                 + "some objects might not be fully converted.\n\n"
+                + "Any custom scripts in your project that reference the Cinemachine API will not be "
+                + "automatically upgraded, and you may have to alter them manually.  "
+                + "Please see the upgrade guide <here>.\n\n"
                 + "NOTE: Undo is not supported for this operation.  You are strongly "
                 + "advised to make a full backup of the project before proceeding.\n\n"
+                + "If you prefer, you can cancel this operation and use the package manager to revert "
+                + "Cinemachine to a 2.x version, which will continue to work as before.\n\n"
                 + "Upgrade project?",
                 "I made a backup, go ahead", "Cancel"))
             {
