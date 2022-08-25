@@ -55,18 +55,19 @@ using System.Collections.Generic;
 //using System.IO;            //debugging with streamReader & StreamWriter
 //using System.Windows.Forms; //debugging to clipboard
 
-namespace Cinemachine.ClipperLib
+namespace Cinemachine
 {
-
 #if use_int32
   using cInt = Int32;
 #else
   using cInt = Int64;
 #endif
 
-  using Path = List<IntPoint>;
-  using Paths = List<List<IntPoint>>;
+  using Path = List<ClipperLib.IntPoint>;
+  using Paths = List<List<ClipperLib.IntPoint>>;
 
+internal static class ClipperLib
+{
   public struct DoublePoint
   {
     public double X;
@@ -4910,4 +4911,5 @@ namespace Cinemachine.ClipperLib
   }
   //------------------------------------------------------------------------------
 
-} //end ClipperLib namespace
+} //end ClipperLib 
+} //end Cinemachine namespace
