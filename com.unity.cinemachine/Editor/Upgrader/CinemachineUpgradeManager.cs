@@ -9,7 +9,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+#if CINEMACHINE_TIMELINE
 using UnityEngine.Timeline;
+#endif
 using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
@@ -128,6 +130,7 @@ namespace Cinemachine.Editor
         void MakeTimelineNamesUnique(out Dictionary<string, string> renames)
         {
             renames = new Dictionary<string, string>();
+#if CINEMACHINE_TIMELINE
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
@@ -140,10 +143,12 @@ namespace Cinemachine.Editor
                 }
                 EditorSceneManager.SaveScene(scene);
             }
+#endif
         }
         
         void RestoreTimelineNames(Dictionary<string, string> renames)
         {
+#if CINEMACHINE_TIMELINE
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
@@ -157,6 +162,7 @@ namespace Cinemachine.Editor
                 }
                 EditorSceneManager.SaveScene(scene);
             }
+#endif
         }
 
         CinemachineUpgradeManager()
@@ -198,6 +204,7 @@ namespace Cinemachine.Editor
             var oldComponent = go.GetComponent<CinemachineVirtualCameraBase>();
             var notUpgradable = m_ObjectUpgrader.UpgradeComponents(go);
 
+#if CINEMACHINE_TIMELINE
             // Patch the timeline shots
             if (timelineManager != null && oldComponent != null)
             {
@@ -205,7 +212,7 @@ namespace Cinemachine.Editor
                 if (oldComponent != newComponent)
                     timelineManager.UpdateTimelineReference(oldComponent, newComponent);
             }
-
+#endif
             // Report difficult cases
             if (notUpgradable != null)
             {
@@ -343,7 +350,9 @@ namespace Cinemachine.Editor
                     upgradedObjects.Add(go);
                     
                     var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
+#if CINEMACHINE_TIMELINE
                     var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
+#endif
                     
                     var convertedCopy = Object.Instantiate(go);
                     UpgradeObjectComponents(convertedCopy, null);
@@ -352,7 +361,9 @@ namespace Cinemachine.Editor
                         originalName = go.name,
                         originalGUIDName = GUID.Generate().ToString(),
                         convertedGUIDName = GUID.Generate().ToString(),
+#if CINEMACHINE_TIMELINE
                         timelineReferences = timelineReferences,
+#endif
                     };
                     go.name = conversionLink.originalGUIDName;
                     convertedCopy.name = conversionLink.convertedGUIDName;
@@ -372,7 +383,11 @@ namespace Cinemachine.Editor
                 using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
                 {
                     var prefabContents = editingScope.prefabContentsRoot;
+#if CINEMACHINE_TIMELINE
                     var timelineManager = new TimelineManager(prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList());
+#else
+                    var timelineManager = new TimelineManager();
+#endif
                     // Note: this logic relies on the fact FreeLooks will be added first in the component list
                     var components = new List<Component>();
                     foreach (var type in upgradeComponentTypes)
@@ -408,8 +423,9 @@ namespace Cinemachine.Editor
                  
                     // GML todo: do we need to do this recursively for child GameObjects?
                     SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
+#if CINEMACHINE_TIMELINE
                     timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
-
+#endif
                     // Restore original scene state (prefab instance name, delete converted copies)
                     prefabInstance.name = conversionLink.originalName;
                     Object.DestroyImmediate(convertedCopy);
@@ -467,6 +483,7 @@ namespace Cinemachine.Editor
         
         void UpgradeAnimationTrackReferences()
         {
+#if CINEMACHINE_TIMELINE
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
@@ -506,6 +523,7 @@ namespace Cinemachine.Editor
                 
                 EditorSceneManager.SaveScene(scene);
             }
+#endif
         }
 
         class SceneManager
@@ -638,6 +656,10 @@ namespace Cinemachine.Editor
 
         class TimelineManager
         {
+#if !CINEMACHINE_TIMELINE
+            public TimelineManager() {} 
+            public TimelineManager(Scene scene) {} 
+#else
             Dictionary<PlayableDirector, List<CinemachineShot>> m_CmShotsToUpdate;
 
             public TimelineManager(List<PlayableDirector> playableDirectors)
@@ -757,6 +779,7 @@ namespace Cinemachine.Editor
                 }
                 return references;
             }
+#endif
         }
     }
 }
