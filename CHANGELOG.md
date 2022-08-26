@@ -5,8 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Bugfix: Collider damping is more robust with extreme FreeLook configurations.
-- Bugfix: Tranpsoser with LockToTarget binding could have gimbal lock
+- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
+- Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
+- Bugfix: Collider damping is more robust with extreme FreeLook configurations
 
 
 ## [2.8.9] - 2022-08-24
