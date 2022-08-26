@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [2.9.1] - 2022-08-24
+- Bugfix: Collider damping is more robust with extreme FreeLook configurations
+
+## [2.9.0] - 2022-08-15
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
 - AimingRig sample is only optionally dependent on UnityEngine.UI.
 - Dependency on com.unity.test-framework added.
