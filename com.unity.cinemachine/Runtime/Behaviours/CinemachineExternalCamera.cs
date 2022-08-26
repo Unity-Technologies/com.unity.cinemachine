@@ -45,6 +45,9 @@ namespace Cinemachine
         /// <summary>This vcam defines no targets</summary>
         override public Transform Follow { get; set; }
 
+        /// <summary>Returns the TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams() => default;
+
         /// <summary>Internal use only.  Do not call this method</summary>
         /// <param name="worldUp">Effective world up</param>
         /// <param name="deltaTime">Effective deltaTime</param>

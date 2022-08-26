@@ -94,6 +94,9 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
+        /// <summary>Returns the TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams() => m_Transitions;
+
         /// <summary>
         /// Query components and extensions for the maximum damping time.
         /// </summary>
