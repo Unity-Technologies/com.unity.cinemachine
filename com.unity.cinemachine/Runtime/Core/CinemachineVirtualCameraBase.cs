@@ -709,6 +709,20 @@ namespace Cinemachine
             }
         }
         
+        // Doesn't really belong here but putting it here to avoid changing
+        // the API (belongs in the caller of CreateBlend).  GML todo: Fix in next version.
+        float m_blendStartPosition;
+
+        // This is a total hack, because of missing API call.  GML todo: Fix in next version.
+        bool GetInheritPosition(ICinemachineCamera cam)
+        {
+            if (cam is CinemachineVirtualCamera)
+                return (cam as CinemachineVirtualCamera).m_Transitions.m_InheritPosition;
+            if (cam is CinemachineFreeLook)
+                return (cam as CinemachineFreeLook).m_Transitions.m_InheritPosition;
+            return false;
+        }
+
         /// <summary>Create a blend between 2 virtual cameras, taking into account
         /// any existing active blend, with special case handling if the new blend is 
         /// effectively an undo of the current blend</summary>
@@ -723,20 +737,32 @@ namespace Cinemachine
             CinemachineBlend activeBlend)
         {
             if (blendDef.BlendCurve == null || blendDef.BlendTime <= 0 || (camA == null && camB == null))
+            {
+                m_blendStartPosition = 0;
                 return null;
+            }
             if (activeBlend != null)
             {
                 // Special case: if backing out of a blend-in-progress
-                // with the same blend in reverse, adjust the belnd time
-                if (activeBlend.CamA == camB
-                    && activeBlend.CamB == camA
-                    && activeBlend.Duration <= blendDef.BlendTime)
+                // with the same blend in reverse, adjust the blend time
+                // to cancel out the progress made in the opposite direction
+                if (activeBlend != null && !activeBlend.IsComplete && activeBlend.CamA == camB && activeBlend.CamB == camA)
                 {
-                    blendDef.m_Time = activeBlend.TimeInBlend;
+                    // How far have we blended?  That is what we must undo
+                    var progress = m_blendStartPosition 
+                        + (1 - m_blendStartPosition) * activeBlend.TimeInBlend / activeBlend.Duration;
+                    blendDef.m_Time *= progress;
+                    m_blendStartPosition = 1 - progress;
                 }
-                camA = new BlendSourceVirtualCamera(activeBlend);
+                else
+                    m_blendStartPosition = 0;
+
+                if (GetInheritPosition(camB))
+                    camA = null;  // otherwise we get a pop when camB is moved
+                else
+                    camA = new BlendSourceVirtualCamera(activeBlend);
             }
-            else if (camA == null)
+            if (camA == null)
                 camA = new StaticPointVirtualCamera(State, "(none)");
             return new CinemachineBlend(
                 camA, camB, blendDef.BlendCurve, blendDef.BlendTime, 0);
