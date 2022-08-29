@@ -124,14 +124,14 @@ namespace Cinemachine
             CustomBlends = null;
         }
 
-        protected internal override void LegacyUpgrade(int streamedVersion)
+        protected internal override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgrade(streamedVersion);
+            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
             if (streamedVersion < 20220721)
             {
                 DefaultTarget = new DefaultTargetSettings 
                 { 
-                    Enabled = m_LegacyLookAt != null || m_LegacyFollow != null,
+                    Enabled = true,
                     Target = new CameraTarget
                     {
                         LookAtTarget = m_LegacyLookAt, 

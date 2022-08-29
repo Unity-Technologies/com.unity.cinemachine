@@ -110,7 +110,7 @@ namespace Cinemachine
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
-                LegacyUpgrade(m_StreamingVersion);
+                LegacyUpgradeCanBeCalledFromThread(m_StreamingVersion);
             m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
 
@@ -122,10 +122,12 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Override this to handle any upgrades necessitated by a streaming version change
+        /// Override this to handle any upgrades necessitated by a streaming version change.
+        /// Note that since this method is not called from the main thread, there are many things
+        /// it cannot do, including checking a unity object for null.
         /// </summary>
         /// <param name="streamedVersion">The version that was streamed</param>
-        internal protected virtual void LegacyUpgrade(int streamedVersion)
+        internal protected virtual void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
         {
             if (streamedVersion < 20220601)
                 CameraPriority = new CameraPriority { Priority = m_LegacyPriority, UseCustomPriority = true };
