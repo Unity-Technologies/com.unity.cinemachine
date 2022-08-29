@@ -203,12 +203,18 @@ namespace Cinemachine.Editor
                 // 0. Open scene
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
-                var upgradables = GetUpgradeCandidates(scene.GetRootGameObjects());
                 
                 // 1. Prefab instances
                 UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager);
 
                 // 2. Non-prefabs
+                var upgradables = GetUpgradeCandidates(scene.GetRootGameObjects());
+                upgradables.Sort((x, y) =>
+                {
+                    var xHas = x.TryGetComponent<CinemachinePath>(out _);
+                    var yHas = y.TryGetComponent<CinemachinePath>(out _);
+                    return -xHas.CompareTo(yHas);
+                });
                 UpgradeNonPrefabs(upgradables, timelineManager);
                 
                 // 3. Clean up obsolete components
