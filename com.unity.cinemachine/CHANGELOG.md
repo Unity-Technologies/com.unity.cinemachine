@@ -4,11 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [Unreleased]
 - Bugfix: Occasional 1-frame glitch when transitioning between some freelooks
+- Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
+- Bugfix: Collider damping is more robust with extreme FreeLook configurations
 
 
-## [2.9.0] - 2022-08-15
+## [2.9.1] - 2022-08-24
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
 - AimingRig sample is only optionally dependent on UnityEngine.UI.
 - Dependency on com.unity.test-framework added.
