@@ -90,13 +90,12 @@ namespace Cinemachine.Editor
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                 {
                     var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();
-                    SplineContainer splineContainer = null;
-                    if (obsoleteDolly.m_Path != null && !obsoleteDolly.m_Path.TryGetComponent(out splineContainer)) 
-                        splineContainer = UpgradePath(obsoleteDolly.m_Path);
-
                     var splineDolly = go.GetComponent<CinemachineSplineDolly>();
                     obsoleteDolly.UpgradeToCm3(splineDolly);
-                    if (splineContainer != null) splineDolly.Spline = splineContainer;
+                    
+                    // set splineDolly spline reference
+                    if (obsoleteDolly.m_Path != null) 
+                        obsoleteDolly.m_Path.TryGetComponent(out splineDolly.Spline);
                 }
             }
             return notUpgradable;
