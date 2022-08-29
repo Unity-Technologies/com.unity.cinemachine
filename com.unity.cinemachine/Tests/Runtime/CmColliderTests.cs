@@ -146,6 +146,7 @@ namespace Tests.Runtime
             var obstructedPosition = m_Vcam.State.FinalPosition;
             Assert.That(originalCamPosition, Is.Not.EqualTo(obstructedPosition).Using(Vector3EqualityComparer.Instance));
 
+            // wait another frame to avoid snap - we need to have a previous damp time to avoid snap
             yield return null;
             m_Brain.ManualUpdate();
             Assert.That(obstructedPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
