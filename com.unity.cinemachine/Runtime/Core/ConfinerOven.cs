@@ -6,16 +6,8 @@ using UnityEngine;
 
 namespace Cinemachine
 {
-    using IntPoint = ClipperLib.IntPoint;
-    using Clipper = ClipperLib.Clipper;
-    using ClipperOffset = ClipperLib.ClipperOffset;
-    using ClipperBase = ClipperLib.ClipperBase;
-    using IntRect = ClipperLib.IntRect;
-    using JoinType = ClipperLib.JoinType;
-    using EndType = ClipperLib.EndType;
-    using PolyType = ClipperLib.PolyType;
-    using PolyFillType = ClipperLib.PolyFillType;
-    using ClipType = ClipperLib.ClipType;
+    using IntPoint = Point64;
+    using IntRect = Rect64;
 
     /// <summary>
     /// Responsible for baking confiners via BakeConfiner function.
@@ -278,10 +270,9 @@ namespace Cinemachine
             }
 
             // Inflate with clipper to frustumHeight
-            var offsetter = new ClipperOffset();
-            offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
-            var solution = new List<List<IntPoint>>();
-            offsetter.Execute(ref solution, -1f * frustumHeight * k_FloatToIntScaler);
+            var offsetter = new ClipperOffset(25);
+            offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
+            var solution = offsetter.Execute(-1f * frustumHeight * k_FloatToIntScaler);
 
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
@@ -291,10 +282,10 @@ namespace Cinemachine
             }
             else
             {
-                var c = new Clipper();
-                c.AddPaths(solution, PolyType.ptSubject, true);
-                c.AddPaths(m_Skeleton, PolyType.ptClip, true);
-                c.Execute(ClipType.ctUnion, bakedSolution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+                var c = new Clipper64();
+                c.AddPaths(solution, PathType.Subject, true);
+                c.AddPaths(m_Skeleton, PathType.Clip, true);
+                c.Execute(ClipType.Union, FillRule.EvenOdd, bakedSolution);
             }
 
             return new BakedSolution(
@@ -377,7 +368,7 @@ namespace Cinemachine
                 }
                 m_OriginalPolygon.Add(path);
             }
-            m_MidPoint = MidPointOfIntRect(ClipperBase.GetBounds(m_OriginalPolygon));
+            m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
 
             // Skip the expensive skeleton calculation if it's not wanted (oversized window off)
             if (m_Cache.userSetMaxFrustumHeight < 0)
@@ -395,11 +386,10 @@ namespace Cinemachine
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
 
             // Binary search for state changes so we can compute the skeleton
-            m_Cache.offsetter = new ClipperOffset();
-            m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.jtMiter, EndType.etClosedPolygon);
-
-            var solution = new List<List<IntPoint>>();
-            m_Cache.offsetter.Execute(ref solution, 0);
+            m_Cache.offsetter = new ClipperOffset(25);
+            m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
+            
+            var solution = m_Cache.offsetter.Execute(0);
             
             m_Cache.solutions = new List<PolygonSolution>();
             m_Cache.solutions.Add(new PolygonSolution
@@ -415,8 +405,8 @@ namespace Cinemachine
                 frustumHeight = 0,
             };
             m_Cache.currentFrustumHeight = 0;
-            m_Cache.maxCandidate = new List<List<IntPoint>>();
-            m_Cache.offsetter.Execute(ref m_Cache.maxCandidate, -1f * m_Cache.theoriticalMaxFrustumHeight * k_FloatToIntScaler);
+            
+            m_Cache.maxCandidate = m_Cache.offsetter.Execute(-1f * m_Cache.theoriticalMaxFrustumHeight * k_FloatToIntScaler);
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -480,8 +470,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    m_Cache.offsetter.Execute(
-                        ref candidate, -1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
+                    candidate = m_Cache.offsetter.Execute(-1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
                 }
                 
                 if (m_Cache.leftCandidate.StateChanged(in candidate))
@@ -561,8 +550,8 @@ namespace Cinemachine
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
                 // At each state change point, collect geometry that gets lost over the transition
-                var clipper = new Clipper();
-                var offsetter = new ClipperOffset();
+                var clipper = new Clipper64();
+                var offsetter = new ClipperOffset(25);
                 for (int i = 1; i < solutions.Count - 1; i += 2)
                 {
                     var prev = solutions[i];
@@ -572,23 +561,21 @@ namespace Cinemachine
                     double step = padding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
 
                     // Grow the larger polygon to inflate marginal regions
-                    var expandedPrev = new List<List<IntPoint>>();
                     offsetter.Clear();
-                    offsetter.AddPaths(prev.polygons, JoinType.jtMiter, EndType.etClosedPolygon);
-                    offsetter.Execute(ref expandedPrev, step);
+                    offsetter.AddPaths(prev.polygons, JoinType.Miter, EndType.Polygon);
+                    var expandedPrev = offsetter.Execute(step);
 
                     // Grow the smaller polygon to be a bit bigger than the expanded larger one
-                    var expandedNext = new List<List<IntPoint>>();
                     offsetter.Clear();
-                    offsetter.AddPaths(next.polygons, JoinType.jtMiter, EndType.etClosedPolygon);
-                    offsetter.Execute(ref expandedNext, step * 2);
+                    offsetter.AddPaths(next.polygons, JoinType.Miter, EndType.Polygon);
+                    var expandedNext = offsetter.Execute(step * 2);
 
                     // Compute the difference - this is the lost geometry
                     var solution = new List<List<IntPoint>>();
                     clipper.Clear();
-                    clipper.AddPaths(expandedPrev, PolyType.ptSubject, true);
-                    clipper.AddPaths(expandedNext, PolyType.ptClip, true);
-                    clipper.Execute(ClipType.ctDifference, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
+                    clipper.AddPaths(expandedPrev, PathType.Subject, true);
+                    clipper.AddPaths(expandedNext, PathType.Clip, true);
+                    clipper.Execute(ClipType.Difference, FillRule.EvenOdd, solution);
 
                     // Add that lost geometry to the skeleton
                     if (solution.Count > 0 && solution[0].Count > 0)
