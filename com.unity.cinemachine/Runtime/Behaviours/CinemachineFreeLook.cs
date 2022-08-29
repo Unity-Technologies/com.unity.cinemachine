@@ -326,13 +326,13 @@ namespace Cinemachine
 
             if (UpdateRigCache())
             {
-                if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
-                    m_XAxis.Value = mOrbitals[1].GetAxisClosestValue(pos, up);
-
-                PushSettingsToRigs();
                 for (int i = 0; i < 3; ++i)
                     m_Rigs[i].ForceCameraPosition(pos, rot);
 
+                if (m_BindingMode != CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
+                    m_XAxis.Value = mOrbitals[1].m_XAxis.Value;
+
+                PushSettingsToRigs();
                 InternalUpdateCameraState(up, -1);
             }
             base.ForceCameraPosition(pos, rot);
@@ -392,7 +392,6 @@ namespace Cinemachine
             if (!RigsAreCreated)
                 return;
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
-            bool forceUpdate = false;
 //            m_RecenterToTargetHeading.DoRecentering(ref m_XAxis, -1, 0);
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
@@ -412,14 +411,7 @@ namespace Cinemachine
                 }
                 ForceCameraPosition(cameraPos, fromCam.State.FinalOrientation);
             }
-            if (forceUpdate)
-            {
-                for (int i = 0; i < 3; ++i)
-                    m_Rigs[i].InternalUpdateCameraState(worldUp, deltaTime);
-                InternalUpdateCameraState(worldUp, deltaTime);
-            }
-            else
-                UpdateCameraState(worldUp, deltaTime);
+            UpdateCameraState(worldUp, deltaTime);
             if (m_Transitions.m_OnCameraLive != null)
                 m_Transitions.m_OnCameraLive.Invoke(this, fromCam);
         }
@@ -734,12 +726,14 @@ namespace Cinemachine
                 return 0; // deleted
 
             // Update the axis only once per frame
-            if (m_LastHeadingUpdateFrame != Time.frameCount)
+            if (!PreviousStateIsValid)
+                deltaTime = -1;
+            if (m_LastHeadingUpdateFrame != Time.frameCount || deltaTime < 0)
             {
                 m_LastHeadingUpdateFrame = Time.frameCount;
                 var oldValue = m_XAxis.Value;
                 m_CachedXAxisHeading = orbital.UpdateHeading(
-                    PreviousStateIsValid ? deltaTime : -1, up,
+                    deltaTime, up,
                     ref m_XAxis, ref m_RecenterToTargetHeading,
                     CinemachineCore.Instance.IsLive(this));
                 // Allow externally-driven values to work in this mode
