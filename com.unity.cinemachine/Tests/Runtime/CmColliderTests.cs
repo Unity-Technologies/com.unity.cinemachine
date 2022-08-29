@@ -143,10 +143,15 @@ namespace Tests.Runtime
             m_Brain.ManualUpdate();
             
             // camera moved check
-            Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
-            
+            var newPosition = m_Vcam.State.FinalPosition;
+            Assert.That(originalCamPosition, !Is.EqualTo(newPosition).Using(Vector3EqualityComparer.Instance));
+
+            yield return null;
+            m_Brain.ManualUpdate();
+            Assert.That(newPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
+            var previousPosition = newPosition;
+
             UnityEngine.Object.Destroy(obstacle);
-            var previousPosition = m_Vcam.State.FinalPosition;
             
             yield return WaitForOnePhysicsFrame();
             m_Brain.ManualUpdate();
@@ -155,7 +160,7 @@ namespace Tests.Runtime
             Assert.That(previousPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             Assert.That(originalCamPosition, !Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
             
-            Assert.That(new Vector3(0, 0, -4.621426f), Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
     }
 #endif
