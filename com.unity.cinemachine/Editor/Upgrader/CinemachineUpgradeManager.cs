@@ -85,7 +85,6 @@ namespace Cinemachine.Editor
             public string originalGUIDName; // unique
             public string convertedGUIDName; // unique
             public List<UniqueExposedReference> timelineReferences;
-            public bool containsSomethingThatMayBeReferenced;
         }
 
         struct UniqueExposedReference
@@ -126,8 +125,6 @@ namespace Cinemachine.Editor
                     if (upgradedObjects.Contains(go))
                         continue; // Ignore if already converted (this can happen in nested prefabs)
                     upgradedObjects.Add(go);
-                    var containsSomethingThatMayBeReferenced = go.TryGetComponent<CinemachinePath>(out _); // TODO: list all candidates in .Data
-                    
                     var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
                     var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
                     
@@ -139,15 +136,12 @@ namespace Cinemachine.Editor
                         originalGUIDName = GUID.Generate().ToString(),
                         convertedGUIDName = GUID.Generate().ToString(),
                         timelineReferences = timelineReferences,
-                        containsSomethingThatMayBeReferenced = containsSomethingThatMayBeReferenced,
                     };
                     go.name = conversionLink.originalGUIDName;
                     convertedCopy.name = conversionLink.convertedGUIDName;
                     conversionLinks.Add(conversionLink);
                     PrefabUtility.RecordPrefabInstancePropertyModifications(go); // record name change
                 }
-
-                conversionLinks.Sort((x, y) => x.containsSomethingThatMayBeReferenced.CompareTo(y.containsSomethingThatMayBeReferenced));
                 conversionLinksPerScene.Add(s, conversionLinks);
                 // save changes (i.e. converted prefab instances)
                 EditorSceneManager.SaveScene(scene); 
