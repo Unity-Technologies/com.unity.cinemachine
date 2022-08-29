@@ -159,9 +159,9 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        internal protected override void LegacyUpgrade(int streamedVersion)
+        internal protected override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgrade(streamedVersion);
+            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
             if (m_LegacyBlendHint != BlendHint.None)
             {
                 m_Transitions.BlendHint = m_LegacyBlendHint;
