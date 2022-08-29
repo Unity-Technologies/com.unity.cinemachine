@@ -154,7 +154,6 @@ namespace Cinemachine.Editor
         /// <summary>Upgrades all prefab assets.</summary>
         void UpgradePrefabAssets()
         {
-            var upgradeComponentTypes = m_ObjectUpgrader.RootUpgradeComponentTypes;
             for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
             {
                 m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
@@ -164,8 +163,10 @@ namespace Cinemachine.Editor
                     var timelineManager = new TimelineManager(prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList());
                     // Note: this logic relies on the fact FreeLooks will be added first in the component list
                     var components = new List<Component>();
-                    foreach (var type in upgradeComponentTypes)
+                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
                         components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                    
+                    // upgrade all
                     foreach (var c in components)
                     {
                         if (c == null || c.gameObject == null)
@@ -174,6 +175,16 @@ namespace Cinemachine.Editor
                             continue; // is a backup copy
 
                         UpgradeObjectComponents(c.gameObject, timelineManager);
+                    }
+
+                    // clean-up now, because we needed obsolete components to restore references
+                    foreach (var c in components)
+                    {
+                        if (c == null || c.gameObject == null)
+                            continue; // was a hidden rig
+                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                            continue; // is a backup copy
+
                         m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
                     }
                 }
