@@ -447,7 +447,7 @@ namespace Cinemachine
         }
 
         /// <summary>Returns false if the object has been deleted</summary>
-        public bool IsValid => !(this == null);
+        public bool IsValid => this != null;
 
         /// <summary>The CameraState object holds all of the information
         /// necessary to position the Unity camera.  It is the output of this class.</summary>

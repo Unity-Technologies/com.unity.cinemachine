@@ -34,8 +34,7 @@ namespace Cinemachine.Editor
                     var t = targets[i] as CinemachinePanTilt;
                     if (!t.HasInputHandler)
                     {
-                        var controller = t.VirtualCamera.GetComponent<InputAxisController>();
-                        if (controller == null)
+                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
                             Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {

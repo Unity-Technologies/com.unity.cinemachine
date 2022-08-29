@@ -110,7 +110,7 @@ namespace Cinemachine.Editor
                     else if (colliderType == typeof(CapsuleCollider))
                     {
                         CapsuleCollider c = confiner.BoundingVolume as CapsuleCollider;
-                        Vector3 size = Vector3.one * c.radius * 2;
+                        Vector3 size = 2 * c.radius * Vector3.one;
                         switch (c.direction)
                         {
                             case 0: size.x = c.height; break;

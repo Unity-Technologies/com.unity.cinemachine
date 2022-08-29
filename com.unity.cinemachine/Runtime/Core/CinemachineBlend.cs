@@ -89,9 +89,7 @@ namespace Cinemachine
             if (b != null && b.Blend.Uses(cam))
                 return true;
             b = CamB as BlendSourceVirtualCamera;
-            if (b != null && b.Blend.Uses(cam))
-                return true;
-            return false;
+            return b != null && b.Blend.Uses(cam);
         }
 
         /// <summary>Construct a blend</summary>

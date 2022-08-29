@@ -307,7 +307,7 @@ namespace Cinemachine.PostFX
                     }
                 }
                 while (sVolumes.Count < minVolumes)
-                    sVolumes.Add(volumeOwner.gameObject.AddComponent<PostProcessVolume>());
+                    sVolumes.Add(volumeOwner.AddComponent<PostProcessVolume>());
             }
             return sVolumes;
         }

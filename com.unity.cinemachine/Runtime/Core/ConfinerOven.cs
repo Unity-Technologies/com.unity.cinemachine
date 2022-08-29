@@ -54,7 +54,7 @@ namespace Cinemachine
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
-                if (m_Solution.Count <= 0) return pointToConfine; // empty confiner -> no need to confine
+                if (m_Solution.Count == 0) return pointToConfine; // empty confiner -> no need to confine
 
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
                 IntPoint p =
@@ -210,9 +210,9 @@ namespace Cinemachine
 
                 double t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
-                
+
                 // local function
-                double IntPointDiffSqrMagnitude(IntPoint point1, IntPoint point2)
+                static double IntPointDiffSqrMagnitude(IntPoint point1, IntPoint point2)
                 {
                     double x = point1.X - point2.X;
                     double y = point1.Y - point2.Y;

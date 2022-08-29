@@ -263,7 +263,7 @@ namespace Cinemachine.PostFX
             {
                 var b = state.GetCustomBlendable(i);
                 var profile = b.Custom as VolumeProfile;
-                if (!(profile == null)) // in case it was deleted
+                if (profile != null) // in case it was deleted
                 {
                     var v = volumes[i];
                     if (firstVolume == null)
@@ -334,7 +334,7 @@ namespace Cinemachine.PostFX
                 }
 
                 while (sVolumes.Count < minVolumes)
-                    sVolumes.Add(volumeOwner.gameObject.AddComponent<Volume>());
+                    sVolumes.Add(volumeOwner.AddComponent<Volume>());
             }
             return sVolumes;
         }

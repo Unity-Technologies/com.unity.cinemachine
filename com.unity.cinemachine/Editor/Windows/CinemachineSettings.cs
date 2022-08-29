@@ -247,7 +247,7 @@ namespace Cinemachine.Editor
                     sCinemachineHeader = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         ScriptableObjectUtility.CinemachineRelativeInstallPath
                             + "/Editor/EditorResources/cinemachine_header.tif");
-                ;
+
                 if (sCinemachineHeader != null)
                     sCinemachineHeader.hideFlags = HideFlags.DontSaveInEditor;
                 return sCinemachineHeader;

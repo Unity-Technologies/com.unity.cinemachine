@@ -278,8 +278,7 @@ namespace Cinemachine.Editor
             iac.SynchronizeControllers();
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            var provider = go.GetComponent<CinemachineInputProvider>();
-            if (provider != null)
+            if (go.TryGetComponent<CinemachineInputProvider>(out var provider))
             {
                 provider.enabled = false;
                 iac.AutoEnableInputs = provider.AutoEnableInputs;
@@ -587,7 +586,7 @@ namespace Cinemachine.Editor
                 });
             }
 
-            CinemachineFreeLookModifier.NoiseModifier.NoiseSettings GetNoiseSettings(CinemachineBasicMultiChannelPerlin noise)
+            static CinemachineFreeLookModifier.NoiseModifier.NoiseSettings GetNoiseSettings(CinemachineBasicMultiChannelPerlin noise)
             {
                 var settings = new CinemachineFreeLookModifier.NoiseModifier.NoiseSettings();
                 if (noise != null)

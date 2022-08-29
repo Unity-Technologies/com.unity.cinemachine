@@ -19,8 +19,7 @@ namespace Cinemachine.Editor
             if (brain != null)
             {
                 cam.Lens = brain.CurrentCameraState.Lens;
-                cam.transform.position = brain.transform.position;
-                cam.transform.rotation = brain.transform.rotation;
+                cam.transform.SetPositionAndRotation(brain.transform.position, brain.transform.rotation);
             }
         }
 

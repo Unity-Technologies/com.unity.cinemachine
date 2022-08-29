@@ -53,8 +53,7 @@ namespace Cinemachine.Editor
                     var t = (CinemachineOrbitalFollow)targets[i];
                     if (!t.HasInputHandler)
                     {
-                        var controller = t.VirtualCamera.GetComponent<InputAxisController>();
-                        if (controller == null)
+                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
                             Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {
@@ -197,36 +196,34 @@ namespace Cinemachine.Editor
         static void DrawOrbitalGizmos(CinemachineOrbitalFollow orbital, GizmoType selectionType)
         {
             var vcam = orbital.VirtualCamera;
-            if (vcam != null && vcam.Follow != null)
+            if (vcam != null && vcam.Follow != null 
+                && orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
             {
-                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
-                {
-                    var prevColor = Gizmos.color;
-                    Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
-                        ? CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour
-                        : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                var prevColor = Gizmos.color;
+                Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
+                    ? CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour
+                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
 
-                    var orient = orbital.GetReferenceOrientation();
-                    var up = orient * Vector3.up;
-                    var rotation = orbital.HorizontalAxis.Value;
-                    orient = Quaternion.AngleAxis(rotation, up) * orient;
-                    var pos = orbital.FollowTargetPosition;
-                    var scale = orbital.RadialAxis.Value;
+                var orient = orbital.GetReferenceOrientation();
+                var up = orient * Vector3.up;
+                var rotation = orbital.HorizontalAxis.Value;
+                orient = Quaternion.AngleAxis(rotation, up) * orient;
+                var pos = orbital.FollowTargetPosition;
+                var scale = orbital.RadialAxis.Value;
 
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Top.Height * scale, 
-                        orient, orbital.Orbits.Top.Radius * scale);
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Center.Height * scale, orient, 
-                        orbital.Orbits.Center.Radius * scale);
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Bottom.Height * scale, 
-                        orient, orbital.Orbits.Bottom.Radius * scale);
+                DrawCircleAtPointWithRadius(
+                    pos + orbital.Orbits.Top.Height * scale * up,
+                    orient, orbital.Orbits.Top.Radius * scale);
+                DrawCircleAtPointWithRadius(
+                    pos + orbital.Orbits.Center.Height * scale * up, orient,
+                    orbital.Orbits.Center.Radius * scale);
+                DrawCircleAtPointWithRadius(
+                    pos + orbital.Orbits.Bottom.Height * scale * up,
+                    orient, orbital.Orbits.Bottom.Radius * scale);
 
-                    DrawCameraPath(pos, orient, scale, orbital);
+                DrawCameraPath(pos, orient, scale, orbital);
 
-                    Gizmos.color = prevColor;
-                }
+                Gizmos.color = prevColor;
             }
         }
 
