@@ -271,6 +271,9 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
+        /// <summary>Returns the TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams() => m_Transitions;
+
         /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>

@@ -101,6 +101,9 @@ namespace Cinemachine
             set { Target.TrackingTarget = value; }
         }
 
+        /// <summary>Returns the TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams() => Transitions;
+
         /// <summary>This is called to notify the CM camera that a target got warped,
         /// so that the CM camera can update its internal state to make the camera
         /// also warp seamlessly.</summary>

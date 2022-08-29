@@ -205,9 +205,7 @@ namespace Cinemachine
                 if (previousCam != null)
                 {
                     // Create a blend (will be null if a cut)
-                    m_ActiveBlend = CreateBlend(
-                            previousCam, LiveChild,
-                            LookupBlend(previousCam, LiveChild), m_ActiveBlend);
+                    m_ActiveBlend = CreateActiveBlend(previousCam, LiveChild, LookupBlend(previousCam, LiveChild));
 
                     // If cutting, generate a camera cut event if live
                     if (m_ActiveBlend == null || !m_ActiveBlend.Uses(previousCam))
