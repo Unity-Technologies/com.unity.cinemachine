@@ -82,6 +82,8 @@ namespace Cinemachine
                     out Vector3 pos, out Quaternion orient);
                 offset = orient * offset;
 
+                curState.ReferenceUp = orient * Vector3.up;
+
                 // Respect minimum target distance on XZ plane
                 var targetPosition = FollowTargetPosition;
                 pos += m_TargetTracker.GetOffsetForMinimumTargetDistance(
@@ -89,7 +91,6 @@ namespace Cinemachine
                     curState.ReferenceUp, targetPosition);
                     
                 curState.RawPosition = pos + offset;
-                curState.ReferenceUp = orient * Vector3.up;
             }
         }
 

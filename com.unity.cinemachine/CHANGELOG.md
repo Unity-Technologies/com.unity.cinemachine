@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Clipper library dependency is no longer conflicting with users.
 - AimingRig sample is only optionally dependent on UnityEngine.UI.
+- Bugfix: Transposer with LockToTarget binding sometimes had gibmal lock
+- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
 
 
 ## [2.9.0-pre.7] - 2022-03-29

@@ -465,6 +465,9 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>Returns the camera's TransitionParams settings</summary>
+        public abstract TransitionParams GetTransitionParams();
+
         /// <summary>Check whether the vcam a live child of this camera.
         /// This base class implementation always returns false.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
@@ -720,39 +723,6 @@ namespace Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].ForceCameraPosition(pos, rot);
             }
-        }
-        
-        /// <summary>Create a blend between 2 virtual cameras, taking into account
-        /// any existing active blend, with special case handling if the new blend is 
-        /// effectively an undo of the current blend</summary>
-        /// <param name="camA">Outgoing virtual camera</param>
-        /// <param name="camB">Incoming virtual camera</param>
-        /// <param name="blendDef">Definition of the blend to create</param>
-        /// <param name="activeBlend">The current active blend</param>
-        /// <returns>The new blend</returns>
-        protected CinemachineBlend CreateBlend(
-            ICinemachineCamera camA, ICinemachineCamera camB,
-            CinemachineBlendDefinition blendDef,
-            CinemachineBlend activeBlend)
-        {
-            if (blendDef.BlendCurve == null || blendDef.BlendTime <= 0 || (camA == null && camB == null))
-                return null;
-            if (activeBlend != null)
-            {
-                // Special case: if backing out of a blend-in-progress
-                // with the same blend in reverse, adjust the belnd time
-                if (activeBlend.CamA == camB
-                    && activeBlend.CamB == camA
-                    && activeBlend.Duration <= blendDef.BlendTime)
-                {
-                    blendDef.m_Time = activeBlend.TimeInBlend;
-                }
-                camA = new BlendSourceVirtualCamera(activeBlend);
-            }
-            else if (camA == null)
-                camA = new StaticPointVirtualCamera(State, "(none)");
-            return new CinemachineBlend(
-                camA, camB, blendDef.BlendCurve, blendDef.BlendTime, 0);
         }
 
         /// <summary>
