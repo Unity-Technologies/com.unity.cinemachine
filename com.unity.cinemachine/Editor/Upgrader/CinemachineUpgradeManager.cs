@@ -130,7 +130,8 @@ namespace Cinemachine.Editor
                     
                     var convertedCopy = Object.Instantiate(go);
                     UpgradeObjectComponents(convertedCopy, null);
-
+                    m_ObjectUpgrader.DeleteObsoleteComponents(convertedCopy);
+                    
                     var conversionLink = new ConversionLink
                     {
                         originalName = go.name,
@@ -484,8 +485,12 @@ namespace Cinemachine.Editor
 
                 upgradables.Add(c.gameObject);
             }
-            
+            upgradables.Sort((x, y) => -(HasReferencable(x).CompareTo(HasReferencable(y))));
             return upgradables;
+            
+            // local function
+            static bool HasReferencable(GameObject go) => 
+                    UpgradeObjectToCm3.Referencables.Any(referencable => go.GetComponent(referencable) != null);
         }
 
         // Hack: ignore nested rigs of a freeLook (GML todo: how to remove this?)
