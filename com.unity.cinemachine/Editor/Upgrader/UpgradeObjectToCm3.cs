@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using Cinemachine.Utility;
+using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -610,11 +611,11 @@ namespace Cinemachine.Editor
             }
         }
 
-        static SplineContainer UpgradePath(CinemachinePathBase pathBase)
+        static void UpgradePath(CinemachinePathBase pathBase)
         {
             var go = pathBase.gameObject;
             if (go.TryGetComponent(out SplineContainer spline))
-                return spline; // already converted
+                return; // already converted
 
             spline = Undo.AddComponent<SplineContainer>(go);
             var splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
@@ -659,12 +660,10 @@ namespace Cinemachine.Editor
                 }
                 default:
                 {
-                    // GML todo: handle this message properly
-                    Debug.LogError($"{go.name}: Path type {pathBase.GetType().Name} is not handled by the upgrader");
+                    Assert.Fail("Need to implement conversion for " + pathBase.GetType() + " in UpgradePath()");
                     break;
                 }
             }
-            return spline;
         }
     }
 }

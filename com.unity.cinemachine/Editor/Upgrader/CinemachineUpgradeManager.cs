@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
                         scene, m_PrefabManager.GetPrefabAssetPath(p)));
 
                 var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = GetUpgradeCandidates(allPrefabInstances.ToArray());
+                var upgradable = GetSortedUpgradeCandidates(allPrefabInstances.ToArray());
                 foreach (var go in upgradable)
                 {
                     if (upgradedObjects.Contains(go))
@@ -203,18 +203,12 @@ namespace Cinemachine.Editor
                 // 0. Open scene
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
-                
+                var upgradables = GetSortedUpgradeCandidates(scene.GetRootGameObjects());
+
                 // 1. Prefab instances
                 UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager);
 
                 // 2. Non-prefabs
-                var upgradables = GetUpgradeCandidates(scene.GetRootGameObjects());
-                upgradables.Sort((x, y) =>
-                {
-                    var xHas = x.TryGetComponent<CinemachinePath>(out _);
-                    var yHas = y.TryGetComponent<CinemachinePath>(out _);
-                    return -xHas.CompareTo(yHas);
-                });
                 UpgradeNonPrefabs(upgradables, timelineManager);
                 
                 // 3. Clean up obsolete components
@@ -458,7 +452,12 @@ namespace Cinemachine.Editor
             return notUpgradable;
         }
 
-        List<GameObject> GetUpgradeCandidates(GameObject[] rootObjects)
+        /// <summary>
+        /// Finds and sorts candidates for upgrade.
+        /// </summary>
+        /// <param name="rootObjects">Objects to check for candidates</param>
+        /// <returns>Sorted list of candidates. First, candidates that may be referenced by others.</returns>
+        List<GameObject> GetSortedUpgradeCandidates(GameObject[] rootObjects)
         {
             var components = new List<Component>();
             if (rootObjects != null)
@@ -466,7 +465,7 @@ namespace Cinemachine.Editor
                     foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
                         components.AddRange(go.GetComponentsInChildren(type, true).ToList());
                     
-            var upgradable = new List<GameObject>();
+            var upgradables = new List<GameObject>();
             foreach (var c in components)
             {
                 // Ignore hidden-object freeLook rigs
@@ -477,9 +476,15 @@ namespace Cinemachine.Editor
                 if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
                     continue;
 
-                upgradable.Add(c.gameObject);
+                upgradables.Add(c.gameObject);
             }
-            return upgradable;
+            
+            upgradables.Sort((x, y) => -(HasReferencable(x).CompareTo(HasReferencable(y))));
+            return upgradables;
+            
+            // local function
+            static bool HasReferencable(GameObject go) => 
+                UpgradeObjectToCm3.Referencables.Any(referencable => go.GetComponent(referencable) != null);
         }
 
         // Hack: ignore nested rigs of a freeLook (GML todo: how to remove this?)
