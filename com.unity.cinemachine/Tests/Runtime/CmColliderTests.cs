@@ -143,13 +143,12 @@ namespace Tests.Runtime
             m_Brain.ManualUpdate();
             
             // camera moved check
-            var newPosition = m_Vcam.State.FinalPosition;
-            Assert.That(originalCamPosition, Is.Not.EqualTo(newPosition).Using(Vector3EqualityComparer.Instance));
+            var obstructedPosition = m_Vcam.State.FinalPosition;
+            Assert.That(originalCamPosition, Is.Not.EqualTo(obstructedPosition).Using(Vector3EqualityComparer.Instance));
 
             yield return null;
             m_Brain.ManualUpdate();
-            Assert.That(newPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
-            var previousPosition = newPosition;
+            Assert.That(obstructedPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
 
             UnityEngine.Object.Destroy(obstacle);
             
@@ -157,10 +156,10 @@ namespace Tests.Runtime
             m_Brain.ManualUpdate();
             
             // camera has moved and it is not yet back at its original position
-            Assert.That(previousPosition, Is.Not.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
-            Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
-            
-            Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
+            var finalPosition = m_Vcam.State.FinalPosition;
+            Assert.That(obstructedPosition, Is.Not.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.That(originalCamPosition, Is.Not.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
+            Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
         }
     }
 #endif
