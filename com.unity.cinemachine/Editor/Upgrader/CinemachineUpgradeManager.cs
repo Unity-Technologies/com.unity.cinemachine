@@ -131,6 +131,7 @@ namespace Cinemachine.Editor
                     var convertedCopy = Object.Instantiate(go);
                     UpgradeObjectComponents(convertedCopy, null);
                     m_ObjectUpgrader.DeleteObsoleteComponents(convertedCopy);
+                    RestoreConvertedCopyReferences(go, convertedCopy, conversionLinks);
                     
                     var conversionLink = new ConversionLink
                     {
@@ -150,6 +151,38 @@ namespace Cinemachine.Editor
             }
 
             return conversionLinksPerScene;
+        }
+
+        void RestoreConvertedCopyReferences(GameObject original, GameObject converted, List<ConversionLink> conversionLinks)
+        {
+            var dolly = original.GetComponentInChildren<CinemachineTrackedDolly>();
+            if (dolly != null &&
+                converted.TryGetComponent(out CinemachineSplineDolly splineDolly) &&
+                dolly.m_Path != null)
+            {
+                var allGameObjectsInScene = GetAllGameObjects();
+
+                foreach (var link in conversionLinks)
+                {
+                    if (link.originalGUIDName == dolly.m_Path.gameObject.name)
+                    {
+                        var target = Find(link.convertedGUIDName, allGameObjectsInScene);
+                        target.TryGetComponent(out splineDolly.Spline);
+                    }
+                }
+            }
+            
+            // local function
+            static List<GameObject> GetAllGameObjects()
+            {
+                var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+                return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
+                    && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
+            }
+            static GameObject Find(string name, List<GameObject> gos)
+            {
+                return gos.FirstOrDefault(go => go != null && go.name.Equals(name));
+            }
         }
         
         /// <summary>Upgrades all prefab assets.</summary>
