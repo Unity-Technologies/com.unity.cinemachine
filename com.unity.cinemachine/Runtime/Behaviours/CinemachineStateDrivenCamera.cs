@@ -124,11 +124,10 @@ namespace Cinemachine
             CustomBlends = null;
         }
 
-        private void Awake()
+        protected internal override void LegacyUpgrade(int streamedVersion)
         {
-            // We can't check for null in LegacyUpgrade() because it's not guaranteed
-            // to be called from the main thread, so we do the work here.
-            if (m_LegacyLookAt != null ||  m_LegacyFollow != null)
+            base.LegacyUpgrade(streamedVersion);
+            if (streamedVersion < 20220721)
             {
                 DefaultTarget = new DefaultTargetSettings 
                 { 
