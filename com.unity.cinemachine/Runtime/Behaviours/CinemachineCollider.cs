@@ -226,6 +226,7 @@ namespace Cinemachine
             public bool TargetObscured;
             public float OcclusionStartTime;
             public List<Vector3> DebugResolutionPath;
+            public Vector3 PreviousCameraOffset;
             public Vector3 PreviousCameraPosition;
             public float PreviousDampTime;
 
@@ -354,8 +355,7 @@ namespace Cinemachine
 
                     // Apply additional correction due to camera radius
                     var cameraPos = initialCamPos + displacement;
-                    displacement += RespectCameraRadius(
-                        cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
+                    displacement += RespectCameraRadius(cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
                     float dampTime = DampingWhenOccluded;
@@ -367,7 +367,7 @@ namespace Cinemachine
                         if (dispSqrMag < Epsilon)
                             dampTime = extra.PreviousDampTime - Damper.Damp(extra.PreviousDampTime, dampTime, deltaTime);
 
-                        var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.PreviousCameraPosition - initialCamPos);
+                        var prevDisplacement = state.ReferenceLookAt + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
                         displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
                     }
                     
@@ -383,7 +383,9 @@ namespace Cinemachine
                             state.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                                 dir0, dir1, state.ReferenceUp).eulerAngles;
                     }
+
                     extra.PreviousDisplacement = displacement;
+                    extra.PreviousCameraOffset = cameraPos - state.ReferenceLookAt;
                     extra.PreviousCameraPosition = cameraPos;
                     extra.PreviousDampTime = dampTime;
                 }
