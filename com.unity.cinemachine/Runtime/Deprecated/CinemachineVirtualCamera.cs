@@ -94,6 +94,9 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
+        /// <summary>Returns the TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams() => m_Transitions;
+
         /// <summary>
         /// Query components and extensions for the maximum damping time.
         /// </summary>
@@ -156,9 +159,9 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        internal protected override void LegacyUpgrade(int streamedVersion)
+        internal protected override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgrade(streamedVersion);
+            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
             if (m_LegacyBlendHint != BlendHint.None)
             {
                 m_Transitions.BlendHint = m_LegacyBlendHint;

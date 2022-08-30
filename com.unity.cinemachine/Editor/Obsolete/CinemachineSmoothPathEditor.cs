@@ -47,6 +47,8 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to Spline");
+
             if (mWaypointList == null)
                 SetupWaypointList();
 

@@ -41,6 +41,9 @@ namespace Cinemachine
         [FormerlySerializedAs("m_ShowDebugText")]
         public bool ShowDebugText;
 
+        /// State for CreateActiveBlend().  Used in the case of backing out of a blend in progress.
+        float m_BlendStartPosition;
+
         /// <summary>
         /// For the inspector ONLY.  Does not really need to be serialized other than for the inspector.
         /// GML todo: make this go away
@@ -105,6 +108,13 @@ namespace Cinemachine
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             return vcam == LiveChild || (ActiveBlend != null && ActiveBlend.Uses(vcam));
+        }
+
+        /// <summary>Returns the current live child's TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams()
+        {
+            var child = LiveChild as CinemachineVirtualCameraBase;
+            return child != null ? child.GetTransitionParams() : default;
         }
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
@@ -208,6 +218,7 @@ namespace Cinemachine
         {
             base.OnEnable();
             InvalidateCameraCache();
+            m_BlendStartPosition = 0;
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
         }
@@ -245,6 +256,49 @@ namespace Cinemachine
                 CinemachineDebug.ReturnToPool(sb);
             }
 #endif
+        }
+
+        /// <summary>Create a blend between 2 virtual cameras, taking into account
+        /// any existing active blend, with special case handling if the new blend is 
+        /// effectively an undo of the current blend.  The returned blend must be
+        /// used as the current active blend</summary>
+        /// <param name="camA">Outgoing virtual camera</param>
+        /// <param name="camB">Incoming virtual camera</param>
+        /// <param name="blendDef">Definition of the blend to create</param>
+        /// <returns>The new blend</returns>
+        protected CinemachineBlend CreateActiveBlend(
+            ICinemachineCamera camA, ICinemachineCamera camB,
+            CinemachineBlendDefinition blendDef)
+        {
+            var activeBlend = ActiveBlend;
+            var blendStartPosition = m_BlendStartPosition;
+            m_BlendStartPosition = 0;
+            if (blendDef.BlendCurve == null || blendDef.BlendTime <= 0 || (camA == null && camB == null))
+                return null;
+
+            if (activeBlend != null)
+            {
+                // Special case: if backing out of a blend-in-progress
+                // with the same blend in reverse, adjust the blend time
+                // to cancel out the progress made in the opposite direction
+                if (activeBlend != null && !activeBlend.IsComplete && activeBlend.CamA == camB && activeBlend.CamB == camA)
+                {
+                    // How far have we blended?  That is what we must undo
+                    var progress = blendStartPosition 
+                        + (1 - blendStartPosition) * activeBlend.TimeInBlend / activeBlend.Duration;
+                    blendDef.m_Time *= progress;
+                    m_BlendStartPosition = 1 - progress;
+                }
+
+                if (camB is CinemachineVirtualCameraBase 
+                    && (camB as CinemachineVirtualCameraBase).GetTransitionParams().InheritPosition)
+                    camA = null;  // otherwise we get a pop when camB is moved
+                else
+                    camA = new BlendSourceVirtualCamera(activeBlend);
+            }
+            if (camA == null)
+                camA = new StaticPointVirtualCamera(State, "(none)");
+            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.BlendTime, 0);
         }
     }
 }
