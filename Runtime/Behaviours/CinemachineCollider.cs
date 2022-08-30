@@ -195,6 +195,7 @@ namespace Cinemachine
         class VcamExtraState
         {
             public Vector3 previousDisplacement;
+            public Vector3 previousCameraOffset;
             public Vector3 previousCameraPosition;
             public float previousDampTime;
             public bool targetObscured;
@@ -327,8 +328,7 @@ namespace Cinemachine
 
                     // Apply additional correction due to camera radius
                     var cameraPos = initialCamPos + displacement;
-                    displacement += RespectCameraRadius(
-                        cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
+                    displacement += RespectCameraRadius(cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
                     float dampTime = m_DampingWhenOccluded;
@@ -340,7 +340,7 @@ namespace Cinemachine
                         if (dispSqrMag < Epsilon)
                             dampTime = extra.previousDampTime - Damper.Damp(extra.previousDampTime, dampTime, deltaTime);
 
-                        var prevDisplacement = Quaternion.Inverse(dampingBypass) * (extra.previousCameraPosition - initialCamPos);
+                        var prevDisplacement = state.ReferenceLookAt + dampingBypass * extra.previousCameraOffset - initialCamPos;
                         displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
                     }
 
@@ -357,6 +357,7 @@ namespace Cinemachine
                                 dir0, dir1, state.ReferenceUp).eulerAngles;
                     }
                     extra.previousDisplacement = displacement;
+                    extra.previousCameraOffset = cameraPos - state.ReferenceLookAt;
                     extra.previousCameraPosition = cameraPos;
                     extra.previousDampTime = dampTime;
                 }
