@@ -235,13 +235,20 @@ namespace Cinemachine.Editor
                 // First disable the old vcamBase, or new one will be rejected
                 Undo.RecordObject(vcam, "Upgrader: disable obsolete");
                 vcam.enabled = false;
-                    
+
                 cmCamera = Undo.AddComponent<CmCamera>(go);
                 CopyValues(vcam, cmCamera);
 
                 // Register the extensions with the cmCamera
                 foreach (var extension in vcam.gameObject.GetComponents<CinemachineExtension>())
                     cmCamera.AddExtension(extension);
+            }
+            else if (vcam.enabled) // RequireComponent added CmCamera, it should be enabled iff vcam was enabled
+            {
+                Undo.RecordObject(vcam, "Upgrader: disable obsolete");
+                vcam.enabled = false;
+                Undo.RecordObject(cmCamera, "Upgrader: enable upgraded");
+                cmCamera.enabled = true;
             }
             return cmCamera;
         }
