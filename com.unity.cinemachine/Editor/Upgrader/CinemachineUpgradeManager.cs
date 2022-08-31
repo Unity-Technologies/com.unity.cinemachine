@@ -68,7 +68,7 @@ namespace Cinemachine.Editor
                 var manager = new CinemachineUpgradeManager();
 
                 var renames = manager.MakeTimelineNamesUnique();
-                manager.UpgradeReferencables();
+                manager.UpgradeNonPrefabReferencables();
                 var conversionLinksPerScene = manager.CopyPrefabInstances();
                 manager.UpgradePrefabAssets();
                 manager.UpgradeAllScenes(conversionLinksPerScene);
@@ -76,12 +76,13 @@ namespace Cinemachine.Editor
             }
         }
 
-        void UpgradeReferencables()
+        void UpgradeNonPrefabReferencables()
         {
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                var upgradables = GetSortedUpgradeCandidates(scene.GetRootGameObjects());
+                var upgradables = 
+                    GetUpgradables(scene.GetRootGameObjects(), UpgradeObjectToCm3.Referencables, false);
                 foreach (var upgradable in upgradables)
                 {
                     if (PrefabUtility.IsPartOfAnyPrefab(upgradable)) 
@@ -144,7 +145,8 @@ namespace Cinemachine.Editor
                         scene, m_PrefabManager.GetPrefabAssetPath(p)));
 
                 var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = GetSortedUpgradeCandidates(allPrefabInstances.ToArray());
+                var upgradable = 
+                    GetUpgradables(allPrefabInstances.ToArray(), m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 foreach (var go in upgradable)
                 {
                     if (upgradedObjects.Contains(go))
@@ -268,7 +270,8 @@ namespace Cinemachine.Editor
                 // 0. Open scene
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
-                var upgradables = GetSortedUpgradeCandidates(scene.GetRootGameObjects());
+                var upgradables = 
+                    GetUpgradables(scene.GetRootGameObjects(), m_ObjectUpgrader.RootUpgradeComponentTypes, true);
 
                 // 1. Prefab instances
                 UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager);
@@ -520,16 +523,18 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Finds and sorts candidates for upgrade.
+        /// Finds all gameObjects with components <paramref name="rootUpgradeComponentTypes"/>.
         /// </summary>
-        /// <param name="rootObjects">Objects to check for candidates</param>
+        /// <param name="rootObjects">GameObjects to check.</param>
+        /// <param name="componentTypes">Find gameObjects that have these components on them or on their children.</param>
+        /// <param name="sort">Sort output. First, candidates that may be referenced and then others.</param>
         /// <returns>Sorted list of candidates. First, candidates that may be referenced by others.</returns>
-        List<GameObject> GetSortedUpgradeCandidates(GameObject[] rootObjects)
+        List<GameObject> GetUpgradables(GameObject[] rootObjects, List<Type> componentTypes, bool sort)
         {
             var components = new List<Component>();
             if (rootObjects != null)
                 foreach (var go in rootObjects)
-                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                    foreach (var type in componentTypes)
                         components.AddRange(go.GetComponentsInChildren(type, true).ToList());
                     
             var upgradables = new List<GameObject>();
@@ -545,12 +550,17 @@ namespace Cinemachine.Editor
 
                 upgradables.Add(c.gameObject);
             }
-            upgradables.Sort((x, y) => -(HasReferencable(x).CompareTo(HasReferencable(y))));
-            return upgradables;
-            
-            // local function
-            static bool HasReferencable(GameObject go) => 
+
+            if (sort)
+            {
+                upgradables.Sort((x, y) => -(HasReferencable(x).CompareTo(HasReferencable(y))));
+                
+                // local function
+                static bool HasReferencable(GameObject go) => 
                     UpgradeObjectToCm3.Referencables.Any(referencable => go.GetComponent(referencable) != null);
+            }
+            
+            return upgradables;
         }
 
         // Hack: ignore nested rigs of a freeLook (GML todo: how to remove this?)
