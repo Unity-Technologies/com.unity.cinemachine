@@ -179,6 +179,13 @@ namespace Cinemachine.Editor
 
             return conversionLinksPerScene;
         }
+        
+        static List<GameObject> GetAllGameObjects()
+        {
+            var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+            return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
+                && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
+        }
 
         void RestoreConvertedCopyReferences(GameObject original, GameObject converted, List<ConversionLink> conversionLinks)
         {
@@ -187,25 +194,18 @@ namespace Cinemachine.Editor
                 converted.TryGetComponent(out CinemachineSplineDolly splineDolly) &&
                 dolly.m_Path != null)
             {
-                var allGameObjectsInScene = GetAllGameObjects();
-
+                var gameObjects = GetAllGameObjects();
                 foreach (var link in conversionLinks)
                 {
                     if (link.originalGUIDName == dolly.m_Path.gameObject.name)
                     {
-                        var target = Find(link.convertedGUIDName, allGameObjectsInScene);
+                        var target = Find(link.convertedGUIDName, gameObjects);
                         target.TryGetComponent(out splineDolly.Spline);
                     }
                 }
             }
             
             // local function
-            static List<GameObject> GetAllGameObjects()
-            {
-                var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
-                return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
-                    && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
-            }
             static GameObject Find(string name, List<GameObject> gos)
             {
                 return gos.FirstOrDefault(go => go != null && go.name.Equals(name));
@@ -320,12 +320,6 @@ namespace Cinemachine.Editor
             }
 
             // local functions
-            static List<GameObject> GetAllGameObjects()
-            {
-                var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
-                return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
-                    && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
-            }
             static GameObject Find(string name, List<GameObject> gos)
             {
                 return gos.FirstOrDefault(go => go != null && go.name.Equals(name));
