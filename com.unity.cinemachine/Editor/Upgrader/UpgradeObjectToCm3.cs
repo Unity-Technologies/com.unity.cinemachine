@@ -663,7 +663,11 @@ namespace Cinemachine.Editor
                     break;
                 }
                 default:
-                    throw new NotImplementedException();
+                {
+                    // GML todo: handle this message properly
+                    Debug.LogError($"{go.name}: Path type {pathBase.GetType().Name} is not handled by the upgrader");
+                    break;
+                }
             }
         }
     }
