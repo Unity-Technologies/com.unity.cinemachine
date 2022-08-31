@@ -340,6 +340,8 @@ namespace Cinemachine.Editor
             var upgradedObjects = new HashSet<GameObject>();
             foreach (var go in gos)
             {
+                if (go == null) continue;
+                
                 // Skip prefab instances (they are done already)
                 if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
                     continue;

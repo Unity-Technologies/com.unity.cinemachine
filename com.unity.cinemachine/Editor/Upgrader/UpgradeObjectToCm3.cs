@@ -194,6 +194,8 @@ namespace Cinemachine.Editor
         /// <param name="go">The GameObject being upgraded</param>
         public void DeleteObsoleteComponents(GameObject go)
         {
+            if (go == null) return;
+            
             foreach (var t in ObsoleteComponentTypesToDelete)
             {
                 var components = go.GetComponentsInChildren(t);
