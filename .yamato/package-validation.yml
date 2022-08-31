@@ -13,7 +13,7 @@ api_doc_validation:
     # Needed for now, until we get a recent upm-pvp into the image.
     - choco install upm-pvp -y -s https://artifactory.prd.it.unity3d.com/artifactory/api/nuget/unity-choco-local
     # Download Unity.
-    - python -c "import json, sys; m = json.load(open(sys.argv[1])); m['dependencies']['com.unity.modules.physics'] = '1.0.0';  json.dump(m, open(sys.argv[1], 'w'))" com.unity.cinemachine/package.json
+    - python -c "import json, sys; m = json.load(open(sys.argv[1])); m['dependencies']['com.unity.modules.physics'] = '1.0.0'; m['dependencies']['com.unity.modules.ui'] = '1.0.0'; json.dump(m, open(sys.argv[1], 'w'))" com.unity.cinemachine/package.json
     - npm install -g upm-ci-utils@stable --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package pack --package-path com.unity.cinemachine
     - unity-downloader-cli --fast --wait -u {{ all_tests.first.editors.first }} -c editor
