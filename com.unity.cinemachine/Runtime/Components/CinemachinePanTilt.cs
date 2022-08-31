@@ -52,6 +52,8 @@ namespace Cinemachine
         [SerializeReference]
         public InputAxis TiltAxis = DefaultTilt;
 
+        Quaternion m_PreviousCameraRotation;
+
         /// <summary>
         /// Input axis controller registers here a delegate to call when the camera is reset
         /// </summary>
@@ -126,6 +128,12 @@ namespace Cinemachine
             var rot = referenceFrame * Quaternion.Euler(TiltAxis.Value, PanAxis.Value, 0);
             var up = referenceFrame * Vector3.up;
             curState.RawOrientation = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
+
+            if (VirtualCamera.PreviousStateIsValid)
+                curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                    m_PreviousCameraRotation * Vector3.forward, 
+                    rot * Vector3.forward, curState.ReferenceUp).eulerAngles;
+            m_PreviousCameraRotation = rot;
         }
 
         /// <summary>

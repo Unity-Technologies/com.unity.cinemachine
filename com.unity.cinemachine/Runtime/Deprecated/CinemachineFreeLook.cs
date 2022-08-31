@@ -127,9 +127,9 @@ namespace Cinemachine
         private float m_LegacyHeadingBias = float.MaxValue;
         bool mUseLegacyRigDefinitions = false;
 
-        internal protected override void LegacyUpgrade(int streamedVersion)
+        internal protected override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgrade(streamedVersion);
+            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
 
             if (m_LegacyHeadingBias != float.MaxValue)
             {
@@ -270,6 +270,9 @@ namespace Cinemachine
             get { return ResolveFollow(m_Follow); }
             set { m_Follow = value; }
         }
+
+        /// <summary>Returns the TransitionParams settings</summary>
+        public override TransitionParams GetTransitionParams() => m_Transitions;
 
         /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
