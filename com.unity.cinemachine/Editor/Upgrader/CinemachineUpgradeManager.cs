@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -68,28 +70,18 @@ namespace Cinemachine.Editor
             {
                 var manager = new CinemachineUpgradeManager();
                 var scene = EditorSceneManager.GetActiveScene();
+                var rootObjects = scene.GetRootGameObjects();
+                var upgradable = manager.GetUpgradables(
+                    rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = manager.GetUpgradables(scene.GetRootGameObjects(), 
-                    manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
-                foreach (var go in upgradable)
-                {
-                    // Skip prefab instances (we'll do them later)
-                    if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
-                        continue;
-
-                    // Don't upgrade twice
-                    if (upgradedObjects.Contains(go))
-                        continue;
-
-                    upgradedObjects.Add(go);
-                    manager.UpgradeObjectComponents(go, null);
-                }
+                manager.UpgradeNonPrefabs(upgradable, upgradedObjects, null);
+                manager.UpgradeObjectReferences(rootObjects);
 
                 foreach (var go in upgradedObjects)
                     manager.m_ObjectUpgrader.DeleteObsoleteComponents(go);
             }
         }
-        
+
         /// <summary>
         /// Upgrades all objects in all scenes and prefabs
         /// </summary>
@@ -122,6 +114,23 @@ namespace Cinemachine.Editor
             }
         }
 
+        void UpgradeObjectReferences(GameObject[] rootObjects)
+        {
+            var map = m_ObjectUpgrader.ClassUpgradeMap;
+            foreach (var go in rootObjects)
+                ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
+                {
+                    var oldType = oldValue.GetType();
+                    if (map.ContainsKey(oldType))
+                    {
+                        var newType = map[oldType];
+                        if (expectedType.IsAssignableFrom(newType))
+                            return oldValue.GetComponent(newType) as MonoBehaviour;
+                    }
+                    return oldValue;
+                });
+        }
+        
         void UpgradeNonPrefabReferencables()
         {
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
@@ -290,6 +299,8 @@ namespace Cinemachine.Editor
                         UpgradeObjectComponents(c.gameObject, timelineManager);
                     }
 
+                    UpgradeObjectReferences(new GameObject[] { editingScope.prefabContentsRoot });
+
                     // clean-up now, because we needed obsolete components to restore references
                     foreach (var c in components)
                     {
@@ -321,18 +332,22 @@ namespace Cinemachine.Editor
             {
                 // 0. Open scene
                 var scene = OpenScene(s);
+                var rootObjects = scene.GetRootGameObjects();
                 var timelineManager = new TimelineManager(scene);
-                var upgradables = 
-                    GetUpgradables(scene.GetRootGameObjects(), m_ObjectUpgrader.RootUpgradeComponentTypes, true);
+                var upgradables = GetUpgradables(rootObjects, m_ObjectUpgrader.RootUpgradeComponentTypes, true);
+                var upgradedObjects = new HashSet<GameObject>();
                 
                 // 1. Prefab instances
-                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager);
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager);
 
                 // 2. Non-prefabs
-                UpgradeNonPrefabs(upgradables, timelineManager);
+                UpgradeNonPrefabs(upgradables, upgradedObjects, timelineManager);
                 
-                // 3. Clean up obsolete components
-                foreach (var go in upgradables)
+                // 3. Fix up object references
+                UpgradeObjectReferences(rootObjects);
+
+                // 4. Clean up obsolete components
+                foreach (var go in upgradedObjects)
                     m_ObjectUpgrader.DeleteObsoleteComponents(go);
 
                 // 4. AnimationReferences
@@ -354,7 +369,9 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="conversionLinks">Conversion links for the current scene</param>
         /// <param name="timelineManager">Timeline manager for the current scene</param>
-        void UpgradePrefabInstances(List<ConversionLink> conversionLinks, TimelineManager timelineManager)
+        void UpgradePrefabInstances(
+            HashSet<GameObject> upgradedObjects, 
+            List<ConversionLink> conversionLinks, TimelineManager timelineManager)
         {
             var allGameObjectsInScene = GetAllGameObjects();
 
@@ -373,6 +390,8 @@ namespace Cinemachine.Editor
                 prefabInstance.name = conversionLink.originalName;
                 UnityEngine.Object.DestroyImmediate(convertedCopy);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
+
+                upgradedObjects.Add(prefabInstance);
             }
 
             // local functions
@@ -413,14 +432,12 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="gos">Gameobjects to upgrade in the current scene</param>
         /// <param name="timelineManager">Timeline manager for the current scene</param>
-        void UpgradeNonPrefabs(List<GameObject> gos, TimelineManager timelineManager)
+        void UpgradeNonPrefabs(
+            List<GameObject> gos, HashSet<GameObject> upgradedObjects, TimelineManager timelineManager)
         {
-            var upgradedObjects = new HashSet<GameObject>();
             foreach (var go in gos)
             {
-                if (go == null) continue;
-                
-                // Skip prefab instances (they are done already)
+                // Skip prefab instances (they are done separately)
                 if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
                     continue;
 

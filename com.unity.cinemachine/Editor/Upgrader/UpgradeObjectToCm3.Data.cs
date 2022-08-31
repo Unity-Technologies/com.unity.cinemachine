@@ -56,7 +56,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Maps class upgrades.
         /// </summary>
-        readonly Dictionary<Type, Type> m_ClassUpgradeMap = new()
+        public readonly Dictionary<Type, Type> ClassUpgradeMap = new()
         {
             { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
             { typeof(CinemachineFreeLook), typeof(CmCamera) },

@@ -107,12 +107,12 @@ namespace Cinemachine.Editor
             foreach (var previousBinding in existingEditorBindings)
             {
                 // if type is not in class upgrade map, then we won't change binding
-                if (!m_ClassUpgradeMap.ContainsKey(previousBinding.type))
+                if (!ClassUpgradeMap.ContainsKey(previousBinding.type))
                     break;
                     
                 var newBinding = previousBinding;
                 // upgrade type based on mapping
-                newBinding.type = m_ClassUpgradeMap[previousBinding.type];
+                newBinding.type = ClassUpgradeMap[previousBinding.type];
 
                 // clean path pointing to old structure where vcam components lived on a hidden child gameObject
                 if (previousBinding.path.Contains("cm"))
@@ -189,8 +189,6 @@ namespace Cinemachine.Editor
         /// <param name="go">The GameObject being upgraded</param>
         public void DeleteObsoleteComponents(GameObject go)
         {
-            if (go == null) return;
-            
             foreach (var t in ObsoleteComponentTypesToDelete)
             {
                 var components = go.GetComponentsInChildren(t);
