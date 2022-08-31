@@ -27,7 +27,7 @@ namespace Cinemachine.Editor
         /// </summary>
         public static readonly List<Type> Referencables = new()
         {
-            typeof(CinemachinePath)
+            typeof(CinemachinePathBase)
         };
 
         /// <summary>
