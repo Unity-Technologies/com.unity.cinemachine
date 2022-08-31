@@ -68,10 +68,35 @@ namespace Cinemachine.Editor
                 var manager = new CinemachineUpgradeManager();
 
                 var renames = manager.MakeTimelineNamesUnique();
+                manager.UpgradeReferencables();
                 var conversionLinksPerScene = manager.CopyPrefabInstances();
                 manager.UpgradePrefabAssets();
                 manager.UpgradeAllScenes(conversionLinksPerScene);
                 manager.RestoreTimelineNames(renames);
+            }
+        }
+
+        void UpgradeReferencables()
+        {
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var upgradables = GetSortedUpgradeCandidates(scene.GetRootGameObjects());
+                foreach (var upgradable in upgradables)
+                {
+                    if (PrefabUtility.IsPartOfAnyPrefab(upgradable)) 
+                        continue;
+                    
+                    foreach (var referencable in UpgradeObjectToCm3.Referencables)
+                    {
+                        
+                        var r = upgradable.GetComponent(referencable);
+                        if (r != null)
+                            UpgradeObjectComponents(upgradable, null);
+                    }
+                }
+                
+                EditorSceneManager.SaveScene(scene); 
             }
         }
 
