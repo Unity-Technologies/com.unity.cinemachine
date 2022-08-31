@@ -21,7 +21,15 @@ namespace Cinemachine.Editor
             typeof(CinemachineFreeLook),
             typeof(CinemachineVirtualCamera),
         };
-        
+
+        /// <summary>
+        /// Any component that may be referenced by vcams or freelooks 
+        /// </summary>
+        public static readonly List<Type> Referencables = new()
+        {
+            typeof(CinemachinePathBase)
+        };
+
         /// <summary>
         /// After the upgrade is complete, these components should be deleted
         /// </summary>

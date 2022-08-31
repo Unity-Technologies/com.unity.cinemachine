@@ -86,8 +86,13 @@ namespace Cinemachine.Editor
                      orbital.UpgradeToCm3(go.GetComponent<CinemachineOrbitalFollow>());
                      ConvertInputAxis(go, "Look Orbit X", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
                 }
+
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
-                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
+                {
+                    var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();
+                    var splineDolly = go.GetComponent<CinemachineSplineDolly>();
+                    obsoleteDolly.UpgradeToCm3(splineDolly);
+                }
             }
             return notUpgradable;
         }
@@ -101,7 +106,13 @@ namespace Cinemachine.Editor
             var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
             foreach (var previousBinding in existingEditorBindings)
             {
+                // if type is not in class upgrade map, then we won't change binding
+                if (!m_ClassUpgradeMap.ContainsKey(previousBinding.type))
+                    break;
+                    
                 var newBinding = previousBinding;
+                // upgrade type based on mapping
+                newBinding.type = m_ClassUpgradeMap[previousBinding.type];
 
                 // clean path pointing to old structure where vcam components lived on a hidden child gameObject
                 if (previousBinding.path.Contains("cm"))
@@ -135,10 +146,6 @@ namespace Cinemachine.Editor
                     var propertyName = previousBinding.propertyName;
                     newBinding.propertyName = propertyName.Replace("m_", string.Empty);
                 }
-
-                // upgrade type based on mapping
-                if (m_ClassUpgradeMap.ContainsKey(previousBinding.type)) 
-                    newBinding.type = m_ClassUpgradeMap[previousBinding.type];
 
                 // Check if previousBinding.type needs an API change
                 if (m_APIUpgradeMaps.ContainsKey(previousBinding.type) &&
@@ -182,6 +189,8 @@ namespace Cinemachine.Editor
         /// <param name="go">The GameObject being upgraded</param>
         public void DeleteObsoleteComponents(GameObject go)
         {
+            if (go == null) return;
+            
             foreach (var t in ObsoleteComponentTypesToDelete)
             {
                 var components = go.GetComponentsInChildren(t);
@@ -216,18 +225,25 @@ namespace Cinemachine.Editor
         static CmCamera UpgradeVcamBaseToCmCamera(CinemachineVirtualCameraBase vcam)
         {
             var go = vcam.gameObject;
-            if (!go.TryGetComponent(out CmCamera cmCamera)) // in case RequireComponent already added CmCamera
+            if (!go.TryGetComponent(out CmCamera cmCamera)) // Check if RequireComponent already added CmCamera
             {
                 // First disable the old vcamBase, or new one will be rejected
                 Undo.RecordObject(vcam, "Upgrader: disable obsolete");
                 vcam.enabled = false;
-                    
+
                 cmCamera = Undo.AddComponent<CmCamera>(go);
                 CopyValues(vcam, cmCamera);
 
                 // Register the extensions with the cmCamera
                 foreach (var extension in vcam.gameObject.GetComponents<CinemachineExtension>())
                     cmCamera.AddExtension(extension);
+            }
+            else if (vcam.enabled) // RequireComponent added CmCamera, it should be enabled iff vcam was enabled
+            {
+                Undo.RecordObject(vcam, "Upgrader: disable obsolete");
+                vcam.enabled = false;
+                Undo.RecordObject(cmCamera, "Upgrader: enable upgraded");
+                cmCamera.enabled = true;
             }
             return cmCamera;
         }
@@ -599,11 +615,11 @@ namespace Cinemachine.Editor
             }
         }
 
-        static SplineContainer UpgradePath(CinemachinePathBase pathBase)
+        static void UpgradePath(CinemachinePathBase pathBase)
         {
             var go = pathBase.gameObject;
             if (go.TryGetComponent(out SplineContainer spline))
-                return spline; // already converted
+                return; // already converted
 
             spline = Undo.AddComponent<SplineContainer>(go);
             var splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
@@ -649,11 +665,11 @@ namespace Cinemachine.Editor
                 default:
                 {
                     // GML todo: handle this message properly
+                    pathBase.gameObject.AddComponent<CinemachineDoNotUpgrade>();
                     Debug.LogError($"{go.name}: Path type {pathBase.GetType().Name} is not handled by the upgrader");
                     break;
                 }
             }
-            return spline;
         }
     }
 }

@@ -12,7 +12,6 @@ using UnityEngine.SceneManagement;
 #if CINEMACHINE_TIMELINE
 using UnityEngine.Timeline;
 #endif
-using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
 {
@@ -70,7 +69,8 @@ namespace Cinemachine.Editor
                 var manager = new CinemachineUpgradeManager();
                 var scene = EditorSceneManager.GetActiveScene();
                 var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = manager.GetUpgradeCandidates(scene.GetRootGameObjects());
+                var upgradable = manager.GetUpgradables(scene.GetRootGameObjects(), 
+                    manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 foreach (var go in upgradable)
                 {
                     // Skip prefab instances (we'll do them later)
@@ -113,23 +113,374 @@ namespace Cinemachine.Editor
             {
                 var manager = new CinemachineUpgradeManager();
 
-                manager.MakeTimelineNamesUnique(out var renames);  
-                manager.UpgradeInScenes(); // non-prefabs first
-                manager.UpgradePrefabsAndPrefabInstances();
-                manager.UpgradeAnimationTrackReferences();
-                manager.DeleteObsoleteComponentsInScenes();
+                var renames = manager.MakeTimelineNamesUnique();
+                manager.UpgradeNonPrefabReferencables();
+                var conversionLinksPerScene = manager.CopyPrefabInstances();
+                manager.UpgradePrefabAssets();
+                manager.UpgradeAllScenes(conversionLinksPerScene);
                 manager.RestoreTimelineNames(renames);
             }
         }
+
+        void UpgradeNonPrefabReferencables()
+        {
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var upgradables = 
+                    GetUpgradables(scene.GetRootGameObjects(), UpgradeObjectToCm3.Referencables, false);
+                foreach (var upgradable in upgradables)
+                {
+                    if (PrefabUtility.IsPartOfAnyPrefab(upgradable)) 
+                        continue;
+                    
+                    UpgradeObjectComponents(upgradable, null);
+                }
+                EditorSceneManager.SaveScene(scene);
+            }
+        }
+
+        /// <summary>
+        /// Data to link original prefab data to upgraded prefab data for restoring prefab modifications.
+        /// timelineReferences are used to restore timelines that referenced vcams that needed to be upgraded
+        /// </summary>
+        struct ConversionLink
+        {
+            public string originalName; // not guaranteed to be unique
+            public string originalGUIDName; // unique
+            public string convertedGUIDName; // unique
+            public List<UniqueExposedReference> timelineReferences;
+        }
+
+        struct UniqueExposedReference
+        {
+            public string directorName; // unique GUID based name
+            public ExposedReference<CinemachineVirtualCameraBase> exposedReference;
+        }
+
+        /// <summary>
+        /// Iterates through all scenes, and copies and upgrades all prefab instances, leaving the original intact.
+        /// Creates a link between original and upgraded copy.
+        /// This is to capture local prefab override settings before the prefab asset is upgraded, which can cause
+        /// the prefab instances to lose their overrides.
+        /// </summary>
+        /// <returns>
+        /// A per scene (scene index) list of links between prefab instances and
+        /// their upgraded copies that contain the original prefab modifications.
+        /// </returns>
+        Dictionary<int, List<ConversionLink>> CopyPrefabInstances()
+        {
+            var conversionLinksPerScene = new Dictionary<int, List<ConversionLink>>();
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                var scene = OpenScene(s);
+                var timelineManager = new TimelineManager(scene);
+
+                var conversionLinks = new List<ConversionLink>();
+                    
+                var allPrefabInstances = new List<GameObject>();
+                for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
+                    allPrefabInstances.AddRange(PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(
+                        scene, m_PrefabManager.GetPrefabAssetPath(p)));
+
+                var upgradedObjects = new HashSet<GameObject>();
+                var upgradable = 
+                    GetUpgradables(allPrefabInstances.ToArray(), m_ObjectUpgrader.RootUpgradeComponentTypes, true);
+                foreach (var go in upgradable)
+                {
+                    if (upgradedObjects.Contains(go))
+                        continue; // Ignore if already converted (this can happen in nested prefabs)
+                    upgradedObjects.Add(go);
+#if CINEMACHINE_TIMELINE
+                    var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
+                    var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
+#endif
+                    
+                    var convertedCopy = UnityEngine.Object.Instantiate(go);
+                    UpgradeObjectComponents(convertedCopy, null);
+                    m_ObjectUpgrader.DeleteObsoleteComponents(convertedCopy);
+                    RestoreConvertedCopyReferences(go, convertedCopy, conversionLinks);
+                    
+                    var conversionLink = new ConversionLink
+                    {
+                        originalName = go.name,
+                        originalGUIDName = GUID.Generate().ToString(),
+                        convertedGUIDName = GUID.Generate().ToString(),
+#if CINEMACHINE_TIMELINE
+                        timelineReferences = timelineReferences,
+#endif
+                    };
+                    go.name = conversionLink.originalGUIDName;
+                    convertedCopy.name = conversionLink.convertedGUIDName;
+                    conversionLinks.Add(conversionLink);
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(go); // record name change
+                }
+                conversionLinksPerScene.Add(s, conversionLinks);
+                // save changes (i.e. converted prefab instances)
+                EditorSceneManager.SaveScene(scene); 
+            }
+
+            return conversionLinksPerScene;
+        }
+        
+        static List<GameObject> GetAllGameObjects()
+        {
+            var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
+            return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
+                && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
+        }
+
+        /// <summary>
+        /// Temporary hack until the reflection based reference updater is ready! TODO: remove!
+        /// </summary>
+        static void RestoreConvertedCopyReferences(GameObject original, GameObject converted, List<ConversionLink> conversionLinks)
+        {
+            // TODO: if we'll have more components that can reference upgradables, then we'll need to
+            // TODO: create some Data in UpgradeObjectToCM3.Data to make this generic and loopable
+            var dolly = original.GetComponentInChildren<CinemachineTrackedDolly>();
+            if (dolly != null &&
+                converted.TryGetComponent(out CinemachineSplineDolly splineDolly) &&
+                dolly.m_Path != null)
+            {
+                var gameObjects = GetAllGameObjects();
+                foreach (var link in conversionLinks)
+                {
+                    if (link.originalGUIDName == dolly.m_Path.gameObject.name)
+                    {
+                        var target = Find(link.convertedGUIDName, gameObjects);
+                        target.TryGetComponent(out splineDolly.Spline);
+                    }
+                }
+            }
+
+            // local function
+            static GameObject Find(string name, List<GameObject> gos)
+            {
+                return gos.FirstOrDefault(go => go != null && go.name.Equals(name));
+            }
+        }
+        
+        /// <summary>Upgrades all prefab assets.</summary>
+        void UpgradePrefabAssets()
+        {
+            for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
+            {
+                m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
+                using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
+                {
+                    var prefabContents = editingScope.prefabContentsRoot;
+#if CINEMACHINE_TIMELINE
+                    var timelineManager = new TimelineManager(prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList());
+#else
+                    var timelineManager = new TimelineManager();
+#endif
+                    // Note: this logic relies on the fact FreeLooks will be added first in the component list
+                    var components = new List<Component>();
+                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                    
+                    // upgrade all
+                    foreach (var c in components)
+                    {
+                        if (c == null || c.gameObject == null)
+                            continue; // was a hidden rig
+                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                            continue; // is a backup copy
+
+                        UpgradeObjectComponents(c.gameObject, timelineManager);
+                    }
+
+                    // clean-up now, because we needed obsolete components to restore references
+                    foreach (var c in components)
+                    {
+                        if (c == null || c.gameObject == null)
+                            continue; // was a hidden rig
+                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                            continue; // is a backup copy
+
+                        m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
+                    }
+                }
+            }
+            
+            m_CurrentSceneOrPrefab = string.Empty;
+        }
+
+        /// <summary>
+        /// Opens every scene in the project and upgrades:
+        /// 1. prefab instances using Conversion link,
+        /// 2. non-prefabs,
+        /// 3. cleans obsolete components,
+        /// 4. updates animation references.
+        /// </summary>
+        /// <param name="conversionLinksPerScene">A per scene (scene index) list of links between prefab instances
+        /// and their upgraded copies that contain the original prefab modifications.</param>
+        void UpgradeAllScenes(Dictionary<int, List<ConversionLink>> conversionLinksPerScene)
+        {
+            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
+            {
+                // 0. Open scene
+                var scene = OpenScene(s);
+                var timelineManager = new TimelineManager(scene);
+                var upgradables = 
+                    GetUpgradables(scene.GetRootGameObjects(), m_ObjectUpgrader.RootUpgradeComponentTypes, true);
+                
+                // 1. Prefab instances
+                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager);
+
+                // 2. Non-prefabs
+                UpgradeNonPrefabs(upgradables, timelineManager);
+                
+                // 3. Clean up obsolete components
+                foreach (var go in upgradables)
+                    m_ObjectUpgrader.DeleteObsoleteComponents(go);
+
+                // 4. AnimationReferences
+#if CINEMACHINE_TIMELINE
+                UpdateAnimationReferences(TimelineManager.GetPlayableDirectors(scene));
+#endif
+
+                // 5. Save scene
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene);
+            }
+        }
+
+       
+        /// <summary>
+        /// First, restores modifications in all prefab instances in the current scene by copying data from the linked
+        /// converted copy of the prefab instance.
+        /// Then, restores timeline references to any of these upgraded instances.
+        /// </summary>
+        /// <param name="conversionLinks">Conversion links for the current scene</param>
+        /// <param name="timelineManager">Timeline manager for the current scene</param>
+        void UpgradePrefabInstances(List<ConversionLink> conversionLinks, TimelineManager timelineManager)
+        {
+            var allGameObjectsInScene = GetAllGameObjects();
+
+            foreach (var conversionLink in conversionLinks)
+            {
+                var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
+                var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
+
+                // GML todo: do we need to do this recursively for child GameObjects?
+                SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
+#if CINEMACHINE_TIMELINE
+                timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
+#endif
+
+                // Restore original scene state (prefab instance name, delete converted copies)
+                prefabInstance.name = conversionLink.originalName;
+                UnityEngine.Object.DestroyImmediate(convertedCopy);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
+            }
+
+            // local functions
+            static GameObject Find(string name, List<GameObject> gos)
+            {
+                return gos.FirstOrDefault(go => go != null && go.name.Equals(name));
+            }
+            static void SynchronizeComponents(GameObject prefabInstance, GameObject convertedCopy, List<Type> noDeleteList)
+            {
+                // Transfer values from converted to the instance
+                var components = convertedCopy.GetComponents<MonoBehaviour>();
+                foreach (var c in components)
+                {
+                    UnityEditorInternal.ComponentUtility.CopyComponent(c);
+                    var c2 = prefabInstance.GetComponent(c.GetType());
+                    if (c2 == null)
+                        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
+                    else
+                        UnityEditorInternal.ComponentUtility.PasteComponentValues(c2);
+                }
+
+                // Delete instance components that are no longer applicable
+                components = prefabInstance.GetComponents<MonoBehaviour>();
+                foreach (var c in components)
+                {
+                    // We'll delete these later
+                    if (noDeleteList.Contains(c.GetType()))
+                        continue;
+
+                    if (convertedCopy.GetComponent(c.GetType()) == null)
+                        UnityEngine.Object.DestroyImmediate(c);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Upgrades all instances that are not part of any prefab and restores timeline references.
+        /// </summary>
+        /// <param name="gos">Gameobjects to upgrade in the current scene</param>
+        /// <param name="timelineManager">Timeline manager for the current scene</param>
+        void UpgradeNonPrefabs(List<GameObject> gos, TimelineManager timelineManager)
+        {
+            var upgradedObjects = new HashSet<GameObject>();
+            foreach (var go in gos)
+            {
+                if (go == null) continue;
+                
+                // Skip prefab instances (they are done already)
+                if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
+                    continue;
+
+                // Don't upgrade twice
+                if (upgradedObjects.Contains(go))
+                    continue;
+
+                upgradedObjects.Add(go);
+                UpgradeObjectComponents(go, timelineManager);
+            }
+        }
+        
+        /// <summary>Updates all playable directors' animation track's references in the current scene.</summary>
+        /// <param name="playableDirectors">Playable directors in the current scene</param>
+        void UpdateAnimationReferences(List<PlayableDirector> playableDirectors)
+        {
+#if CINEMACHINE_TIMELINE
+            foreach (var playableDirector in playableDirectors)
+            {
+                if (playableDirector == null)
+                    continue;
+
+                var playableAsset = playableDirector.playableAsset;
+                if (playableAsset is TimelineAsset timelineAsset)
+                {
+                    var tracks = timelineAsset.GetOutputTracks();
+                    foreach (var track in tracks)
+                    {
+                        if (track is AnimationTrack animationTrack)
+                        {
+                            var trackAnimator = playableDirector.GetGenericBinding(track) as Animator;
+                            if (animationTrack.inClipMode)
+                            {
+                                var clips = animationTrack.GetClips();
+                                var animationClips = clips
+                                    .Select(c => c.asset) //animation clip is stored in the clip's asset
+                                    .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
+                                    .Select(asset => asset.clip); //finally we get an animation clip!
+
+                                foreach (var animationClip in animationClips)
+                                    m_ObjectUpgrader.ProcessAnimationClip(animationClip, trackAnimator);
+                            }
+                            else //uses recorded clip
+                                m_ObjectUpgrader.ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
+                        }
+                    }
+                }
+            }
+#endif
+        }
+        
 
         /// <summary>
         /// We need to be able to tell timelines apart, and their name may not be unique. So we make them
         /// unique here, and restore their original name when we are done with RestoreTimelineNames().
         /// </summary>
-        /// <param name="renames">Dictionary, Key = GUID name generated, Value = original name</param>
-        void MakeTimelineNamesUnique(out Dictionary<string, string> renames)
+        /// <returns>Mapping from the GUID name to the original name.</returns>
+        Dictionary<string, string> MakeTimelineNamesUnique()
         {
-            renames = new Dictionary<string, string>();
+            var renames = new Dictionary<string, string>();
 #if CINEMACHINE_TIMELINE
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
@@ -144,8 +495,11 @@ namespace Cinemachine.Editor
                 EditorSceneManager.SaveScene(scene);
             }
 #endif
+            return renames;
         }
         
+        /// <summary>Restore timelines' names to the original name.</summary>
+        /// <param name="renames">Mapping from the GUID name to the original name.</param>
         void RestoreTimelineNames(Dictionary<string, string> renames)
         {
 #if CINEMACHINE_TIMELINE
@@ -194,7 +548,8 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
-        /// Upgrades the input gameObject's components without deleting the obsolete components.
+        /// First upgrades the input gameObject's components without deleting the obsolete components.
+        /// Then upgrades timeline references (if timelineManager is not null) to the upgraded gameObject.
         /// If the object could not be fully upgraded, a pre-upgrade 
         /// copy is created and returned, else returns null.
         /// </summary>
@@ -213,6 +568,7 @@ namespace Cinemachine.Editor
                     timelineManager.UpdateTimelineReference(oldComponent, newComponent);
             }
 #endif
+
             // Report difficult cases
             if (notUpgradable != null)
             {
@@ -225,30 +581,21 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Last conversion stage, after all objects have been converted.  Deletes the obsolete components.
+        /// Finds all gameObjects with components <paramref name="rootUpgradeComponentTypes"/>.
         /// </summary>
-        void DeleteObsoleteComponentsInScenes()
-        {
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var upgradable = GetUpgradeCandidates(scene.GetRootGameObjects());
-                foreach (var go in upgradable)
-                    m_ObjectUpgrader.DeleteObsoleteComponents(go);
-                if (upgradable.Count > 0)
-                    EditorSceneManager.SaveScene(scene); 
-            }
-        }
-
-        List<GameObject> GetUpgradeCandidates(GameObject[] rootObjects)
+        /// <param name="rootObjects">GameObjects to check.</param>
+        /// <param name="componentTypes">Find gameObjects that have these components on them or on their children.</param>
+        /// <param name="sort">Sort output. First, candidates that may be referenced and then others.</param>
+        /// <returns>Sorted list of candidates. First, candidates that may be referenced by others.</returns>
+        List<GameObject> GetUpgradables(GameObject[] rootObjects, List<Type> componentTypes, bool sort)
         {
             var components = new List<Component>();
             if (rootObjects != null)
                 foreach (var go in rootObjects)
-                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                    foreach (var type in componentTypes)
                         components.AddRange(go.GetComponentsInChildren(type, true).ToList());
                     
-            var upgradable = new List<GameObject>();
+            var upgradables = new List<GameObject>();
             foreach (var c in components)
             {
                 // Ignore hidden-object freeLook rigs
@@ -259,9 +606,19 @@ namespace Cinemachine.Editor
                 if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
                     continue;
 
-                upgradable.Add(c.gameObject);
+                upgradables.Add(c.gameObject);
             }
-            return upgradable;
+
+            if (sort)
+            {
+                upgradables.Sort((x, y) => -(HasReferencable(x).CompareTo(HasReferencable(y))));
+                
+                // local function
+                static bool HasReferencable(GameObject go) => 
+                    UpgradeObjectToCm3.Referencables.Any(referencable => go.GetComponent(referencable) != null);
+            }
+            
+            return upgradables;
         }
 
         // Hack: ignore nested rigs of a freeLook (GML todo: how to remove this?)
@@ -269,263 +626,7 @@ namespace Cinemachine.Editor
         {
             return !(c is CinemachineFreeLook) && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
         }
-
-        void UpgradeInScenes()
-        {
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var timelineManager = new TimelineManager(scene);
-                    
-                var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = GetUpgradeCandidates(scene.GetRootGameObjects());
-                foreach (var go in upgradable)
-                {
-                    // Skip prefab instances (we'll do them later)
-                    if (PrefabUtility.GetPrefabInstanceStatus(go) != PrefabInstanceStatus.NotAPrefab)
-                        continue;
-
-                    // Don't upgrade twice
-                    if (upgradedObjects.Contains(go))
-                        continue;
-
-                    upgradedObjects.Add(go);
-                    UpgradeObjectComponents(go, timelineManager);
-                }
-
-                // Update scene
-                if (upgradedObjects.Count > 0)
-                {
-                    EditorSceneManager.MarkSceneDirty(scene);
-                    EditorSceneManager.SaveScene(scene);
-                }
-            }
-        }
         
-        /// <summary>
-        /// Data to link original prefab data to upgraded prefab data for restoring prefab modifications.
-        /// timelineReferences are used to restore timelines that referenced vcams that needed to be upgraded
-        /// </summary>
-        struct ConversionLink
-        {
-            public string originalName;
-            public string originalGUIDName;
-            public string convertedGUIDName;
-            public List<UniqueExposedReference> timelineReferences;
-        }
-
-        struct UniqueExposedReference
-        {
-            public string directorName; // unique GUID based name
-            public ExposedReference<CinemachineVirtualCameraBase> exposedReference;
-        }
-        
-        void UpgradePrefabsAndPrefabInstances()
-        {
-            var upgradeComponentTypes = m_ObjectUpgrader.RootUpgradeComponentTypes;
-
-            // First copy all prefab instances and upgrade the copy, leaving the original intact.
-            // This is to capture local prefab override settings.
-            // We temporarily rename the original with a GUID so we can find it later.
-            var conversionLinksPerScene = new Dictionary<string, List<ConversionLink>>();
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var timelineManager = new TimelineManager(scene);
-
-                var conversionLinks = new List<ConversionLink>();
-                    
-                var allPrefabInstances = new List<GameObject>();
-                for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
-                    allPrefabInstances.AddRange(PrefabManager.FindAllInstancesOfPrefabEvenInNestedPrefabs(
-                        scene, m_PrefabManager.GetPrefabAssetPath(p)));
-
-                var upgradedObjects = new HashSet<GameObject>();
-                var upgradable = GetUpgradeCandidates(allPrefabInstances.ToArray());
-                foreach (var go in upgradable)
-                {
-                    // Ignore if already converted (this can happen in nested prefabs)
-                    if (upgradedObjects.Contains(go))
-                        continue; 
-                    upgradedObjects.Add(go);
-                    
-                    var originalVcam = go.GetComponent<CinemachineVirtualCameraBase>();
-#if CINEMACHINE_TIMELINE
-                    var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
-#endif
-                    
-                    var convertedCopy = Object.Instantiate(go);
-                    UpgradeObjectComponents(convertedCopy, null);
-                    var conversionLink = new ConversionLink
-                    {
-                        originalName = go.name,
-                        originalGUIDName = GUID.Generate().ToString(),
-                        convertedGUIDName = GUID.Generate().ToString(),
-#if CINEMACHINE_TIMELINE
-                        timelineReferences = timelineReferences,
-#endif
-                    };
-                    go.name = conversionLink.originalGUIDName;
-                    convertedCopy.name = conversionLink.convertedGUIDName;
-                    conversionLinks.Add(conversionLink);
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(go); // record name change
-                }
-
-                conversionLinksPerScene.Add(m_SceneManager.GetScenePath(s), conversionLinks);
-                // save changes (i.e. converted prefab instances)
-                EditorSceneManager.SaveScene(scene); 
-            }
-
-            // Upgrade Prefab Assets
-            for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
-            {
-                m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
-                using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
-                {
-                    var prefabContents = editingScope.prefabContentsRoot;
-#if CINEMACHINE_TIMELINE
-                    var timelineManager = new TimelineManager(prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList());
-#else
-                    var timelineManager = new TimelineManager();
-#endif
-                    // Note: this logic relies on the fact FreeLooks will be added first in the component list
-                    var components = new List<Component>();
-                    foreach (var type in upgradeComponentTypes)
-                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
-                    foreach (var c in components)
-                    {
-                        if (c == null || c.gameObject == null)
-                            continue; // was a hidden rig
-                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
-                            continue; // is a backup copy
-
-                        UpgradeObjectComponents(c.gameObject, timelineManager);
-                        m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
-                    }
-                }
-            }
-            m_CurrentSceneOrPrefab = string.Empty;
-
-            // In each scene, restore modifications in all prefab instances by copying data
-            // from the linked converted copy of the prefab instance.
-            
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var timelineManager = new TimelineManager(scene);
-                var conversionLinks = conversionLinksPerScene[m_SceneManager.GetScenePath(s)];
-                var allGameObjectsInScene = GetAllGameObjects();
-
-                foreach (var conversionLink in conversionLinks)
-                {
-                    var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
-                    var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
-                 
-                    // GML todo: do we need to do this recursively for child GameObjects?
-                    SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
-#if CINEMACHINE_TIMELINE
-                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
-#endif
-                    // Restore original scene state (prefab instance name, delete converted copies)
-                    prefabInstance.name = conversionLink.originalName;
-                    Object.DestroyImmediate(convertedCopy);
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(prefabInstance);
-                }
-                if (conversionLinks.Count > 0)
-                    EditorSceneManager.SaveScene(scene);
-            }
-
-            // local functions
-            static List<GameObject> GetAllGameObjects()
-            {
-                var all = (GameObject[])Resources.FindObjectsOfTypeAll(typeof(GameObject));
-                return all.Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject)
-                    && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
-            }
-
-            static GameObject Find(string name, List<GameObject> gameobjects)
-            {
-                foreach (var go in gameobjects)
-                {
-                    if (go != null && go.name.Equals(name))
-                        return go;
-                }
-                return null;
-            }
-
-            static void SynchronizeComponents(GameObject prefabInstance, GameObject convertedCopy, List<Type> noDeleteList)
-            {
-                // Transfer values from converted to the instance
-                var components = convertedCopy.GetComponents<MonoBehaviour>();
-                foreach (var c in components)
-                {
-                    UnityEditorInternal.ComponentUtility.CopyComponent(c);
-                    var c2 = prefabInstance.GetComponent(c.GetType());
-                    if (c2 == null)
-                        UnityEditorInternal.ComponentUtility.PasteComponentAsNew(prefabInstance);
-                    else
-                        UnityEditorInternal.ComponentUtility.PasteComponentValues(c2);
-                }
-
-                // Delete instance components that are no longer applicable
-                components = prefabInstance.GetComponents<MonoBehaviour>();
-                foreach (var c in components)
-                {
-                    // We'll delete these later
-                    if (noDeleteList.Contains(c.GetType()))
-                        continue;
-
-                    if (convertedCopy.GetComponent(c.GetType()) == null)
-                        Object.DestroyImmediate(c);
-                }
-            }
-        }
-        
-        void UpgradeAnimationTrackReferences()
-        {
-#if CINEMACHINE_TIMELINE
-            for (var s = 0; s < m_SceneManager.SceneCount; ++s)
-            {
-                var scene = OpenScene(s);
-                var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
-                // collect all cmShots that may require a reference update
-                foreach (var playableDirector in playableDirectors)
-                {
-                    if (playableDirector == null)
-                        continue;
-
-                    var playableAsset = playableDirector.playableAsset;
-                    if (playableAsset is TimelineAsset timelineAsset)
-                    {
-                        var tracks = timelineAsset.GetOutputTracks();
-                        foreach (var track in tracks)
-                        {
-                            if (track is AnimationTrack animationTrack)
-                            {
-                                var trackAnimator = playableDirector.GetGenericBinding(track) as Animator;
-                                if (animationTrack.inClipMode)
-                                {
-                                    var clips = animationTrack.GetClips();
-                                    var animationClips = clips
-                                        .Select(c => c.asset) //animation clip is stored in the clip's asset
-                                        .OfType<AnimationPlayableAsset>() //need to cast to the correct asset type
-                                        .Select(asset => asset.clip); //finally we get an animation clip!
-
-                                    foreach (var animationClip in animationClips)
-                                        m_ObjectUpgrader.ProcessAnimationClip(animationClip, trackAnimator);
-                                }
-                                else //uses recorded clip
-                                    m_ObjectUpgrader.ProcessAnimationClip(animationTrack.infiniteClip, trackAnimator);
-                            }
-                        }
-                    }
-                }
-                
-                EditorSceneManager.SaveScene(scene);
-            }
-#endif
-        }
-
         class SceneManager
         {
             List<string> m_AllScenePaths = new ();
