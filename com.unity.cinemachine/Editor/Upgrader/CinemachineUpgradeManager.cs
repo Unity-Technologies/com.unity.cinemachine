@@ -230,6 +230,9 @@ namespace Cinemachine.Editor
                 && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
         }
 
+        /// <summary>
+        /// Temporary hack until the reflection based reference updater is ready! TODO: remove!
+        /// </summary>
         static void RestoreConvertedCopyReferences(GameObject original, GameObject converted, List<ConversionLink> conversionLinks)
         {
             // TODO: if we'll have more components that can reference upgradables, then we'll need to
