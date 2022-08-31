@@ -172,7 +172,7 @@ namespace Cinemachine
                                 if (vcam != null)
                                 {
                                     vcam.Priority += BoostAmount;
-                                    vcam.MoveToTopOfPrioritySubqueue();
+                                    vcam.Prioritize();
                                 }
                                 break;
                             }
@@ -182,7 +182,7 @@ namespace Cinemachine
                                 targetGameObject.SetActive(true);
                                 var vcam = targetGameObject.GetComponent<CinemachineVirtualCameraBase>();
                                 if (vcam != null)
-                                    vcam.MoveToTopOfPrioritySubqueue();
+                                    vcam.Prioritize();
                             }
                             break;
                         case ActionModes.Deactivate:

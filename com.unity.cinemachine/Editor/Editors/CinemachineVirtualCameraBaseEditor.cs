@@ -133,36 +133,12 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            DrawUpgradeButton();
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CmCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
-        }
-
-        protected void DrawUpgradeButton()
-        {
-            var attrs = serializedObject.targetObject.GetType()
-                .GetCustomAttributes(typeof(ObsoleteAttribute), true);
-            if (attrs != null && attrs.Length > 0)
-            {
-#if true // For testing only - do not release with this because no undo and no animation fixup
-                if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Convert to CmCamera")))
-                {
-                    Undo.SetCurrentGroupName("Convert to CmCamera");
-                    for (int i = 0; i < targets.Length; ++i)
-                        CinemachineUpgradeManager.UpgradeSingleObject(((CinemachineVirtualCameraBase)targets[i]).gameObject);
-                    GUIUtility.ExitGUI();
-                }
-#endif
-                if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent("Upgrade Project to Cinemachine 3")))
-                {
-                    CinemachineUpgradeManager.UpgradeProject();
-                    GUIUtility.ExitGUI();
-                }
-                EditorGUILayout.Space();
-            }
         }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM

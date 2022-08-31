@@ -61,7 +61,9 @@ namespace Cinemachine
         [HideInInspector]
         [Tooltip("Obsolete - no longer used")]
         public bool m_ApplyBeforeBody;
-
+        
+        Quaternion m_PreviousCameraRotation;
+        
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
         {
             get
@@ -152,6 +154,12 @@ namespace Cinemachine
             }
             rot = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
             curState.RawOrientation = rot;
+
+            if (VirtualCamera.PreviousStateIsValid)
+                curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                    m_PreviousCameraRotation * Vector3.forward, 
+                    rot * Vector3.forward, curState.ReferenceUp).eulerAngles;
+            m_PreviousCameraRotation = rot;
         }
 
         /// <summary>

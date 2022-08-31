@@ -226,6 +226,9 @@ namespace Cinemachine
             public bool TargetObscured;
             public float OcclusionStartTime;
             public List<Vector3> DebugResolutionPath;
+            public Vector3 PreviousCameraOffset;
+            public Vector3 PreviousCameraPosition;
+            public float PreviousDampTime;
 
             public void AddPointToDebugPath(Vector3 p)
             {
@@ -307,8 +310,11 @@ namespace Cinemachine
             
                 if (AvoidObstacles)
                 {
+                    var initialCamPos = state.GetCorrectedPosition();
+
                     // Rotate the previous collision correction along with the camera
-                    extra.PreviousDisplacement = Quaternion.Euler(state.PositionDampingBypass) * extra.PreviousDisplacement;
+                    var dampingBypass = Quaternion.Euler(state.PositionDampingBypass);
+                    extra.PreviousDisplacement = dampingBypass * extra.PreviousDisplacement;
 
                     // Calculate the desired collision correction
                     var displacement = PreserveLineOfSight(ref state, ref extra);
@@ -331,7 +337,7 @@ namespace Cinemachine
                     // to the target for a while, to reduce popping in and out on bumpy objects
                     if (SmoothingTime > Epsilon)
                     {
-                        var pos = state.GetCorrectedPosition() + displacement;
+                        var pos = initialCamPos + displacement;
                         var dir = pos - state.ReferenceLookAt;
                         var distance = dir.magnitude;
                         if (distance > Epsilon)
@@ -348,21 +354,40 @@ namespace Cinemachine
                         extra.ResetDistanceSmoothing(SmoothingTime);
 
                     // Apply additional correction due to camera radius
-                    var cameraPos = state.GetCorrectedPosition() + displacement;
-                    displacement += RespectCameraRadius(
-                        cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
+                    var cameraPos = initialCamPos + displacement;
+                    displacement += RespectCameraRadius(cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                    float dampTime = DampingWhenOccluded;
+                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid && DampingWhenOccluded + Damping > Epsilon)
                     {
-                        displacement = extra.PreviousDisplacement + Damper.Damp(
-                            displacement - extra.PreviousDisplacement, 
-                            displacement.sqrMagnitude > extra.PreviousDisplacement.sqrMagnitude ? DampingWhenOccluded : Damping,
-                            deltaTime);
+                        // To ease the transition between damped and undamped regions, we damp the damp time
+                        var dispSqrMag = displacement.sqrMagnitude;
+                        dampTime = dispSqrMag > extra.PreviousDisplacement.sqrMagnitude ? DampingWhenOccluded : Damping;
+                        if (dispSqrMag < Epsilon)
+                            dampTime = extra.PreviousDampTime - Damper.Damp(extra.PreviousDampTime, dampTime, deltaTime);
+
+                        var prevDisplacement = state.ReferenceLookAt + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
+                        displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
+                    }
+                    
+                    state.PositionCorrection += displacement;
+                    cameraPos = state.GetCorrectedPosition();
+
+                    // Adjust the damping bypass to account for the displacement
+                    if (state.HasLookAt() && VirtualCamera.PreviousStateIsValid)
+                    {
+                        var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
+                        var dir1 = cameraPos - state.ReferenceLookAt;
+                        if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
+                            state.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                                dir0, dir1, state.ReferenceUp).eulerAngles;
                     }
 
                     extra.PreviousDisplacement = displacement;
-                    state.PositionCorrection += displacement;
+                    extra.PreviousCameraOffset = cameraPos - state.ReferenceLookAt;
+                    extra.PreviousCameraPosition = cameraPos;
+                    extra.PreviousDampTime = dampTime;
                 }
             }
             // Rate the shot after the aim was set

@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added customizable Auto Dolly to cameras and Spline Cart.
 - Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
 - Bugfix: No redundant RepaintAllViews calls.
+- Bugfix: Collider damping is more robust with extreme FreeLook configurations
+
+## [2.9.0] - 2022-08-15
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
 - Bugfix: Confiner2D confines to midpoint when camera window is bigger than the axis aligned bounding box of the input confiner.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
@@ -30,6 +33,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SensorSize is not saved when not using physical camera.
 - Clipper library dependency is no longer conflicting with users.
 - AimingRig sample is only optionally dependent on UnityEngine.UI.
+- Bugfix: Transposer with LockToTarget binding sometimes had gibmal lock
+- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
 
 
 ## [2.9.0-pre.7] - 2022-03-29
