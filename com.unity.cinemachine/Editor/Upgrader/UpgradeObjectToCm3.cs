@@ -92,10 +92,6 @@ namespace Cinemachine.Editor
                     var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();
                     var splineDolly = go.GetComponent<CinemachineSplineDolly>();
                     obsoleteDolly.UpgradeToCm3(splineDolly);
-                    
-                    // set splineDolly spline reference
-                    if (obsoleteDolly.m_Path != null) 
-                        obsoleteDolly.m_Path.TryGetComponent(out splineDolly.Spline);
                 }
             }
             return notUpgradable;
