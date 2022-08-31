@@ -134,12 +134,7 @@ namespace Cinemachine.Editor
                     if (PrefabUtility.IsPartOfAnyPrefab(upgradable)) 
                         continue;
                     
-                    foreach (var referencable in UpgradeObjectToCm3.Referencables)
-                    {
-                        var r = upgradable.GetComponent(referencable);
-                        if (r != null)
-                            UpgradeObjectComponents(upgradable, null);
-                    }
+                    UpgradeObjectComponents(upgradable, null);
                 }
                 EditorSceneManager.SaveScene(scene);
             }
