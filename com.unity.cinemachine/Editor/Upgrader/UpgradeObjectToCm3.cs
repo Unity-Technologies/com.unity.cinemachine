@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using Cinemachine.Utility;
-using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -668,10 +667,7 @@ namespace Cinemachine.Editor
                     break;
                 }
                 default:
-                {
-                    Assert.Fail("Need to implement conversion for " + pathBase.GetType() + " in UpgradePath()");
-                    break;
-                }
+                    throw new NotImplementedException();
             }
         }
     }
