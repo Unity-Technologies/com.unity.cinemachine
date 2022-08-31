@@ -1,3 +1,5 @@
+#define DISABLE_MAX_ITERATION_TIME // define for debugging
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -236,8 +238,8 @@ namespace Cinemachine
         List<List<IntPoint>> m_Skeleton = new List<List<IntPoint>>();
 
         const long k_FloatToIntScaler = 100000;
-        const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-        const float k_MinStepSize = 0.005f;
+        const float k_IntToFloatScaler = 1f / k_FloatToIntScaler;
+        const float k_MinStepSize = 5f / k_FloatToIntScaler;
 
         Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
@@ -265,7 +267,7 @@ namespace Cinemachine
                 return new BakedSolution(
                     m_AspectStretcher.Aspect, frustumHeight, false,
                     m_PolygonRect, m_OriginalPolygon, 
-                    new List<List<IntPoint>>{new List<IntPoint> { m_MidPoint }});
+                    m_Cache.theoriticalMaxCandidate);
             }
 
             // Inflate with clipper to frustumHeight
@@ -307,7 +309,6 @@ namespace Cinemachine
                     if (paths[i].Count != polygons[i].Count)
                         return true;
                 }
-
                 return false;
             }
             public bool IsNull => polygons == null;
@@ -327,7 +328,8 @@ namespace Cinemachine
             public List<PolygonSolution> solutions;
             public PolygonSolution rightCandidate;
             public PolygonSolution leftCandidate;
-            public List<List<IntPoint>> maxCandidate;
+            public List<List<IntPoint>> userSetMaxCandidate;
+            public List<List<IntPoint>> theoriticalMaxCandidate;
             public float stepSize;
             public float maxFrustumHeight;
             public float userSetMaxFrustumHeight;
@@ -388,8 +390,8 @@ namespace Cinemachine
             m_Cache.offsetter = new ClipperOffset(25);
             m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             
-            var solution = m_Cache.offsetter.Execute(0);
-            
+
+            var solution = new List<List<Point64>>(m_Cache.offsetter.Execute(0));
             m_Cache.solutions = new List<PolygonSolution>();
             m_Cache.solutions.Add(new PolygonSolution
             {
@@ -404,8 +406,10 @@ namespace Cinemachine
                 frustumHeight = 0,
             };
             m_Cache.currentFrustumHeight = 0;
-            
-            m_Cache.maxCandidate = m_Cache.offsetter.Execute(-1f * m_Cache.theoriticalMaxFrustumHeight * k_FloatToIntScaler);
+
+            m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
+            m_Cache.userSetMaxCandidate = new List<List<Point64>>(
+                m_Cache.offsetter.Execute(m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -451,9 +455,6 @@ namespace Cinemachine
             
             while (m_Cache.solutions.Count < 1000)
             {
-                var numPaths = m_Cache.leftCandidate.polygons.Count;
-                var candidate = new List<List<IntPoint>>(numPaths);
-
                 m_Cache.stepSize = Mathf.Min(m_Cache.stepSize, 
                     m_Cache.maxFrustumHeight - m_Cache.leftCandidate.frustumHeight);
 #if false
@@ -462,21 +463,17 @@ namespace Cinemachine
 #endif
                 m_Cache.currentFrustumHeight = 
                     m_Cache.leftCandidate.frustumHeight + m_Cache.stepSize;
-                if (Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < 
-                    UnityVectorExtensions.Epsilon)
-                {
-                    candidate = m_Cache.maxCandidate;
-                }
-                else
-                {
-                    candidate = m_Cache.offsetter.Execute(-1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
-                }
+                
+                var candidate = 
+                    Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < UnityVectorExtensions.Epsilon 
+                        ? m_Cache.userSetMaxCandidate 
+                        : m_Cache.offsetter.Execute(-1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
                 
                 if (m_Cache.leftCandidate.StateChanged(in candidate))
                 {
                     m_Cache.rightCandidate = new PolygonSolution
                     {
-                        polygons = candidate,
+                        polygons = new List<List<Point64>>(candidate),
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
                     m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
@@ -485,7 +482,7 @@ namespace Cinemachine
                 {
                     m_Cache.leftCandidate = new PolygonSolution
                     {
-                        polygons = candidate,
+                        polygons = new List<List<Point64>>(candidate),
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
 
@@ -517,6 +514,7 @@ namespace Cinemachine
                     break; // stop searching, because we are at the bound
                 }
 
+#if !DISABLE_MAX_ITERATION_TIME
                 // Pause after max time per iteration reached
                 var elapsedTime = Time.realtimeSinceStartup - startTime;
                 if (elapsedTime > maxComputationTimePerFrameInSeconds)
@@ -530,6 +528,7 @@ namespace Cinemachine
                     bakeProgress = m_Cache.leftCandidate.frustumHeight / m_Cache.maxFrustumHeight;
                     return;
                 }
+#endif
             }
 
             ComputeSkeleton(in m_Cache.solutions);
@@ -546,6 +545,7 @@ namespace Cinemachine
             bakeProgress = 1;
             State = BakingState.BAKED;
 
+            // local function
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
                 // At each state change point, collect geometry that gets lost over the transition
