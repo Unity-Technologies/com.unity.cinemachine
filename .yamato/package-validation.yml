@@ -28,5 +28,3 @@ api_doc_validation:
     logs:
       paths:
         - upm-ci~/test-results/**
-  dependencies:
-    - .yamato/package-pack.yml#pack
