@@ -7,13 +7,16 @@ api_doc_validation:
   name: API documentation validation
   agent:
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/ubuntu:stable
     flavor: b1.medium
   commands:
     # Needed for now, until we get a recent upm-pvp into the image.
-    - choco install upm-pvp -y -s https://artifactory.prd.it.unity3d.com/artifactory/api/nuget/unity-choco-local
+    - sudo apt-get update && sudo apt-get install -y upm-pvp
     # Download Unity.
-    - unity-downloader-cli --fast --wait -u 2021.3 -c editor
+    - python -c "import json, sys; m = json.load(open(sys.argv[1])); m['dependencies']['com.unity.modules.physics'] = '1.0.0';  json.dump(m, open(sys.argv[1], 'w'))" com.unity.cinemachine/package.json
+    - npm install -g upm-ci-utils@stable --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package pack --package-path com.unity.cinemachine
+    - unity-downloader-cli --fast --wait -u {{ all_tests.first.editors.first }} -c editor
     # Run PVS in PVP mode.
     - upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results "upm-ci~/pvp"
     # Require that PVP-20-1 (API docs validation) passed
