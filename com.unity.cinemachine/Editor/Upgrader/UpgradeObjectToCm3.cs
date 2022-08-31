@@ -665,6 +665,7 @@ namespace Cinemachine.Editor
                 default:
                 {
                     // GML todo: handle this message properly
+                    pathBase.gameObject.AddComponent<CinemachineDoNotUpgrade>();
                     Debug.LogError($"{go.name}: Path type {pathBase.GetType().Name} is not handled by the upgrader");
                     break;
                 }
