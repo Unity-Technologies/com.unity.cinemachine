@@ -187,8 +187,10 @@ namespace Cinemachine.Editor
                 && (go.hideFlags & (HideFlags.NotEditable | HideFlags.HideAndDontSave)) == 0).ToList();
         }
 
-        void RestoreConvertedCopyReferences(GameObject original, GameObject converted, List<ConversionLink> conversionLinks)
+        static void RestoreConvertedCopyReferences(GameObject original, GameObject converted, List<ConversionLink> conversionLinks)
         {
+            // TODO: if we'll have more components that can reference upgradables, then we'll need to
+            // TODO: create some Data in UpgradeObjectToCM3.Data to make this generic and loopable
             var dolly = original.GetComponentInChildren<CinemachineTrackedDolly>();
             if (dolly != null &&
                 converted.TryGetComponent(out CinemachineSplineDolly splineDolly) &&
@@ -204,7 +206,7 @@ namespace Cinemachine.Editor
                     }
                 }
             }
-            
+
             // local function
             static GameObject Find(string name, List<GameObject> gos)
             {
