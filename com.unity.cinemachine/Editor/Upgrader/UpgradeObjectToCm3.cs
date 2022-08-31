@@ -230,7 +230,7 @@ namespace Cinemachine.Editor
         static CmCamera UpgradeVcamBaseToCmCamera(CinemachineVirtualCameraBase vcam)
         {
             var go = vcam.gameObject;
-            if (!go.TryGetComponent(out CmCamera cmCamera)) // in case RequireComponent already added CmCamera
+            if (!go.TryGetComponent(out CmCamera cmCamera)) // Check if RequireComponent already added CmCamera
             {
                 // First disable the old vcamBase, or new one will be rejected
                 Undo.RecordObject(vcam, "Upgrader: disable obsolete");
