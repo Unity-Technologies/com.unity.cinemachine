@@ -262,7 +262,7 @@ namespace Cinemachine
                 : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
             
             // Special case: we are shrank to the mid point of the original input confiner area.
-            if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
+            if (State == BakingState.BAKED && frustumHeight >= m_Cache.theoreticalMaxFrustumHeight)
             {
                 return new BakedSolution(m_AspectStretcher.Aspect, frustumHeight, false,
                     m_PolygonRect, m_OriginalPolygon, m_Cache.theoriticalMaxCandidate);
@@ -272,6 +272,11 @@ namespace Cinemachine
             var offsetter = new ClipperOffset(25);
             offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             var solution = offsetter.Execute(-1f * frustumHeight * k_FloatToIntScaler);
+            if (solution.Count == 0)
+            {
+                solution = m_Cache.theoriticalMaxCandidate;
+                m_Cache.theoreticalMaxFrustumHeight = frustumHeight; // refine theoretical max
+            }
 
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
@@ -331,7 +336,7 @@ namespace Cinemachine
             public float stepSize;
             public float maxFrustumHeight;
             public float userSetMaxFrustumHeight;
-            public float theoriticalMaxFrustumHeight;
+            public float theoreticalMaxFrustumHeight;
             public float currentFrustumHeight;
 
             public float bakeTime;
@@ -350,7 +355,7 @@ namespace Cinemachine
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
             
             // Don't compute further than what is the theoretical max
-            m_Cache.theoriticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
+            m_Cache.theoreticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // Initialize clipper
             m_OriginalPolygon = new List<List<IntPoint>>(inputPath.Count);
@@ -379,9 +384,9 @@ namespace Cinemachine
 
             // exact comparison to 0 is intentional!
             m_Cache.maxFrustumHeight = m_Cache.userSetMaxFrustumHeight;
-            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoriticalMaxFrustumHeight) 
+            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoreticalMaxFrustumHeight) 
             {
-                m_Cache.maxFrustumHeight = m_Cache.theoriticalMaxFrustumHeight;
+                m_Cache.maxFrustumHeight = m_Cache.theoreticalMaxFrustumHeight;
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
 
