@@ -239,7 +239,9 @@ namespace Cinemachine
 
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1f / k_FloatToIntScaler;
-        const float k_MinStepSize = 5f / k_FloatToIntScaler;
+        const float k_MinStepSize = 500f / k_FloatToIntScaler;
+        const int k_MitterLimit = 10;
+        const int k_SkeletonPadding = 5;
 
         Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
@@ -269,7 +271,7 @@ namespace Cinemachine
             }
 
             // Inflate with clipper to frustumHeight
-            var offsetter = new ClipperOffset(25);
+            var offsetter = new ClipperOffset(k_MitterLimit);
             offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             var solution = offsetter.Execute(-1f * frustumHeight * k_FloatToIntScaler);
             if (solution.Count == 0)
@@ -375,26 +377,30 @@ namespace Cinemachine
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
             m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
 
-            // Skip the expensive skeleton calculation if it's not wanted (0 == oversized window off)
+            // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.userSetMaxFrustumHeight < 0)
             {
                 State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
             }
+            
+            m_Cache.offsetter = new ClipperOffset(k_MitterLimit);
+            m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
 
             // exact comparison to 0 is intentional!
             m_Cache.maxFrustumHeight = m_Cache.userSetMaxFrustumHeight;
             if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoreticalMaxFrustumHeight) 
             {
                 m_Cache.maxFrustumHeight = m_Cache.theoreticalMaxFrustumHeight;
+                m_Cache.userSetMaxCandidate = m_Cache.theoriticalMaxCandidate;
+            }
+            else
+            {
+                m_Cache.userSetMaxCandidate = new List<List<Point64>>(
+                    m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
-
-            // Binary search for state changes so we can compute the skeleton
-            m_Cache.offsetter = new ClipperOffset(25);
-            m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             
-
             var solution = new List<List<Point64>>(m_Cache.offsetter.Execute(0));
             m_Cache.solutions = new List<PolygonSolution>();
             m_Cache.solutions.Add(new PolygonSolution
@@ -410,8 +416,6 @@ namespace Cinemachine
                 frustumHeight = 0,
             };
             m_Cache.currentFrustumHeight = 0;
-            m_Cache.userSetMaxCandidate = new List<List<Point64>>(
-                m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -455,6 +459,7 @@ namespace Cinemachine
             
             var startTime = Time.realtimeSinceStartup;
             
+            // Binary search for state changes so we can compute the skeleton
             while (m_Cache.solutions.Count < 1000)
             {
                 m_Cache.stepSize = Mathf.Min(m_Cache.stepSize, 
@@ -552,14 +557,13 @@ namespace Cinemachine
             {
                 // At each state change point, collect geometry that gets lost over the transition
                 var clipper = new Clipper64();
-                var offsetter = new ClipperOffset(25);
+                var offsetter = new ClipperOffset(k_MitterLimit);
                 for (int i = 1; i < solutions.Count - 1; i += 2)
                 {
                     var prev = solutions[i];
                     var next = solutions[i+1];
 
-                    const int padding = 5; // to counteract precision problems - inflates small regions
-                    double step = padding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
+                    double step = k_SkeletonPadding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
 
                     // Grow the larger polygon to inflate marginal regions
                     offsetter.Clear();
