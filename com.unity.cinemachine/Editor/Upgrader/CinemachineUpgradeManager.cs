@@ -117,7 +117,11 @@ namespace Cinemachine.Editor
         void UpgradeObjectReferences(GameObject[] rootObjects)
         {
             var map = m_ObjectUpgrader.ClassUpgradeMap;
-            foreach (var go in rootObjects)
+            foreach (var go in rootObjects) 
+            {
+                if (go == null)
+                    continue; // ignore deleted objects (prefab instance copies)
+                
                 ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
                 {
                     var oldType = oldValue.GetType();
@@ -129,6 +133,7 @@ namespace Cinemachine.Editor
                     }
                     return oldValue;
                 });
+            }
         }
         
         void UpgradeNonPrefabReferencables()
