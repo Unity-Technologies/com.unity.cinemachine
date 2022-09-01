@@ -354,7 +354,7 @@ namespace Cinemachine
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
             
-            // Don't compute further than what is the theoretical max
+            // Don't compute further than what is the theoretical upper-bound (it may be a little bit more)
             m_Cache.theoreticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
             // Initialize clipper
@@ -375,7 +375,7 @@ namespace Cinemachine
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
             m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
 
-            // Skip the expensive skeleton calculation if it's not wanted (oversized window off)
+            // Skip the expensive skeleton calculation if it's not wanted (0 == oversized window off)
             if (m_Cache.userSetMaxFrustumHeight < 0)
             {
                 State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
