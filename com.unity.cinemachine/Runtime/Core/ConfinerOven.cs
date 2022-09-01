@@ -284,8 +284,8 @@ namespace Cinemachine
             else
             {
                 var c = new Clipper64();
-                c.AddPaths(solution, PathType.Subject, true);
-                c.AddPaths(m_Skeleton, PathType.Clip, true);
+                c.AddSubject(solution);
+                c.AddClip(m_Skeleton);
                 c.Execute(ClipType.Union, FillRule.EvenOdd, bakedSolution);
             }
 
@@ -409,7 +409,7 @@ namespace Cinemachine
 
             m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
             m_Cache.userSetMaxCandidate = new List<List<Point64>>(
-                m_Cache.offsetter.Execute(m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
+                m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
 
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
@@ -562,18 +562,18 @@ namespace Cinemachine
                     // Grow the larger polygon to inflate marginal regions
                     offsetter.Clear();
                     offsetter.AddPaths(prev.polygons, JoinType.Miter, EndType.Polygon);
-                    var expandedPrev = offsetter.Execute(step);
+                    var expandedPrev = new List<List<Point64>>(offsetter.Execute(step));
 
                     // Grow the smaller polygon to be a bit bigger than the expanded larger one
                     offsetter.Clear();
                     offsetter.AddPaths(next.polygons, JoinType.Miter, EndType.Polygon);
-                    var expandedNext = offsetter.Execute(step * 2);
+                    var expandedNext = new List<List<Point64>>(offsetter.Execute(step * 2));
 
                     // Compute the difference - this is the lost geometry
                     var solution = new List<List<IntPoint>>();
                     clipper.Clear();
-                    clipper.AddPaths(expandedPrev, PathType.Subject, true);
-                    clipper.AddPaths(expandedNext, PathType.Clip, true);
+                    clipper.AddSubject(expandedPrev);
+                    clipper.AddClip(expandedNext);
                     clipper.Execute(ClipType.Difference, FillRule.EvenOdd, solution);
 
                     // Add that lost geometry to the skeleton
