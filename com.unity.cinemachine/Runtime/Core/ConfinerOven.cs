@@ -401,6 +401,8 @@ namespace Cinemachine
             {
                 m_Cache.userSetMaxCandidate = new List<List<Point64>>(
                     m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
+                if (m_Cache.userSetMaxCandidate.Count == 0) 
+                    m_Cache.userSetMaxCandidate = m_Cache.theoriticalMaxCandidate;
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
             
