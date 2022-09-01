@@ -264,10 +264,8 @@ namespace Cinemachine
             // Special case: we are shrank to the mid point of the original input confiner area.
             if (State == BakingState.BAKED && frustumHeight > m_Cache.theoriticalMaxFrustumHeight)
             {
-                return new BakedSolution(
-                    m_AspectStretcher.Aspect, frustumHeight, false,
-                    m_PolygonRect, m_OriginalPolygon, 
-                    m_Cache.theoriticalMaxCandidate);
+                return new BakedSolution(m_AspectStretcher.Aspect, frustumHeight, false,
+                    m_PolygonRect, m_OriginalPolygon, m_Cache.theoriticalMaxCandidate);
             }
 
             // Inflate with clipper to frustumHeight
@@ -370,6 +368,7 @@ namespace Cinemachine
                 m_OriginalPolygon.Add(path);
             }
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
+            m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
 
             // Skip the expensive skeleton calculation if it's not wanted (oversized window off)
             if (m_Cache.userSetMaxFrustumHeight < 0)
@@ -406,8 +405,6 @@ namespace Cinemachine
                 frustumHeight = 0,
             };
             m_Cache.currentFrustumHeight = 0;
-
-            m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
             m_Cache.userSetMaxCandidate = new List<List<Point64>>(
                 m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
 
