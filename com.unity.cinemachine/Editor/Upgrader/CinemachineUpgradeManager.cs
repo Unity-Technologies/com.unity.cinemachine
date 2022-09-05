@@ -133,6 +133,16 @@ namespace Cinemachine.Editor
                     }
                     return oldValue;
                 });
+                
+                // manager cameras need to be recorded to keep references after saving scenes if they are part of a prefab
+                if (PrefabUtility.IsPartOfAnyPrefab(go))
+                {
+                    var managers = go.GetComponents<CinemachineCameraManagerBase>();
+                    foreach (var manager in managers)
+                    {
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
+                    }
+                }
             }
         }
         
