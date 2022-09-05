@@ -385,7 +385,9 @@ namespace Cinemachine.Editor
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                 var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
 
-                UpgradeObjectComponents(prefabInstance, null); // prefab instance modification that added an old vcam needs to be upgraded
+                // Prefab instance modification that added an old vcam needs to be upgraded,
+                // all other prefab instances were indirectly upgraded when the Prefab Asset was upgraded
+                UpgradeObjectComponents(prefabInstance, null); 
 
                 // GML todo: do we need to do this recursively for child GameObjects?
                 SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
