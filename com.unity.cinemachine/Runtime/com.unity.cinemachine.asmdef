@@ -1,5 +1,6 @@
 {
     "name": "Cinemachine",
+    "rootNamespace": "",
     "references": [
         "Unity.Timeline",
         "Unity.Postprocessing.Runtime",
@@ -78,6 +79,11 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "14.0.0",
+            "define": "CINEMACHINE_HDRP_14"
         }
     ],
     "noEngineReferences": false

@@ -986,6 +986,16 @@ namespace Cinemachine
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
 #if CINEMACHINE_HDRP
+    #if CINEMACHINE_HDRP_14
+                        //cam.focusDistance = state.Lens.FocusDistance; // implemented in CM 3.0
+                        cam.iso = state.Lens.Iso;
+                        cam.shutterSpeed = state.Lens.ShutterSpeed;
+                        cam.aperture = state.Lens.Aperture;
+                        cam.bladeCount = state.Lens.BladeCount;
+                        cam.curvature = state.Lens.Curvature;
+                        cam.barrelClipping = state.Lens.BarrelClipping;
+                        cam.anamorphism = state.Lens.Anamorphism;
+    #else
                         cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
                         if (hda != null)
                         {
@@ -997,6 +1007,7 @@ namespace Cinemachine
                             hda.physicalParameters.barrelClipping = state.Lens.BarrelClipping;
                             hda.physicalParameters.anamorphism = state.Lens.Anamorphism;
                         }
+    #endif
 #endif
                     }
                 }
