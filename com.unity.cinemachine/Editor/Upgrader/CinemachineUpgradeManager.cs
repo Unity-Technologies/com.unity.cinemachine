@@ -138,10 +138,8 @@ namespace Cinemachine.Editor
                 if (PrefabUtility.IsPartOfAnyPrefab(go))
                 {
                     var managers = go.GetComponents<CinemachineCameraManagerBase>();
-                    foreach (var manager in managers)
-                    {
+                    foreach (var manager in managers) 
                         PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
-                    }
                 }
             }
         }
