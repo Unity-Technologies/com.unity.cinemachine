@@ -4,11 +4,7 @@ using UnityEngine.Serialization;
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;
     using UnityEngine.Rendering;
-    #if CINEMACHINE_HDRP_7_3_1
-        using UnityEngine.Rendering.HighDefinition;
-    #else
-        using UnityEngine.Experimental.Rendering.HDPipeline;
-    #endif
+    using UnityEngine.Rendering.HighDefinition;
 #elif CINEMACHINE_LWRP_7_3_1
     using System.Collections.Generic;
     using UnityEngine.Rendering;
@@ -207,7 +203,7 @@ namespace Cinemachine.PostFX
                             }
                             focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
-#if CINEMACHINE_HDRP_7_3_1
+#if CINEMACHINE_HDRP
                             state.Lens.FocusDistance = focusDistance;
 #endif
                             profile.isDirty = true;
@@ -223,7 +219,7 @@ namespace Cinemachine.PostFX
         {
             //Debug.Log($"Camera cut to {brain.ActiveVirtualCamera.Name}");
 
-#if CINEMACHINE_HDRP_7_3_1
+#if CINEMACHINE_HDRP
             // Reset temporal effects
             var cam = brain.OutputCamera;
             if (cam != null)
