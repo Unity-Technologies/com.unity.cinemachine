@@ -155,9 +155,15 @@ namespace Cinemachine
 #if CINEMACHINE_HDRP
         public int Iso;
         public float ShutterSpeed;
+#if CINEMACHINE_HDRP_14
+        [Range(Camera.kMinAperture, Camera.kMaxAperture)]
+        public float Aperture;
+        [Range(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
+#else
         [Range(HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture)]
         public float Aperture;
         [Range(HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount)]
+#endif
         public int BladeCount;
         public Vector2 Curvature;
         [Range(0, 1)]
@@ -189,6 +195,15 @@ namespace Cinemachine
 #if CINEMACHINE_HDRP
                 if (lens.IsPhysicalCamera)
                 {
+#if CINEMACHINE_HDRP_14
+                    lens.Iso = fromCamera.iso;
+                    lens.ShutterSpeed = fromCamera.shutterSpeed;
+                    lens.Aperture = fromCamera.aperture;
+                    lens.BladeCount = fromCamera.bladeCount;
+                    lens.Curvature = fromCamera.curvature;
+                    lens.BarrelClipping = fromCamera.barrelClipping;
+                    lens.Anamorphism = fromCamera.anamorphism;
+#else
                     var pc = new HDPhysicalCamera();
     #if UNITY_2019_2_OR_NEWER
                     fromCamera.TryGetComponent<HDAdditionalCameraData>(out var hda);
@@ -204,6 +219,7 @@ namespace Cinemachine
                     lens.Curvature = pc.curvature;
                     lens.BarrelClipping = pc.barrelClipping;
                     lens.Anamorphism = pc.anamorphism;
+#endif
                 }
 #endif
             }
@@ -329,6 +345,15 @@ namespace Cinemachine
             m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
             m_SensorSize.y = Mathf.Max(m_SensorSize.y, 0.1f);
 #if CINEMACHINE_HDRP
+    #if CINEMACHINE_HDRP_14
+            ShutterSpeed = Mathf.Max(0, ShutterSpeed);
+            Aperture = Mathf.Clamp(Aperture, Camera.kMinAperture, Camera.kMaxAperture);
+            BladeCount = Mathf.Clamp(BladeCount, Camera.kMinBladeCount, Camera.kMaxBladeCount);
+            BarrelClipping = Mathf.Clamp01(BarrelClipping);
+            Curvature.x = Mathf.Clamp(Curvature.x, Camera.kMinAperture, Camera.kMaxAperture);
+            Curvature.y = Mathf.Clamp(Curvature.y, Curvature.x, Camera.kMaxAperture);
+            Anamorphism = Mathf.Clamp(Anamorphism, -1, 1);
+    #else
             ShutterSpeed = Mathf.Max(0, ShutterSpeed);
             Aperture = Mathf.Clamp(Aperture, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
             BladeCount = Mathf.Clamp(BladeCount, HDPhysicalCamera.kMinBladeCount, HDPhysicalCamera.kMaxBladeCount);
@@ -336,6 +361,7 @@ namespace Cinemachine
             Curvature.x = Mathf.Clamp(Curvature.x, HDPhysicalCamera.kMinAperture, HDPhysicalCamera.kMaxAperture);
             Curvature.y = Mathf.Clamp(Curvature.y, Curvature.x, HDPhysicalCamera.kMaxAperture);
             Anamorphism = Mathf.Clamp(Anamorphism, -1, 1);
+    #endif
 #endif
         }
     }
