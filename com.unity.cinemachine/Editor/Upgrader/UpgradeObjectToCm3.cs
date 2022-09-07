@@ -266,7 +266,7 @@ namespace Cinemachine.Editor
 
             // Destroy the hidden child object
             var owner = vcam.GetComponentOwner();
-            if (owner.gameObject != go)
+            if (owner != null && owner.gameObject != go)
                 UnparentAndDestroy(owner);
 
             return null;

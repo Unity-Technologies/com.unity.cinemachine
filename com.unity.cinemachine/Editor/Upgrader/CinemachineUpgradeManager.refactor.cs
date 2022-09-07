@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
         //     open scene x
         //     MakeTimelineNamesUnique x
         //     CopyPrefabInstances(no upgrade), give unique names x
+        //     Extra: convert copy
         //     collect timeline references, collect animation references, create conversion links x
         //     Upgrade prefab instance copies of referencables only x
         //     save scene x
@@ -28,6 +29,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                m_CurrentSceneOrPrefab = scene.name;
 
                 // MakeTimelineNamesUnique
                 {
@@ -69,11 +71,8 @@ namespace Cinemachine.Editor
                         var timelineReferences = timelineManager.GetTimelineReferences(originalVcam);
 #endif
                         var convertedCopy = Object.Instantiate(go);
-                        if (UpgradeObjectToCm3.HasReferencableComponent(convertedCopy))
-                        {
-                            UpgradeObjectComponents(convertedCopy, null);
-                            m_ObjectUpgrader.DeleteObsoleteComponents(convertedCopy);
-                        }
+                        UpgradeObjectComponents(convertedCopy, null);
+                        m_ObjectUpgrader.DeleteObsoleteComponents(convertedCopy);
 
                         var conversionLink = new ConversionLink
                         {
@@ -96,6 +95,8 @@ namespace Cinemachine.Editor
 
                 EditorSceneManager.SaveScene(scene);
             }
+
+            m_CurrentSceneOrPrefab = string.Empty;
         }
 
         // foreach referencable prefab asset
@@ -161,6 +162,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                m_CurrentSceneOrPrefab = scene.name;
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
                 
@@ -168,6 +170,8 @@ namespace Cinemachine.Editor
                 
                 EditorSceneManager.SaveScene(scene);
             }
+
+            m_CurrentSceneOrPrefab = string.Empty;
         }
 
         // foreach non-referencable prefab asset
@@ -239,6 +243,7 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                m_CurrentSceneOrPrefab = scene.name;
                 var timelineManager = new TimelineManager(scene);
 
                 var upgradedObjects = new HashSet<GameObject>();
@@ -252,9 +257,9 @@ namespace Cinemachine.Editor
                 var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
                 UpdateAnimationReferences(playableDirectors);
 #endif
-                
                 UpgradeObjectReferences(rootObjects);
                 
+                // TODO: maybe I should delete after prefabs
                 // Clean up all obsolete components
                 foreach (var go in rootObjects)
                     m_ObjectUpgrader.DeleteObsoleteComponents(go);
@@ -271,6 +276,34 @@ namespace Cinemachine.Editor
 #endif
                 EditorSceneManager.SaveScene(scene);
             }
+
+            m_CurrentSceneOrPrefab = string.Empty;
+        }
+
+        // delete obsolete components for prefab assets
+        void Step6()
+        {
+            for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
+            {
+                m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
+                using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
+                {
+                    var prefabContents = editingScope.prefabContentsRoot;
+                    var components = new List<Component>();
+                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                    foreach (var c in components)
+                    {
+                        if (c == null || c.gameObject == null)
+                            continue; // was a hidden rig
+                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                            continue; // is a backup copy
+
+                        m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
+                    }
+                }
+            }
+            m_CurrentSceneOrPrefab = string.Empty;
         }
     }
 }

@@ -110,7 +110,7 @@ namespace Cinemachine.Editor
                 manager.Step3(conversionLinksPerScene);
                 manager.Step4();
                 manager.Step5(conversionLinksPerScene, timelineRenames);
-                // manager.Step6();
+                manager.Step6();
 
                 // var renames = manager.MakeTimelineNamesUnique();
                 // manager.UpgradeNonPrefabReferencables();
