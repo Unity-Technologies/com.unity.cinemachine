@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Upgrades cm2 to cm3
     /// </summary>
-    class CinemachineUpgradeManager
+    partial class CinemachineUpgradeManager
     {
         const string k_UnupgradableTag = " BACKUP - not fully upgradable by CM";
 
@@ -105,12 +105,19 @@ namespace Cinemachine.Editor
             {
                 var manager = new CinemachineUpgradeManager();
 
-                var renames = manager.MakeTimelineNamesUnique();
-                manager.UpgradeNonPrefabReferencables();
-                var conversionLinksPerScene = manager.CopyPrefabInstances();
-                manager.UpgradePrefabAssets();
-                manager.UpgradeAllScenes(conversionLinksPerScene);
-                manager.RestoreTimelineNames(renames);
+                manager.Step1(out var conversionLinksPerScene, out var timelineRenames);
+                manager.Step2();
+                manager.Step3(conversionLinksPerScene);
+                manager.Step4();
+                manager.Step5(conversionLinksPerScene, timelineRenames);
+                // manager.Step6();
+
+                // var renames = manager.MakeTimelineNamesUnique();
+                // manager.UpgradeNonPrefabReferencables();
+                // var conversionLinksPerScene = manager.CopyPrefabInstances();
+                // manager.UpgradePrefabAssets();
+                // manager.UpgradeAllScenes(conversionLinksPerScene);
+                // manager.RestoreTimelineNames(renames);
             }
         }
 
@@ -343,7 +350,8 @@ namespace Cinemachine.Editor
                 var upgradedObjects = new HashSet<GameObject>();
                 
                 // 1. Prefab instances
-                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager);
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, true);
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, false);
 
                 // 2. Non-prefabs
                 UpgradeNonPrefabs(upgradables, upgradedObjects, timelineManager);
@@ -376,13 +384,17 @@ namespace Cinemachine.Editor
         /// <param name="timelineManager">Timeline manager for the current scene</param>
         void UpgradePrefabInstances(
             HashSet<GameObject> upgradedObjects, 
-            List<ConversionLink> conversionLinks, TimelineManager timelineManager)
+            List<ConversionLink> conversionLinks, TimelineManager timelineManager, bool upgradeReferencables)
         {
             var allGameObjectsInScene = GetAllGameObjects();
 
             foreach (var conversionLink in conversionLinks)
             {
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
+                var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabInstance);
+                if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
+                    continue;
+
                 var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
 
                 // Prefab instance modification that added an old vcam needs to be upgraded,
@@ -392,7 +404,8 @@ namespace Cinemachine.Editor
                 // GML todo: do we need to do this recursively for child GameObjects?
                 SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
 #if CINEMACHINE_TIMELINE
-                timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
+                if (timelineManager != null)
+                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
 #endif
 
                 // Restore original scene state (prefab instance name, delete converted copies)

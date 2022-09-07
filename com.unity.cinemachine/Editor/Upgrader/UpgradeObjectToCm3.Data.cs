@@ -27,8 +27,19 @@ namespace Cinemachine.Editor
         /// </summary>
         public static readonly List<Type> Referencables = new()
         {
-            typeof(CinemachinePathBase)
+            typeof(CinemachinePathBase),
+            typeof(CinemachineDollyCart),
         };
+        
+        public static bool HasReferencableComponent(UnityEngine.GameObject go)
+        {
+            foreach (var referencable in UpgradeObjectToCm3.Referencables)
+            {
+                if (go.TryGetComponent(referencable, out _))
+                    return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// After the upgrade is complete, these components should be deleted
