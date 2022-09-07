@@ -268,7 +268,11 @@ namespace Cinemachine.Utility
             {
                 var obj = c as object;
                 if (ScanFields(ref obj, updater))
+                {
                     doneSomething = true;
+                    if (UnityEditor.PrefabUtility.IsPartOfAnyPrefab(go)) 
+                        UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(c);
+                }
             }
             return doneSomething;
 
