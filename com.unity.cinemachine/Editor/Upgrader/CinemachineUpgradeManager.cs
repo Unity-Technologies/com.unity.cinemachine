@@ -117,7 +117,11 @@ namespace Cinemachine.Editor
         void UpgradeObjectReferences(GameObject[] rootObjects)
         {
             var map = m_ObjectUpgrader.ClassUpgradeMap;
-            foreach (var go in rootObjects)
+            foreach (var go in rootObjects) 
+            {
+                if (go == null)
+                    continue; // ignore deleted objects (prefab instance copies)
+                
                 ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
                 {
                     var oldType = oldValue.GetType();
@@ -129,6 +133,7 @@ namespace Cinemachine.Editor
                     }
                     return oldValue;
                 });
+            }
         }
         
         void UpgradeNonPrefabReferencables()
@@ -379,6 +384,10 @@ namespace Cinemachine.Editor
             {
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                 var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
+
+                // Prefab instance modification that added an old vcam needs to be upgraded,
+                // all other prefab instances were indirectly upgraded when the Prefab Asset was upgraded
+                UpgradeObjectComponents(prefabInstance, null); 
 
                 // GML todo: do we need to do this recursively for child GameObjects?
                 SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
