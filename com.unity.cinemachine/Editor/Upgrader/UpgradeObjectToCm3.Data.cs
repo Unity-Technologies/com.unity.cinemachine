@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
@@ -9,37 +10,30 @@ namespace Cinemachine.Editor
     partial class UpgradeObjectToCm3
     {
         /// <summary>
-        /// Search for these types to find GameObjects to upgrade
+        /// Search for these types to find GameObjects to upgrade.
+        /// The order is important: Referencables first, then NonReferencables for the conversion algorithm.
         /// </summary>
-        public readonly List<Type> RootUpgradeComponentTypes = new()
-        {
-            // Put the paths first so any vcam references to them will convert
-            typeof(CinemachinePath),
-            typeof(CinemachineSmoothPath),
-            typeof(CinemachineDollyCart),
-            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
-            typeof(CinemachineFreeLook),
-            typeof(CinemachineVirtualCamera),
-        };
-
+        public readonly List<Type> RootUpgradeComponentTypes = Referencables.Concat(NonReferencables).ToList();
+        
         /// <summary>
         /// Any component that may be referenced by vcams or freelooks 
         /// </summary>
         public static readonly List<Type> Referencables = new()
         {
-            typeof(CinemachinePathBase),
+            typeof(CinemachinePath),
+            typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
         };
-        
-        public static bool HasReferencableComponent(UnityEngine.GameObject go)
+
+        /// <summary>
+        /// Any component that is not referenced during the upgrade
+        /// </summary>
+        public static readonly List<Type> NonReferencables = new()
         {
-            foreach (var referencable in UpgradeObjectToCm3.Referencables)
-            {
-                if (go.TryGetComponent(referencable, out _))
-                    return true;
-            }
-            return false;
-        }
+            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
+            typeof(CinemachineFreeLook),
+            typeof(CinemachineVirtualCamera),
+        };
 
         /// <summary>
         /// After the upgrade is complete, these components should be deleted

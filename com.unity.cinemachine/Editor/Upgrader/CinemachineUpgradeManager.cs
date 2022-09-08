@@ -105,19 +105,12 @@ namespace Cinemachine.Editor
             {
                 var manager = new CinemachineUpgradeManager();
 
-                manager.Step1(out var conversionLinksPerScene, out var timelineRenames);
-                manager.Step2();
-                manager.Step3(conversionLinksPerScene);
-                manager.Step4();
-                manager.Step5(conversionLinksPerScene, timelineRenames);
-                manager.Step6();
-
-                // var renames = manager.MakeTimelineNamesUnique();
-                // manager.UpgradeNonPrefabReferencables();
-                // var conversionLinksPerScene = manager.CopyPrefabInstances();
-                // manager.UpgradePrefabAssets();
-                // manager.UpgradeAllScenes(conversionLinksPerScene);
-                // manager.RestoreTimelineNames(renames);
+                manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
+                manager.UpgradeFilteredPrefabAssets(UpgradeObjectToCm3.Referencables);
+                manager.UpgradeReferencablePrefabInstances(conversionLinksPerScene);
+                manager.UpgradeFilteredPrefabAssets(UpgradeObjectToCm3.NonReferencables);
+                manager.UpgradeRemaining(conversionLinksPerScene, timelineRenames);
+                manager.CleanupPrefabAssets();
             }
         }
 
