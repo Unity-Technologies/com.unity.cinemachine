@@ -29,7 +29,6 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                m_CurrentSceneOrPrefab = scene.name;
 
                 // MakeTimelineNamesUnique
                 {
@@ -162,7 +161,6 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                m_CurrentSceneOrPrefab = scene.name;
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
                 
@@ -243,7 +241,6 @@ namespace Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                m_CurrentSceneOrPrefab = scene.name;
                 var timelineManager = new TimelineManager(scene);
 
                 var upgradedObjects = new HashSet<GameObject>();
