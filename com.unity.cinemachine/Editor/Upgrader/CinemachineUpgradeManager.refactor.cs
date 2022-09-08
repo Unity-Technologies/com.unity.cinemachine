@@ -278,6 +278,7 @@ namespace Cinemachine.Editor
         }
 
         // delete obsolete components for prefab assets
+        // update caches of manager cameras that are part of any prefab assets
         void Step6()
         {
             for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
@@ -297,6 +298,14 @@ namespace Cinemachine.Editor
                             continue; // is a backup copy
 
                         m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
+                    }
+                    
+                    var managers =
+                        prefabContents.GetComponentsInChildren<CinemachineCameraManagerBase>();
+                    foreach (var manager in managers)
+                    {
+                        manager.InvalidateCameraCache();
+                        var children = manager.ChildCameras; // UpdateCameraCache
                     }
                 }
             }
