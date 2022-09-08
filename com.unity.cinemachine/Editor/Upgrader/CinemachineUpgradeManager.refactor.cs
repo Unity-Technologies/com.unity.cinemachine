@@ -38,7 +38,7 @@ namespace Cinemachine.Editor
                 }
 #endif
 
-                // CopyPrefabInstances(no upgrade), give unique names, create conversion links, collect timeline references
+                // CopyPrefabInstances, give unique names, create conversion links, collect timeline references
                 // Upgrade prefab instance copies of referencables only
                 var conversionLinks = new List<ConversionLink>();
                 var timelineManager = new TimelineManager(scene);
@@ -169,8 +169,9 @@ namespace Cinemachine.Editor
             {
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
-                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager,
-                    UpgradeObjectToCm3.Referencables, out _);
+                var upgradedObjects = new HashSet<GameObject>();
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager,
+                    UpgradeObjectToCm3.Referencables);
                 
                 EditorSceneManager.SaveScene(scene);
             }
@@ -198,9 +199,10 @@ namespace Cinemachine.Editor
             {
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
+                var upgradedObjects = new HashSet<GameObject>();
                 
-                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager, 
-                    UpgradeObjectToCm3.NonReferencables, out var upgradedObjects);
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, 
+                    UpgradeObjectToCm3.NonReferencables);
                 
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradables = GetUpgradables(rootObjects, m_ObjectUpgrader.RootUpgradeComponentTypes, true);

@@ -170,10 +170,9 @@ namespace Cinemachine.Editor
         /// <param name="filter">Only consider prefab instances that have at
         /// least one component of type specified in the filter</param>
         /// <param name="upgradedObjects">Set of gameObject that have been converted</param>
-        void UpgradePrefabInstances(List<ConversionLink> conversionLinks,
-            TimelineManager timelineManager, List<Type> filter, out HashSet<GameObject> upgradedObjects)
+        void UpgradePrefabInstances( HashSet<GameObject> upgradedObjects, List<ConversionLink> conversionLinks,
+            TimelineManager timelineManager, List<Type> filter)
         {
-            upgradedObjects = new HashSet<GameObject>();
             var allGameObjectsInScene = GetAllGameObjects();
 
             foreach (var conversionLink in conversionLinks)
