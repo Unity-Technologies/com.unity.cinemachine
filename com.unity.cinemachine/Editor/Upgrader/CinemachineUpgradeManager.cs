@@ -189,9 +189,8 @@ namespace Cinemachine.Editor
 
                 // Prefab instance modification that added an old vcam needs to be upgraded,
                 // all other prefab instances were indirectly upgraded when the Prefab Asset was upgraded
-                UpgradeObjectComponents(prefabInstance, null); 
-
-                // GML todo: do we need to do this recursively for child GameObjects?
+                UpgradeObjectComponents(prefabInstance, null);
+                
                 SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
 #if CINEMACHINE_TIMELINE
                 if (timelineManager != null)
