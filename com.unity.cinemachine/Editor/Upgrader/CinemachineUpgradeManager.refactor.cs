@@ -109,7 +109,7 @@ namespace Cinemachine.Editor
                 {
                     var prefabContents = editingScope.prefabContentsRoot;
                     if (!HasAnyOfComponent(prefabContents, filter))
-                        continue; // ignore not referencable prefab assets
+                        continue; // ignore prefab assets without components in filter
                     
 #if CINEMACHINE_TIMELINE
                     var playableDirectors = prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList();
