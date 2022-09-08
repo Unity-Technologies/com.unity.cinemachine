@@ -362,7 +362,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Finds all gameObjects with components <paramref name="rootUpgradeComponentTypes"/>.
+        /// Finds all gameObjects with components <paramref name="componentTypes"/>.
         /// </summary>
         /// <param name="rootObjects">GameObjects to check.</param>
         /// <param name="componentTypes">Find gameObjects that have these components on them or on their children.</param>
