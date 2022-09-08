@@ -106,43 +106,41 @@ namespace Cinemachine.Editor
             for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
             {
                 m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
-                using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
-                {
-                    var prefabContents = editingScope.prefabContentsRoot;
-                    var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabContents);
-                    if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
-                        continue;
+                using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
+                var prefabContents = editingScope.prefabContentsRoot;
+                var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabContents);
+                if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
+                    continue;
                     
 #if CINEMACHINE_TIMELINE
-                    var playableDirectors = prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList();
-                    var timelineManager = new TimelineManager(playableDirectors);
+                var playableDirectors = prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList();
+                var timelineManager = new TimelineManager(playableDirectors);
 #else
-                    var timelineManager = new TimelineManager();
+                var timelineManager = new TimelineManager();
 #endif
-                    // Note: this logic relies on the fact FreeLooks will be added first in the component list
-                    var components = new List<Component>();
-                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
-                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                // Note: this logic relies on the fact FreeLooks will be added first in the component list
+                var components = new List<Component>();
+                foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                    components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
                     
-                    // upgrade all
-                    foreach (var c in components)
-                    {
-                        if (c == null || c.gameObject == null)
-                            continue; // was a hidden rig
-                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
-                            continue; // is a backup copy
+                // upgrade all
+                foreach (var c in components)
+                {
+                    if (c == null || c.gameObject == null)
+                        continue; // was a hidden rig
+                    if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                        continue; // is a backup copy
 
-                        // Upgrade prefab and fix timeline references
-                        UpgradeObjectComponents(c.gameObject, timelineManager);
-                    }
-
-                    // Fix object references
-                    UpgradeObjectReferences(new[] { editingScope.prefabContentsRoot });
-#if CINEMACHINE_TIMELINE
-                    // Fix animation references
-                    UpdateAnimationReferences(playableDirectors);
-#endif
+                    // Upgrade prefab and fix timeline references
+                    UpgradeObjectComponents(c.gameObject, timelineManager);
                 }
+
+                // Fix object references
+                UpgradeObjectReferences(new[] { editingScope.prefabContentsRoot });
+#if CINEMACHINE_TIMELINE
+                // Fix animation references
+                UpdateAnimationReferences(playableDirectors);
+#endif
             }
             m_CurrentSceneOrPrefab = string.Empty;
         }
@@ -234,29 +232,28 @@ namespace Cinemachine.Editor
             for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
             {
                 m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
-                using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
+                using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
+                var prefabContents = editingScope.prefabContentsRoot;
+                var components = new List<Component>();
+                foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                    components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                
+                foreach (var c in components)
                 {
-                    var prefabContents = editingScope.prefabContentsRoot;
-                    var components = new List<Component>();
-                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
-                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
-                    foreach (var c in components)
-                    {
-                        if (c == null || c.gameObject == null)
-                            continue; // was a hidden rig
-                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
-                            continue; // is a backup copy
+                    if (c == null || c.gameObject == null)
+                        continue; // was a hidden rig
+                    if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                        continue; // is a backup copy
 
-                        m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
-                    }
+                    m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
+                }
                     
-                    var managers =
-                        prefabContents.GetComponentsInChildren<CinemachineCameraManagerBase>();
-                    foreach (var manager in managers)
-                    {
-                        manager.InvalidateCameraCache();
-                        var justToUpdateCache = manager.ChildCameras;
-                    }
+                var managers =
+                    prefabContents.GetComponentsInChildren<CinemachineCameraManagerBase>();
+                foreach (var manager in managers)
+                {
+                    manager.InvalidateCameraCache();
+                    var justToUpdateCache = manager.ChildCameras;
                 }
             }
             m_CurrentSceneOrPrefab = string.Empty;
