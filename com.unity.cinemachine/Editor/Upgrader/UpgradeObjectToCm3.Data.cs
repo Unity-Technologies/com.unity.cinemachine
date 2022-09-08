@@ -37,8 +37,9 @@ namespace Cinemachine.Editor
         {
             foreach (var referencable in Referencables)
             {
-                if (go.TryGetComponent(referencable, out _))
-                        return true;
+                var c = go.GetComponentInChildren(referencable);
+                if (c != null)
+                    return true;
             }
             return false;
         }

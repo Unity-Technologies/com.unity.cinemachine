@@ -65,7 +65,6 @@ namespace Cinemachine.Editor
 #endif
                     var convertedCopy = Object.Instantiate(go);
                     UpgradeObjectComponents(convertedCopy, null);
-                    m_ObjectUpgrader.DeleteObsoleteComponents(convertedCopy);
 
                     var conversionLink = new ConversionLink
                     {
@@ -196,6 +195,12 @@ namespace Cinemachine.Editor
                 var upgradables = GetUpgradables(rootObjects, m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 UpgradeNonPrefabs(upgradables, upgradedObjects, timelineManager);
                 
+                // restore dolly references in prefab instances
+                foreach (var go in upgradables)
+                {
+                    UpgradeObjectComponents(go, null);
+                } 
+                
 #if CINEMACHINE_TIMELINE
                 var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
                 UpdateAnimationReferences(playableDirectors);
@@ -213,6 +218,8 @@ namespace Cinemachine.Editor
                     if (timelineRenames.ContainsKey(director.name)) // search based on guid name
                     {
                         director.name = timelineRenames[director.name]; // restore director name
+                        if (PrefabUtility.IsPartOfAnyPrefab(director.gameObject)) 
+                            PrefabUtility.RecordPrefabInstancePropertyModifications(director);
                     }
                 }
 #endif

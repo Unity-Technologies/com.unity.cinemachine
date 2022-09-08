@@ -179,6 +179,8 @@ namespace Cinemachine.Editor
             foreach (var conversionLink in conversionLinks)
             {
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
+                if (prefabInstance == null)
+                    continue; // it has been upgraded already
                 var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabInstance);
                 if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
                     continue;
@@ -372,8 +374,8 @@ namespace Cinemachine.Editor
         {
             var components = new List<Component>();
             if (rootObjects != null)
-                foreach (var go in rootObjects)
-                    foreach (var type in componentTypes)
+                foreach (var type in componentTypes)
+                    foreach (var go in rootObjects)
                         components.AddRange(go.GetComponentsInChildren(type, true).ToList());
                     
             var upgradables = new List<GameObject>();
@@ -390,15 +392,6 @@ namespace Cinemachine.Editor
                 upgradables.Add(c.gameObject);
             }
 
-            if (sort)
-            {
-                upgradables.Sort((x, y) => -(HasReferencable(x).CompareTo(HasReferencable(y))));
-                
-                // local function
-                static bool HasReferencable(GameObject go) => 
-                    UpgradeObjectToCm3.Referencables.Any(referencable => go.GetComponent(referencable) != null);
-            }
-            
             return upgradables;
         }
 
