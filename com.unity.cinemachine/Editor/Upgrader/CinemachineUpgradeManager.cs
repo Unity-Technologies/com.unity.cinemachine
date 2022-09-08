@@ -632,12 +632,8 @@ namespace Cinemachine.Editor
                         foreach (var cmShot in cmShots)
                         {
                             var exposedRef = cmShot.VirtualCamera;
-                            if (exposedRef.exposedName == reference.exposedReference.exposedName)
-                            {
-                                // update reference if it needs to be updated <=> null
-                                if (exposedRef.Resolve(director) == null)
-                                    director.SetReferenceValue(exposedRef.exposedName, upgraded);
-                            }
+                            if (exposedRef.exposedName == reference.exposedReference.exposedName) 
+                                director.SetReferenceValue(exposedRef.exposedName, upgraded);
                         }
                     }
                 }
