@@ -181,8 +181,8 @@ namespace Cinemachine.Editor
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                 if (prefabInstance == null)
                     continue; // it has been upgraded already
-                var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabInstance);
-                if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
+                
+                if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabInstance)) 
                     continue;
 
                 var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);

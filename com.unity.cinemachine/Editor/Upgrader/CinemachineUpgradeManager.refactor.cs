@@ -107,8 +107,7 @@ namespace Cinemachine.Editor
                 m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
                 using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
                 var prefabContents = editingScope.prefabContentsRoot;
-                var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabContents);
-                if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
+                if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabContents))
                     continue;
                     
 #if CINEMACHINE_TIMELINE
@@ -196,11 +195,9 @@ namespace Cinemachine.Editor
                 UpgradeNonPrefabs(upgradables, upgradedObjects, timelineManager);
                 
                 // restore dolly references in prefab instances
-                foreach (var go in upgradables)
-                {
+                foreach (var go in upgradables) 
                     UpgradeObjectComponents(go, null);
-                } 
-                
+
 #if CINEMACHINE_TIMELINE
                 var playableDirectors = TimelineManager.GetPlayableDirectors(scene);
                 UpdateAnimationReferences(playableDirectors);
