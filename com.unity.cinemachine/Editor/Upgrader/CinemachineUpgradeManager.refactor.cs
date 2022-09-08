@@ -98,7 +98,7 @@ namespace Cinemachine.Editor
         /// - Fix object references
         /// - Fix animation references
         /// </summary>
-        /// <param name="filter">Only work on prefab assets that have at
+        /// <param name="filter">Only consider on prefab assets that have at
         /// least one component of type specified in the filter</param>
         void UpgradeFilteredPrefabAssets(List<Type> filter)
         {
@@ -169,9 +169,8 @@ namespace Cinemachine.Editor
             {
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
-                var upgradedObjects = new HashSet<GameObject>();
-                
-                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, true);
+                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager,
+                    UpgradeObjectToCm3.Referencables, out _);
                 
                 EditorSceneManager.SaveScene(scene);
             }
@@ -191,15 +190,17 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="conversionLinksPerScene">Key: scene index, Value: List of conversion links</param>
         /// <param name="timelineRenames">Timeline rename mapping</param>
-        void UpgradeRemaining(Dictionary<int, List<ConversionLink>> conversionLinksPerScene, Dictionary<string, string> timelineRenames)
+        void UpgradeRemaining(
+            Dictionary<int, List<ConversionLink>> conversionLinksPerScene,
+            Dictionary<string, string> timelineRenames)
         {
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
-                var upgradedObjects = new HashSet<GameObject>();
                 
-                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, false);
+                UpgradePrefabInstances(conversionLinksPerScene[s], timelineManager, 
+                    UpgradeObjectToCm3.NonReferencables, out var upgradedObjects);
                 
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradables = GetUpgradables(rootObjects, m_ObjectUpgrader.RootUpgradeComponentTypes, true);

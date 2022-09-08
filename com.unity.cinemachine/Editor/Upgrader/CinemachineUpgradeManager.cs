@@ -375,17 +375,19 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="conversionLinks">Conversion links for the current scene</param>
         /// <param name="timelineManager">Timeline manager for the current scene</param>
-        void UpgradePrefabInstances(
-            HashSet<GameObject> upgradedObjects, 
-            List<ConversionLink> conversionLinks, TimelineManager timelineManager, bool upgradeReferencables)
+        /// <param name="filter">Only consider prefab instances that have at
+        /// least one component of type specified in the filter</param>
+        /// <param name="upgradedObjects">Set of gameObject that have been converted</param>
+        void UpgradePrefabInstances(List<ConversionLink> conversionLinks,
+            TimelineManager timelineManager, List<Type> filter, out HashSet<GameObject> upgradedObjects)
         {
+            upgradedObjects = new HashSet<GameObject>();
             var allGameObjectsInScene = GetAllGameObjects();
 
             foreach (var conversionLink in conversionLinks)
             {
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
-                var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabInstance);
-                if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
+                if (!HasAnyOfComponent(prefabInstance, filter))
                     continue;
 
                 var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);
