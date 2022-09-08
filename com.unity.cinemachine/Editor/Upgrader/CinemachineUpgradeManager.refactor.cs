@@ -244,8 +244,6 @@ namespace Cinemachine.Editor
                 
                 foreach (var c in components)
                 {
-                    if (c == null || c.gameObject == null)
-                        continue; // was a hidden rig
                     if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
                         continue; // is a backup copy
 
