@@ -105,9 +105,9 @@ namespace Cinemachine.Editor
                 var manager = new CinemachineUpgradeManager();
 
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
-                manager.UpgradeFilteredPrefabAssets(UpgradeObjectToCm3.Referencables);
+                manager.UpgradePrefabAssets(true);
                 manager.UpgradeReferencablePrefabInstances(conversionLinksPerScene);
-                manager.UpgradeFilteredPrefabAssets(UpgradeObjectToCm3.NonReferencables);
+                manager.UpgradePrefabAssets(false);
                 manager.UpgradeRemaining(conversionLinksPerScene, timelineRenames);
                 manager.CleanupPrefabAssets();
             }
@@ -167,18 +167,20 @@ namespace Cinemachine.Editor
         /// </summary>
         /// <param name="conversionLinks">Conversion links for the current scene</param>
         /// <param name="timelineManager">Timeline manager for the current scene</param>
-        /// <param name="filter">Only consider prefab instances that have at
-        /// least one component of type specified in the filter</param>
+        /// <param name="upgradeReferencables">
+        /// True, then only referencable prefab instances are upgraded.
+        /// False, then only non-referencable prefab instances are upgraded.</param>
         /// <param name="upgradedObjects">Set of gameObject that have been converted</param>
-        void UpgradePrefabInstances( HashSet<GameObject> upgradedObjects, List<ConversionLink> conversionLinks,
-            TimelineManager timelineManager, List<Type> filter)
+        void UpgradePrefabInstances(HashSet<GameObject> upgradedObjects, List<ConversionLink> conversionLinks,
+            TimelineManager timelineManager, bool upgradeReferencables)
         {
             var allGameObjectsInScene = GetAllGameObjects();
 
             foreach (var conversionLink in conversionLinks)
             {
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
-                if (!HasAnyOfComponent(prefabInstance, filter))
+                var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabInstance);
+                if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
                     continue;
 
                 var convertedCopy = Find(conversionLink.convertedGUIDName, allGameObjectsInScene);

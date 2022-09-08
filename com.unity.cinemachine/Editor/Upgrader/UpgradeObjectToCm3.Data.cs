@@ -13,27 +13,35 @@ namespace Cinemachine.Editor
         /// Search for these types to find GameObjects to upgrade.
         /// The order is important: Referencables first, then NonReferencables for the conversion algorithm.
         /// </summary>
-        public readonly List<Type> RootUpgradeComponentTypes = Referencables.Concat(NonReferencables).ToList();
+        public readonly List<Type> RootUpgradeComponentTypes = new()
+        {
+            typeof(CinemachinePath),
+            typeof(CinemachineSmoothPath),
+            typeof(CinemachineDollyCart),
+
+            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
+            typeof(CinemachineFreeLook),
+            typeof(CinemachineVirtualCamera),
+        };
         
         /// <summary>
         /// Any component that may be referenced by vcams or freelooks 
         /// </summary>
         public static readonly List<Type> Referencables = new()
         {
-            typeof(CinemachinePath),
-            typeof(CinemachineSmoothPath),
+            typeof(CinemachinePathBase),
             typeof(CinemachineDollyCart),
         };
-
-        /// <summary>
-        /// Any component that is not referenced during the upgrade
-        /// </summary>
-        public static readonly List<Type> NonReferencables = new()
+        
+        public static bool HasReferencableComponent(UnityEngine.GameObject go)
         {
-            // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
-            typeof(CinemachineFreeLook),
-            typeof(CinemachineVirtualCamera),
-        };
+            foreach (var referencable in Referencables)
+            {
+                if (go.TryGetComponent(referencable, out _))
+                        return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// After the upgrade is complete, these components should be deleted

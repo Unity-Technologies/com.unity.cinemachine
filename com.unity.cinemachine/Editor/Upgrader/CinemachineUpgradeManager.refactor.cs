@@ -98,9 +98,10 @@ namespace Cinemachine.Editor
         /// - Fix object references
         /// - Fix animation references
         /// </summary>
-        /// <param name="filter">Only consider on prefab assets that have at
-        /// least one component of type specified in the filter</param>
-        void UpgradeFilteredPrefabAssets(List<Type> filter)
+        /// <param name="upgradeReferencables">
+        /// True, then only referencable prefab instances are upgraded.
+        /// False, then only non-referencable prefab instances are upgraded.</param>
+        void UpgradePrefabAssets(bool upgradeReferencables)
         {
             for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
             {
@@ -108,8 +109,9 @@ namespace Cinemachine.Editor
                 using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
                 {
                     var prefabContents = editingScope.prefabContentsRoot;
-                    if (!HasAnyOfComponent(prefabContents, filter))
-                        continue; // ignore prefab assets without components in filter
+                    var hasReferencable = UpgradeObjectToCm3.HasReferencableComponent(prefabContents);
+                    if ((!upgradeReferencables || !hasReferencable) && (upgradeReferencables || hasReferencable))
+                        continue;
                     
 #if CINEMACHINE_TIMELINE
                     var playableDirectors = prefabContents.GetComponentsInChildren<PlayableDirector>(true).ToList();
@@ -145,16 +147,6 @@ namespace Cinemachine.Editor
             m_CurrentSceneOrPrefab = string.Empty;
         }
 
-        bool HasAnyOfComponent(GameObject go, List<Type> components)
-        {
-            foreach (var referencable in components)
-            {
-                if (go.TryGetComponent(referencable, out _))
-                    return true;
-            }
-            return false;
-        }
-        
         /// <summary>
         /// For each scene:
         /// - Upgrade referencable prefab instances without deleting obsolete components,
@@ -170,8 +162,7 @@ namespace Cinemachine.Editor
                 var scene = OpenScene(s);
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
-                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager,
-                    UpgradeObjectToCm3.Referencables);
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, true);
                 
                 EditorSceneManager.SaveScene(scene);
             }
@@ -201,8 +192,7 @@ namespace Cinemachine.Editor
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
                 
-                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, 
-                    UpgradeObjectToCm3.NonReferencables);
+                UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, false);
                 
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradables = GetUpgradables(rootObjects, m_ObjectUpgrader.RootUpgradeComponentTypes, true);
