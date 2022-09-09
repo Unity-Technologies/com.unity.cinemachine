@@ -280,7 +280,6 @@ namespace Cinemachine
             if (solution.Count == 0)
             {
                 solution = m_Cache.theoriticalMaxCandidate;
-                m_Cache.theoreticalMaxFrustumHeight = frustumHeight; // refine theoretical max
             }
 
             // Add in the skeleton
