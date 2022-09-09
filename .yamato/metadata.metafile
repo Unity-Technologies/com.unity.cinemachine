@@ -21,7 +21,7 @@ all_tests:
     editors: [2022.2, trunk]
     args: --type vetting-tests --platform editmode
     variables:
-     - "UPMCI_PROMOTION: 1"
+     - "UPMCI_PROMOTION: 0"
   - name: promotion_tests
     editors: [2022.2, trunk]
     args: --type promotion-audit --platform editmode
