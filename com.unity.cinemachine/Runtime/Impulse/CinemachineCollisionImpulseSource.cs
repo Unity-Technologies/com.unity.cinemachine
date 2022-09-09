@@ -4,7 +4,9 @@ using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
+    
 #if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
+    /// <summary>If Physics or Physics 2D is part of the project, this would generate inpulse events.</summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource {}
 #else

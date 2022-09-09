@@ -122,6 +122,12 @@ namespace Cinemachine.Editor
             return ObjectNames.NicifyVariableName(name);
         }
         
+        /// <summary>
+        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify,
+        /// and add (Deprecated) to types with Obsolete attributes.
+        /// </summary>
+        /// <param name="type">The type to nicify as a string</param>
+        /// <returns>The nicified name</returns>
         public static string NicifyClassName(Type type)
         {
             var name = type.Name;

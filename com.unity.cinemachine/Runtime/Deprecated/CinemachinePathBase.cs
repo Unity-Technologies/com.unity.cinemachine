@@ -320,9 +320,8 @@ namespace Cinemachine
                 pos /= length;
             return pos;
         }
-
-        // to add enable toggle
-        public void OnEnable() {}
+        
+        void OnEnable() {} // to add enable toggle
 
         private float[] m_DistanceToPos;
         private float[] m_PosToDistance;
