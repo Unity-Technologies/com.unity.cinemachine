@@ -44,7 +44,7 @@ all_configurations:
     test_names: [isolation_tests]
     platform_names: [ubuntu]
   publish:
-    test_names: [isolation_tests, vetting_tests]
+    test_names: [vetting_tests]
     platform_names: [windows, macOS, ubuntu]
   promote:
     test_names: [promotion_tests, vetting_tests]

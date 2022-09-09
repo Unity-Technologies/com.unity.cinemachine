@@ -7,10 +7,11 @@ publish:
     image: package-ci/win10:stable
     flavor: b1.large
   variables:
+    IS_DRY_RUN: 0
     UPMCI_ENABLE_PACKAGE_SIGNING: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package publish --package-path com.unity.cinemachine 
+    - IF %IS_DRY_RUN% == 1 (upm-ci package publish --dry-run) ELSE (upm-ci package publish)
   triggers:
     tags:
       only:
