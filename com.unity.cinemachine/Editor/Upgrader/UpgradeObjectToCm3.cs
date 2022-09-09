@@ -30,7 +30,11 @@ namespace Cinemachine.Editor
 
             // Is it a DollyCart?
             if (ReplaceComponent<CinemachineDollyCart, CinemachineSplineCart>(go))
-                go.GetComponent<CinemachineDollyCart>().UpgradeToCm3(go.GetComponent<CinemachineSplineCart>());
+            {
+                var obsoleteDolly = go.GetComponent<CinemachineDollyCart>();
+                var splineCart = go.GetComponent<CinemachineSplineCart>();
+                obsoleteDolly.UpgradeToCm3(splineCart);
+            }
 
             // Is it a path?
             if (go.TryGetComponent(out CinemachinePathBase path))
@@ -192,9 +196,11 @@ namespace Cinemachine.Editor
             foreach (var t in ObsoleteComponentTypesToDelete)
             {
                 var components = go.GetComponentsInChildren(t);
-                foreach (var c in components)
+                foreach (var c in components) 
                     Undo.DestroyObjectImmediate(c);
             }
+            if (PrefabUtility.IsPartOfAnyPrefab(go))
+                PrefabUtility.RecordPrefabInstancePropertyModifications(go);
         }
  
         /// Disable an obsolete component and add a replacement
@@ -266,7 +272,7 @@ namespace Cinemachine.Editor
 
             // Destroy the hidden child object
             var owner = vcam.GetComponentOwner();
-            if (owner.gameObject != go)
+            if (owner != null && owner.gameObject != go)
                 UnparentAndDestroy(owner);
 
             return null;
