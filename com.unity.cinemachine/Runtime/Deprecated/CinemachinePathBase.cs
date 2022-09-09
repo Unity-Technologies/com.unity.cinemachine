@@ -321,7 +321,7 @@ namespace Cinemachine
             return pos;
         }
         
-        void OnEnable() {} // to add enable toggle
+        protected virtual void OnEnable() {} // to add enable toggle
 
         private float[] m_DistanceToPos;
         private float[] m_PosToDistance;
