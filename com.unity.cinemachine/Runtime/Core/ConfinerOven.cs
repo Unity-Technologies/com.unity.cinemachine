@@ -556,6 +556,8 @@ namespace Cinemachine
             bakeProgress = 1;
             State = BakingState.BAKED;
 
+            // TODO: This needs refinement to solve the problem of seeing outside of the confiner area.
+            // TODO: The problem is that bones do not shrink.
             // local function
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
