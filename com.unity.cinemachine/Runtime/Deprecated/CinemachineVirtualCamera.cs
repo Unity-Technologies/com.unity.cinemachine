@@ -94,7 +94,9 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
+        
         /// <summary>Returns the TransitionParams settings</summary>
+        /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => m_Transitions;
 
         /// <summary>

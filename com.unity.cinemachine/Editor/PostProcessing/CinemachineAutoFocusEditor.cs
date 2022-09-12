@@ -4,7 +4,7 @@
 namespace Cinemachine.PostFX.Editor
 {
     [CustomEditor(typeof(CinemachineAutoFocus))]
-    public sealed class CinemachineAutoFocusEditor : Cinemachine.Editor.BaseEditor<CinemachineAutoFocus>
+    sealed class CinemachineAutoFocusEditor : Cinemachine.Editor.BaseEditor<CinemachineAutoFocus>
     {
 #if !CINEMACHINE_HDRP
         public override void OnInspectorGUI()

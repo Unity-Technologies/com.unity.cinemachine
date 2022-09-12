@@ -111,6 +111,7 @@ namespace Cinemachine
         }
 
         /// <summary>Returns the current live child's TransitionParams settings</summary>
+        /// <returns>The current live child's TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams()
         {
             var child = LiveChild as CinemachineVirtualCameraBase;

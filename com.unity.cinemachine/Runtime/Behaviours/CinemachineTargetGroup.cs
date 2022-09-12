@@ -175,6 +175,7 @@ namespace Cinemachine
 
         void ISerializationCallbackReceiver.OnBeforeSerialize() {}
 
+        /// <summary>Obsolete Targets</summary>
         [Obsolete("m_Targets is obsolete.  Please use Targets instead")]
         public Target[] m_Targets
         {
