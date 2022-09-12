@@ -1,5 +1,5 @@
-﻿#if CINEMACHINE_UGUI
-using UnityEngine;
+﻿using UnityEngine;
+#if CINEMACHINE_UGUI
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
