@@ -102,6 +102,7 @@ namespace Cinemachine
         }
 
         /// <summary>Returns the TransitionParams settings</summary>
+        /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => Transitions;
 
         /// <summary>This is called to notify the CM camera that a target got warped,

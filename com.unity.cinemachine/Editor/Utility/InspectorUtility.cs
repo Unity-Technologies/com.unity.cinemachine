@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
-    public static class InspectorUtility
+    static class InspectorUtility
     {
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
@@ -122,6 +122,12 @@ namespace Cinemachine.Editor
             return ObjectNames.NicifyVariableName(name);
         }
         
+        /// <summary>
+        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify,
+        /// and add (Deprecated) to types with Obsolete attributes.
+        /// </summary>
+        /// <param name="type">The type to nicify as a string</param>
+        /// <returns>The nicified name</returns>
         public static string NicifyClassName(Type type)
         {
             var name = type.Name;

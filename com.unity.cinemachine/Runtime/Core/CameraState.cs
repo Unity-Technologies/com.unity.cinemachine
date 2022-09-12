@@ -131,7 +131,7 @@ namespace Cinemachine
         /// their weights blend along with the camera weights.  For efficiency, a fixed number of slots
         /// are provided, plus a (more expensive) overflow list.
         /// The base system manages but otherwise ignores this data - it is intended for 
-        /// extension modules.</summary>
+        /// extension modules.
         /// </summary>
         public struct CustomBlendableItems
         {
@@ -460,6 +460,9 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>Returns the index of the custom blendable that is associated with the input.</summary>
+        /// <param name="custom">The object with which the returned custom blendable index is associated.</param>
+        /// <returns>The index of the custom blendable that is associated with the input.</returns>
         public static int FindCustomBlendable(this CameraState s, Object custom)
         {
             if (s.CustomBlendables.m_Item0.Custom == custom)
