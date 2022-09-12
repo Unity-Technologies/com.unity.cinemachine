@@ -97,9 +97,9 @@ namespace Cinemachine
         [Tooltip("Automatic recentering to at-rest position")]
         public Recentering m_Recentering;
 
-        private float m_CurrentSpeed;
-        private float m_LastUpdateTime;
-        private int m_LastUpdateFrame;
+        float m_CurrentSpeed;
+        float m_LastUpdateTime;
+        int m_LastUpdateFrame;
 
         /// <summary>Constructor with specific values</summary>
         /// <param name="minValue"></param>
@@ -211,10 +211,9 @@ namespace Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             // Cheating: we want the render frame time, not the fixed frame time
-            if (CinemachineCore.UniformDeltaTimeOverride >= 0)
-                deltaTime = CinemachineCore.UniformDeltaTimeOverride; 
-            else if (Time.inFixedTimeStep && deltaTime >= 0 && m_LastUpdateTime != 0)
+            if (deltaTime >= 0 && m_LastUpdateTime != 0) 
                 deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+            
             m_LastUpdateTime = Time.realtimeSinceStartup;
             
             if (m_InputAxisProvider != null)
@@ -323,7 +322,7 @@ namespace Cinemachine
 
         // MaxSpeed may be limited as we approach the range ends, in order
         // to prevent a hard bump
-        private float GetMaxSpeed()
+        float GetMaxSpeed()
         {
             float range = m_MaxValue - m_MinValue;
             if (!m_Wrap && range > 0)
@@ -369,6 +368,8 @@ namespace Cinemachine
             [Tooltip("How long it takes to reach destination once recentering has started.")]
             public float m_RecenteringTime;
 
+            float m_LastUpdateTime;
+
             /// <summary>Constructor with specific field values</summary>
             /// <param name="enabled"></param>
             /// <param name="waitTime"></param>
@@ -381,6 +382,7 @@ namespace Cinemachine
                 mLastAxisInputTime = 0;
                 mRecenteringVelocity = 0;
                 m_LegacyHeadingDefinition = m_LegacyVelocityFilterStrength = -1;
+                m_LastUpdateTime = 0;
             }
 
             /// <summary>Call this from OnValidate()</summary>
@@ -408,7 +410,7 @@ namespace Cinemachine
             /// <summary>Cancel any recenetering in progress.</summary>
             public void CancelRecentering()
             {
-                mLastAxisInputTime = CinemachineCore.CurrentTime;
+                mLastAxisInputTime = Time.realtimeSinceStartup;
                 mRecenteringVelocity = 0;
             }
 
@@ -421,6 +423,12 @@ namespace Cinemachine
             /// <param name="recenterTarget">The value that is considered to be centered</param>
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
+                // Cheating: we want the render frame time, not the fixed frame time
+                if (deltaTime >= 0)
+                    deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
+                
+                m_LastUpdateTime = Time.realtimeSinceStartup;
+                
                 if (!m_enabled && deltaTime >= 0)
                     return;
 
@@ -458,8 +466,8 @@ namespace Cinemachine
             }
 
             // Legacy support
-            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingDefinition")] private int m_LegacyHeadingDefinition;
-            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_VelocityFilterStrength")] private int m_LegacyVelocityFilterStrength;
+            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_HeadingDefinition")] int m_LegacyHeadingDefinition;
+            [SerializeField] [HideInInspector] [FormerlySerializedAs("m_VelocityFilterStrength")] int m_LegacyVelocityFilterStrength;
             internal bool LegacyUpgrade(ref int heading, ref int velocityFilter)
             {
                 if (m_LegacyHeadingDefinition != -1 && m_LegacyVelocityFilterStrength != -1)
