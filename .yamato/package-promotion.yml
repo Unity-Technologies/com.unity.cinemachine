@@ -11,7 +11,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - IF %IS_DRY_RUN% == 1 (upm-ci package promote --dry-run) ELSE (upm-ci package promote)
+    - IF %IS_DRY_RUN% == 1 (upm-ci package promote --package-path com.unity.cinemachine --dry-run) ELSE (upm-ci package promote --package-path com.unity.cinemachine)
   triggers:
     tags:
       only:

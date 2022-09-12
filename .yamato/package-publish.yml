@@ -11,7 +11,7 @@ publish:
     UPMCI_ENABLE_PACKAGE_SIGNING: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - IF %IS_DRY_RUN% == 1 (upm-ci package publish --dry-run) ELSE (upm-ci package publish)
+    - IF %IS_DRY_RUN% == 1 (upm-ci package publish --package-path com.unity.cinemachine --dry-run) ELSE (upm-ci package publish --package-path com.unity.cinemachine)
   triggers:
     tags:
       only:
