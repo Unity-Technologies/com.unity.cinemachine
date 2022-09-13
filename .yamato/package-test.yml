@@ -11,6 +11,7 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
     flavor: {{ platform.flavor }}
   {% if platform.name == "centos" or test.variables %}
   variables:
+    UPMCI_ENABLE_APV_CLEAN_CONSOLE_TEST: 1
     {% if platform.name == "centos" %}
     DISPLAY: ":0"
     {% endif %}
