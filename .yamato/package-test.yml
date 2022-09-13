@@ -31,3 +31,19 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
 {% endfor %}
 {% endfor %}
 {% endfor %}
+
+{% for platform in all_platforms%}
+clean_console_test_in_2022.2_on_{{ platform.nam }}:
+  name: clean_console_test_in_2022.2_on_{{ platform.nam }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor }}
+  variables:
+    UPMCI_ENABLE_APV_CLEAN_CONSOLE_TEST: 1
+  commands:
+    - python -c "import json, sys; m = json.load(open(sys.argv[1])); m['dependencies']['com.unity.render-pipelines.high-definition'] = '13.1.8'; json.dump(m, open(sys.argv[1], 'w'))" com.unity.cinemachine/package.json
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package pack --package-path com.unity.cinemachine
+    - upm-ci package test -u 2022.2 --package-path com.unity.cinemachine
+{% endfor %}
