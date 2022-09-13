@@ -33,8 +33,8 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
 {% endfor %}
 
 {% for platform in all_platforms%}
-clean_console_test_in_2022.2_on_{{ platform.nam }}:
-  name: clean_console_test_in_2022.2_on_{{ platform.nam }}
+clean_console_test_in_2022.2_on_{{ platform.name }}:
+  name: clean_console_test_in_2022.2_on_{{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
