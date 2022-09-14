@@ -233,12 +233,12 @@ namespace Cinemachine
 
             // Direct mode update: maxSpeed interpreted as multiplier
             input *= m_MaxSpeed; // apply gain
-            if (deltaTime < Epsilon)
+            if (deltaTime < 0)
                 m_CurrentSpeed = 0;
             else
             {
                 float dampTime = Mathf.Abs(input) < Mathf.Abs(m_CurrentSpeed) ? m_DecelTime : m_AccelTime;
-                m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime * 0.5f, deltaTime);
+                m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime, deltaTime);
 
                 // Decelerate to the end points of the range if not wrapping
                 float range = m_MaxValue - m_MinValue;
@@ -248,11 +248,11 @@ namespace Cinemachine
                     float v = ClampValue(v0 + m_CurrentSpeed * deltaTime);
                     float d = (m_CurrentSpeed > 0) ? m_MaxValue - v : v - m_MinValue;
                     if (d < (0.1f * range) && Mathf.Abs(m_CurrentSpeed) > Epsilon)
-                        m_CurrentSpeed = Damper.Damp(v - v0, m_DecelTime, deltaTime);
+                        m_CurrentSpeed = Damper.Damp(v - v0, m_DecelTime, deltaTime) / deltaTime;
                 }
-                input = m_CurrentSpeed;
+                input = m_CurrentSpeed * deltaTime;
             }
-            Value = ClampValue(Value + input * deltaTime);
+            Value = ClampValue(Value + m_CurrentSpeed);
             return Mathf.Abs(input) > Epsilon;
         }
 
