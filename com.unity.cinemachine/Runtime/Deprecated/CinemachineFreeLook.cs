@@ -272,6 +272,7 @@ namespace Cinemachine
         }
 
         /// <summary>Returns the TransitionParams settings</summary>
+        /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => m_Transitions;
 
         /// <summary>Check whether the vcam a live child of this camera.
