@@ -395,7 +395,7 @@ namespace Cinemachine.Editor
                     if (presets == null)
                         return -1;
 #if CINEMACHINE_HDRP
-                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(p).y);
+                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(property).y);
                     var aperture = property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue;
                     var iso = property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue;
                     var shutterSpeed = property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue;
