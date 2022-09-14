@@ -211,7 +211,9 @@ namespace Cinemachine
             ref InputAxisControl control)
         {
             var input = control.InputValue;
-            if (deltaTime > k_Epsilon)
+            if (deltaTime < 0)
+                m_CurrentSpeed = 0;
+            else
             {
                 var dampTime = Mathf.Abs(input) < Mathf.Abs(m_CurrentSpeed) ? control.DecelTime : control.AccelTime;
                 m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime, deltaTime);
@@ -228,7 +230,7 @@ namespace Cinemachine
                 }
                 input = m_CurrentSpeed * deltaTime;
             }
-            axis.Value = axis.ClampValue(axis.Value + input);
+            axis.Value = axis.ClampValue(axis.Value + m_CurrentSpeed);
 
             if (Mathf.Abs(control.InputValue) > k_Epsilon)
                 CancelRecentering();
