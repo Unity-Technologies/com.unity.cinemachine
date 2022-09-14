@@ -1,0 +1,32 @@
+{% metadata_file .yamato/metadata.metafile %}
+---
+
+# The following job runs PVP API docs validation to validate all public APIs (classes and methods) have documentation.
+# For APIs which are exempted from API docs validartion, they are put in pvp_exemptions.json
+api_doc_validation:
+  name: API documentation validation
+  agent:
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: b1.medium
+  commands:
+    # Needed for now, until we get a recent upm-pvp into the image.
+    - sudo apt-get update && sudo apt-get install -y upm-pvp
+    # Add dependencies on physics and HDRP packages in Cinemachine package to workaround script compilation errors.
+    # Since Cinemachine package's dependencies need to be changed by this job on the fly, we cannot use the package packed by the 'pack' job. So just pack the package inside this job and make it self sufficient.
+    - python -c "import json, sys; m = json.load(open(sys.argv[1])); m['dependencies']['com.unity.modules.physics'] = '1.0.0'; m['dependencies']['com.unity.render-pipelines.high-definition'] = '13.1.8'; json.dump(m, open(sys.argv[1], 'w'))" com.unity.cinemachine/package.json
+    - npm install -g upm-ci-utils@stable --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package pack --package-path com.unity.cinemachine
+    # Download Unity.
+    - unity-downloader-cli --fast --wait -u {{ all_tests.first.editors.first }} -c editor
+    # Run PVS in PVP mode.
+    - upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results "upm-ci~/pvp"
+    # Require that PVP-20-1 (API docs validation) passed
+    - upm-pvp require PVP-20-1 --results "upm-ci~/pvp" --failures "upm-ci~/pvp/failures.json"
+  artifacts:
+    pvp:
+      paths:
+        - upm-ci~/pvp/**
+    logs:
+      paths:
+        - upm-ci~/test-results/**
