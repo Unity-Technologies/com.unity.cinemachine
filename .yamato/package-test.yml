@@ -46,4 +46,11 @@ clean_console_test_in_2022.2_on_{{ platform.name }}:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package pack --package-path com.unity.cinemachine
     - upm-ci package test -u 2022.2 --package-path com.unity.cinemachine
+  artifacts:
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*"
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
 {% endfor %}
