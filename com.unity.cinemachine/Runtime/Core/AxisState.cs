@@ -232,29 +232,27 @@ namespace Cinemachine
                 return MaxSpeedUpdate(input, deltaTime); // legacy mode
 
             // Direct mode update: maxSpeed interpreted as multiplier
-            input *= m_MaxSpeed;
-            if (deltaTime < Epsilon)
+            input *= m_MaxSpeed; // apply gain
+            if (deltaTime < 0)
                 m_CurrentSpeed = 0;
             else
             {
-                float speed = input / deltaTime;
-                float dampTime = Mathf.Abs(speed) < Mathf.Abs(m_CurrentSpeed) ? m_DecelTime : m_AccelTime;
-                speed = m_CurrentSpeed + Damper.Damp(speed - m_CurrentSpeed, dampTime, deltaTime);
-                m_CurrentSpeed = speed;
+                float dampTime = Mathf.Abs(input) < Mathf.Abs(m_CurrentSpeed) ? m_DecelTime : m_AccelTime;
+                m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime, deltaTime);
 
                 // Decelerate to the end points of the range if not wrapping
                 float range = m_MaxValue - m_MinValue;
                 if (!m_Wrap && m_DecelTime > Epsilon && range > Epsilon)
                 {
                     float v0 = ClampValue(Value);
-                    float v = ClampValue(v0 + speed * deltaTime);
-                    float d = (speed > 0) ? m_MaxValue - v : v - m_MinValue;
-                    if (d < (0.1f * range) && Mathf.Abs(speed) > Epsilon)
-                        speed = Damper.Damp(v - v0, m_DecelTime, deltaTime) / deltaTime;
+                    float v = ClampValue(v0 + m_CurrentSpeed * deltaTime);
+                    float d = (m_CurrentSpeed > 0) ? m_MaxValue - v : v - m_MinValue;
+                    if (d < (0.1f * range) && Mathf.Abs(m_CurrentSpeed) > Epsilon)
+                        m_CurrentSpeed = Damper.Damp(v - v0, m_DecelTime, deltaTime) / deltaTime;
                 }
-                input = speed * deltaTime;
+                input = m_CurrentSpeed * deltaTime;
             }
-            Value = ClampValue(Value + input);
+            Value = ClampValue(Value + m_CurrentSpeed);
             return Mathf.Abs(input) > Epsilon;
         }
 
