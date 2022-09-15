@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations.
 - Bugfix: AxisState Recentering wait time not work reliably in FixedUpdate.
+- Add support for HDRP 14 (Unity 2022.2)
+- Bugfix: InputValueGain mode of axis input was not framerate-independent
 
 
 ## [2.8.9] - 2022-08-24
