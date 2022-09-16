@@ -1,3 +1,4 @@
+using Editor.Utility;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -7,7 +8,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineGroupFraming))]
     [CanEditMultipleObjects]
-    class CinemachineGroupFramingEditor : UnityEditor.Editor
+    class CinemachineGroupFramingEditor : EditorWithIcon
     {
         CinemachineGroupFraming Target => target as CinemachineGroupFraming;
 

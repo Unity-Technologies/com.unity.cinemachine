@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
+using Editor.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
@@ -8,7 +9,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePositionComposer))]
     [CanEditMultipleObjects]
-    class CinemachinePositionComposerEditor : UnityEditor.Editor
+    class CinemachinePositionComposerEditor : EditorWithIcon
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;

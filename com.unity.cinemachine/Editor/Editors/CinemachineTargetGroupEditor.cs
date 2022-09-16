@@ -1,3 +1,4 @@
+using Editor.Utility;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -5,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineTargetGroup))]
-    internal sealed class CinemachineTargetGroupEditor : UnityEditor.Editor
+    internal sealed class CinemachineTargetGroupEditor : EditorWithIcon
     {
         CinemachineTargetGroup Target => target as CinemachineTargetGroup;
 

@@ -1,3 +1,4 @@
+using Editor.Utility;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -6,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineFollow))]
     [CanEditMultipleObjects]
-    internal class CinemachineFollowEditor : UnityEditor.Editor
+    internal class CinemachineFollowEditor : EditorWithIcon
     {
         CinemachineFollow Target => target as CinemachineFollow;
 

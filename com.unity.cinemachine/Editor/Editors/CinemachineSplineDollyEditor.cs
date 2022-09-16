@@ -1,3 +1,4 @@
+using Editor.Utility;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSplineDolly))]
     [CanEditMultipleObjects]
-    sealed class CinemachineSplineDollyEditor : UnityEditor.Editor
+    sealed class CinemachineSplineDollyEditor : EditorWithIcon
     {
         CinemachineSplineDolly Target => target as CinemachineSplineDolly;
 

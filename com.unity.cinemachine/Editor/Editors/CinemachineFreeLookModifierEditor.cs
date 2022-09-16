@@ -4,11 +4,12 @@ using Cinemachine.Editor;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System;
+using Editor.Utility;
 
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLookModifier))]
-    internal sealed class CinemachineFreeLookModifierEditor : UnityEditor.Editor
+    internal sealed class CinemachineFreeLookModifierEditor : EditorWithIcon
     {
         CinemachineFreeLookModifier Target => target as CinemachineFreeLookModifier;
 

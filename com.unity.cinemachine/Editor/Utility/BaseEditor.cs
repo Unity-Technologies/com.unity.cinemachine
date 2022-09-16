@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System.Linq.Expressions;
+using Editor.Utility;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -10,7 +12,7 @@ namespace Cinemachine.Editor
     /// A convenience base class for making inspector editors.
     /// </summary>
     /// <typeparam name="T">The class we're editing</typeparam>
-    public class BaseEditor<T> : UnityEditor.Editor where T : class
+    public class BaseEditor<T> : EditorWithIcon where T : class
     {
         /// <summary>
         /// The target object, cast as the same class as the object being edited

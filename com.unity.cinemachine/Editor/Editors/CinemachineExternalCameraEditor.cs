@@ -1,3 +1,4 @@
+using Editor.Utility;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -6,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineExternalCamera))]
     [CanEditMultipleObjects]
-    internal class CinemachineExternalCameraEditor : UnityEditor.Editor
+    internal class CinemachineExternalCameraEditor : EditorWithIcon
     {
         CinemachineExternalCamera Target => target as CinemachineExternalCamera;
         CmCameraInspectorUtility m_CameraUtility = new();
