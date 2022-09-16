@@ -23,10 +23,17 @@ namespace Cinemachine.Editor
         {
             m_IconContent = new GUIContent
             {
-                image = EditorGUIUtility.IconContent("d_WheelCollider Icon").image, // TODO: create a proper image
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(GetIconPath()),
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };
+        }
+        
+        string GetIconPath()
+        {
+            var isProSkin = EditorGUIUtility.isProSkin;
+            return ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Icons/Spline Track/" +
+                (isProSkin ? "Dark/" : "Light/") + (m_IsSelected ? "Selected/" : "") + "DollyTrack@128.png";
         }
 
         /// <summary>This is called when the Tool is selected in the editor.</summary>
