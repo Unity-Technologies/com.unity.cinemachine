@@ -9,7 +9,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// This is a collection of utilities surrounding ScriptableObjects
     /// </summary>
-    public class ScriptableObjectUtility : ScriptableObject
+    class ScriptableObjectUtility : ScriptableObject
     {
         /// <summary>
         /// The default relative path to the root directory where Cinemachine is installed

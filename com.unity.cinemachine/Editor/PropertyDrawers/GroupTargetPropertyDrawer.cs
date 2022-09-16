@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineTargetGroup.Target))]
-    internal sealed class GroupTargetPropertyDrawer : PropertyDrawer
+    class GroupTargetPropertyDrawer : PropertyDrawer
     {
         CinemachineTargetGroup.Target def = new();
 

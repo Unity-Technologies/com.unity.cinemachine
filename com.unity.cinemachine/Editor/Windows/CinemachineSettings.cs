@@ -4,7 +4,7 @@ using System;
 
 namespace Cinemachine.Editor
 {
-    internal sealed class CinemachineSettings : AssetPostprocessor
+    class CinemachineSettings : AssetPostprocessor
     {
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
         {

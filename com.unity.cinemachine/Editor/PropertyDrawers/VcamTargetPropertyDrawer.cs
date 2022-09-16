@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(VcamTargetPropertyAttribute))]
-    internal sealed class VcamTargetPropertyDrawer : PropertyDrawer
+    class VcamTargetPropertyDrawer : PropertyDrawer
     {
         // old IMGUI implementation must remain until no more IMGUI inspectors are using it
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)

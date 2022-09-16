@@ -7,10 +7,10 @@ using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
 #endif
 
-namespace Cinemachine.PostFX.Editor
+namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePostProcessing))]
-    sealed class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
+    class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
     {
 #if !CINEMACHINE_POST_PROCESSING_V2
         public override void OnInspectorGUI()

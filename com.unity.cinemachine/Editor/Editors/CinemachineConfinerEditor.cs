@@ -3,12 +3,12 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineConfiner))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
+    class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -188,5 +188,5 @@ namespace Cinemachine.Editor
             }
         }
     }
-#endif
 }
+#endif

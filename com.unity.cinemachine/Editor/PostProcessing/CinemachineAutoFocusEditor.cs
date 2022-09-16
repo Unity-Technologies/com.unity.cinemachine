@@ -1,13 +1,12 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Cinemachine.Editor;
 using UnityEngine;
 
-namespace Cinemachine.PostFX.Editor
+namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineAutoFocus))]
-    sealed class CinemachineAutoFocusEditor : UnityEditor.Editor
+    class CinemachineAutoFocusEditor : UnityEditor.Editor
     {
 #if !CINEMACHINE_HDRP
         public override VisualElement CreateInspectorGUI()

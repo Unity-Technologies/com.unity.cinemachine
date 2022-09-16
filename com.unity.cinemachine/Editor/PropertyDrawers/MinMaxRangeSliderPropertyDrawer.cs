@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(MinMaxRangeSliderAttribute))]
-    sealed class MinMaxRangeSliderPropertyDrawer : PropertyDrawer
+    class MinMaxRangeSliderPropertyDrawer : PropertyDrawer
     {
         // IMGUI implementation must remain until no more IMGUI inspectors are using it
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)

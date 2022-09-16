@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 namespace Cinemachine.Editor
 {
-    internal class WaveformWindow : EditorWindow
+    class WaveformWindow : EditorWindow
     {
         WaveformGenerator mWaveformGenerator;
         Texture2D mScreenshot;

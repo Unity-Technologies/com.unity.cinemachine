@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineFollow))]
     [CanEditMultipleObjects]
-    internal class CinemachineFollowEditor : UnityEditor.Editor
+    class CinemachineFollowEditor : UnityEditor.Editor
     {
         CinemachineFollow Target => target as CinemachineFollow;
 
@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_NoFollowHelp = ux.AddChild(new HelpBox("Follow requires a Tracking target.", HelpBoxMessageType.Warning));
+            m_NoFollowHelp = ux.AddChild(new HelpBox("Follow requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();

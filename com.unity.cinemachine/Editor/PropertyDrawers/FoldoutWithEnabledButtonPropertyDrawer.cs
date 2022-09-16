@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(FoldoutWithEnabledButtonAttribute))]
-    sealed class FoldoutWithEnabledButtonPropertyDrawer : PropertyDrawer
+    class FoldoutWithEnabledButtonPropertyDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {

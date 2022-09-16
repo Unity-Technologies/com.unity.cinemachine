@@ -4,7 +4,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineImpulseListener))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineImpulseListenerEditor : BaseEditor<CinemachineImpulseListener>
+    class CinemachineImpulseListenerEditor : BaseEditor<CinemachineImpulseListener>
     {
         public override void OnInspectorGUI()
         {
