@@ -1,5 +1,4 @@
-﻿using Editor.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -11,7 +10,7 @@ namespace Cinemachine.Editor
     /// </summary>
     [CustomEditor(typeof(CinemachineBrain))]
     [CanEditMultipleObjects]
-    class CinemachineBrainEditor : EditorWithIcon
+    class CinemachineBrainEditor : UnityEditor.Editor
     {
         CinemachineBrain Target => target as CinemachineBrain;
 
@@ -106,8 +105,8 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
-            string kGizmoFileName = ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Icons/CmCamera/" +
-                (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") + "VirtualCamera@256.png";
+            string kGizmoFileName = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
+            "/Editor/EditorResources/Icons/CmCamera/Dark/VirtualCamera@256.png";
 
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
