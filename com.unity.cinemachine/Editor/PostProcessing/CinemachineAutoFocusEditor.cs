@@ -19,7 +19,7 @@ namespace Cinemachine.PostFX.Editor
 #else
         CinemachineAutoFocus Target => target as CinemachineAutoFocus;
 
-        const string kComputeShaderName = "CinemachineFocusDistanceCompute";
+        const string k_ComputeShaderName = "CinemachineFocusDistanceCompute";
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -42,9 +42,9 @@ namespace Cinemachine.PostFX.Editor
             shaderDisplay.SetEnabled(false);
 
             var importHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
-                $"The {kComputeShaderName} shader needs to be imported into "
-                    + "the project. It will be imprted by default into the Assets root.  "
-                    + "After importing, you cam move it elsewhere but don't rename it.",
+                $"The {k_ComputeShaderName} shader needs to be imported into "
+                    + "the project. It will be imported by default into the Assets root.  "
+                    + "After importing, you can move it elsewhere but don't rename it.",
                     HelpBoxMessageType.Warning,
                 "Import\nShader", () =>
             {
@@ -53,9 +53,9 @@ namespace Cinemachine.PostFX.Editor
                 if (shader == null)
                 {
                     // Import the asset from the package
-                    var shaderAssetPath = $"Assets/{kComputeShaderName}.compute";
+                    var shaderAssetPath = $"Assets/{k_ComputeShaderName}.compute";
                     FileUtil.CopyFileOrDirectory(
-                        $"Packages/com.unity.cinemachine/Runtime/PostProcessing/HDRP Resources~/{kComputeShaderName}.compute",
+                        $"Packages/com.unity.cinemachine/Runtime/PostProcessing/HDRP Resources~/{k_ComputeShaderName}.compute",
                         shaderAssetPath);
                     AssetDatabase.ImportAsset(shaderAssetPath);
                     shader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderAssetPath);
@@ -99,7 +99,7 @@ namespace Cinemachine.PostFX.Editor
 
         static ComputeShader FindShader()
         {
-            var guids = AssetDatabase.FindAssets($"{kComputeShaderName}, t:ComputeShader", new [] { "Assets" });
+            var guids = AssetDatabase.FindAssets($"{k_ComputeShaderName}, t:ComputeShader", new [] { "Assets" });
             if (guids.Length > 0)
                 return AssetDatabase.LoadAssetAtPath<ComputeShader>(
                     AssetDatabase.GUIDToAssetPath(guids[0]));
