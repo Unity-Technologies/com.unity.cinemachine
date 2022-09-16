@@ -2,12 +2,12 @@ using Cinemachine;
 using Cinemachine.Editor;
 using Editor.Utility;
 using UnityEditor;
-using UnityEngine;
 
 namespace Editor.Editors
 {
-    [CustomEditor(typeof(CinemachineSplineRoll))]
-    public class CinemachineSplineRollEditor : EditorWithIcon
+    [CustomEditor(typeof(CinemachineSplineCart))]
+    [CanEditMultipleObjects]
+    public class CinemachineSplineCartEditor : EditorWithIcon
     {
         protected override string GetIconPath() =>
             ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Icons/SplineTrack/" +

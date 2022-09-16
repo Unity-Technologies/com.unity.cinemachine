@@ -8,7 +8,7 @@ using UnityEngine.Splines;
 namespace Cinemachine.Editor
 {
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
-    class SplineRollTool : EditorTool, IDrawSelectedHandles
+    sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
         Color m_HandleColor = new(1f, 0.6f, 0f); // TODO: check with Swap
 
@@ -28,13 +28,10 @@ namespace Cinemachine.Editor
                 tooltip = "Adjust the roll data points along the spline."
             };
         }
-        
-        string GetIconPath()
-        {
-            var isProSkin = EditorGUIUtility.isProSkin;
-            return ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Icons/Spline Track/" +
-                (isProSkin ? "Dark/" : "Light/") + (m_IsSelected ? "Selected/" : "") + "DollyTrack@128.png";
-        }
+
+        static string GetIconPath() =>
+            ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Icons/SplineTrack/" +
+            (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") + "DollyTrack@128.png";
 
         /// <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
