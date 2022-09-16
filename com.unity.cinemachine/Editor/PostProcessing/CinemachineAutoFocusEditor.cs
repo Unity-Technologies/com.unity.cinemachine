@@ -1,45 +1,118 @@
-    using UnityEditor;
-    using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+using Cinemachine.Editor;
+using UnityEngine;
 
 namespace Cinemachine.PostFX.Editor
 {
     [CustomEditor(typeof(CinemachineAutoFocus))]
-    sealed class CinemachineAutoFocusEditor : Cinemachine.Editor.BaseEditor<CinemachineAutoFocus>
+    sealed class CinemachineAutoFocusEditor : UnityEditor.Editor
     {
 #if !CINEMACHINE_HDRP
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            EditorGUILayout.HelpBox(
-                "This component is only valid for HDRP projects.",
-                MessageType.Warning);
+            var ux = new VisualElement();
+            ux.AddChild(new HelpBox("This component is only valid for HDRP projects.", HelpBoxMessageType.Warning));
+            return ux;
         }
 #else
-        public override void OnInspectorGUI()
+        CinemachineAutoFocus Target => target as CinemachineAutoFocus;
+
+        const string kComputeShaderName = "CinemachineFocusDistanceCompute";
+
+        public override VisualElement CreateInspectorGUI()
         {
-            EditorGUILayout.HelpBox(
+            var ux = new VisualElement();
+            ux.AddChild(new HelpBox(
                 "Note: focus control requires an active Volume containing a Depth Of Field override "
                     + "having Focus Mode activated and set to Physical Camera, "
-                    + "and Focus Distance Mode activated and set to Camera",
-                MessageType.Info);
+                    + "and Focus Distance Mode activated and set to Camera", 
+                HelpBoxMessageType.Info));
 
-            base.OnInspectorGUI();
+            var focusTargetProp = serializedObject.FindProperty(() => Target.FocusTarget);
+            ux.Add(new PropertyField(focusTargetProp));
+            var customTarget = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.CustomTarget)));
+            var offset = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.FocusDepthOffset)));
+            var damping = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            var radius = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.AutoDetectionRadius)));
+
+            var computeShaderProp = serializedObject.FindProperty("m_ComputeShader");
+            var shaderDisplay = ux.AddChild(new PropertyField(computeShaderProp));
+            shaderDisplay.SetEnabled(false);
+
+            var importHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
+                $"The {kComputeShaderName} shader needs to be imported into "
+                    + "the project. It will be imprted by default into the Assets root.  "
+                    + "After importing, you cam move it elsewhere but don't rename it.",
+                    HelpBoxMessageType.Warning,
+                "Import\nShader", () =>
+            {
+                // Check if it's already imported, just in case
+                var shader = FindShader();
+                if (shader == null)
+                {
+                    // Import the asset from the package
+                    var shaderAssetPath = $"Assets/{kComputeShaderName}.compute";
+                    FileUtil.CopyFileOrDirectory(
+                        $"Packages/com.unity.cinemachine/Runtime/PostProcessing/HDRP Resources~/{kComputeShaderName}.compute",
+                        shaderAssetPath);
+                    AssetDatabase.ImportAsset(shaderAssetPath);
+                    shader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderAssetPath);
+                }
+                AssignShaderToTarget(shader);
+            }));
+
+            TrackFocusTarget(focusTargetProp);
+            ux.TrackPropertyValue(focusTargetProp, TrackFocusTarget);
+
+            void TrackFocusTarget(SerializedProperty p)
+            {
+                var mode = (CinemachineAutoFocus.FocusTrackingMode)p.intValue;
+                customTarget.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.CustomTarget);
+                offset.SetVisible(mode != CinemachineAutoFocus.FocusTrackingMode.None);
+                damping.SetVisible(mode != CinemachineAutoFocus.FocusTrackingMode.None);
+                radius.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter);
+                shaderDisplay.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter);
+                bool importHelpVisible = false;
+                if (mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter && computeShaderProp.objectReferenceValue == null)
+                {
+                    var shader = FindShader(); // slow!!!!
+                    if (shader != null)
+                        AssignShaderToTarget(shader);
+                    else
+                        importHelpVisible = true;
+                }
+                importHelp.SetVisible(importHelpVisible);
+            }
+
+            // Make the import box disappear after import
+            ux.TrackPropertyValue(computeShaderProp, (p) =>
+            {
+                var mode = (CinemachineAutoFocus.FocusTrackingMode)focusTargetProp.intValue;
+                importHelp.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter
+                    && p.objectReferenceValue == null);
+            });
+
+            return ux;
         }
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        static ComputeShader FindShader()
         {
-            base.GetExcludedPropertiesInInspector(excluded);
-            var focusTargetProp  = FindProperty(x => x.FocusTarget);
-            var mode = (CinemachineAutoFocus.FocusTrackingMode)focusTargetProp.intValue;
-            if (mode != CinemachineAutoFocus.FocusTrackingMode.CustomTarget)
-                excluded.Add(FieldPath(x => x.CustomTarget));
-            if (mode != CinemachineAutoFocus.FocusTrackingMode.ScreenCenter)
-                excluded.Add(FieldPath(x => x.AutoDetectionRadius));
-            if (mode == CinemachineAutoFocus.FocusTrackingMode.None)
+            var guids = AssetDatabase.FindAssets($"{kComputeShaderName}, t:ComputeShader", new [] { "Assets" });
+            if (guids.Length > 0)
+                return AssetDatabase.LoadAssetAtPath<ComputeShader>(
+                    AssetDatabase.GUIDToAssetPath(guids[0]));
+            return null;
+        }
+
+        void AssignShaderToTarget(ComputeShader shader)
+        {
+            for (int i = 0; i < targets.Length; ++i)
             {
-                excluded.Add(FieldPath(x => x.FocusOffset));
-                excluded.Add(FieldPath(x => x.Damping));
+                var t = new SerializedObject(targets[i]);
+                t.FindProperty("m_ComputeShader").objectReferenceValue = shader;
+                t.ApplyModifiedProperties();
             }
         }
 #endif
