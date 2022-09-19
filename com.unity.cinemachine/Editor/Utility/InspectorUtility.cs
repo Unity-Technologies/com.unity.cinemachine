@@ -153,9 +153,9 @@ namespace Cinemachine.Editor
         {
             try
             {
-                path = "/" + path;
-                var info = new DirectoryInfo(ScriptableObjectUtility.CinemachineInstallPath + path);
-                path = ScriptableObjectUtility.kPackageRoot + path + "/";
+                path = ScriptableObjectUtility.kPackageRoot + "/" + path;
+                var info = new DirectoryInfo(path);
+                path += "/";
                 var fileInfo = info.GetFiles();
                 foreach (var file in fileInfo)
                 {
