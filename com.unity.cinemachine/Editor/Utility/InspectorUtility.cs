@@ -153,9 +153,9 @@ namespace Cinemachine.Editor
         {
             try
             {
-                path = "/" + path;
-                var info = new DirectoryInfo(ScriptableObjectUtility.CinemachineInstallPath + path);
-                path = ScriptableObjectUtility.kPackageRoot + path + "/";
+                path = ScriptableObjectUtility.kPackageRoot + "/" + path;
+                var info = new DirectoryInfo(path);
+                path += "/";
                 var fileInfo = info.GetFiles();
                 foreach (var file in fileInfo)
                 {
@@ -208,7 +208,7 @@ namespace Cinemachine.Editor
         /// <param name="property"></param>
         /// <returns></returns>
         // GML TODO: get rid of this
-        internal static string GetVirtualCameraObjectName(SerializedProperty property)
+        public static string GetVirtualCameraObjectName(SerializedProperty property)
         {
             // A little hacky here, as we favour virtual cameras...
             var obj = property.serializedObject.targetObject;
@@ -229,7 +229,7 @@ namespace Cinemachine.Editor
             return obj.name;
         }
 
-        internal static float PropertyHeightOfChidren(SerializedProperty property)
+        public static float PropertyHeightOfChidren(SerializedProperty property)
         {
             float height = 0;
             var childProperty = property.Copy();
@@ -244,7 +244,7 @@ namespace Cinemachine.Editor
             return height - EditorGUIUtility.standardVerticalSpacing;
         }
 
-        internal static void DrawChildProperties(Rect position, SerializedProperty property)
+        public static void DrawChildProperties(Rect position, SerializedProperty property)
         {
             var childProperty = property.Copy();
             var endProperty = childProperty.GetEndProperty();
@@ -258,7 +258,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal static void HelpBoxWithButton(
+        public static void HelpBoxWithButton(
             string message, MessageType messageType, 
             GUIContent buttonContent, Action onClicked)
         {
@@ -284,7 +284,7 @@ namespace Cinemachine.Editor
                 onClicked();
         }
 
-        internal static float EnabledFoldoutHeight(SerializedProperty property, string enabledPropertyName)
+        public static float EnabledFoldoutHeight(SerializedProperty property, string enabledPropertyName)
         {
             var enabledProp = property.FindPropertyRelative(enabledPropertyName);
             if (enabledProp == null)
@@ -294,7 +294,7 @@ namespace Cinemachine.Editor
             return PropertyHeightOfChidren(property);
         }
 
-        internal static bool EnabledFoldout(
+        public static bool EnabledFoldout(
             Rect rect, SerializedProperty property, string enabledPropertyName,
             GUIContent label = null)
         {
@@ -333,9 +333,9 @@ namespace Cinemachine.Editor
         }
 
         static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
-        internal const string s_NoneString = "(none)";
+        public const string s_NoneString = "(none)";
 
-        internal static string GetAssignableBehaviourNames(Type inputType)
+        public static string GetAssignableBehaviourNames(Type inputType)
         {
             if (!s_AssignableTypes.ContainsKey(inputType))
             {
@@ -364,10 +364,10 @@ namespace Cinemachine.Editor
 
 
         /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
-        internal static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
+        public static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
 
         // this is a hack to get around some vertical alignment issues in UITK
-        internal static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
+        public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
 
         /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
@@ -375,7 +375,7 @@ namespace Cinemachine.Editor
         /// <param name="ux">Container in which to put the header</param>
         /// <param name="text">The text of the header</param>
         /// <param name="tooltip">optional tooltip for the header</param>
-        internal static void AddHeader(this VisualElement ux, string text, string tooltip = "")
+        public static void AddHeader(this VisualElement ux, string text, string tooltip = "")
         {
             var verticalPad = SingleLineHeight / 2;
             var row = new LabeledContainer($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} });
@@ -390,7 +390,7 @@ namespace Cinemachine.Editor
         /// Create a space between inspector sections
         /// </summary>
         /// <param name="ux">Container in which to add the space</param>
-        internal static void AddSpace(this VisualElement ux)
+        public static void AddSpace(this VisualElement ux)
         {
             ux.Add(new VisualElement { style = { height = SingleLineHeight / 2 }});
         }
@@ -399,7 +399,7 @@ namespace Cinemachine.Editor
         /// This is a hack to get proper layout.  There seems to be no sanctioned way to 
         /// get the current inspector label width.
         /// </summary>
-        internal class LabeledContainer : BaseField<bool> // bool is just a dummy because it has to be something
+        public class LabeledContainer : BaseField<bool> // bool is just a dummy because it has to be something
         {
             public Label Label => labelElement;
             public VisualElement Input { get; }
@@ -428,7 +428,7 @@ namespace Cinemachine.Editor
         /// This is an inspector container with 2 side-by-side rows. The Left row's width is 
         /// locked to the inspector field label size, for proper alignment.
         /// </summary>
-        internal class LeftRightContainer : VisualElement
+        public class LeftRightContainer : VisualElement
         {
             public VisualElement Left;
             public VisualElement Right;
@@ -458,7 +458,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>A foldout that displays an overlay in the right-hand column when closed</summary>
-        internal class FoldoutWithOverlay : VisualElement
+        public class FoldoutWithOverlay : VisualElement
         {
             public readonly Foldout OpenFoldout;
             public readonly Foldout ClosedFoldout;
@@ -521,7 +521,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal class CompactPropertyField : VisualElement
+        public class CompactPropertyField : VisualElement
         {
             public Label Label;
             public PropertyField Field;
@@ -540,7 +540,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
+        public static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
         {
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
@@ -560,7 +560,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        internal static LeftRightContainer CreatePropertyRow(
+        public static LeftRightContainer CreatePropertyRow(
             SerializedProperty property, out VisualElement propertyField)
         {
             var row = new LeftRightContainer();
@@ -574,7 +574,7 @@ namespace Cinemachine.Editor
             return row;
         }
 
-        internal static VisualElement CreateHelpBoxWithButton(
+        public static VisualElement CreateHelpBoxWithButton(
             string message, HelpBoxMessageType messageType, 
             string buttonText, Action onClicked)
         {
@@ -584,12 +584,12 @@ namespace Cinemachine.Editor
             return row;
         }
 
-        internal static void SetVisible(this VisualElement e, bool show) 
+        public static void SetVisible(this VisualElement e, bool show) 
             => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
 
-        internal static bool IsVisible(this VisualElement e) => e.style.display != DisplayStyle.None;
+        public static bool IsVisible(this VisualElement e) => e.style.display != DisplayStyle.None;
 
-        internal static T AddChild<T>(this VisualElement e, T child) where T : VisualElement
+        public static T AddChild<T>(this VisualElement e, T child) where T : VisualElement
         {
             e.Add(child);
             return child;

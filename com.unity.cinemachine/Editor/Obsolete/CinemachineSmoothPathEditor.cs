@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineSmoothPath))]
-    internal sealed class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
+    class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
     {
         private ReorderableList mWaypointList;
 

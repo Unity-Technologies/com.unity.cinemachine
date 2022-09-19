@@ -11,7 +11,7 @@ using UnityEngine.Serialization;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
     // Workaround for Unity scripting bug

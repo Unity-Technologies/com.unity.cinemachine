@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Helpers for the editor relating to SerializedPropertys
     /// </summary>
-    public static class SerializedPropertyHelper
+    static class SerializedPropertyHelper
     {
         /// <summary>
         /// This is a way to get a field name string in such a manner that the compiler will

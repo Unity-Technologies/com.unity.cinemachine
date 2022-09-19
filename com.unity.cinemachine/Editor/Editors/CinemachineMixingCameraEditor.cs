@@ -6,8 +6,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineMixingCamera))]
-    internal sealed class CinemachineMixingCameraEditor 
-        : CinemachineVirtualCameraBaseEditor<CinemachineMixingCamera>
+    class CinemachineMixingCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineMixingCamera>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -35,7 +34,7 @@ namespace Cinemachine.Editor
                     totalWeight += Target.GetWeight(i);
 
             if (numCameras == 0)
-                EditorGUILayout.HelpBox("There are no Virtual Camera children", MessageType.Warning);
+                EditorGUILayout.HelpBox("There are no CmCamera children", MessageType.Warning);
             else 
             {
                 EditorGUILayout.Separator();

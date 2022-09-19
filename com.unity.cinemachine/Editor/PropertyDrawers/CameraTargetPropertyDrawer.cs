@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CameraTarget))]
-    internal sealed class CameraTargetPropertyDrawer : PropertyDrawer
+    class CameraTargetPropertyDrawer : PropertyDrawer
     {
         CameraTarget def;
 

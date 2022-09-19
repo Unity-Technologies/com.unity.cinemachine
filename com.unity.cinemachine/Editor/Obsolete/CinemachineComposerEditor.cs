@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
+    class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;

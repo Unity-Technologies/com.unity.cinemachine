@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !CINEMACHINE_HDRP
     /// <summary>

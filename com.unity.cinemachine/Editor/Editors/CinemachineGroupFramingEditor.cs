@@ -24,7 +24,7 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox("Tracking target must be a Target Group.", HelpBoxMessageType.Warning));
+            m_NoTargetHelp = ux.AddChild(new HelpBox("Tracking Target in the CmCamera must be a Target Group.", HelpBoxMessageType.Warning));
             m_GroupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingMode)));

@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineHardLockToTarget))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineHardLockToTargetEditor : BaseEditor<CinemachineHardLockToTarget>
+    class CinemachineHardLockToTargetEditor : BaseEditor<CinemachineHardLockToTarget>
     {
         public override void OnInspectorGUI()
         {
@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineHardLockToTarget).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Hard Lock requires a Tracking Target.  Change Position Control to None if you don't want a Tracking target.",
+                    "Hard Lock requires a Tracking Target in the CmCamera.",
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }

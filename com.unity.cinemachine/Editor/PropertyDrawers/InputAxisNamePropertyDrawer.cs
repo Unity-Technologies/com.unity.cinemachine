@@ -7,7 +7,7 @@ using System;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(InputAxisNamePropertyAttribute))]
-    internal sealed class InputAxisNamePropertyDrawer : PropertyDrawer
+    class InputAxisNamePropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {

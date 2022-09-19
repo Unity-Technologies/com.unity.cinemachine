@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineTrackedDolly))]
     [CanEditMultipleObjects]
-    sealed class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
+    class CinemachineTrackedDollyEditor : BaseEditor<CinemachineTrackedDolly>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>

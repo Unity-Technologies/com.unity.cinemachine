@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !CINEMACHINE_POST_PROCESSING_V2
     /// <summary>

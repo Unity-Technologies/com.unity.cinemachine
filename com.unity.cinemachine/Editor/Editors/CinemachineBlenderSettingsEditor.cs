@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlenderSettings))]
-    sealed class CinemachineBlenderSettingsEditor : BaseEditor<CinemachineBlenderSettings>
+    class CinemachineBlenderSettingsEditor : BaseEditor<CinemachineBlenderSettings>
     {
         ReorderableList m_BlendList;
         const string k_NoneLabel = "(none)";

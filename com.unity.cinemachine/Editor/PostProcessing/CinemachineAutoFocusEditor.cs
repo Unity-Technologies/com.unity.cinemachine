@@ -1,13 +1,12 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Cinemachine.Editor;
 using UnityEngine;
 
-namespace Cinemachine.PostFX.Editor
+namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineAutoFocus))]
-    sealed class CinemachineAutoFocusEditor : UnityEditor.Editor
+    class CinemachineAutoFocusEditor : UnityEditor.Editor
     {
 #if !CINEMACHINE_HDRP
         public override VisualElement CreateInspectorGUI()
@@ -55,7 +54,7 @@ namespace Cinemachine.PostFX.Editor
                     // Import the asset from the package
                     var shaderAssetPath = $"Assets/{k_ComputeShaderName}.compute";
                     FileUtil.CopyFileOrDirectory(
-                        $"Packages/com.unity.cinemachine/Runtime/PostProcessing/HDRP Resources~/{k_ComputeShaderName}.compute",
+                        $"{ScriptableObjectUtility.kPackageRoot}/Runtime/PostProcessing/HDRP Resources~/{k_ComputeShaderName}.compute",
                         shaderAssetPath);
                     AssetDatabase.ImportAsset(shaderAssetPath);
                     shader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderAssetPath);
