@@ -22,7 +22,7 @@ namespace Cinemachine.Editor
         static class IconUtility
         {
             static List<string> s_ScriptPathCache;
-            static List<string> GetScripts()
+            static List<string> GetScriptPathsCached()
             {
                 return s_ScriptPathCache ??= GetAllAssetPaths(new [] { ".cs" }, new [] { "com.unity.cinemachine" });
                 
@@ -59,9 +59,11 @@ namespace Cinemachine.Editor
                 return s_IconCache[path];
             }
 
+            /// <summary>Checks if the first script it finds uses the correct icon or not.</summary>
+            /// <returns>True, when icons don't match -> so no need to update. False, otherwise.</returns>
             public static bool DoIconsNeedToBeUpdated()
             {
-                var cmScriptPaths = GetScripts();
+                var cmScriptPaths = GetScriptPathsCached();
                 foreach (var cmScriptPath in cmScriptPaths)
                 {
                     var monoImporter = AssetImporter.GetAtPath(cmScriptPath) as MonoImporter;
@@ -80,9 +82,10 @@ namespace Cinemachine.Editor
                 return false;
             }
 
+            /// <summary>Updates all script icons according to the current theme.</summary>
             public static void UpdateIcons()
             {
-                var cmScriptPaths = GetScripts();
+                var cmScriptPaths = GetScriptPathsCached();
                 foreach (var cmScriptPath in cmScriptPaths)
                 {
                     var monoImporter = AssetImporter.GetAtPath(cmScriptPath) as MonoImporter;
