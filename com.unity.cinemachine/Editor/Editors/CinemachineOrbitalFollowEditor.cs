@@ -203,8 +203,8 @@ namespace Cinemachine.Editor
                 {
                     var prevColor = Gizmos.color;
                     Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
-                        ? CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour
-                        : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                        ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
+                        : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
                     var orient = orbital.GetReferenceOrientation();
                     var up = orient * Vector3.up;

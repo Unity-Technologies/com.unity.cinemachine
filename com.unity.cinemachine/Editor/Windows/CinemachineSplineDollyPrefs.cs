@@ -1,83 +1,53 @@
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Editor;
 
-namespace Cinemachine
+namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
     static class CinemachineSplineDollyPrefs
     {
-        static bool SettingsFoldedOut
-        {
-            get => EditorPrefs.GetBool(k_SplineSettingsFoldoutKey, false);
-            set
-            {
-                if (value != SettingsFoldedOut)
-                {
-                    EditorPrefs.SetBool(k_SplineSettingsFoldoutKey, value);
-                }
-            }
-        }
+        static CinemachineSettings.BoolItem SettingsFoldedOut = new("CNMCN_Spline_Foldout", false);
+        public static CinemachineSettings.ColorItem SplineRollColor = new ("CNMCN_Spline_Roll_Colour", Color.green);
+        public static CinemachineSettings.FloatItem SplineWidth = new("CNMCN_Spline_width", 0.5f);
+        public static CinemachineSettings.IntItem SplineResolution = new("CNMCN_Spline_resolution", 10);
 
-        public static Color SplineRollColor
-        {
-            get => CinemachineSettings.UnpackColour(
-                EditorPrefs.GetString(k_SplineRollColorKey, CinemachineSettings.PackColor(Color.green)));
+        static readonly GUIContent s_SplineRollColorGUIContent = new GUIContent("Spline Track", 
+            "The color with which the spline is drawn, when a " + nameof(CinemachineSplineRoll) + " is attached.");
+        static readonly GUIContent s_SplineWidthGUIContent = new GUIContent("Width", 
+            "The width of the spline");
+        static readonly GUIContent s_SplineResolutionGUIContent = new GUIContent("Resolution",
+            "The resolution with which the spline is drawn. Change this if performance in the editor is a concern.");
 
-            set
-            {
-                if (value != SplineRollColor)
-                {
-                    EditorPrefs.SetString(k_SplineRollColorKey, CinemachineSettings.PackColor(value));
-                }
-            }
-        }
-
-        public static float SplineWidth = 0.5f;
-        public static int SplineResolution = 10;
-
-        const string k_SplineSettingsFoldoutKey = "CNMCN_Spline_Foldout";
-        const string k_SplineRollColorKey = "CNMCN_Spline_Roll_Colour";
-
-        static GUIContent s_SplineRollColorGUIContent, s_SplineWidthGUIContent, s_SplineResolutionGUIContent;
-
-        static CinemachineSplineDollyPrefs()
-        {
-            CinemachineSettings.AdditionalCategories += DrawSplineSettings;
-            
-            s_SplineRollColorGUIContent = new GUIContent
-            {
-                text = "Spline Track",
-                tooltip = "The color with which the spline is drawn, when a " + nameof(CinemachineSplineRoll) + " is attached."
-            };
-            s_SplineWidthGUIContent = new GUIContent
-            {
-                text = "Width",
-                tooltip = "The width of the spline"
-            };
-            s_SplineResolutionGUIContent = new GUIContent
-            {
-                text = "Resolution",
-                tooltip = "The resolution with which the spline is drawn. Change this, if performance in the editor is a concern."
-            };
-        }
+        static CinemachineSplineDollyPrefs() => CinemachineSettings.AdditionalCategories += DrawSplineSettings;
 
         static void DrawSplineSettings()
         {
-            SettingsFoldedOut = EditorGUILayout.Foldout(SettingsFoldedOut, "Spline Settings", true);
-            if (SettingsFoldedOut)
+            SettingsFoldedOut.Value = EditorGUILayout.Foldout(SettingsFoldedOut.Value, "Spline Settings", true);
+            if (SettingsFoldedOut.Value)
             {
                 EditorGUI.indentLevel++;
                 EditorGUI.BeginChangeCheck();
 
-                SplineRollColor = EditorGUILayout.ColorField(s_SplineRollColorGUIContent, SplineRollColor);
-                SplineWidth = Mathf.Max(0.01f, EditorGUILayout.FloatField(s_SplineWidthGUIContent, SplineWidth));
-                SplineResolution = Mathf.Clamp(EditorGUILayout.IntField(s_SplineResolutionGUIContent, SplineResolution), 3, 100);
+                EditorGUILayout.BeginHorizontal();
+                SplineRollColor.Value = EditorGUILayout.ColorField(s_SplineRollColorGUIContent, SplineRollColor.Value);
+                if (GUILayout.Button("Reset"))
+                    SplineRollColor.Reset();
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                SplineWidth.Value = Mathf.Max(0.01f, EditorGUILayout.FloatField(s_SplineWidthGUIContent, SplineWidth.Value));
+                if (GUILayout.Button("Reset"))
+                    SplineWidth.Reset();
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                SplineResolution.Value = Mathf.Clamp(EditorGUILayout.IntField(s_SplineResolutionGUIContent, SplineResolution.Value), 3, 100);
+                if (GUILayout.Button("Reset"))
+                    SplineResolution.Reset();
+                EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck())
-                {
                     UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-                }
 
                 EditorGUI.indentLevel--;
             }

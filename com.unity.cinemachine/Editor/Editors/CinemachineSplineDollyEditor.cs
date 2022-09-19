@@ -48,8 +48,8 @@ namespace Cinemachine.Editor
         {
             if (Selection.activeGameObject != splineRoll.gameObject) return;
             
-            DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor, 
-                CinemachineSplineDollyPrefs.SplineWidth, CinemachineSplineDollyPrefs.SplineResolution);
+            DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor.Value, 
+                CinemachineSplineDollyPrefs.SplineWidth.Value, CinemachineSplineDollyPrefs.SplineResolution.Value);
         }
 
         static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)

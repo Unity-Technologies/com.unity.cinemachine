@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
-            if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
             
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
         {
             m_GameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
-            if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
@@ -83,7 +83,7 @@ namespace Cinemachine.Editor
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides || !Target.isActiveAndEnabled)
+            if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
@@ -103,16 +103,16 @@ namespace Cinemachine.Editor
                 {
                     targetScreenPosition.y = Screen.height - targetScreenPosition.y;
 
-                    GUI.color = CinemachineSettings.ComposerSettings.TargetColour;
+                    GUI.color = CinemachineComposerPrefs.TargetColour.Value;
                     Rect r = new Rect(targetScreenPosition, Vector2.zero);
-                    float size = (CinemachineSettings.ComposerSettings.TargetSize
+                    float size = (CinemachineComposerPrefs.TargetSize.Value
                         + CinemachineScreenComposerGuides.kGuideBarWidthPx) / 2;
                     GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
                     size -= CinemachineScreenComposerGuides.kGuideBarWidthPx;
                     if (size > 0)
                     {
                         Vector4 overlayOpacityScalar
-                            = new Vector4(1f, 1f, 1f, CinemachineSettings.ComposerSettings.OverlayOpacity);
+                            = new Vector4(1f, 1f, 1f, CinemachineComposerPrefs.OverlayOpacity.Value);
                         GUI.color = Color.black * overlayOpacityScalar;
                         GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
                     }

@@ -121,8 +121,8 @@ namespace Cinemachine.Editor
                 state.Lens,
                 Matrix4x4.TRS(state.GetFinalPosition(), state.GetFinalOrientation().normalized, Vector3.one),
                 CinemachineCore.Instance.IsLive(vcam)
-                    ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
+                    ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                    : CinemachineCorePrefs.InactiveGizmoColour.Value);
         }
 
         public static void DrawCameraFrustumGizmo(LensSettings lens, Matrix4x4 transform, Color color)

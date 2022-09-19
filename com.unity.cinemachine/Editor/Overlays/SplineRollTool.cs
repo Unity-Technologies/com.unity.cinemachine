@@ -128,7 +128,7 @@ namespace Cinemachine.Editor
                     var handleRotationGlobalSpace = m_DefaultHandleOrientation * handleRotationLocalSpace;
                     
                     var handleSize = Mathf.Max(
-                        HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth);
+                        HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth.Value);
                     using (new Handles.DrawingScope(m_RollInUse ? Handles.selectedColor : Handles.color))
                     {
                         Handles.ArrowHandleCap(

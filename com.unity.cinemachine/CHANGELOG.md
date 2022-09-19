@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## ## [3.0.0-pre.1] - 2022-06-01
+## [Unreleased]
+- Add Show Hierarhy Icon preference option
+
+
+## [3.0.0-pre.1] - 2022-06-01
 - Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
 - VirtualCamera refactor: CinemachineVirtualCamera is now CmCamera.
 - FreeLook refactor: CinemachineFreeLook is now CmCamera with FreeLook Modifier.
@@ -19,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations
+
 
 ## [2.9.0] - 2022-08-15
 - Bugfix: CinemachineConfiner was not confining correctly when Confine Screen Edges was enabled and the camera was rotated.
