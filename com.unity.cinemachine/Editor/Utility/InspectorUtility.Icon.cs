@@ -21,33 +21,59 @@ namespace Cinemachine.Editor
 
         static class IconUtility
         {
-            static readonly string[] k_Extensions = { ".cs" };
-            static readonly string[] k_Packages = { "com.unity.cinemachine" };
-
-            static List<string> s_Scripts;
-
+            static List<string> s_ScriptPathCache;
             static List<string> GetScripts()
             {
-                if (s_Scripts == null) 
-                    s_Scripts = GetAllAssetPaths(k_Extensions, k_Packages);
-                return s_Scripts;
+                return s_ScriptPathCache ??= GetAllAssetPaths(new [] { ".cs" }, new [] { "com.unity.cinemachine" });
+                
+                // local functions
+                static List<string> GetAllAssetPaths(string[] withExtensions, string[] inPackages)
+                {
+                    var assetPaths = AssetDatabase.GetAllAssetPaths();
+                    var filteredAssetPaths = new List<string>();
+                    foreach (var assetPath in assetPaths)
+                        if (HasExtension(assetPath, withExtensions) && PartOfPackage(assetPath, inPackages))
+                            filteredAssetPaths.Add(assetPath);
+                    return filteredAssetPaths;
+
+                    // local functions
+                    static bool HasExtension(string assetPath, IEnumerable<string> extensions)
+                    {
+                        return extensions.Any(extension => assetPath.EndsWith(extension));
+                    }
+
+                    static bool PartOfPackage(string assetPath, IEnumerable<string> packages)
+                    {
+                        return packages.Any(package => assetPath.Contains(package));
+                    }
+                }
+            }
+
+            static Dictionary<string, Texture2D> s_IconCache = new();
+            static Texture2D LoadAssetAtPathCached(string path)
+            {
+                if (!s_IconCache.ContainsKey(path))
+                {
+                    s_IconCache.Add(path, AssetDatabase.LoadAssetAtPath<Texture2D>(path));
+                }
+                return s_IconCache[path];
             }
 
             public static bool DoIconsNeedToBeUpdated()
             {
-                s_Scripts = GetAllAssetPaths(k_Extensions, k_Packages);
+                var cmScriptPaths = GetScripts();
                 foreach (var cmScriptPath in cmScriptPaths)
                 {
                     var monoImporter = AssetImporter.GetAtPath(cmScriptPath) as MonoImporter;
                     if (monoImporter == null)
                         continue;
 
-                    var iconPath = GetIconPath(monoImporter);
+                    var iconPath = GetIconForScript(monoImporter);
                     if (iconPath != string.Empty)
                     {
-                        var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
-                        var icon2 = monoImporter.GetIcon();
-                        return icon != icon2;
+                        var icon = LoadAssetAtPathCached(iconPath);
+                        var scriptIcon = monoImporter.GetIcon();
+                        return icon != scriptIcon;
                     }
                 }
 
@@ -56,45 +82,24 @@ namespace Cinemachine.Editor
 
             public static void UpdateIcons()
             {
-                var cmScriptPaths = GetAllAssetPaths(k_Extensions, k_Packages);
+                var cmScriptPaths = GetScripts();
                 foreach (var cmScriptPath in cmScriptPaths)
                 {
                     var monoImporter = AssetImporter.GetAtPath(cmScriptPath) as MonoImporter;
                     if (monoImporter == null)
                         continue;
 
-                    var iconPath = GetIconPath(monoImporter);
+                    var iconPath = GetIconForScript(monoImporter);
                     if (iconPath != string.Empty)
                     {
-                        var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath);
+                        var icon = LoadAssetAtPathCached(iconPath);
                         monoImporter.SetIcon(icon);
                         monoImporter.SaveAndReimport();
                     }
                 }
             }
-
-            static List<string> GetAllAssetPaths(string[] withExtensions, string[] inPackages)
-            {
-                var assetPaths = AssetDatabase.GetAllAssetPaths();
-                var filteredAssetPaths = new List<string>();
-                foreach (var assetPath in assetPaths)
-                    if (HasExtension(assetPath, withExtensions) && PartOfPackage(assetPath, inPackages))
-                        filteredAssetPaths.Add(assetPath);
-                return filteredAssetPaths;
-
-                // local functions
-                static bool HasExtension(string assetPath, IEnumerable<string> extensions)
-                {
-                    return extensions.Any(extension => assetPath.EndsWith(extension));
-                }
-
-                static bool PartOfPackage(string assetPath, IEnumerable<string> packages)
-                {
-                    return packages.Any(package => assetPath.Contains(package));
-                }
-            }
-
-            static string GetIconPath(MonoImporter monoImporter)
+            
+            static string GetIconForScript(MonoImporter monoImporter)
             {
                 var script = monoImporter.GetScript();
                 var scriptClass = script.GetClass();
