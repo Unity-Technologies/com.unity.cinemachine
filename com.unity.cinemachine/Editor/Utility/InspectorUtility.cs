@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
-    static class InspectorUtility
+    static partial class InspectorUtility
     {
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
