@@ -31,7 +31,7 @@ namespace Cinemachine.Editor
 
         static string GetIconPath() =>
             ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Icons/SplineTrack/" +
-            (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") + "DollyTrack@128.png";
+            (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") + "DollyTrack@256.png";
 
         /// <summary>This is called when the Tool is selected in the editor.</summary>
         public override void OnActivated()
