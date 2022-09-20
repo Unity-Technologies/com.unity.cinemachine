@@ -22,23 +22,6 @@ namespace Cinemachine.Editor
 
         static class IconUtility
         {
-            static List<string> s_ScriptPathCache;
-            static List<string> GetScriptPathsCached()
-            {
-                return s_ScriptPathCache ??= GetAllCinemachineRuntimeScripts();
-                
-                // local functions
-                static List<string> GetAllCinemachineRuntimeScripts()
-                {
-                    var cmRuntimeScripts = new List<string>();
-                    var directories = Directory.GetDirectories(ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Runtime");
-                    foreach (var directory in directories)
-                        cmRuntimeScripts.AddRange(Directory.GetFiles(directory, "*.cs"));
-                    
-                    return cmRuntimeScripts;
-                }
-            }
-
             static Dictionary<string, Texture2D> s_IconCache = new();
             static Texture2D LoadAssetAtPathCached(string path)
             {
@@ -51,28 +34,27 @@ namespace Cinemachine.Editor
             /// <returns>True, when icons don't match -> so no need to update. False, otherwise.</returns>
             public static bool DoIconsNeedToBeUpdated()
             {
-                var cmScriptPaths = GetScriptPathsCached();
-                foreach (var cmScriptPath in cmScriptPaths)
-                {
-                    var monoImporter = AssetImporter.GetAtPath(cmScriptPath) as MonoImporter;
-                    if (monoImporter == null)
-                        continue;
+                var cmCameraPath = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
+                    "/Runtime/Behaviours/CmCamera.cs";
+                var monoImporter = AssetImporter.GetAtPath(cmCameraPath) as MonoImporter;
+                if (monoImporter == null)
+                    return false;
 
-                    var iconPath = GetIconPathForScript(monoImporter.GetScript());
-                    if (iconPath != string.Empty)
-                    {
-                        var icon = LoadAssetAtPathCached(iconPath);
-                        var scriptIcon = monoImporter.GetIcon();
-                        return icon != scriptIcon;
-                    }
+                var iconPath = GetIconPathForScript(monoImporter.GetScript());
+                if (iconPath != string.Empty)
+                {
+                    var icon = LoadAssetAtPathCached(iconPath);
+                    var scriptIcon = monoImporter.GetIcon();
+                    return icon != scriptIcon;
                 }
+
                 return false;
             }
 
             /// <summary>Updates all script icons according to the current theme.</summary>
             public static void UpdateIcons()
             {
-                var cmScriptPaths = GetScriptPathsCached();
+                var cmScriptPaths = GetAllCinemachineRuntimeScripts();
                 foreach (var cmScriptPath in cmScriptPaths)
                 {
                     var monoImporter = AssetImporter.GetAtPath(cmScriptPath) as MonoImporter;
@@ -86,6 +68,17 @@ namespace Cinemachine.Editor
                         monoImporter.SetIcon(icon);
                         monoImporter.SaveAndReimport();
                     }
+                }
+                
+                // local function
+                static List<string> GetAllCinemachineRuntimeScripts()
+                {
+                    var cmRuntimeScripts = new List<string>();
+                    var directories = Directory.GetDirectories(ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Runtime");
+                    foreach (var directory in directories)
+                        cmRuntimeScripts.AddRange(Directory.GetFiles(directory, "*.cs"));
+                    
+                    return cmRuntimeScripts;
                 }
             }
             
