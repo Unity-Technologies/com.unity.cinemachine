@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,38 +25,25 @@ namespace Cinemachine.Editor
             static List<string> s_ScriptPathCache;
             static List<string> GetScriptPathsCached()
             {
-                return s_ScriptPathCache ??= GetAllAssetPaths(new [] { ".cs" }, new [] { "com.unity.cinemachine" });
+                return s_ScriptPathCache ??= GetAllCinemachineRuntimeScripts();
                 
                 // local functions
-                static List<string> GetAllAssetPaths(string[] withExtensions, string[] inPackages)
+                static List<string> GetAllCinemachineRuntimeScripts()
                 {
-                    var assetPaths = AssetDatabase.GetAllAssetPaths();
-                    var filteredAssetPaths = new List<string>();
-                    foreach (var assetPath in assetPaths)
-                        if (HasExtension(assetPath, withExtensions) && PartOfPackage(assetPath, inPackages))
-                            filteredAssetPaths.Add(assetPath);
-                    return filteredAssetPaths;
-
-                    // local functions
-                    static bool HasExtension(string assetPath, IEnumerable<string> extensions)
-                    {
-                        return extensions.Any(extension => assetPath.EndsWith(extension));
-                    }
-
-                    static bool PartOfPackage(string assetPath, IEnumerable<string> packages)
-                    {
-                        return packages.Any(package => assetPath.Contains(package));
-                    }
+                    var cmRuntimeScripts = new List<string>();
+                    var directories = Directory.GetDirectories(ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Runtime");
+                    foreach (var directory in directories)
+                        cmRuntimeScripts.AddRange(Directory.GetFiles(directory, "*.cs"));
+                    
+                    return cmRuntimeScripts;
                 }
             }
 
             static Dictionary<string, Texture2D> s_IconCache = new();
             static Texture2D LoadAssetAtPathCached(string path)
             {
-                if (!s_IconCache.ContainsKey(path))
-                {
+                if (!s_IconCache.ContainsKey(path)) 
                     s_IconCache.Add(path, AssetDatabase.LoadAssetAtPath<Texture2D>(path));
-                }
                 return s_IconCache[path];
             }
 
@@ -70,7 +58,7 @@ namespace Cinemachine.Editor
                     if (monoImporter == null)
                         continue;
 
-                    var iconPath = GetIconForScript(monoImporter);
+                    var iconPath = GetIconPathForScript(monoImporter.GetScript());
                     if (iconPath != string.Empty)
                     {
                         var icon = LoadAssetAtPathCached(iconPath);
@@ -78,7 +66,6 @@ namespace Cinemachine.Editor
                         return icon != scriptIcon;
                     }
                 }
-
                 return false;
             }
 
@@ -92,7 +79,7 @@ namespace Cinemachine.Editor
                     if (monoImporter == null)
                         continue;
 
-                    var iconPath = GetIconForScript(monoImporter);
+                    var iconPath = GetIconPathForScript(monoImporter.GetScript());
                     if (iconPath != string.Empty)
                     {
                         var icon = LoadAssetAtPathCached(iconPath);
@@ -102,10 +89,9 @@ namespace Cinemachine.Editor
                 }
             }
             
-            static string GetIconForScript(MonoImporter monoImporter)
+            static string GetIconPathForScript(MonoScript monoScript)
             {
-                var script = monoImporter.GetScript();
-                var scriptClass = script.GetClass();
+                var scriptClass = monoScript.GetClass();
                 if (scriptClass == null)
                     return string.Empty;
 
