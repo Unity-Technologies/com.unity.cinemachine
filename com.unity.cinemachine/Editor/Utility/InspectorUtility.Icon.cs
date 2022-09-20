@@ -30,8 +30,8 @@ namespace Cinemachine.Editor
                 return s_IconCache[path];
             }
 
-            /// <summary>Checks if the first script it finds uses the correct icon or not.</summary>
-            /// <returns>True, when icons don't match -> so no need to update. False, otherwise.</returns>
+            /// <summary>Checks if CmCamera script has the correct icon or not.</summary>
+            /// <returns>True, when icons don't match. False, otherwise.</returns>
             public static bool DoIconsNeedToBeUpdated()
             {
                 var cmCameraPath = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
@@ -51,7 +51,7 @@ namespace Cinemachine.Editor
                 return false;
             }
 
-            /// <summary>Updates all script icons according to the current theme.</summary>
+            /// <summary>Updates all icons of cinemachine runtime scripts according to the current theme.</summary>
             public static void UpdateIcons()
             {
                 var cmScriptPaths = GetAllCinemachineRuntimeScripts();
