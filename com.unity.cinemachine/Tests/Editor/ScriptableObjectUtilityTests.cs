@@ -12,7 +12,7 @@ namespace Tests.Editor
         public void CinemachineInstallPathIsValid()
         {
             var pathToCmLogo = Path.Combine(ScriptableObjectUtility.kPackageRoot + 
-                "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
+                "/Editor/EditorResources/Icons/CmCamera@256.png");
             Assert.That(File.Exists(pathToCmLogo));
         }
         
@@ -20,7 +20,7 @@ namespace Tests.Editor
         public void CinemachineInstallRelativePathIsValid()
         {
             var relativePathToCmLogo = Path.Combine(ScriptableObjectUtility.kPackageRoot + 
-                "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
+                "/Editor/EditorResources/Icons/CmCamera@256.png");
             var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));
         }

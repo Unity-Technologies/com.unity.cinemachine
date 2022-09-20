@@ -1,4 +1,4 @@
-using System;
+#if false
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -76,14 +76,51 @@ namespace Cinemachine.Editor
             if (scriptClass == null)
                 return string.Empty;
             if (scriptClass.IsSubclassOf(typeof(CinemachineExtension)))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmExtensions/CinemachineExtensions@256.png";
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png";
             if (scriptClass.IsSubclassOf(typeof(CinemachineComponentBase)))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent/CMComponent@256.png";
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png";
             if (scriptClass == typeof(CinemachineSplineRoll) || scriptClass == typeof(CinemachineSplineCart))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/SplineTrack/DollyTrack@256.png";
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png";
             if (scriptClass.IsSubclassOf(typeof(CinemachineVirtualCameraBase)) || scriptClass == typeof(CinemachineBrain))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png";
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
             return string.Empty;
         }
+
+        [MenuItem("Cinemachine/Darken Icons")]
+        static void DarkenIcons()
+        {
+            var icons = GetAllIcons();
+            foreach (var path in icons)
+            {
+                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                for (int m = 0; m < icon.mipmapCount; ++m)
+                {
+                    var pixels = icon.GetPixels(m);
+                    for (int i = 0; i < pixels.Length; ++i)
+                    {
+                        var pixel = pixels[i];
+                        pixels[i] = Color.Lerp(pixel, new Color(0, 0, 0, pixel.a), 0.2f);
+                    }
+                    icon.SetPixels(pixels, m);
+                }
+
+                var bytes = icon.EncodeToPNG();
+                File.WriteAllBytes(path, bytes);
+            }
+
+            // local function
+            static string[] GetAllIcons()
+            {
+                return new[] 
+                { 
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png",
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png",
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png",
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png"
+                };
+            }
+        }
+
     }
 }
+#endif

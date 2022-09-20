@@ -23,8 +23,8 @@ namespace Cinemachine.Editor
         {
             m_IconContent = new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.kPackageRoot + 
-                    "/Editor/EditorResources/Icons/SplineTrack/DollyTrack@256.png"),
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png"),
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };
