@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
+#if CINEMACHINE_PHYSICS
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineCollider))]
     [CanEditMultipleObjects]
-    sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
+    class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -37,7 +37,7 @@ namespace Cinemachine.Editor
             if (Target.AvoidObstacles && Target.VirtualCamera != null
                     && !Target.VirtualCamera.State.HasLookAt())
                 EditorGUILayout.HelpBox(
-                    "Avoid Obstacles requires a LookAt target.",
+                    "Avoid Obstacles requires a Tracking Target in the CmCamera.",
                     MessageType.Warning);
 
             DrawRemainingPropertiesInInspector();
@@ -79,5 +79,5 @@ namespace Cinemachine.Editor
             }
         }
     }
-#endif
 }
+#endif

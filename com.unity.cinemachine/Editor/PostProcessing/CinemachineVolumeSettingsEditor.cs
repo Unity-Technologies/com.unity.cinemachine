@@ -11,10 +11,10 @@
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.PostFX.Editor
+namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVolumeSettings))]
-    sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
+    class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
         public override void OnInspectorGUI()

@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineHardLookAt))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineHardLookAtEditor : BaseEditor<CinemachineHardLookAt>
+    class CinemachineHardLookAtEditor : BaseEditor<CinemachineHardLookAt>
     {
         public override void OnInspectorGUI()
         {
@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineHardLookAt).LookAtTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Hard Look At requires a Tracking target.  Change Rotation Control to None if you don't want a Tracking or LookAt target.", 
+                    "Hard Look At requires a Tracking Target in the CmCamera.", 
                     MessageType.Warning);
             EditorGUI.BeginChangeCheck();
             GUI.enabled = false;

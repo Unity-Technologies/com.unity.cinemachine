@@ -5,8 +5,7 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineCollisionImpulseSource))]
-    internal sealed class CinemachineCollisionImpulseSourceEditor
-        : BaseEditor<CinemachineCollisionImpulseSource>
+    class CinemachineCollisionImpulseSourceEditor : BaseEditor<CinemachineCollisionImpulseSource>
     {
         float m_TestForce = 1;
         GUIContent m_TestButton = new GUIContent(

@@ -12,8 +12,7 @@ namespace Cinemachine
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
+    class CinemachineFreeLookEditor : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>

@@ -14,13 +14,13 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(LensSettingsHideModeOverridePropertyAttribute))]
-    internal class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
+    class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
     {
         public LensSettingsHideModeOverridePropertyDrawer() => HideModeOverride = true;
     }
 
     [CustomPropertyDrawer(typeof(LensSettings))]
-    internal class LensSettingsPropertyDrawer : PropertyDrawer
+    class LensSettingsPropertyDrawer : PropertyDrawer
     {
         static LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 

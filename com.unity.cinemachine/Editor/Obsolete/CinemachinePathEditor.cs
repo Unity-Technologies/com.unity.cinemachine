@@ -9,7 +9,7 @@ namespace Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachinePath))]
-    internal sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
+    class CinemachinePathEditor : BaseEditor<CinemachinePath>
     {
         public static string kPreferTangentSelectionKey = "CinemachinePathEditor.PreferTangentSelection";
         public static bool PreferTangentSelection

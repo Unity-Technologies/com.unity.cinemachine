@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(NoiseSettings))]
-    internal sealed class NoiseSettingsEditor : BaseEditor<NoiseSettings>
+    class NoiseSettingsEditor : BaseEditor<NoiseSettings>
     {
         private const float vSpace = 2;
         private const float hSpace = 3;

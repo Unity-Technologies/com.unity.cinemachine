@@ -11,8 +11,7 @@ namespace Cinemachine.Editor
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
-    internal class CinemachineVirtualCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
+    class CinemachineVirtualCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 

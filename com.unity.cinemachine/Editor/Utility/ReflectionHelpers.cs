@@ -11,7 +11,7 @@ namespace Cinemachine.Utility
 {
     /// <summary>An ad-hoc collection of helpers for reflection, used by Cinemachine
     /// or its editor tools in various places</summary>
-    internal static class ReflectionHelpers
+     static class ReflectionHelpers
     {
         /// <summary>Copy the fields from one object to another</summary>
         /// <param name="src">The source object to copy from</param>

@@ -9,7 +9,7 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(InputAxisController))]
-    internal class InputAxisControllerEditor : UnityEditor.Editor
+    class InputAxisControllerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

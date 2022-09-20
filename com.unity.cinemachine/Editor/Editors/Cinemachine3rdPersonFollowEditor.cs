@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
     [CanEditMultipleObjects]
-    internal class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
+    class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
     {
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(Cinemachine3rdPersonFollow))]
         static void Draw3rdPersonGizmos(Cinemachine3rdPersonFollow target, GizmoType selectionType)
@@ -47,7 +47,7 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as Cinemachine3rdPersonFollow).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "3rd Person Follow requires a Follow Target.  Change Body to Do Nothing if you don't want a Follow target.",
+                    "3rd Person Follow requires a Tracking Target in the CmCamera.",
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }

@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
 
     [CustomEditor(typeof(CinemachineStoryboard))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
+    class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
         const float k_FastWaveformUpdateInterval = 0.1f;
         float m_LastSplitScreenEventTime = 0;

@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+#if CINEMACHINE_PHYSICS_2D
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineConfiner2D))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
+    class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
     {
         SerializedProperty m_MaxWindowSizeProperty;
         GUIContent m_ComputeSkeletonLabel = new GUIContent(
@@ -165,5 +165,5 @@ namespace Cinemachine.Editor
             Gizmos.matrix = oldMatrix;
         }
     }
-#endif
 }
+#endif

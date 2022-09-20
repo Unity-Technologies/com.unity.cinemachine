@@ -16,15 +16,14 @@ namespace Cinemachine.Examples
 
     #if UNITY_EDITOR
     [CustomEditor(typeof(InvokeEventFromInspector))]
-    public class GenerateEventEditor : BaseEditor<InvokeEventFromInspector>
+    public class GenerateEventEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            DrawDefaultInspector();
             Rect rect = EditorGUILayout.GetControlRect(true);
             if (GUI.Button(rect, "Invoke", "Button"))
-                Target.Invoke();
-            DrawRemainingPropertiesInInspector();
+                ((InvokeEventFromInspector)target).Invoke();
         }
     }
     #endif

@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineImpulseSource))]
-    internal sealed class CinemachineImpulseSourceEditor : BaseEditor<CinemachineImpulseSource>
+    class CinemachineImpulseSourceEditor : BaseEditor<CinemachineImpulseSource>
     {
         float m_TestForce = 1;
         GUIContent m_TestButton = new GUIContent(

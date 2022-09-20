@@ -10,14 +10,14 @@ namespace Tests.Editor
         [Test]
         public void CinemachineInstallPathIsValid()
         {
-            var pathToCmLogo = Path.Combine(ScriptableObjectUtility.CinemachineInstallPath, "Editor/EditorResources/cm_logo_sm.png");
+            var pathToCmLogo = Path.Combine($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/cm_logo_sm.png");
             Assert.That(File.Exists(pathToCmLogo));
         }
 
         [Test]
         public void CinemachineInstallRelativePathIsValid()
         {
-            var relativePathToCmLogo = Path.Combine(ScriptableObjectUtility.CinemachineRelativeInstallPath, "Editor/EditorResources/cm_logo_sm.png");
+            var relativePathToCmLogo = Path.Combine($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/cm_logo_sm.png");
             var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));
         }

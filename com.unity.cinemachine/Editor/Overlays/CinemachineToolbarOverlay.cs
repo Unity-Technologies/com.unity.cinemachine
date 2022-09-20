@@ -78,7 +78,7 @@ namespace Cinemachine.Editor
         {
             m_State.refreshIcon = m_State.isProSkin != EditorGUIUtility.isProSkin;
             m_State.isProSkin = EditorGUIUtility.isProSkin;
-            return ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Handles/" +
+            return $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/" +
                 (m_State.isProSkin ? 
                     (m_State.isSelected ? "Dark-Selected" : "Dark") : 
                     (m_State.isSelected ? "Light-Selected" : "Light")) + "/";
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
     /// By default, CinemachineToolSettingsOverlay.customToolbarItems is null.
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
-    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
+    [Icon(ScriptableObjectUtility.kPackageRoot + "/Gizmos/cm_logo.png")]
     public class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
     {
         static readonly string[] k_CmToolbarItems = { OrbitalFollowOrbitSelection.id };
@@ -191,12 +191,9 @@ namespace Cinemachine.Editor
             
             m_Icons = new Texture2D[]
             {
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/FreelookRigTop.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/FreelookRigBottom.png"),
             };
         }
 

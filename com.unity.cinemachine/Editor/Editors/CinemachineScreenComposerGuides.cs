@@ -14,8 +14,8 @@ namespace Cinemachine.Editor
         }
     }
     
-    // This is necessary because in 2019.3 we don't get mouse events in the game view in Edit mode
-    internal class GameViewEventCatcher
+    // This is necessary because since 2019.3 we don't get mouse events in the game view in Edit mode
+    class GameViewEventCatcher
     {
         class Dragger
         {
@@ -90,7 +90,7 @@ namespace Cinemachine.Editor
     /// Use an instance of this class to draw screen composer guides in the game view.
     /// This is an internal class, and is not meant to be called outside of Cinemachine.
     /// </summary>
-    public class CinemachineScreenComposerGuides
+    class CinemachineScreenComposerGuides
     {
         /// <summary>Delegate for getting the hard/soft guide rects</summary>
         /// <returns>The Hard/Soft guide rect</returns>

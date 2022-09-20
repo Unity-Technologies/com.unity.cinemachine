@@ -2,39 +2,18 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System;
-using System.Linq;
 
 namespace Cinemachine.Editor
 {
     /// <summary>
     /// This is a collection of utilities surrounding ScriptableObjects
     /// </summary>
-    public class ScriptableObjectUtility : ScriptableObject
+    class ScriptableObjectUtility
     {
         /// <summary>
-        /// The default relative path to the root directory where Cinemachine is installed
+        /// The root directory where Cinemachine is installed
         /// </summary>
-        public static string kPackageRoot = "Packages/com.unity.cinemachine";
-
-        /// <summary>Get the Cinemachine package install path.</summary>
-        public static string CinemachineInstallPath
-        {
-            get
-            {
-                string path = Path.GetFullPath(kPackageRoot);
-                path = path.Replace('\\', '/'); // because of GetFullPath()
-                return path;
-            }
-        }
-
-        /// <summary>Get the relative Cinemachine package install path.</summary>
-        public static string CinemachineRelativeInstallPath
-        {
-            get
-            {
-                return kPackageRoot;
-            }
-        }
+        public const string kPackageRoot = "Packages/com.unity.cinemachine";
 
         /// <summary>Create a scriptable object asset</summary>
         /// <typeparam name="T">The type of asset to create</typeparam>

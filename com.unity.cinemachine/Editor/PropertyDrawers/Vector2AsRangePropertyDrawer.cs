@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(Vector2AsRangeAttribute))]
-    internal sealed class Vector2AsRangePropertyDrawer : PropertyDrawer
+    class Vector2AsRangePropertyDrawer : PropertyDrawer
     {
         const int hSpace = 2;
         GUIContent m_ToLabel =  new GUIContent("...");

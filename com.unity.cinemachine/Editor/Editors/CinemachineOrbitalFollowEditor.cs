@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalFollow))]
     [CanEditMultipleObjects]
-    internal class CinemachineOrbitalFollowEditor : UnityEditor.Editor
+    class CinemachineOrbitalFollowEditor : UnityEditor.Editor
     {
         CinemachineOrbitalFollow Target => target as CinemachineOrbitalFollow;
 
@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Tracking target.", HelpBoxMessageType.Warning));
+            m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();

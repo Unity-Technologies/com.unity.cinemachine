@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(RangeSliderAttribute))]
-    sealed class RangeSliderPropertyDrawer : PropertyDrawer
+    class RangeSliderPropertyDrawer : PropertyDrawer
     {
         // old IMGUI implementation must remain until no more IMGUI inspectors are using it
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)

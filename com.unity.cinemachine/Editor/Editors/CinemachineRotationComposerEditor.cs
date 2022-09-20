@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineRotationComposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineRotationComposerEditor : UnityEditor.Editor
+    class CinemachineRotationComposerEditor : UnityEditor.Editor
     {
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
@@ -52,7 +52,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
+            m_NoTargetHelp = ux.AddChild(new HelpBox("Rotation Composer requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
