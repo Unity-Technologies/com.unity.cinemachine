@@ -8,6 +8,7 @@ namespace Cinemachine.Editor
 {
     static partial class InspectorUtility
     {
+#if false
         /// <summary>
         /// This function is called (because of InitializeOnLoadMethod) anytime Unity loads: theme change, script change, etc.
         /// </summary>
@@ -19,6 +20,7 @@ namespace Cinemachine.Editor
                 IconUtility.UpdateIcons();
             }
         }
+#endif
 
         static class IconUtility
         {
