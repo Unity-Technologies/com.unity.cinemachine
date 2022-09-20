@@ -23,8 +23,7 @@ namespace Cinemachine.Editor
         /// <returns>True, when icons don't match. False, otherwise.</returns>
         public static bool DoIconsNeedToBeUpdated()
         {
-            var cmCameraPath = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
-                "/Runtime/Behaviours/CmCamera.cs";
+            var cmCameraPath = ScriptableObjectUtility.kPackageRoot + "/Runtime/Behaviours/CmCamera.cs";
             var monoImporter = AssetImporter.GetAtPath(cmCameraPath) as MonoImporter;
             if (monoImporter == null)
                 return false;
@@ -63,7 +62,7 @@ namespace Cinemachine.Editor
             static List<string> GetAllCinemachineRuntimeScripts()
             {
                 var cmRuntimeScripts = new List<string>();
-                var directories = Directory.GetDirectories(ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Runtime");
+                var directories = Directory.GetDirectories(ScriptableObjectUtility.kPackageRoot + "/Runtime");
                 foreach (var directory in directories)
                     cmRuntimeScripts.AddRange(Directory.GetFiles(directory, "*.cs"));
                 
@@ -76,22 +75,14 @@ namespace Cinemachine.Editor
             var scriptClass = monoScript.GetClass();
             if (scriptClass == null)
                 return string.Empty;
-
             if (scriptClass.IsSubclassOf(typeof(CinemachineExtension)))
-                return ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                    "/Editor/EditorResources/Icons/CmExtensions/CinemachineExtensions@256.png";
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmExtensions/CinemachineExtensions@256.png";
             if (scriptClass.IsSubclassOf(typeof(CinemachineComponentBase)))
-                return ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                    "/Editor/EditorResources/Icons/CmComponent/CMComponent@256.png";
-
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent/CMComponent@256.png";
             if (scriptClass == typeof(CinemachineSplineRoll) || scriptClass == typeof(CinemachineSplineCart))
-                return ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                    "/Editor/EditorResources/Icons/SplineTrack/DollyTrack@256.png";
-
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/SplineTrack/DollyTrack@256.png";
             if (scriptClass.IsSubclassOf(typeof(CinemachineVirtualCameraBase)) || scriptClass == typeof(CinemachineBrain))
-                return ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                    "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png";
-
+                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png";
             return string.Empty;
         }
     }

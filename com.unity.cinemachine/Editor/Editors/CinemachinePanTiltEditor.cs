@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePanTilt))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachinePanTiltEditor : UnityEditor.Editor
+    class CinemachinePanTiltEditor : UnityEditor.Editor
     {
         CinemachinePanTilt Target => target as CinemachinePanTilt;
 

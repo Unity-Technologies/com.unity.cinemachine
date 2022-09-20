@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomPropertyDrawer(typeof(OrbitalTransposerHeadingPropertyAttribute))]
-    internal sealed class OrbitalTransposerHeadingPropertyDrawer : PropertyDrawer
+    class OrbitalTransposerHeadingPropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
         bool mExpanded = true;

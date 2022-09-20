@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineTransposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
+    class CinemachineTransposerEditor : BaseEditor<CinemachineTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>

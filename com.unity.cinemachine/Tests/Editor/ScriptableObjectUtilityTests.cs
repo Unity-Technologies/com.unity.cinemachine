@@ -11,19 +11,17 @@ namespace Tests.Editor
         [Test]
         public void CinemachineInstallPathIsValid()
         {
-            var pathToCmLogo = ScriptableObjectUtility.CinemachineInstallPath +
-                "/Editor/EditorResources/Icons/CmCamera/" + (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") +
-                "VirtualCamera@256.png";
+            var pathToCmLogo = Path.Combine(ScriptableObjectUtility.kPackageRoot + 
+                "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
             Assert.That(File.Exists(pathToCmLogo));
         }
         
         [Test]
         public void CinemachineInstallRelativePathIsValid()
         {
-            var relativePath = ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                "/Editor/EditorResources/Icons/CmCamera/" + (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") +
-                "VirtualCamera@256.png";
-            var pathToCmLogo = Path.GetFullPath(relativePath);
+            var relativePathToCmLogo = Path.Combine(ScriptableObjectUtility.kPackageRoot + 
+                "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
+            var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));
         }
     }

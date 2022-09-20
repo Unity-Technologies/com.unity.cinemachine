@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(HideFoldoutAttribute))]
-    sealed class HideFoldoutPropertyDrawer : PropertyDrawer
+    class HideFoldoutPropertyDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {

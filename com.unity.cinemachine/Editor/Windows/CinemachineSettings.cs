@@ -4,7 +4,7 @@ using System;
 
 namespace Cinemachine.Editor
 {
-    internal sealed class CinemachineSettings : AssetPostprocessor
+    class CinemachineSettings : AssetPostprocessor
     {
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
         {
@@ -229,9 +229,9 @@ namespace Cinemachine.Editor
             get
             {
                 if (sCinemachineLogoTexture == null)
-                    sCinemachineLogoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                        ScriptableObjectUtility.CinemachineRelativeInstallPath + 
-                        "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
+                    sCinemachineLogoTexture = 
+                        AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}" +
+                            "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
                 if (sCinemachineLogoTexture != null)
                     sCinemachineLogoTexture.hideFlags = HideFlags.DontSaveInEditor;
                 return sCinemachineLogoTexture;
@@ -245,8 +245,7 @@ namespace Cinemachine.Editor
             {
                 if (sCinemachineHeader == null)
                     sCinemachineHeader = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                        ScriptableObjectUtility.CinemachineRelativeInstallPath
-                            + "/Editor/EditorResources/cinemachine_header.tif");
+                        $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/cinemachine_header.tif");
                 ;
                 if (sCinemachineHeader != null)
                     sCinemachineHeader.hideFlags = HideFlags.DontSaveInEditor;

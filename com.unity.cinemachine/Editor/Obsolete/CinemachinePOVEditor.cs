@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
     [System.Obsolete]
     [CustomEditor(typeof(CinemachinePOV))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachinePOVEditor : BaseEditor<CinemachinePOV>
+    class CinemachinePOVEditor : BaseEditor<CinemachinePOV>
     {
         private void OnEnable()
         {

@@ -5,8 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBasicMultiChannelPerlin))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineBasicMultiChannelPerlinEditor 
-        : BaseEditor<CinemachineBasicMultiChannelPerlin>
+    class CinemachineBasicMultiChannelPerlinEditor : BaseEditor<CinemachineBasicMultiChannelPerlin>
     {
         private void OnEnable()
         {

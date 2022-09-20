@@ -1,0 +1,137 @@
+﻿#pragma kernel CSMain
+
+#if 1 // Includes are available only when HDRP is installed
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
+#else
+// Copied here from above includes, to avoid compilation errors in the absence of HDRP.
+// This is not currently working, for reasons TBD.
+float4 _ScreenSize;
+float4 _ZBufferParams;
+Texture2DArray _CameraDepthTexture;
+#define LOAD_TEXTURE2D_X_LOD(textureName, unCoord2, lod) textureName.Load(int4(unCoord2, 0, lod))
+float LinearEyeDepth(float depth, float4 zBufferParam) { return 1.0 / (zBufferParam.z * depth + zBufferParam.w); }
+#endif
+
+// 16 samples, won't handle a different number
+static const uint kSampleCount = 16;
+static const float2 kDiskKernel[kSampleCount] = {
+    float2(0,0),
+    float2(0.54545456,0),
+    float2(0.16855472,0.5187581),
+    float2(-0.44128203,0.3206101),
+    float2(-0.44128197,-0.3206102),
+    float2(0.1685548,-0.5187581),
+    float2(1,0),
+    float2(0.809017,0.58778524),
+    float2(0.30901697,0.95105654),
+    float2(-0.30901703,0.9510565),
+    float2(-0.80901706,0.5877852),
+    float2(-1,0),
+    float2(-0.80901694,-0.58778536),
+    float2(-0.30901664,-0.9510566),
+    float2(0.30901712,-0.9510565),
+    float2(0.80901694,-0.5877853),
+};
+// Kernel above taken from PostProcessing/Shaders/Builtins/DiskKernels.hlsl
+
+struct FocusDistanceParams
+{
+    uint VoteBias;			// 0...15
+    float DepthTolerance;	// 0.02
+    float SampleRadius;		// 0.02
+    float SamplePosX;		// 0
+    float SamplePosY;		// 0
+    float DefaultFocusDistance;	// current focus distance
+};
+
+struct FocusDistanceOutput
+{
+    float FocusDistance;
+};
+
+RWStructuredBuffer<FocusDistanceParams> _FocusDistanceParams;// : register(u2);
+RWStructuredBuffer<FocusDistanceOutput> _FocusDistanceOutput;// : register(u3);
+
+[numthreads(1,1,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    // Settings
+    FocusDistanceParams params = _FocusDistanceParams[0];
+
+    float sampleKernelSize = params.SampleRadius;
+    float depthTolerance = params.DepthTolerance;
+    uint voteBias = params.VoteBias;
+    float2 kernelPos = float2(params.SamplePosX, params.SamplePosY);
+
+    // Buckets
+    float depths[kSampleCount] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+    uint votes[kSampleCount] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    // Init the first bucket with the current target depth
+    // Even though it might actually not be hit by any sample, and
+    // in a rare case cause the last sample to not get a bucket.
+    // No votes for now.
+    depths[0] = params.DefaultFocusDistance;
+
+    uint mostVotes = 0;
+    uint biggestBucket = 0;
+    for (uint i = 0; i < kSampleCount; i++)
+    {
+        float2 offset = kernelPos + kDiskKernel[i] * sampleKernelSize + float2(0.5, 0.5);
+        float depth = LOAD_TEXTURE2D_X_LOD(_CameraDepthTexture, int2(offset.xy * _ScreenSize.xy), 0).r;
+
+        // Convert to distance units
+        depth = LinearEyeDepth(depth, _ZBufferParams);
+
+        // TODO: Any depth that would result in effective focus at infinity should be
+        // clamped here into one value. Otherwise we're unnecesarily spreading them over buckets
+        // and decreasing their voting power. Need to figure out what that focus distance is from DoF params.
+        // depth = min(_FocusDistanceToInfinity, depth);
+        // Alternatively: bucket based on raw depth and only convert the output to linear.
+
+        // Find an empty bucket or add to a bucket that's close enough
+        for (uint j = 0; j < kSampleCount; j++)
+        {
+            float bucket = depths[j];
+
+            // New bucket, claim it
+            if (bucket < 0)
+            {
+                depths[j] = depth;
+                votes[j] += 1;
+                if (votes[j] > mostVotes)
+                {
+                    mostVotes = votes[j];
+                    biggestBucket = j;
+                }
+                break;
+            }
+
+            // Belongs to this bucket, upvote
+            if (abs(bucket - depth) <= depthTolerance)
+            {
+                votes[j] += 1;
+                if (votes[j] > mostVotes)
+                {
+                    mostVotes = votes[j];
+                    biggestBucket = j;
+                }
+                break;
+            }
+        }
+    }
+
+    // If the bucket with the most votes got considerably more votes (i.e. more by voteBias) than
+    // the current target focus distance, set it as the new target focus distance.
+    // Clamp the vote bias to the most votes value - if the buckets are too small, we can't be too sticky.
+    float targetFocusDistance = params.DefaultFocusDistance;
+    voteBias = min(mostVotes - 1, voteBias);
+    if (mostVotes > votes[0] + voteBias)
+        targetFocusDistance = depths[biggestBucket];
+
+    _FocusDistanceOutput[0].FocusDistance = targetFocusDistance;
+}
+
+
+

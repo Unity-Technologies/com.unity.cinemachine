@@ -13,7 +13,7 @@ namespace Cinemachine.Editor
                 .GetCustomAttributes(typeof(ObsoleteAttribute), true);
             if (attrs != null && attrs.Length > 0)
             {
-#if false // For testing only - do not release with this because no prefab support and no animation fixup
+#if true // For testing only - do not release with this because no prefab support and no animation fixup
                 if (GUI.Button(EditorGUILayout.GetControlRect(), new GUIContent(buttonText)))
                 {
                     Undo.SetCurrentGroupName(buttonText);

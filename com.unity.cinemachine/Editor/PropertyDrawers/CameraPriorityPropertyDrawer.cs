@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CameraPriority))]
-    internal sealed class CameraPriorityPropertyDrawer : PropertyDrawer
+    class CameraPriorityPropertyDrawer : PropertyDrawer
     {
         CameraPriority def;
 

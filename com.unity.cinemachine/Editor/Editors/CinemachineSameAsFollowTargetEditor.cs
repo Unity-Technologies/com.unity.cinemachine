@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSameAsFollowTarget))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineSameAsFollowTargetEditor : BaseEditor<CinemachineSameAsFollowTarget>
+    class CinemachineSameAsFollowTargetEditor : BaseEditor<CinemachineSameAsFollowTarget>
     {
         public override void OnInspectorGUI()
         {
@@ -15,8 +15,8 @@ namespace Cinemachine.Editor
                 needWarning = (targets[i] as CinemachineSameAsFollowTarget).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox(
-                    "Same As Follow Target requires a Follow target.  It will set the virtual camera's "
-                        + "rotation to be the same as that of the Follow Target.",
+                    "Same As Follow Target requires a Tracking Target in the CmCamera.  It will set the camera's "
+                        + "rotation to be the same as that of the Tracking Target.",
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }
