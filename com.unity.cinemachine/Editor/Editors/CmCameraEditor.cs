@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CmCamera))]
     [CanEditMultipleObjects]
-    sealed class CmCameraEditor : UnityEditor.Editor
+    sealed class CmCameraEditor : UnityEditor.Editor 
     {
         CmCamera Target => target as CmCamera;
         CmCameraInspectorUtility m_CameraUtility = new CmCameraInspectorUtility();

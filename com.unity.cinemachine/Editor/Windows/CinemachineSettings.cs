@@ -230,9 +230,8 @@ namespace Cinemachine.Editor
             {
                 if (sCinemachineLogoTexture == null)
                     sCinemachineLogoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                        ScriptableObjectUtility.CinemachineRelativeInstallPath +
-                        "/Editor/EditorResources/Icons/CmCamera/" + (EditorGUIUtility.isProSkin ? "Dark/" : "Light/") +
-                        "VirtualCamera@256.png");
+                        ScriptableObjectUtility.CinemachineRelativeInstallPath + 
+                        "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png");
                 if (sCinemachineLogoTexture != null)
                     sCinemachineLogoTexture.hideFlags = HideFlags.DontSaveInEditor;
                 return sCinemachineLogoTexture;

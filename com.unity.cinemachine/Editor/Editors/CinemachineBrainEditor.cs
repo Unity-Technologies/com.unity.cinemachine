@@ -106,7 +106,7 @@ namespace Cinemachine.Editor
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
             string kGizmoFileName = ScriptableObjectUtility.CinemachineRelativeInstallPath + 
-            "/Editor/EditorResources/Icons/CmCamera/Dark/VirtualCamera@256.png";
+            "/Editor/EditorResources/Icons/CmCamera/VirtualCamera@256.png";
 
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
