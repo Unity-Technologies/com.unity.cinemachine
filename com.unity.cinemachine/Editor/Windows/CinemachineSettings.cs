@@ -138,7 +138,7 @@ namespace Cinemachine.Editor
             get
             {
                 if (s_CinemachineLogoTexture == null)
-                    s_CinemachineLogoTexture = ssetDatabase.LoadAssetAtPath<Texture2D>(
+                    s_CinemachineLogoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Icons/CmCamera@256.png");
                 if (s_CinemachineLogoTexture != null)
                     s_CinemachineLogoTexture.hideFlags = HideFlags.DontSaveInEditor;
@@ -152,7 +152,7 @@ namespace Cinemachine.Editor
             get
             {
                 if (s_CinemachineHeader == null)
-                    s_CinemachineHeader = AAssetDatabase.LoadAssetAtPath<Texture2D>(
+                    s_CinemachineHeader = AssetDatabase.LoadAssetAtPath<Texture2D>(
                         $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/cinemachine_header.tif");
                 ;
                 if (s_CinemachineHeader != null)
