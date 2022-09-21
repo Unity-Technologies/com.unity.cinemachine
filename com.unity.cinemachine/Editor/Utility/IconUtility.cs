@@ -99,7 +99,9 @@ namespace Cinemachine.Editor
                     for (int i = 0; i < pixels.Length; ++i)
                     {
                         var pixel = pixels[i];
-                        pixels[i] = Color.Lerp(pixel, new Color(0, 0, 0, pixel.a), 0.2f);
+                        Color.RGBToHSV(pixel, out var h, out var s, out var v);
+                        if (s < 0.01f) // modify grey only
+                            pixels[i] = Color.Lerp(pixel, new Color(0, 0, 0, pixel.a), 0.2f);
                     }
                     icon.SetPixels(pixels, m);
                 }
