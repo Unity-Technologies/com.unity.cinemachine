@@ -971,6 +971,7 @@ namespace Cinemachine
                 Camera cam = OutputCamera;
                 if (cam != null)
                 {
+                    cam.ResetProjectionMatrix();
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;
