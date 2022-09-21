@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations
 - Add support for HDRP 14 (Unity 2022.2)
 - Bugfix: InputValueGain mode of axis input was not framerate-independent
+- Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
 
 
 ## [2.9.1] - 2022-08-24
