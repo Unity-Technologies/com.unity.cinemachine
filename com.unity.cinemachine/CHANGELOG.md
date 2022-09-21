@@ -4,6 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
+- Bugfix: Occasional 1-frame glitch when transitioning between some freelooks
+- Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
+- Bugfix: Collider damping is more robust with extreme FreeLook configurations
+- Add support for HDRP 14 (Unity 2022.2)
+- Bugfix: InputValueGain mode of axis input was not framerate-independent
+- Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
+- Bugfix: POV starts up in its centered position, if recentering is enabled
 
 ## ## [3.0.0-pre.1] - 2022-06-01
 - Upgrade mechanism for upgrading Cinemachine 2 to Cinemachine 3.
