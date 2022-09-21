@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: AxisState Recentering wait time not work reliably in FixedUpdate.
 - Add support for HDRP 14 (Unity 2022.2)
 - Bugfix: InputValueGain mode of axis input was not framerate-independent
+- Bugfix: POV starts up in its centered position, if recentering is enabled
 
 
 ## [2.8.9] - 2022-08-24
