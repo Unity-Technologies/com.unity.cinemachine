@@ -8,7 +8,7 @@ using UnityEngine.Splines;
 namespace Cinemachine.Editor
 {
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
-    class SplineRollTool : EditorTool, IDrawSelectedHandles
+    sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
@@ -21,7 +21,8 @@ namespace Cinemachine.Editor
         {
             m_IconContent = new GUIContent
             {
-                image = EditorGUIUtility.IconContent("d_WheelCollider Icon").image, // TODO: create a proper image
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png"),
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };
