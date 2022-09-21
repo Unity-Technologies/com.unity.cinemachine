@@ -144,11 +144,11 @@ namespace Cinemachine.Editor
     /// By default, CinemachineToolSettingsOverlay.customToolbarItems is null.
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
-    [Icon(ScriptableObjectUtility.kPackageRoot + "/Gizmos/cm_logo.png")]
+    [Icon(ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png")]
     public class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
     {
         static readonly string[] k_CmToolbarItems = { OrbitalFollowOrbitSelection.id };
-
+        
         /// <summary>
         /// Override this method to return your visual element content.
         /// By default, this draws the same visual element as the HorizontalToolbar

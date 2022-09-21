@@ -139,7 +139,7 @@ namespace Cinemachine.Editor
             {
                 if (s_CinemachineLogoTexture == null)
                     s_CinemachineLogoTexture = ssetDatabase.LoadAssetAtPath<Texture2D>(
-                        $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/cm_logo_sm.png");
+                        $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Icons/CmCamera@256.png");
                 if (s_CinemachineLogoTexture != null)
                     s_CinemachineLogoTexture.hideFlags = HideFlags.DontSaveInEditor;
                 return s_CinemachineLogoTexture;
