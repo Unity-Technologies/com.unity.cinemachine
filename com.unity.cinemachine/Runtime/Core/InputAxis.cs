@@ -228,9 +228,8 @@ namespace Cinemachine
                     if (d < (0.1f * range) && Mathf.Abs(m_CurrentSpeed) > k_Epsilon)
                         m_CurrentSpeed = Damper.Damp(v - v0, control.DecelTime, deltaTime) / deltaTime;
                 }
-                input = m_CurrentSpeed * deltaTime;
             }
-            axis.Value = axis.ClampValue(axis.Value + m_CurrentSpeed);
+            axis.Value = axis.ClampValue(axis.Value + m_CurrentSpeed * deltaTime);
 
             if (Mathf.Abs(control.InputValue) > k_Epsilon)
                 CancelRecentering();
@@ -296,6 +295,6 @@ namespace Cinemachine
             m_ForceRecenter = false;
         }
 
-        internal static float CurrentTime => CinemachineCore.CurrentUnscaledTime;
+        static float CurrentTime => CinemachineCore.CurrentUnscaledTime;
     }
 }
