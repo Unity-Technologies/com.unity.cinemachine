@@ -451,8 +451,7 @@ namespace Cinemachine
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
             var x = (min + max) / 2f; // initial guess - mid point
-            int i;
-            for (i = 0; i < maxIteration; ++i)
+            for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
                 var slope = SlopeOfAngleFunction(x);
@@ -472,10 +471,8 @@ namespace Cinemachine
             // approximating derivative using symmetric difference quotient (finite diff)
             float SlopeOfAngleFunction(float input)
             {
-                var fxBehind = GetLocalPositionForCameraFromInput(input - epsilon);
-                var angleBehind = Vector3.SignedAngle(desiredDirection, fxBehind, Vector3.right);
-                var fxAfter = GetLocalPositionForCameraFromInput(input + epsilon);
-                var angleAfter = Vector3.SignedAngle(desiredDirection, fxAfter, Vector3.right);
+                var angleBehind = AngleFunction(input - epsilon);
+                var angleAfter = AngleFunction(input + epsilon);
                 return (angleAfter - angleBehind) / (2f * epsilon);
             }
         }
