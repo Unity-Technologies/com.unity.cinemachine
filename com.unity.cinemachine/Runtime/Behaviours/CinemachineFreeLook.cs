@@ -444,23 +444,25 @@ namespace Cinemachine
             }
             return m_YAxis.Value; // stay conservative
         }
-        
+
         const float k_Epsilon = 0.00005f;
+        HashSet<float> m_Xs = new HashSet<float> {10,20,30,40,50}; // alloc 5 places, in my tests that was max - might not need, we could also add an iteration count max instead of this check
         float SteepestDescent(float min, float max, Vector3 desiredDirection)
         {
-            var xs = new HashSet<float>();
+            m_Xs.Clear();
             var x = (min + max) / 2f; // midpoint as guess
             float angle, slope;
             while (Mathf.Abs(AngleFunction(x)) >= k_Epsilon)
             {
                 angle = AngleFunction(x);
                 slope = SlopeOfAngleFunction(x);
-                if (slope == 0 || xs.Count != 0 && xs.Contains(x))
+                if (slope == 0 || m_Xs.Contains(x))
                     break; // found best
 
-                xs.Add(x);
+                m_Xs.Add(x);
                 x = Mathf.Clamp(x - (angle / slope), min, max); // clamping so we don't overshoot
             }
+            Debug.Log(m_Xs.Count);
             return x;
 
             // localFunctions
