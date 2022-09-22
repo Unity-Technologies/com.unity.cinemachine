@@ -444,7 +444,6 @@ namespace Cinemachine
             }
             return m_YAxis.Value; // stay conservative
         }
-
         
         float SteepestDescent(float min, float max, Vector3 desiredDirection)
         {
@@ -457,7 +456,7 @@ namespace Cinemachine
                 var slope = SlopeOfAngleFunction(x);
                 if (slope == 0 || Mathf.Abs(angle) < epsilon)
                     break; // found best
-                x = Mathf.Clamp(x - (angle / slope), min, max); // clamping so we don't overshoot
+                x = Mathf.Clamp(x - (angle / slope), min, max); // clamping is needed so we don't overshoot
             }
             return x;
 
@@ -467,7 +466,6 @@ namespace Cinemachine
                 var point = GetLocalPositionForCameraFromInput(input);
                 return Vector3.SignedAngle(desiredDirection, point, Vector3.right);
             }
-
             // approximating derivative using symmetric difference quotient (finite diff)
             float SlopeOfAngleFunction(float input)
             {
