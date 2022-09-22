@@ -444,25 +444,20 @@ namespace Cinemachine
                 dir.x = 0;
 
                 
-                // We need to find the minimum of the angle of function of the bottom or top segments 
-                // Using steepest descent
-                // var r1 = SteepestDescent(0f, 0.5f, dir);
-                // var r2 = SteepestDescent(0.5f, 1f, dir);
-                // return r1.Item2 < r2.Item2 ? r1.Item1 : r2.Item1;
-                return SteepestDescent(0f, 1f, dir).Item1;
+                // We need to find the minimum of the angle of function using steepest descent
+                return SteepestDescent(0f, 1f, dir);
             }
             return m_YAxis.Value; // stay conservative
         }
         
         const float k_Epsilon = 0.00005f;
-        Tuple<float, float> SteepestDescent(float min, float max, Vector3 desiredDirection)
+        float SteepestDescent(float min, float max, Vector3 desiredDirection)
         {
             var x = (min + max) / 2f; // midpoint as guess
             var xPrev = x + 1f; // initial value not equal to x
-            var angle = 0f;
             while (Mathf.Abs(AngleFunction(x)) >= k_Epsilon)
             {
-                angle = AngleFunction(x);
+                var angle = AngleFunction(x);
                 var slope = SlopeOfAngleFunction(x);
                 if (slope == 0 || xPrev == x)
                     break; // found best
@@ -470,7 +465,7 @@ namespace Cinemachine
                 xPrev = x;
                 x = Mathf.Clamp(x - (angle / slope), min, max); // clamping so we don't overshoot
             }
-            return new Tuple<float, float>(x, Mathf.Abs(angle));
+            return x;
 
             // localFunctions
             float AngleFunction(float input)
