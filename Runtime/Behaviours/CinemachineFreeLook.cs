@@ -443,39 +443,52 @@ namespace Cinemachine
                 }
                 dir.x = 0;
 
-                // Sample the spline in a few places, find the 2 closest, and lerp
-                int i0 = 0, i1 = 0;
-                float a0 = 0, a1 = 0;
-                const int NumSamples = 13;
-                float step = 1f / (NumSamples-1);
-                for (int i = 0; i < NumSamples; ++i)
-                {
-                    float a = Vector3.SignedAngle(
-                        dir, GetLocalPositionForCameraFromInput(i * step), Vector3.right);
-                    if (i == 0)
-                        a0 = a1 = a;
-                    else
-                    {
-                        if (Mathf.Abs(a) < Mathf.Abs(a0))
-                        {
-                            a1 = a0;
-                            i1 = i0;
-                            a0 = a;
-                            i0 = i;
-                        }
-                        else if (Mathf.Abs(a) < Mathf.Abs(a1))
-                        {
-                            a1 = a;
-                            i1 = i;
-                        }
-                    }
-                }
-                if (Mathf.Sign(a0) == Mathf.Sign(a1))
-                    return i0 * step;
-                float t = Mathf.Abs(a0) / (Mathf.Abs(a0) + Mathf.Abs(a1));
-                return Mathf.Lerp(i0 * step, i1 * step, t);
+                
+                // We need to find the minimum of the angle of function of the bottom or top segments 
+                // Using steepest descent
+                // var r1 = SteepestDescent(0f, 0.5f, dir);
+                // var r2 = SteepestDescent(0.5f, 1f, dir);
+                // return r1.Item2 < r2.Item2 ? r1.Item1 : r2.Item1;
+                return SteepestDescent(0f, 1f, dir).Item1;
             }
             return m_YAxis.Value; // stay conservative
+        }
+        
+        const float k_Epsilon = 0.00005f;
+        Tuple<float, float> SteepestDescent(float min, float max, Vector3 desiredDirection)
+        {
+            var x = (min + max) / 2f; // midpoint as guess
+            var xPrev = x + 1f; // initial value not equal to x
+            var angle = 0f;
+            while (Mathf.Abs(AngleFunction(x)) >= k_Epsilon)
+            {
+                angle = AngleFunction(x);
+                var slope = SlopeOfAngleFunction(x);
+                if (slope == 0 || xPrev == x)
+                    break; // found best
+                
+                xPrev = x;
+                x = Mathf.Clamp(x - (angle / slope), min, max); // clamping so we don't overshoot
+            }
+            return new Tuple<float, float>(x, Mathf.Abs(angle));
+
+            // localFunctions
+            float AngleFunction(float input)
+            {
+                var point = GetLocalPositionForCameraFromInput(input);
+                return Vector3.SignedAngle(desiredDirection, point, Vector3.right);
+            }
+
+            // approximating derivative using symmetric difference quotient (finite diff)
+            float SlopeOfAngleFunction(float input)
+            {
+                var fxBehind = GetLocalPositionForCameraFromInput(input - k_Epsilon);
+                var angleBehind = Vector3.SignedAngle(desiredDirection, fxBehind, Vector3.right);
+                var fxAfter = GetLocalPositionForCameraFromInput(input + k_Epsilon);
+                var angleAfter = Vector3.SignedAngle(desiredDirection, fxAfter, Vector3.right);
+                var slope = (angleAfter - angleBehind) / (2f * k_Epsilon);
+                return slope;
+            }
         }
 
         CameraState m_State = CameraState.Default;          // Current state this frame
