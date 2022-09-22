@@ -165,12 +165,8 @@ namespace Cinemachine.Editor
         static Vector2 s_ScrollPosition = Vector2.zero;
         
         [SettingsProvider]
-        static SettingsProvider CreateProjectSettingsProvider()
-        {
-            var provider = new SettingsProvider("Preferences/Cinemachine", SettingsScope.User);
-            provider.guiHandler = (sarchContext) => OnGUI();
-            return provider;
-        }
+        static SettingsProvider CreateProjectSettingsProvider() => 
+            new("Preferences/Cinemachine", SettingsScope.User) { guiHandler = _ => OnGUI() };
 
         static void OnGUI()
         {
