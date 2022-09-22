@@ -445,24 +445,21 @@ namespace Cinemachine
             return m_YAxis.Value; // stay conservative
         }
 
-        const float k_Epsilon = 0.00005f;
-        HashSet<float> m_Xs = new HashSet<float> {10,20,30,40,50}; // alloc 5 places, in my tests that was max - might not need, we could also add an iteration count max instead of this check
+        
         float SteepestDescent(float min, float max, Vector3 desiredDirection)
         {
-            m_Xs.Clear();
-            var x = (min + max) / 2f; // midpoint as guess
-            float angle, slope;
-            while (Mathf.Abs(AngleFunction(x)) >= k_Epsilon)
+            const int maxIteration = 10;
+            const float epsilon = 0.00005f;
+            var x = (min + max) / 2f; // initial guess - mid point
+            int i;
+            for (i = 0; i < maxIteration; ++i)
             {
-                angle = AngleFunction(x);
-                slope = SlopeOfAngleFunction(x);
-                if (slope == 0 || m_Xs.Contains(x))
+                var angle = AngleFunction(x);
+                var slope = SlopeOfAngleFunction(x);
+                if (slope == 0 || Mathf.Abs(angle) < epsilon)
                     break; // found best
-
-                m_Xs.Add(x);
                 x = Mathf.Clamp(x - (angle / slope), min, max); // clamping so we don't overshoot
             }
-            Debug.Log(m_Xs.Count);
             return x;
 
             // localFunctions
@@ -475,11 +472,11 @@ namespace Cinemachine
             // approximating derivative using symmetric difference quotient (finite diff)
             float SlopeOfAngleFunction(float input)
             {
-                var fxBehind = GetLocalPositionForCameraFromInput(input - k_Epsilon);
+                var fxBehind = GetLocalPositionForCameraFromInput(input - epsilon);
                 var angleBehind = Vector3.SignedAngle(desiredDirection, fxBehind, Vector3.right);
-                var fxAfter = GetLocalPositionForCameraFromInput(input + k_Epsilon);
+                var fxAfter = GetLocalPositionForCameraFromInput(input + epsilon);
                 var angleAfter = Vector3.SignedAngle(desiredDirection, fxAfter, Vector3.right);
-                return (angleAfter - angleBehind) / (2f * k_Epsilon);
+                return (angleAfter - angleBehind) / (2f * epsilon);
             }
         }
 
