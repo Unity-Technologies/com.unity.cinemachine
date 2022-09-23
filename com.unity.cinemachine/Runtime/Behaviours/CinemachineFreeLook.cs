@@ -434,7 +434,7 @@ namespace Cinemachine
                 Vector3 flatDir = dir; flatDir.y = 0;
                 if (!flatDir.AlmostZero())
                 {
-                    float angle = Vector3.SignedAngle(flatDir, Vector3.back, Vector3.up);
+                    float angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
                     dir = Quaternion.AngleAxis(angle, Vector3.up) * dir;
                 }
                 dir.x = 0;
@@ -464,7 +464,7 @@ namespace Cinemachine
             float AngleFunction(float input)
             {
                 var point = GetLocalPositionForCameraFromInput(input);
-                return Vector3.SignedAngle(desiredDirection, point, Vector3.right);
+                return UnityVectorExtensions.SignedAngle(desiredDirection, point, Vector3.right);
             }
             // approximating derivative using symmetric difference quotient (finite diff)
             float SlopeOfAngleFunction(float input)
