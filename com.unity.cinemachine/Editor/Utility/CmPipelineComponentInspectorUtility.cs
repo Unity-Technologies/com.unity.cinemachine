@@ -86,7 +86,7 @@ namespace Cinemachine.Editor
                 var t = targets[i] as CinemachineComponentBase;
                 if (t != null)
                 {
-                    noCamera |= t.VirtualCamera == null;
+                    noCamera |= t.VirtualCamera == null || t.VirtualCamera is CinemachineCameraManagerBase;
                     switch (m_RequiredTargets)
                     {
                         case RequiredTargets.Follow: noTarget |= t.FollowTarget == null; break;
@@ -129,7 +129,7 @@ namespace Cinemachine.Editor
                 var t = targets[i] as CinemachineComponentBase;
                 if (t != null)
                 {
-                    noCamera |= t.VirtualCamera == null;
+                    noCamera |= t.VirtualCamera == null || t.VirtualCamera is CinemachineCameraManagerBase;
                     switch (requiredTargets)
                     {
                         case RequiredTargets.Follow: noTarget |= t.FollowTarget == null; break;
