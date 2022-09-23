@@ -280,8 +280,8 @@ namespace Cinemachine
             Color originalGizmoColour = Gizmos.color;
             bool isActiveVirtualCam = CinemachineCore.Instance.IsLive(vcam);
             Gizmos.color = isActiveVirtualCam
-                ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
             if (vcam.Follow != null)
             {

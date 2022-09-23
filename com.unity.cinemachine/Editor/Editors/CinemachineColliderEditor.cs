@@ -53,7 +53,7 @@ namespace Cinemachine.Editor
                 Vector3 pos = vcam.State.GetFinalPosition();
                 if (collider.AvoidObstacles && vcam.State.HasLookAt())
                 {
-                    Gizmos.color = CinemachineColliderPrefs.FeelerColor;
+                    Gizmos.color = CinemachineColliderPrefs.CameraSphereColor.Value;
                     if (collider.CameraRadius > 0)
                         Gizmos.DrawWireSphere(pos, collider.CameraRadius);
 
@@ -65,7 +65,7 @@ namespace Cinemachine.Editor
                     List<List<Vector3>> debugPaths = collider.DebugPaths;
                     foreach (var path in debugPaths)
                     {
-                        Gizmos.color = CinemachineColliderPrefs.FeelerHitColor;
+                        Gizmos.color = CinemachineColliderPrefs.CameraPathColor.Value;
                         Vector3 p0 = vcam.State.ReferenceLookAt;
                         foreach (var p in path)
                         {

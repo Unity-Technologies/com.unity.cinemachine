@@ -62,8 +62,8 @@ namespace Cinemachine.Editor
                     var pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
                     var oldColor = Gizmos.color;
                     Gizmos.color = isActive
-                        ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                        : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                        ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                        : CinemachineCorePrefs.InactiveGizmoColour.Value;
                     Gizmos.DrawLine(pos, target.VirtualCamera.State.RawPosition);
                     Gizmos.color = oldColor;
                 }

@@ -140,7 +140,7 @@ namespace Cinemachine.Editor
             if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
                 return;
 
-            Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
+            Color color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
             Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
             
             var oldMatrix = Gizmos.matrix;

@@ -376,8 +376,8 @@ namespace Cinemachine.Editor
             toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
             toggle.tooltip = "Enable the display of overlays in the Game window.  "
                 + "You can adjust colours and opacity in Cinemachine Preferences.";
-            toggle.value = CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides;
-            toggle.RegisterValueChangedCallback((evt) => CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides = evt.newValue);
+            toggle.value = CinemachineCorePrefs.ShowInGameGuides.Value;
+            toggle.RegisterValueChangedCallback((evt) => CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue);
             ux.Add(toggle);
         }
 

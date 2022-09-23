@@ -281,27 +281,16 @@ namespace Cinemachine.Editor
             }
         }
 
-        static GUIContent ShowInGameGuidesLabel = new GUIContent(
-            "Game Window Guides",
-            "Enable the display of overlays in the Game window.  "
-                + "You can adjust colours and opacity in Cinemachine Preferences.");
-
-        static GUIContent SaveDuringPlayLabel = new GUIContent(
-            "Save During Play",
-            "If checked, Virtual Camera settings changes made during Play Mode "
-                + "will be propagated back to the scene when Play Mode is exited.");
-
         /// <summary>
         /// Draw the global settings controls in the inspector
         /// </summary>
         protected void DrawGlobalControlsInInspector()
         {
-            CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
-                = EditorGUILayout.Toggle(ShowInGameGuidesLabel,
-                    CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides);
+            CinemachineCorePrefs.ShowInGameGuides.Value
+                = EditorGUILayout.Toggle(CinemachineCorePrefs.s_ShowInGameGuidesLabel, CinemachineCorePrefs.ShowInGameGuides.Value);
 
             SaveDuringPlay.SaveDuringPlay.Enabled
-                = EditorGUILayout.Toggle(SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+                = EditorGUILayout.Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(

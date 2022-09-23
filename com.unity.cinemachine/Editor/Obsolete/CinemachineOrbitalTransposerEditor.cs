@@ -97,8 +97,8 @@ namespace Cinemachine.Editor
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
-                    ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                    ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                    : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
                 Vector3 up = target.VirtualCamera.State.ReferenceUp;
                 Vector3 pos = target.FollowTargetPosition;
