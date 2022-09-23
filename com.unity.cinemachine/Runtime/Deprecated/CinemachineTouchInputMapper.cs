@@ -9,6 +9,7 @@ namespace Cinemachine
     /// Drop it on any game object in your scene.
     /// </summary>
     [Obsolete]
+    [AddComponentMenu("")] // Don't display in add component menu
     public class CinemachineTouchInputMapper : MonoBehaviour
     {
         /// <summary>Sensitivity multiplier for x-axis</summary>

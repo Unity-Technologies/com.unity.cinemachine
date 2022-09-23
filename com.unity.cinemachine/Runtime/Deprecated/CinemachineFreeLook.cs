@@ -14,7 +14,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
+    [AddComponentMenu("")] // Don't display in add component menu
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {

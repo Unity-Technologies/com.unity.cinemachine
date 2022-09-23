@@ -7,7 +7,7 @@ namespace Cinemachine
     /// <summary>
     /// An add-on module for Cm Camera that adds a final offset to the camera
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Camera Offset")]
     [ExecuteAlways]
     [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineCameraOffset.html")]
     [SaveDuringPlay]

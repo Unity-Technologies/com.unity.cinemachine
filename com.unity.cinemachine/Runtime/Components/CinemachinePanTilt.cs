@@ -11,7 +11,7 @@ namespace Cinemachine
     ///
     /// This component does not change the camera's position.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Pan Tilt")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachinePanTilt 

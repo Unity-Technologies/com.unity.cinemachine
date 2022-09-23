@@ -13,7 +13,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
+    [AddComponentMenu("")] // Don't display in add component menu
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {

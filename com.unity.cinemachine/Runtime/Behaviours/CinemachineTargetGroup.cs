@@ -58,7 +58,7 @@ namespace Cinemachine
     /// The bounding box is calculated by taking the member positions, weight,
     /// and radii into account.
     /// </summary>
-    [AddComponentMenu("Cinemachine/CinemachineTargetGroup")]
+    [AddComponentMenu("Cinemachine/Cinemachine Target Group")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]

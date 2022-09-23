@@ -9,7 +9,7 @@ namespace Cinemachine
     /// the FOV of the lens to keep the target object at a constant size on the screen,
     /// regardless of camera and target position.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Follow Zoom")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]

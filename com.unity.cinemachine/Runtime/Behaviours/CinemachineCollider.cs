@@ -18,7 +18,7 @@ namespace Cinemachine
     /// Additionally, the Collider can be used to assess the shot quality and
     /// report this as a field in the camera State.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Collider")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]

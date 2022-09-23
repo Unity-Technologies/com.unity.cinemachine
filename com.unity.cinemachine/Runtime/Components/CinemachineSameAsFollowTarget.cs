@@ -9,7 +9,7 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to match the orientation of the Follow target.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Same As Follow Target")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase

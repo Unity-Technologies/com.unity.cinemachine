@@ -74,7 +74,7 @@ namespace Cinemachine
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    [AddComponentMenu("Cinemachine/CinemachineBrain")]
+    [AddComponentMenu("Cinemachine/Cinemachine Brain")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
     public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack

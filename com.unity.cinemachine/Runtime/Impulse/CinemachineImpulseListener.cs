@@ -11,7 +11,7 @@ namespace Cinemachine
     /// signals on the specified channels, and moves the camera in response to them.
     /// </summary>
     [SaveDuringPlay]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Impulse Listener")]
     [ExecuteAlways]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseListener.html")]
     public class CinemachineImpulseListener : CinemachineExtension
