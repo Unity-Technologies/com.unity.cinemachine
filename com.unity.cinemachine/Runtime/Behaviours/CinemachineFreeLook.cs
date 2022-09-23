@@ -440,16 +440,16 @@ namespace Cinemachine
                 dir.x = 0;
 
                 // We need to find the minimum of the angle of function using steepest descent
-                return SteepestDescent(0f, 1f, dir);
+                return SteepestDescent(0f, 1f, dir, cameraPos);
             }
             return m_YAxis.Value; // stay conservative
         }
-        
-        float SteepestDescent(float min, float max, Vector3 desiredDirection)
+
+        float SteepestDescent(float min, float max, Vector3 desiredDirection, Vector3 cameraPos)
         {
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
-            var x = (min + max) / 2f; // initial guess - mid point
+            var x = InitialGuess();
             for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
@@ -458,6 +458,7 @@ namespace Cinemachine
                     break; // found best
                 x = Mathf.Clamp(x - (angle / slope), min, max); // clamping is needed so we don't overshoot
             }
+
             return x;
 
             // localFunctions
@@ -472,6 +473,44 @@ namespace Cinemachine
                 var angleBehind = AngleFunction(input - epsilon);
                 var angleAfter = AngleFunction(input + epsilon);
                 return (angleAfter - angleBehind) / (2f * epsilon);
+            }
+            // initial guess based on closest point to line approximating spline
+            float InitialGuess()
+            {
+                UpdateCachedSpline();
+                var pb = m_CachedKnots[1]; // point at the bottom of spline
+                var pm = m_CachedKnots[2]; // point in the middle of spline
+                var pt = m_CachedKnots[3]; // point at the top of spline
+                var dbm = SqrDistanceBetweenLineSegmentAndPoint(pb, pm, cameraPos, out var tbm);
+                var dmt = SqrDistanceBetweenLineSegmentAndPoint(pm, pt, cameraPos, out var tmt);
+
+                return dbm < dmt ? Mathf.Lerp(0, 0.5f, tbm) : Mathf.Lerp(0.5f, 1f, tmt);
+                
+                // local function
+                // line segment is defined by a and b. Point is p.
+                // t gives the closest point on line a-b, Lerp(a, b, t)
+                float SqrDistanceBetweenLineSegmentAndPoint(Vector3 a, Vector3 b, Vector3 p, out float t)
+                {
+                    var ab = b - a;
+                    var ap = p - a;
+                    if (Vector3.Dot(ap, ab) <= 0)
+                    {
+                        t = 0;
+                        return Vector3.Dot(ap, ap);
+                    }
+
+
+                    var bp = p - b;
+                    if (Vector3.Dot(bp, ab) >= 0)
+                    {
+                        t = 1;
+                        return Vector3.Dot(bp, bp);
+                    }
+
+                    var ab_x_ap = Vector3.Cross(ab, ap);
+                    t = 0.5f;
+                    return Vector3.Dot(ab_x_ap, ab_x_ap) / Vector3.Dot(ab, ab);
+                }
             }
         }
 
