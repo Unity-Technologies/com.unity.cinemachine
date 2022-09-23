@@ -1,27 +1,23 @@
 using UnityEditor;
-using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineHardLookAt))]
     [CanEditMultipleObjects]
-    class CinemachineHardLookAtEditor : BaseEditor<CinemachineHardLookAt>
+    class CinemachineHardLookAtEditor : UnityEditor.Editor
     {
-        public override void OnInspectorGUI()
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+
+        void OnEnable() => m_PipelineUtility = new (this);
+        void OnDisable() => m_PipelineUtility.OnDisable();
+
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineHardLookAt).LookAtTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "Hard Look At requires a Tracking Target in the CmCamera.", 
-                    MessageType.Warning);
-            EditorGUI.BeginChangeCheck();
-            GUI.enabled = false;
-            EditorGUILayout.LabelField(" ", "No additional settings", EditorStyles.miniLabel);
-            GUI.enabled = true;
-            DrawRemainingPropertiesInInspector();
+            var ux = new VisualElement();
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            m_PipelineUtility.UpdateState();
+            return ux;
         }
     }
 }

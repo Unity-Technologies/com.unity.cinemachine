@@ -30,6 +30,8 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
             if (Target.ConfineMode == CinemachineConfiner.Mode.Confine2D)
             {

@@ -10,14 +10,15 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
-        VisualElement m_NoTargetHelp;
 
         CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
         protected virtual void OnEnable()
         {
+            m_PipelineUtility = new (this);
             m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
             m_ScreenGuideEditor.GetHardGuide = () => Target.HardGuideRect;
             m_ScreenGuideEditor.GetSoftGuide = () => Target.SoftGuideRect;
@@ -35,12 +36,11 @@ namespace Cinemachine.Editor
             
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-
-            EditorApplication.update += UpdateVisibility;
         }
 
         protected virtual void OnDisable()
         {
+            m_PipelineUtility.OnDisable();
             m_GameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -48,16 +48,13 @@ namespace Cinemachine.Editor
 
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-
-            EditorApplication.update -= UpdateVisibility;
         }
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox("Position Composer requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
-
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
@@ -67,17 +64,8 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UnlimitedSoftZone)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
 
+            m_PipelineUtility.UpdateState();
             return ux;
-        }
-
-        void UpdateVisibility()
-        {
-            if (Target == null || m_NoTargetHelp == null)
-                return;
-            var noTarget = false;
-            for (var i = 0; i < targets.Length; ++i)
-                noTarget |= targets[i] != null && (targets[i] as CinemachinePositionComposer).FollowTarget == null;
-            m_NoTargetHelp.SetVisible(noTarget);
         }
 
         protected virtual void OnGUI()

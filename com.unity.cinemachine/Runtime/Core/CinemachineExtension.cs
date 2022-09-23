@@ -22,7 +22,7 @@ namespace Cinemachine
             get
             {
                 if (m_VcamOwner == null)
-                    m_VcamOwner = GetComponent<CinemachineVirtualCameraBase>();
+                    TryGetComponent(out m_VcamOwner);
                 return m_VcamOwner;
             }
         }
@@ -55,8 +55,6 @@ namespace Cinemachine
         /// <param name="connect">True if connecting, false if disconnecting</param>
         protected virtual void ConnectToVcam(bool connect)
         {
-            if (connect && VirtualCamera == null)
-                Debug.LogError("CinemachineExtension requires a Cinemachine Virtual Camera component");
             if (VirtualCamera != null)
             {
                 if (connect)

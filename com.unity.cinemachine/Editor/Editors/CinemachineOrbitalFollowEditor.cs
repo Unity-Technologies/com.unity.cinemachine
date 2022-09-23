@@ -11,11 +11,12 @@ namespace Cinemachine.Editor
     {
         CinemachineOrbitalFollow Target => target as CinemachineOrbitalFollow;
 
-        VisualElement m_NoFollowHelp;
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_NoControllerHelp;
 
         void OnEnable()
         {
+            m_PipelineUtility = new (this);
             EditorApplication.update += UpdateHelpBoxes;
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
@@ -23,6 +24,7 @@ namespace Cinemachine.Editor
         
         void OnDisable()
         {
+            m_PipelineUtility.OnDisable();
             EditorApplication.update -= UpdateHelpBoxes;
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
@@ -32,8 +34,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
-
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
 
@@ -78,24 +79,21 @@ namespace Cinemachine.Editor
                 m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
             }
 
+            m_PipelineUtility.UpdateState();
             UpdateHelpBoxes();
             return ux;
         }
 
         void UpdateHelpBoxes()
         {
-            if (target == null)
+            if (target == null || m_NoControllerHelp == null)
                 return;  // target was deleted
-            bool noFollow = false;
             bool noHandler = false;
             for (int i = 0; i < targets.Length; ++i)
             {
                 var t = (CinemachineOrbitalFollow)targets[i];
-                noFollow |= t.FollowTarget == null;
                 noHandler |= !t.HasInputHandler;
             }
-            if (m_NoFollowHelp != null)
-                m_NoFollowHelp.SetVisible(noFollow);
             if (m_NoControllerHelp != null)
                 m_NoControllerHelp.SetVisible(noHandler);
         }

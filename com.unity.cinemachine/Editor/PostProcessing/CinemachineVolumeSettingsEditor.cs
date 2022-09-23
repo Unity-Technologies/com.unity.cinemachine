@@ -77,6 +77,7 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
             var focusMode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
             if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
             {

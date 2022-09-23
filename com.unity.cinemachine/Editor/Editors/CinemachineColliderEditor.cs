@@ -33,12 +33,10 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-
-            if (Target.AvoidObstacles && Target.VirtualCamera != null
-                    && !Target.VirtualCamera.State.HasLookAt())
-                EditorGUILayout.HelpBox(
-                    "Avoid Obstacles requires a Tracking Target in the CmCamera.",
-                    MessageType.Warning);
+            
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this, Target.AvoidObstacles 
+                ? CmPipelineComponentInspectorUtility.RequiredTargets.LookAt 
+                : CmPipelineComponentInspectorUtility.RequiredTargets.None);
 
             DrawRemainingPropertiesInInspector();
         }

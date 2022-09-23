@@ -10,17 +10,17 @@ namespace Cinemachine.Editor
     {
         CinemachineFollow Target => target as CinemachineFollow;
 
-        VisualElement m_NoFollowHelp;
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
 
         void OnEnable()
         {
-            EditorApplication.update += UpdateHelpBoxes;
+            m_PipelineUtility = new (this);
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         }
         
         void OnDisable()
         {
-            EditorApplication.update -= UpdateHelpBoxes;
+            m_PipelineUtility.OnDisable();
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
@@ -28,28 +28,12 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_NoFollowHelp = ux.AddChild(new HelpBox("Follow requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
-
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
-            ux.AddSpace();
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FollowOffset)));
 
-            UpdateHelpBoxes();
+            m_PipelineUtility.UpdateState();
             return ux;
-        }
-
-        void UpdateHelpBoxes()
-        {
-            if (target == null)
-                return;  // target was deleted
-            bool noFollow = false;
-            for (int i = 0; i < targets.Length; ++i)
-            {
-                var t = targets[i] as CinemachineFollow;
-                noFollow |= t.FollowTarget == null;
-            }
-            if (m_NoFollowHelp != null)
-                m_NoFollowHelp.SetVisible(noFollow);
         }
 
         void OnSceneGUI()
