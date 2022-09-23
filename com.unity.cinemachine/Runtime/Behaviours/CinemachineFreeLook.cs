@@ -474,7 +474,7 @@ namespace Cinemachine
                 var angleAfter = AngleFunction(input + epsilon);
                 return (angleAfter - angleBehind) / (2f * epsilon);
             }
-            // initial guess based on closest point to line approximating spline
+            // initial guess based on closest line (approximating spline) to point 
             float InitialGuess()
             {
                 UpdateCachedSpline();
@@ -508,7 +508,7 @@ namespace Cinemachine
                     }
 
                     var ab_x_ap = Vector3.Cross(ab, ap);
-                    t = 0.5f;
+                    t = 0.5f; // guess mid
                     return Vector3.Dot(ab_x_ap, ab_x_ap) / Vector3.Dot(ab, ab);
                 }
             }
