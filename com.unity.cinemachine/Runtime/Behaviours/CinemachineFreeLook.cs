@@ -483,7 +483,8 @@ namespace Cinemachine
                 var dbm = SqrDistanceBetweenLineSegmentAndPoint(pb, pm, cameraPos, out var tbm);
                 var dmt = SqrDistanceBetweenLineSegmentAndPoint(pm, pt, cameraPos, out var tmt);
 
-                return dbm < dmt ? Mathf.Lerp(0, 0.5f, tbm) : Mathf.Lerp(0.5f, 1f, tmt);
+                var mid = (min + max) / 2f;
+                return dbm < dmt ? Mathf.Lerp(min, mid, tbm) : Mathf.Lerp(mid, max, tmt);
                 
                 // local function
                 // line segment is defined by a and b. Point is p.
