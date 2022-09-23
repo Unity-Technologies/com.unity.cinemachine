@@ -458,7 +458,6 @@ namespace Cinemachine
                     break; // found best
                 x = Mathf.Clamp(x - (angle / slope), min, max); // clamping is needed so we don't overshoot
             }
-
             return x;
 
             // localFunctions
@@ -498,7 +497,6 @@ namespace Cinemachine
                         t = 0;
                         return Vector3.Dot(ap, ap);
                     }
-
 
                     var bp = p - b;
                     if (Vector3.Dot(bp, ab) >= 0)
