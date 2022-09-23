@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
     [InitializeOnLoad]
     static class CinemachineColliderPrefs
     {
-        static CinemachineSettings.BoolItem SettingsFoldedOut = new("CNMCN_Collider_Foldout", false);
+        static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Collider_Foldout", false);
         public static CinemachineSettings.ColorItem CameraSphereColor = new("CNMCN_Collider_Camera_Path_Colour", Color.grey);
         public static CinemachineSettings.ColorItem CameraPathColor = new("CNMCN_Collider_Camera_Sphere_Colour", Color.yellow);
 
@@ -14,8 +14,8 @@ namespace Cinemachine.Editor
 
         static void DrawColliderSettings()
         {
-            SettingsFoldedOut.Value = EditorGUILayout.Foldout(SettingsFoldedOut.Value, "Collider Settings", true);
-            if (SettingsFoldedOut.Value)
+            s_SettingsFoldedOut.Value = EditorGUILayout.Foldout(s_SettingsFoldedOut.Value, "Collider Settings", true);
+            if (s_SettingsFoldedOut.Value)
             {
                 EditorGUI.indentLevel++;
                 EditorGUI.BeginChangeCheck();
