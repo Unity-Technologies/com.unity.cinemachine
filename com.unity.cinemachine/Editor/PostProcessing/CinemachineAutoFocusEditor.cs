@@ -12,7 +12,7 @@ namespace Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            ux.AddChild(new HelpBox("This component is only valid for HDRP projects.", HelpBoxMessageType.Warning));
+            ux.AddChild(new HelpBox("This component is only valid within HDRP projects.", HelpBoxMessageType.Warning));
             return ux;
         }
 #else

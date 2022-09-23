@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             EditorGUILayout.HelpBox(
-                "This component is only valid for HDRP and URP projects.",
+                "This component is only valid within HDRP and URP projects.",
                 MessageType.Warning);
         }
 #else
