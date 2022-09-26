@@ -492,11 +492,9 @@ namespace Cinemachine
                 // TODO: cameraPos and pb, pm, pt are not in the same space!!! -> this needs to be fixed so initial guess will be better!
             }
 #endif
-            var cameraPosInRigSpace = cameraPos - rigOffset;
-            
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
-            var x = InitialGuess();
+            var x = InitialGuess(cameraPos - rigOffset);
             for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
@@ -521,7 +519,7 @@ namespace Cinemachine
                 return (angleAfter - angleBehind) / (2f * epsilon);
             }
             // initial guess based on closest line (approximating spline) to point 
-            float InitialGuess()
+            float InitialGuess(Vector3 cameraPosInRigSpace)
             {
                 UpdateCachedSpline();
                 var pb = m_CachedKnots[1]; // point at the bottom of spline
