@@ -42,6 +42,8 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+
             if (Target.BoundingShape2D == null)
                 EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
             else if (Target.BoundingShape2D.GetType() != typeof(PolygonCollider2D)

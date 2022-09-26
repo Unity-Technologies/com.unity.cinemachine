@@ -9,7 +9,7 @@ namespace Cinemachine
     /// the FOV of the lens to keep the target object at a constant size on the screen,
     /// regardless of camera and target position.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Follow Zoom")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -31,31 +31,23 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Damping")]
         public float Damping = 1f;
 
-        /// <summary>Will not generate an FOV smaller than this.</summary>
-        [RangeSlider(1f, 179f)]
-        [Tooltip("Lower limit for the FOV that this behaviour will generate.")]
-        [FormerlySerializedAs("m_MinFOV")]
-        public float MinFOV = 3f;
-
-        /// <summary>Will not generate an FOV larget than this.</summary>
-        [RangeSlider(1f, 179f)]
-        [Tooltip("Upper limit for the FOV that this behaviour will generate.")]
-        [FormerlySerializedAs("m_MaxFOV")]
-        public float MaxFOV = 60f;
+        /// <summary>Range for the FOV that this behaviour will generate.</summary>
+        [MinMaxRangeSlider(1f, 179f)]
+        [Tooltip("Range for the FOV that this behaviour will generate.")]
+        public Vector2 FovRange = new Vector2(3f, 60f);
 
         void Reset()
         {
             Width = 2f;
             Damping = 1f;
-            MinFOV = 3f;
-            MaxFOV = 60f;
+            FovRange = new Vector2(3f, 60f);
         }
 
         void OnValidate()
         {
             Width = Mathf.Max(0, Width);
-            MaxFOV = Mathf.Clamp(MaxFOV, 1, 179);
-            MinFOV = Mathf.Clamp(MinFOV, 1, MaxFOV);
+            FovRange.y = Mathf.Clamp(FovRange.y, 1, 179);
+            FovRange.x = Mathf.Clamp(FovRange.x, 1, FovRange.y);
         }
 
         class VcamExtraState
@@ -93,8 +85,8 @@ namespace Cinemachine
                 if (d > UnityVectorExtensions.Epsilon)
                 {
                     // Clamp targetWidth to FOV min/max
-                    var minW = d * 2f * Mathf.Tan(MinFOV * Mathf.Deg2Rad / 2f);
-                    var maxW = d * 2f * Mathf.Tan(MaxFOV * Mathf.Deg2Rad / 2f);
+                    var minW = d * 2f * Mathf.Tan(FovRange.x * Mathf.Deg2Rad / 2f);
+                    var maxW = d * 2f * Mathf.Tan(FovRange.y * Mathf.Deg2Rad / 2f);
                     targetWidth = Mathf.Clamp(targetWidth, minW, maxW);
 
                     // Apply damping
@@ -108,7 +100,7 @@ namespace Cinemachine
                     fov = 2f * Mathf.Atan(targetWidth / (2 * d)) * Mathf.Rad2Deg;
                 }
                 var lens = state.Lens;
-                lens.FieldOfView = extra.m_PreviousFrameZoom = Mathf.Clamp(fov, MinFOV, MaxFOV);
+                lens.FieldOfView = extra.m_PreviousFrameZoom = Mathf.Clamp(fov, FovRange.x, FovRange.y);
                 state.Lens = lens;
             }
         }

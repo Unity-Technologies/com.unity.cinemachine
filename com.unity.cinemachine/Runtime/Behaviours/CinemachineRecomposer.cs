@@ -8,7 +8,7 @@ namespace Cinemachine
     /// comnposition.  It is intended for use in a Timeline context, where you want to hand-adjust
     /// the output of procedural or recorded camera aiming.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Recomposer")]
     [ExecuteAlways]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineRecomposer.html")]

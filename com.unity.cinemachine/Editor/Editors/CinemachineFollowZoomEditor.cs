@@ -4,11 +4,11 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineHardLockToTarget))]
+    [CustomEditor(typeof(CinemachineFollowZoom))]
     [CanEditMultipleObjects]
-    class CinemachineHardLockToTargetEditor : UnityEditor.Editor
+    class CinemachineFollowZoomEditor : UnityEditor.Editor
     {
-        CinemachineHardLockToTarget Target => target as CinemachineHardLockToTarget;
+        CinemachineFollowZoom Target => target as CinemachineFollowZoom;
 
         CmPipelineComponentInspectorUtility m_PipelineUtility;
 
@@ -19,8 +19,10 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Width)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FovRange)));
 
             m_PipelineUtility.UpdateState();
             return ux;

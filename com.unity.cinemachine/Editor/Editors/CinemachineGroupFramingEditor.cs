@@ -11,20 +11,28 @@ namespace Cinemachine.Editor
     {
         CinemachineGroupFraming Target => target as CinemachineGroupFraming;
 
-        VisualElement m_NoTargetHelp;
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_GroupSizeIsZeroHelp;
         VisualElement m_PerspectiveControls;
         VisualElement m_OrthoControls;
 
-        void OnEnable() => EditorApplication.update += UpdateVisibility;
-        void OnDisable() => EditorApplication.update -= UpdateVisibility;
+        void OnEnable() 
+        {
+            m_PipelineUtility = new(this);
+            EditorApplication.update += UpdateVisibility;
+        }
+        void OnDisable() 
+        {
+            EditorApplication.update -= UpdateVisibility;
+            m_PipelineUtility.OnDisable();
+        }
 
         public override VisualElement CreateInspectorGUI()
         {
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox("Tracking Target in the CmCamera must be a Target Group.", HelpBoxMessageType.Warning));
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.FollowGroup);
             m_GroupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingMode)));
@@ -51,22 +59,26 @@ namespace Cinemachine.Editor
                 dollyRange.SetVisible(haveDolly);
             });
             
+            m_PipelineUtility.UpdateState();
             UpdateVisibility();
             return ux;
         }
 
         void UpdateVisibility()
         {
-            if (target == null || m_NoTargetHelp == null)
+            if (target == null || m_GroupSizeIsZeroHelp == null)
                 return; 
 
             ICinemachineTargetGroup group = null;
             for (int i = 0; group == null && i < targets.Length; ++i)
-                group = (targets[i] as CinemachineGroupFraming).VirtualCamera.FollowTargetAsGroup;
-            m_NoTargetHelp.SetVisible(group == null);
+            {
+                var vcam = (targets[i] as CinemachineGroupFraming).VirtualCamera;
+                if (vcam != null)
+                    group = vcam.FollowTargetAsGroup;
+            }
             m_GroupSizeIsZeroHelp.SetVisible(group != null && group.Sphere.radius < 0.01f);
 
-            bool ortho = Target.VirtualCamera.State.Lens.Orthographic;
+            bool ortho = Target.VirtualCamera != null && Target.VirtualCamera.State.Lens.Orthographic;
             m_PerspectiveControls.SetVisible(!ortho);
             m_OrthoControls.SetVisible(ortho);
         }
@@ -75,7 +87,7 @@ namespace Cinemachine.Editor
         static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.enabled && target.VirtualCamera.FollowTargetAsGroup != null)
+            if (target.enabled && target.VirtualCamera != null && target.VirtualCamera.FollowTargetAsGroup != null)
             {
                 var oldM = Gizmos.matrix;
                 var oldC = Gizmos.color;

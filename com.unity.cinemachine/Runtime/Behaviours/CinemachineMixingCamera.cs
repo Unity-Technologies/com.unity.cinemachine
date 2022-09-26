@@ -16,7 +16,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine Mixing Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineMixingCamera.html")]
     public class CinemachineMixingCamera : CinemachineCameraManagerBase
     {

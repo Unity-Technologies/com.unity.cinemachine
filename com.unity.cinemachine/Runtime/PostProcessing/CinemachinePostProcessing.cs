@@ -46,7 +46,7 @@ namespace Cinemachine
     /// DepthOfField effect that is enabled.
     /// </summary>
     [ExecuteAlways]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Post Processing")] // Hide in menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]

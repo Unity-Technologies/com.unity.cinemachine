@@ -13,7 +13,7 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Rotation Composer")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     public class CinemachineRotationComposer : CinemachineComponentBase, 

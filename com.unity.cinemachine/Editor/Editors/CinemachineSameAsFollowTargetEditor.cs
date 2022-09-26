@@ -1,24 +1,29 @@
 using UnityEditor;
-using UnityEngine;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSameAsFollowTarget))]
     [CanEditMultipleObjects]
-    class CinemachineSameAsFollowTargetEditor : BaseEditor<CinemachineSameAsFollowTarget>
+    class CinemachineSameAsFollowTargetEditor : UnityEditor.Editor
     {
-        public override void OnInspectorGUI()
+        CinemachineSameAsFollowTarget Target => target as CinemachineSameAsFollowTarget;
+
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+
+        void OnEnable() => m_PipelineUtility = new (this);
+        void OnDisable() => m_PipelineUtility.OnDisable();
+
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineSameAsFollowTarget).FollowTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "Same As Follow Target requires a Tracking Target in the CmCamera.  It will set the camera's "
-                        + "rotation to be the same as that of the Tracking Target.",
-                    MessageType.Warning);
-            DrawRemainingPropertiesInInspector();
+            var ux = new VisualElement();
+
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+
+            m_PipelineUtility.UpdateState();
+            return ux;
         }
     }
 }

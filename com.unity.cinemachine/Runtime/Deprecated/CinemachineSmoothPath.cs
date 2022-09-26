@@ -8,7 +8,7 @@ namespace Cinemachine
     /// This is a deprecated component.  Use SplineContainer instead.
     /// </summary>
     [Obsolete("CinemachinePathBase has been deprecated. Use SplineContainer instead")]
-    [AddComponentMenu("Cinemachine/CinemachineSmoothPath")]
+    [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSmoothPath.html")]

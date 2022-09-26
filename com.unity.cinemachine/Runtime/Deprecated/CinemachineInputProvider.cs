@@ -11,6 +11,7 @@ namespace Cinemachine
     /// This is a deprecated component.  Use CinemachineSplineDolly instead.
     /// </summary>
     [Obsolete("CinemachineInputProvider has been deprecated. Use InputAxisController instead.")]
+    [AddComponentMenu("")] // Don't display in add component menu
     public class CinemachineInputProvider : MonoBehaviour, AxisState.IInputAxisProvider
     {
         /// <summary>

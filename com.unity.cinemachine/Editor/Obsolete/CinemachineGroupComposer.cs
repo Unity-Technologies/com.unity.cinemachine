@@ -6,7 +6,7 @@ namespace Cinemachine
     /// <summary>
     /// This is a deprecated component.  Use CinemachineRotationComposer and CinemachineGroupFraming instead.
     /// </summary>
-    [System.Obsolete("CinemachineFramingTransposer has been deprecated. Use CinemachineRotationComposer and CinemachineGroupFraming instead")]
+    [System.Obsolete("CinemachineGroupTransposer has been deprecated. Use CinemachineRotationComposer and CinemachineGroupFraming instead")]
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]

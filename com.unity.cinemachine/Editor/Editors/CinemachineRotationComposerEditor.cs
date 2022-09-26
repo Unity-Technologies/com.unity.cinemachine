@@ -10,14 +10,15 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineRotationComposerEditor : UnityEditor.Editor
     {
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
-        VisualElement m_NoTargetHelp;
 
         CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
         protected virtual void OnEnable()
         {
+            m_PipelineUtility = new (this);
             m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
             m_ScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
             m_ScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
@@ -34,46 +35,31 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
    
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-            EditorApplication.update += UpdateVisibility;
         }
 
         protected virtual void OnDisable()
         {
+            m_PipelineUtility.OnDisable();
             m_GameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
   
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-            EditorApplication.update -= UpdateVisibility;
         }
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox("Rotation Composer requires a Tracking Target in the CmCamera.", HelpBoxMessageType.Warning));
-
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.LookAt);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
-
-            UpdateVisibility();
+            m_PipelineUtility.UpdateState();
             return ux;
-        }
-
-        void UpdateVisibility()
-        {
-            if (Target == null || m_NoTargetHelp == null)
-                return;
-
-            bool noTarget = false;
-            for (int i = 0; i < targets.Length; ++i)
-                noTarget |= targets[i] != null && (targets[i] as CinemachineRotationComposer).LookAtTarget == null;
-            if (m_NoTargetHelp != null)
-                m_NoTargetHelp.SetVisible(noTarget);
         }
 
         protected virtual void OnGUI()

@@ -10,7 +10,7 @@ namespace Cinemachine
     /// Just add it as a component alongside an existing Unity Camera component.
     /// </summary>
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
-    [AddComponentMenu("Cinemachine/CinemachineExternalCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine External Camera")]
     [ExecuteAlways]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase

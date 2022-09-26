@@ -39,19 +39,6 @@ namespace Cinemachine.Editor
             }
         }
         
-        public override void OnInspectorGUI()
-        {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as Cinemachine3rdPersonFollow).FollowTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "3rd Person Follow requires a Tracking Target in the CmCamera.",
-                    MessageType.Warning);
-            DrawRemainingPropertiesInInspector();
-        }
-
         protected virtual void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
@@ -62,6 +49,13 @@ namespace Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
+        public override void OnInspectorGUI()
+        {
+            BeginInspector();
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            DrawRemainingPropertiesInInspector();
+        }
+
         void OnSceneGUI()
         {
             var thirdPerson = Target;

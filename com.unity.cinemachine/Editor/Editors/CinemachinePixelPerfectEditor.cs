@@ -1,15 +1,12 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineHardLockToTarget))]
+    [CustomEditor(typeof(CinemachinePixelPerfect))]
     [CanEditMultipleObjects]
-    class CinemachineHardLockToTargetEditor : UnityEditor.Editor
+    class CinemachinePixelPerfectEditor : UnityEditor.Editor
     {
-        CinemachineHardLockToTarget Target => target as CinemachineHardLockToTarget;
-
         CmPipelineComponentInspectorUtility m_PipelineUtility;
 
         void OnEnable() => m_PipelineUtility = new (this);
@@ -19,10 +16,12 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-
+#if CINEMACHINE_LWRP_7_3_1 || CINEMACHINE_PIXEL_PERFECT_2_0_3
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
             m_PipelineUtility.UpdateState();
+#else
+            ux.Add(new HelpBox("This component is only valid within URP projects", HelpBoxMessageType.Warning));
+#endif
             return ux;
         }
     }

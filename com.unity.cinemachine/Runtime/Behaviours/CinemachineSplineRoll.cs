@@ -13,6 +13,7 @@ namespace Cinemachine
     /// </summary>
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
+    [AddComponentMenu("Cinemachine/Cinemachine Spline Roll")]
     public class CinemachineSplineRoll : MonoBehaviour
     {
         /// <summary>

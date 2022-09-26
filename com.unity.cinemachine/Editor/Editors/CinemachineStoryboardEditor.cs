@@ -33,6 +33,8 @@ namespace Cinemachine.Editor
                 WaveformWindow.SetDefaultUpdateInterval();
 
             BeginInspector();
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+
             CinemachineCorePrefs.StoryboardGlobalMute.Value = EditorGUILayout.Toggle(
                 CinemachineCorePrefs.s_StoryboardGlobalMuteLabel, CinemachineCorePrefs.StoryboardGlobalMute.Value);
 

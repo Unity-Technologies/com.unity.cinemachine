@@ -12,17 +12,22 @@ namespace Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            ux.AddChild(new HelpBox("This component is only valid for HDRP projects.", HelpBoxMessageType.Warning));
+            ux.AddChild(new HelpBox("This component is only valid within HDRP projects.", HelpBoxMessageType.Warning));
             return ux;
         }
 #else
         CinemachineAutoFocus Target => target as CinemachineAutoFocus;
 
         const string k_ComputeShaderName = "CinemachineFocusDistanceCompute";
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+
+        void OnEnable() => m_PipelineUtility = new (this);
+        void OnDisable() => m_PipelineUtility.OnDisable();
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
             ux.AddChild(new HelpBox(
                 "Note: focus control requires an active Volume containing a Depth Of Field override "
                     + "having Focus Mode activated and set to Physical Camera, "
@@ -93,6 +98,7 @@ namespace Cinemachine.Editor
                     && p.objectReferenceValue == null);
             });
 
+            m_PipelineUtility.UpdateState();
             return ux;
         }
 

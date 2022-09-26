@@ -10,7 +10,7 @@ namespace Cinemachine
     /// This is useful for third-person style aim cameras that want a dead-accurate
     /// aim at all times, even in the presence of positional or rotational noise.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine 3rd Person Aim")]
     [ExecuteAlways]
     [SaveDuringPlay]
     [DisallowMultipleComponent]

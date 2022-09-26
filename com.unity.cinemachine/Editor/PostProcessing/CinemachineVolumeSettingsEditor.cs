@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             EditorGUILayout.HelpBox(
-                "This component is only valid for HDRP and URP projects.",
+                "This component is only valid within HDRP and URP projects.",
                 MessageType.Warning);
         }
 #else
@@ -77,6 +77,7 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
             var focusMode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
             if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
             {
