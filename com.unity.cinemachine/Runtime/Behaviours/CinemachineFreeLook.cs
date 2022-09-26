@@ -1,4 +1,3 @@
-// #define DEBUG_HELPERS
 using UnityEngine;
 using Cinemachine.Utility;
 using UnityEngine.Serialization;
@@ -452,48 +451,7 @@ namespace Cinemachine
                 Follow.position, 
                 GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>().GetReferenceOrientation(State.ReferenceUp), 
                 Vector3.one);
-#if DEBUG_HELPERS
-            {
-                const float debugStepsize = 0.005f;
-                float maxAngle = 0f;
-                for (float debug = 0f; debug <= 1f; debug += debugStepsize)
-                {
-                    var angle = Mathf.Abs(AngleFunction(debug));
-                    maxAngle = Mathf.Max(angle, maxAngle);
-                }
-
-                for (float debug = 0f; debug <= 1f; debug += debugStepsize)
-                {
-                    var angle = Mathf.Abs(AngleFunction(debug)) / maxAngle;
-                    var start = rigToCameraMatrix.MultiplyPoint(GetLocalPositionForCameraFromInput(debug));
-                    var normal = EstimateNormal(debug).normalized;
-                    Debug.DrawLine(start, start + (normal * angle), Color.green);
-
-                    Vector3 EstimateNormal(float d)
-                    {
-                        var p = GetLocalPositionForCameraFromInput(Mathf.Clamp01(d - debugStepsize));
-                        var n = GetLocalPositionForCameraFromInput(Mathf.Clamp01(d + debugStepsize));
-                        return Vector3.Cross(p-n, Vector3.right);
-                    }
-                }
-
-                UpdateCachedSpline();
-                var pb = rigToCameraMatrix.MultiplyPoint(m_CachedKnots[1]); // point at the bottom of spline
-                var pm = rigToCameraMatrix.MultiplyPoint(m_CachedKnots[2]); // point in the middle of spline
-                var pt = rigToCameraMatrix.MultiplyPoint(m_CachedKnots[3]); // point at the top of spline
-                Debug.DrawLine(pb, pm, Color.magenta);
-                Debug.DrawLine(pm, pt, Color.magenta);
-                
-                Debug.DrawLine(cameraPos, cameraPos + Vector3.up, Color.blue);
-                Debug.DrawLine(cameraPos, cameraPos + Vector3.down, Color.blue);
-                Debug.DrawLine(cameraPos, cameraPos + Vector3.left, Color.blue);
-                Debug.DrawLine(cameraPos, cameraPos + Vector3.right, Color.blue);
-                Debug.DrawLine(cameraPos, cameraPos + Vector3.forward, Color.blue);
-                Debug.DrawLine(cameraPos, cameraPos + Vector3.back, Color.blue);
-                
-                // TODO: cameraPos and pb, pm, pt are not in the same space!!! -> this needs to be fixed so initial guess will be better!
-            }
-#endif
+            
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
             var x = InitialGuess(rigToCameraMatrix.inverse.MultiplyPoint(cameraPos));
