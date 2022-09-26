@@ -440,22 +440,16 @@ namespace Cinemachine
                 dir.x = 0;
 
                 // We need to find the minimum of the angle of function using steepest descent
-                return SteepestDescent(dir, cameraPos);
+                return SteepestDescent(dir.normalized * (cameraPos - Follow.position).magnitude);
             }
             return m_YAxis.Value; // stay conservative
         }
 
-        float SteepestDescent(Vector3 desiredDirection, Vector3 cameraPos)
+        float SteepestDescent(Vector3 cameraOffset)
         {
-            var orientation = GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>()
-                .GetReferenceOrientation(State.ReferenceUp);
-            var cameraToRigMatrix = Matrix4x4.identity;
-            // no need to check for return value of Inverse3DAffine, because the input matrix is invertible
-            Matrix4x4.Inverse3DAffine(Matrix4x4.TRS(Follow.position, orientation, Vector3.one), ref cameraToRigMatrix);
-            
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
-            var x = InitialGuess(cameraToRigMatrix.MultiplyPoint(cameraPos));
+            var x = InitialGuess(cameraOffset);
             for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
@@ -470,7 +464,7 @@ namespace Cinemachine
             float AngleFunction(float input)
             {
                 var point = GetLocalPositionForCameraFromInput(input);
-                return Mathf.Abs(UnityVectorExtensions.SignedAngle(desiredDirection, point, Vector3.right));
+                return Mathf.Abs(UnityVectorExtensions.SignedAngle(cameraOffset, point, Vector3.right));
             }
             // approximating derivative using symmetric difference quotient (finite diff)
             float SlopeOfAngleFunction(float input)
