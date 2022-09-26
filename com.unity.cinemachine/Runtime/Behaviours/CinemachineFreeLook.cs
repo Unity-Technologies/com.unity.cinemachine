@@ -449,6 +449,7 @@ namespace Cinemachine
 
         float SteepestDescent(float min, float max, Vector3 desiredDirection, Vector3 cameraPos)
         {
+            var rigOffset = Follow.position;
 #if DEBUG_HELPERS
             {
                 const float debugStepsize = 0.005f;
@@ -462,7 +463,7 @@ namespace Cinemachine
                 for (float debug = 0f; debug <= 1f; debug += debugStepsize)
                 {
                     var angle = Mathf.Abs(AngleFunction(debug)) / maxAngle;
-                    var start = GetLocalPositionForCameraFromInput(debug);
+                    var start = rigOffset + GetLocalPositionForCameraFromInput(debug);
                     var normal = EstimateNormal(debug).normalized;
                     Debug.DrawLine(start, start + (normal * angle), Color.green);
 
@@ -475,9 +476,9 @@ namespace Cinemachine
                 }
 
                 UpdateCachedSpline();
-                var pb = (Vector3) m_CachedKnots[1]; // point at the bottom of spline
-                var pm = (Vector3) m_CachedKnots[2]; // point in the middle of spline
-                var pt = (Vector3) m_CachedKnots[3]; // point at the top of spline
+                var pb = rigOffset + (Vector3) m_CachedKnots[1]; // point at the bottom of spline
+                var pm = rigOffset + (Vector3) m_CachedKnots[2]; // point in the middle of spline
+                var pt = rigOffset + (Vector3) m_CachedKnots[3]; // point at the top of spline
                 Debug.DrawLine(pb, pm, Color.magenta);
                 Debug.DrawLine(pm, pt, Color.magenta);
                 
@@ -485,10 +486,13 @@ namespace Cinemachine
                 Debug.DrawLine(cameraPos, cameraPos + Vector3.down, Color.blue);
                 Debug.DrawLine(cameraPos, cameraPos + Vector3.left, Color.blue);
                 Debug.DrawLine(cameraPos, cameraPos + Vector3.right, Color.blue);
+                Debug.DrawLine(cameraPos, cameraPos + Vector3.forward, Color.blue);
+                Debug.DrawLine(cameraPos, cameraPos + Vector3.back, Color.blue);
                 
                 // TODO: cameraPos and pb, pm, pt are not in the same space!!! -> this needs to be fixed so initial guess will be better!
             }
 #endif
+            var cameraPosInRigSpace = cameraPos - rigOffset;
             
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
@@ -523,10 +527,10 @@ namespace Cinemachine
                 var pb = m_CachedKnots[1]; // point at the bottom of spline
                 var pm = m_CachedKnots[2]; // point in the middle of spline
                 var pt = m_CachedKnots[3]; // point at the top of spline
-                var t1 = cameraPos.ClosestPointOnSegment(pb, pm);
-                var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPos);
-                var t2 = cameraPos.ClosestPointOnSegment(pm, pt);
-                var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPos);
+                var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
+                var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
+                var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
+                var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
 
                 var mid = (min + max) / 2f;
                 return d1 < d2 ? Mathf.Lerp(min, mid, t1) : Mathf.Lerp(mid, max, t2);
