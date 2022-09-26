@@ -447,19 +447,19 @@ namespace Cinemachine
 
         float SteepestDescent(Vector3 desiredDirection, Vector3 cameraPos)
         {
-            var rigToCameraMatrix = Matrix4x4.TRS(
-                Follow.position, 
-                GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>().GetReferenceOrientation(State.ReferenceUp), 
-                Vector3.one);
+            var orientation = GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>()
+                .GetReferenceOrientation(State.ReferenceUp);
+            var cameraToRigMatrix = Matrix4x4.identity;
+            Matrix4x4.Inverse3DAffine(Matrix4x4.TRS(Follow.position, orientation, Vector3.one), ref cameraToRigMatrix);
             
             const int maxIteration = 10;
             const float epsilon = 0.00005f;
-            var x = InitialGuess(rigToCameraMatrix.inverse.MultiplyPoint(cameraPos));
+            var x = InitialGuess(cameraToRigMatrix.MultiplyPoint(cameraPos));
             for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
                 var slope = SlopeOfAngleFunction(x);
-                if (slope == 0 || Mathf.Abs(angle) < epsilon)
+                if (Mathf.Abs(slope) < epsilon || Mathf.Abs(angle) < epsilon)
                     break; // found best
                 x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
             }
