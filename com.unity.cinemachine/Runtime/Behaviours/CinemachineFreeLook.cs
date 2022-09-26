@@ -450,6 +450,7 @@ namespace Cinemachine
             var orientation = GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>()
                 .GetReferenceOrientation(State.ReferenceUp);
             var cameraToRigMatrix = Matrix4x4.identity;
+            // no need to check for return value of Inverse3DAffine, because the input matrix is invertible
             Matrix4x4.Inverse3DAffine(Matrix4x4.TRS(Follow.position, orientation, Vector3.one), ref cameraToRigMatrix);
             
             const int maxIteration = 10;
