@@ -440,12 +440,12 @@ namespace Cinemachine
                 dir.x = 0;
 
                 // We need to find the minimum of the angle of function using steepest descent
-                return SteepestDescent(0f, 1f, dir, cameraPos);
+                return SteepestDescent(dir, cameraPos);
             }
             return m_YAxis.Value; // stay conservative
         }
 
-        float SteepestDescent(float min, float max, Vector3 desiredDirection, Vector3 cameraPos)
+        float SteepestDescent(Vector3 desiredDirection, Vector3 cameraPos)
         {
             var rigToCameraMatrix = Matrix4x4.TRS(
                 Follow.position, 
@@ -461,7 +461,7 @@ namespace Cinemachine
                 var slope = SlopeOfAngleFunction(x);
                 if (slope == 0 || Mathf.Abs(angle) < epsilon)
                     break; // found best
-                x = Mathf.Clamp(x - (angle / slope), min, max); // clamping is needed so we don't overshoot
+                x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
             }
             return x;
 
@@ -490,8 +490,8 @@ namespace Cinemachine
                 var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
                 var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
 
-                var mid = (min + max) / 2f;
-                return d1 < d2 ? Mathf.Lerp(min, mid, t1) : Mathf.Lerp(mid, max, t2);
+                // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
+                return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2);
             }
         }
 
