@@ -480,36 +480,13 @@ namespace Cinemachine
                 var pb = m_CachedKnots[1]; // point at the bottom of spline
                 var pm = m_CachedKnots[2]; // point in the middle of spline
                 var pt = m_CachedKnots[3]; // point at the top of spline
-                var dbm = SqrDistanceBetweenLineSegmentAndPoint(pb, pm, cameraPos, out var tbm);
-                var dmt = SqrDistanceBetweenLineSegmentAndPoint(pm, pt, cameraPos, out var tmt);
+                var t1 = cameraPos.ClosestPointOnSegment(pb, pm);
+                var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPos);
+                var t2 = cameraPos.ClosestPointOnSegment(pm, pt);
+                var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPos);
 
                 var mid = (min + max) / 2f;
-                return dbm < dmt ? Mathf.Lerp(min, mid, tbm) : Mathf.Lerp(mid, max, tmt);
-                
-                // local function
-                // line segment is defined by a and b. Point is p.
-                // t gives the closest point on line a-b, Lerp(a, b, t)
-                float SqrDistanceBetweenLineSegmentAndPoint(Vector3 a, Vector3 b, Vector3 p, out float t)
-                {
-                    var ab = b - a;
-                    var ap = p - a;
-                    if (Vector3.Dot(ap, ab) <= 0)
-                    {
-                        t = 0;
-                        return Vector3.Dot(ap, ap);
-                    }
-
-                    var bp = p - b;
-                    if (Vector3.Dot(bp, ab) >= 0)
-                    {
-                        t = 1;
-                        return Vector3.Dot(bp, bp);
-                    }
-
-                    var ab_x_ap = Vector3.Cross(ab, ap);
-                    t = 0.5f; // guess mid
-                    return Vector3.Dot(ab_x_ap, ab_x_ap) / Vector3.Dot(ab, ab);
-                }
+                return d1 < d2 ? Mathf.Lerp(min, mid, t1) : Mathf.Lerp(mid, max, t2);
             }
         }
 
