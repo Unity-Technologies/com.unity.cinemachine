@@ -271,7 +271,7 @@ namespace Cinemachine
                 }
                 dir.x = 0;
 
-                // We need to find the minimum of the angle of function using steepest descent
+                // We need to find the minimum of the angle function using steepest descent
                 var x = SteepestDescent(dir.normalized * (cameraPos - followPosition).magnitude);
                 return x <= 0.5f
                     ? Mathf.Lerp(verticalAxis.Range.x, verticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
