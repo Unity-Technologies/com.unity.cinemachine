@@ -8,14 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
 - Bugfix: Occasional 1-frame glitch when transitioning between some freelooks
 - Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
-- Bugfix: Collider damping is more robust with extreme FreeLook configurations
 - Add support for HDRP 14 (Unity 2022.2)
 - Bugfix: InputValueGain mode of axis input was not framerate-independent
 - Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
 - Bugfix: POV starts up in its centered position, if recentering is enabled
-
-## [Unreleased]
 - Add Show Hierarchy Icon preference option
+- New icons for cinemachine (cameras, components, extensions, tracks).
 
 
 ## [3.0.0-pre.1] - 2022-06-01
@@ -32,7 +30,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations
-- New icons for cinemachine (cameras, components, extensions, tracks).
 
 
 ## [2.9.0] - 2022-08-15
