@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [unreleased]
 - Bugfix: Tranpsoser with LockToTarget binding could have gimbal lock
+- Freelook ForcePosition is more precise now.
 
 
 ## [2.6.17] - 2022-08-15
