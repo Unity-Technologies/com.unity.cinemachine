@@ -226,25 +226,23 @@ namespace Cinemachine
             var distance = dir.magnitude;
             if (distance > 0.001f)
             {
+                var up = VirtualCamera.State.ReferenceUp;
+                var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+                dir /= distance;
+                var localDir = orient * dir;
+                var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                 switch (OrbitStyle)
                 {
                     case OrbitStyles.Sphere:
                     {
-                        var up = VirtualCamera.State.ReferenceUp;
-                        var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-                        dir /= distance;
-                        var localDir = orient * dir;
-                        var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                         VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
                         HorizontalAxis.Value = r.y;
                     }
                         break;
                     case OrbitStyles.ThreeRing:
                     {
-                        var up = VirtualCamera.State.ReferenceUp;
-                        VerticalAxis.Value = GetYAxisClosestValue(pos, up, VerticalAxis);
-                        // if (TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
-                        //     VerticalAxis.Value = 0;
+                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, up, VerticalAxis);
+                        HorizontalAxis.Value = r.y;
                     }
                         break;
                     default:
@@ -255,7 +253,7 @@ namespace Cinemachine
             //RadialAxis.Value = distance / Radius;
         }
         
-        float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up, InputAxis verticalAxis)
+        float GetVerticalAxisClosestValue(Vector3 cameraPos, Vector3 up, InputAxis verticalAxis)
         {
             if (FollowTarget != null)
             {
