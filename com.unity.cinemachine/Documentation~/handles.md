@@ -1,8 +1,8 @@
 # Cinemachine Handle toolbar
 
-The Cinemachine Handle toolbar is a group of 3D controls that allow you to manipulate virtual camera parameters visually in the Scene view. You can use the handle tools to interactively adjust the selected object's parameters quickly and efficiently rather than controlling them via the inspector.
+The Cinemachine Handle toolbar is a group of 3D controls that allow you to manipulate CmCamera parameters visually in the Scene view. You can use the handle tools to interactively adjust the selected object's parameters quickly and efficiently rather than controlling them via the inspector.
 
-The toolbar automatically appears in the Scene view **toolbar** Overlay when you select a type of virtual camera with an associated handle.
+The toolbar automatically appears in the Scene view **toolbar** Overlay when you select a type of CmCamera with an associated handle.
 
 ![scene-view](images/scene-view.png)
 
@@ -22,7 +22,7 @@ The FOV tool can adjust Vertical FOV, Horizontal FOV, Orthographic Size, or Foca
 
 ![FOV](images/FOV.png)
 
-For more information on the Field of View (FOV) property see, [Setting Virtual Camera properties](CinemachineVirtualCamera.md).
+For more information on the Field of View (FOV) property see, [Setting CmCamera properties](CinemachineVirtualCamera.md).
 
 **2. Far/Near clip planes**
 
@@ -30,7 +30,7 @@ For more information on the Field of View (FOV) property see, [Setting Virtual C
 
 ![clip-plane](images/clip-plane.png)
 
-For more information on the Far and Near clip plane properties see, [Setting Virtual Camera properties](CinemachineVirtualCamera.md).
+For more information on the Far and Near clip plane properties see, [Setting CmCamera properties](CinemachineVirtualCamera.md).
 
 **3. Follow offset**
 
@@ -38,7 +38,7 @@ The Follow offset is an offset from the Follow Target. You can drag the points t
 
 ![follow-offset](images/follow-offset.png)
 
-For more information on the Follow offset property see, [Orbital Transposer properties](CinemachineBodyOrbitalTransposer.md).
+For more information on the Follow offset property see, [Orbital Follow properties](CinemachineBodyOrbitalTransposer.md).
 
 **4. Tracked object offset**
 

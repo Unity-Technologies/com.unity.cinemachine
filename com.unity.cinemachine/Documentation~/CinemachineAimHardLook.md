@@ -1,4 +1,4 @@
 # Hard Look At
 
-This Virtual Camera __Aim__ algorithm rotates the Virtual Camera to keep the __Look At__ target in the center of the camera frame.
+This CmCamera __Rotation Control__ algorithm rotates the CmCamera to keep the __Look At__ target in the center of the camera frame.
 

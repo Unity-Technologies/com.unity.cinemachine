@@ -1,4 +1,4 @@
 # Hard Lock to Target
 
-This Virtual Camera __Body__ algorithm uses the same position at the __Follow__ target. In other words, the target acts as a mounting point for the Virtual Camera.
+This CmCamera __Position Control__ algorithm uses the same position at the __Tracking Target__arget. In other words, the target acts as a mounting point for the CmCamera.
 

@@ -1,10 +1,10 @@
 # Spline Dolly
 
-This camera __Body__ algorithm restricts the Cinemachine Camera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
+This CmCamera __Position Control__ algorithm restricts the CmCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
 
-Enable __Automatic Dolly__ to move the camera to a position on the spline that is closest to the __Tracking Target__. When enabled, __Automatic Dolly__ moves the camera to the position on the spline that’s closest to the target.
+Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards that is closest to the __Tracking Target__, or in some custom way that you devise.
 
-**Tip**: Choose your spline shapes with care when using Automatic Dolly. This becomes problematic on splines that form an arc around some point.  As an extreme illustration, consider a perfectly circular spline with the __Tracking Target__ at the center. The closest point on the spline is unstable because all points on the circular spline are equally close to the target. In this situation, moving the __Tracking Target__ small distances can cause the camera to move large distances on the spline.
+**Tip**: Choose your spline shapes with care when using Nearest Point to Target Automatic Dolly. It can become problematic on splines that form an arc around some point.  As an extreme illustration, consider a perfectly circular spline with the __Tracking Target__ at the center. The closest point on the spline is unstable because all points on the circular spline are equally close to the target. In this situation, moving the __Tracking Target__ small distances can cause the camera to move large distances on the spline.
 
 ## Properties:
 
@@ -23,10 +23,10 @@ Enable __Automatic Dolly__ to move the camera to a position on the spline that i
 | | _Path No Roll_ | Use the spline’s up vector at the current point, but with the roll set to zero. |
 | | _Follow Target_ | Use the up vector from the Tracking target’s transform. |
 | | _Follow Target No Roll_ | Use the up vector from the Tracking target’s transform, but with the roll zeroed out. |
-| __Auto Dolly__ || Controls how automatic dollying occurs. A Tracking target is necessary to use this feature. |
-| | _Enabled_ | Enable the automatic dolly feature. Note: this can have some performance impact. |
-| | _Position Offset_ | Offset, in position units, from the closest point on the spline to the tracking target. |
+| __Auto Dolly__ || Controls how automatic dollying occurs. |
+| | _None_ | No automatic dollying occurs.  You must control the CmCamera's position on the spline by setting PathPosition. |
+| | _Fixed Speed_ | Camera travels along the path at a fixed speed, which you can set. |
+| | _Nearest Point To Target_ | Positions the camera at the point on the spline that is closest to the Tracking Target's position.  A Tracking Target is required in the CmCamera.  You can also specify an offset from the closest point, to tune the camera's position. |
 | __Damping__ || Controls how aggressively the camera moves to its desired point on the spline.  Smaller values produce a faster-moving camera, larger values produce a heavier, more slowly-moving camera. |
-| | _Enabled_ | Enable the automatic dolly feature. Note: this can have some performance impact. |
 | | _Position_ | How aggressively the camera tries to maintain the offset along the x, y, or z directions in spline local space. X represents the axis that is perpendicular to the spline. Use this to smooth out imperfections in the path. This may move the camera off the spline. Y represents the axis that is defined by the spline-local up direction. Use this to smooth out imperfections in the path. This may move the camera off the spline. Z represents the axis that is parallel to the spline. This won't move the camera off the spline. |
 | | _Angular Damping_ | How to set the virtual camera's Up vector.  This will affect the screen composition, because the camera Aim behaviours will always try to respect the Up direction.  This is only used when the Camera Up is taking its value from the Tracking Target |
