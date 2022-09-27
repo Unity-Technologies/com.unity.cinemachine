@@ -272,12 +272,15 @@ namespace Cinemachine
                 dir.x = 0;
 
                 // We need to find the minimum of the angle of function using steepest descent
-                return SteepestDescent(dir.normalized * (cameraPos - followPosition).magnitude, verticalAxis);
+                var x = SteepestDescent(dir.normalized * (cameraPos - followPosition).magnitude);
+                return x <= 0.5f
+                    ? Mathf.Lerp(verticalAxis.Range.x, verticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
+                    : Mathf.Lerp(verticalAxis.Center, verticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
             }
             return VerticalAxis.Value; // stay conservative
             
-            // local function
-            float SteepestDescent(Vector3 cameraOffset, InputAxis inputAxis)
+            // local functions
+            float SteepestDescent(Vector3 cameraOffset)
             {
                 const int maxIteration = 10;
                 const float epsilon = 0.00005f;
@@ -291,9 +294,7 @@ namespace Cinemachine
                     x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
                 }
 
-                return x <= 0.5f
-                    ? Mathf.Lerp(inputAxis.Range.x, inputAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
-                    : Mathf.Lerp(inputAxis.Center, inputAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
+                return x;
 
                 // localFunctions
                 float AngleFunction(float input)
@@ -325,9 +326,9 @@ namespace Cinemachine
                     // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
                     return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2); // represents mid to top
                 }
-
-                static float MapTo01(float valueToMap, float fMin, float fMax) => (valueToMap - fMin) / (fMax - fMin);
             }
+            
+            static float MapTo01(float valueToMap, float fMin, float fMax) => (valueToMap - fMin) / (fMax - fMin);
         }
         
         /// <summary>This is called to notify the user that a target got warped,
