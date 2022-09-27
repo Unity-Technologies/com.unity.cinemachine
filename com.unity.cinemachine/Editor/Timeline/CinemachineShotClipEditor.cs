@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
         public override void OnCreate(TimelineClip clip, TrackAsset track, TimelineClip clonedFrom)
         {
             base.OnCreate(clip, track, clonedFrom);
-            if (CinemachineShotEditor.AutoCreateShotFromSceneView)
+            if (CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value)
             {
                 var asset = clip.asset as CinemachineShot;
                 var vcam = CinemachineShotEditor.CreatePassiveVcamFromSceneView();
