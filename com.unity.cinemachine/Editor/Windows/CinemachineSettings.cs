@@ -111,27 +111,26 @@ namespace Cinemachine.Editor
             static byte[] Base64Decode(string base64EncodedData) => Convert.FromBase64String(base64EncodedData);
         }
 
+        // Called by the ingrastructure.  We install our hierarchy icon drawer.
         static void OnPostprocessAllAssets(
             string[] importedAssets, string[] deletedAssets, string[] movedAssets, 
             string[] movedFromAssetPaths, bool didDomainReload)
         {
             if (didDomainReload)
-                EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+                EditorApplication.hierarchyWindowItemOnGUI += (int instanceID, Rect r) =>
+                {
+                    var instance = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+                    if (instance == null)
+                        return; // object in process of being deleted
+
+                    if (CinemachineCorePrefs.ShowBrainIconInHierarchy.Value && instance.TryGetComponent<CinemachineBrain>(out _))
+                    {
+                        var texRect = new Rect(r.xMax - r.height, r.yMin, r.height, r.height);
+                        GUI.DrawTexture(texRect, CinemachineLogoTexture, ScaleMode.ScaleAndCrop);
+                    }
+                };
         }
 
-        static void OnHierarchyGUI(int instanceID, Rect selectionRect)
-        {
-            var instance = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
-            if (instance == null)
-                return; // object in process of being deleted
-
-            if (CinemachineCorePrefs.ShowBrainIconInHierarchy.Value && instance.TryGetComponent<CinemachineBrain>(out _))
-            {
-                var texRect = new Rect(selectionRect.xMax - selectionRect.height, selectionRect.yMin, selectionRect.height, selectionRect.height);
-                GUI.DrawTexture(texRect, CinemachineLogoTexture, ScaleMode.ScaleAndCrop);
-            }
-        }
-        
         static Texture2D s_CinemachineLogoTexture = null;
         public static Texture2D CinemachineLogoTexture
         {
@@ -146,21 +145,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        static Texture2D s_CinemachineHeader = null;
-        static Texture2D CinemachineHeader
-        {
-            get
-            {
-                if (s_CinemachineHeader == null)
-                    s_CinemachineHeader = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                        $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/cinemachine_header.tif");
-                ;
-                if (s_CinemachineHeader != null)
-                    s_CinemachineHeader.hideFlags = HideFlags.DontSaveInEditor;
-                return s_CinemachineHeader;
-            }
-        }
-
         public static event Action AdditionalCategories = CinemachineCorePrefs.DrawCoreSettings; // This one is first
         static Vector2 s_ScrollPosition = Vector2.zero;
         
@@ -170,15 +154,15 @@ namespace Cinemachine.Editor
 
         static void OnGUI()
         {
-            if (CinemachineHeader != null)
+            if (CinemachineLogoTexture != null)
             {
-                const float kWidth = 350f;
-                float aspectRatio = (float)CinemachineHeader.height / (float)CinemachineHeader.width;
+                const float kWidth = 64f;
+                float aspectRatio = (float)CinemachineLogoTexture.height / (float)CinemachineLogoTexture.width;
                 GUILayout.BeginScrollView(Vector2.zero, false, false, GUILayout.Width(kWidth), GUILayout.Height(kWidth * aspectRatio));
                 var texRect = new Rect(0f, 0f, kWidth, kWidth * aspectRatio);
 
                 GUILayout.BeginArea(texRect);
-                GUI.DrawTexture(texRect, CinemachineHeader, ScaleMode.ScaleToFit);
+                GUI.DrawTexture(texRect, CinemachineLogoTexture, ScaleMode.ScaleToFit);
                 GUILayout.EndArea();
 
                 GUILayout.EndScrollView();

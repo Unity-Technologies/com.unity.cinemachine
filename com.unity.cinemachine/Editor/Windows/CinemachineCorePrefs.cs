@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
             "Storyboard Global Mute", 
             "If checked, all storyboards are globally muted.");
         public static readonly GUIContent s_ShowInGameGuidesLabel = new(
-            "Game View Guides", 
+            "Show Game View Guides", 
             "Enable the display of overlays in the Game View.  You can adjust colours and opacity in Cinemachine Preferences.");
         public static readonly GUIContent s_SaveDuringPlayLabel = new(
             "Save During Play",
