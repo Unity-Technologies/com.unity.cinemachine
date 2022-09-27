@@ -73,8 +73,8 @@ namespace Tests.Runtime
                 yield return null;
         
                 // save camera current position and rotation
-                m_OriginalPosition = m_Freelook.State.CorrectedPosition;
-                m_OriginalOrientation = m_Freelook.State.CorrectedOrientation;
+                m_OriginalPosition = m_Freelook.State.GetCorrectedPosition();
+                m_OriginalOrientation = m_Freelook.State.GetCorrectedOrientation();
         
                 yield return null;
         
@@ -82,8 +82,8 @@ namespace Tests.Runtime
         
                 yield return null;
         
-                Assert.That(m_Freelook.State.CorrectedPosition, Is.EqualTo(m_OriginalPosition).Using(new Vector3EqualityComparer(0.01f)));
-                Assert.That(m_Freelook.State.CorrectedOrientation, Is.EqualTo(m_OriginalOrientation).Using(new QuaternionEqualityComparer(0.001f)));
+                Assert.That(m_Freelook.State.GetCorrectedPosition(), Is.EqualTo(m_OriginalPosition).Using(new Vector3EqualityComparer(0.01f)));
+                Assert.That(m_Freelook.State.GetCorrectedOrientation(), Is.EqualTo(m_OriginalOrientation).Using(new QuaternionEqualityComparer(0.001f)));
             }
         }
     }
