@@ -62,12 +62,13 @@ namespace Tests.Runtime
         {
             for (var i = 0; i < m_Freelook.m_Orbits.Length; ++i) 
                 m_Freelook.m_Orbits[i] = rigSetup[i];
-            
-            for (var i = 0; i < 10; ++i)
+
+            const float steps = 20f;
+            for (var i = 0f; i <= steps; ++i)
             {
-                // set axis randomly
-                m_Freelook.m_XAxis.Value = Random.Range(0f, 180f);
-                m_Freelook.m_YAxis.Value = Random.Range(0f, 1f);
+                var axisValue = i / steps;
+                m_Freelook.m_XAxis.Value = 180f * axisValue; // x axis range [0, 180]
+                m_Freelook.m_YAxis.Value = axisValue; // y axis range [0, 1]
         
                 yield return null;
         
