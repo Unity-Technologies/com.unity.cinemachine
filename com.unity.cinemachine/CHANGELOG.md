@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: InputValueGain mode of axis input was not framerate-independent
 - Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
 - Bugfix: POV starts up in its centered position, if recentering is enabled
+- Freelook ForcePosition is more precise now.
 
 
 ## [2.9.1] - 2022-08-24
