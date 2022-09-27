@@ -227,22 +227,22 @@ namespace Cinemachine
             if (distance > 0.001f)
             {
                 var up = VirtualCamera.State.ReferenceUp;
-                var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-                dir /= distance;
-                var localDir = orient * dir;
+                var orient = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up); // this is correct and orient is not
+                var directionNormalized = dir / distance;
+                var localDir = orient * directionNormalized;
                 var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                 switch (OrbitStyle)
                 {
                     case OrbitStyles.Sphere:
                     {
-                        VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
-                        HorizontalAxis.Value = r.y;
+                        VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x; // wrong when target is rotated and binding is such
+                        HorizontalAxis.Value = r.y; // wrong when target is rotated and binding is such
                     }
                         break;
                     case OrbitStyles.ThreeRing:
                     {
-                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, up, VerticalAxis);
-                        HorizontalAxis.Value = r.y;
+                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, localDir, VerticalAxis);
+                        HorizontalAxis.Value = r.y; // wrong when target is rotated and binding is such
                     }
                         break;
                     default:
@@ -253,24 +253,22 @@ namespace Cinemachine
             //RadialAxis.Value = distance / Radius;
         }
         
-        float GetVerticalAxisClosestValue(Vector3 cameraPos, Vector3 up, InputAxis verticalAxis)
+        float GetVerticalAxisClosestValue(Vector3 cameraPos, Vector3 normalizedDirection, InputAxis verticalAxis)
         {
             if (FollowTarget != null)
             {
                 // Rotate the camera pos to the back
                 Vector3 followPosition = FollowTarget.position;
-                Quaternion q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
-                Vector3 dir = q * (cameraPos - followPosition);
-                Vector3 flatDir = dir; flatDir.y = 0;
+                Vector3 flatDir = normalizedDirection; flatDir.y = 0;
                 if (!flatDir.AlmostZero())
                 {
                     float angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
-                    dir = Quaternion.AngleAxis(angle, Vector3.up) * dir;
+                    normalizedDirection = Quaternion.AngleAxis(angle, Vector3.up) * normalizedDirection;
                 }
-                dir.x = 0;
+                normalizedDirection.x = 0;
 
                 // We need to find the minimum of the angle function using steepest descent
-                var x = SteepestDescent(dir.normalized * (cameraPos - followPosition).magnitude);
+                var x = SteepestDescent(normalizedDirection * (cameraPos - followPosition).magnitude);
                 return x <= 0.5f
                     ? Mathf.Lerp(verticalAxis.Range.x, verticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
                     : Mathf.Lerp(verticalAxis.Center, verticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
