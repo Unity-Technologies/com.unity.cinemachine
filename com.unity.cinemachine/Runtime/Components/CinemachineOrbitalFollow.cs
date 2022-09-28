@@ -12,7 +12,7 @@ namespace Cinemachine
     ///
     /// The position on the sphere and the radius of the sphere can be controlled by user input.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Orbital Follow")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineOrbitalFollow 

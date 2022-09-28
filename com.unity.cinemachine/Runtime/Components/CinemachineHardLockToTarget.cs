@@ -9,7 +9,7 @@ namespace Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to place the camera on the Follow Target.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Hard Lock to Target")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineHardLockToTarget : CinemachineComponentBase

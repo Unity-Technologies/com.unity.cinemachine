@@ -14,7 +14,7 @@ namespace Cinemachine
     /// In Auto-Dolly mode, the Spline Position field is animated automatically every frame by finding
     /// the position on the spline that's closest to the camera's tracking target.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Spline Dolly")]
+    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Spline Dolly")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     public class CinemachineSplineDolly : CinemachineComponentBase

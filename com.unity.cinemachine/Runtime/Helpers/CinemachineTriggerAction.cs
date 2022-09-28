@@ -20,7 +20,7 @@ namespace Cinemachine
     /// a trigger collider is entered and exited.
     /// </summary>
     [SaveDuringPlay]
-    [AddComponentMenu("Cinemachine/Cinemachine Trigger Action")]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Trigger Action")]
     [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineTriggerAction.html")]
     public class CinemachineTriggerAction : MonoBehaviour
     {
