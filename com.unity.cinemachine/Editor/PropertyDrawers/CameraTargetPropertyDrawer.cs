@@ -42,7 +42,7 @@ namespace Cinemachine.Editor
             if (GUI.Button(rect, EditorGUIUtility.IconContent("_Popup"), GUI.skin.label))
             {
                 GenericMenu menu = new GenericMenu();
-                menu.AddItem(new GUIContent("Convert to TargetGroup"), false, () =>
+                menu.AddItem(new GUIContent("Convert to Target Group"), false, () =>
                 {
                     if (target != null && target.GetComponent<CinemachineTargetGroup>() == null)
                     {
@@ -50,7 +50,7 @@ namespace Cinemachine.Editor
                         var group = go.GetComponent<CinemachineTargetGroup>();
                    
                         group.RotationMode = CinemachineTargetGroup.RotationModes.GroupAverage;
-                        group.AddMember(target, 1, 1);
+                        group.AddMember(target, 1, 0.5f);
                         property.objectReferenceValue = group.Transform;
                         property.serializedObject.ApplyModifiedProperties();
                     }
