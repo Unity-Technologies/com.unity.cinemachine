@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using Cinemachine;
+using Cinemachine.TargetTracking;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -9,17 +11,40 @@ namespace Tests.Runtime
 {
     public class FreelookForcePositionTests : CinemachineFixtureBase
     {
-        CinemachineFreeLook m_Freelook;
+        CmCamera m_CmCamera;
+        CinemachineOrbitalFollow m_OrbitalFollow;
+        GameObject m_FollowTargetGo;
         Vector3 m_OriginalPosition;
         Quaternion m_OriginalOrientation;
-        
+        static readonly Vector2 k_AxisRange = new(-180f, 180f);
+        static readonly Array k_BindingModes = Enum.GetValues(typeof(BindingMode));
+
         [SetUp]
         public override void SetUp()
         {
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
-            var vcamHolder = CreateGameObject("CM Freelook", typeof(CinemachineFreeLook));
-            m_Freelook = vcamHolder.GetComponent<CinemachineFreeLook>();
-            m_Freelook.Priority = 100;
+            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+
+            var camGo = CreateGameObject("CM Freelook", typeof(CmCamera));
+            m_CmCamera = camGo.GetComponent<CmCamera>();
+            m_OrbitalFollow = camGo.AddComponent<CinemachineOrbitalFollow>();
+            m_OrbitalFollow.HorizontalAxis.Range = k_AxisRange;
+            m_OrbitalFollow.HorizontalAxis.Center = 0f;
+            m_OrbitalFollow.HorizontalAxis.Wrap = true;
+            m_OrbitalFollow.VerticalAxis.Range = k_AxisRange;
+            m_OrbitalFollow.VerticalAxis.Center = 0f;
+            m_OrbitalFollow.VerticalAxis.Wrap = false;
+            m_OrbitalFollow.RadialAxis.Range = new Vector2(1f, 5f);
+            m_OrbitalFollow.RadialAxis.Center = 1f;
+            m_OrbitalFollow.RadialAxis.Wrap = false;
+            m_OrbitalFollow.RadialAxis.Value = m_OrbitalFollow.RadialAxis.Center;
+            m_OrbitalFollow.TrackerSettings.PositionDamping = Vector3.zero;
+            m_OrbitalFollow.TrackerSettings.RotationDamping = Vector3.zero;
+            m_OrbitalFollow.TrackerSettings.QuaternionDamping = 0;
+            camGo.AddComponent<CinemachineHardLookAt>();
+            
+            m_FollowTargetGo = CreatePrimitive(PrimitiveType.Cube);
+            m_FollowTargetGo.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            m_CmCamera.Target.TrackingTarget = m_FollowTargetGo.transform;
 
             base.SetUp();
         }
@@ -30,60 +55,124 @@ namespace Tests.Runtime
             base.TearDown();
         }
 
+        public struct TestData
+        {
+            public CinemachineOrbitalFollow.OrbitStyles OrbitStyle;
+            public float Radius;
+            public Cinemachine3OrbitRig.Settings Orbits;
+            public float Precision;
+        }
         static IEnumerable RigSetups
         {
             get
             {
-                yield return new TestCaseData(new[]
-                {
-                    new CinemachineFreeLook.Orbit { m_Height = 0, m_Radius = 1 },
-                    new CinemachineFreeLook.Orbit { m_Height = 1, m_Radius = 2 },
-                    new CinemachineFreeLook.Orbit { m_Height = 2, m_Radius = 3 }
-                }).SetName("Rig1").Returns(null);
+                yield return new TestCaseData(
+                    new TestData
+                    {
+                        OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
+                        Orbits = new Cinemachine3OrbitRig.Settings { 
+                            Top = new Cinemachine3OrbitRig.Orbit { Height = 5, Radius = 3},
+                            Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
+                            Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 5}
+                        },
+                        Precision = 0.01f // this does not have difficult edge cases
+                    }).SetName("3Ring-Centered").Returns(null);
 
-                yield return new TestCaseData(new[]
-                {
-                    new CinemachineFreeLook.Orbit { m_Height = 5, m_Radius = 3 },
-                    new CinemachineFreeLook.Orbit { m_Height = 3, m_Radius = 1 },
-                    new CinemachineFreeLook.Orbit { m_Height = 1, m_Radius = 2 }
-                }).SetName("Rig2").Returns(null);
+                yield return new TestCaseData(
+                    new TestData
+                    {
+                        OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
+                        Orbits = new Cinemachine3OrbitRig.Settings {
+                            Top = new Cinemachine3OrbitRig.Orbit { Height = 5, Radius = 3},
+                            Center = new Cinemachine3OrbitRig.Orbit { Height = 3, Radius = 1},
+                            Bottom = new Cinemachine3OrbitRig.Orbit { Height = 1, Radius = 2}
+                        },
+                        Precision = 0.5f // this has a few difficult cases to resolve and thus error is expected
+                    }).SetName("3Ring-Above").Returns(null);
+                
+                yield return new TestCaseData(
+                    new TestData
+                    {
+                        OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
+                        Orbits = new Cinemachine3OrbitRig.Settings { 
+                            Top = new Cinemachine3OrbitRig.Orbit { Height = -1, Radius = 5},
+                            Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
+                            Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 3}
+                        },
+                        Precision = 0.5f // this has a few difficult cases to resolve and thus error is expected
+                    }).SetName("3Ring-Below").Returns(null);
 
-                yield return new TestCaseData(new[]
-                {
-                    new CinemachineFreeLook.Orbit { m_Height = -1, m_Radius = 3 },
-                    new CinemachineFreeLook.Orbit { m_Height = -3, m_Radius = 8 },
-                    new CinemachineFreeLook.Orbit { m_Height = -5, m_Radius = 5 }
-                }).SetName("Rig3").Returns(null);
+                yield return new TestCaseData(
+                    new TestData
+                    {
+                        OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere,
+                        Radius = 3f,
+                        Precision = 0.001f
+                    }).SetName("Sphere-r3").Returns(null);
+                
+                yield return new TestCaseData(
+                    new TestData
+                    {
+                        OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere,
+                        Radius = 7f,
+                        Precision = 0.001f
+                    }).SetName("Sphere-r7").Returns(null);
             }
         }
 
         [UnityTest, TestCaseSource(nameof(RigSetups))]
-        public IEnumerator Test_Freelook_ForcePosition_Precision(CinemachineFreeLook.Orbit[] rigSetup)
+        public IEnumerator Test_Freelook_ForcePosition_AllBindings_RotatedTarget(TestData rigSetup)
         {
-            for (var i = 0; i < m_Freelook.m_Orbits.Length; ++i) 
-                m_Freelook.m_Orbits[i] = rigSetup[i];
-
-            const float steps = 20f;
-            for (var i = 0f; i <= steps; ++i)
+            m_FollowTargetGo.transform.SetPositionAndRotation(new Vector3(-5f, 11f, -7f), Quaternion.Euler(31, 31, 31));
+            yield return null;
+            
+            yield return Test_Freelook_ForcePosition_AllBindings(rigSetup);
+        }
+        
+        [UnityTest, TestCaseSource(nameof(RigSetups))]
+        public IEnumerator Test_Freelook_ForcePosition_AllBindings(TestData rigSetup)
+        {
+            m_OrbitalFollow.OrbitStyle = rigSetup.OrbitStyle;
+            var floatEqualityComparer = new FloatEqualityComparer(rigSetup.Precision);
+            switch (rigSetup.OrbitStyle)
             {
-                var axisValue = i / steps;
-                m_Freelook.m_XAxis.Value = 180f * axisValue; // x axis range [0, 180]
-                m_Freelook.m_YAxis.Value = axisValue; // y axis range [0, 1]
-        
+                case CinemachineOrbitalFollow.OrbitStyles.Sphere:
+                    m_OrbitalFollow.Radius = rigSetup.Radius;
+                    break;
+                case CinemachineOrbitalFollow.OrbitStyles.ThreeRing:
+                    m_OrbitalFollow.Orbits = rigSetup.Orbits;
+                    m_OrbitalFollow.Orbits.SplineCurvature = 1f;
+                    break;
+            }
+            
+            const float step = 5f; // so tests are not too long
+            foreach (BindingMode bindingMode in k_BindingModes)
+            {
+                m_OrbitalFollow.TrackerSettings.BindingMode = bindingMode;
                 yield return null;
+                
+                for (var axisValue = k_AxisRange.x + 1; axisValue < k_AxisRange.y; axisValue += step)
+                {
+                    // Set Axis values
+                    m_OrbitalFollow.HorizontalAxis.Value = axisValue;
+                    m_OrbitalFollow.VerticalAxis.Value = axisValue;
+                    yield return null;
         
-                // save camera current position and rotation
-                m_OriginalPosition = m_Freelook.State.GetCorrectedPosition();
-                m_OriginalOrientation = m_Freelook.State.GetCorrectedOrientation();
+                    // Save camera current position and rotation
+                    m_OriginalPosition = m_CmCamera.State.GetCorrectedPosition();
+                    m_OriginalOrientation = m_CmCamera.State.GetCorrectedOrientation();
+                    yield return null;
         
-                yield return null;
+                    // Force camera to position
+                    m_CmCamera.ForceCameraPosition(m_OriginalPosition, m_OriginalOrientation);
+                    yield return null;
         
-                m_Freelook.ForceCameraPosition(m_OriginalPosition, m_OriginalOrientation);
-        
-                yield return null;
-        
-                Assert.That(m_Freelook.State.GetCorrectedPosition(), Is.EqualTo(m_OriginalPosition).Using(new Vector3EqualityComparer(0.01f)));
-                Assert.That(m_Freelook.State.GetCorrectedOrientation(), Is.EqualTo(m_OriginalOrientation).Using(new QuaternionEqualityComparer(0.001f)));
+                    
+                    // ignore SimpleFollowWithWorldUp because axis value is 0 always in this case
+                    if (m_OrbitalFollow.TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
+                        Assert.That(m_OrbitalFollow.HorizontalAxis.Value, Is.EqualTo(axisValue).Using(floatEqualityComparer));
+                    Assert.That(m_OrbitalFollow.VerticalAxis.Value, Is.EqualTo(axisValue).Using(floatEqualityComparer));
+                }
             }
         }
     }
