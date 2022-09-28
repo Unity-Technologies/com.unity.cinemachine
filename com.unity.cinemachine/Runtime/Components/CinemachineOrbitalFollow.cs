@@ -226,23 +226,29 @@ namespace Cinemachine
             var distance = dir.magnitude;
             if (distance > 0.001f)
             {
-                var up = VirtualCamera.State.ReferenceUp;
-                var orient = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up); // this is correct and orient is not
-                var directionNormalized = dir / distance;
-                var localDir = orient * directionNormalized;
-                var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                 switch (OrbitStyle)
                 {
                     case OrbitStyles.Sphere:
                     {
-                        VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x; // wrong when target is rotated and binding is such
-                        HorizontalAxis.Value = r.y; // wrong when target is rotated and binding is such
+                        // does not work for binding modes that change the orientation of the rig
+                        var up = VirtualCamera.State.ReferenceUp;
+                        var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+                        dir /= distance;
+                        var localDir = orient * dir;
+                        var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
+                        VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
+                        HorizontalAxis.Value = r.y; // never works
                     }
                         break;
                     case OrbitStyles.ThreeRing:
                     {
+                        var up = VirtualCamera.State.ReferenceUp;
+                        var orient = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
+                        var directionNormalized = dir / distance;
+                        var localDir = orient * directionNormalized;
+                        var r = UnityVectorExtensions.SafeFromToRotation(orient * Vector3.back, localDir, up).eulerAngles;
                         VerticalAxis.Value = GetVerticalAxisClosestValue(pos, localDir, VerticalAxis);
-                        HorizontalAxis.Value = r.y; // wrong when target is rotated and binding is such
+                        HorizontalAxis.Value = r.y; // never works
                     }
                         break;
                     default:
