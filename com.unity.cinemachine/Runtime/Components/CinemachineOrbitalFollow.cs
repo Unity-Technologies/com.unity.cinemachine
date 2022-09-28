@@ -216,7 +216,6 @@ namespace Cinemachine
         /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
-            var cameraPosition = VirtualCamera.State.GetCorrectedPosition();
             base.ForceCameraPosition(pos, rot);
             m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
 
@@ -244,8 +243,8 @@ namespace Cinemachine
                     case OrbitStyles.ThreeRing:
                     {
                         var up = VirtualCamera.State.ReferenceUp;
-                        HorizontalAxis.Value += GetHorizontalAxisDelta(cameraPosition, pos, targetPos, up);
-                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, up, VerticalAxis);
+                        HorizontalAxis.Value = GetHorizontalAxis(pos, targetPos, up, HorizontalAxis);
+                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, targetPos, up, VerticalAxis);
                     }
                         break;
                     default:
@@ -256,27 +255,26 @@ namespace Cinemachine
             //RadialAxis.Value = distance / Radius;
         }
         
-        float GetHorizontalAxisDelta(Vector3 oldCamPos, Vector3 newCamPos, Vector3 targetPos, Vector3 up)
+        float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up, InputAxis horizontalAxis)
         {
             Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-            Vector3 fwd = (orient * Vector3.forward).ProjectOntoPlane(up);
-            if (!fwd.AlmostZero() && FollowTarget != null)
+            Vector3 fwd = (orient * Vector3.back).ProjectOntoPlane(up);
+            if (!fwd.AlmostZero())
             {
                 // Find angle delta between current position (a) and new position (b)
-                Vector3 a = (oldCamPos - targetPos).ProjectOntoPlane(up);
-                Vector3 b = (newCamPos - targetPos).ProjectOntoPlane(up);
-                return Vector3.SignedAngle(a, b, up);
+                // Vector3 a = (oldCamPos - targetPos).ProjectOntoPlane(up);
+                Vector3 b = (camPos - targetPos).ProjectOntoPlane(up);
+                return UnityVectorExtensions.SignedAngle(fwd, b, up);
             }
-            return 0; // Can't calculate, stay conservative
+            return horizontalAxis.Value; // Can't calculate, stay conservative
         }
-        float GetVerticalAxisClosestValue(Vector3 cameraPos, Vector3 up, InputAxis verticalAxis)
+        float GetVerticalAxisClosestValue(Vector3 camPos, Vector3 targetPos, Vector3 up, InputAxis verticalAxis)
         {
             if (FollowTarget != null)
             {
                 // Rotate the camera pos to the back
                 Quaternion q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
-                Vector3 followPosition = FollowTarget.position;
-                Vector3 normalizedDirection = (q * (cameraPos - followPosition)).normalized;
+                Vector3 normalizedDirection = (q * (camPos - targetPos)).normalized;
                 Vector3 flatDir = normalizedDirection; flatDir.y = 0;
                 if (!flatDir.AlmostZero())
                 {
@@ -286,7 +284,7 @@ namespace Cinemachine
                 normalizedDirection.x = 0;
 
                 // We need to find the minimum of the angle function using steepest descent
-                var x = SteepestDescent(normalizedDirection * (cameraPos - followPosition).magnitude);
+                var x = SteepestDescent(normalizedDirection * (camPos - targetPos).magnitude);
                 return x <= 0.5f
                     ? Mathf.Lerp(verticalAxis.Range.x, verticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
                     : Mathf.Lerp(verticalAxis.Center, verticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
