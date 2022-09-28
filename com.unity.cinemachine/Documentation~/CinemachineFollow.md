@@ -1,6 +1,6 @@
 # Follow
 
-This CmCamera __Position Control__ algorithm moves the CmCamera to maintain a fixed offset relative to the __Tracking Target__. It also applies damping.
+This CmCamera __Position Control__ behaviour moves the CmCamera to maintain a fixed offset relative to the __Tracking Target__. It also applies damping.
 
 The fixed offset can be interpreted in various ways, depending on the Binding Mode.
 

@@ -1,6 +1,6 @@
 # Orbital Follow
 
-This CmCamera __Position Control__ algorithm moves the Unity camera in a variable relationship to the CmCamera’s __Tracking Target__. It optionally accepts [player input](https://docs.unity3d.com/Manual/ConventionalGameInput.html), which allows the player to dynamically control the position of the camera relative to the target.
+This CmCamera __Position Control__ behaviour moves the Unity camera in a variable relationship to the CmCamera’s __Tracking Target__. If you add a [Cinemachine Input Axis Controller](CinemachineInputAxisController.md) behaviour, the camera position can be driven by [player input](https://docs.unity3d.com/Manual/ConventionalGameInput.html), which allows the player to dynamically control the position of the camera relative to the target.
 
 __Orbital Follow__ operates in 2 modes:
 - Sphere: in this mode the camera is positioned at any point on a sphere surrounding the target.

@@ -2,9 +2,11 @@
 
 This CmCamera __Position Control__ behaviour restricts the CmCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
 
-Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards that is closest to the __Tracking Target__, or in some custom way that you devise.
+Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards a point on the spline that is closest to the __Tracking Target__, or in some custom way that you devise.
 
 **Tip**: Choose your spline shapes with care when using Nearest Point to Target Automatic Dolly. It can become problematic on splines that form an arc around some point.  As an extreme illustration, consider a perfectly circular spline with the __Tracking Target__ at the center. The closest point on the spline is unstable because all points on the circular spline are equally close to the target. In this situation, moving the __Tracking Target__ small distances can cause the camera to move large distances on the spline.
+
+![Spline Dolly Inspector](images/SplineDollyInspector.png)
 
 ## Properties:
 

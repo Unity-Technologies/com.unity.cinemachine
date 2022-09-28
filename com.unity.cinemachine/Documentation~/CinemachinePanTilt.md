@@ -1,6 +1,6 @@
 # Pan Tilt
 
-This CmCamera __Rotation Control__ algorithm pans and tilts the camera in response stimulus, for instance the user’s input.  This component does not read user input itself; it expects to be driven by an __Input Axis Controller__ component or by some other means that you devise.
+This CmCamera __Rotation Control__ behaviour pans and tilts the camera in response stimulus, for instance the user’s input.  This component does not read user input itself; it can be be driven by an [Cinemachine Input Axis Controller](CinemachineInputAxisController.md) component or by some other means that you devise.
 
 ## Properties:
 

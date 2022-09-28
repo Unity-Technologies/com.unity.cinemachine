@@ -1,6 +1,6 @@
 # Position Composer
 
-This Cinemachine Camera __Position Control__ algorithm moves the camera in a fixed screen-space relationship to the __Tracking Target__. You can also specify offsets, damping, and composition rules. __Position Composer__ only changes the camera’s position in space. It does not re-orient or otherwise aim the camera.  To control the view angle of the camera, set the CmCamera's rotation in its transform, or add a procedural Rotation Control component to the CmCamera.
+This CmCamera __Position Control__ behaviour moves the camera to maintain a desired screen-space position for the __Tracking Target__. You can also specify offsets, damping, and composition rules. __Position Composer__ only changes the camera’s position in space; it does not rotate the camera.  To control the view angle of the camera, set the CmCamera's rotation in its transform, or add a procedural [Rotation Control](CinemachineVirtualCameraAim.md) component to the CmCamera.
 
 __Position Composer__ is good for 2D and orthographic cameras, and it also works with perspective cameras and 3D environments.
 

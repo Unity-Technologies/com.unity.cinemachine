@@ -1,6 +1,6 @@
 # Rotation Composer
 
-This CmCamera __Rotation Control__ algorithm rotates the camera to face the __Look At__ target. It also applies offsets, damping, and composition rules. Examples of targets for aiming: the upper spine or head bone of a character, vehicles, or dummy objects which are controlled or animated programmatically.
+This CmCamera __Rotation Control__ behaviour rotates the camera to face the __Look At__ target. It also applies offsets, damping, and composition rules. It only rotates the camera, it never changes the camera's position.  Examples of targets for aiming: the upper spine or head bone of a character, vehicles, or dummy objects which are controlled or animated programmatically.
 
 ## Properties:
 

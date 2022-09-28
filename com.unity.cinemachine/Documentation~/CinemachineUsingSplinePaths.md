@@ -13,5 +13,6 @@ A new Cinemachine Camera and spline appear in the [Hierarchy]([https://docs.unit
 
 3. In the [Inspector]([https://docs.unity3d.com/Manual/UsingTheInspector.html](https://docs.unity3d.com/Manual/UsingTheInspector.html)) or in the Scene View, add and adjust waypoints.
 
+Any Unity spline can be used as a path in Cinemachine.  Just drag it into the [Spline Dolly](CinemachineSplineDolly.md) Spline property field, and immediately the CmCamera will start following the spline. 
 
 
