@@ -11,7 +11,6 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineSmoothPath.html")]
     public class CinemachineSmoothPath : CinemachinePathBase
     {
         /// <summary>If checked, then the path ends are joined to form a continuous loop</summary>

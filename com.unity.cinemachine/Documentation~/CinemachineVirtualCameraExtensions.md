@@ -8,5 +8,5 @@ To add an extension to a CmCamera:
 
 1. Select your CmCamera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
 
-2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), use the __Add Extension__ drop-down menu to choose the extension.
+2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), use the __Add Extension__ drop-down menu to choose the extension.  The chosen behaviour will be added to the CmCamera GameObject.
 

@@ -9,8 +9,8 @@ namespace Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Camera Offset")]
     [ExecuteAlways]
-    [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineCameraOffset.html")]
     [SaveDuringPlay]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineCameraOffset.html")]
     public class CinemachineCameraOffset : CinemachineExtension
     {
         /// <summary>

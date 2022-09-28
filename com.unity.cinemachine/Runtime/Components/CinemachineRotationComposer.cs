@@ -16,6 +16,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Rotation Composer")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineRotationComposer.html")]
     public class CinemachineRotationComposer : CinemachineComponentBase, 
         CinemachineFreeLookModifier.IModifiableComposition
     {

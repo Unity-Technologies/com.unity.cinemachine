@@ -4,7 +4,7 @@ Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to a
 
 **Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera.md) instead of Timeline.
 
-Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrainProperties.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CmCamera with the highest Priority setting.
+Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CmCamera with the highest Priority setting.
 
 You control CmCameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a CmCamera to activate then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
 
@@ -40,7 +40,7 @@ To add Cinemachine Shot Clips to a Cinemachine Track:
 
 3. In the Timeline editor, adjust the order, duration, cutting, and blending of the shot clip.
 
-4. [Adjust the properties of the CmCamera](CinemachineVirtualCamera.md) to place it in the Scene and specify what to aim at or follow.
+4. [Adjust the properties of the CmCamera](CmCamera.md) to place it in the Scene and specify what to aim at or follow.
 
 5. To animate properties of the CmCamera, create an Animation Track for it and animate as you would any other GameObject.
 

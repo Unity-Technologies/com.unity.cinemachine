@@ -76,7 +76,7 @@ namespace Cinemachine
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/Cinemachine Brain")]
     [SaveDuringPlay]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrain.html")]
     public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack
     {
         /// <summary>

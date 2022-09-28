@@ -18,6 +18,7 @@ namespace Cinemachine
     [ExecuteAlways]
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Input Axis Controller")]
+    [HelpURL(Documentation.BaseURL + "manual/InputAxisController.html")]
     public class InputAxisController : MonoBehaviour
     {
         /// <summary>

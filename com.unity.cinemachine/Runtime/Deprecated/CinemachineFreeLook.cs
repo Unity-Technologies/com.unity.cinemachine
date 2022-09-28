@@ -15,7 +15,6 @@ namespace Cinemachine
     [ExecuteAlways]
     [ExcludeFromPreset]
     [AddComponentMenu("")] // Don't display in add component menu
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
     public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>

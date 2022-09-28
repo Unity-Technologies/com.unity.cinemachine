@@ -1,6 +1,6 @@
 # Spline Dolly
 
-This CmCamera __Position Control__ algorithm restricts the CmCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
+This CmCamera __Position Control__ behaviour restricts the CmCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
 
 Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards that is closest to the __Tracking Target__, or in some custom way that you devise.
 

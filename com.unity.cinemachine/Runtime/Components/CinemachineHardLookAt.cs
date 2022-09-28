@@ -10,6 +10,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Hard Look At")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineHardLookAt.html")]
     public class CinemachineHardLookAt : CinemachineComponentBase
     {
         /// <summary>True if component is enabled and has a LookAt defined</summary>

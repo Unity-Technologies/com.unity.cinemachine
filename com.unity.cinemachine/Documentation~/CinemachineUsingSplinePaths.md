@@ -1,6 +1,6 @@
 # Using Spline paths
 
-A Spline path is path formed by a Spline in a scene. Use a Spline to specify a fixed course to position or animate a CmCamera. Use the [Spline Dolly](CinemachineBodySplineDolly.md) algorithm to use a Spline path with your CmCamera.
+A Spline path is path formed by a Spline in a scene. Use a Spline to specify a fixed course to position or animate a CmCamera. Use the [Spline Dolly](CinemachineSplineDolly.md) algorithm to use a Spline path with your CmCamera.
 
 ![Editing a dolly path in the Scene view](images/CinemachinePathScene.png)
 

@@ -17,6 +17,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Spline Dolly")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineDolly.html")]
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
         /// <summary>The Spline container to which the camera will be constrained.</summary>

@@ -15,7 +15,7 @@ namespace Cinemachine
     /// </summary>
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Independent Impulse Listener")]
-    [HelpURL(Documentation.BaseURL + "api/Cinemachine.CinemachineIndependentImpulseListener.html")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineIndependentImpulseListener.html")]
     public class CinemachineIndependentImpulseListener : MonoBehaviour
     {
         Vector3 m_ImpulsePosLastFrame;

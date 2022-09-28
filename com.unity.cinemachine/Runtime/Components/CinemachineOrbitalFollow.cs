@@ -15,6 +15,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Orbital Follow")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineOrbitalFollow.html")]
     public class CinemachineOrbitalFollow 
         : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource

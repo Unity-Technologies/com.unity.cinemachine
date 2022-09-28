@@ -11,7 +11,6 @@ namespace Cinemachine
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [AddComponentMenu("")] // Don't display in add component menu
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineDollyCart.html")]
     public class CinemachineDollyCart : MonoBehaviour
     {
         /// <summary>The path to follow</summary>

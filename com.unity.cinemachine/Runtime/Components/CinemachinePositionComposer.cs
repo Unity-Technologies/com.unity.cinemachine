@@ -22,6 +22,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Position Composer")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePositionComposer.html")]
     public class CinemachinePositionComposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance

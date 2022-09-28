@@ -14,7 +14,6 @@ namespace Cinemachine
     [ExecuteAlways]
     [ExcludeFromPreset]
     [AddComponentMenu("")] // Don't display in add component menu
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>The object that the camera wants to look at (the Aim target).

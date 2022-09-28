@@ -11,7 +11,7 @@ namespace Cinemachine
     [RequireComponent(typeof(CinemachineTargetGroup))]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Group Weight Manipulator")]
-    [HelpURL(Documentation.BaseURL + "api/Cinemachine.GroupWeightManipulator.html")]
+    [HelpURL(Documentation.BaseURL + "manual/GroupWeightManipulator.html")]
     public class GroupWeightManipulator : MonoBehaviour
     {
         /// <summary>The weight of the group member at index 0</summary>
