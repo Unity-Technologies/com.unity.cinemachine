@@ -216,6 +216,7 @@ namespace Cinemachine
         /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
+            var cameraPosition = VirtualCamera.State.GetCorrectedPosition();
             base.ForceCameraPosition(pos, rot);
             m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
 
@@ -243,7 +244,7 @@ namespace Cinemachine
                     case OrbitStyles.ThreeRing:
                     {
                         var up = VirtualCamera.State.ReferenceUp;
-                        HorizontalAxis.Value += GetHorizontalAxisDelta(pos, up);
+                        HorizontalAxis.Value += GetHorizontalAxisDelta(cameraPosition, pos, targetPos, up);
                         VerticalAxis.Value = GetVerticalAxisClosestValue(pos, up, VerticalAxis);
                     }
                         break;
@@ -255,16 +256,15 @@ namespace Cinemachine
             //RadialAxis.Value = distance / Radius;
         }
         
-        float GetHorizontalAxisDelta(Vector3 cameraPos, Vector3 up)
+        float GetHorizontalAxisDelta(Vector3 oldCamPos, Vector3 newCamPos, Vector3 targetPos, Vector3 up)
         {
             Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             Vector3 fwd = (orient * Vector3.forward).ProjectOntoPlane(up);
             if (!fwd.AlmostZero() && FollowTarget != null)
             {
                 // Find angle delta between current position (a) and new position (b)
-                Vector3 targetPos = FollowTargetPosition;
-                Vector3 a = (VirtualCamera.State.GetCorrectedPosition() - targetPos).ProjectOntoPlane(up);
-                Vector3 b = (cameraPos - targetPos).ProjectOntoPlane(up);
+                Vector3 a = (oldCamPos - targetPos).ProjectOntoPlane(up);
+                Vector3 b = (newCamPos - targetPos).ProjectOntoPlane(up);
                 return Vector3.SignedAngle(a, b, up);
             }
             return 0; // Can't calculate, stay conservative

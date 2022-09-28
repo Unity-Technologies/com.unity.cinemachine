@@ -134,16 +134,16 @@ namespace Cinemachine
         /// <param name="rot">Worldspace orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
+            UpdatePipelineCache();
+            for (int i = 0; i < m_Pipeline.Length; ++i)
+                if (m_Pipeline[i] != null)
+                    m_Pipeline[i].ForceCameraPosition(pos, rot);
+            
             PreviousStateIsValid = false;
             transform.position = pos;
             transform.rotation = rot;
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
-
-            UpdatePipelineCache();
-            for (int i = 0; i < m_Pipeline.Length; ++i)
-                if (m_Pipeline[i] != null)
-                    m_Pipeline[i].ForceCameraPosition(pos, rot);
 
             base.ForceCameraPosition(pos, rot);
         }
