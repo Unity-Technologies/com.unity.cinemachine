@@ -125,7 +125,6 @@ namespace Tests.Runtime
         {
             m_FollowTargetGo.transform.SetPositionAndRotation(new Vector3(-5f, 11f, -7f), Quaternion.Euler(31, 31, 31));
             yield return null;
-            
             yield return Test_Freelook_ForcePosition_AllBindings(rigSetup);
         }
         
@@ -166,7 +165,6 @@ namespace Tests.Runtime
                     // Force camera to position
                     m_CmCamera.ForceCameraPosition(m_OriginalPosition, m_OriginalOrientation);
                     yield return null;
-        
                     
                     // ignore SimpleFollowWithWorldUp because axis value is 0 always in this case
                     if (m_OrbitalFollow.TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
