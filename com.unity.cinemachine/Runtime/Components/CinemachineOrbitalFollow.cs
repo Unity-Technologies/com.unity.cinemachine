@@ -2,7 +2,12 @@ using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
+using System.Numerics;
 using Cinemachine.TargetTracking;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
+using Vector4 = UnityEngine.Vector4;
 
 namespace Cinemachine
 {
@@ -230,14 +235,31 @@ namespace Cinemachine
                 {
                     case OrbitStyles.Sphere:
                     {
-                        // does not work for binding modes that change the orientation of the rig - works for WorldSpace and LockToTargetWithWorldUp
                         var up = VirtualCamera.State.ReferenceUp;
                         var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-                        dir /= distance;
-                        var localDir = orient * dir;
-                        var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-                        VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
-                        HorizontalAxis.Value = r.y; // only works for WorldSpace
+                        
+                        dir /= distance; // normalize
+                        var radialScale = distance / Radius;
+                        
+                        var followTargetForward = orient * Vector3.back; // hAxis 0, vAxis 0
+                        var followTargetUp = orient * Vector3.up;
+                        var followTargetRight = orient * Vector3.right;
+                        
+                        // TODO: there is a drift in the vertical, why?
+                        var vertical = dir.ProjectOntoPlane(followTargetRight);
+                        VerticalAxis.Value = UnityVectorExtensions.SignedAngle(followTargetForward, vertical, followTargetRight);
+                        var horizontal = dir.ProjectOntoPlane(followTargetUp);
+                        HorizontalAxis.Value = UnityVectorExtensions.SignedAngle(followTargetForward, horizontal, followTargetUp);
+                        RadialAxis.Value = radialScale;
+
+                        // // does not work for binding modes that change the orientation of the rig - works for WorldSpace and LockToTargetWithWorldUp
+                        // var up = VirtualCamera.State.ReferenceUp;
+                        // var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+                        // dir /= distance;
+                        // var localDir = orient * dir;
+                        // var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
+                        // // VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
+                        // HorizontalAxis.Value = r.y; // only works for WorldSpace
                     }
                         break;
                     case OrbitStyles.ThreeRing:
