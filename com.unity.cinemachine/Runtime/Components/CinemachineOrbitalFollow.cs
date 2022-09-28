@@ -243,12 +243,8 @@ namespace Cinemachine
                     case OrbitStyles.ThreeRing:
                     {
                         var up = VirtualCamera.State.ReferenceUp;
-                        var orient = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
-                        var directionNormalized = dir / distance;
-                        var localDir = orient * directionNormalized;
-                        var r = UnityVectorExtensions.SafeFromToRotation(orient * Vector3.back, localDir, up).eulerAngles;
-                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, localDir, VerticalAxis);
-                        HorizontalAxis.Value = r.y; // never works
+                        HorizontalAxis.Value += GetHorizontalAxisDelta(pos, up);
+                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, up, VerticalAxis);
                     }
                         break;
                     default:
@@ -259,12 +255,28 @@ namespace Cinemachine
             //RadialAxis.Value = distance / Radius;
         }
         
-        float GetVerticalAxisClosestValue(Vector3 cameraPos, Vector3 normalizedDirection, InputAxis verticalAxis)
+        float GetHorizontalAxisDelta(Vector3 cameraPos, Vector3 up)
+        {
+            Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+            Vector3 fwd = (orient * Vector3.forward).ProjectOntoPlane(up);
+            if (!fwd.AlmostZero() && FollowTarget != null)
+            {
+                // Find angle delta between current position (a) and new position (b)
+                Vector3 targetPos = FollowTargetPosition;
+                Vector3 a = (VirtualCamera.State.GetCorrectedPosition() - targetPos).ProjectOntoPlane(up);
+                Vector3 b = (cameraPos - targetPos).ProjectOntoPlane(up);
+                return Vector3.SignedAngle(a, b, up);
+            }
+            return 0; // Can't calculate, stay conservative
+        }
+        float GetVerticalAxisClosestValue(Vector3 cameraPos, Vector3 up, InputAxis verticalAxis)
         {
             if (FollowTarget != null)
             {
                 // Rotate the camera pos to the back
+                Quaternion q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
                 Vector3 followPosition = FollowTarget.position;
+                Vector3 normalizedDirection = (q * (cameraPos - followPosition)).normalized;
                 Vector3 flatDir = normalizedDirection; flatDir.y = 0;
                 if (!flatDir.AlmostZero())
                 {
