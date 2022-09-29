@@ -77,7 +77,7 @@ namespace Cinemachine.Editor
             var targetObject = command.context as GameObject;
             var parent = targetObject == null || targetObject.transform.parent == null 
                 ? null : targetObject.transform.parent.gameObject;
-            var vcam = CreatePassiveVirtualCamera("FreeLook Camera", parent, true);
+            var vcam = CreatePassiveCmCamera("FreeLook Camera", parent, true);
             if (targetObject != null)
                 vcam.Follow = targetObject.transform;
             Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
@@ -93,7 +93,7 @@ namespace Cinemachine.Editor
             var targetObject = command.context as GameObject;
             var parent = targetObject == null || targetObject.transform.parent == null 
                 ? null : targetObject.transform.parent.gameObject;
-            var vcam = CreatePassiveVirtualCamera("Third Person Aim Camera", parent, true);
+            var vcam = CreatePassiveCmCamera("Third Person Aim Camera", parent, true);
             if (targetObject != null)
                 vcam.Follow = targetObject.transform;
             var thirdPersonFollow = Undo.AddComponent<Cinemachine3rdPersonFollow>(vcam.gameObject);
