@@ -237,6 +237,7 @@ namespace Cinemachine
                         var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                         VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
                         HorizontalAxis.Value = r.y;
+                        RadialAxis.Value = distance / Radius;
                         break;
                     }
                     case OrbitStyles.ThreeRing:
@@ -251,7 +252,6 @@ namespace Cinemachine
                 }
                 
             }
-            //RadialAxis.Value = distance / Radius;
         }
         
         float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up, InputAxis horizontalAxis)
