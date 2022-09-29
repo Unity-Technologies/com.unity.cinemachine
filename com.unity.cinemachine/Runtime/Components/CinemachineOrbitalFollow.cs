@@ -245,6 +245,15 @@ namespace Cinemachine
                         var up = VirtualCamera.State.ReferenceUp;
                         HorizontalAxis.Value = GetHorizontalAxis(pos, targetPos, up);
                         VerticalAxis.Value = GetVerticalAxisClosestValue(pos, targetPos, up);
+                        if (m_X >= 0)
+                        {
+                            // m_X is x from GetVerticalAxisClosestValue
+                            Vector3 camPosLocal = m_OrbitCache.SplineValue(m_X);
+                            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+                            var camPosWorld = orient * camPosLocal + targetPos;
+                            var newDistance = (camPosWorld - targetPos).magnitude;
+                            RadialAxis.Value = distance / newDistance;
+                        }
                         break;
                     }
                     default:
@@ -253,6 +262,8 @@ namespace Cinemachine
                 
             }
         }
+
+        float m_X; // TODO: this is a quick prototype only
         
         float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up)
         {
@@ -282,10 +293,13 @@ namespace Cinemachine
 
                 // We need to find the minimum of the angle function using steepest descent
                 var x = SteepestDescent(normalizedDirection * (camPos - targetPos).magnitude);
+                m_X = x;
                 return x <= 0.5f
                     ? Mathf.Lerp(VerticalAxis.Range.x, VerticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
                     : Mathf.Lerp(VerticalAxis.Center, VerticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
             }
+
+            m_X = -1f;
             return VerticalAxis.Value; // stay conservative
             
             // local functions
