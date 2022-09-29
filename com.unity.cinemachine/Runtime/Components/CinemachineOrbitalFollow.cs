@@ -242,118 +242,114 @@ namespace Cinemachine
                     }
                     case OrbitStyles.ThreeRing:
                     {
-                        var up = VirtualCamera.State.ReferenceUp;
-                        HorizontalAxis.Value = GetHorizontalAxis(pos, targetPos, up);
-                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, targetPos, up);
-                        if (m_X >= 0)
-                        {
-                            // m_X is x from GetVerticalAxisClosestValue
-                            Vector3 camPosLocal = m_OrbitCache.SplineValue(m_X);
-                            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-                            var camPosWorld = orient * camPosLocal + targetPos;
-                            var newDistance = (camPosWorld - targetPos).magnitude;
-                            RadialAxis.Value = distance / newDistance;
-                        }
+                        Calculate3RingAxes(pos, targetPos, distance);
                         break;
                     }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                
             }
         }
 
-        float m_X; // TODO: this is a quick prototype only
-        
-        float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up)
+        void Calculate3RingAxes(Vector3 pos, Vector3 targetPos, float distance)
         {
+            var up = VirtualCamera.State.ReferenceUp;
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-            var fwd = (orient * Vector3.back).ProjectOntoPlane(up);
-            if (!fwd.AlmostZero())
-            {
-                var b = (camPos - targetPos).ProjectOntoPlane(up);
-                return UnityVectorExtensions.SignedAngle(fwd, b, up);
-            }
-            return HorizontalAxis.Value; // Can't calculate, stay conservative
-        }
-        float GetVerticalAxisClosestValue(Vector3 camPos, Vector3 targetPos, Vector3 up)
-        {
-            if (FollowTarget != null)
-            {
-                // Rotate the camera pos to the back
-                var q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
-                var normalizedDirection = (q * (camPos - targetPos)).normalized;
-                var flatDir = normalizedDirection; flatDir.y = 0;
-                if (!flatDir.AlmostZero())
-                {
-                    var angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
-                    normalizedDirection = Quaternion.AngleAxis(angle, Vector3.up) * normalizedDirection;
-                }
-                normalizedDirection.x = 0;
-
-                // We need to find the minimum of the angle function using steepest descent
-                var x = SteepestDescent(normalizedDirection * (camPos - targetPos).magnitude);
-                m_X = x;
-                return x <= 0.5f
-                    ? Mathf.Lerp(VerticalAxis.Range.x, VerticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
-                    : Mathf.Lerp(VerticalAxis.Center, VerticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
-            }
-
-            m_X = -1f;
-            return VerticalAxis.Value; // stay conservative
+            HorizontalAxis.Value = GetHorizontalAxis();
+            VerticalAxis.Value = GetVerticalAxisClosestValue(out var t);
+            RadialAxis.Value = distance / (orient * m_OrbitCache.SplineValue(t)).magnitude;
             
             // local functions
-            float SteepestDescent(Vector3 cameraOffset)
+            float GetHorizontalAxis()
             {
-                const int maxIteration = 10;
-                const float epsilon = 0.00005f;
-                var x = InitialGuess(cameraOffset);
-                for (var i = 0; i < maxIteration; ++i)
+                var fwd = (orient * Vector3.back).ProjectOntoPlane(up);
+                if (!fwd.AlmostZero())
                 {
-                    var angle = AngleFunction(x);
-                    var slope = SlopeOfAngleFunction(x);
-                    if (Mathf.Abs(slope) < epsilon || Mathf.Abs(angle) < epsilon)
-                        break; // found best
-                    x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
+                    var b = (pos - targetPos).ProjectOntoPlane(up);
+                    return UnityVectorExtensions.SignedAngle(fwd, b, up);
                 }
-
-                return x;
-
-                // localFunctions
-                float AngleFunction(float input)
-                {
-                    var point = m_OrbitCache.SplineValue(input);
-                    return Mathf.Abs(UnityVectorExtensions.SignedAngle(cameraOffset, point, Vector3.right));
-                }
-                // approximating derivative using symmetric difference quotient (finite diff)
-                float SlopeOfAngleFunction(float input)
-                {
-                    var angleBehind = AngleFunction(input - epsilon);
-                    var angleAfter = AngleFunction(input + epsilon);
-                    return (angleAfter - angleBehind) / (2f * epsilon);
-                }
-                // initial guess based on closest line (approximating spline) to point 
-                float InitialGuess(Vector3 cameraPosInRigSpace)
-                {
-                    if (m_OrbitCache.SettingsChanged(Orbits))
-                        m_OrbitCache.UpdateOrbitCache(Orbits);
-                    
-                    var pb = m_OrbitCache.SplineValue(0f); // point at the bottom of spline
-                    var pm = m_OrbitCache.SplineValue(0.5f); // point in the middle of spline
-                    var pt = m_OrbitCache.SplineValue(1f); // point at the top of spline
-                    var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
-                    var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
-                    var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
-                    var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
-
-                    // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
-                    return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2); // represents mid to top
-                }
+                return HorizontalAxis.Value; // Can't calculate, stay conservative
             }
-            
-            static float MapTo01(float valueToMap, float fMin, float fMax) => (valueToMap - fMin) / (fMax - fMin);
+            float GetVerticalAxisClosestValue(out float tSpline)
+            {
+                if (FollowTarget != null)
+                {
+                    // Rotate the camera pos to the back
+                    var q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
+                    var normalizedDirection = (q * (pos - targetPos)).normalized;
+                    var flatDir = normalizedDirection; flatDir.y = 0;
+                    if (!flatDir.AlmostZero())
+                    {
+                        var angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
+                        normalizedDirection = Quaternion.AngleAxis(angle, Vector3.up) * normalizedDirection;
+                    }
+                    normalizedDirection.x = 0;
+
+                    // We need to find the minimum of the angle function using steepest descent
+                    tSpline = SteepestDescent(normalizedDirection * (pos - targetPos).magnitude);
+                    return tSpline <= 0.5f
+                        ? Mathf.Lerp(VerticalAxis.Range.x, VerticalAxis.Center, MapTo01(tSpline, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
+                        : Mathf.Lerp(VerticalAxis.Center, VerticalAxis.Range.y, MapTo01(tSpline, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
+                }
+
+                tSpline = -1f;
+                return VerticalAxis.Value; // stay conservative
+                
+                // local functions
+                float SteepestDescent(Vector3 cameraOffset)
+                {
+                    const int maxIteration = 10;
+                    const float epsilon = 0.00005f;
+                    var x = InitialGuess(cameraOffset);
+                    for (var i = 0; i < maxIteration; ++i)
+                    {
+                        var angle = AngleFunction(x);
+                        var slope = SlopeOfAngleFunction(x);
+                        if (Mathf.Abs(slope) < epsilon || Mathf.Abs(angle) < epsilon)
+                            break; // found best
+                        x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
+                    }
+
+                    return x;
+
+                    // localFunctions
+                    float AngleFunction(float input)
+                    {
+                        var point = m_OrbitCache.SplineValue(input);
+                        return Mathf.Abs(UnityVectorExtensions.SignedAngle(cameraOffset, point, Vector3.right));
+                    }
+                    // approximating derivative using symmetric difference quotient (finite diff)
+                    float SlopeOfAngleFunction(float input)
+                    {
+                        var angleBehind = AngleFunction(input - epsilon);
+                        var angleAfter = AngleFunction(input + epsilon);
+                        return (angleAfter - angleBehind) / (2f * epsilon);
+                    }
+                    // initial guess based on closest line (approximating spline) to point 
+                    float InitialGuess(Vector3 cameraPosInRigSpace)
+                    {
+                        if (m_OrbitCache.SettingsChanged(Orbits))
+                            m_OrbitCache.UpdateOrbitCache(Orbits);
+                        
+                        var pb = m_OrbitCache.SplineValue(0f); // point at the bottom of spline
+                        var pm = m_OrbitCache.SplineValue(0.5f); // point in the middle of spline
+                        var pt = m_OrbitCache.SplineValue(1f); // point at the top of spline
+                        var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
+                        var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
+                        var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
+                        var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
+
+                        // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
+                        return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2); // represents mid to top
+                    }
+                }
+                
+                static float MapTo01(float valueToMap, float fMin, float fMax) => (valueToMap - fMin) / (fMax - fMin);
+            }
         }
-        
+
+
+
         /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera
         /// also warp seamlessly.</summary>
