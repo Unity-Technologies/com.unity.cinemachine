@@ -237,20 +237,26 @@ namespace Cinemachine
                     {
                         var up = VirtualCamera.State.ReferenceUp;
                         var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-                        
+                        var targetToWorldSpace = Quaternion.Inverse(orient);
                         dir /= distance; // normalize
-                        var radialScale = distance / Radius;
-                        
-                        var followTargetForward = orient * Vector3.back; // hAxis 0, vAxis 0
-                        var followTargetUp = orient * Vector3.up;
-                        var followTargetRight = orient * Vector3.right;
+                        dir = targetToWorldSpace * dir; // move to local space
+
+                        var followTargetForward = Vector3.back; // hAxis 0, vAxis 0
+                        var followTargetUp = Vector3.up;
+                        var followTargetRight = Vector3.right;
                         
                         // TODO: there is a drift in the vertical, why?
                         var vertical = dir.ProjectOntoPlane(followTargetRight);
+                        var v2 = dir.ProjectOntoPlane(followTargetForward);
+                        var v3 = dir.ProjectOntoPlane(followTargetUp);
+                        var r1 = UnityVectorExtensions.SignedAngle(followTargetForward, vertical, followTargetRight);
+                        var r2 = UnityVectorExtensions.SignedAngle(followTargetForward, v2, followTargetRight);
+                        var r3 = UnityVectorExtensions.SignedAngle(followTargetForward, v3, followTargetRight);
                         VerticalAxis.Value = UnityVectorExtensions.SignedAngle(followTargetForward, vertical, followTargetRight);
                         var horizontal = dir.ProjectOntoPlane(followTargetUp);
                         HorizontalAxis.Value = UnityVectorExtensions.SignedAngle(followTargetForward, horizontal, followTargetUp);
-                        RadialAxis.Value = radialScale;
+                        
+                        RadialAxis.Value = distance / Radius;
 
                         // // does not work for binding modes that change the orientation of the rig - works for WorldSpace and LockToTargetWithWorldUp
                         // var up = VirtualCamera.State.ReferenceUp;
