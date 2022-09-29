@@ -85,6 +85,24 @@ namespace Cinemachine.Editor
             Undo.AddComponent<InputAxisController>(vcam.gameObject);
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject).enabled = false;
         }
+        
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Third Person Aim Camera", false, m_GameObjectMenuPriority)]
+        static void CreateThirdPersonAimCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Third Person Aim Camera");
+            var targetObject = command.context as GameObject;
+            var parent = targetObject == null || targetObject.transform.parent == null 
+                ? null : targetObject.transform.parent.gameObject;
+            var vcam = CreatePassiveVirtualCamera("Third Person Aim Camera", parent, true);
+            if (targetObject != null)
+                vcam.Follow = targetObject.transform;
+            var thirdPersonFollow = Undo.AddComponent<Cinemachine3rdPersonFollow>(vcam.gameObject);
+            thirdPersonFollow.ShoulderOffset = new Vector3(0.8f, -0.4f, 0f);
+            thirdPersonFollow.CameraSide = 1;
+            thirdPersonFollow.VerticalArmLength = 1.2f;
+            thirdPersonFollow.CameraDistance = 4f;
+            Undo.AddComponent<Cinemachine3rdPersonAim>(vcam.gameObject);
+        }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Target Group Camera", false, m_GameObjectMenuPriority)]
         static void CreateTargetGroupCamera(MenuCommand command)
