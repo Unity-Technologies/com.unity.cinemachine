@@ -31,7 +31,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added IShotQualityEvaluator to enable customization of shot quality evaluation for ClearShot
 - Bugfix: No redundant RepaintAllViews calls.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations
-- Freelook ForcePosition is more precise now.
 
 
 ## [2.9.0] - 2022-08-15
