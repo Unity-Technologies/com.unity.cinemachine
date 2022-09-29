@@ -243,8 +243,8 @@ namespace Cinemachine
                     case OrbitStyles.ThreeRing:
                     {
                         var up = VirtualCamera.State.ReferenceUp;
-                        HorizontalAxis.Value = GetHorizontalAxis(pos, targetPos, up, HorizontalAxis);
-                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, targetPos, up, VerticalAxis);
+                        HorizontalAxis.Value = GetHorizontalAxis(pos, targetPos, up);
+                        VerticalAxis.Value = GetVerticalAxisClosestValue(pos, targetPos, up);
                         break;
                     }
                     default:
@@ -254,7 +254,7 @@ namespace Cinemachine
             }
         }
         
-        float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up, InputAxis horizontalAxis)
+        float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up)
         {
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             var fwd = (orient * Vector3.back).ProjectOntoPlane(up);
@@ -263,9 +263,9 @@ namespace Cinemachine
                 var b = (camPos - targetPos).ProjectOntoPlane(up);
                 return UnityVectorExtensions.SignedAngle(fwd, b, up);
             }
-            return horizontalAxis.Value; // Can't calculate, stay conservative
+            return HorizontalAxis.Value; // Can't calculate, stay conservative
         }
-        float GetVerticalAxisClosestValue(Vector3 camPos, Vector3 targetPos, Vector3 up, InputAxis verticalAxis)
+        float GetVerticalAxisClosestValue(Vector3 camPos, Vector3 targetPos, Vector3 up)
         {
             if (FollowTarget != null)
             {
@@ -283,8 +283,8 @@ namespace Cinemachine
                 // We need to find the minimum of the angle function using steepest descent
                 var x = SteepestDescent(normalizedDirection * (camPos - targetPos).magnitude);
                 return x <= 0.5f
-                    ? Mathf.Lerp(verticalAxis.Range.x, verticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
-                    : Mathf.Lerp(verticalAxis.Center, verticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
+                    ? Mathf.Lerp(VerticalAxis.Range.x, VerticalAxis.Center, MapTo01(x, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
+                    : Mathf.Lerp(VerticalAxis.Center, VerticalAxis.Range.y, MapTo01(x, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
             }
             return VerticalAxis.Value; // stay conservative
             
