@@ -123,7 +123,7 @@ namespace Tests.Runtime
             var floatEqualityComparer = new FloatEqualityComparer(rigSetup.Precision);
             var axisRange = Setup(rigSetup.OrbitStyle);
             
-            const float step = 5f; // so tests are not too long
+            const float step = 29f; // so tests are not too long
             foreach (BindingMode bindingMode in k_BindingModes)
             {
                 if (bindingMode == BindingMode.SimpleFollowWithWorldUp)
