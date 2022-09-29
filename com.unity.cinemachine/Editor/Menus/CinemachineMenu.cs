@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
         static void CreateVirtualCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
-            CreateDefaultVirtualCamera(parentObject: command.context as GameObject, select: true);
+            CreatePassiveCmCamera(parentObject: command.context as GameObject, select: true);
         }
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Follow Camera", false, m_GameObjectMenuPriority)]
@@ -132,8 +132,8 @@ namespace Cinemachine.Editor
                 "Blend List Camera", command.context as GameObject, true);
 
             // We give the camera a couple of children as an example of setup
-            var childVcam1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
-            var childVcam2 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
+            var childVcam1 = CreatePassiveCmCamera(parentObject: blendListCamera.gameObject);
+            var childVcam2 = CreatePassiveCmCamera(parentObject: blendListCamera.gameObject);
             childVcam2.Lens.FieldOfView = 10;
 
             // Set up initial instruction set
@@ -154,20 +154,20 @@ namespace Cinemachine.Editor
                 "State-Driven Camera", command.context as GameObject, true);
 
             // We give the camera a child as an example setup
-            CreateDefaultVirtualCamera(parentObject: stateDrivenCamera.gameObject);
+            CreatePassiveCmCamera(parentObject: stateDrivenCamera.gameObject);
         }
 #endif
 
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_GameObjectMenuPriority)]
-        static void CreateClearShotVirtualCamera(MenuCommand command)
+        static void CreateClearShotCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("ClearShot Camera");
             var clearShotCamera = CreateCinemachineObject<CinemachineClearShot>(
                 "ClearShot Camera", command.context as GameObject, true);
 
             // We give the camera a child as an example setup
-            var childVcam = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
+            var childVcam = CreatePassiveCmCamera(parentObject: clearShotCamera.gameObject);
             Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).AvoidObstacles = false;
         }
 #endif
@@ -214,7 +214,6 @@ namespace Cinemachine.Editor
                 "Dolly Cart", command.context as GameObject, true).Spline = splineContainer;
         }
 
-
         /// <summary>
         /// Sets the specified <see cref="Transform"/> to match the position and 
         /// rotation of the <see cref="SceneView"/> camera, and returns the scene view 
@@ -249,21 +248,9 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Creates a <see cref="CinemachineVirtualCamera"/> with standard procedural components.
+        /// Creates a <see cref="CmCamera"/> with no procedural components.
         /// </summary>
-        public static CmCamera CreateDefaultVirtualCamera(
-            string name = "Cm Camera", GameObject parentObject = null, bool select = false)
-        {
-            var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
-            vcam.Lens = MatchSceneViewCamera(vcam.transform);
-
-            return vcam;
-        }
-
-        /// <summary>
-        /// Creates a <see cref="CinemachineVirtualCamera"/> with no procedural components.
-        /// </summary>
-        public static CmCamera CreatePassiveVirtualCamera(
+        public static CmCamera CreatePassiveCmCamera(
             string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
             var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
