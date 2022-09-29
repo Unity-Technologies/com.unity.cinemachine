@@ -2,7 +2,6 @@ using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
-using System.Numerics;
 using Cinemachine.TargetTracking;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
@@ -235,14 +234,13 @@ namespace Cinemachine
                 {
                     case OrbitStyles.Sphere:
                     {
-                        // does not work for binding modes that change the orientation of the rig - works for WorldSpace and LockToTargetWithWorldUp
                         var up = VirtualCamera.State.ReferenceUp;
                         var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
                         dir /= distance;
                         var localDir = Quaternion.Inverse(orient) * dir;
                         var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                         VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
-                        HorizontalAxis.Value = r.y; // only works for WorldSpace
+                        HorizontalAxis.Value = r.y;
                     }
                         break;
                     case OrbitStyles.ThreeRing:
@@ -266,7 +264,6 @@ namespace Cinemachine
             Vector3 fwd = (orient * Vector3.back).ProjectOntoPlane(up);
             if (!fwd.AlmostZero())
             {
-                // Find angle delta between current position (a) and new position (b)
                 Vector3 b = (camPos - targetPos).ProjectOntoPlane(up);
                 return UnityVectorExtensions.SignedAngle(fwd, b, up);
             }
