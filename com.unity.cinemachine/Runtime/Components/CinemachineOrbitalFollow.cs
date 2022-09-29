@@ -256,11 +256,11 @@ namespace Cinemachine
         
         float GetHorizontalAxis(Vector3 camPos, Vector3 targetPos, Vector3 up, InputAxis horizontalAxis)
         {
-            Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-            Vector3 fwd = (orient * Vector3.back).ProjectOntoPlane(up);
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+            var fwd = (orient * Vector3.back).ProjectOntoPlane(up);
             if (!fwd.AlmostZero())
             {
-                Vector3 b = (camPos - targetPos).ProjectOntoPlane(up);
+                var b = (camPos - targetPos).ProjectOntoPlane(up);
                 return UnityVectorExtensions.SignedAngle(fwd, b, up);
             }
             return horizontalAxis.Value; // Can't calculate, stay conservative
@@ -270,12 +270,12 @@ namespace Cinemachine
             if (FollowTarget != null)
             {
                 // Rotate the camera pos to the back
-                Quaternion q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
-                Vector3 normalizedDirection = (q * (camPos - targetPos)).normalized;
-                Vector3 flatDir = normalizedDirection; flatDir.y = 0;
+                var q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
+                var normalizedDirection = (q * (camPos - targetPos)).normalized;
+                var flatDir = normalizedDirection; flatDir.y = 0;
                 if (!flatDir.AlmostZero())
                 {
-                    float angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
+                    var angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
                     normalizedDirection = Quaternion.AngleAxis(angle, Vector3.up) * normalizedDirection;
                 }
                 normalizedDirection.x = 0;
