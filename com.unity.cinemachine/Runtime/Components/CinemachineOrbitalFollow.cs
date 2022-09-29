@@ -257,7 +257,8 @@ namespace Cinemachine
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             HorizontalAxis.Value = GetHorizontalAxis();
             VerticalAxis.Value = GetVerticalAxisClosestValue(out var t);
-            RadialAxis.Value = distance / (orient * m_OrbitCache.SplineValue(t)).magnitude;
+            if (t >= 0) // only set t, if we changed vertical axis
+                RadialAxis.Value = distance / (orient * m_OrbitCache.SplineValue(t)).magnitude;
             
             // local functions
             float GetHorizontalAxis()
