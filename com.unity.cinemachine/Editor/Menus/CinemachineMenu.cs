@@ -180,8 +180,8 @@ namespace Cinemachine.Editor
                 "Mixing Camera", command.context as GameObject, true);
 
             // We give the camera a couple of children as an example of setup
-            CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
-            CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
+            CreatePassiveCmCamera(parentObject: mixingCamera.gameObject);
+            CreatePassiveCmCamera(parentObject: mixingCamera.gameObject);
         }
         
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Spline", false, m_GameObjectMenuPriority)]
