@@ -197,33 +197,57 @@ namespace Cinemachine.Editor
             var vcam = orbital.VirtualCamera;
             if (vcam != null && vcam.Follow != null)
             {
-                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
+                switch (orbital.OrbitStyle)
                 {
-                    var prevColor = Gizmos.color;
-                    Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
-                        ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
-                        : CinemachineCorePrefs.InactiveGizmoColour.Value;
+                    case CinemachineOrbitalFollow.OrbitStyles.ThreeRing:
+                    {
+                        var prevColor = Gizmos.color;
+                        Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
+                            ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
+                            : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
-                    var orient = orbital.GetReferenceOrientation();
-                    var up = orient * Vector3.up;
-                    var rotation = orbital.HorizontalAxis.Value;
-                    orient = Quaternion.AngleAxis(rotation, up) * orient;
-                    var pos = orbital.FollowTargetPosition;
-                    var scale = orbital.RadialAxis.Value;
+                        var orient = orbital.GetReferenceOrientation();
+                        var up = orient * Vector3.up;
+                        var rotation = orbital.HorizontalAxis.Value;
+                        orient = Quaternion.AngleAxis(rotation, up) * orient;
+                        var pos = orbital.FollowTargetPosition;
+                        var scale = orbital.RadialAxis.Value;
 
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Top.Height * scale, 
-                        orient, orbital.Orbits.Top.Radius * scale);
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Center.Height * scale, orient, 
-                        orbital.Orbits.Center.Radius * scale);
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Bottom.Height * scale, 
-                        orient, orbital.Orbits.Bottom.Radius * scale);
+                        DrawCircleAtPointWithRadius(
+                            pos + up * orbital.Orbits.Top.Height * scale,
+                            orient, orbital.Orbits.Top.Radius * scale);
+                        DrawCircleAtPointWithRadius(
+                            pos + up * orbital.Orbits.Center.Height * scale, orient,
+                            orbital.Orbits.Center.Radius * scale);
+                        DrawCircleAtPointWithRadius(
+                            pos + up * orbital.Orbits.Bottom.Height * scale,
+                            orient, orbital.Orbits.Bottom.Radius * scale);
 
-                    DrawCameraPath(pos, orient, scale, orbital);
+                        DrawCameraPath(pos, orient, scale, orbital);
 
-                    Gizmos.color = prevColor;
+                        Gizmos.color = prevColor;
+                        break;
+                    }
+                    case CinemachineOrbitalFollow.OrbitStyles.Sphere:
+                    {
+                        var prevColor = Gizmos.color;
+                        Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
+                            ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
+                            : CinemachineCorePrefs.InactiveGizmoColour.Value;
+
+                        var followPos = orbital.FollowTargetPosition;
+                        var cameraUp = orbital.VirtualCamera.transform.up;
+                        var cameraForward = orbital.VirtualCamera.transform.forward;
+
+                        // Handles.DrawS
+                        Handles.DrawWireDisc(followPos, cameraUp, orbital.Radius);
+                        Handles.DrawWireDisc(followPos, cameraForward, orbital.Radius);
+                        Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.05f);
+                        Gizmos.DrawSphere(followPos, orbital.Radius);
+
+                        Gizmos.color = prevColor;
+                        break;
+                    }
                 }
             }
         }
