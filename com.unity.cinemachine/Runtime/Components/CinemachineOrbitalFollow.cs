@@ -353,9 +353,9 @@ namespace Cinemachine
             public static Settings Default => new Settings
             { 
                 SplineCurvature = 0.5f,
-                Top = new Orbit { Height = 10, Radius = 4 },
-                Center = new Orbit { Height = 2.5f, Radius = 8 },
-                Bottom= new Orbit { Height = -0.5f, Radius = 5 }
+                Top = new Orbit { Height = 5, Radius = 2 },
+                Center = new Orbit { Height = 2.25f, Radius = 4 },
+                Bottom= new Orbit { Height = 0.1f, Radius = 2.5f }
             };
         }
 
