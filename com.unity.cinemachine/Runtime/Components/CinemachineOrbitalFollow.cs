@@ -247,11 +247,6 @@ namespace Cinemachine
                         
                         // TODO: there is a drift in the vertical, why?
                         var vertical = dir.ProjectOntoPlane(followTargetRight);
-                        var v2 = dir.ProjectOntoPlane(followTargetForward);
-                        var v3 = dir.ProjectOntoPlane(followTargetUp);
-                        var r1 = UnityVectorExtensions.SignedAngle(followTargetForward, vertical, followTargetRight);
-                        var r2 = UnityVectorExtensions.SignedAngle(followTargetForward, v2, followTargetRight);
-                        var r3 = UnityVectorExtensions.SignedAngle(followTargetForward, v3, followTargetRight);
                         VerticalAxis.Value = UnityVectorExtensions.SignedAngle(followTargetForward, vertical, followTargetRight);
                         var horizontal = dir.ProjectOntoPlane(followTargetUp);
                         HorizontalAxis.Value = UnityVectorExtensions.SignedAngle(followTargetForward, horizontal, followTargetUp);
