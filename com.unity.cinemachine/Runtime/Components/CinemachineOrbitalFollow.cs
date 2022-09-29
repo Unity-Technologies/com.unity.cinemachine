@@ -3,10 +3,6 @@ using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
 using Cinemachine.TargetTracking;
-using Quaternion = UnityEngine.Quaternion;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
-using Vector4 = UnityEngine.Vector4;
 
 namespace Cinemachine
 {
@@ -241,15 +237,15 @@ namespace Cinemachine
                         var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
                         VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
                         HorizontalAxis.Value = r.y;
-                    }
                         break;
+                    }
                     case OrbitStyles.ThreeRing:
                     {
                         var up = VirtualCamera.State.ReferenceUp;
                         HorizontalAxis.Value = GetHorizontalAxis(pos, targetPos, up, HorizontalAxis);
                         VerticalAxis.Value = GetVerticalAxisClosestValue(pos, targetPos, up, VerticalAxis);
-                    }
                         break;
+                    }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
