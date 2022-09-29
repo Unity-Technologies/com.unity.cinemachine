@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: POV starts up in its centered position, if recentering is enabled
 - Add Show Hierarchy Icon preference option
 - New icons for cinemachine (cameras, components, extensions, tracks).
+- Freelook ForcePosition is more precise now.
 
 
 ## [3.0.0-pre.1] - 2022-06-01
