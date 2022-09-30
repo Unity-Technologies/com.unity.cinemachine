@@ -12,6 +12,6 @@ To add a CmCamera that follows and looks at a target:
 To add a passive CmCamera:
 
 1. In the Unity menu, choose __GameObject > Cinemachine > CmCamera__. <br/>Unity adds a new GameObject with a CmCamera component. If necessary, Unity also adds a [Cinemachine Brain](CinemachineBrainProperties.md) component to the Unity camera GameObject for you.
-2. The CmCamera is created by default to match the scene view camera.  You can set the CmCamera's transform and lens properties as you like.
+2. The CmCamera is created by default to match the Scene view camera. You can set the CmCamera's transform and lens properties as you like.
 
 

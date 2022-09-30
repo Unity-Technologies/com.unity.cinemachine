@@ -28,12 +28,12 @@ To Populate a Target Group:
 | | _Group Center_ | Use the center of the axis-aligned bounding box that contains all items of the Target Group. |
 | | _Group Average_ | Use the weighted average of the positions of the items in the Target Group. |
 | __Rotation Mode__ || How to calculate the rotation of the Target Group.  |
-| | _Manual_ | Use the values specified in the Rotation properties of the Target Group’s transform.  This is the recommended setting. |
+| | _Manual_ | Use the values specified in the Rotation properties of the Target Group’s transform. This is the recommended setting. |
 | | _Group Average_ | Weighted average of the orientation of the items in the Target Group. |
 | __Update Method__ || When to update the transform of the Target Group. |
 | | _Update_ | Update in the normal MonoBehaviour Update() method. |
 | | _Fixed Update_ | Updated in sync with the Physics module, in FixedUpdate(). |
 | | _Late Update_ | Updated in MonoBehaviour `LateUpdate()`. |
 | __Targets__ || The list of target GameObjects. |
-| | _Weight_ | How much weight to give the item when averaging. Cannot be negative. |
-| | _Radius_ | The radius of the item, used for calculating the bounding box. Cannot be negative. |
+| | _Weight_ | How much weight to give the item when averaging. This cannot be negative. |
+| | _Radius_ | The radius of the item, used for calculating the bounding box. This cannot be negative. |

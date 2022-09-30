@@ -16,6 +16,6 @@ It’s useful to think about this in terms of individual “impulses.” An impu
 
 To set up and use Impulse in a Scene, do the following: 
 
-- Add **[Cinemachine Impulse Source](CinemachineImpulseSource.md)** or **[Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource.md)** components to one or more GameObjects that you want to trigger camera shake.
+- Add **[Cinemachine Impulse Source](CinemachineImpulseSource.md)** or **[Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource.md)** components to one or more GameObjects that you want to trigger a camera shake.
 
 - Add a **[Cinemachine Impulse Listener](CinemachineImpulseListener.md)** extension to one or more Cinemachine CmCameras so they can detect and react to impulses.

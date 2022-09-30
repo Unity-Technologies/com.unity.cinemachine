@@ -42,10 +42,10 @@ The rig and the camera position are defined by three pivot points (the origin, t
 
 Note the rotations on the rig;</br>
 
-- **B rotates horizontally around A**. Using A as the origin, B's position is calculated from the Shoulder Offset's X, Y, and Z values .</br>
+- **B rotates horizontally around A**. Using A as the origin, B's position is calculated from the Shoulder Offset's X, Y, and Z values.</br>
    ![](images/CMShoulderOffsetexample.png)
 
-- **C rotates vertically around B**. C's position is calculated from the Vertical Arm Length from B. Positive values result with C above B, negative values result with C below B.</br>
+- **C rotates vertically around B**. C's position is calculated from the Vertical Arm Length from B. Positive values result with C above B, and negative values result with C below B.</br>
    ![](images/CMVerticalDistanceexample.png) 
 
 

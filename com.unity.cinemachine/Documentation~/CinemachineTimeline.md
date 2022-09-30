@@ -6,7 +6,7 @@ Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to a
 
 Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CmCamera with the highest Priority setting.
 
-You control CmCameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a CmCamera to activate then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
+You control CmCameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a CmCamera to activate and then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
 
 To cut between two CmCameras, place the clips next to each other. To blend between two CmCameras, overlap the clips.
 
