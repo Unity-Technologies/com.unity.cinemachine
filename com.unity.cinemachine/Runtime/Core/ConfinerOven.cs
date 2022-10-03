@@ -479,7 +479,9 @@ namespace Cinemachine
                     Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < UnityVectorExtensions.Epsilon 
                         ? m_Cache.userSetMaxCandidate 
                         : m_Cache.offsetter.Execute(-1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
-                
+                if (candidate.Count == 0) 
+                    candidate = m_Cache.userSetMaxCandidate;
+
                 if (m_Cache.leftCandidate.StateChanged(in candidate))
                 {
                     m_Cache.rightCandidate = new PolygonSolution
@@ -581,7 +583,7 @@ namespace Cinemachine
                     offsetter.AddPaths(next.polygons, JoinType.Miter, EndType.Polygon);
                     var expandedNext = new List<List<Point64>>(offsetter.Execute(step * 2));
 
-                    // Compute the difference - this is the lost geometry
+                    // Compute the difference - this is the lost geometry // TODO: need to think this through
                     var solution = new List<List<IntPoint>>();
                     clipper.Clear();
                     clipper.AddSubject(expandedPrev);
