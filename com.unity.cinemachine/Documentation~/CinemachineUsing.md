@@ -35,7 +35,7 @@ The Cinemachine Brain is a component in the Unity Camera itself. The Cinemachine
 
 ## Positioning and Aiming
 
-Use the [__Position Control__ properties](CinemachineVirtualCameraBody.md) in a CmCamera to specify how to move it in the Scene. Use the [__Rotation Control__ properties](CinemachineVirtualCameraAim.md) to specify how to aim it.
+Use the [__Position Control__ properties](CmCamera.md) in a CmCamera to specify how to move it in the Scene. Use the [__Rotation Control__ properties](CinemachineVirtualCameraAim.md) to specify how to aim it.
 
 By default, a CmCamera has a single Tracking Target, which is used for two purposes:
 
@@ -70,11 +70,11 @@ The __Rotation Control__ properties offer the following procedural algorithms fo
 
 ## Composing a shot
 
-The [__Position Composer__](CinemachineBodyFramingTransposer.md) and [__Rotation Composer__](CinemachineAimComposer.md) algorithms define areas in the camera frame for you to compose a shot:
+The [__Position Composer__](CinemachinePositionComposer.md) and [__Rotation Composer__](CinemachineRotationComposer.md) algorithms define areas in the camera frame for you to compose a shot:
 
-* __Dead zone__: The area of the frame in which Cinemachine keeps the target.  The target can move within this region and the CmCamera will not adjust to reframe it until the target leaves the dead zone.
+* __Dead zone__: The area of the frame in which Cinemachine keeps the target. The target can move within this region and the CmCamera will not adjust to reframe it until the target leaves the dead zone.
 
-* __Soft zone__: If the target enters this region of the frame, the camera will adjust to put it back in the dead zone.  It will do this slowly or quickly, according to the time specified in the Damping settings.
+* __Soft zone__: If the target enters this region of the frame, the camera will adjust to put it back in the dead zone. It will do this slowly or quickly, according to the time specified in the Damping settings.
 
 * __Screen Position__: The screen position of the center of the dead zone.  0 is the center of the screen, +1 and -1 are the edges.
 
@@ -90,6 +90,6 @@ Adjust these areas to get a wide range of camera behaviors. To do this, drag the
 
 ## Using noise to simulate camera shake
 
-Real-world physical cameras are often heavy and cumbersome. They are hand-held by the camera operator or mounted on unstable objects like moving vehicles. Use [Noise properties](CinemachineVirtualCameraNoise.md) to simulate these real-world qualities for cinematic effect. For example, you could add a camera shake when following a running character to immerse the player in the action.
+Real-world physical cameras are often heavy and cumbersome. They are hand-held by the camera operator or mounted on unstable objects like moving vehicles. Use [Noise properties](CinemachineNoiseProfiles.md) to simulate these real-world qualities for cinematic effect. For example, you could add a camera shake when following a running character to immerse the player in the action.
 
 At each frame update, Cinemachine adds noise separately from the movement of the camera to follow a target. Noise does not influence the camera’s position in future frames. This separation ensures that properties like __damping__ behave as expected.

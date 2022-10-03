@@ -22,7 +22,7 @@ The FOV tool can adjust Vertical FOV, Horizontal FOV, Orthographic Size, or Foca
 
 ![FOV](images/FOV.png)
 
-For more information on the Field of View (FOV) property see, [Setting CmCamera properties](CinemachineVirtualCamera.md).
+For more information on the Field of View (FOV) property see, [Setting CmCamera properties](CmCamera.md).
 
 **2. Far/Near clip planes**
 
@@ -30,7 +30,7 @@ For more information on the Field of View (FOV) property see, [Setting CmCamera 
 
 ![clip-plane](images/clip-plane.png)
 
-For more information on the Far and Near clip plane properties see, [Setting CmCamera properties](CinemachineVirtualCamera.md).
+For more information on the Far and Near clip plane properties see, [Setting CmCamera properties](CmCamera.md).
 
 **3. Follow offset**
 
@@ -38,7 +38,7 @@ The Follow offset is an offset from the Follow Target. You can drag the points t
 
 ![follow-offset](images/follow-offset.png)
 
-For more information on the Follow offset property see, [Orbital Follow properties](CinemachineBodyOrbitalTransposer.md).
+For more information on the Follow offset property see, [Orbital Follow properties](CinemachineFollow.md).
 
 **4. Tracked object offset**
 
@@ -46,7 +46,7 @@ This starts from where the camera is placed. You can drag the points to increase
 
 ![tracked-object-offset](images/tracked-object-offset.png)
 
-For more information on the Tracked object offset property see, [Rotation Composer properties](CinemachineAimRotationComposer.md).
+For more information on the Tracked object offset property see, [Rotation Composer properties](CinemachineRotationComposer.md).
 
 ## Cinemachine tool settings
 
@@ -54,7 +54,7 @@ The Cinemachine tool settings are automatically displayed when a Free Look camer
 
 ![overlays-menu](images/overlays-menu.png)
 
-For more information, see [Cinemachine Free Look Camera](CinemachineFreeLook.md).
+For more information, see [Cinemachine Free Look Camera](FreeLookCameras.md).
 
 To deactivate the Cinemachine tool settings for a Free Look camera:
 

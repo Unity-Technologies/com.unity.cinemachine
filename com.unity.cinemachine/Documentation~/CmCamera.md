@@ -14,7 +14,7 @@ At any time, each CmCamera may be in one of these states:
 On its own, the CmCamera is a passive object, meaning that its transform can be controlled or parented, just like any other GameObject. It becomes a placeholder for the real camera: when it is Live, the Unity camera is positioned to match the CmCamera's transform, and its lens is set to match as well. Furthermore, as part of the Cinemachine ecosystem, it can participate in blends and be controlled from a Cinemachine track in the timeline. You can also add effects like impulse, post-processing,  noise, and other extensions to increase the punch of the shot.
 
 ## Going Procedural
-However, the real magic comes when you add Procedural Components to bring the camera to life, allowing it to robustly track targets and compose its own shots. For this, you can add __Position Control__, __Rotation Control__, and __Noise__ behaviors to drive the CmCamera's position, rotation, and lens. The CmCamera applies these settings to the Unity Camera when [Cinemachine Brain](CinemachineBrainProperties.md) or [Timeline](CinemachineTimeline.md) transfers control of the Unity camera to the CmCamera. 
+However, the real magic comes when you add Procedural Components to bring the camera to life, allowing it to robustly track targets and compose its own shots. For this, you can add __Position Control__, __Rotation Control__, and __Noise__ behaviors to drive the CmCamera's position, rotation, and lens. The CmCamera applies these settings to the Unity Camera when [Cinemachine Brain](CinemachineBrain.md) or [Timeline](CinemachineTimeline.md) transfers control of the Unity camera to the CmCamera. 
 
 ![CmCamera properties](images/CmCameraInspector.png)
 
