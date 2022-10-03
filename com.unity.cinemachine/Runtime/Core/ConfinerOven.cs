@@ -537,7 +537,7 @@ namespace Cinemachine
             State = BakingState.BAKED;
 
             // local function
-            // TODO: KGB: make bones shrink to a point to solve problem of seeing outside of the confiner area.
+            // TODO: KGB: think about shrinking bones to a point to solve problem of seeing outside of the confiner area.
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
                 var clipper = new Clipper64();
