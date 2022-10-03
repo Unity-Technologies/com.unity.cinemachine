@@ -11,7 +11,6 @@ namespace Cinemachine
     [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachinePath.html")]
     public class CinemachinePath : CinemachinePathBase
     {
         /// <summary>A waypoint along the path</summary>

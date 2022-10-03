@@ -50,6 +50,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CmCamera.html")]
     public sealed class CmCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>

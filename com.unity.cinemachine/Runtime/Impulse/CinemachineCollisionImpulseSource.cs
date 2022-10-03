@@ -20,7 +20,7 @@ namespace Cinemachine
     /// pass the filter, they will cause an impulse event to be generated.
     /// </summary>
     [SaveDuringPlay]
-    [AddComponentMenu("Cinemachine/Cinemachine Collision Impulse Source")]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Collision Impulse Source")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCollisionImpulseSource.html")]
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource
     {

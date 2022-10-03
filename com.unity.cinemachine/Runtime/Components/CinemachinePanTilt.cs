@@ -14,6 +14,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Pan Tilt")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePanTilt.html")]
     public class CinemachinePanTilt 
         : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource

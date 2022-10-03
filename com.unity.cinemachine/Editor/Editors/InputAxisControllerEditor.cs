@@ -118,11 +118,13 @@ namespace Cinemachine.Editor
                         actionName = "Player/Fire";
                         inputName = "Fire";
                     }
+#if false
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
                     {
                         //actionName = "UI/ScrollWheel"; // best we can do - actually it doean't work because it'a Vector2 type
                         inputName = "Mouse ScrollWheel";
                     }
+#endif
                     if (axis.Name.Contains("Jump"))
                     {
                         actionName = "UI/RightClick"; // best we can do

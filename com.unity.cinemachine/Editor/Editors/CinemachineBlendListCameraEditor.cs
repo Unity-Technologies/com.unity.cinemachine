@@ -216,7 +216,7 @@ namespace Cinemachine.Editor
             m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
+                    var vcam = CinemachineMenu.CreatePassiveCmCamera(parentObject: Target.gameObject);
                     vcam.transform.SetSiblingIndex(index);
                 };
             m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>

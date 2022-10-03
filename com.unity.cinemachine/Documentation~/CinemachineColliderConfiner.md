@@ -4,4 +4,5 @@ As characters and objects move around in a complex Scene, obstacles in the Scene
 
 * [Cinemachine Collider](CinemachineCollider.md)
 * [Cinemachine Confiner](CinemachineConfiner.md)
+* [Cinemachine Confiner2D](CinemachineConfiner2D.md)
 

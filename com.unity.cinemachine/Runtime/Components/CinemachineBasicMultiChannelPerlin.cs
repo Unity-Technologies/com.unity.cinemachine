@@ -18,6 +18,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Noise/Cinemachine Basic Multi Channel Perlin")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Noise)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBasicMultiChannelPerlin.html")]
     public class CinemachineBasicMultiChannelPerlin 
         : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableNoise
     {

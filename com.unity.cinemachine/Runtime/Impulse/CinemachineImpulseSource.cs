@@ -14,8 +14,8 @@ namespace Cinemachine
     /// 
     /// </summary>
     [SaveDuringPlay]
-    [AddComponentMenu("Cinemachine/Cinemachine Impulse Source")]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseSourceOverview.html")]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Impulse Source")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineImpulseSource.html")]
     public class CinemachineImpulseSource : MonoBehaviour
     {
         /// <summary>

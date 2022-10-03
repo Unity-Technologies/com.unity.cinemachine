@@ -8,8 +8,10 @@ namespace Cinemachine
     /// This is an add-on for Cinemachine virtual cameras containing the OrbitalFollow component.
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
-    [SaveDuringPlay] [AddComponentMenu("")] // Hide in menu
+    [SaveDuringPlay] 
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine FreeLook Modifier")] // Hide in menu
     [ExecuteAlways]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLookModifier.html")]
     public class CinemachineFreeLookModifier : CinemachineExtension
     {
         /// <summary>

@@ -10,6 +10,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine 3rd Person Follow")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/Cinemachine3rdPersonFollow.html")]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping

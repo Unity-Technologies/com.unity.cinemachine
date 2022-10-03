@@ -14,6 +14,7 @@ namespace Cinemachine
     [ExecuteAlways]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
+    [HelpURL(Documentation.BaseURL + "manual/Cinemachine3rdPersonAim.html")]
     public class Cinemachine3rdPersonAim : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>

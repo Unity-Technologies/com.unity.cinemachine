@@ -15,6 +15,7 @@ namespace Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Follow")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineFollow.html")]
     public class CinemachineFollow : CinemachineComponentBase
     {
         /// <summary>The distance which the camera will attempt to maintain from the tracking target</summary>
