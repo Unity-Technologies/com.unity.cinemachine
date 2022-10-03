@@ -228,15 +228,15 @@ namespace Cinemachine
                 m_CenterX = centerX;
             }
 
-            public Vector2 Stretch(Vector2 p) => new Vector2((p.x - m_CenterX) * m_InverseAspect + m_CenterX, p.y);
-            public Vector2 Unstretch(Vector2 p) => new Vector2((p.x - m_CenterX) * Aspect + m_CenterX, p.y);
+            public Vector2 Stretch(Vector2 p) => new((p.x - m_CenterX) * m_InverseAspect + m_CenterX, p.y);
+            public Vector2 Unstretch(Vector2 p) => new((p.x - m_CenterX) * Aspect + m_CenterX, p.y);
         }
 
         float m_MinFrustumHeightWithBones;
 
         List<List<IntPoint>> m_OriginalPolygon;
         IntPoint m_MidPoint;
-        List<List<IntPoint>> m_Skeleton = new List<List<IntPoint>>();
+        List<List<IntPoint>> m_Skeleton = new();
 
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1f / k_FloatToIntScaler;
@@ -245,9 +245,9 @@ namespace Cinemachine
         const int k_SkeletonPadding = 5;
 
         Rect m_PolygonRect;
-        AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
+        AspectStretcher m_AspectStretcher = new(1, 0);
 
-        float m_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
+        const float k_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
         public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
@@ -442,8 +442,7 @@ namespace Cinemachine
                 return new Rect(minX, minY, Mathf.Max(0, maxX - minX), Mathf.Max(0, maxY - minY));
             }
 
-            IntPoint MidPointOfIntRect(IntRect bounds) => 
-                new IntPoint((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
+            IntPoint MidPointOfIntRect(IntRect bounds) => new((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
         }
         
         /// <summary>
@@ -530,7 +529,7 @@ namespace Cinemachine
                 if (elapsedTime > maxComputationTimePerFrameInSeconds)
                 {
                     m_Cache.bakeTime += elapsedTime;
-                    if (m_Cache.bakeTime > m_MaxComputationTimeForFullSkeletonBakeInSeconds)
+                    if (m_Cache.bakeTime > k_MaxComputationTimeForFullSkeletonBakeInSeconds)
                     {
                         State = BakingState.TIMEOUT; 
                     }
