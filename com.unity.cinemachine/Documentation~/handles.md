@@ -50,13 +50,13 @@ For more information on the Tracked object offset property see, [Rotation Compos
 
 ## Cinemachine tool settings
 
-The Cinemachine tool settings are automatically displayed when a Free Look camera is selected. These settings allow you to adjust the position of the three separate camera rigs: **Top**, **Middle**, and **Bottom**.
+The Cinemachine tool settings are automatically displayed when a FreeLook camera is selected. These settings allow you to adjust the position of the three separate camera rigs: **Top**, **Middle**, and **Bottom**.
 
 ![overlays-menu](images/overlays-menu.png)
 
-For more information, see [Cinemachine Free Look Camera](FreeLookCameras.md).
+For more information, see [Cinemachine FreeLook Camera](FreeLookCameras.md).
 
-To deactivate the Cinemachine tool settings for a Free Look camera:
+To deactivate the Cinemachine tool settings for a FreeLook camera:
 
 * Right-click on the **Scene** tab in the Scene view.
 * Select **Overlays** and then **Cinemachine tools** from the pop-up menu.
