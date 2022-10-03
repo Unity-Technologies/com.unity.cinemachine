@@ -1,5 +1,3 @@
-#define DISABLE_MAX_ITERATION_TIME // define for debugging
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -526,8 +524,7 @@ namespace Cinemachine
                     m_Cache.solutions.Add(m_Cache.leftCandidate);
                     break; // stop searching, because we are at the bound
                 }
-
-#if !DISABLE_MAX_ITERATION_TIME
+                
                 // Pause after max time per iteration reached
                 var elapsedTime = Time.realtimeSinceStartup - startTime;
                 if (elapsedTime > maxComputationTimePerFrameInSeconds)
@@ -541,7 +538,6 @@ namespace Cinemachine
                     bakeProgress = m_Cache.leftCandidate.frustumHeight / m_Cache.maxFrustumHeight;
                     return;
                 }
-#endif
             }
 
             ComputeSkeleton(in m_Cache.solutions);
