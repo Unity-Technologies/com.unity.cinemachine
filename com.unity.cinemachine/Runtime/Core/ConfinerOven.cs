@@ -134,12 +134,8 @@ namespace Cinemachine
                     {
                         var numPoints = original.Count;
                         for (var i = 0; i < numPoints; ++i)
-                        {
                             if (FindIntersection(l1, l2, original[i], original[(i + 1) % numPoints]) == 2)
-                            {
                                 return true;
-                            }
-                        }
                     }
 
                     return false;
@@ -161,7 +157,7 @@ namespace Cinemachine
                         var srcPoly = m_Solution[i];
                         int numPoints = srcPoly.Count;
                         var pathSegment = new List<Vector2>(numPoints);
-                        for (int j = 0; j < numPoints; j++)
+                        for (var j = 0; j < numPoints; j++)
                         {
                             // Restore the original aspect ratio
                             pathSegment.Add(m_AspectStretcher.Unstretch(

@@ -250,14 +250,13 @@ namespace Cinemachine
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="boundingShape2D">Bounding shape</param>
-            /// <param name="maxWindowSize">Max Window size</param>
-            /// <param name="aspectRatio">Aspect ratio/param>
+            /// <param name="maxWindowSize">Max Window size (calculation bound)</param>
+            /// <param name="aspectRatio">Aspect ratio</param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
-            public bool ValidateCache(
-                Collider2D boundingShape2D, float maxWindowSize, 
-                float aspectRatio, out bool confinerStateChanged)
+            public bool ValidateCache(Collider2D boundingShape2D, float maxWindowSize, float aspectRatio,
+                out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
                 if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
@@ -277,15 +276,13 @@ namespace Cinemachine
                     // If delta world to baked scale is uniform, cache is valid.
                     Vector2 lossyScaleXY = deltaWorldToBaked.lossyScale;
                     if (lossyScaleXY.IsUniform())
-                    {
-                        return true; 
-                    }
+                        return true;
                 }
                 
                 Invalidate();
                 confinerStateChanged = true;
                 
-                Type colliderType = boundingShape2D == null ? null:  boundingShape2D.GetType();
+                Type colliderType = boundingShape2D == null ? null : boundingShape2D.GetType();
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     var poly = boundingShape2D as PolygonCollider2D;
@@ -319,11 +316,9 @@ namespace Cinemachine
                         originalPath.Add(dst);
                     }
                 }
-                else
-                {
+                else 
                     return false; // input collider is invalid
-                }
-                
+
                 confinerOven = new ConfinerOven(originalPath, aspectRatio, maxWindowSize);
                 m_AspectRatio = aspectRatio;
                 m_BoundingShape2D = boundingShape2D;
