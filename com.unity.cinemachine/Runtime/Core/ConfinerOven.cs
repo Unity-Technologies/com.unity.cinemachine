@@ -184,10 +184,8 @@ namespace Cinemachine
                 double dy34 = p4.Y - p3.Y;
 
                 // Solve for t1 and t2
-                double denominator = dy12 * dx34 - dx12 * dy34;
-                double t1 =
-                    ((p1.X - p3.X) * dy34 + (p3.Y - p1.Y) * dx34)
-                    / denominator;
+                var denominator = dy12 * dx34 - dx12 * dy34;
+                var t1 = ((p1.X - p3.X) * dy34 + (p3.Y - p1.Y) * dx34) / denominator;
                 if (double.IsInfinity(t1) || double.IsNaN(t1))
                 {
                     // The lines are parallel (or close enough to it).
@@ -202,7 +200,7 @@ namespace Cinemachine
                     return 0; // no intersection
                 }
 
-                double t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
+                var t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
                 
                 // local function
@@ -266,26 +264,20 @@ namespace Cinemachine
             
             // Special case: we are shrank to the mid point of the original input confiner area.
             if (State == BakingState.BAKED && frustumHeight >= m_Cache.theoreticalMaxFrustumHeight)
-            {
-                return new BakedSolution(m_AspectStretcher.Aspect, frustumHeight, false,
-                    m_PolygonRect, m_OriginalPolygon, m_Cache.theoriticalMaxCandidate);
-            }
+                return new BakedSolution(m_AspectStretcher.Aspect, frustumHeight, false, m_PolygonRect,
+                    m_OriginalPolygon, m_Cache.theoreticalMaxCandidate);
 
             // Inflate with clipper to frustumHeight
             var offsetter = new ClipperOffset(k_MitterLimit);
             offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             var solution = offsetter.Execute(-1f * frustumHeight * k_FloatToIntScaler);
-            if (solution.Count == 0)
-            {
-                solution = m_Cache.theoriticalMaxCandidate;
-            }
+            if (solution.Count == 0) 
+                solution = m_Cache.theoreticalMaxCandidate;
 
             // Add in the skeleton
             var bakedSolution = new List<List<IntPoint>>();
             if (State == BakingState.BAKING || m_Skeleton.Count == 0)
-            {
                 bakedSolution = solution;
-            }
             else
             {
                 var c = new Clipper64();
@@ -334,7 +326,7 @@ namespace Cinemachine
             public PolygonSolution rightCandidate;
             public PolygonSolution leftCandidate;
             public List<List<IntPoint>> userSetMaxCandidate;
-            public List<List<IntPoint>> theoriticalMaxCandidate;
+            public List<List<IntPoint>> theoreticalMaxCandidate; // theoretical upper bound on the computation
             public float stepSize;
             public float maxFrustumHeight;
             public float userSetMaxFrustumHeight;
@@ -352,7 +344,6 @@ namespace Cinemachine
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
 
-            // calculate mid point and use it as the most shrank down version
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
             
@@ -374,8 +365,10 @@ namespace Cinemachine
                 }
                 m_OriginalPolygon.Add(path);
             }
+            
+            // calculate mid point and use it as the most shrank down version at theoritical max
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
-            m_Cache.theoriticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
+            m_Cache.theoreticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
 
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.userSetMaxFrustumHeight < 0)
@@ -392,14 +385,14 @@ namespace Cinemachine
             if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoreticalMaxFrustumHeight) 
             {
                 m_Cache.maxFrustumHeight = m_Cache.theoreticalMaxFrustumHeight;
-                m_Cache.userSetMaxCandidate = m_Cache.theoriticalMaxCandidate;
+                m_Cache.userSetMaxCandidate = m_Cache.theoreticalMaxCandidate;
             }
             else
             {
                 m_Cache.userSetMaxCandidate = new List<List<Point64>>(
                     m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
                 if (m_Cache.userSetMaxCandidate.Count == 0) 
-                    m_Cache.userSetMaxCandidate = m_Cache.theoriticalMaxCandidate;
+                    m_Cache.userSetMaxCandidate = m_Cache.theoreticalMaxCandidate;
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
             
@@ -496,11 +489,9 @@ namespace Cinemachine
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
 
-                    // if we have not found right yet, then we don't need to decrease stepsize
-                    if (!m_Cache.rightCandidate.IsNull)
-                    {
+                    // decrease stepSize if we have a right candidate
+                    if (!m_Cache.rightCandidate.IsNull) 
                         m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
-                    }
                 }
                 
                 // if we have a right candidate, and left and right are sufficiently close, 
@@ -543,28 +534,23 @@ namespace Cinemachine
 
             // Remove useless/empty results
             for (var i = m_Cache.solutions.Count - 1; i >= 0; --i)
-            {
                 if (m_Cache.solutions[i].polygons.Count == 0)
-                {
                     m_Cache.solutions.RemoveAt(i);
-                }
-            }
 
             bakeProgress = 1;
             State = BakingState.BAKED;
 
-            // TODO: This needs refinement to solve the problem of seeing outside of the confiner area.
-            // TODO: The problem is that bones do not shrink.
             // local function
+            // TODO: KGB: make bones shrink to a point to solve problem of seeing outside of the confiner area.
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
-                // At each state change point, collect geometry that gets lost over the transition
                 var clipper = new Clipper64();
                 var offsetter = new ClipperOffset(k_MitterLimit);
-                for (int i = 1; i < solutions.Count - 1; i += 2)
+                // At each state change point (1-2, 3-4, ...), collect geometry that gets lost over the transition
+                for (var i = 1; i < solutions.Count - 1; i += 2)
                 {
-                    var prev = solutions[i];
-                    var next = solutions[i+1];
+                    var prev = solutions[i]; // solution before state change
+                    var next = solutions[i+1]; // solution after state change
 
                     double step = k_SkeletonPadding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
 
@@ -578,7 +564,7 @@ namespace Cinemachine
                     offsetter.AddPaths(next.polygons, JoinType.Miter, EndType.Polygon);
                     var expandedNext = new List<List<Point64>>(offsetter.Execute(step * 2));
 
-                    // Compute the difference - this is the lost geometry // TODO: need to think this through
+                    // Compute the difference - this is the lost geometry
                     var solution = new List<List<IntPoint>>();
                     clipper.Clear();
                     clipper.AddSubject(expandedPrev);
