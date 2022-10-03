@@ -86,6 +86,7 @@ namespace Cinemachine.Editor
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject).enabled = false;
         }
         
+#if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Third Person Aim Camera", false, m_GameObjectMenuPriority)]
         static void CreateThirdPersonAimCamera(MenuCommand command)
         {
@@ -103,6 +104,7 @@ namespace Cinemachine.Editor
             thirdPersonFollow.CameraDistance = 4f;
             Undo.AddComponent<Cinemachine3rdPersonAim>(vcam.gameObject);
         }
+#endif
 
         [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Target Group Camera", false, m_GameObjectMenuPriority)]
         static void CreateTargetGroupCamera(MenuCommand command)
