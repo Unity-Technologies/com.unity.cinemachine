@@ -1,4 +1,4 @@
-# CmCamera
+# CmCameras
 
 The CmCamera is a component that you add to an empty GameObject. It represents a Cinemachine Camera in the Unity Scene.
 

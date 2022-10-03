@@ -1,10 +1,10 @@
-# Free Look Cameras
+# Using FreeLook Cameras
 
 With Cinemachine 3.0, the FreeLook camera is no longer a separate class as it was in prior versions of Cinemachine. Instead, it is implemented by setting up a [CmCamera](CmCamera.md) with the appropriate behaviors.
 
-A Free Look is a CmCamera that tracks a GameObject target and allows the user to control the camera's viewing angle. Essentially, it is a camera that can orbit the target in response to user input. There are several possible ways to implement such a camera, each with its own style of behavior and idiosyncrasies. The one you choose will depend on the way your target moves, and on the specific camera behavior that you want. It's a good exercise to think carefully about how you want the camera to behave. There is no one-size-fits-all.
+A FreeLook is a CmCamera that tracks a GameObject target and allows the user to control the camera's viewing angle. Essentially, it is a camera that can orbit the target in response to user input. There are several possible ways to implement such a camera, each with its own style of behavior and idiosyncrasies. The one you choose will depend on the way your target moves, and on the specific camera behavior that you want. It's a good exercise to think carefully about how you want the camera to behave. There is no one-size-fits-all.
 
-When you choose Cinemachine > FreeLook Camera from the GameObject menu, it will by default create a CmCamera with the following components:
+When you choose **Cinemachine > FreeLook Camera** from the GameObject menu, it will by default create a CmCamera with the following components:
 
 ![Default Free Look Inspector](images/DefaultFreeLookInspector.png)
 
