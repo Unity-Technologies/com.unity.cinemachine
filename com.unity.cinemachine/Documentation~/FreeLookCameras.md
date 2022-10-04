@@ -1,4 +1,4 @@
-# Using FreeLook Cameras
+# Creating FreeLook Cameras
 
 With Cinemachine 3.0, the FreeLook camera is no longer a separate class as it was in prior versions of Cinemachine. Instead, it is implemented by setting up a [CmCamera](CmCamera.md) with the appropriate behaviors.
 

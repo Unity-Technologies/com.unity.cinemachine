@@ -1,4 +1,4 @@
-# CmCameras
+# CmCamera
 
 The CmCamera is a component that you add to an empty GameObject. It represents a Cinemachine Camera in the Unity Scene.
 
@@ -35,7 +35,7 @@ However, the real magic comes when you add Procedural Components to bring the ca
 | | _Orthographic Size_ | When using an orthographic camera, defines the half-height of the camera view, in world coordinates. Available when the Unity camera with the Cinemachine Brain component uses a Projection of Orthographic. |
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. You can also use [Scene Handles](handles.md) to modify this property.|
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. You can also use [Scene Handles](handles.md) to modify this property.|
-| | _Dutch_ | A Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the CmCamera; there is no counterpart property in the Unity camera. |
+| | _Dutch_ | The Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the CmCamera; there is no counterpart property in the Unity camera. |
 |  __Mode Override__ || Allows you to select a different camera mode to apply to the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html) component when Cinemachine activates this CmCamera. <br />__Important:__ For this override to take effect, you must enable the Lens Mode Override option in the CinemachineBrain inspector, and specify a default lens mode there. |
 | | _None_ | Leaves the __Projection__ and __Physical Camera__ properties unchanged in the Camera. |
 | | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |
