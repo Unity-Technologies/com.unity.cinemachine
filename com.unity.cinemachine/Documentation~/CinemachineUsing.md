@@ -5,7 +5,7 @@ Using Cinemachine requires a new way of thinking about working with cameras. For
 
 ## CmCameras
 
-Cinemachine does not create new cameras. Instead, it directs a single Unity camera for multiple shots. You compose these shots with __Cm Cameras__ (also referred to sometimes as _Virtual Cameras_).  CmCameras move and rotate the Unity camera and control its settings.
+Cinemachine does not create new cameras. Instead, it directs a single Unity camera for multiple shots. You compose these shots with __CmCameras__ (also referred to sometimes as _Virtual Cameras_).  CmCameras move and rotate the Unity camera and control its settings.
 
 The CmCameras are separate GameObjects from the Unity Camera, and behave independently. They are not nested within each other. For example, a Scene might look like this:
 
@@ -15,7 +15,7 @@ The main tasks that the CmCamera does for you:
 
 * Positions the Unity camera in the Scene.
 * Aims the Unity camera at something.
-* Adds procedural noise to the Unity camera. Noise simulates things like handheld effects or vehicle shakes.
+* Adds procedural noise to the Unity camera. Noise simulates things like hand-held effects or vehicle shakes.
 
 Cinemachine encourages you to create many CmCameras. The CmCamera is designed to consume little processing power. If your Scene is performance-sensitive, deactivate all but the essential CmCameras at any given moment for best performance.
 
@@ -29,7 +29,7 @@ One CmCamera has control of the Unity camera at any point in time. This is the _
 
 ## Cinemachine Brain
 
-The Cinemachine Brain is a component in the Unity Camera itself. The Cinemachine Brain monitors all active CmCameras in the Scene. To specify the next live CmCamera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired CmCamera's game object. Cinemachine Brain then chooses the most recently activated CmCamera with the same or higher priority as the live CmCamera.  It performs a cut or blend between the previous and new CmCameras.
+The Cinemachine Brain is a component in the Unity Camera itself. The Cinemachine Brain monitors all active CmCameras in the Scene. To specify the next live CmCamera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired CmCamera's game object. Cinemachine Brain then chooses the most recently activated CmCamera with the same or higher priority as the live CmCamera. It performs a cut or blend between the previous and new CmCameras.
 
 **Tip**: Use Cinemachine Brain to respond to dynamic game events in real time. It allows your game logic to control the camera by manipulating priorities. This is particularly useful for live gameplay, where action isn’t always predictable. Use [Timeline](CinemachineTimeline.md) to choreograph cameras in predictable situations, like cutscenes. Timeline overrides the Cinemachine Brain priority system to give you precise, to-the-frame camera control.
 
@@ -70,11 +70,11 @@ The __Rotation Control__ properties offer the following procedural algorithms fo
 
 ## Composing a shot
 
-The [__Position Composer__](CinemachineBodyFramingTransposer.md) and [__Rotation Composer__](CinemachineAimComposer.md) algorithms define areas in the camera frame for you to compose a shot:
+The [__Position Composer__](CinemachinePositionComposer.md) and [__Rotation Composer__](CinemachineRotationComposer.md) algorithms define areas in the camera frame for you to compose a shot:
 
-* __Dead zone__: The area of the frame in which Cinemachine keeps the target.  The target can move within this region and the CmCamera will not adjust to reframe it until the target leaves the dead zone
+* __Dead zone__: The area of the frame in which Cinemachine keeps the target. The target can move within this region and the CmCamera will not adjust to reframe it until the target leaves the dead zone.
 
-* __Soft zone__: If the target enters this region of the frame, the camera will adjust to put it back in the dead zone.  It will do this slowly or quickly, according to the time specified in the Damping settings.
+* __Soft zone__: If the target enters this region of the frame, the camera will adjust to put it back in the dead zone. It will do this slowly or quickly, according to the time specified in the Damping settings.
 
 * __Screen Position__: The screen position of the center of the dead zone.  0 is the center of the screen, +1 and -1 are the edges.
 
@@ -90,6 +90,6 @@ Adjust these areas to get a wide range of camera behaviors. To do this, drag the
 
 ## Using noise to simulate camera shake
 
-Real-world physical cameras are often heavy and cumbersome. They are hand-held by the camera operator or mounted on unstable objects like moving vehicles. Use [Noise properties](CinemachineVirtualCameraNoise.md) to simulate these real-world qualities for cinematic effect. For example, you could add a camera shake when following a running character to immerse the player in the action.
+Real-world physical cameras are often heavy and cumbersome. They are hand-held by the camera operator or mounted on unstable objects like moving vehicles. Use [Noise properties](CinemachineNoiseProfiles.md) to simulate these real-world qualities for cinematic effect. For example, you could add a camera shake when following a running character to immerse the player in the action.
 
 At each frame update, Cinemachine adds noise separately from the movement of the camera to follow a target. Noise does not influence the camera’s position in future frames. This separation ensures that properties like __damping__ behave as expected.

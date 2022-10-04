@@ -15,7 +15,7 @@ Use the reserved name **\*\*ANY CAMERA\*\*** to blend from or to any CmCamera.
 When Cinemachine begins a transition from one CmCamera to another, it will look in this asset for an entry that matches the upcoming transition, and apply that blend definition.  
 
 - If none is found, then the CinemachineBrain's DefaultBlend setting will apply.  
-- If multiple entries in the Custom Blends asset match the upcoming transition, Cinemachine will choose the one with the strongest specificity.  For example, if blending from vcam1 to vcam2, and the custom blends asset contains an entry for _vcam1-to-AnyCamera_, and another entry for _vcam1-to-vcam2_, then the _vcam1-to-vcam2_ entry will apply.
+- If multiple entries in the Custom Blends asset match the upcoming transition, Cinemachine will choose the one with the strongest specificity. For example, if blending from vcam1 to vcam2, and the custom blends asset contains an entry for _vcam1-to-AnyCamera_, and another entry for _vcam1-to-vcam2_, then the _vcam1-to-vcam2_ entry will apply.
 - If multiple entries in the Custom Blends asset match the upcoming transition with equally-strong specificity, then the first one found will apply.
 
 ## Properties:
