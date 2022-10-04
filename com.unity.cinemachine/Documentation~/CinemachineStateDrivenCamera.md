@@ -6,7 +6,7 @@ The __Cinemachine State-Driven Camera__ component activates a child CmCamera whe
 
 The animation target for a State-Driven Camera is a GameObject with an [Animator](https://docs.unity3d.com/Manual/class-Animator.html) component controlled by an [Animator Controller](https://docs.unity3d.com/Manual/class-AnimatorController.html).
 
-Assign normal __Trcking Targets__ each child CmCamera. If a child CmCamera has no __Tracking Target__, State-Driven camera can provide its own as a fallback.
+Assign normal __Tracking Targets__ to each child CmCamera. If a child CmCamera has no __Tracking Target__, a State-Driven camera can provide its own as a fallback.
 
 State-Driven Camera has a list that assigns child CmCameras to animation states. You can define default and custom blends between the State-Driven children.
 
@@ -31,12 +31,12 @@ To create a State-Driven camera:
 | **Property:** | **Function:** |
 |:---|:---|
 | __Solo__ | Toggles whether or not the CmCamera is temporarily live. Use this property to get immediate visual feedback in the [Game view](https://docs.unity3d.com/Manual/GameView.html) to adjust the CmCamera. |
-| __Game View Guides__ | Toggles the visibility of compositional guides in the Game view. These guides are available when Tracking Target specifies a GameObject and the CmCamera has a screen-composition behaviour, such as Position Composer or Rotation Composer. This setting is shared by all CmCameras. |
+| __Game View Guides__ | Toggles the visibility of compositional guides in the Game view. These guides are available when Tracking Target specifies a GameObject and the CmCamera has a screen-composition behavior, such as Position Composer or Rotation Composer. This setting is shared by all CmCameras. |
 | __Save During Play__ | Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay.md).  Use this feature to fine-tune a CmCamera without having to remember which properties to copy and paste. This setting is shared by all CmCameras. |
 | __Priority__ | This is used to control which of several active CmCameras should be live, when not controlled by Timeline.  By default, priority is 0.  Enable this to specify a custom priority value.  A higher value indicates a higher priority.  Negative values are also allowed. Cinemachine Brain chooses the next live CmCamera from all CmCameras that are activated and have the same or higher priority as the current live CmCamera. This property has no effect when using a CmCamera with Timeline. |
 | __Standby Update__ | Controls how often the CmCamera is updated when the CmCamera is not live. |
 | __Default Target__ | If enabled, this target will be used as fallback if child CmCameras don't specify a Tracking Target of their own |
-| __Show Debug Text__ | If enabled, current state information will be displayed in the Game View |
+| __Show Debug Text__ | If enabled, the current state information will be displayed in the Game View. |
 | __Animated Target__ | The GameObject that contains the Animator Controller. The State-Drive camera reacts to the animation state changes from this GameObject. |
 | __Layer__ | The animation layer to observe in the Animated Target. |
 | __Default Blend__ | The blend which is used if you don’t explicitly define a blend between two CmCameras. |
