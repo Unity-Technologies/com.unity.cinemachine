@@ -138,10 +138,10 @@ namespace Cinemachine
                 }
                 
                 var oldCameraPos = state.GetCorrectedPosition();
-                var cameraPosLocal = m_ShapeCache.deltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
+                var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 var currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
-                var bakedSpaceFrustumHeight = currentFrustumHeight * m_ShapeCache.deltaWorldToBaked.lossyScale.x;
+                var bakedSpaceFrustumHeight = currentFrustumHeight * m_ShapeCache.DeltaWorldToBaked.lossyScale.x;
 
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
@@ -149,11 +149,11 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.BakedSolution == null 
                     || !extra.BakedSolution.IsValid())
                 {
-                    extra.BakedSolution = m_ShapeCache.confinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
+                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
 
                 cameraPosLocal = extra.BakedSolution.ConfinePoint(cameraPosLocal);
-                var newCameraPos = m_ShapeCache.deltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
+                var newCameraPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
 
                 // Don't move the camera along its z-axis
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
@@ -217,12 +217,12 @@ namespace Cinemachine
         /// </summary>
         struct ShapeCache
         {
-            public ConfinerOven confinerOven;
-            public List<List<Vector2>> originalPath;  // in baked space, not including offset
+            public ConfinerOven ConfinerOven;
+            public List<List<Vector2>> OriginalPath;  // in baked space, not including offset
 
             // These account for offset and transform change since baking
-            public Matrix4x4 deltaWorldToBaked; 
-            public Matrix4x4 deltaBakedToWorld;
+            public Matrix4x4 DeltaWorldToBaked; 
+            public Matrix4x4 DeltaBakedToWorld;
 
             float m_AspectRatio;
             float m_MaxWindowSize;
@@ -238,12 +238,12 @@ namespace Cinemachine
             {
                 m_AspectRatio = 0;
                 m_MaxWindowSize = -1;
-                deltaBakedToWorld = deltaWorldToBaked = Matrix4x4.identity;
+                DeltaBakedToWorld = DeltaWorldToBaked = Matrix4x4.identity;
 
                 m_BoundingShape2D = null;
-                originalPath = null;
+                OriginalPath = null;
 
-                confinerOven = null;
+                ConfinerOven = null;
             }
             
             /// <summary>
@@ -262,19 +262,19 @@ namespace Cinemachine
                 if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
                 {
                     // Advance confiner baking
-                    if (confinerOven.State == ConfinerOven.BakingState.BAKING)
+                    if (ConfinerOven.State == ConfinerOven.BakingState.BAKING)
                     {
-                        confinerOven.BakeConfiner(maxComputationTimePerFrameInSeconds);
+                        ConfinerOven.BakeConfiner(maxComputationTimePerFrameInSeconds);
 
                         // If no longer baking, then confinerStateChanged
-                        confinerStateChanged = confinerOven.State != ConfinerOven.BakingState.BAKING;
+                        confinerStateChanged = ConfinerOven.State != ConfinerOven.BakingState.BAKING;
                     }
                     
                     // Update in case the polygon's transform changed
                     CalculateDeltaTransformationMatrix();
                     
                     // If delta world to baked scale is uniform, cache is valid.
-                    Vector2 lossyScaleXY = deltaWorldToBaked.lossyScale;
+                    Vector2 lossyScaleXY = DeltaWorldToBaked.lossyScale;
                     if (lossyScaleXY.IsUniform())
                         return true;
                 }
@@ -286,7 +286,7 @@ namespace Cinemachine
                 if (colliderType == typeof(PolygonCollider2D))
                 {
                     var poly = boundingShape2D as PolygonCollider2D;
-                    originalPath = new List<List<Vector2>>();
+                    OriginalPath = new List<List<Vector2>>();
 
                     // Cache the current worldspace shape
                     m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
@@ -296,13 +296,13 @@ namespace Cinemachine
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < path.Length; ++j)
                             dst.Add(m_BakedToWorld.MultiplyPoint3x4(path[j]));
-                        originalPath.Add(dst);
+                        OriginalPath.Add(dst);
                     }
                 }
                 else if (colliderType == typeof(CompositeCollider2D))
                 {
                     var poly = boundingShape2D as CompositeCollider2D;
-                    originalPath = new List<List<Vector2>>();
+                    OriginalPath = new List<List<Vector2>>();
 
                     // Cache the current worldspace shape
                     m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
@@ -313,13 +313,13 @@ namespace Cinemachine
                         List<Vector2> dst = new List<Vector2>();
                         for (int j = 0; j < numPoints; ++j)
                             dst.Add(m_BakedToWorld.MultiplyPoint3x4(path[j]));
-                        originalPath.Add(dst);
+                        OriginalPath.Add(dst);
                     }
                 }
                 else 
                     return false; // input collider is invalid
 
-                confinerOven = new ConfinerOven(originalPath, aspectRatio, maxWindowSize);
+                ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, maxWindowSize);
                 m_AspectRatio = aspectRatio;
                 m_BoundingShape2D = boundingShape2D;
                 m_MaxWindowSize = maxWindowSize;
@@ -333,8 +333,8 @@ namespace Cinemachine
             {
                 return boundingShape2D != null && m_BoundingShape2D != null && 
                        m_BoundingShape2D == boundingShape2D && // same boundingShape?
-                       originalPath != null && // first time?
-                       confinerOven != null && // cache not empty? 
+                       OriginalPath != null && // first time?
+                       ConfinerOven != null && // cache not empty? 
                        Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
                        Mathf.Abs(m_MaxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
             }
@@ -345,8 +345,8 @@ namespace Cinemachine
                 // incorporate the worldspace delta that the confiner has moved since baking
                 var m = Matrix4x4.Translate(-m_BoundingShape2D.offset) * 
                         m_BoundingShape2D.transform.worldToLocalMatrix;
-                deltaWorldToBaked = m_BakedToWorld * m;
-                deltaBakedToWorld = deltaWorldToBaked.inverse;
+                DeltaWorldToBaked = m_BakedToWorld * m;
+                DeltaBakedToWorld = DeltaWorldToBaked.inverse;
             }
         }
 
@@ -357,8 +357,8 @@ namespace Cinemachine
             ref List<List<Vector2>> currentPath,
             out Matrix4x4 pathLocalToWorld)
         {
-            originalPath = m_ShapeCache.originalPath;
-            pathLocalToWorld = m_ShapeCache.deltaBakedToWorld;
+            originalPath = m_ShapeCache.OriginalPath;
+            pathLocalToWorld = m_ShapeCache.DeltaBakedToWorld;
             currentPath.Clear();
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
             for (var i = 0; i < allExtraStates.Count; ++i)
@@ -372,9 +372,9 @@ namespace Cinemachine
             return originalPath != null;
         }
 
-        internal float BakeProgress() => m_ShapeCache.confinerOven != null ? m_ShapeCache.confinerOven.bakeProgress : 0f;
-        internal bool ConfinerOvenTimedOut() => m_ShapeCache.confinerOven != null && 
-            m_ShapeCache.confinerOven.State == ConfinerOven.BakingState.TIMEOUT;
+        internal float BakeProgress() => m_ShapeCache.ConfinerOven != null ? m_ShapeCache.ConfinerOven.bakeProgress : 0f;
+        internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null && 
+            m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.TIMEOUT;
 #endif
 
     }
