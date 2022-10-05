@@ -62,7 +62,7 @@ namespace Cinemachine
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained.  " +
-                 "Can be a 2D polygon or 2D composite collider.")]
+                 "Can be polygon-, box-, or composite collider 2D.")]
         [FormerlySerializedAs("m_BoundingShape2D")]
         public Collider2D BoundingShape2D;
 

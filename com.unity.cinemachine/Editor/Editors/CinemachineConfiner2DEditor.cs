@@ -47,10 +47,11 @@ namespace Cinemachine.Editor
             if (Target.BoundingShape2D == null)
                 EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
             else if (Target.BoundingShape2D.GetType() != typeof(PolygonCollider2D)
-                && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D))
+                && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D)
+                && Target.BoundingShape2D.GetType() != typeof(BoxCollider2D))
             {
                 EditorGUILayout.HelpBox(
-                    "Must be a PolygonCollider2D or CompositeCollider2D.",
+                    "Must be a PolygonCollider2D, BoxCollider2D, or CompositeCollider2D.",
                     MessageType.Warning);
             }
             else if (Target.BoundingShape2D.GetType() == typeof(CompositeCollider2D))
