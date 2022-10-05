@@ -286,44 +286,67 @@ namespace Cinemachine
                 
                 Invalidate();
                 confinerStateChanged = true;
-                
-                Type colliderType = boundingShape2D == null ? null:  boundingShape2D.GetType();
-                if (colliderType == typeof(PolygonCollider2D))
+                switch (boundingShape2D)
                 {
-                    var poly = boundingShape2D as PolygonCollider2D;
-                    m_OriginalPath = new List<List<Vector2>>();
-
-                    // Cache the current worldspace shape
-                    m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
-                    for (int i = 0; i < poly.pathCount; ++i)
+                    case PolygonCollider2D polygonCollider2D:
                     {
-                        Vector2[] path = poly.GetPath(i);
-                        List<Vector2> dst = new List<Vector2>();
-                        for (int j = 0; j < path.Length; ++j)
-                            dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
-                        m_OriginalPath.Add(dst);
+                        m_OriginalPath = new List<List<Vector2>>();
+                        
+                        // Cache the current worldspace shape
+                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
+                        for (int i = 0; i < polygonCollider2D.pathCount; ++i)
+                        {
+                            Vector2[] path = polygonCollider2D.GetPath(i);
+                            List<Vector2> dst = new List<Vector2>();
+                            for (int j = 0; j < path.Length; ++j)
+                                dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
+                            m_OriginalPath.Add(dst);
+                        }
                     }
-                }
-                else if (colliderType == typeof(CompositeCollider2D))
-                {
-                    var poly = boundingShape2D as CompositeCollider2D;
-                    m_OriginalPath = new List<List<Vector2>>();
-
-                    // Cache the current worldspace shape
-                    m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
-                    var path = new Vector2[poly.pointCount];
-                    for (int i = 0; i < poly.pathCount; ++i)
+                        break;
+                    case BoxCollider2D boxCollider2D:
                     {
-                        int numPoints = poly.GetPath(i, path);
-                        List<Vector2> dst = new List<Vector2>();
-                        for (int j = 0; j < numPoints; ++j)
-                            dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
-                        m_OriginalPath.Add(dst);
+                        // Cache the current worldspace shape
+                        Vector2 center = boxCollider2D.transform.TransformPoint(boxCollider2D.offset);
+
+                        var size = boxCollider2D.size;
+                        var halfY = size.y / 2f;
+                        var halfX = size.x / 2f;
+                        var top = center.y + halfY;
+                        var bottom = center.y - halfY;
+                        var left = center.x - halfX;
+                        var right = center.x + halfX;
+         
+                        var topLeft = new Vector3(left, top);
+                        var topRight = new Vector3(right, top);
+                        var btmRight = new Vector3(right, bottom); 
+                        var btmLeft = new Vector3(left, bottom);
+                        
+                        m_OriginalPath = new List<List<Vector2>>
+                        {
+                            new() {topLeft, topRight, btmRight, btmLeft}
+                        };
                     }
-                }
-                else
-                {
-                    return false; // input collider is invalid
+                        break;
+                    case CompositeCollider2D compositeCollider2D:
+                    {
+                        m_OriginalPath = new List<List<Vector2>>();
+
+                        // Cache the current worldspace shape
+                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
+                        var path = new Vector2[compositeCollider2D.pointCount];
+                        for (var i = 0; i < compositeCollider2D.pathCount; ++i)
+                        {
+                            var numPoints = compositeCollider2D.GetPath(i, path);
+                            var dst = new List<Vector2>();
+                            for (var j = 0; j < numPoints; ++j)
+                                dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
+                            m_OriginalPath.Add(dst);
+                        }
+                    }
+                        break;
+                    default:
+                        return false;
                 }
                 
                 m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize);
