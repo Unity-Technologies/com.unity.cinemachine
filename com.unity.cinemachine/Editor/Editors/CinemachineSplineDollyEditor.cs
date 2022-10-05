@@ -7,14 +7,20 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSplineDolly))]
     [CanEditMultipleObjects]
-    sealed class CinemachineSplineDollyEditor : UnityEditor.Editor
+    class CinemachineSplineDollyEditor : UnityEditor.Editor
     {
         CinemachineSplineDolly Target => target as CinemachineSplineDolly;
+
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+
+        void OnEnable() => m_PipelineUtility = new (this);
+        void OnDisable() => m_PipelineUtility.OnDisable();
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
 
             var splineProp = serializedObject.FindProperty(() => Target.Spline);
@@ -39,6 +45,7 @@ namespace Cinemachine.Editor
                     noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
                 noSplineHelp.SetVisible(noSpline);
             }
+            m_PipelineUtility.UpdateState();
             return ux;
         }
 
@@ -48,8 +55,8 @@ namespace Cinemachine.Editor
         {
             if (Selection.activeGameObject != splineRoll.gameObject) return;
             
-            DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor, 
-                CinemachineSplineDollyPrefs.SplineWidth, CinemachineSplineDollyPrefs.SplineResolution);
+            DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor.Value, 
+                CinemachineSplineDollyPrefs.SplineWidth.Value, CinemachineSplineDollyPrefs.SplineResolution.Value);
         }
 
         static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)

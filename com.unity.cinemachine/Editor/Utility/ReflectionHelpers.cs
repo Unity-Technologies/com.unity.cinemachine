@@ -5,12 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using UnityEngine;
 
 namespace Cinemachine.Utility
 {
     /// <summary>An ad-hoc collection of helpers for reflection, used by Cinemachine
     /// or its editor tools in various places</summary>
-    internal static class ReflectionHelpers
+     static class ReflectionHelpers
     {
         /// <summary>Copy the fields from one object to another</summary>
         /// <param name="src">The source object to copy from</param>
@@ -252,6 +253,111 @@ namespace Cinemachine.Utility
                 if (i > 0) sb.Append('.');
             }
             return sb.ToString();
+        }
+
+        public delegate MonoBehaviour ReferenceUpdater(Type expectedType, MonoBehaviour oldValue);
+
+        /// <summary>
+        /// Recursive scan that calls handler for all serializable fields that reference a MonoBehaviour
+        /// </summary>
+        public static bool RecursiveUpdateBehaviourReferences(GameObject go, ReferenceUpdater updater)
+        {
+            bool doneSomething = false;
+            var components = go.GetComponentsInChildren<MonoBehaviour>(true);
+            foreach (var c in components)
+            {
+                var obj = c as object;
+                if (ScanFields(ref obj, updater))
+                {
+                    doneSomething = true;
+                    if (UnityEditor.PrefabUtility.IsPartOfAnyPrefab(go)) 
+                        UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(c);
+                }
+            }
+            return doneSomething;
+
+            // local function
+            static bool ScanFields(ref object obj, ReferenceUpdater updater)
+            {
+                if (obj == null)
+                    return false;
+
+                bool changed = false;
+
+                BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance;
+                if (obj is MonoBehaviour)
+                    bindingFlags |= BindingFlags.NonPublic; // you can inspect non-public fields if thy have the attribute
+
+                var fields = obj.GetType().GetFields(bindingFlags);
+                foreach (var f in fields)
+                {
+                    if (!f.IsPublic && f.GetCustomAttribute(typeof(SerializeField)) == null)
+                        continue;
+
+                    // Process the field
+                    var type = f.FieldType;
+                    if (typeof(MonoBehaviour).IsAssignableFrom(type))
+                    {
+                        var fieldValue = f.GetValue(obj);
+                        var mb = fieldValue as MonoBehaviour;
+                        if (mb != null)
+                        {
+                            var newValue = updater(type, mb);
+                            if (newValue != mb)
+                            {
+                                changed = true;
+                                f.SetValue(obj, newValue);
+                            }
+                        }
+                    }
+
+                    // Handle arrays and nested types
+                    else if (type.IsArray)
+                    {
+                        var fieldValue = f.GetValue(obj) as Array;
+                        if (fieldValue != null)
+                        {
+                            for (int i = 0; i < fieldValue.Length; ++i)
+                            {
+                                var element = fieldValue.GetValue(i);
+                                if (ScanFields(ref element, updater))
+                                {
+                                    fieldValue.SetValue(element, i);
+                                    changed = true;
+                                }
+                            }
+                            if (changed)
+                                f.SetValue(obj, fieldValue);
+                        }
+                    }
+                    else if (typeof(IList).IsAssignableFrom(type))
+                    {
+                        var fieldValue = obj as IList;
+                        if (fieldValue != null)
+                        {
+                            for (int i = 0; i < fieldValue.Count; ++i)
+                            {
+                                var element = fieldValue[i];
+                                if (ScanFields(ref element, updater))
+                                {
+                                    fieldValue[i] = element;
+                                    changed = true;
+                                }
+                            }
+                            if (changed)
+                                f.SetValue(obj, fieldValue);
+                        }
+                    }
+                    else
+                    {
+                        // If the field type has fields of its own, process them
+                        var fieldValue = f.GetValue(obj);
+                        if (ScanFields(ref fieldValue, updater))
+                            changed = true;
+                    }
+                }
+                return changed;
+            }
         }
     }
 }

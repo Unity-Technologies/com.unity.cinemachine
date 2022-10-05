@@ -10,26 +10,12 @@ namespace Cinemachine.Editor
     {
         static CinemachineScreenComposerGuidesGlobalDraggable()
         {
-            CinemachineScreenComposerGuides.sDraggableGameWindowGuides = Enabled;
-        }
-
-        public static string kEnabledKey = "DraggableScreenComposerGuides_Enabled";
-        public static bool Enabled
-        {
-            get => EditorPrefs.GetBool(kEnabledKey, true);
-            set
-            {
-                if (value != CinemachineScreenComposerGuides.sDraggableGameWindowGuides)
-                {
-                    EditorPrefs.SetBool(kEnabledKey, value);
-                    CinemachineScreenComposerGuides.sDraggableGameWindowGuides = value;
-                }
-            }
+            CinemachineScreenComposerGuides.sDraggableGameWindowGuides = CinemachineCorePrefs.DraggableComposerGuides.Value;
         }
     }
     
-    // This is necessary because in 2019.3 we don't get mouse events in the game view in Edit mode
-    internal class GameViewEventCatcher
+    // This is necessary because since 2019.3 we don't get mouse events in the game view in Edit mode
+    class GameViewEventCatcher
     {
         class Dragger
         {
@@ -43,7 +29,7 @@ namespace Cinemachine.Editor
                 if (mActive && mRoot.panel != null)
                 {
                     if (!Application.isPlaying
-                        && CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
+                        && CinemachineCorePrefs.ShowInGameGuides.Value
                         && CinemachineBrain.SoloCamera == null)
                     {
                         InspectorUtility.RepaintGameView();
@@ -104,7 +90,7 @@ namespace Cinemachine.Editor
     /// Use an instance of this class to draw screen composer guides in the game view.
     /// This is an internal class, and is not meant to be called outside of Cinemachine.
     /// </summary>
-    public class CinemachineScreenComposerGuides
+    class CinemachineScreenComposerGuides
     {
         /// <summary>Delegate for getting the hard/soft guide rects</summary>
         /// <returns>The Hard/Soft guide rect</returns>
@@ -231,12 +217,12 @@ namespace Cinemachine.Editor
             Matrix4x4 oldMatrix = GUI.matrix;
             GUI.matrix = Matrix4x4.Translate(cameraRect.min);
             GUIUtility.RotateAroundPivot(lens.Dutch, cameraRect.center);
-            Color hardBarsColour = CinemachineSettings.ComposerSettings.HardBoundsOverlayColour;
-            Color softBarsColour = CinemachineSettings.ComposerSettings.SoftBoundsOverlayColour;
-            float overlayOpacity = CinemachineSettings.ComposerSettings.OverlayOpacity;
+            Color hardBarsColour = CinemachineComposerPrefs.HardBoundsOverlayColour.Value;
+            Color softBarsColour = CinemachineComposerPrefs.SoftBoundsOverlayColour.Value;
+            float overlayOpacity = CinemachineComposerPrefs.OverlayOpacity.Value;
             if (!isLive)
             {
-                softBarsColour = CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                softBarsColour = CinemachineCorePrefs.InactiveGizmoColour.Value;
                 hardBarsColour = Color.Lerp(softBarsColour, Color.black, 0.5f);
                 overlayOpacity /= 2;
             }

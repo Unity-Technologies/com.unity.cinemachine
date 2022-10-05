@@ -7,10 +7,10 @@ using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
 #endif
 
-namespace Cinemachine.PostFX.Editor
+namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePostProcessing))]
-    sealed class CinemachinePostProcessingEditor : Cinemachine.Editor.BaseEditor<CinemachinePostProcessing>
+    class CinemachinePostProcessingEditor : BaseEditor<CinemachinePostProcessing>
     {
 #if !CINEMACHINE_POST_PROCESSING_V2
         public override void OnInspectorGUI()
@@ -36,8 +36,7 @@ namespace Cinemachine.PostFX.Editor
         void OnEnable()
         {
             Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(
-                Cinemachine.Editor.ScriptableObjectUtility.CinemachineRelativeInstallPath
-                     + "/Editor/EditorResources/PostProcessLayer.png");
+                $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/PostProcessLayer.png");
             m_ProfileLabel = new GUIContent("Profile", texture, "A reference to a profile asset");
 
             m_FocusTracking = FindProperty(x => x.FocusTracking);
@@ -83,6 +82,7 @@ namespace Cinemachine.PostFX.Editor
                 MessageType.Warning);
 #endif
             BeginInspector();
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
             DrawRemainingPropertiesInInspector();
 
             var focusMode = (CinemachinePostProcessing.FocusTrackingMode)m_FocusTracking.intValue;

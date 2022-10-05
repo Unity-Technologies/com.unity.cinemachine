@@ -12,7 +12,7 @@ namespace Cinemachine
     /// the final position of the virtual camera. It will confine the virtual
     /// camera's position to the volume specified in the Bounding Volume field.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]

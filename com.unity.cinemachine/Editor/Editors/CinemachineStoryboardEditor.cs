@@ -9,28 +9,13 @@ namespace Cinemachine.Editor
     {
         static CinemachineStoryboardMute()
         {
-            CinemachineStoryboard.s_StoryboardGlobalMute = Enabled;
-        }
-
-        public static string kEnabledKey = "StoryboardMute_Enabled";
-        public static bool Enabled
-        {
-            get { return EditorPrefs.GetBool(kEnabledKey, false); }
-            set
-            {
-                if (value != Enabled)
-                {
-                    EditorPrefs.SetBool(kEnabledKey, value);
-                    CinemachineStoryboard.s_StoryboardGlobalMute = value;
-                    InspectorUtility.RepaintGameView();
-                }
-            }
+            CinemachineStoryboard.s_StoryboardGlobalMute = CinemachineCorePrefs.StoryboardGlobalMute.Value;
         }
     }
 
     [CustomEditor(typeof(CinemachineStoryboard))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
+    class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
     {
         const float k_FastWaveformUpdateInterval = 0.1f;
         float m_LastSplitScreenEventTime = 0;
@@ -48,12 +33,10 @@ namespace Cinemachine.Editor
                 WaveformWindow.SetDefaultUpdateInterval();
 
             BeginInspector();
-            CinemachineStoryboardMute.Enabled
-                = EditorGUILayout.Toggle(
-                    new GUIContent(
-                        "Storyboard Global Mute",
-                        "If checked, all storyboards are globally muted."),
-                    CinemachineStoryboardMute.Enabled);
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+
+            CinemachineCorePrefs.StoryboardGlobalMute.Value = EditorGUILayout.Toggle(
+                CinemachineCorePrefs.s_StoryboardGlobalMuteLabel, CinemachineCorePrefs.StoryboardGlobalMute.Value);
 
             Rect rect = EditorGUILayout.GetControlRect(true);
             EditorGUI.BeginChangeCheck();

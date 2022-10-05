@@ -2,18 +2,18 @@
 
 Both the __Pixel Perfect Camera__ and Cinemachine modify the Camera’s orthographic size. Using these two systems together in a single Scene would cause them to fight for control over the Camera and produce unwanted results. The __Cinemachine Pixel Perfect__ extension solves this incompatibility.
 
-__Cinemachine Pixel Perfect__ is an [extension](CinemachineVirtualCameraExtensions.md) for the __Cinemachine Virtual Camera__ that alters the orthographic size of the virtual camera. The extension detects the presence of the Pixel Perfect Camera component, and uses the component settings to calculate for the correct orthographic size of the virtual camera that best retains the Sprites in a pixel-perfect resolution.
+__Cinemachine Pixel Perfect__ is an [extension](CinemachineVirtualCameraExtensions.md) for the __CmCamera__ that alters the orthographic size of the CmCamera. The extension detects the presence of the Pixel Perfect Camera component, and uses the component settings to calculate for the correct orthographic size of the CmCamera that best retains the Sprites in a pixel-perfect resolution.
 
-To add this extension to your virtual cameras, use the __Add Extension__ dropdown menu on the Cinemachine Virtual Camera Inspector window. Add this extension to each virtual camera in your Project.
+To add this extension to your CmCameras, use the __Add Extension__ dropdown menu on the CmCamera Inspector window. Add this extension to each CmCamera in your Project.
 
 ![](images/2Dpixelperfect_ex.png)
 
-For each virtual camera attached with this extension, the Pixel Perfect Camera component then calculates a pixel-perfect orthographic size that best matches the original size of the virtual camera during __Play Mode __ or when __Run In Edit Mode__ is enabled. This is done to match the original framing of each virtual camera as close as possible when the pixel-perfect calculations are implemented.
+For each CmCamera attached with this extension, the Pixel Perfect Camera component then calculates a pixel-perfect orthographic size that best matches the original size of the CmCamera during __Play Mode __ or when __Run In Edit Mode__ is enabled. This is done to match the original framing of each CmCamera as close as possible when the pixel-perfect calculations are implemented.
 
-When the [Cinemachine Brain](CinemachineBrainProperties.md) component [blends](CinemachineBlending.md) between multiple virtual cameras, the rendered image is temporarily not pixel-perfect during the transition between cameras. The image becomes pixel-perfect once the view fully transitions to a single virtual camera.
+When the [Cinemachine Brain](CinemachineBrain.md) component [blends](CinemachineBlending.md) between multiple CmCameras, the rendered image is temporarily not pixel-perfect during the transition between cameras. The image becomes pixel-perfect once the view fully transitions to a single CmCamera.
 
 The following are the current limitations of the extension:
 
-- When a virtual camera with the Pixel Perfect extension is set to follow a [Target Group](CinemachineTargetGroup.md), there may be visible choppiness when the virtual camera is positioned with the Framing Transposer component. 
-- If the __Upscale Render Texture__ option is enabled on the Pixel Perfect Camera, there are less possible pixel-perfect resolutions that match the original orthographic size of the virtual cameras. This may cause the framing of the virtual cameras to be off by quite a large margin after the pixel-perfect calculations.
+- When a CmCamera with the Pixel Perfect extension is set to follow a [Target Group](CinemachineTargetGroup.md), there may be visible choppiness when the CmCamera is positioned with the Framing Transposer component. 
+- If the __Upscale Render Texture__ option is enabled on the Pixel Perfect Camera, there are less possible pixel-perfect resolutions that match the original orthographic size of the CmCameras. This may cause the framing of the CmCameras to be off by quite a large margin after the pixel-perfect calculations.
 

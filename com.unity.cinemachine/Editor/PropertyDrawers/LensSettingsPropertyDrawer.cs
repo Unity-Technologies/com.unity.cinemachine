@@ -5,29 +5,22 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
-    #if CINEMACHINE_HDRP_7_3_1
-        using UnityEngine.Rendering.HighDefinition;
-    #else
-        #if CINEMACHINE_LWRP_7_3_1
-            using UnityEngine.Rendering.Universal;
-        #else
-            using UnityEngine.Experimental.Rendering.HDPipeline;
-        #endif
-    #endif
+#if CINEMACHINE_HDRP
+    using UnityEngine.Rendering.HighDefinition;
+#elif CINEMACHINE_LWRP_7_3_1
+    using UnityEngine.Rendering.Universal;
 #endif
-
 
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(LensSettingsHideModeOverridePropertyAttribute))]
-    internal class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
+    class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
     {
         public LensSettingsHideModeOverridePropertyDrawer() => HideModeOverride = true;
     }
 
     [CustomPropertyDrawer(typeof(LensSettings))]
-    internal class LensSettingsPropertyDrawer : PropertyDrawer
+    class LensSettingsPropertyDrawer : PropertyDrawer
     {
         static LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 
@@ -402,7 +395,7 @@ namespace Cinemachine.Editor
                     if (presets == null)
                         return -1;
 #if CINEMACHINE_HDRP
-                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(p).y);
+                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(property).y);
                     var aperture = property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue;
                     var iso = property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue;
                     var shutterSpeed = property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue;

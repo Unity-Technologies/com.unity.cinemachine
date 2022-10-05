@@ -53,7 +53,7 @@ namespace Cinemachine
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
     /// </para>
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner 2D")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]

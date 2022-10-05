@@ -1,83 +1,39 @@
 using UnityEngine;
 using UnityEditor;
 
-using Cinemachine.Editor;
-
-namespace Cinemachine
+namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    internal static class CinemachineColliderPrefs
+    static class CinemachineColliderPrefs
     {
-        private static bool SettingsFoldedOut
+        static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Collider_Foldout", false);
+        public static CinemachineSettings.ColorItem CameraSphereColor = new("CNMCN_Collider_Camera_Path_Colour", Color.grey);
+        public static CinemachineSettings.ColorItem CameraPathColor = new("CNMCN_Collider_Camera_Sphere_Colour", Color.yellow);
+
+        static CinemachineColliderPrefs() => CinemachineSettings.AdditionalCategories += DrawColliderSettings;
+
+        static void DrawColliderSettings()
         {
-            get { return EditorPrefs.GetBool(kColliderSettingsFoldoutKey, false); }
-            set
-            {
-                if (value != SettingsFoldedOut)
-                {
-                    EditorPrefs.SetBool(kColliderSettingsFoldoutKey, value);
-                }
-            }
-        }
-
-        public static Color FeelerHitColor
-        {
-            get
-            {
-                return CinemachineSettings.UnpackColour(EditorPrefs.GetString(kFeelerHitColourKey, CinemachineSettings.PackColor(Color.yellow)));
-            }
-
-            set
-            {
-                if (value != FeelerHitColor)
-                {
-                    EditorPrefs.SetString(kFeelerHitColourKey, CinemachineSettings.PackColor(value));
-                }
-            }
-        }
-
-        public static Color FeelerColor
-        {
-            get
-            {
-                return CinemachineSettings.UnpackColour(EditorPrefs.GetString(kFeelerColourKey, CinemachineSettings.PackColor(Color.gray)));
-            }
-
-            set
-            {
-                if (value != FeelerColor)
-                {
-                    EditorPrefs.SetString(kFeelerColourKey, CinemachineSettings.PackColor(value));
-                }
-            }
-        }
-
-        private const string kColliderSettingsFoldoutKey  = "CNMCN_Collider_Foldout";
-        private const string kFeelerHitColourKey          = "CNMCN_Collider_FeelerHit_Colour";
-        private const string kFeelerColourKey             = "CNMCN_Collider_Feeler_Colour";
-
-        static CinemachineColliderPrefs()
-        {
-            Cinemachine.Editor.CinemachineSettings.AdditionalCategories += DrawColliderSettings;
-        }
-
-        private static void DrawColliderSettings()
-        {
-            SettingsFoldedOut = EditorGUILayout.Foldout(SettingsFoldedOut, "Collider Settings", true);
-            if (SettingsFoldedOut)
+            s_SettingsFoldedOut.Value = EditorGUILayout.Foldout(s_SettingsFoldedOut.Value, "Collider Settings", true);
+            if (s_SettingsFoldedOut.Value)
             {
                 EditorGUI.indentLevel++;
-
                 EditorGUI.BeginChangeCheck();
 
-                FeelerHitColor   = EditorGUILayout.ColorField("Feeler Hit", FeelerHitColor);
-                FeelerColor = EditorGUILayout.ColorField("Feeler", FeelerColor);
+                EditorGUILayout.BeginHorizontal();
+                CameraSphereColor.Value = EditorGUILayout.ColorField("Camera Sphere Color", CameraSphereColor.Value);
+                if (GUILayout.Button("Reset"))
+                    CameraSphereColor.Reset();
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                CameraPathColor.Value = EditorGUILayout.ColorField("Camera Path Color", CameraPathColor.Value);
+                if (GUILayout.Button("Reset"))
+                    CameraPathColor.Reset();
+                EditorGUILayout.EndHorizontal();
 
                 if (EditorGUI.EndChangeCheck())
-                {
                     UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-                }
-
                 EditorGUI.indentLevel--;
             }
         }

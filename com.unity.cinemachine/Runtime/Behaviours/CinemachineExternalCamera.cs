@@ -10,7 +10,7 @@ namespace Cinemachine
     /// Just add it as a component alongside an existing Unity Camera component.
     /// </summary>
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
-    [AddComponentMenu("Cinemachine/CinemachineExternalCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine External Camera")]
     [ExecuteAlways]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
@@ -41,11 +41,12 @@ namespace Cinemachine
             get => LookAtTarget;
             set => LookAtTarget = value;
         }
-
+        
         /// <summary>This vcam defines no targets</summary>
-        override public Transform Follow { get; set; }
+        public override Transform Follow { get; set; }
 
         /// <summary>Returns the TransitionParams settings</summary>
+        /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => default;
 
         /// <summary>Internal use only.  Do not call this method</summary>

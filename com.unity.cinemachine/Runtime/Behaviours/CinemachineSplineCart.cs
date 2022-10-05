@@ -10,6 +10,7 @@ namespace Cinemachine
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Spline Cart")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineCart.html")]
     public class CinemachineSplineCart : MonoBehaviour
     {

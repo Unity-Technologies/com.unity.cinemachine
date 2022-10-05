@@ -1,5 +1,5 @@
-﻿#if CINEMACHINE_UGUI
-using UnityEngine;
+﻿using UnityEngine;
+#if CINEMACHINE_UGUI
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
@@ -10,7 +10,7 @@ namespace Cinemachine
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Storyboard")]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineStoryboard.html")]

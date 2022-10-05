@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(AutoDollySelectorAttribute))]
-    sealed class SplineAutoDollyPropertyDrawer : PropertyDrawer
+    class SplineAutoDollyPropertyDrawer : PropertyDrawer
     {
         readonly float vSpace = EditorGUIUtility.standardVerticalSpacing;
 

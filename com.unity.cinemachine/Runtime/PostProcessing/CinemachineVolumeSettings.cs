@@ -4,18 +4,14 @@ using UnityEngine.Serialization;
 #if CINEMACHINE_HDRP
     using System.Collections.Generic;
     using UnityEngine.Rendering;
-    #if CINEMACHINE_HDRP_7_3_1
-        using UnityEngine.Rendering.HighDefinition;
-    #else
-        using UnityEngine.Experimental.Rendering.HDPipeline;
-    #endif
+    using UnityEngine.Rendering.HighDefinition;
 #elif CINEMACHINE_LWRP_7_3_1
     using System.Collections.Generic;
     using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
     // Workaround for Unity scripting bug
@@ -43,7 +39,7 @@ namespace Cinemachine.PostFX
     /// DepthOfField effect that is enabled.
     /// </summary>
     [ExecuteAlways]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Volume Settings")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVolumeSettings.html")]
@@ -207,7 +203,7 @@ namespace Cinemachine.PostFX
                             }
                             focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
-#if CINEMACHINE_HDRP_7_3_1
+#if CINEMACHINE_HDRP
                             state.Lens.FocusDistance = focusDistance;
 #endif
                             profile.isDirty = true;
@@ -223,7 +219,7 @@ namespace Cinemachine.PostFX
         {
             //Debug.Log($"Camera cut to {brain.ActiveVirtualCamera.Name}");
 
-#if CINEMACHINE_HDRP_7_3_1
+#if CINEMACHINE_HDRP
             // Reset temporal effects
             var cam = brain.OutputCamera;
             if (cam != null)

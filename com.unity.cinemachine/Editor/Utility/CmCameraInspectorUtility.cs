@@ -344,7 +344,7 @@ namespace Cinemachine.Editor
         /// </summary>
         public void AddSaveDuringPlayToggle(VisualElement ux)
         {
-            var helpBox = new HelpBox("Virtual Camera settings changes made during Play Mode will be "
+            var helpBox = new HelpBox("CmCamera settings changes made during Play Mode will be "
                     + "propagated back to the scene when Play Mode is exited.", 
                 HelpBoxMessageType.Info);
             helpBox.style.display = (SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying) 
@@ -354,7 +354,7 @@ namespace Cinemachine.Editor
 
             toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
 
-            toggle.tooltip = "If checked, Virtual Camera settings changes made during Play Mode "
+            toggle.tooltip = "If checked, CmCamera settings changes made during Play Mode "
                 + "will be propagated back to the scene when Play Mode is exited.";
             toggle.value = SaveDuringPlay.SaveDuringPlay.Enabled;
             toggle.RegisterValueChangedCallback((evt) => 
@@ -376,8 +376,8 @@ namespace Cinemachine.Editor
             toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
             toggle.tooltip = "Enable the display of overlays in the Game window.  "
                 + "You can adjust colours and opacity in Cinemachine Preferences.";
-            toggle.value = CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides;
-            toggle.RegisterValueChangedCallback((evt) => CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides = evt.newValue);
+            toggle.value = CinemachineCorePrefs.ShowInGameGuides.Value;
+            toggle.RegisterValueChangedCallback((evt) => CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue);
             ux.Add(toggle);
         }
 

@@ -9,7 +9,7 @@ using System.Linq;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(InputAxisController))]
-    internal class InputAxisControllerEditor : UnityEditor.Editor
+    class InputAxisControllerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
@@ -93,7 +93,9 @@ namespace Cinemachine.Editor
                 InputAxisController.SetControlDefaults 
                     = (in IInputAxisSource.AxisDescriptor axis, ref InputAxisController.Controller controller) => 
                 {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var actionName = "";
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
                     var inputName = "";
                     var invertY = false;
                     controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
@@ -116,11 +118,13 @@ namespace Cinemachine.Editor
                         actionName = "Player/Fire";
                         inputName = "Fire";
                     }
+#if false
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
                     {
                         //actionName = "UI/ScrollWheel"; // best we can do - actually it doean't work because it'a Vector2 type
                         inputName = "Mouse ScrollWheel";
                     }
+#endif
                     if (axis.Name.Contains("Jump"))
                     {
                         actionName = "UI/RightClick"; // best we can do

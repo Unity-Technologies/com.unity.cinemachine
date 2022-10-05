@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(InputAxis))]
-    internal sealed class InputAxisWithNamePropertyDrawer : PropertyDrawer
+    class InputAxisWithNamePropertyDrawer : PropertyDrawer
     {
         InputAxis def = new InputAxis(); // to access name strings
 

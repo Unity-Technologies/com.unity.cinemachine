@@ -8,7 +8,7 @@ using System;
 namespace Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLookModifier))]
-    internal sealed class CinemachineFreeLookModifierEditor : UnityEditor.Editor
+    class CinemachineFreeLookModifierEditor : UnityEditor.Editor
     {
         CinemachineFreeLookModifier Target => target as CinemachineFreeLookModifier;
 

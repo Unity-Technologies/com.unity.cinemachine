@@ -8,10 +8,9 @@ namespace Cinemachine
     /// This is a deprecated component.  Use SplineContainer instead.
     /// </summary>
     [Obsolete("CinemachinePath has been deprecated. Use SplineContainer instead")]
-    [AddComponentMenu("Cinemachine/CinemachinePath")]
+    [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachinePath.html")]
     public class CinemachinePath : CinemachinePathBase
     {
         /// <summary>A waypoint along the path</summary>

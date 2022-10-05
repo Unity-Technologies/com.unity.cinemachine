@@ -50,6 +50,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/CmCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CmCamera.html")]
     public sealed class CmCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>
@@ -102,6 +103,7 @@ namespace Cinemachine
         }
 
         /// <summary>Returns the TransitionParams settings</summary>
+        /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => Transitions;
 
         /// <summary>This is called to notify the CM camera that a target got warped,

@@ -15,9 +15,10 @@ namespace Cinemachine
     /// a large family of different noises using the same profile.
     /// </summary>
     /// <seealso cref="NoiseSettings"/>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Noise/Cinemachine Basic Multi Channel Perlin")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Noise)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBasicMultiChannelPerlin.html")]
     public class CinemachineBasicMultiChannelPerlin 
         : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableNoise
     {

@@ -7,16 +7,10 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
-#if CINEMACHINE_HDRP_7_3_1
+#if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
-#else
-#if CINEMACHINE_LWRP_7_3_1
-        using UnityEngine.Rendering.Universal;
-#else
-        using UnityEngine.Experimental.Rendering.HDPipeline;
-#endif
-#endif
+#elif CINEMACHINE_LWRP_7_3_1
+    using UnityEngine.Rendering.Universal;
 #endif
 
 namespace Cinemachine
@@ -80,9 +74,9 @@ namespace Cinemachine
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    [AddComponentMenu("Cinemachine/CinemachineBrain")]
+    [AddComponentMenu("Cinemachine/Cinemachine Brain")]
     [SaveDuringPlay]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrain.html")]
     public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack
     {
         /// <summary>
@@ -1012,6 +1006,7 @@ namespace Cinemachine
                 Camera cam = OutputCamera;
                 if (cam != null)
                 {
+                    cam.ResetProjectionMatrix();
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;

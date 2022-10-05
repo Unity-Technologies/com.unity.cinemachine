@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !CINEMACHINE_POST_PROCESSING_V2
     /// <summary>
@@ -46,7 +46,7 @@ namespace Cinemachine.PostFX
     /// DepthOfField effect that is enabled.
     /// </summary>
     [ExecuteAlways]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Post Processing")] // Hide in menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]

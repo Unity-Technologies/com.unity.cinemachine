@@ -58,7 +58,7 @@ namespace Cinemachine
     /// The bounding box is calculated by taking the member positions, weight,
     /// and radii into account.
     /// </summary>
-    [AddComponentMenu("Cinemachine/CinemachineTargetGroup")]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Target Group")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -175,6 +175,7 @@ namespace Cinemachine
 
         void ISerializationCallbackReceiver.OnBeforeSerialize() {}
 
+        /// <summary>Obsolete Targets</summary>
         [Obsolete("m_Targets is obsolete.  Please use Targets instead")]
         public Target[] m_Targets
         {

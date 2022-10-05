@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(NoiseSettingsPropertyAttribute))]
-    internal sealed class NoiseSettingsPropertyDrawer : PropertyDrawer
+    class NoiseSettingsPropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {

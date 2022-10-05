@@ -10,14 +10,15 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         CinemachineScreenComposerGuides m_ScreenGuideEditor;
         GameViewEventCatcher m_GameViewEventCatcher;
-        VisualElement m_NoTargetHelp;
 
         CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
         protected virtual void OnEnable()
         {
+            m_PipelineUtility = new (this);
             m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
             m_ScreenGuideEditor.GetHardGuide = () => Target.HardGuideRect;
             m_ScreenGuideEditor.GetSoftGuide = () => Target.SoftGuideRect;
@@ -30,34 +31,30 @@ namespace Cinemachine.Editor
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
-            if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
             
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
-
-            EditorApplication.update += UpdateVisibility;
         }
 
         protected virtual void OnDisable()
         {
+            m_PipelineUtility.OnDisable();
             m_GameViewEventCatcher.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
-            if (CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides)
+            if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-
-            EditorApplication.update -= UpdateVisibility;
         }
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_NoTargetHelp = ux.AddChild(new HelpBox("A Tracking target is required.", HelpBoxMessageType.Warning));
-
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
@@ -67,23 +64,14 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UnlimitedSoftZone)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
 
+            m_PipelineUtility.UpdateState();
             return ux;
-        }
-
-        void UpdateVisibility()
-        {
-            if (Target == null || m_NoTargetHelp == null)
-                return;
-            var noTarget = false;
-            for (var i = 0; i < targets.Length; ++i)
-                noTarget |= targets[i] != null && (targets[i] as CinemachinePositionComposer).FollowTarget == null;
-            m_NoTargetHelp.SetVisible(noTarget);
         }
 
         protected virtual void OnGUI()
         {
             // Draw the camera guides
-            if (Target == null || !CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides || !Target.isActiveAndEnabled)
+            if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
@@ -103,16 +91,16 @@ namespace Cinemachine.Editor
                 {
                     targetScreenPosition.y = Screen.height - targetScreenPosition.y;
 
-                    GUI.color = CinemachineSettings.ComposerSettings.TargetColour;
+                    GUI.color = CinemachineComposerPrefs.TargetColour.Value;
                     Rect r = new Rect(targetScreenPosition, Vector2.zero);
-                    float size = (CinemachineSettings.ComposerSettings.TargetSize
+                    float size = (CinemachineComposerPrefs.TargetSize.Value
                         + CinemachineScreenComposerGuides.kGuideBarWidthPx) / 2;
                     GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
                     size -= CinemachineScreenComposerGuides.kGuideBarWidthPx;
                     if (size > 0)
                     {
                         Vector4 overlayOpacityScalar
-                            = new Vector4(1f, 1f, 1f, CinemachineSettings.ComposerSettings.OverlayOpacity);
+                            = new Vector4(1f, 1f, 1f, CinemachineComposerPrefs.OverlayOpacity.Value);
                         GUI.color = Color.black * overlayOpacityScalar;
                         GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
                     }

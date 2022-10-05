@@ -17,6 +17,8 @@ namespace Cinemachine
     /// </summary>
     [ExecuteAlways]
     [SaveDuringPlay]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Input Axis Controller")]
+    [HelpURL(Documentation.BaseURL + "manual/InputAxisController.html")]
     public class InputAxisController : MonoBehaviour
     {
         /// <summary>
@@ -213,14 +215,19 @@ namespace Cinemachine
             {
                 var c = Controllers[i];
 #if ENABLE_LEGACY_INPUT_MANAGER
+                float legacyInputValue = 0;
                 if (!string.IsNullOrEmpty(c.LegacyInput) && GetInputAxisValue != null)
-                    c.Control.InputValue = GetInputAxisValue(c.LegacyInput) * c.LegacyGain;
+                    legacyInputValue = c.Control.InputValue = GetInputAxisValue(c.LegacyInput) * c.LegacyGain;
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (c.InputAction != null && c.InputAction.action != null)
                 {
                     var axis = i < m_Axes.Count ? m_Axes[i].AxisIndex : 0;
-                    c.Control.InputValue = ReadInputAction(c, axis) * c.Gain;
+                    var inputValue = ReadInputAction(c, axis) * c.Gain;
+#if ENABLE_LEGACY_INPUT_MANAGER
+                    if (legacyInputValue == 0 || inputValue != 0)
+#endif
+                        c.Control.InputValue = inputValue;
                 }
 #endif
                 c.Driver.ProcessInput(deltaTime, m_Axes[i].Axis, ref c.Control);

@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
+#if CINEMACHINE_PHYSICS
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS
     [CustomEditor(typeof(CinemachineCollider))]
     [CanEditMultipleObjects]
-    sealed class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
+    class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -33,12 +33,10 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-
-            if (Target.AvoidObstacles && Target.VirtualCamera != null
-                    && !Target.VirtualCamera.State.HasLookAt())
-                EditorGUILayout.HelpBox(
-                    "Avoid Obstacles requires a LookAt target.",
-                    MessageType.Warning);
+            
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this, Target.AvoidObstacles 
+                ? CmPipelineComponentInspectorUtility.RequiredTargets.LookAt 
+                : CmPipelineComponentInspectorUtility.RequiredTargets.None);
 
             DrawRemainingPropertiesInInspector();
         }
@@ -53,7 +51,7 @@ namespace Cinemachine.Editor
                 Vector3 pos = vcam.State.GetFinalPosition();
                 if (collider.AvoidObstacles && vcam.State.HasLookAt())
                 {
-                    Gizmos.color = CinemachineColliderPrefs.FeelerColor;
+                    Gizmos.color = CinemachineColliderPrefs.CameraSphereColor.Value;
                     if (collider.CameraRadius > 0)
                         Gizmos.DrawWireSphere(pos, collider.CameraRadius);
 
@@ -65,7 +63,7 @@ namespace Cinemachine.Editor
                     List<List<Vector3>> debugPaths = collider.DebugPaths;
                     foreach (var path in debugPaths)
                     {
-                        Gizmos.color = CinemachineColliderPrefs.FeelerHitColor;
+                        Gizmos.color = CinemachineColliderPrefs.CameraPathColor.Value;
                         Vector3 p0 = vcam.State.ReferenceLookAt;
                         foreach (var p in path)
                         {
@@ -79,5 +77,5 @@ namespace Cinemachine.Editor
             }
         }
     }
-#endif
 }
+#endif

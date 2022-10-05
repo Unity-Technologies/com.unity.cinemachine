@@ -10,7 +10,7 @@ namespace Cinemachine
     /// settings from that Pixel Perfect Camera to correct the orthographic size so that pixel art
     /// sprites would appear pixel perfect when the virtual camera becomes live.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Pixel Perfect")] // Hide in menu
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePixelPerfect.html")]

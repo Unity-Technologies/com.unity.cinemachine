@@ -1,5 +1,5 @@
 # 3rd Person Follow
-Use Cinemachine Virtual Camera’s **3rd Person Follow** to keep the camera at a constant position and distance relative to a Follow target (subject to damping controls), tracking the target’s movement and rotation.
+Use Cinemachine CmCamera’s **3rd Person Follow** to keep the camera at a constant position and distance relative to a Tracking Target (subject to damping controls), tracking the target’s movement and rotation.
 
 The 3rd Person Follow’s mini-rig setup defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a 3rd-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.
 
@@ -35,24 +35,24 @@ Which results in this Game view:
 
 The rig and the camera position are defined by three pivot points (the origin, the shoulder, and the hand) as well as by a camera that is positioned behind the hand.
 
-- The **origin (A)**: The origin is the Follow target's position. When the target pivots horizontally, the rig rotates with it around this point.
-- The **shoulder (B)**: By default, it is offset to one side, to create an over-the-shoulder follow position. Vertical rotations of the Follow target are transferred here, so the rig rotates horizontally about the origin, and vertically about the shoulder.
-- The **hand (C)**: Vertically offset in relation to the shoulder. The arm length affects the follow target's screen position when the camera rotates vertically. By default, it is offset from the shoulder, so that vertical rotations will keep the character nicely positioned on the screen. For 1st-person cameras, this can be set to 0.
-- The **camera (D)**: The camera's rotation will always be parallel to the Follow target's rotation, but positioned at Camera Distance behind the hand. The camera always looks directly at the hand. 
+- The **origin (A)**: The origin is the tracking target's position. When the target pivots horizontally, the rig rotates with it around this point.
+- The **shoulder (B)**: By default, it is offset to one side, to create an over-the-shoulder follow position. Vertical rotations of the tracking target are transferred here, so the rig rotates horizontally about the origin, and vertically about the shoulder.
+- The **hand (C)**: Vertically offset in relation to the shoulder. The arm length affects the tracking target's screen position when the camera rotates vertically. By default, it is offset from the shoulder, so that vertical rotations will keep the character nicely positioned on the screen. For 1st-person cameras, this can be set to 0.
+- The **camera (D)**: The camera's rotation will always be parallel to the tracking target's rotation, but positioned at Camera Distance behind the hand. The camera always looks directly at the hand. 
 
 Note the rotations on the rig;</br>
 
-- **B rotates horizontally around A**. Using A as the origin, B's position is calculated from the Shoulder Offset's X, Y, and Z values .</br>
+- **B rotates horizontally around A**. Using A as the origin, B's position is calculated from the Shoulder Offset's X, Y, and Z values.</br>
    ![](images/CMShoulderOffsetexample.png)
 
-- **C rotates vertically around B**. C's position is calculated from the Vertical Arm Length from B. Positive values result with C above B, negative values result with C below B.</br>
+- **C rotates vertically around B**. C's position is calculated from the Vertical Arm Length from B. Positive values result with C above B, and negative values result with C below B.</br>
    ![](images/CMVerticalDistanceexample.png) 
 
 
 
 ## Controlling the Camera
 
-There is no direct input control for the camera. You must have a controller script that moves and rotates the Follow target; the camera will position and orient itself relative to that. When the Follow target is the character itself, the camera’s rotation always matches the character’s rotation. When the Follow target is an invisible GameObject that can rotate independently of the character, the camera will then be able to rotate around the character.
+There is no direct input control for the camera. You must have a controller script that moves and rotates the tracking target; the camera will position and orient itself relative to that. When the tracking target is the character itself, the camera’s rotation always matches the character’s rotation. When the tracking target is an invisible GameObject that can rotate independently of the character, the camera will then be able to rotate around the character.
 
 For an example, see the **AimingRig** sample scene.
 
@@ -70,8 +70,8 @@ When combined with the [Cinemachine3rdPersonAim](Cinemachine3rdPersonAim.md) ext
 |**Property:**|**Function:**|
 |:---|:---|
 | Damping                 | The responsiveness of the camera in tracking the target. Each axis can have its own setting. The value is the approximate time it takes the camera to catch up to the target's new position. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. |
-| Shoulder Offset         | Position of the shoulder pivot relative to the follow target origin. This offset is in target-local space. |
-| Vertical Arm Length     | Vertical offset of the hand in relation to the shoulder. Arm length affects the follow target's screen position when the camera rotates vertically. |
+| Shoulder Offset         | Position of the shoulder pivot relative to the tracking target origin. This offset is in target-local space. |
+| Vertical Arm Length     | Vertical offset of the hand in relation to the shoulder. Arm length affects the tracking target's screen position when the camera rotates vertically. |
 | Camera Side             | Specifies which shoulder the camera is on (left, right, or somewhere in-between). |
 | Camera Distance         | Specifies the distance from the hand to the camera.                |
 | Camera Collision Filter | Specifies which layers will be included or excluded from collision resolution. |

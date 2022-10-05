@@ -12,9 +12,10 @@ namespace Cinemachine
     ///
     /// The position on the sphere and the radius of the sphere can be controlled by user input.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Orbital Follow")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineOrbitalFollow.html")]
     public class CinemachineOrbitalFollow 
         : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
@@ -218,24 +219,123 @@ namespace Cinemachine
         {
             base.ForceCameraPosition(pos, rot);
             m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
-
             m_ResetHandler?.Invoke();
-
-            var targetPos = FollowTargetPosition;
-            var dir = pos - targetPos;
-            var distance = dir.magnitude;
-            if (distance > 0.001f)
+            if (FollowTarget != null)
             {
-                // GML TODO: handle ThreeRing mode
-                var up = VirtualCamera.State.ReferenceUp;
-                var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
-                dir /= distance;
-                var localDir = orient * dir;
-                var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-                VerticalAxis.Value = TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x;
-                HorizontalAxis.Value = r.y;
+                var dir = pos - FollowTargetPosition;
+                var distance = dir.magnitude;
+                if (distance > 0.001f)
+                {
+                    dir /= distance;
+                    if (OrbitStyle == OrbitStyles.ThreeRing)
+                        InferAxesFromPosition_ThreeRing(dir, distance);
+                    else
+                        InferAxesFromPosition_Sphere(dir, distance);
+                }
             }
-            RadialAxis.Value = distance / Radius;
+        }
+
+        void InferAxesFromPosition_Sphere(Vector3 dir, float distance)
+        {
+            var up = VirtualCamera.State.ReferenceUp;
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+            var localDir = Quaternion.Inverse(orient) * dir;
+            var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
+            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x);
+            HorizontalAxis.Value = HorizontalAxis.ClampValue(r.y);
+            RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
+        }
+
+        void InferAxesFromPosition_ThreeRing(Vector3 dir, float distance)
+        {
+            var up = VirtualCamera.State.ReferenceUp;
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+            HorizontalAxis.Value = GetHorizontalAxis();
+            VerticalAxis.Value = GetVerticalAxisClosestValue(out var splinePoint);
+            RadialAxis.Value = RadialAxis.ClampValue(distance / splinePoint.magnitude);
+            
+            // local functions
+            float GetHorizontalAxis()
+            {
+                var fwd = (orient * Vector3.back).ProjectOntoPlane(up);
+                if (!fwd.AlmostZero())
+                    return UnityVectorExtensions.SignedAngle(fwd, dir.ProjectOntoPlane(up), up);
+                return HorizontalAxis.Value; // Can't calculate, stay conservative
+            }
+
+            float GetVerticalAxisClosestValue(out Vector3 splinePoint)
+            {
+                // Rotate the camera pos to the back
+                var q = UnityVectorExtensions.SafeFromToRotation(up, Vector3.up, up);
+                var localDir = q * dir;
+                var flatDir = localDir; flatDir.y = 0;
+                if (!flatDir.AlmostZero())
+                {
+                    var angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
+                    localDir = Quaternion.AngleAxis(angle, Vector3.up) * localDir;
+                }
+                localDir.x = 0;
+                localDir.Normalize();
+
+                // We need to find the minimum of the angle function using steepest descent
+                var t = SteepestDescent(localDir * distance);
+                splinePoint = m_OrbitCache.SplineValue(t);
+                return t <= 0.5f
+                    ? Mathf.Lerp(VerticalAxis.Range.x, VerticalAxis.Center, MapTo01(t, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
+                    : Mathf.Lerp(VerticalAxis.Center, VerticalAxis.Range.y, MapTo01(t, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
+                
+                // local functions
+                float SteepestDescent(Vector3 cameraOffset)
+                {
+                    const int maxIteration = 10;
+                    const float epsilon = 0.00005f;
+                    var x = InitialGuess(cameraOffset);
+                    for (var i = 0; i < maxIteration; ++i)
+                    {
+                        var angle = AngleFunction(x);
+                        var slope = SlopeOfAngleFunction(x);
+                        if (Mathf.Abs(slope) < epsilon || Mathf.Abs(angle) < epsilon)
+                            break; // found best
+                        x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
+                    }
+                    return x;
+
+                    // localFunctions
+                    float AngleFunction(float input)
+                    {
+                        var point = m_OrbitCache.SplineValue(input);
+                        return Mathf.Abs(UnityVectorExtensions.SignedAngle(cameraOffset, point, Vector3.right));
+                    }
+
+                    // approximating derivative using symmetric difference quotient (finite diff)
+                    float SlopeOfAngleFunction(float input)
+                    {
+                        var angleBehind = AngleFunction(input - epsilon);
+                        var angleAfter = AngleFunction(input + epsilon);
+                        return (angleAfter - angleBehind) / (2f * epsilon);
+                    }
+
+                    // initial guess based on closest line (approximating spline) to point 
+                    float InitialGuess(Vector3 cameraPosInRigSpace)
+                    {
+                        if (m_OrbitCache.SettingsChanged(Orbits))
+                            m_OrbitCache.UpdateOrbitCache(Orbits);
+                        
+                        var pb = m_OrbitCache.SplineValue(0f); // point at the bottom of spline
+                        var pm = m_OrbitCache.SplineValue(0.5f); // point in the middle of spline
+                        var pt = m_OrbitCache.SplineValue(1f); // point at the top of spline
+                        var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
+                        var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
+                        var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
+                        var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
+
+                        // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
+                        return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2); // represents mid to top
+                    }
+                }
+                
+                static float MapTo01(float valueToMap, float fMin, float fMax) => (valueToMap - fMin) / (fMax - fMin);
+            }
         }
 
         /// <summary>This is called to notify the user that a target got warped,
@@ -352,9 +452,9 @@ namespace Cinemachine
             public static Settings Default => new Settings
             { 
                 SplineCurvature = 0.5f,
-                Top = new Orbit { Height = 10, Radius = 4 },
-                Center = new Orbit { Height = 2.5f, Radius = 8 },
-                Bottom= new Orbit { Height = -0.5f, Radius = 5 }
+                Top = new Orbit { Height = 5, Radius = 2 },
+                Center = new Orbit { Height = 2.25f, Radius = 4 },
+                Bottom= new Orbit { Height = 0.1f, Radius = 2.5f }
             };
         }
 

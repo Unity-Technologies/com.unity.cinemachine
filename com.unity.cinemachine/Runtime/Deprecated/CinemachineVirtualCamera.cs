@@ -13,8 +13,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineVirtualCamera")]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineVirtualCamera.html")]
+    [AddComponentMenu("")] // Don't display in add component menu
     public class CinemachineVirtualCamera : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>The object that the camera wants to look at (the Aim target).
@@ -94,7 +93,9 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
+        
         /// <summary>Returns the TransitionParams settings</summary>
+        /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => m_Transitions;
 
         /// <summary>

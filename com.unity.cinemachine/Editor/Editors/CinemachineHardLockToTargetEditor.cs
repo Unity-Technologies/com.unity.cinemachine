@@ -1,23 +1,29 @@
 using UnityEditor;
-using UnityEngine;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineHardLockToTarget))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineHardLockToTargetEditor : BaseEditor<CinemachineHardLockToTarget>
+    class CinemachineHardLockToTargetEditor : UnityEditor.Editor
     {
-        public override void OnInspectorGUI()
+        CinemachineHardLockToTarget Target => target as CinemachineHardLockToTarget;
+
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+
+        void OnEnable() => m_PipelineUtility = new (this);
+        void OnDisable() => m_PipelineUtility.OnDisable();
+
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineHardLockToTarget).FollowTarget == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "Hard Lock requires a Tracking Target.  Change Position Control to None if you don't want a Tracking target.",
-                    MessageType.Warning);
-            DrawRemainingPropertiesInInspector();
+            var ux = new VisualElement();
+
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+
+            m_PipelineUtility.UpdateState();
+            return ux;
         }
     }
 }

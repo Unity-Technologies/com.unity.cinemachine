@@ -24,7 +24,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineClearShot")]
+    [AddComponentMenu("Cinemachine/Cinemachine ClearShot")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineClearShot.html")]
     public class CinemachineClearShot : CinemachineCameraManagerBase
     {

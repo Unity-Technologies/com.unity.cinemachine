@@ -9,12 +9,65 @@ namespace Tests.Editor
     public class InputAxisTests
     {
         const float k_DeltaTime = 0.1f;
-        [SetUp]
-        public void Setup()
-        {
-            CinemachineCore.CurrentUnscaledTimeTimeOverride = 0f;
-        }
+        [SetUp] public void Setup() { CinemachineCore.CurrentUnscaledTimeTimeOverride = 0f; }
+        [TearDown] public void TearDown() { CinemachineCore.CurrentUnscaledTimeTimeOverride = -1; }
         
+        static IEnumerable AxisDriverAccelTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(0);
+                yield return new TestCaseData(0.1f);
+                yield return new TestCaseData(0.2f);
+                yield return new TestCaseData(0.3f);
+                yield return new TestCaseData(0.4f);
+                yield return new TestCaseData(0.5f);
+            }
+        }
+
+        [Test, TestCaseSource(nameof(AxisDriverAccelTestCases))]
+        public void TestAxisDriverAccel(float accelTime)
+        {
+            var axis = new InputAxis { Range = new Vector2(-100f, 100f), Value = 0, Center = 0, Wrap = false };
+            var control = new InputAxisControl { InputValue = 1, AccelTime = accelTime, DecelTime = accelTime };
+            axis.Validate();
+            control.Validate();
+            var driver = new InputAxisDriver();
+            var prevValue = axis.Value;
+            var prevDelta = 0f;
+
+            // Accelerate to speed
+            for (int i = 0; i < 20; ++i)
+            {
+                driver.ProcessInput(k_DeltaTime, axis, ref control);
+                var delta = axis.Value - prevValue;
+                UnityEngine.Assertions.Assert.IsTrue(delta > prevDelta); // must be speeding up
+                prevValue = axis.Value;
+                prevDelta = delta;
+                if (k_DeltaTime * i >= accelTime)
+                    break;
+                UnityEngine.Assertions.Assert.IsTrue(delta < control.InputValue * k_DeltaTime); // must be not at target speed
+            }
+            // Must have reached the target speed
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(prevDelta, control.InputValue * k_DeltaTime, 0.001f);
+
+            // Decelerate to zero
+            control.InputValue = 0;
+            for (int i = 0; i < 20; ++i)
+            {
+                driver.ProcessInput(k_DeltaTime, axis, ref control);
+                var delta = axis.Value - prevValue;
+                UnityEngine.Assertions.Assert.IsTrue(delta < prevDelta); // must be slowing down
+                prevValue = axis.Value;
+                prevDelta = delta;
+                if (k_DeltaTime * i >= accelTime)
+                    break;
+                UnityEngine.Assertions.Assert.IsTrue(delta > 0); // must be not at target speed
+            }
+            // Must have reached zero speed
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(prevDelta, 0, 0.001f);
+        }
+
         static IEnumerable AxisStateTestCases
         {
             get
@@ -36,7 +89,7 @@ namespace Tests.Editor
 
         [Test, TestCaseSource(nameof(AxisStateTestCases))]
         public void TestInputAxis(
-            Vector2 range, bool wrap, float accelTime, float decelTime, float axisValue, float[] expectedResults)
+            Vector2 range, bool wrap, float accelTime, float decelTime, float inputValue, float[] expectedResults)
         {
             var axis = new InputAxis
             {
@@ -48,7 +101,7 @@ namespace Tests.Editor
             
             var control = new InputAxisControl
             {
-                InputValue = axisValue,
+                InputValue = inputValue,
                 AccelTime = accelTime,
                 DecelTime = decelTime,
             };
@@ -83,7 +136,7 @@ namespace Tests.Editor
 
         [Test, TestCaseSource(nameof(RecenteringTestCases))]
         public void TestInputAxisRecentering(Vector2 range, bool wrap,
-            float accelTime, float decelTime, float axisValue,
+            float accelTime, float decelTime, float inputValue,
             bool enabled, float recenteringTime, float[] expectedResults)
         {
             var axis = new InputAxis
@@ -96,7 +149,7 @@ namespace Tests.Editor
             
             var control = new InputAxisControl
             {
-                InputValue = axisValue,
+                InputValue = inputValue,
                 AccelTime = accelTime,
                 DecelTime = decelTime,
             };
@@ -118,7 +171,6 @@ namespace Tests.Editor
                 control.InputValue = 0; // cancel input, so recentering can start
                 CinemachineCore.CurrentUnscaledTimeTimeOverride += k_DeltaTime; // control time for deterministic tests
                 UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, result);
-                
             }
         }
     }

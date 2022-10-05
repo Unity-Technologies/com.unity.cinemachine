@@ -16,7 +16,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineMixingCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine Mixing Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineMixingCamera.html")]
     public class CinemachineMixingCamera : CinemachineCameraManagerBase
     {
@@ -175,6 +175,7 @@ namespace Cinemachine
         }
 
         /// <summary>Rebuild the cached list of child cameras.</summary>
+        /// <returns>True, if rebuild was needed. False, otherwise.</returns>
         protected override bool UpdateCameraCache()
         {
             if (!base.UpdateCameraCache())

@@ -10,7 +10,7 @@ namespace Cinemachine.Editor
     /// A convenience base class for making inspector editors.
     /// </summary>
     /// <typeparam name="T">The class we're editing</typeparam>
-    public class BaseEditor<T> : UnityEditor.Editor where T : class
+    class BaseEditor<T> : UnityEditor.Editor where T : class
     {
         /// <summary>
         /// The target object, cast as the same class as the object being edited

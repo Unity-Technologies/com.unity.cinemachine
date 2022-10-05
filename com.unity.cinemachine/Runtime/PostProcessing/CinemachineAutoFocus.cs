@@ -7,7 +7,7 @@ using Cinemachine.Utility;
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !CINEMACHINE_HDRP
     /// <summary>
@@ -29,7 +29,7 @@ namespace Cinemachine.PostFX
     /// It must be added in the editor.
     /// </summary>
     [ExecuteAlways]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Auto Focus")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineAutoFocus.html")]
@@ -63,9 +63,9 @@ namespace Cinemachine.PostFX
         [Tooltip("The target to use if Focus Target is set to Custom Target")]
         public Transform CustomTarget;
 
-        /// <summary>Offsets the sharpest point away from the focus target location</summary>
-        [Tooltip("Offsets the sharpest point away from the focus target location.")]
-        public float FocusOffset;
+        /// <summary>Offsets the sharpest point away in depth from the focus target location</summary>
+        [Tooltip("Offsets the sharpest point away in depth from the focus target location.")]
+        public float FocusDepthOffset;
 
         /// <summary>
         /// Set this to make the focus adjust gradually to the desired setting.  The
@@ -86,7 +86,7 @@ namespace Cinemachine.PostFX
         CustomPassVolume m_CustomPassVolume;
 
         /// <summary>Serialized so that the compute shader is include in the build</summary>
-        [SerializeField, HideInInspector]
+        [SerializeField]
         ComputeShader m_ComputeShader;
 
         void Reset()
@@ -94,7 +94,7 @@ namespace Cinemachine.PostFX
             Damping = 0.2f;
             FocusTarget = FocusTrackingMode.None;
             CustomTarget = null;
-            FocusOffset = 0;
+            FocusDepthOffset = 0;
             AutoDetectionRadius = 0.02f;
         }
 
@@ -102,17 +102,6 @@ namespace Cinemachine.PostFX
         {
             Damping = Mathf.Max(0, Damping);
         }
-
-#if UNITY_EDITOR
-        // GML todo: is there a better way to set up this binding?
-        protected override void Awake()
-        {
-            base.Awake();
-            if (m_ComputeShader == null)
-                m_ComputeShader = UnityEditor.AssetDatabase.LoadAssetAtPath<ComputeShader>(
-                    "Packages/com.unity.cinemachine/Runtime/PostProcessing/FocusDistance.compute");
-        }
-#endif
 
         void OnDisable()
         {
@@ -159,7 +148,7 @@ namespace Cinemachine.PostFX
                 if (focusTarget != null)
                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
 
-                focusDistance = Mathf.Max(0, focusDistance + FocusOffset);
+                focusDistance = Mathf.Max(0, focusDistance + FocusDepthOffset);
 
                 // Apply damping
                 if (deltaTime >= 0 && vcam.PreviousStateIsValid)

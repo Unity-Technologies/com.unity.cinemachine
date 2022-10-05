@@ -1,10 +1,10 @@
 # Cinemachine Clear Shot Camera
 
-The __Cinemachine ClearShot Camera__ component chooses among its children Virtual Cameras for the best quality shot of the target. Use Clear Shot to set up complex multi-camera coverage of a Scene to guarantee a clear view of the target.
+The __Cinemachine ClearShot Camera__ component chooses among its children CmCameras for the best quality shot of the target. Use Clear Shot to set up complex multi-camera coverage of a Scene to guarantee a clear view of the target.
 
-This can be a very powerful tool. Virtual Camera children with [Cinemachine Collider](CinemachineCollider.md) extensions analyze the Scene for target obstructions, optimal target distance, and so on. Clear Shot uses this information to choose the best child to activate.
+This can be a very powerful tool. CmCamera children with [Cinemachine Collider](CinemachineCollider.md) extensions analyze the Scene for target obstructions, optimal target distance, and so on. Clear Shot uses this information to choose the best child to activate.
 
-**Tip:** To use a single [Cinemachine Collider](CinemachineCollider.md) for all Virtual Camera children, add a Cinemachine Collider extension to the ClearShot GameObject instead of each of its Virtual Camera children. This Cinemachine Collider extension applies to all of the children, as if each of them had that Collider as its own extension.
+**Tip:** To use a single [Cinemachine Collider](CinemachineCollider.md) for all CmCamera children, add a Cinemachine Collider extension to the ClearShot GameObject instead of each of its CmCamera children. This Cinemachine Collider extension applies to all of the children, as if each of them had that Collider as its own extension.
 
 If multiple child cameras have the same shot quality, the Clear Shot camera chooses the one with the highest priority.
 
@@ -14,15 +14,16 @@ You can also define custom blends between the ClearShot children.
 
 | **Property:** | **Function:** |
 |:---|:---|
-| **Game Window Guides** | Enables the displays of overlays in the Game window. Adjust the color and opacity in Cinemachine Preferences. This is a global setting, shared by all virtial cameras. |
-| **Save During Play** | When enabled, virtual camera setting changes made during Play mode are propagated back to the scene when Play mode is exited.  This is a global setting, shared by all objects that support Save During Play. |
-| __Look At__ | The default target GameObject that the children Virtual Camera move with. The Clear Shot camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
-| __Follow__ | The target GameObject to aim the Unity camera at. The Clear Shot camera uses this target when the child does not specify this target. May be empty if all of the children define targets of their own. |
-| __Show Debug Text__ | Check to display a textual summary of the live Virtual Camera and blend in the Game view. |
+| __Solo__ | Toggles whether or not the CmCamera is temporarily live. Use this property to get immediate visual feedback in the [Game view](https://docs.unity3d.com/Manual/GameView.html) to adjust the CmCamera. |
+| __Game View Guides__ | Toggles the visibility of compositional guides in the Game view. These guides are available when Tracking Target specifies a GameObject and the CmCamera has a screen-composition behavior, such as Position Composer or Rotation Composer. This setting is shared by all CmCameras. |
+| __Save During Play__ | Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay.md).  Use this feature to fine-tune a CmCamera without having to remember which properties to copy and paste. This setting is shared by all CmCameras. |
+| __Priority__ | This is used to control which of several active CmCameras should be live, when not controlled by Timeline.  By default, priority is 0.  Enable this to specify a custom priority value.  A higher value indicates a higher priority.  Negative values are also allowed. Cinemachine Brain chooses the next live CmCamera from all CmCameras that are activated and have the same or higher priority as the current live CmCamera. This property has no effect when using a CmCamera with Timeline. |
+| __Standby Update__ | Controls how often the CmCamera is updated when the CmCamera is not live. |
+| __Default Target__ | If enabled, this target will be used as a fallback if child CmCameras don't specify a Tracking Target of their own |
+| __Show Debug Text__ | If enabled, current state information will be displayed in the Game View |
 | __Activate After__ | Wait this many seconds before activating a new child camera. |
 | __Min Duration__ | An active camera must be active for at least this many seconds, unless a higher-priority camera becomes active. |
-| __Randomize Choice__ | Check to choose a random camera if multiple cameras have equal shot quality. Uncheck to use the order of the child Virtual Cameras and their priorities. |
-| __Default Blend__ | The blend to use when you haven’t explicitly defined a blend between two Virtual Cameras. |
-| __Priority__ | Determine which camera becomes active based on the state of other cameras and this camera. Higher numbers have greater priority. |
+| __Randomize Choice__ | Check to choose a random camera if multiple cameras have equal shot quality. Uncheck to use the order of the child CmCameras and their priorities. |
+| __Default Blend__ | The blend to use when you haven’t explicitly defined a blend between two CmCameras. |
 
 

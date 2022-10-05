@@ -8,10 +8,8 @@ using UnityEngine.Splines;
 namespace Cinemachine.Editor
 {
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
-    class SplineRollTool : EditorTool, IDrawSelectedHandles
+    sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
-        Color m_HandleColor = new(1f, 0.6f, 0f); // TODO: check with Swap
-
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
 
@@ -23,7 +21,8 @@ namespace Cinemachine.Editor
         {
             m_IconContent = new GUIContent
             {
-                image = EditorGUIUtility.IconContent("d_WheelCollider Icon").image, // TODO: create a proper image
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png"),
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };
@@ -54,7 +53,7 @@ namespace Cinemachine.Editor
             
             Undo.RecordObject(splineDataTarget, "Modifying Roll SplineData");
             m_DisableHandles = false;
-            var color = m_HandleColor;
+            var color = Handles.selectedColor;
             if (!m_IsSelected) 
                 color.a = k_UnselectedAlpha;
             using (new Handles.DrawingScope(color))
@@ -76,8 +75,8 @@ namespace Cinemachine.Editor
             m_DisableHandles = true;
             var nativeSpline = new NativeSpline(splineDataTarget.Container.Spline, 
                 splineDataTarget.Container.transform.localToWorldMatrix);
-            
-            var color = m_HandleColor;
+
+            var color = Handles.selectedColor;
             if (!m_IsSelected) 
                 color.a = k_UnselectedAlpha;
             using (new Handles.DrawingScope(color))
@@ -128,7 +127,7 @@ namespace Cinemachine.Editor
                     var handleRotationGlobalSpace = m_DefaultHandleOrientation * handleRotationLocalSpace;
                     
                     var handleSize = Mathf.Max(
-                        HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth);
+                        HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth.Value);
                     using (new Handles.DrawingScope(m_RollInUse ? Handles.selectedColor : Handles.color))
                     {
                         Handles.ArrowHandleCap(

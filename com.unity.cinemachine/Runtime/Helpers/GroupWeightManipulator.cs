@@ -10,7 +10,8 @@ namespace Cinemachine
     /// </summary>
     [RequireComponent(typeof(CinemachineTargetGroup))]
     [ExecuteAlways]
-    [HelpURL(Documentation.BaseURL + "api/Cinemachine.GroupWeightManipulator.html")]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Group Weight Manipulator")]
+    [HelpURL(Documentation.BaseURL + "manual/GroupWeightManipulator.html")]
     public class GroupWeightManipulator : MonoBehaviour
     {
         /// <summary>The weight of the group member at index 0</summary>

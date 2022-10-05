@@ -3,18 +3,6 @@ using System;
 using UnityEditor;
 using System.Collections.Generic;
 
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
-    #if CINEMACHINE_HDRP_7_3_1
-    using UnityEngine.Rendering.HighDefinition;
-    #else
-        #if CINEMACHINE_LWRP_7_3_1
-        using UnityEngine.Rendering.Universal;
-        #else
-        using UnityEngine.Experimental.Rendering.HDPipeline;
-        #endif
-    #endif
-#endif
-
 namespace Cinemachine.Editor
 {
     /// <summary>

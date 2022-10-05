@@ -105,7 +105,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
-            const string kGizmoFileName = "Packages/com.unity.cinemachine/Gizmos/cm_logo.png";
+            const string kGizmoFileName = ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
 
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
@@ -121,8 +121,8 @@ namespace Cinemachine.Editor
                 state.Lens,
                 Matrix4x4.TRS(state.GetFinalPosition(), state.GetFinalOrientation().normalized, Vector3.one),
                 CinemachineCore.Instance.IsLive(vcam)
-                    ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour);
+                    ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                    : CinemachineCorePrefs.InactiveGizmoColour.Value);
         }
 
         public static void DrawCameraFrustumGizmo(LensSettings lens, Matrix4x4 transform, Color color)

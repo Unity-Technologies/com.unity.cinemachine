@@ -3,26 +3,24 @@
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
     using System.Collections.Generic;
+
+
 #if CINEMACHINE_HDRP
-    #if CINEMACHINE_HDRP_7_3_1
-        using UnityEngine.Rendering.HighDefinition;
-    #else
-        using UnityEngine.Experimental.Rendering.HDPipeline;
-    #endif
+    using UnityEngine.Rendering.HighDefinition;
 #elif CINEMACHINE_LWRP_7_3_1
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.PostFX.Editor
+namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVolumeSettings))]
-    sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
+    class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
         public override void OnInspectorGUI()
         {
             EditorGUILayout.HelpBox(
-                "This component is only valid for HDRP and URP projects.",
+                "This component is only valid within HDRP and URP projects.",
                 MessageType.Warning);
         }
 #else
@@ -79,6 +77,7 @@ namespace Cinemachine.PostFX.Editor
         {
             BeginInspector();
 
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
             var focusMode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
             if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
             {
