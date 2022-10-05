@@ -254,9 +254,8 @@ namespace Cinemachine
         public BakedSolution GetBakedSolution(float frustumHeight)
         {
             // If the user has set a max frustum height, respect it
-            frustumHeight = m_Cache.userSetMaxFrustumHeight <= 0
-                ? frustumHeight
-                : Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
+            if (m_Cache.userSetMaxFrustumHeight > 0)
+                frustumHeight = Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
             
             // Special case: we are shrank to the mid point of the original input confiner area.
             if (State == BakingState.BAKED && frustumHeight >= m_Cache.theoreticalMaxFrustumHeight)
