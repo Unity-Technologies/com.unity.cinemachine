@@ -307,7 +307,7 @@ namespace Cinemachine
                     case BoxCollider2D boxCollider2D:
                     {
                         // Cache the current worldspace shape
-                        Vector2 center = boxCollider2D.transform.TransformPoint(boxCollider2D.offset);
+                        Vector2 center = boxCollider2D.transform.TransformPoint(Vector3.zero);
 
                         var size = boxCollider2D.size;
                         var halfY = size.y / 2f;
@@ -326,6 +326,7 @@ namespace Cinemachine
                         {
                             new() {topLeft, topRight, btmRight, btmLeft}
                         };
+                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                     }
                         break;
                     case CompositeCollider2D compositeCollider2D:
