@@ -638,11 +638,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 3
-  SprintSpeed: 10
+  SprintSpeed: 8
   JumpSpeed: 5
   SprintJumpSpeed: 7
-  VelocityDamping: 0.5
-  RotationDamping: 0.5
+  Damping: 0.5
   InputForward: 0
   UpMode: 1
   Strafe: 0

@@ -12,8 +12,7 @@ namespace Cinemachine.Examples
         public float JumpSpeed = 4;
         public float SprintJumpSpeed = 6;
     
-        public float VelocityDamping = 0.5f;
-        public float RotationDamping = 0.5f;
+        public float Damping = 0.5f;
 
         public enum ForwardModes { Camera, Player, World };
         public ForwardModes InputForward = ForwardModes.Camera;
@@ -101,8 +100,10 @@ namespace Cinemachine.Examples
             {
                 m_IsSprinting = Sprint.Value > 0.5f;
                 var desiredVelocity = input * (m_IsSprinting ? SprintSpeed : Speed);
-                var damping = justLanded ? 0 : VelocityDamping;
-                m_CurrentVelocityXZ += Damper.Damp(desiredVelocity - m_CurrentVelocityXZ, damping, Time.deltaTime);
+                var damping = justLanded ? 0 : Damping;
+                m_CurrentVelocityXZ = Vector3.Slerp(
+                    m_CurrentVelocityXZ, desiredVelocity, 
+                    Damper.Damp(1, damping, Time.deltaTime));
             }
             
             // Apply the position change
@@ -116,7 +117,7 @@ namespace Cinemachine.Examples
                 var qB = Quaternion.LookRotation(
                     (InputForward == ForwardModes.Player && Vector3.Dot(fwd, m_CurrentVelocityXZ) < 0)
                         ? -m_CurrentVelocityXZ : m_CurrentVelocityXZ, UpDirection);
-                var damping = justLanded ? 0 : RotationDamping;
+                var damping = justLanded ? 0 : Damping;
                 transform.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
             }
         }
