@@ -307,26 +307,21 @@ namespace Cinemachine
                     case BoxCollider2D boxCollider2D:
                     {
                         // Cache the current worldspace shape
-                        Vector2 center = boxCollider2D.transform.TransformPoint(Vector3.zero);
+                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
 
                         var size = boxCollider2D.size;
                         var halfY = size.y / 2f;
                         var halfX = size.x / 2f;
-                        var top = center.y + halfY;
-                        var bottom = center.y - halfY;
-                        var left = center.x - halfX;
-                        var right = center.x + halfX;
-         
-                        var topLeft = new Vector3(left, top);
-                        var topRight = new Vector3(right, top);
-                        var btmRight = new Vector3(right, bottom); 
-                        var btmLeft = new Vector3(left, bottom);
-                        
+
+                        var topLeft = m_bakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, halfY));
+                        var topRight = m_bakedToWorld.MultiplyPoint3x4(new Vector3(halfX, halfY));
+                        var btmRight = m_bakedToWorld.MultiplyPoint3x4(new Vector3(halfX, -halfY));
+                        var btmLeft = m_bakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, -halfY));
+
                         m_OriginalPath = new List<List<Vector2>>
                         {
-                            new() {topLeft, topRight, btmRight, btmLeft}
+                            new() { topLeft, topRight, btmRight, btmLeft }
                         };
-                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                     }
                         break;
                     case CompositeCollider2D compositeCollider2D:
