@@ -253,7 +253,7 @@ namespace Cinemachine
             /// </summary>
             /// <param name="boundingShape2D">Bounding shape</param>
             /// <param name="maxWindowSize">Max Window size</param>
-            /// <param name="aspectRatio">Aspect ratio/param>
+            /// <param name="aspectRatio">Aspect ratio</param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
@@ -294,11 +294,11 @@ namespace Cinemachine
                         
                         // Cache the current worldspace shape
                         m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
-                        for (int i = 0; i < polygonCollider2D.pathCount; ++i)
+                        for (var i = 0; i < polygonCollider2D.pathCount; ++i)
                         {
-                            Vector2[] path = polygonCollider2D.GetPath(i);
-                            List<Vector2> dst = new List<Vector2>();
-                            for (int j = 0; j < path.Length; ++j)
+                            var path = polygonCollider2D.GetPath(i);
+                            var dst = new List<Vector2>();
+                            for (var j = 0; j < path.Length; ++j)
                                 dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
                             m_OriginalPath.Add(dst);
                         }
@@ -308,11 +308,9 @@ namespace Cinemachine
                     {
                         // Cache the current worldspace shape
                         m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
-
                         var size = boxCollider2D.size;
                         var halfY = size.y / 2f;
                         var halfX = size.x / 2f;
-
                         var topLeft = m_bakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, halfY));
                         var topRight = m_bakedToWorld.MultiplyPoint3x4(new Vector3(halfX, halfY));
                         var btmRight = m_bakedToWorld.MultiplyPoint3x4(new Vector3(halfX, -halfY));
