@@ -71,10 +71,10 @@ namespace Cinemachine
         void Start()
         {
 #if CINEMACHINE_PHYSICS
-            m_RigidBody = GetComponent<Rigidbody>();
+            TryGetComponent(out m_RigidBody);
 #endif
 #if CINEMACHINE_PHYSICS_2D
-            m_RigidBody2D = GetComponent<Rigidbody2D>();
+            TryGetComponent(out m_RigidBody2D);
 #endif
         }
 

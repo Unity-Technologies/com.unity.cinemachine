@@ -169,8 +169,7 @@ namespace Cinemachine
                             break;
                         case ActionModes.PriorityBoost:
                             {
-                                var vcam = targetGameObject.GetComponent<CinemachineVirtualCameraBase>();
-                                if (vcam != null)
+                                if (targetGameObject.TryGetComponent<CinemachineVirtualCameraBase>(out var vcam))
                                 {
                                     vcam.Priority += BoostAmount;
                                     vcam.Prioritize();
@@ -181,8 +180,7 @@ namespace Cinemachine
                             if (targetGameObject != null)
                             {
                                 targetGameObject.SetActive(true);
-                                var vcam = targetGameObject.GetComponent<CinemachineVirtualCameraBase>();
-                                if (vcam != null)
+                                if (targetGameObject.TryGetComponent<CinemachineVirtualCameraBase>(out var vcam))
                                     vcam.Prioritize();
                             }
                             break;
@@ -205,8 +203,7 @@ namespace Cinemachine
 #if CINEMACHINE_TIMELINE
                         case ActionModes.Play:
                             {
-                                var playable = targetGameObject.GetComponent<PlayableDirector>();
-                                if (playable != null)
+                                if (targetGameObject.TryGetComponent<PlayableDirector>(out var playable))
                                 {
                                     double startTime = 0;
                                     double duration = playable.duration;
@@ -232,21 +229,18 @@ namespace Cinemachine
                                 }
                                 else
                                 {
-                                    var ani = targetGameObject.GetComponent<Animation>();
-                                    if (ani != null)
+                                    if (targetGameObject.TryGetComponent<Animation>(out var ani))
                                         ani.Play();
                                 }
                                 break;
                             }
                         case ActionModes.Stop:
                             {
-                                var playable = targetGameObject.GetComponent<PlayableDirector>();
-                                if (playable != null)
+                                if (targetGameObject.TryGetComponent<PlayableDirector>(out var playable))
                                     playable.Stop();
                                 else
                                 {
-                                    var ani = targetGameObject.GetComponent<Animation>();
-                                    if (ani != null)
+                                    if (targetGameObject.TryGetComponent<Animation>(out var ani))
                                         ani.Stop();
                                 }
                                 break;

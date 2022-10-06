@@ -18,8 +18,8 @@ namespace Cinemachine.Editor
             BeginInspector();
 
             EditorGUILayout.Separator();
-            var collider = Target.GetComponent<Collider>();
-            var collider2D = Target.GetComponent<Collider2D>();
+            Target.TryGetComponent<Collider>(out var collider);
+            Target.TryGetComponent<Collider2D>(out var collider2D);
             if ((collider == null || !collider.enabled) && (collider2D == null || !collider2D.enabled))
                 EditorGUILayout.HelpBox(
                     "An active Collider or Collider2D component is required in order to detect "

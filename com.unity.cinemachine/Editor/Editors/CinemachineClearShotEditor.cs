@@ -144,8 +144,12 @@ namespace Cinemachine.Editor
         bool ObjectHasEvaluator(object obj)
         {
             var vcam = obj as CinemachineVirtualCameraBase;
-            var evaluator = vcam == null ? null : vcam.GetComponent<IShotQualityEvaluator>() as MonoBehaviour;
-            return evaluator != null && evaluator.enabled;
+            if (vcam != null && vcam.TryGetComponent<IShotQualityEvaluator>(out var evaluator))
+            {
+                var b = evaluator as MonoBehaviour;
+                return b != null && b.enabled;
+            }
+            return false;
         }
 
         void SetupChildList()
