@@ -338,8 +338,8 @@ MonoBehaviour:
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1727080744}
-    LegacyInput: Mouse X
-    LegacyGain: 200
+    LegacyInput: 
+    LegacyGain: 0
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 4
     Control:
@@ -352,8 +352,8 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 1727080744}
-    LegacyInput: Mouse Y
-    LegacyGain: -200
+    LegacyInput: 
+    LegacyGain: 0
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: -4
     Control:
@@ -367,7 +367,7 @@ MonoBehaviour:
   - Name: Orbit Scale
     Owner: {fileID: 1727080744}
     LegacyInput: 
-    LegacyGain: 200
+    LegacyGain: 0
     InputAction: {fileID: 0}
     Gain: 4
     Control:

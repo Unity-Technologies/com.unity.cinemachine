@@ -19,6 +19,7 @@ namespace Cinemachine.Examples
         public ForwardModes InputForward = ForwardModes.Camera;
         public enum UpModes { Player, World };
         public UpModes UpMode = UpModes.World;
+
         public bool Strafe = false;
 
         public Action StartJump;
@@ -41,11 +42,23 @@ namespace Cinemachine.Examples
         float m_CurrentVelocityY;
         bool m_IsSprinting;
         bool m_IsJumping;
-        float m_DistanceFromGround; // Valid only when not using character controller
         CharacterController m_Controller; // optional
 
-        public Vector3 VelocityXZ => m_CurrentVelocityXZ;
-        public float VelocityY => m_CurrentVelocityY;
+        // Get velocity relative to player transform
+        public Vector3 GetPlayerVelocity()
+        {
+            if (InputForward == ForwardModes.Player)
+                return new Vector3(m_CurrentVelocityXZ.x, m_CurrentVelocityY, m_CurrentVelocityXZ.z);
+            if (!GetInputFrame(out var frame))
+                return Vector3.zero;
+            var up = UpDirection;
+            var vel = m_CurrentVelocityXZ.ProjectOntoPlane(up);
+            var fwd = transform.forward.ProjectOntoPlane(up);
+            vel = Quaternion.AngleAxis(Vector3.SignedAngle(fwd, Vector3.forward, up), up) * vel;
+            vel.y = m_CurrentVelocityY;
+            return vel;
+        }
+
         public bool IsSprinting => m_IsSprinting;
         public bool IsJumping => m_IsJumping;
 
@@ -75,23 +88,12 @@ namespace Cinemachine.Examples
 
         void Update()
         {
-            var up = UpMode == UpModes.World ? Vector3.up : transform.up;
-
             // Process Jump and gravity
-            bool justLanded = ProcessJump(up);
+            bool justLanded = ProcessJump();
 
             // Get the reference frame for the input
-            var fwd = InputForward switch
-            {
-                ForwardModes.Camera => Camera.main.transform.forward,
-                ForwardModes.Player => transform.forward,
-                _ => Vector3.forward,
-            };
-            fwd = fwd.ProjectOntoPlane(up);
-            fwd = fwd.normalized;
-            if (fwd.sqrMagnitude < 0.01f)
-                return;
-            var inputFrame = Quaternion.LookRotation(fwd, Vector3.up);
+            if (!GetInputFrame(out var inputFrame))
+                return; // no input frame, give up
 
             // Read the input from the user and put it in the input frame
             var input = inputFrame * new Vector3(MoveX.Value, 0, MoveZ.Value);
@@ -108,21 +110,45 @@ namespace Cinemachine.Examples
             }
             
             // Apply the position change
-            ApplyMotion(up);
+            ApplyMotion();
 
             // If not strafing, rotate the player to face movement direction
             if (!Strafe && m_CurrentVelocityXZ.sqrMagnitude > 0.001f)
             {
+                var fwd = inputFrame * new Vector3(0, 0, 1);
                 var qA = transform.rotation;
                 var qB = Quaternion.LookRotation(
                     (InputForward == ForwardModes.Player && Vector3.Dot(fwd, m_CurrentVelocityXZ) < 0)
-                        ? -m_CurrentVelocityXZ : m_CurrentVelocityXZ);
+                        ? -m_CurrentVelocityXZ : m_CurrentVelocityXZ, UpDirection);
                 var damping = justLanded ? 0 : RotationDamping;
                 transform.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
             }
         }
 
-        bool ProcessJump(Vector3 up)
+        Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
+
+        // Get the reference frame for the input
+        bool GetInputFrame(out Quaternion inputFrame)
+        {
+            var up = UpDirection;
+            var fwd = InputForward switch
+            {
+                ForwardModes.Camera => Camera.main.transform.forward,
+                ForwardModes.Player => transform.forward,
+                _ => Vector3.forward,
+            };
+            fwd = fwd.ProjectOntoPlane(up);
+            fwd = fwd.normalized;
+            if (fwd.sqrMagnitude < 0.01f)
+            {
+                inputFrame = Quaternion.identity;
+                return false;
+            }
+            inputFrame = Quaternion.LookRotation(fwd, up);
+            return true;
+        }
+
+        bool ProcessJump()
         {
             const float kGravity = -9.8f;
             bool justLanded = false;
@@ -134,7 +160,7 @@ namespace Cinemachine.Examples
                     StartJump();
                 m_CurrentVelocityY = m_IsSprinting ? SprintJumpSpeed : JumpSpeed;
             }
-            if (IsGrounded(up) && m_CurrentVelocityY < 0)
+            if (IsGrounded() && m_CurrentVelocityY < 0)
             {
                 m_CurrentVelocityY = 0;
                 if (m_IsJumping)
@@ -148,33 +174,50 @@ namespace Cinemachine.Examples
             return justLanded;
         }
 
-        bool IsGrounded(Vector3 up)
+        bool IsGrounded()
         {
             if (m_Controller != null)
                 return m_Controller.isGrounded;
 
             // No controller - must compute manually with raycast
-            m_DistanceFromGround = 0;
-            if (Physics.Raycast(transform.position + up, -up, out var hit, 10, LayerMask.GetMask("Default")))
-                m_DistanceFromGround = hit.distance - 1; // cache it for later (save a raycast)
-            return m_DistanceFromGround <= 0.01f;
+            return GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
         }
 
-        void ApplyMotion(Vector3 up)
+        void ApplyMotion()
         {
-            var deltaPos = (m_CurrentVelocityY * up + m_CurrentVelocityXZ) * Time.deltaTime;
             if (m_Controller != null)
-                m_Controller.Move(deltaPos);
+                m_Controller.Move((m_CurrentVelocityY * UpDirection + m_CurrentVelocityXZ) * Time.deltaTime);
             else
             {
+                var pos = transform.position + m_CurrentVelocityXZ * Time.deltaTime;
+
                 // Don't fall below ground
-                if (m_CurrentVelocityY < 0 || m_DistanceFromGround < 0)
+                var up = UpDirection;
+                var altitude = GetDistanceFromGround(pos, up, 10);
+                if (altitude < 0 && m_CurrentVelocityY <= 0)
+                {
+                    pos -= altitude * up;
+                    m_CurrentVelocityY = 0;
+                }
+                else if (m_CurrentVelocityY < 0)
                 {
                     var dy = -m_CurrentVelocityY * Time.deltaTime;
-                    deltaPos += Mathf.Max(0, dy - m_DistanceFromGround) * up;
+                    if (dy > altitude)
+                    {
+                        pos -= altitude * up;
+                        m_CurrentVelocityY = 0;
+                    }
                 }
-                transform.position += deltaPos;
+                transform.position = pos + m_CurrentVelocityY * up * Time.deltaTime;
             }
+        }
+
+        float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
+        {
+            float hExtraHeight = 2;
+            if (Physics.Raycast(pos + up * hExtraHeight, -up, out var hit, max + hExtraHeight, LayerMask.GetMask("Default")))
+                return hit.distance - hExtraHeight; 
+            return max + 1;
         }
     }
 }

@@ -556,7 +556,7 @@ GameObject:
   - component: {fileID: 5995860984952935428}
   - component: {fileID: 2318977312575967558}
   m_Layer: 0
-  m_Name: Cameron
+  m_Name: Cameron Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -639,8 +639,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 3
   SprintSpeed: 10
-  JumpSpeed: 4
-  SprintJumpSpeed: 6
+  JumpSpeed: 5
+  SprintJumpSpeed: 7
   VelocityDamping: 0.5
   RotationDamping: 0.5
   InputForward: 0
@@ -755,12 +755,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NormalWalkSpeed: 2
   SprintAnimationScale: 1
-  JumpAnimationScale: 0.75
-  AnimationSpeedVariable: Speed
-  AnimationWalkScaleVariable: WalkScale
-  AnimationJumpScaleVariable: JumpScale
-  AnimationStartJumpTrigger: Jump
-  AnimationEndJumpTrigger: Land
+  JumpAnimationScale: 0.65
 --- !u!1 &6960710989245956327
 GameObject:
   m_ObjectHideFlags: 0

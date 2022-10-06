@@ -313,14 +313,14 @@ MonoBehaviour:
   Radius: 10
   Orbits:
     Top:
-      Radius: 2
-      Height: 5
-    Center:
       Radius: 4
-      Height: 2.25
+      Height: 10
+    Center:
+      Radius: 8
+      Height: 4.5
     Bottom:
-      Radius: 2.5
-      Height: 0.1
+      Radius: 5
+      Height: 2
     SplineCurvature: 0.5
   HorizontalAxis:
     rid: 1709466907129151525
@@ -400,8 +400,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
-  m_LocalRotation: {x: 0.18224323, y: 1e-45, z: 0, w: 0.9832535}
-  m_LocalPosition: {x: 0, y: 32.321, z: -4}
+  m_LocalRotation: {x: 0.20737024, y: 0, z: 0, w: 0.97826254}
+  m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -566,8 +566,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.18224323, y: 1e-45, z: 0, w: 0.9832535}
-  m_LocalPosition: {x: 0, y: 32.321, z: -4}
+  m_LocalRotation: {x: 0.20737024, y: 0, z: 0, w: 0.97826254}
+  m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -866,6 +866,14 @@ PrefabInstance:
     - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: UpMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: JumpSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: SprintJumpSpeed
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_DistanceFromGround
