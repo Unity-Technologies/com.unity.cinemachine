@@ -136,8 +136,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = false;
-            transform.position = pos;
-            transform.rotation = rot;
+            transform.SetPositionAndRotation(pos, rot);
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
