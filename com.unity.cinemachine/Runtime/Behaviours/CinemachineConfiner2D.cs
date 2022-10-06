@@ -262,6 +262,10 @@ namespace Cinemachine
                 float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
+                
+                if (boundingShape2D == null)
+                    return false;
+                
                 if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
                 {
                     // Advance confiner baking
