@@ -138,7 +138,7 @@ namespace Cinemachine.Editor
                     for (int i = 0; i < targets.Length; ++i)
                     {
                         var vcam = (CinemachineVirtualCameraBase)targets[i];
-                        if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
+                        if (vcam.TryGetComponent<AxisState.IInputAxisProvider>(out var _))
                             continue;
                         var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
                         inputProvider.XYAxis = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(

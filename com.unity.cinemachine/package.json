@@ -36,9 +36,14 @@
   },
   "samples": [
     {
-      "displayName": "Cinemachine Example Scenes",
+      "displayName": "Sample Scenes",
       "description": "Sample scenes illustrating various ways to use Cinemachine",
-      "path": "Samples~/Cinemachine Example Scenes"
+      "path": "Samples~/Sample Scenes"
+    },
+    {
+      "displayName": "Old Samples from CM2",
+      "description": "Samples made with CM 2.X, using obsolete API",
+      "path": "Samples~/Old Samples from CM2"
     }
   ]
 }

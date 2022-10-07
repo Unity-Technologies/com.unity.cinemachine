@@ -54,8 +54,7 @@ namespace Cinemachine.Editor
                     var t = (CinemachineOrbitalFollow)targets[i];
                     if (!t.HasInputHandler)
                     {
-                        var controller = t.VirtualCamera.GetComponent<InputAxisController>();
-                        if (controller == null)
+                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
                             Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {
