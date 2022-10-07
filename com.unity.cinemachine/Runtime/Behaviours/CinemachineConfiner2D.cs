@@ -290,33 +290,33 @@ namespace Cinemachine
                 {
                     case PolygonCollider2D polygonCollider2D:
                     {
-                        m_OriginalPath = new List<List<Vector2>>();
+                        OriginalPath = new List<List<Vector2>>();
                         
                         // Cache the current worldspace shape
-                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
+                        m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         for (var i = 0; i < polygonCollider2D.pathCount; ++i)
                         {
                             var path = polygonCollider2D.GetPath(i);
                             var dst = new List<Vector2>();
                             for (var j = 0; j < path.Length; ++j)
-                                dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
-                            m_OriginalPath.Add(dst);
+                                dst.Add(m_BakedToWorld.MultiplyPoint3x4(path[j]));
+                            OriginalPath.Add(dst);
                         }
                     }
                         break;
                     case BoxCollider2D boxCollider2D:
                     {
                         // Cache the current worldspace shape
-                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
+                        m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         var size = boxCollider2D.size;
                         var halfY = size.y / 2f;
                         var halfX = size.x / 2f;
-                        var topLeft = m_bakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, halfY));
-                        var topRight = m_bakedToWorld.MultiplyPoint3x4(new Vector3(halfX, halfY));
-                        var btmRight = m_bakedToWorld.MultiplyPoint3x4(new Vector3(halfX, -halfY));
-                        var btmLeft = m_bakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, -halfY));
+                        var topLeft = m_BakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, halfY));
+                        var topRight = m_BakedToWorld.MultiplyPoint3x4(new Vector3(halfX, halfY));
+                        var btmRight = m_BakedToWorld.MultiplyPoint3x4(new Vector3(halfX, -halfY));
+                        var btmLeft = m_BakedToWorld.MultiplyPoint3x4(new Vector3(-halfX, -halfY));
 
-                        m_OriginalPath = new List<List<Vector2>>
+                        OriginalPath = new List<List<Vector2>>
                         {
                             new() { topLeft, topRight, btmRight, btmLeft }
                         };
@@ -324,18 +324,18 @@ namespace Cinemachine
                         break;
                     case CompositeCollider2D compositeCollider2D:
                     {
-                        m_OriginalPath = new List<List<Vector2>>();
+                        OriginalPath = new List<List<Vector2>>();
 
                         // Cache the current worldspace shape
-                        m_bakedToWorld = boundingShape2D.transform.localToWorldMatrix;
+                        m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         var path = new Vector2[compositeCollider2D.pointCount];
                         for (var i = 0; i < compositeCollider2D.pathCount; ++i)
                         {
                             var numPoints = compositeCollider2D.GetPath(i, path);
                             var dst = new List<Vector2>();
                             for (var j = 0; j < numPoints; ++j)
-                                dst.Add(m_bakedToWorld.MultiplyPoint3x4(path[j]));
-                            m_OriginalPath.Add(dst);
+                                dst.Add(m_BakedToWorld.MultiplyPoint3x4(path[j]));
+                            OriginalPath.Add(dst);
                         }
                     }
                         break;
@@ -343,10 +343,10 @@ namespace Cinemachine
                         return false;
                 }
                 
-                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize);
-                m_aspectRatio = aspectRatio;
-                m_boundingShape2D = boundingShape2D;
-                m_maxWindowSize = maxWindowSize;
+                ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, maxWindowSize);
+                m_AspectRatio = aspectRatio;
+                m_BoundingShape2D = boundingShape2D;
+                m_MaxWindowSize = maxWindowSize;
 
                 CalculateDeltaTransformationMatrix();
 
