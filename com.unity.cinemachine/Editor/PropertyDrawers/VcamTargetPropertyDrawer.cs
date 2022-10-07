@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
 
             var oldEnabled = GUI.enabled;
             var target = property.objectReferenceValue as Transform;
-            if (target == null || target.GetComponent<CinemachineTargetGroup>() != null)
+            if (target == null || target.TryGetComponent<CinemachineTargetGroup>(out var _))
                 GUI.enabled = false;
             if (GUI.Button(rect, EditorGUIUtility.IconContent("_Popup"), GUI.skin.label))
             {

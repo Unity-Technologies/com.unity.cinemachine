@@ -10,7 +10,7 @@ To add this extension to your CmCameras, use the __Add Extension__ dropdown menu
 
 For each CmCamera attached with this extension, the Pixel Perfect Camera component then calculates a pixel-perfect orthographic size that best matches the original size of the CmCamera during __Play Mode __ or when __Run In Edit Mode__ is enabled. This is done to match the original framing of each CmCamera as close as possible when the pixel-perfect calculations are implemented.
 
-When the [Cinemachine Brain](CinemachineBrainProperties.md) component [blends](CinemachineBlending.md) between multiple CmCameras, the rendered image is temporarily not pixel-perfect during the transition between cameras. The image becomes pixel-perfect once the view fully transitions to a single CmCamera.
+When the [Cinemachine Brain](CinemachineBrain.md) component [blends](CinemachineBlending.md) between multiple CmCameras, the rendered image is temporarily not pixel-perfect during the transition between cameras. The image becomes pixel-perfect once the view fully transitions to a single CmCamera.
 
 The following are the current limitations of the extension:
 

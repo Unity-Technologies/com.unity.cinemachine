@@ -10,7 +10,7 @@ The Cinemachine Post Processing extension holds a Post-Processing Profile asset 
 
 Before attaching post processing profiles to CmCameras, you first need to set up your project to use post processing. 
 
-To set up project to use Post Processing V2 with Cinemachine:
+To set up a project to use Post Processing V2 with Cinemachine:
 
 1. [Install](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html) the Postprocessing V2 package.
 
@@ -30,13 +30,13 @@ To add a Post Process profile to a CmCamera
 |:---||:---|
 | __Profile__ || The Post-Processing profile to activate when this CmCamera is live. |
 | __Focus Tracks Target__ || This is obsolete, please use __Focus Tracking__. |
-| __Focus Tracking__ || If the profile has the appropriate overrides, will set the base focus distance to be the distance from the selected target to the camera.  The __Focus Offset__ field will then modify that distance. |
-|| _None_ | No focus tracking |
-|| _Look At Target_ | Focus offset is relative to the LookAt target |
-|| _Follow Target_ | Focus offset is relative to the Follow target |
-|| _Custom Target_ | Focus offset is relative to the Custom target |
+| __Focus Tracking__ || If the profile has the appropriate overrides, will set the base focus distance to be the distance from the selected target to the camera. The __Focus Offset__ field will then modify that distance. |
+|| _None_ | No focus tracking. |
+|| _Look At Target_ | Focus offset is relative to the LookAt target. |
+|| _Follow Target_ | Focus offset is relative to the Follow target. |
+|| _Custom Target_ | Focus offset is relative to the Custom target. |
 || _Camera_ | Focus offset is relative to the camera |
-| __Focus Target__ || The target to use if __Focus Tracks Target__ is set to _Custom Target_ |
+| __Focus Target__ || The target to use if __Focus Tracks Target__ is set to _Custom Target_.|
 | __Focus Offset__ || Used when __Focus Tracking__ is not _None_.  Offsets the sharpest point away from the location of the focus target. |
 
 

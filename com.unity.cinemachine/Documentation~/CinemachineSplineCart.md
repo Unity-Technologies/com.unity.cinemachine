@@ -7,7 +7,7 @@ __Cinemachine Spline Cart__ is a component that constrains the transform of its 
 | **Property:** || **Function:** |
 |:---|:---|:---
 | __Spline__ || The spline to follow. |
-| __Update Method__ || When to move the cart when speed is non-zero. Use __Update__ or __LateUpdate__ for normal updating, __Fixed Update__ for updates in sync with the Physics module. |
+| __Update Method__ || When to move the cart when speed is non-zero. Use __Update__ or __LateUpdate__ for normal updating and use __Fixed Update__ for updates in sync with the Physics module. |
 | __Position Units__ || The unit of measure for __Position__.  |
 | | _Knot_ | Use knots along the spline. The value 0 represents the first knot on the spline, 1 is the second knot, and so on. Non-integer values represent points in between the knots |
 | | _Distance_ | Distance along the spline, in normal distance units. 0 is the beginning of the spline. |

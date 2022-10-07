@@ -312,9 +312,9 @@ namespace Cinemachine
 
                 // Update the volume's layer so it will be seen
 #if CINEMACHINE_HDRP
-                var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
+                brain.gameObject.TryGetComponent<HDAdditionalCameraData>(out var data);
 #elif CINEMACHINE_LWRP_7_3_1
-                var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
+                brain.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var data);
 #endif
                 if (data != null)
                 {

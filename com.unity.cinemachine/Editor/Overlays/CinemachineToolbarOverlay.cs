@@ -209,10 +209,9 @@ namespace Cinemachine.Editor
             var active = Selection.activeObject as GameObject;
             if (active != null)
             {
-                var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
-                if (orbitalFollow != null && 
-                    CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) &&
-                    orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
+                if (active.TryGetComponent<CinemachineOrbitalFollow>(out var orbitalFollow)
+                    && CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) 
+                    && orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
                 {
                     style.display = DisplayStyle.Flex; // display menu
                    
@@ -244,8 +243,7 @@ namespace Cinemachine.Editor
                     var active = Selection.activeObject as GameObject;
                     if (active != null)
                     {
-                        var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
-                        if (orbitalFollow != null)
+                        if (active.TryGetComponent<CinemachineOrbitalFollow>(out var orbitalFollow))
                         {
                             orbitalFollow.VerticalAxis.Value = s_SelectedOrbit switch
                             {

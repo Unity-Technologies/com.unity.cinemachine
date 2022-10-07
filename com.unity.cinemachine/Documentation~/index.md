@@ -14,7 +14,7 @@ Cinemachine works well with other Unity tools, acting as a powerful complement t
 
 Cinemachine is a free package, available for any project. You install Cinemachine like [any other package](https://docs.unity3d.com/Packages/com.unity.package-manager-ui@latest/index.html).
 
-After you install Cinemachine, a new __GameObject > Cinemachine__ menu is available. You can also access this menu when you right click inside the Hierarchy view.
+After you install Cinemachine, a new __GameObject > Cinemachine__ menu is available. You can also access this menu when you right-click inside the Hierarchy view.
 
 ![Cinemachine menu in the Unity Editor](images/CinemachineMenu.png)
 
@@ -30,13 +30,13 @@ This version of Cinemachine is supported by the following versions of the Unity 
 
 ### Upgrading from previous versions of Cinemachine
 
-Cinemachine 3.0 is a major version change from CM 2.X, and the API and data format have changed significantly.  Scripts written for the CM 2.X API are unlikely to run with 3.X without manual intervention.  Also, the CM Camera instances in your project will themselves need upgrading.
+Cinemachine 3.0 is a major version change from CM 2.X, and the API and data format have changed significantly. Scripts written for the CM 2.X API are unlikely to run with 3.X without manual intervention. Also, the CM Camera instances in your project will themselves need upgrading.
 
-While is is possible to upgrade an existing project from CM 2.X, you should think carefully about whether you are willing to put in the work.  It might be better in many cases just to stick with CM 2.X, which will continue to be supported for a while in parallel with CM 3.X.  If you do choose to upgrade your project, please see the upgrade guide located [here](https://to be written).
+While it is possible to upgrade an existing project from CM 2.X, you should think carefully about whether you are willing to put in the work. It might be better in many cases just to stick with CM 2.X, which will continue to be supported for a while in parallel with CM 3.X.  If you do choose to upgrade your project, please see the upgrade guide located [here](https://to be written).
 
 ### Upgrading from the old Asset Store version of Cinemachine
 
-If you already installed a very old version Cinemachine from the Unity Asset Store, you should upgrade to the Cinemachine Package.  It is recommended in this case to upgrade to Cinemachine 2.X, which in most cases is completely automatic.
+If you already installed a very old version of Cinemachine from the Unity Asset Store, you should upgrade to the Cinemachine Package. It is recommended in this case to upgrade to Cinemachine 2.X, which in most cases is completely automatic.
 
 To upgrade to the Cinemachine Package:
 
