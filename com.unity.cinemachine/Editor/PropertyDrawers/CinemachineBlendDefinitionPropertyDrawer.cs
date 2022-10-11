@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
             SerializedProperty timeProp = property.FindPropertyRelative(() => myClass.m_Time);
-            GUIContent timeText = new GUIContent(" s", timeProp.tooltip);
+            GUIContent timeText = new GUIContent(" ", timeProp.tooltip);
             var textDimensions = GUI.skin.label.CalcSize(timeText);
 
             rect = EditorGUI.PrefixLabel(rect, EditorGUI.BeginProperty(rect, label, property));
@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth }});
 
             var timeProp = property.FindPropertyRelative(() => myClass.m_Time);
-            var timeWidget = row.Right.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
+            var timeWidget = row.Right.AddChild(new InspectorUtility.CompactPropertyField(timeProp, " ")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 5 }});
 
             OnStyleChanged(styleProp);

@@ -122,7 +122,7 @@ namespace Cinemachine.Editor
                     EditorGUI.LabelField(rect, "Style");
 
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
-                    EditorGUI.LabelField(rect, "Time");
+                    EditorGUI.LabelField(rect, "Time (s)");
                 };
 
             m_BlendList.drawElementCallback
