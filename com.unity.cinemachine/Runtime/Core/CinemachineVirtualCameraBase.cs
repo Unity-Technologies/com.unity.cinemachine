@@ -405,11 +405,9 @@ namespace Cinemachine
         [Flags]
         public enum BlendHint
         {
-            /// <summary>Spherical blend about LookAt target position if there is a LookAt target, 
-            /// linear blend between LookAt targets</summary>
+            /// <summary>Spherical blend about Tracking target position</summary>
             SphericalPosition = 1,
-            /// <summary>Cylindrical blend about LookAt target position if there is a LookAt target 
-            /// (vertical co-ordinate is linearly interpolated), linear blend between LookAt targets</summary>
+            /// <summary>Cylindrical blend about Tracking target position (vertical co-ordinate is linearly interpolated)</summary>
             CylindricalPosition = 2,
             /// <summary>Screen-space blend between LookAt targets instead of world space lerp of target position</summary>
             ScreenSpaceAimWhenTargetsDiffer = 4,
