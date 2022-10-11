@@ -106,7 +106,10 @@ namespace Cinemachine
 
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
-
+    
+    /// <summary>Property should be treated as enum flags.</summary>
+    public sealed class EnumMaskPropertyAttribute : PropertyAttribute {}
+    
     /// <summary>Property field is a NoiseSettings asset.</summary>
     public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
     

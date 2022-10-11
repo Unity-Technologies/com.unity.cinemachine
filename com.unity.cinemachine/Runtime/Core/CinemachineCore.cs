@@ -24,8 +24,7 @@ namespace Cinemachine
         public static readonly int kStreamingVersion = 20220721;
 
         /// <summary>
-        /// Stages in the Cinemachine Component pipeline, used for
-        /// UI organization>.  This enum defines the pipeline order.
+        /// Stages in the Cinemachine Component pipeline.  This enum defines the pipeline order.
         /// </summary>
         public enum Stage
         {
@@ -43,7 +42,7 @@ namespace Cinemachine
             /// types, after the pipeline is complete</summary>
             Finalize
         };
-
+        
         static CinemachineCore s_Instance = null;
 
         /// <summary>Get the singleton instance</summary>
@@ -243,7 +242,7 @@ namespace Cinemachine
         static int s_FixedFrameCount; // Current fixed frame count
 
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
-        internal void UpdateAllActiveVirtualCameras(int layerMask, Vector3 worldUp, float deltaTime)
+        internal void UpdateAllActiveVirtualCameras(uint channelMask, Vector3 worldUp, float deltaTime)
         {
             // Setup for roundRobin standby updating
             var filter = m_CurrentUpdateFilter;
@@ -276,8 +275,8 @@ namespace Cinemachine
                     if (vcam.StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
                         || IsLive(vcam))
                     {
-                        // Skip this vcam if it's not on the layer mask
-                        if (((1 << vcam.gameObject.layer) & layerMask) != 0)
+                        // Skip this vcam if it's not on the channel mask
+                        if (((uint)vcam.GetChannel() & channelMask) != 0)
                             UpdateVirtualCamera(vcam, worldUp, deltaTime);
                     }
                     else if (currentRoundRobin == null
@@ -516,11 +515,11 @@ namespace Cinemachine
                     if (b != null && b.OutputCamera != null && b.IsLive(vcam))
                         return b;
                 }
-                int layer = 1 << vcam.gameObject.layer;
+                var channel = (uint)vcam.GetChannel();
                 for (int i = 0; i < numBrains; ++i)
                 {
                     var b = GetActiveBrain(i);
-                    if (b != null && b.OutputCamera != null && (b.OutputCamera.cullingMask & layer) != 0)
+                    if (b != null && b.OutputCamera != null && ((uint)b.ChannelMask & channel) != 0)
                         return b;
                 }
             }

@@ -71,6 +71,7 @@ namespace Cinemachine
         void Reset()
         {
             Target = default;
+            CustomOutput = OutputChannel.Default;
             Lens = LensSettings.Default;
         }
 
