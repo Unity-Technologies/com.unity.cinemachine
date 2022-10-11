@@ -193,8 +193,8 @@ namespace Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
 
-            if (Transitions.OnCameraLive != null)
-                Transitions.OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.Events.OnCameraLive != null)
+                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time

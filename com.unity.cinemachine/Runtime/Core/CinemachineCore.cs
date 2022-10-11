@@ -21,7 +21,7 @@ namespace Cinemachine
     public sealed class CinemachineCore
     {
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
-        public static readonly int kStreamingVersion = 20220721;
+        public static readonly int kStreamingVersion = 20221011;
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline, used for
