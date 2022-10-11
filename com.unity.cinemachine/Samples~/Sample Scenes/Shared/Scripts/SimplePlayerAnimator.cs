@@ -3,11 +3,11 @@ using UnityEngine;
 namespace Cinemachine.Examples
 {
     /// <summary>
-    /// Add-on for ThirdPersonController that controls animation for the Cameron character.
+    /// Add-on for SimplePlayerController that controls animation for the Cameron character.
     /// </summary>
-    [RequireComponent(typeof(ThirdPersonController))]
+    [RequireComponent(typeof(SimplePlayerController))]
     [RequireComponent(typeof(Animator))]
-    public class ThirdPersonControllerAnimator : MonoBehaviour
+    public class SimplePlayerAnimator : MonoBehaviour
     {
         // Tune this to the animation in the model: feet should not slide when walking at this speed
         public float NormalWalkSpeed = 1; 
@@ -16,7 +16,7 @@ namespace Cinemachine.Examples
         public float JumpAnimationScale = 1;
 
         Animator m_Animator;
-        ThirdPersonController m_Controller;
+        SimplePlayerController m_Controller;
 
         void Start()
         {
@@ -25,10 +25,11 @@ namespace Cinemachine.Examples
             {
                 m_Controller.StartJump += () => m_Animator.SetTrigger("Jump");
                 m_Controller.EndJump += () => m_Animator.SetTrigger("Land");
+                m_Controller.PostUpdate += UpdateAnimation;
             }
         }
 
-        void LateUpdate()
+        void UpdateAnimation()
         {
             var vel = m_Controller.GetPlayerVelocity();
             var speed = new Vector2(vel.x, vel.z).magnitude;

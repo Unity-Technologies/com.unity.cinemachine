@@ -308,7 +308,7 @@ namespace Cinemachine
                 {
                     case 0: return c.m_CachedAction.ReadValue<Vector2>().x;
                     case 1: return c.m_CachedAction.ReadValue<Vector2>().y;
-                    case 2: return c.m_CachedAction.ReadValue<float>();
+                    default: return c.m_CachedAction.ReadValue<float>();
                 }
             }
             return 0;
