@@ -125,6 +125,40 @@ namespace Tests.Runtime
             yield return null; // wait one frame
             Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
+        
+        [UnityTest]
+        public IEnumerator Test_SimpleSquareConfiner_BoxCollider2D()
+        {
+            var boxCollider2D = CreateGameObject("BoxCollider2DHolder", typeof(BoxCollider2D)).GetComponent<BoxCollider2D>();
+            m_Confiner2D.BoundingShape2D = boxCollider2D;
+            m_Confiner2D.Damping = 0;
+            m_Confiner2D.MaxWindowSize = 0;
+
+            // clockwise
+            boxCollider2D.size = new Vector2(2f, 2f);
+            
+            m_Confiner2D.InvalidateCache();
+
+            m_Vcam.transform.position = Vector3.zero;
+            yield return null; // wait one frame
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+
+            m_Vcam.transform.position = Vector2.left * 2f;
+            yield return null; // wait one frame
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.left).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+
+            m_Vcam.transform.position = Vector2.up * 2f;
+            yield return null; // wait one frame
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.up).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+
+            m_Vcam.transform.position = Vector2.right * 2f;
+            yield return null; // wait one frame
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.right).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+
+            m_Vcam.transform.position = Vector2.down * 2f;
+            yield return null; // wait one frame
+            Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
+        }
     }
 #endif
 }

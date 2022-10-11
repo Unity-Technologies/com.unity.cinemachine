@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add Show Hierarchy Icon preference option
 - New icons for cinemachine (cameras, components, extensions, tracks).
 - Freelook ForcePosition is more precise now.
+- Confiner2D supports BoxCollider2D now.
 
 
 ## [3.0.0-pre.1] - 2022-06-01
