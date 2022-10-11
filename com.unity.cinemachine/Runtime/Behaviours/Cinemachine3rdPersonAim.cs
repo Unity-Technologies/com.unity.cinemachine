@@ -33,14 +33,6 @@ namespace Cinemachine
         [Tooltip("How far to project the object detection ray")]
         public float AimDistance;
 
-        /// <summary>This 2D object will be positioned in the game view over the raycast hit point, 
-        /// if any, or will remain in the center of the screen if no hit point is 
-        /// detected.  May be null, in which case no on-screen indicator will appear.</summary>
-        [Tooltip("This 2D object will be positioned in the game view over the raycast hit point, if any, "
-            + "or will remain in the center of the screen if no hit point is detected.  "
-            + "May be null, in which case no on-screen indicator will appear")]
-        public RectTransform AimTargetReticle;
-
         /// <summary>World space position of where the player would hit if a projectile were to 
         /// be fired from the player origin.  This may be different
         /// from state.ReferenceLookAt due to camera offset from player origin.</summary>
@@ -56,28 +48,6 @@ namespace Cinemachine
             AimCollisionFilter = 1;
             IgnoreTag = string.Empty;
             AimDistance = 200.0f;
-            AimTargetReticle = null;
-        }
-
-        /// <summary>Notification that this virtual camera is going live.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <returns>True to request a vcam update of internal state</returns>
-        public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) 
-        { 
-            CinemachineCore.CameraUpdatedEvent.RemoveListener(DrawReticle);
-            CinemachineCore.CameraUpdatedEvent.AddListener(DrawReticle);
-            return false; 
-        }
-
-        void DrawReticle(CinemachineBrain brain)
-        {
-            if (!brain.IsLive(VirtualCamera) || brain.OutputCamera == null)
-                CinemachineCore.CameraUpdatedEvent.RemoveListener(DrawReticle);
-            else if (AimTargetReticle != null)
-                AimTargetReticle.position = brain.OutputCamera.WorldToScreenPoint(AimTarget);
         }
 
         Vector3 ComputeLookAtPoint(Vector3 camPos, Transform player)
