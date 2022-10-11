@@ -119,6 +119,9 @@ namespace Cinemachine
         /// <summary>The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. 
         /// CmCameras that do not output to one of these channels will be ignored.  Use this in situations where multiple
         /// CinemachineBrains are needed (for example, Split-screen).</summary>
+        [Tooltip("The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. "
+            + "CmCameras that do not output to one of these channels will be ignored.  Use this in situations "
+            + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
         [EnumMaskProperty]
         public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
 
