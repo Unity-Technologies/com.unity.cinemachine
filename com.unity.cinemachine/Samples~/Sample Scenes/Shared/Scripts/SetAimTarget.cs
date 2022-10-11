@@ -13,7 +13,7 @@ public class SetAimTarget : MonoBehaviour
     {
         if (AimTarget != null && CmCamera != null && CinemachineCore.Instance.IsLive(CmCamera))
         {
-            if (CmCamera.TryGetComponent<Cinemachine3rdPersonAim>(out var aim))
+            if (CmCamera.TryGetComponent<Cinemachine3rdPersonAim>(out var aim) && aim.enabled)
             {
                 AimTarget.position = aim.AimTarget;
             }
