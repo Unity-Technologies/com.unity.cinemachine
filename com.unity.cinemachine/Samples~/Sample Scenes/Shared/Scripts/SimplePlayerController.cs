@@ -5,7 +5,7 @@ using System;
 
 namespace Cinemachine.Examples
 {
-    public class ThirdPersonController : MonoBehaviour, IInputAxisSource
+    public class SimplePlayerController : MonoBehaviour, IInputAxisSource
     {
         public float Speed = 1f;
         public float SprintSpeed = 4;
@@ -21,6 +21,8 @@ namespace Cinemachine.Examples
 
         public bool Strafe = false;
 
+        public Action PreUpdate;
+        public Action PostUpdate;
         public Action StartJump;
         public Action EndJump;
 
@@ -38,6 +40,7 @@ namespace Cinemachine.Examples
         public InputAxis Sprint = new InputAxis { Range = new Vector2(0, 1) };
 
         Vector3 m_CurrentVelocityXZ;
+        Vector3 m_LastInput;
         float m_CurrentVelocityY;
         bool m_IsSprinting;
         bool m_IsJumping;
@@ -56,6 +59,7 @@ namespace Cinemachine.Examples
 
         public bool IsSprinting => m_IsSprinting;
         public bool IsJumping => m_IsJumping;
+        public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
 
         /// Report the available input axes to the input axis controller.
         /// We use the Input Axis Controller because it works with both the Input package
@@ -83,6 +87,8 @@ namespace Cinemachine.Examples
 
         void Update()
         {
+            PreUpdate?.Invoke();
+
             // Process Jump and gravity
             bool justLanded = ProcessJump();
 
@@ -91,19 +97,23 @@ namespace Cinemachine.Examples
                 return; // no input frame, give up
 
             // Read the input from the user and put it in the input frame
-            var input = inputFrame * new Vector3(MoveX.Value, 0, MoveZ.Value);
-            if (input.sqrMagnitude > 1)
-                input.Normalize();
+            m_LastInput = inputFrame * new Vector3(MoveX.Value, 0, MoveZ.Value);
+            if (m_LastInput.sqrMagnitude > 1)
+                m_LastInput.Normalize();
 
             // Compute the new velocity and move the player, but only if not mid-jump
             if (!m_IsJumping)
             {
                 m_IsSprinting = Sprint.Value > 0.5f;
-                var desiredVelocity = input * (m_IsSprinting ? SprintSpeed : Speed);
+                var desiredVelocity = m_LastInput * (m_IsSprinting ? SprintSpeed : Speed);
                 var damping = justLanded ? 0 : Damping;
-                m_CurrentVelocityXZ = Vector3.Slerp(
-                    m_CurrentVelocityXZ, desiredVelocity, 
-                    Damper.Damp(1, damping, Time.deltaTime));
+                if (Vector3.Angle(m_CurrentVelocityXZ, desiredVelocity) < 100)
+                    m_CurrentVelocityXZ = Vector3.Slerp(
+                        m_CurrentVelocityXZ, desiredVelocity, 
+                        Damper.Damp(1, damping, Time.deltaTime));
+                else
+                    m_CurrentVelocityXZ += Damper.Damp(
+                        desiredVelocity - m_CurrentVelocityXZ, damping, Time.deltaTime);
             }
             
             // Apply the position change
@@ -120,6 +130,8 @@ namespace Cinemachine.Examples
                 var damping = justLanded ? 0 : Damping;
                 transform.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
             }
+
+            PostUpdate?.Invoke();
         }
 
         Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
