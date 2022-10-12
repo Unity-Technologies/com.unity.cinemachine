@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New icons for cinemachine (cameras, components, extensions, tracks).
 - Freelook ForcePosition is more precise now.
 - Confiner2D supports BoxCollider2D now.
-- Cinemachine complies wiht 'Create Objects at Origin' scene preference option.
+- Cinemachine complies with 'Create Objects at Origin' scene preference option.
 
 
 ## [3.0.0-pre.1] - 2022-06-01
