@@ -35,6 +35,7 @@ namespace Cinemachine
         /// If false, default priority of 0 will be used.
         /// If true, the the Priority field is valid.
         /// </summary>
+        [Tooltip("Enable this to expose the Priority and Output Channel fields")]
         public bool Enabled;
 
         /// <summary>
