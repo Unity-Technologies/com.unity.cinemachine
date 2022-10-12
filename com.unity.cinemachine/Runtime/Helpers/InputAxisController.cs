@@ -33,6 +33,21 @@ namespace Cinemachine
             /// <summary>Identifies this owner of the axis controlled by this controller</summary>
             [HideInInspector] public UnityEngine.Object Owner;
 
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            /// <summary>Action for the Input package (if used).</summary>
+            [Tooltip("Action for the Input package (if used).")]
+            public InputActionReference InputAction;
+
+            /// <summary>The input value is multiplied by this amount prior to processing.
+            /// Controls the input power.  Set it to a negative value to invert the input</summary>
+            [Tooltip("The input value is multiplied by this amount prior to processing.  "
+                + "Controls the input power.  Set it to a negative value to invert the input")]
+            public float Gain;
+
+            /// <summary>The actual action, resolved for player</summary>
+            internal InputAction m_CachedAction;
+#endif
+
 #if ENABLE_LEGACY_INPUT_MANAGER
             /// <summary>Axis name for the Legacy Input system (if used).  
             /// CinemachineCore.GetInputAxis() will be called with this name.</summary>
@@ -48,20 +63,6 @@ namespace Cinemachine
             public float LegacyGain;
 #endif
 
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            /// <summary>Action for the Input package (if used).</summary>
-            [Tooltip("Action for the Input package (if used).")]
-            public InputActionReference InputAction;
-
-            /// <summary>The input value is multiplied by this amount prior to processing.
-            /// Controls the input power.  Set it to a negative value to invert the input</summary>
-            [Tooltip("The input value is multiplied by this amount prior to processing.  "
-                + "Controls the input power.  Set it to a negative value to invert the input")]
-            public float Gain;
-
-            /// <summary>The actual action, resolved for player</summary>
-            internal InputAction m_CachedAction;
-#endif
             /// <summary>Setting that control the way the input axis responds to user input</summary>
             [HideFoldout]
             public InputAxisControl Control;

@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(TagFieldAttribute))]
-    class CinemachineTagFieldPropertyDrawer : PropertyDrawer
+    class TagFieldPropertyDrawer : PropertyDrawer
     {
         const float hSpace = 2;
         private string tagValue = "";
