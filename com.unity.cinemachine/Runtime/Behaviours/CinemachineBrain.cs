@@ -1,3 +1,5 @@
+//#define RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
+
 using Cinemachine.Utility;
 using System;
 using System.Collections;
@@ -1013,15 +1015,21 @@ namespace Cinemachine
                 if (cam != null)
                 {
                     bool isPhysical = cam.usePhysicalProperties;
+#if RESET_PROJECTION_MATRIX
                     cam.ResetProjectionMatrix();
+#endif
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
                     
+#if RESET_PROJECTION_MATRIX
                     if (!LensModeOverride.Enabled)
                         cam.usePhysicalProperties = isPhysical; // because ResetProjectionMatrix resets it
                     else
+#else
+                    if (LensModeOverride.Enabled)
+#endif
                     {
                         if (state.Lens.ModeOverride != LensSettings.OverrideModes.None)
                         {
