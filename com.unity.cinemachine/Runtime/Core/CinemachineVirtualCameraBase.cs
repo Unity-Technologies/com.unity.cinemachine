@@ -524,13 +524,14 @@ namespace Cinemachine
             [Serializable]
             public struct TransitionEvents
             {
-                /// <summary>This event fires when the virtual camera goes Live</summary>
-                [Tooltip("This event fires when the virtual camera goes Live")]
+                /// <summary>This event fires when the CmCamera goes Live</summary>
+                [Tooltip("This event fires when the CmCamera goes Live")]
                 public CinemachineBrain.VcamActivatedEvent OnCameraLive;
             }
             /// <summary>
             /// These events fire when a transition occurs
             /// </summary>
+            [Tooltip("These events fire when a transition occurs")]
             public TransitionEvents Events;
         }
 

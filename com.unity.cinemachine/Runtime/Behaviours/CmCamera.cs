@@ -64,8 +64,8 @@ namespace Cinemachine
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         public LensSettings Lens = LensSettings.Default;
 
-        /// <summary> Collection of parameters that influence how this CM camera transitions from
-        /// other CM cameras </summary>
+        /// <summary>Parameters that influence how this CmCamera transitions from other CmCameras.</summary>
+        [Tooltip("Parameters that influence how this CmCamera transitions from other CmCameras")]
         public TransitionParams Transitions;
 
         void Reset()
