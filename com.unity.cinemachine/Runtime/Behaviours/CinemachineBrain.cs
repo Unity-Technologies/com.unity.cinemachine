@@ -1014,13 +1014,14 @@ namespace Cinemachine
                 {
                     bool isPhysical = cam.usePhysicalProperties;
                     cam.ResetProjectionMatrix();
-                    cam.usePhysicalProperties = isPhysical;
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
                     
-                    if (LensModeOverride.Enabled)
+                    if (!LensModeOverride.Enabled)
+                        cam.usePhysicalProperties = isPhysical; // because ResetProjectionMatrix resets it
+                    else
                     {
                         if (state.Lens.ModeOverride != LensSettings.OverrideModes.None)
                         {

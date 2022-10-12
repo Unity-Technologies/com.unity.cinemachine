@@ -273,7 +273,7 @@ namespace Cinemachine
             NearClipPlane = nearClip;
             FarClipPlane = farClip;
             Dutch = dutch;
-            m_SensorSize = Vector3.one;
+            m_SensorSize = Vector2.one;
             GateFit = Camera.GateFitMode.Horizontal;
 
 #if CINEMACHINE_HDRP
