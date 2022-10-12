@@ -507,8 +507,12 @@ namespace Cinemachine
         [Serializable]
         public struct TransitionParams
         {
-            /// <summary>Hint for transitioning to and from this virtual camera</summary>
-            [Tooltip("Hint for transitioning to and from this virtual camera")]
+            /// <summary>Hint for transitioning to and from this CmCamera.  Hints can be combined, although 
+            /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+            /// make an arbitrary choice.</summary>
+            [Tooltip("Hint for transitioning to and from this CmCamera.  Hints can be combined, although "
+                + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+                + "make an arbitrary choice.")]
             public BlendHint BlendHint;
 
             /// <summary>Shortcut to read InheritPosition flag in BlendHint</summary>
