@@ -57,7 +57,6 @@ namespace Cinemachine
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
         [Tooltip("The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs")]
-        [AxisStateProperty]
         public AxisState m_YAxis = new AxisState(0, 1, false, true, 2f, 0.2f, 0.1f, "Mouse Y", false);
 
         /// <summary>Controls how automatic recentering of the Y axis is accomplished</summary>
@@ -68,11 +67,9 @@ namespace Cinemachine
         /// the rigs' OrbitalTransposer component</summary>
         [Tooltip("The Horizontal axis.  Value is -180...180.  "
             + "This is passed on to the rigs' OrbitalTransposer component")]
-        [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
         /// <summary>The definition of Forward.  Camera will follow behind</summary>
-        [OrbitalTransposerHeadingProperty]
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public CinemachineOrbitalTransposer.Heading m_Heading
             = new CinemachineOrbitalTransposer.Heading(
