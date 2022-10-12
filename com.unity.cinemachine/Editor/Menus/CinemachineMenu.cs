@@ -275,10 +275,7 @@ namespace Cinemachine.Editor
 
             // We use ObjectFactory to create a new GameObject as it automatically supports undo/redo
             var go = ObjectFactory.CreateGameObject(name);
-            T component = Undo.AddComponent<T>(go);
-
-            if (parentObject != null)
-                Undo.SetTransformParent(go.transform, parentObject.transform, "Set parent of " + name);
+            var component = Undo.AddComponent<T>(go);
 
             // We ensure that the new object has a unique name, for example "Camera (1)".
             // This must be done after setting the parent in order to get an accurate unique name
@@ -286,8 +283,8 @@ namespace Cinemachine.Editor
 
             // We set the new object to be at the current pivot of the scene.
             // GML TODO: Support the "Place Objects At World Origin" preference option in 2020.3+, see GOCreationCommands.cs
-            if (SceneView.lastActiveSceneView != null)
-                go.transform.position = SceneView.lastActiveSceneView.pivot;
+            // Place vcam as set by the unity editor preferences
+            ObjectFactory.PlaceGameObject(go, parentObject);
 
             if (select)
                 Selection.activeGameObject = go;
