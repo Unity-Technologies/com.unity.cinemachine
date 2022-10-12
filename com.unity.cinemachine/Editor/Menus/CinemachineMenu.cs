@@ -239,7 +239,7 @@ namespace Cinemachine.Editor
                 var src = SceneView.lastActiveSceneView.camera;
                 // Respect scene view preferences - Create Objects at Origin:
                 // only set position and rotation, if sceneObject is not in the exact center
-                if (sceneObject.transform.position != Vector3.zero)
+                if (!AtOrigin(sceneObject.transform.position))
                     sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
                 if (lens.Orthographic == src.orthographic)
                 {
@@ -250,6 +250,8 @@ namespace Cinemachine.Editor
                 }
             }
             return lens;
+
+            static bool AtOrigin(Vector3 a) => a.x == 0f && a.y == 0f && a.z == 0f;
         }
 
         /// <summary>
