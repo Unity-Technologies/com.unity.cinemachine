@@ -57,7 +57,6 @@ namespace Cinemachine.Editor
                 }
                 else
                 {
-#pragma warning disable CS0219 // Variable is assigned but its value is never used
                     // Draw the input value on the same line as the foldout, for convenience
                     SerializedProperty actionProperty = null;
                     SerializedProperty legacyProperty = null;
@@ -93,7 +92,6 @@ namespace Cinemachine.Editor
                         EditorGUI.indentLevel = oldIndent;
                         EditorGUIUtility.labelWidth = oldLabelWidth;
                     }
-#pragma warning restore CS0219 // Variable is assigned but its value is never used
                 }
             }
             if (EditorGUI.EndChangeCheck())
