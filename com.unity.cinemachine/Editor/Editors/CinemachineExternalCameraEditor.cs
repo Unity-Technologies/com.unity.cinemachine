@@ -26,9 +26,9 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             m_CameraUtility.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraPriority)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TransitionBlendHint)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TransitionHint)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LookAtTarget)));
 
             return ux;

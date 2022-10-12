@@ -25,7 +25,9 @@ However, the real magic comes when you add Procedural Components to bring the ca
 | __Solo__ || Toggles whether or not the CmCamera is temporarily live. Use this property to get immediate visual feedback in the [Game view](https://docs.unity3d.com/Manual/GameView.html) to adjust the CmCamera. |
 | __Game View Guides__ || Toggles the visibility of compositional guides in the Game view. These guides are available when Tracking Target specifies a GameObject and the CmCamera has a screen-composition behavior, such as Position Composer or Rotation Composer. This setting is shared by all CmCameras. |
 | __Save During Play__ || Check to [apply the changes while in Play mode](CinemachineSavingDuringPlay.md).  Use this feature to fine-tune a CmCamera without having to remember which properties to copy and paste. This setting is shared by all CmCameras. |
-| __Priority__ || This is used to control which of several active CmCameras should be live, when not controlled by Timeline. By default, priority is 0.  Enable this to specify a custom priority value. A higher value indicates a higher priority. Negative values are also allowed. Cinemachine Brain chooses the next live CmCamera from all CmCameras that are activated and have the same or higher priority as the current live CmCamera. This property has no effect when using a CmCamera with Timeline. |
+| __Custom Output__ || This setting controls how the output of this CmCamera is used by the CinemachineBrain.  Enable this to use Priorities or custom CM output channels. |
+|| _Channel_ | This controls which CinemachineBrain will be driven by this camera.  It is needed when there are multiple CinemachineBrains in the scene (for example, when implementing split-screen). |
+|| _Priority_ | This is used to control which of several active CmCameras should be live, when not controlled by Timeline. By default, priority is 0.  Use this to specify a custom priority value. A higher value indicates a higher priority. Negative values are also allowed. Cinemachine Brain chooses the next live CmCamera from all CmCameras that are activated and have the same or higher priority as the current live CmCamera. This property has no effect when using a CmCamera with Timeline. |
 | __Tracking Target__ || The target GameObject that the CmCamera procedurally follows. The procedural algorithms use this target as input when updating the position and rotation of the Unity camera. |
 | __Look At Target__ || If enabled, this specifies a distinct target GameObject at which to aim the Unity camera. The [Rotation Control properties](CinemachineVirtualCameraAim.md) use this target to update the rotation of the Unity camera. |
 | __Standby Update__ || Controls how often the CmCamera is updated when the CmCamera is not live. |
@@ -41,8 +43,11 @@ However, the real magic comes when you add Procedural Components to bring the ca
 | | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |
 | | _Perspective_ | Sets the __Projection__ property to __Perspective__ and *disables* the __Physical Camera__ feature and properties. |
 | | _Physical_ | Sets the __Projection__ property to __Perspective__ and *enables* the __Physical Camera__ feature and properties. |
-| __Blend Hint__ || Provides hints for blending positions to and from the CmCamera. |
-| __Inherit Position__ || When enabled, whenever this CmCamera goes live, forces the initial position to be the same as the current position of the Unity Camera, if possible. |
+| __Blend Hint__ || Provides hints for blending positions to and from the CmCamera. Values can be combined together. |
+| | _Spherical Position_ | During a blend, camera will take a spherical path around the Tracking target. |
+| | _Cylindrical Position_ | During a blend, camera will take a cylindrical path around the Tracking target (vertical co-ordinate is linearly interpolated). |
+| | _Screen Space Aim When Targets Differ_ | During a blend, Tracking target position will interpolate in screen space instead of world space. |
+| | _Inherit Position_ | When this CmCamera goes live, force the initial position to be the same as the current position of the Unity Camera, if possible. |
 | __Position Control__ || Shortcut for setting the procedural positioning behavior of the CmCamera.  |
 | __Rotation Control__ || Shortcut for setting the procedural rotation behavior of the CmCamera.  |
 | __Noise__ || Shortcut for setting the procedural noise behavior of the CmCamera.  |

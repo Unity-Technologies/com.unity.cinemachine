@@ -47,12 +47,7 @@ namespace Cinemachine
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
-        public TransitionParams m_Transitions;
-
-        /// <summary>Legacy support</summary>
-        [SerializeField] [HideInInspector]
-        [FormerlySerializedAs("m_BlendHint")]
-        [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
+        public TransitionParams Transitions;
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
@@ -123,23 +118,49 @@ namespace Cinemachine
         private float m_LegacyHeadingBias = float.MaxValue;
         bool mUseLegacyRigDefinitions = false;
 
-        internal protected override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
+        [Serializable]
+        struct LegacyTransitionParams
         {
-            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
+            [FormerlySerializedAs("m_PositionBlending")]
+            public int m_BlendHint;
+            public bool m_InheritPosition;
+            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+        }
+        [FormerlySerializedAs("m_Transitions")]
+        [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
-            if (m_LegacyHeadingBias != float.MaxValue)
+        internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        {
+            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
+            if (streamedVersion < 20221011)
             {
-                m_Heading.m_Bias= m_LegacyHeadingBias;
-                m_LegacyHeadingBias = float.MaxValue;
-                int heading = (int)m_Heading.m_Definition;
-                if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
-                    m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
-                mUseLegacyRigDefinitions = true;
-            }
-            if (m_LegacyBlendHint != BlendHint.None)
-            {
-                m_Transitions.BlendHint = m_LegacyBlendHint;
-                m_LegacyBlendHint = BlendHint.None;
+                if (m_LegacyHeadingBias != float.MaxValue)
+                {
+                    m_Heading.m_Bias= m_LegacyHeadingBias;
+                    m_LegacyHeadingBias = float.MaxValue;
+                    int heading = (int)m_Heading.m_Definition;
+                    if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
+                        m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
+                    mUseLegacyRigDefinitions = true;
+                }
+                if (m_LegacyTransitions.m_BlendHint != 0)
+                {
+                    if (m_LegacyTransitions.m_BlendHint == 3)
+                        Transitions.BlendHint = BlendHint.ScreenSpaceAimWhenTargetsDiffer;
+                    else
+                        Transitions.BlendHint = (BlendHint)m_LegacyTransitions.m_BlendHint;
+                    m_LegacyTransitions.m_BlendHint = 0;
+                }
+                if (m_LegacyTransitions.m_InheritPosition)
+                {
+                    Transitions.BlendHint |= BlendHint.InheritPosition;
+                    m_LegacyTransitions.m_InheritPosition = false;
+                }
+                if (m_LegacyTransitions.m_OnCameraLive != null)
+                {
+                    Transitions.Events.OnCameraLive = m_LegacyTransitions.m_OnCameraLive;
+                    m_LegacyTransitions.m_OnCameraLive = null;
+                }
             }
         }
         
@@ -232,6 +253,7 @@ namespace Cinemachine
         {
             DestroyRigs();
             UpdateRigCache();
+            PriorityAndChannel = OutputChannel.Default;
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
@@ -269,7 +291,7 @@ namespace Cinemachine
 
         /// <summary>Returns the TransitionParams settings</summary>
         /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => m_Transitions;
+        public override TransitionParams GetTransitionParams() => Transitions;
 
         /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
@@ -361,7 +383,7 @@ namespace Cinemachine
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it
@@ -406,7 +428,7 @@ namespace Cinemachine
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
 //            m_YAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.InheritPosition 
+            if (fromCam != null && Transitions.InheritPosition 
                 && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
@@ -429,8 +451,8 @@ namespace Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (m_Transitions.OnCameraLive != null)
-                m_Transitions.OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.Events.OnCameraLive != null)
+                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
         
         bool AxisState.IRequiresInput.RequiresInput() => true;

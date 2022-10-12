@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Freelook ForcePosition is more precise now.
 - Confiner2D supports BoxCollider2D now.
 - Added "Place Objects At World Origin" preference option support.
+- Added Channel setting, to use for multiple CM Brains, instead of piggybacking on the layer system.
 
 
 ## [3.0.0-pre.1] - 2022-06-01

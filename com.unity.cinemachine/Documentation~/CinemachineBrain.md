@@ -20,7 +20,7 @@ Cinemachine Brain holds the following key properties:
 
 * __Event Dispatching__:  Cinemachine Brain fires events when it changes shot. It fires an event when a CmCamera goes live. It also fires an event when it cuts from one CmCamera to another. Use the latter event to reset temporal post effects.
 
-![Cinemachine Brain, a component in the Unity camera](images/CinemachineBrain.png)
+![Cinemachine Brain, a component in the Unity camera](images/CinemachineBrainInspector.png)
 
 ## Properties:
 
@@ -30,6 +30,7 @@ Cinemachine Brain holds the following key properties:
 | __Show Camera Frustum__ || Check to display the frustum of the camera in the Scene view. |
 | __Ignore Time Scale__ || Check to make the CmCameras respond in real time to user input and damping, even if the game is running in slow motion. |
 | __World Up Override__ || The Y axis of the specified GameObject defines the worldspace up vector for CmCameras. Use this property in top-down game environments. Set to None to use the worldspace Y axis. Setting this appropriately is important to avoid gimbal-lock in extreme up/down conditions. |
+| __Channel Mask__ || The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. CmCameras that do not output to one of these channels will be ignored.  Normally, this value should be left at Default.  Change it in situations where multiple CinemachineBrains are needed (for example, when implementing Split-screen). |
 | __Update Method__ || When to update the position and rotation of the CmCameras.  |
 | | _Fixed Update_ | Synchronize CmCamera update with the Physics module, in FixedUpdate. |
 | | _Late Update_ | In MonoBehaviour LateUpdate. |

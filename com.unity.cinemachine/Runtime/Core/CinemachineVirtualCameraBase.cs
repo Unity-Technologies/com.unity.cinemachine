@@ -15,7 +15,7 @@ namespace Cinemachine
     /// as CmCamera, or meta-cameras such as
     /// CinemachineClearShot or CinemachineBlendListCamera.
     ///
-    /// A CinemachineVirtualCameraBase exposes a CameraPriority property.  When the behaviour is
+    /// A CinemachineVirtualCameraBase exposes a OutputChannel property.  When the behaviour is
     /// enabled in the game, the Virtual Camera is automatically placed in a queue
     /// maintained by the static CinemachineCore singleton.
     /// The queue is sorted by priority.  When a Unity camera is equipped with a
@@ -47,7 +47,8 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        public CameraPriority CameraPriority;
+        [FoldoutWithEnabledButton]
+        public OutputChannel PriorityAndChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
@@ -110,7 +111,7 @@ namespace Cinemachine
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
-                LegacyUpgradeCanBeCalledFromThread(m_StreamingVersion);
+                LegacyUpgradeMayBeCalledFromThread(m_StreamingVersion);
             m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
 
@@ -127,17 +128,17 @@ namespace Cinemachine
         /// it cannot do, including checking a unity object for null.
         /// </summary>
         /// <param name="streamedVersion">The version that was streamed</param>
-        internal protected virtual void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
+        internal protected virtual void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                CameraPriority = new CameraPriority { Priority = m_LegacyPriority, UseCustomPriority = true };
+                PriorityAndChannel.SetPriority(m_LegacyPriority);
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
         int m_LegacyPriority = 10;
 
         /// <summary>Obsolete field - use Priority instead</summary>
-        // GML this does not work because we can't auto-upgrade an int field to an int property :-/
+        // GML Upgradable does not work because we can't auto-upgrade an int field to an int property :-/
         //[Obsolete("m_Priority has been removed.  Please use Priority. (UnityUpgradable) -> Priority", false)]
         [Obsolete("m_Priority has been removed.  Please use Priority.", false)]
         public int m_Priority { get => Priority; set => Priority = value; }
@@ -397,21 +398,26 @@ namespace Cinemachine
         /// in the CinemachineCore's queue of eligible shots.</summary>
         public int Priority 
         { 
-            get => CameraPriority.UseCustomPriority ? CameraPriority.Priority : 0;
-            set => CameraPriority = new CameraPriority { Priority = value, UseCustomPriority = true };
+            get => PriorityAndChannel.GetPriority();
+            set => PriorityAndChannel.SetPriority(value);
         }
 
-        /// <summary>Hint for blending to and from this virtual camera</summary>
+        /// <summary>Get the effective output channel mask.  Returns Channels.Default if Custom Priority is not Enabled.</summary>
+        public OutputChannel.Channels GetChannel() => PriorityAndChannel.GetChannel();
+
+        /// <summary>Hint for transitioning to and from this virtual camera</summary>
+        [Flags]
         public enum BlendHint
         {
-            /// <summary>Standard linear position and aim blend</summary>
-            None,
-            /// <summary>Spherical blend about LookAt target position if there is a LookAt target, linear blend between LookAt targets</summary>
-            SphericalPosition,
-            /// <summary>Cylindrical blend about LookAt target position if there is a LookAt target (vertical co-ordinate is linearly interpolated), linear blend between LookAt targets</summary>
-            CylindricalPosition,
-            /// <summary>Standard linear position blend, radial blend between LookAt targets</summary>
-            ScreenSpaceAimWhenTargetsDiffer
+            /// <summary>Spherical blend about Tracking target position</summary>
+            SphericalPosition = 1,
+            /// <summary>Cylindrical blend about Tracking target position (vertical co-ordinate is linearly interpolated)</summary>
+            CylindricalPosition = 2,
+            /// <summary>Screen-space blend between LookAt targets instead of world space lerp of target position</summary>
+            ScreenSpaceAimWhenTargetsDiffer = 4,
+            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
+            /// as the current position of the Unity Camera</summary>
+            InheritPosition = 8
         }
 
         /// <summary>Applies a position blend hint to a camera state</summary>
@@ -419,20 +425,12 @@ namespace Cinemachine
         /// <param name="hint">The hint to apply</param>
         protected void ApplyPositionBlendMethod(ref CameraState state, BlendHint hint)
         {
-            switch (hint)
-            {
-                default:
-                    break;
-                case BlendHint.SphericalPosition:
-                    state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend;
-                    break;
-                case BlendHint.CylindricalPosition:
-                    state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend;
-                    break;
-                case BlendHint.ScreenSpaceAimWhenTargetsDiffer:
-                    state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend;
-                    break;
-            }
+            if ((hint & BlendHint.SphericalPosition) != 0)
+                state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend;
+            if ((hint & BlendHint.CylindricalPosition) != 0)
+                state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend;
+            if ((hint & BlendHint.ScreenSpaceAimWhenTargetsDiffer) != 0)
+                state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend;
         }
 
         /// <summary>The GameObject owner of the Virtual Camera behaviour.</summary>
@@ -474,7 +472,7 @@ namespace Cinemachine
         /// <summary>Check whether the vcam a live child of this camera.
         /// This base class implementation always returns false.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
 
@@ -513,21 +511,32 @@ namespace Cinemachine
         [Serializable]
         public struct TransitionParams
         {
-            /// <summary>Hint for blending positions to and from this virtual camera</summary>
-            [Tooltip("Hint for blending positions to and from this virtual camera")]
-            [FormerlySerializedAs("m_PositionBlending")]
-            [FormerlySerializedAs("m_BlendHint")]
+            /// <summary>Hint for transitioning to and from this CmCamera.  Hints can be combined, although 
+            /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+            /// make an arbitrary choice.</summary>
+            [Tooltip("Hint for transitioning to and from this CmCamera.  Hints can be combined, although "
+                + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+                + "make an arbitrary choice.")]
             public BlendHint BlendHint;
 
-            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same as the current position of the Unity Camera</summary>
-            [Tooltip("When this virtual camera goes Live, attempt to force the position to be the same as the current position of the Unity Camera")]
-            [FormerlySerializedAs("m_InheritPosition")]
-            public bool InheritPosition;
+            /// <summary>Shortcut to read InheritPosition flag in BlendHint</summary>
+            public bool InheritPosition => (BlendHint & BlendHint.InheritPosition) != 0;
 
-            /// <summary>This event fires when the virtual camera goes Live</summary>
-            [Tooltip("This event fires when the virtual camera goes Live")]
-            [FormerlySerializedAs("m_OnCameraLive")]
-            public CinemachineBrain.VcamActivatedEvent OnCameraLive;
+            /// <summary>
+            /// These events fire when a transition occurs
+            /// </summary>
+            [Serializable]
+            public struct TransitionEvents
+            {
+                /// <summary>This event fires when the CmCamera goes Live</summary>
+                [Tooltip("This event fires when the CmCamera goes Live")]
+                public CinemachineBrain.VcamActivatedEvent OnCameraLive;
+            }
+            /// <summary>
+            /// These events fire when a transition occurs
+            /// </summary>
+            [Tooltip("These events fire when a transition occurs")]
+            public TransitionEvents Events;
         }
 
         /// <summary>Notification that this virtual camera is going live.
