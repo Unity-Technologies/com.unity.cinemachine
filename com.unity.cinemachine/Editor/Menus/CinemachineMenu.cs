@@ -237,7 +237,10 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
             {
                 var src = SceneView.lastActiveSceneView.camera;
-                sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
+                // Respect scene view preferences - Create Objects at Origin:
+                // only set position and rotation, if sceneObject is not in the exact center
+                if (sceneObject.transform.position != Vector3.zero)
+                    sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
                 if (lens.Orthographic == src.orthographic)
                 {
                     if (src.orthographic)
