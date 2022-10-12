@@ -217,6 +217,7 @@ namespace Cinemachine
         {
             DestroyPipeline();
             UpdateComponentPipeline();
+            PriorityAndChannel = OutputChannel.Default;
         }
 
         /// <summary>

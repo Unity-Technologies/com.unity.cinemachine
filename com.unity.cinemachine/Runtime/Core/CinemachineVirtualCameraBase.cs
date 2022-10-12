@@ -15,7 +15,7 @@ namespace Cinemachine
     /// as CmCamera, or meta-cameras such as
     /// CinemachineClearShot or CinemachineBlendListCamera.
     ///
-    /// A CinemachineVirtualCameraBase exposes a CameraPriority property.  When the behaviour is
+    /// A CinemachineVirtualCameraBase exposes a OutputChannel property.  When the behaviour is
     /// enabled in the game, the Virtual Camera is automatically placed in a queue
     /// maintained by the static CinemachineCore singleton.
     /// The queue is sorted by priority.  When a Unity camera is equipped with a
@@ -47,7 +47,8 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        public CameraPriority CameraPriority;
+        [FoldoutWithEnabledButton]
+        public OutputChannel PriorityAndChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
@@ -130,14 +131,14 @@ namespace Cinemachine
         internal protected virtual void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                CameraPriority = new CameraPriority { Priority = m_LegacyPriority, UseCustomPriority = true };
+                PriorityAndChannel.SetPriority(m_LegacyPriority);
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
         int m_LegacyPriority = 10;
 
         /// <summary>Obsolete field - use Priority instead</summary>
-        // GML this does not work because we can't auto-upgrade an int field to an int property :-/
+        // GML Upgradable does not work because we can't auto-upgrade an int field to an int property :-/
         //[Obsolete("m_Priority has been removed.  Please use Priority. (UnityUpgradable) -> Priority", false)]
         [Obsolete("m_Priority has been removed.  Please use Priority.", false)]
         public int m_Priority { get => Priority; set => Priority = value; }
@@ -397,9 +398,12 @@ namespace Cinemachine
         /// in the CinemachineCore's queue of eligible shots.</summary>
         public int Priority 
         { 
-            get => CameraPriority.UseCustomPriority ? CameraPriority.Priority : 0;
-            set => CameraPriority = new CameraPriority { Priority = value, UseCustomPriority = true };
+            get => PriorityAndChannel.GetPriority();
+            set => PriorityAndChannel.SetPriority(value);
         }
+
+        /// <summary>Get the effective output channel mask.  Returns Channels.Default if Custom Priority is not Enabled.</summary>
+        public OutputChannel.Channels GetChannel() => PriorityAndChannel.GetChannel();
 
         /// <summary>Hint for transitioning to and from this virtual camera</summary>
         [Flags]

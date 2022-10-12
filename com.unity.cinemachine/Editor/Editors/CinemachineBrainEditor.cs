@@ -54,6 +54,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowCameraFrustum)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.IgnoreTimeScale)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.WorldUpOverride)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ChannelMask)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));

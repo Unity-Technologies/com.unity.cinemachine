@@ -253,6 +253,7 @@ namespace Cinemachine
         {
             DestroyRigs();
             UpdateRigCache();
+            PriorityAndChannel = OutputChannel.Default;
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>

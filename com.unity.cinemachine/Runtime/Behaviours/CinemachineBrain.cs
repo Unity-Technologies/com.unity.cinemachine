@@ -116,6 +116,15 @@ namespace Cinemachine
         [FormerlySerializedAs("m_WorldUpOverride")]
         public Transform WorldUpOverride;
 
+        /// <summary>The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. 
+        /// CmCameras that do not output to one of these channels will be ignored.  Use this in situations where multiple
+        /// CinemachineBrains are needed (for example, Split-screen).</summary>
+        [Tooltip("The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. "
+            + "CmCameras that do not output to one of these channels will be ignored.  Use this in situations "
+            + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
+        [EnumMaskProperty]
+        public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
+
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
         {
@@ -266,6 +275,7 @@ namespace Cinemachine
             ShowCameraFrustum = true;
             IgnoreTimeScale = false;
             WorldUpOverride = null;
+            ChannelMask = OutputChannel.Channels.Default;
             UpdateMethod = UpdateMethods.SmartUpdate;
             BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
             LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
@@ -555,9 +565,7 @@ namespace Cinemachine
         {
             // We always update all active virtual cameras
             CinemachineCore.Instance.m_CurrentUpdateFilter = updateFilter;
-            Camera camera = OutputCamera;
-            CinemachineCore.Instance.UpdateAllActiveVirtualCameras(
-                camera == null ? -1 : camera.cullingMask, DefaultWorldUp, deltaTime);
+            CinemachineCore.Instance.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
 
             // Make sure all live cameras get updated, in case some of them are deactivated
             if (SoloCamera != null)
@@ -957,14 +965,12 @@ namespace Cinemachine
         ICinemachineCamera TopCameraFromPriorityQueue()
         {
             CinemachineCore core = CinemachineCore.Instance;
-            Camera outputCamera = OutputCamera;
-            int mask = outputCamera == null ? ~0 : outputCamera.cullingMask;
+            var channelMask = (uint)ChannelMask;
             int numCameras = core.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)
             {
                 var cam = core.GetVirtualCamera(i);
-                GameObject go = cam != null ? cam.gameObject : null;
-                if (go != null && (mask & (1 << go.layer)) != 0)
+                if (cam != null && ((uint)cam.GetChannel() & channelMask) != 0)
                     return cam;
             }
             return null;
