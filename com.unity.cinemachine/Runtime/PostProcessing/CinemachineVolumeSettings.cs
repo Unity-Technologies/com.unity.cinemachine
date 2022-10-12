@@ -89,6 +89,11 @@ namespace Cinemachine
         public float FocusOffset;
 
         /// <summary>
+        /// If Focus tracking is enabled, this will return the calculated focus distance
+        /// </summary>
+        public float CalculatedFocusDistance { get; private set; }
+        
+        /// <summary>
         /// This profile will be applied whenever this virtual camera is live
         /// </summary>
         [Tooltip("This profile will be applied whenever this virtual camera is live")]
@@ -201,7 +206,7 @@ namespace Cinemachine
                                 if (focusTarget != null)
                                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
-                            focusDistance = Mathf.Max(0, focusDistance);
+                            CalculatedFocusDistance = focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
 #if CINEMACHINE_HDRP
                             state.Lens.FocusDistance = focusDistance;
