@@ -48,28 +48,63 @@ namespace Cinemachine
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
-        public TransitionParams m_Transitions;
-
+        public TransitionParams Transitions;
+        
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
-        public string[] m_ExcludedPropertiesInInspector = new string[] { "m_Script" };
+        internal string[] m_ExcludedPropertiesInInspector = new string[] { "m_Script" };
 
         /// <summary>Inspector control - Use for enabling sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
-        public CinemachineCore.Stage[] m_LockStageInInspector;
+        internal CinemachineCore.Stage[] m_LockStageInInspector;
 
-        /// <summary>Legacy support</summary>
-        [SerializeField] [HideInInspector]
-        [FormerlySerializedAs("m_BlendHint")]
-        [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
+        // Legacy support ===============================================================
+        [Serializable]
+        struct LegacyTransitionParams
+        {
+            [FormerlySerializedAs("m_PositionBlending")]
+            public int m_BlendHint;
+            public bool m_InheritPosition;
+            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+        }
+        [FormerlySerializedAs("m_Transitions")]
+        [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
+
+        internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        {
+            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
+            if (streamedVersion < 20221011)
+            {
+                if (m_LegacyTransitions.m_BlendHint != 0)
+                {
+                    if (m_LegacyTransitions.m_BlendHint == 3)
+                        Transitions.BlendHint = BlendHint.ScreenSpaceAimWhenTargetsDiffer;
+                    else
+                        Transitions.BlendHint = (BlendHint)m_LegacyTransitions.m_BlendHint;
+                    m_LegacyTransitions.m_BlendHint = 0;
+                }
+                if (m_LegacyTransitions.m_InheritPosition)
+                {
+                    Transitions.BlendHint |= BlendHint.InheritPosition;
+                    m_LegacyTransitions.m_InheritPosition = false;
+                }
+                if (m_LegacyTransitions.m_OnCameraLive != null)
+                {
+                    Transitions.Events.OnCameraLive = m_LegacyTransitions.m_OnCameraLive;
+                    m_LegacyTransitions.m_OnCameraLive = null;
+                }
+            }
+        }
+        // ===============================================================
         
+
         /// <summary>This is the name of the hidden GameObject that will be created as a child object
         /// of the virtual camera.  This hidden game object acts as a container for the polymorphic
         /// CinemachineComponent pipeline.  The Inspector UI for the Virtual Camera
         /// provides access to this pipleline, as do the CinemachineComponent-family of
         /// public methods in this class.
         /// The lifecycle of the pipeline GameObject is managed automatically.</summary>
-        public const string PipelineName = "cm";
+        const string PipelineName = "cm";
 
         /// <summary>The CameraState object holds all of the information
         /// necessary to position the Unity camera.  It is the output of this class.</summary>
@@ -96,7 +131,7 @@ namespace Cinemachine
         
         /// <summary>Returns the TransitionParams settings</summary>
         /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => m_Transitions;
+        public override TransitionParams GetTransitionParams() => Transitions;
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.
@@ -127,7 +162,7 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -158,16 +193,6 @@ namespace Cinemachine
                         &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
 
             base.OnDestroy();
-        }
-
-        internal protected override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
-        {
-            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
-            if (m_LegacyBlendHint != BlendHint.None)
-            {
-                m_Transitions.BlendHint = m_LegacyBlendHint;
-                m_LegacyBlendHint = BlendHint.None;
-            }
         }
 
         // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
@@ -571,7 +596,7 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
-            if (m_Transitions.InheritPosition && fromCam != null
+            if (Transitions.InheritPosition && fromCam != null
                  && !CinemachineCore.Instance.IsLiveInBlend(this))
                 ForceCameraPosition(fromCam.State.GetFinalPosition(), fromCam.State.GetFinalOrientation());
 
@@ -580,7 +605,7 @@ namespace Cinemachine
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
                     if (m_ComponentPipeline[i].OnTransitionFromCamera(
-                            fromCam, worldUp, deltaTime, ref m_Transitions))
+                            fromCam, worldUp, deltaTime, ref Transitions))
                         forceUpdate = true;
             }
             if (forceUpdate)
@@ -590,8 +615,8 @@ namespace Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (m_Transitions.OnCameraLive != null)
-                m_Transitions.OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.Events.OnCameraLive != null)
+                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
         
         /// <summary>

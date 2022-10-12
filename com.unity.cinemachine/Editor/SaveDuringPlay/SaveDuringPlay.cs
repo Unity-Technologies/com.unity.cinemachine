@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace SaveDuringPlay
+namespace Cinemachine.SaveDuringPlay
 {
     /// <summary>A collection of tools for finding objects</summary>
     static class ObjectTreeUtil

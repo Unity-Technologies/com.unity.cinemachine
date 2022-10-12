@@ -43,8 +43,11 @@ However, the real magic comes when you add Procedural Components to bring the ca
 | | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |
 | | _Perspective_ | Sets the __Projection__ property to __Perspective__ and *disables* the __Physical Camera__ feature and properties. |
 | | _Physical_ | Sets the __Projection__ property to __Perspective__ and *enables* the __Physical Camera__ feature and properties. |
-| __Blend Hint__ || Provides hints for blending positions to and from the CmCamera. |
-| __Inherit Position__ || When enabled, whenever this CmCamera goes live, forces the initial position to be the same as the current position of the Unity Camera, if possible. |
+| __Blend Hint__ || Provides hints for blending positions to and from the CmCamera. Values can be combined together. |
+| | _Spherical Position_ | During a blend, camera will take a spherical path around the Tracking target. |
+| | _Cylindrical Position_ | During a blend, camera will take a cylindrical path around the Tracking target (vertical co-ordinate is linearly interpolated). |
+| | _Screen Space Aim When Targets Differ_ | During a blend, Tracking target position will interpolate in screen space instead of world space. |
+| | _Inherit Position_ | When this CmCamera goes live, force the initial position to be the same as the current position of the Unity Camera, if possible. |
 | __Position Control__ || Shortcut for setting the procedural positioning behavior of the CmCamera.  |
 | __Rotation Control__ || Shortcut for setting the procedural rotation behavior of the CmCamera.  |
 | __Noise__ || Shortcut for setting the procedural noise behavior of the CmCamera.  |

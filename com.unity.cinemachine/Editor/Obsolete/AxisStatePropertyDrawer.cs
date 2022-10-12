@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Cinemachine.Editor
 {
     [System.Obsolete]
-    [CustomPropertyDrawer(typeof(AxisStatePropertyAttribute))]
+    [CustomPropertyDrawer(typeof(AxisState))]
     class AxisStatePropertyDrawer : PropertyDrawer
     {
         const int vSpace = 2;
