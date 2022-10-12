@@ -74,7 +74,7 @@ namespace Cinemachine
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.CustomOutput));
+            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));

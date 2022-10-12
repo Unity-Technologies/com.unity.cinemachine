@@ -54,7 +54,7 @@ namespace Cinemachine
         {
             DefaultTarget = default;
             ShowDebugText = false;
-            CustomOutput = OutputChannel.Default;
+            PriorityAndChannel = OutputChannel.Default;
             InvalidateCameraCache();
         }
         

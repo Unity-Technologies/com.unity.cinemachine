@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Linq;
 
 namespace Cinemachine
 {
@@ -71,7 +70,7 @@ namespace Cinemachine
         void Reset()
         {
             Target = default;
-            CustomOutput = OutputChannel.Default;
+            PriorityAndChannel = OutputChannel.Default;
             Lens = LensSettings.Default;
         }
 

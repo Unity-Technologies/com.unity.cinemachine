@@ -47,9 +47,8 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        [FormerlySerializedAs("OutputChannel")]
         [FoldoutWithEnabledButton]
-        public OutputChannel CustomOutput = OutputChannel.Default;
+        public OutputChannel PriorityAndChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
@@ -132,7 +131,7 @@ namespace Cinemachine
         internal protected virtual void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                CustomOutput.SetPriority(m_LegacyPriority);
+                PriorityAndChannel.SetPriority(m_LegacyPriority);
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
@@ -399,12 +398,12 @@ namespace Cinemachine
         /// in the CinemachineCore's queue of eligible shots.</summary>
         public int Priority 
         { 
-            get => CustomOutput.GetPriority();
-            set => CustomOutput.SetPriority(value);
+            get => PriorityAndChannel.GetPriority();
+            set => PriorityAndChannel.SetPriority(value);
         }
 
         /// <summary>Get the effective output channel mask.  Returns Channels.Default if Custom Priority is not Enabled.</summary>
-        public OutputChannel.Channels GetChannel() => CustomOutput.GetChannel();
+        public OutputChannel.Channels GetChannel() => PriorityAndChannel.GetChannel();
 
         /// <summary>Hint for blending to and from this virtual camera</summary>
         public enum BlendHint
