@@ -10,8 +10,8 @@ namespace Cinemachine.Examples
     public class ExpandingAimReticle : MonoBehaviour
     {
         [Tooltip("Maximum radius of the aim reticle, when aiming is inaccurate. ")]
-        [Range(0, 100f)]
-        public float MaxRadius;
+        [Vector2AsRange]
+        public Vector2 RadiusRange;
 
         [Tooltip("The time is takes for the aim reticle to adjust, when inaccurate.")]
         [Range(0, 1f)]
@@ -34,9 +34,15 @@ namespace Cinemachine.Examples
         float m_BlendVelocity;
         float m_CurrentRadius;
 
+        void OnValidate()
+        {
+            RadiusRange.x = Mathf.Clamp(RadiusRange.x, 0, 100);
+            RadiusRange.y = Mathf.Clamp(RadiusRange.y, RadiusRange.x, 100);
+        }
+
         void Reset()
         {
-            MaxRadius = 30f;
+            RadiusRange = new Vector2(2.5f, 40f);
             BlendTime = 0.05f;
         }
 
@@ -51,7 +57,7 @@ namespace Cinemachine.Examples
             }
 
             m_CurrentRadius = Mathf.SmoothDamp(m_CurrentRadius, distanceFromCenter * 2f, ref m_BlendVelocity, BlendTime);
-            m_CurrentRadius = Mathf.Min(MaxRadius, m_CurrentRadius);
+            m_CurrentRadius = Mathf.Clamp(m_CurrentRadius, RadiusRange.x, RadiusRange.y);
 
             Left.rectTransform.position = screenCenterPoint + (Vector2.left * m_CurrentRadius);
             Right.rectTransform.position = screenCenterPoint + (Vector2.right * m_CurrentRadius);

@@ -1,12 +1,16 @@
-using System;
 using Cinemachine;
 using UnityEngine;
 
 public class PositionAimTargetAndReticle : MonoBehaviour
 {
-    [Tooltip("AimTarget Reticle")]
-    public RectTransform Reticle;
+    [Tooltip("This canvas will be enabled when there is a 3rdPersoAim camera active")]
+    public Canvas ReticleCanvas;
 
+    [Tooltip("If non-null, this target will pe positioned on the screen over the actual aim target")]
+    public RectTransform AimTargetIndicator;
+
+    // We add a CameraUpdatedEvent listener so that we are guaranteed to update after the
+    // Brain has positioned the camera
     void OnEnable()
     {
         CinemachineCore.CameraUpdatedEvent.AddListener(SetAimTarget);
@@ -19,25 +23,27 @@ public class PositionAimTargetAndReticle : MonoBehaviour
 
     void SetAimTarget(CinemachineBrain brain)
     {
-        if (brain.OutputCamera == null)
+        var enableReticle = false;
+        if (brain == null || brain.OutputCamera == null || ReticleCanvas == null)
             CinemachineCore.CameraUpdatedEvent.RemoveListener(SetAimTarget);
-
-        var liveCam = brain.ActiveVirtualCamera as CinemachineVirtualCameraBase;
-        if (liveCam != null)
+        else
         {
-            if (liveCam.TryGetComponent<Cinemachine3rdPersonAim>(out var aim) && aim.enabled)
+            var liveCam = brain.ActiveVirtualCamera as CmCamera;
+            if (liveCam != null)
             {
-                transform.position = aim.AimTarget;
-            }
-            else
-            {
-                var lookAt = liveCam.ResolveLookAt(liveCam.LookAt);
-                if (lookAt != null)
-                    transform.position = lookAt.position;
-            }
+                if (liveCam.TryGetComponent<Cinemachine3rdPersonAim>(out var aim) && aim.enabled)
+                {
+                    // Set the worldspace aim target position so that we can know what gets hit
+                    enableReticle = true;
+                    transform.position = aim.AimTarget;
 
-            if (brain != null && Reticle != null)
-                Reticle.position = brain.OutputCamera.WorldToScreenPoint(transform.position);
+                    // Set the screen-space hit target indicator position
+                    if (AimTargetIndicator != null)
+                        AimTargetIndicator.position = brain.OutputCamera.WorldToScreenPoint(transform.position);
+                }
+            }
         }
+        if (ReticleCanvas != null)
+            ReticleCanvas.enabled = enableReticle;
     }
 }

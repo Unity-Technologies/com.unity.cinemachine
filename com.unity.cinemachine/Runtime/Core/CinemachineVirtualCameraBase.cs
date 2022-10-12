@@ -474,7 +474,7 @@ namespace Cinemachine
         /// <summary>Check whether the vcam a live child of this camera.
         /// This base class implementation always returns false.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
         public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
 
