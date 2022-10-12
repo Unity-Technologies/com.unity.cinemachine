@@ -281,8 +281,6 @@ namespace Cinemachine.Editor
             // This must be done after setting the parent in order to get an accurate unique name
             GameObjectUtility.EnsureUniqueNameForSibling(go);
 
-            // We set the new object to be at the current pivot of the scene.
-            // GML TODO: Support the "Place Objects At World Origin" preference option in 2020.3+, see GOCreationCommands.cs
             // Place vcam as set by the unity editor preferences
             ObjectFactory.PlaceGameObject(go, parentObject);
 
