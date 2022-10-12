@@ -64,9 +64,9 @@ namespace Cinemachine
             Instructions = null;
         }
         
-        protected internal override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
+        protected internal override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
+            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
             if (streamedVersion < 20220721)
             {
                 DefaultTarget = new DefaultTargetSettings 
