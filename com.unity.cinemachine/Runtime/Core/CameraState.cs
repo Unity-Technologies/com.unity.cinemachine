@@ -168,6 +168,38 @@ namespace Cinemachine
         /// </summary>
         internal CustomBlendableItems CustomBlendables;
 
+        /// <summary>Add a custom blendable to the pot for eventual application to the camera.
+        /// The base system manages but otherwise ignores this data - it is intended for 
+        /// extension modules</summary>
+        /// <param name="b">The custom blendable to add.  If b.m_Custom is the same as an 
+        /// already-added custom blendable, then they will be merged and the weights combined.</param>
+        public void AddCustomBlendable(CustomBlendableItems.Item b)
+        {
+            // Attempt to merge common blendables to avoid growth
+            var index = this.FindCustomBlendable(b.Custom);
+            if (index >= 0)
+                b.Weight += this.GetCustomBlendable(index).Weight;
+            else
+            {
+                index = CustomBlendables.NumItems;
+                CustomBlendables.NumItems = index + 1;
+            }
+            switch (index)
+            {
+                case 0: CustomBlendables.m_Item0 = b; break;
+                case 1: CustomBlendables.m_Item1 = b; break;
+                case 2: CustomBlendables.m_Item2 = b; break;
+                case 3: CustomBlendables.m_Item3 = b; break;
+                default: 
+                {
+                    if (CustomBlendables.m_Overflow == null)
+                        CustomBlendables.m_Overflow = new();
+                    CustomBlendables.m_Overflow.Add(b);
+                    break;
+                }
+            }
+        }
+
         /// <summary>Intelligently blend the contents of two states.</summary>
         /// <param name="stateA">The first state, corresponding to t=0</param>
         /// <param name="stateB">The second state, corresponding to t=1</param>
@@ -405,28 +437,28 @@ namespace Cinemachine
         /// Returns true if this state has a valid ReferenceLookAt value.
         /// </summary>
         #pragma warning disable 1718 // comparison made to same variable
-        public static bool HasLookAt(this CameraState s) => s.ReferenceLookAt == s.ReferenceLookAt; // will be false if NaN
+        public static bool HasLookAt(this in CameraState s) => s.ReferenceLookAt == s.ReferenceLookAt; // will be false if NaN
         #pragma warning restore 1718
 
         /// <summary>
         /// Position with correction applied.
         /// </summary>
-        public static Vector3 GetCorrectedPosition(this CameraState s) => s.RawPosition + s.PositionCorrection;
+        public static Vector3 GetCorrectedPosition(this in CameraState s) => s.RawPosition + s.PositionCorrection;
 
         /// <summary>
         /// Orientation with correction applied.
         /// </summary>
-        public static Quaternion GetCorrectedOrientation(this CameraState s) => s.RawOrientation * s.OrientationCorrection;
+        public static Quaternion GetCorrectedOrientation(this in CameraState s) => s.RawOrientation * s.OrientationCorrection;
 
         /// <summary>
         /// Position with correction applied.  This is what the final camera gets.
         /// </summary>
-        public static Vector3 GetFinalPosition(this CameraState s) => s.RawPosition + s.PositionCorrection;
+        public static Vector3 GetFinalPosition(this in CameraState s) => s.RawPosition + s.PositionCorrection;
 
         /// <summary>
         /// Orientation with correction and dutch applied.  This is what the final camera gets.
         /// </summary>
-        public static Quaternion GetFinalOrientation(this CameraState s)
+        public static Quaternion GetFinalOrientation(this in CameraState s)
         {
             if (Mathf.Abs(s.Lens.Dutch) > UnityVectorExtensions.Epsilon)
                 return s.GetCorrectedOrientation() * Quaternion.AngleAxis(s.Lens.Dutch, Vector3.forward);
@@ -435,14 +467,14 @@ namespace Cinemachine
 
         /// <summary>Get the number of custom blendable items that have been added to this CameraState</summary>
         /// <returns>The number of custom blendable items added.</returns>
-        public static int GetNumCustomBlendables(this CameraState s) => s.CustomBlendables.NumItems;
+        public static int GetNumCustomBlendables(this in CameraState s) => s.CustomBlendables.NumItems;
 
         /// <summary>Get a custom blendable that will be applied to the camera.  
         /// The base system manages but otherwise ignores this data - it is intended for 
         /// extension modules</summary>
         /// <param name="index">Which one to get.  Must be in range [0...NumCustomBlendables)</param>
         /// <returns>The custom blendable at the specified index.</returns>
-        public static CameraState.CustomBlendableItems.Item GetCustomBlendable(this CameraState s, int index)
+        public static CameraState.CustomBlendableItems.Item GetCustomBlendable(this in CameraState s, int index)
         {
             switch (index)
             {
@@ -463,7 +495,7 @@ namespace Cinemachine
         /// <summary>Returns the index of the custom blendable that is associated with the input.</summary>
         /// <param name="custom">The object with which the returned custom blendable index is associated.</param>
         /// <returns>The index of the custom blendable that is associated with the input.</returns>
-        public static int FindCustomBlendable(this CameraState s, Object custom)
+        public static int FindCustomBlendable(this in CameraState s, Object custom)
         {
             if (s.CustomBlendables.m_Item0.Custom == custom)
                 return 0;
@@ -481,37 +513,5 @@ namespace Cinemachine
             }
             return -1;
         }
-
-        /// <summary>Add a custom blendable to the pot for eventual application to the camera.
-        /// The base system manages but otherwise ignores this data - it is intended for 
-        /// extension modules</summary>
-        /// <param name="b">The custom blendable to add.  If b.m_Custom is the same as an 
-        /// already-added custom blendable, then they will be merged and the weights combined.</param>
-        public static void AddCustomBlendable(this CameraState s, CameraState.CustomBlendableItems.Item b)
-        {
-            // Attempt to merge common blendables to avoid growth
-            var index = s.FindCustomBlendable(b.Custom);
-            if (index >= 0)
-                b.Weight += s.GetCustomBlendable(index).Weight;
-            else
-            {
-                index = s.CustomBlendables.NumItems;
-                s.CustomBlendables.NumItems = index + 1;
-            }
-            switch (index)
-            {
-                case 0: s.CustomBlendables.m_Item0 = b; break;
-                case 1: s.CustomBlendables.m_Item1 = b; break;
-                case 2: s.CustomBlendables.m_Item2 = b; break;
-                case 3: s.CustomBlendables.m_Item3 = b; break;
-                default: 
-                {
-                    if (s.CustomBlendables.m_Overflow == null)
-                        s.CustomBlendables.m_Overflow = new();
-                    s.CustomBlendables.m_Overflow.Add(b);
-                    break;
-                }
-            }
-         }
     }
 }

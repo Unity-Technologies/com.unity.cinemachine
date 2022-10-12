@@ -14,7 +14,7 @@ namespace Cinemachine.Utility
         /// </summary>
         /// <param name="v">Vector2 to check for NaN</param>
         /// <returns>True, if any components of the vector are NaN</returns>
-        public static bool IsNaN(this Vector2 v)
+        public static bool IsNaN(this in Vector2 v)
         {
             return float.IsNaN(v.x) || float.IsNaN(v.y);
         }
@@ -24,7 +24,7 @@ namespace Cinemachine.Utility
         /// </summary>
         /// <param name="v">Vector2 to check for NaN</param>
         /// <returns>True, if any components of the vector are NaN</returns>
-        public static bool IsNaN(this Vector3 v)
+        public static bool IsNaN(this in Vector3 v)
         {
             return float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z);
         }
@@ -37,7 +37,7 @@ namespace Cinemachine.Utility
         /// <param name="s0">Start of line segment</param>
         /// <param name="s1">End of line segment</param>
         /// <returns>The interpolation parameter representing the point on the segment, with 0==s0, and 1==s1</returns>
-        public static float ClosestPointOnSegment(this Vector3 p, Vector3 s0, Vector3 s1)
+        public static float ClosestPointOnSegment(this in Vector3 p, in Vector3 s0, in Vector3 s1)
         {
             Vector3 s = s1 - s0;
             float len2 = Vector3.SqrMagnitude(s);
@@ -53,7 +53,7 @@ namespace Cinemachine.Utility
         /// <param name="s0">Start of line segment</param>
         /// <param name="s1">End of line segment</param>
         /// <returns>The interpolation parameter representing the point on the segment, with 0==s0, and 1==s1</returns>
-        public static float ClosestPointOnSegment(this Vector2 p, Vector2 s0, Vector2 s1)
+        public static float ClosestPointOnSegment(this in Vector2 p, in Vector2 s0, in Vector2 s1)
         {
             Vector2 s = s1 - s0;
             float len2 = Vector2.SqrMagnitude(s);
@@ -69,7 +69,7 @@ namespace Cinemachine.Utility
         /// <param name="vector"></param>
         /// <param name="planeNormal">The normal that defines the plane.  Must have a length of 1.</param>
         /// <returns>The component of the vector that lies in the plane</returns>
-        public static Vector3 ProjectOntoPlane(this Vector3 vector, Vector3 planeNormal)
+        public static Vector3 ProjectOntoPlane(this in Vector3 vector, in Vector3 planeNormal)
         {
             return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
         }
@@ -80,7 +80,7 @@ namespace Cinemachine.Utility
         /// <param name="v">The vector to normalize</param>
         /// <returns>The normalized vector, or the zero vector if its magnitude 
         /// was too small to normalize</returns>
-        public static Vector2 SquareNormalize(this Vector2 v)
+        public static Vector2 SquareNormalize(this in Vector2 v)
         {
             var d = Mathf.Max(Mathf.Abs(v.x), Mathf.Abs(v.y));
             return d < Epsilon ? Vector2.zero : v / d;
@@ -166,14 +166,14 @@ namespace Cinemachine.Utility
             return 1;   // segments don't touch but lines intersect
         }
 
-        private static float Cross(this Vector2 v1, Vector2 v2) { return (v1.x * v2.y) - (v1.y * v2.x); }
+        private static float Cross(this in Vector2 v1, in Vector2 v2) { return (v1.x * v2.y) - (v1.y * v2.x); }
         
         /// <summary>
         /// Component-wise absolute value
         /// </summary>
         /// <param name="v">Input vector</param>
         /// <returns>Component-wise absolute value of the input vector</returns>
-        public static Vector2 Abs(this Vector2 v)
+        public static Vector2 Abs(this in Vector2 v)
         {
             return new Vector2(Mathf.Abs(v.x), Mathf.Abs(v.y));
         }
@@ -183,7 +183,7 @@ namespace Cinemachine.Utility
         /// </summary>
         /// <param name="v">Input vector</param>
         /// <returns>Component-wise absolute value of the input vector</returns>
-        public static Vector3 Abs(this Vector3 v)
+        public static Vector3 Abs(this in Vector3 v)
         {
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
@@ -193,7 +193,7 @@ namespace Cinemachine.Utility
         /// </summary>
         /// <param name="v">Vector to check</param>
         /// <returns>True, if the vector elements are the same. False, otherwise.</returns>
-        public static bool IsUniform(this Vector2 v)
+        public static bool IsUniform(this in Vector2 v)
         {
             return Math.Abs(v.x - v.y) < Epsilon;
         }
@@ -203,7 +203,7 @@ namespace Cinemachine.Utility
         /// </summary>
         /// <param name="v">Vector to check</param>
         /// <returns>True, if the vector elements are the same. False, otherwise.</returns>
-        public static bool IsUniform(this Vector3 v)
+        public static bool IsUniform(this in Vector3 v)
         {
             return Math.Abs(v.x - v.y) < Epsilon && Math.Abs(v.x - v.z) < Epsilon;
         }
@@ -211,7 +211,7 @@ namespace Cinemachine.Utility
         /// <summary>Is the vector within Epsilon of zero length?</summary>
         /// <param name="v"></param>
         /// <returns>True if the square magnitude of the vector is within Epsilon of zero</returns>
-        public static bool AlmostZero(this Vector3 v)
+        public static bool AlmostZero(this in Vector3 v)
         {
             return v.sqrMagnitude < (Epsilon * Epsilon);
         }
@@ -220,7 +220,7 @@ namespace Cinemachine.Utility
         /// <param name="v1">The first vector</param>
         /// <param name="v2">The second vector</param>
         /// <returns>Angle between the vectors, in degrees</returns>
-        public static float Angle(Vector3 v1, Vector3 v2)
+        public static float Angle(in Vector3 v1, in Vector3 v2)
         {
 #if false // Maybe this version is better?  to test....
             float a = v1.magnitude;
@@ -239,7 +239,7 @@ namespace Cinemachine.Utility
         /// <param name="v2">The second vector</param>
         /// <param name="up">Definition of up (used to determine the sign)</param>
         /// <returns>Signed angle between the vectors, in degrees</returns>
-        public static float SignedAngle(Vector3 v1, Vector3 v2, Vector3 up)
+        public static float SignedAngle(in Vector3 v1, in Vector3 v2, in Vector3 up)
         {
             float angle = Angle(v1, v2);
             if (Mathf.Sign(Vector3.Dot(up, Vector3.Cross(v1, v2))) < 0)
@@ -252,7 +252,7 @@ namespace Cinemachine.Utility
         /// <param name="v2">The second vector</param>
         /// <param name="up">Definition of up (used to determine the sign)</param>
         /// <returns>Rotation between the vectors</returns>
-        public static Quaternion SafeFromToRotation(Vector3 v1, Vector3 v2, Vector3 up)
+        public static Quaternion SafeFromToRotation(in Vector3 v1, in Vector3 v2, in Vector3 up)
         {
             var axis = Vector3.Cross(v1, v2);
             if (axis.AlmostZero())
@@ -269,7 +269,7 @@ namespace Cinemachine.Utility
         /// <param name="up">Defines the up direction</param>
         /// <returns>Interpolated vector</returns>
         public static Vector3 SlerpWithReferenceUp(
-            Vector3 vA, Vector3 vB, float t, Vector3 up)
+            in Vector3 vA, in Vector3 vB, float t, in Vector3 up)
         {
             float dA = vA.magnitude;
             float dB = vB.magnitude;
@@ -298,7 +298,7 @@ namespace Cinemachine.Utility
         /// <param name="up">Defines the up direction.  Must have a length of 1.</param>
         /// <returns>Interpolated quaternion</returns>
         public static Quaternion SlerpWithReferenceUp(
-            Quaternion qA, Quaternion qB, float t, Vector3 up)
+            in Quaternion qA, in Quaternion qB, float t, in Vector3 up)
         {
             var dirA = (qA * Vector3.forward).ProjectOntoPlane(up);
             var dirB = (qB * Vector3.forward).ProjectOntoPlane(up);
@@ -330,7 +330,7 @@ namespace Cinemachine.Utility
         /// <returns>Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
         /// about local right.</returns>
         public static Vector2 GetCameraRotationToTarget(
-            this Quaternion orient, Vector3 lookAtDir, Vector3 worldUp)
+            this in Quaternion orient, Vector3 lookAtDir, in Vector3 worldUp)
         {
             if (lookAtDir.AlmostZero())
                 return Vector2.zero;  // degenerate
@@ -377,7 +377,7 @@ namespace Cinemachine.Utility
         /// <param name="worldUp">Which way is up</param>
         /// <returns>Result rotation after the input is applied to the input quaternion</returns>
         public static Quaternion ApplyCameraRotation(
-            this Quaternion orient, Vector2 rot, Vector3 worldUp)
+            this in Quaternion orient, in Vector2 rot, in Vector3 worldUp)
         {
             Quaternion q = Quaternion.AngleAxis(rot.x, Vector3.right);
             return (Quaternion.AngleAxis(rot.y, worldUp) * orient) * q;
@@ -392,7 +392,7 @@ namespace Cinemachine.Utility
         /// <param name="delta">x and y are added/subtracted fto/from the edges of
         /// the rect, inflating it in all directions</param>
         /// <returns>The inflated rect</returns>
-        public static Rect Inflated(this Rect r, Vector2 delta)
+        public static Rect Inflated(this in Rect r, in Vector2 delta)
         {
             return new Rect(
                 r.xMin - delta.x, r.yMin - delta.y,
