@@ -21,12 +21,10 @@ namespace Cinemachine.Examples
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Header("Axis Control")]
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        [AxisStateProperty]
         public AxisState VerticalAxis;
 
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        [AxisStateProperty]
         public AxisState HorizontalAxis;
 
         private void OnValidate()
