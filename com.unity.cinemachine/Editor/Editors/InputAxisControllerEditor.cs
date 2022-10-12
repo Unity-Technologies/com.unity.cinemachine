@@ -57,28 +57,43 @@ namespace Cinemachine.Editor
                 }
                 else
                 {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
                     // Draw the input value on the same line as the foldout, for convenience
-                    SerializedProperty property = null;
+                    SerializedProperty actionProperty = null;
+                    SerializedProperty legacyProperty = null;
+                    int numFields = 0;
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-                    property = element.FindPropertyRelative("InputAction");
-#elif ENABLE_LEGACY_INPUT_MANAGER
-                    property = element.FindPropertyRelative("LegacyInput");
+                    actionProperty = element.FindPropertyRelative("InputAction");
+                    ++numFields;
 #endif
-                    if (property != null)
+#if ENABLE_LEGACY_INPUT_MANAGER
+                    legacyProperty = element.FindPropertyRelative("LegacyInput");
+                    ++numFields;
+#endif
+                    if (numFields > 0)
                     {
                         rect.x += EditorGUIUtility.labelWidth - height;
                         rect.width -= EditorGUIUtility.labelWidth - height;
+                        rect.width /= numFields;
 
                         int oldIndent = EditorGUI.indentLevel;
                         float oldLabelWidth = EditorGUIUtility.labelWidth;
 
                         EditorGUI.indentLevel = 0;
-                        EditorGUIUtility.labelWidth = height;
-                        EditorGUI.PropertyField(rect, property, new GUIContent(" ", property.tooltip));
+                        EditorGUIUtility.labelWidth = height / numFields;
+
+                        if (actionProperty != null)
+                        {
+                            EditorGUI.PropertyField(rect, actionProperty, new GUIContent(" ", actionProperty.tooltip));
+                            rect.x += rect.width;
+                        }
+                        if (legacyProperty != null)
+                            EditorGUI.PropertyField(rect, legacyProperty, new GUIContent(" ", legacyProperty.tooltip));
 
                         EditorGUI.indentLevel = oldIndent;
                         EditorGUIUtility.labelWidth = oldLabelWidth;
                     }
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
                 }
             }
             if (EditorGUI.EndChangeCheck())
