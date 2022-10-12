@@ -1013,8 +1013,8 @@ namespace Cinemachine
                 if (cam != null)
                 {
                     bool isPhysical = cam.usePhysicalProperties;
-                    if (!isPhysical)
-                        cam.ResetProjectionMatrix();
+                    cam.ResetProjectionMatrix();
+                    cam.usePhysicalProperties = isPhysical;
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;
