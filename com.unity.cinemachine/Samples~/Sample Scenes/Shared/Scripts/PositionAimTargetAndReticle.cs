@@ -24,7 +24,7 @@ public class PositionAimTargetAndReticle : MonoBehaviour
     void SetAimTarget(CinemachineBrain brain)
     {
         var enableReticle = false;
-        if (brain == null || brain.OutputCamera == null || ReticleCanvas == null)
+        if (brain == null || brain.OutputCamera == null)
             CinemachineCore.CameraUpdatedEvent.RemoveListener(SetAimTarget);
         else
         {
