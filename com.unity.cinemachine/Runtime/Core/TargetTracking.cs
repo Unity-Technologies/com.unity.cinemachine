@@ -123,7 +123,7 @@ namespace Cinemachine.TargetTracking
         /// </summary>
         /// <param name="s">The tracker settings</param>
         /// <returns>Highest damping setting in this mode</returns>
-        public static float GetMaxDampTime(this in TrackerSettings s) 
+        public static float GetMaxDampTime(this TrackerSettings s) 
         { 
             var d = s.GetEffectivePositionDamping();
             var d2 = s.AngularDampingMode == AngularDampingMode.Euler 
@@ -139,7 +139,7 @@ namespace Cinemachine.TargetTracking
         /// </summary>
         /// <param name="s">The tracker settings</param>
         /// <returns>The damping settings applicable for this binding mode</returns>
-        internal static Vector3 GetEffectivePositionDamping(this in TrackerSettings s)
+        internal static Vector3 GetEffectivePositionDamping(this TrackerSettings s)
         {
             return s.BindingMode == BindingMode.SimpleFollowWithWorldUp 
                 ? new Vector3(0, s.PositionDamping.y, s.PositionDamping.z) : s.PositionDamping;
@@ -151,7 +151,7 @@ namespace Cinemachine.TargetTracking
         /// </summary>
         /// <param name="s">The tracker settings</param>
         /// <returns>The damping settings applicable for this binding mode</returns>
-        internal static Vector3 GetEffectiveRotationDamping(this in TrackerSettings s)
+        internal static Vector3 GetEffectiveRotationDamping(this TrackerSettings s)
         {
             switch (s.BindingMode)
             {
