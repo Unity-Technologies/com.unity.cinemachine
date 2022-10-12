@@ -41,7 +41,6 @@ namespace Cinemachine
 
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        [AxisStateProperty]
         public AxisState m_VerticalAxis = new AxisState(-70, 70, false, false, 300f, 0.1f, 0.1f, "Mouse Y", true);
 
         /// <summary>Controls how automatic recentering of the Vertical axis is accomplished</summary>
@@ -50,7 +49,6 @@ namespace Cinemachine
 
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        [AxisStateProperty]
         public AxisState m_HorizontalAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", false);
 
         /// <summary>Controls how automatic recentering of the Horizontal axis is accomplished</summary>

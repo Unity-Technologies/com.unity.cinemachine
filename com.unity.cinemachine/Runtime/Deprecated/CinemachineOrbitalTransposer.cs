@@ -210,7 +210,6 @@ namespace Cinemachine
 
         /// <summary>The definition of Forward.  Camera will follow behind.</summary>
         [Space]
-        [OrbitalTransposerHeadingProperty]
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public Heading m_Heading = new Heading(Heading.HeadingDefinition.TargetForward, 4, 0);
 
@@ -223,7 +222,6 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Heading Control.  The settings here control the behaviour of the camera "
             + "in response to the player's input.")]
-        [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
         /// <summary>
