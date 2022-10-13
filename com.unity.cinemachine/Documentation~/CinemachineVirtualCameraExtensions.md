@@ -1,6 +1,6 @@
 # Extensions
 
-Extensions are components that augment the behavior of a CmCamera. For example, the [Collider](CinemachineCollider.md) extension moves a camera out of the way of GameObjects that obstruct the camera’s view of its target.
+Extensions are components that augment the behavior of a CmCamera. For example, the [Deoccluder](CinemachineDeoccluder.md) extension moves a camera out of the way of GameObjects that obstruct the camera’s view of its target.
 
 Cinemachine includes a variety of extensions. Create your own custom extensions by inheriting the `CinemachineExtension` class.
 
