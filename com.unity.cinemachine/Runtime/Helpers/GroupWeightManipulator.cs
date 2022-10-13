@@ -10,7 +10,8 @@ namespace Cinemachine
     /// </summary>
     [RequireComponent(typeof(CinemachineTargetGroup))]
     [ExecuteAlways]
-    [HelpURL(Documentation.BaseURL + "api/Cinemachine.GroupWeightManipulator.html")]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Group Weight Manipulator")]
+    [HelpURL(Documentation.BaseURL + "manual/GroupWeightManipulator.html")]
     public class GroupWeightManipulator : MonoBehaviour
     {
         /// <summary>The weight of the group member at index 0</summary>
@@ -46,10 +47,10 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Weight7")]
         public float Weight7 = 1;
 
-        CinemachineTargetGroup m_group;
+        CinemachineTargetGroup m_Group;
         void Start()
         {
-            m_group = GetComponent<CinemachineTargetGroup>();
+            TryGetComponent(out m_Group);
         }
 
         void OnValidate()
@@ -66,13 +67,13 @@ namespace Cinemachine
 
         void Update()
         {
-            if (m_group != null)
+            if (m_Group != null)
                 UpdateWeights();
         }
 
         void UpdateWeights()
         {
-            var targets = m_group.Targets;
+            var targets = m_Group.Targets;
             int last = targets.Count - 1;
             if (last < 0) return; targets[0].Weight = Weight0;
             if (last < 1) return; targets[1].Weight = Weight1;

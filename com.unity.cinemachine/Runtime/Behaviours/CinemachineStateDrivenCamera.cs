@@ -21,7 +21,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineStateDrivenCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine State Driven Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineStateDrivenCamera.html")]
     public class CinemachineStateDrivenCamera : CinemachineCameraManagerBase
     {
@@ -124,9 +124,9 @@ namespace Cinemachine
             CustomBlends = null;
         }
 
-        protected internal override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
+        protected internal override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
+            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
             if (streamedVersion < 20220721)
             {
                 DefaultTarget = new DefaultTargetSettings 

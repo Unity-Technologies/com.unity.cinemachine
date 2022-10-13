@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
             // Ordinary properties
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
+            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
             DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
             DrawRemainingPropertiesInInspector();
 
@@ -197,7 +197,7 @@ namespace Cinemachine.Editor
                     var obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
                     var priorityProp = obj.FindProperty(
-                        () => Target.CameraPriority).FindPropertyRelative("Priority");
+                        () => Target.PriorityAndChannel).FindPropertyRelative("Priority");
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
                     EditorGUIUtility.labelWidth = oldWidth;
                     obj.ApplyModifiedProperties();
@@ -216,7 +216,7 @@ namespace Cinemachine.Editor
             m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
+                    var vcam = CinemachineMenu.CreatePassiveCmCamera(parentObject: Target.gameObject);
                     vcam.transform.SetSiblingIndex(index);
                 };
             m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>

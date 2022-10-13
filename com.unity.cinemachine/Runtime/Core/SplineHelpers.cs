@@ -5,7 +5,7 @@ namespace Cinemachine.Utility
     /// <summary>
     /// A collection of utilities relating to Bezier splines
     /// </summary>
-    public static class SplineHelpers
+    static class SplineHelpers
     {
         /// <summary>Compute the value of a 4-point 3-dimensional bezier spline</summary>
         /// <param name="t">How far along the spline (0...1)</param>

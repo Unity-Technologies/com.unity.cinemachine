@@ -36,43 +36,96 @@ namespace Cinemachine.Editor
         static void CreateVirtualCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
-            CreateDefaultVirtualCamera(parentObject: command.context as GameObject, select: true);
+            CreatePassiveCmCamera(parentObject: command.context as GameObject, select: true);
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Follow Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Follow Camera", false, m_GameObjectMenuPriority)]
         static void CreateFollowCamera(MenuCommand command)
         {
-            CinemachineEditorAnalytics.SendCreateEvent("Cm Camera");
-            var vcam = CreateCinemachineObject<CmCamera>(
-                "Cm Camera", command.context as GameObject, true);
+            CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
+            var targetObject = command.context as GameObject;
+            var parent = targetObject == null || targetObject.transform.parent == null 
+                ? null : targetObject.transform.parent.gameObject;
+            var vcam = CreateCinemachineObject<CmCamera>("Cm Camera", parent, true);
+            if (targetObject != null)
+                vcam.Follow = targetObject.transform;
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             Undo.AddComponent<CinemachineFollow>(vcam.gameObject);
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "2D Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/2D Camera", false, m_GameObjectMenuPriority)]
         static void Create2DCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
-            var vcam = CreateCinemachineObject<CmCamera>(
-                "Cm Camera", command.context as GameObject, true);
+            var targetObject = command.context as GameObject;
+            var parent = targetObject == null || targetObject.transform.parent == null 
+                ? null : targetObject.transform.parent.gameObject;
+            var vcam = CreateCinemachineObject<CmCamera>("Cm Camera", parent, true);
+            if (targetObject != null)
+                vcam.Follow = targetObject.transform;
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
 
             Undo.AddComponent<CinemachinePositionComposer>(vcam.gameObject);
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "FreeLook Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/FreeLook Camera", false, m_GameObjectMenuPriority)]
         static void CreateFreeLookCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
-            var vcam = CreatePassiveVirtualCamera("FreeLook Camera", command.context as GameObject, true);
+            var targetObject = command.context as GameObject;
+            var parent = targetObject == null || targetObject.transform.parent == null 
+                ? null : targetObject.transform.parent.gameObject;
+            var vcam = CreatePassiveCmCamera("FreeLook Camera", parent, true);
+            if (targetObject != null)
+                vcam.Follow = targetObject.transform;
             Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             Undo.AddComponent<InputAxisController>(vcam.gameObject);
-            Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject);
+            Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject).enabled = false;
         }
+        
+#if CINEMACHINE_PHYSICS
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Third Person Aim Camera", false, m_GameObjectMenuPriority)]
+        static void CreateThirdPersonAimCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Third Person Aim Camera");
+            var targetObject = command.context as GameObject;
+            var parent = targetObject == null || targetObject.transform.parent == null 
+                ? null : targetObject.transform.parent.gameObject;
+            var vcam = CreatePassiveCmCamera("Third Person Aim Camera", parent, true);
+            if (targetObject != null)
+                vcam.Follow = targetObject.transform;
+            var thirdPersonFollow = Undo.AddComponent<Cinemachine3rdPersonFollow>(vcam.gameObject);
+            thirdPersonFollow.ShoulderOffset = new Vector3(0.8f, -0.4f, 0f);
+            thirdPersonFollow.CameraSide = 1;
+            thirdPersonFollow.VerticalArmLength = 1.2f;
+            thirdPersonFollow.CameraDistance = 4f;
+            Undo.AddComponent<Cinemachine3rdPersonAim>(vcam.gameObject);
+        }
+#endif
 
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Target Group Camera", false, m_GameObjectMenuPriority)]
+        static void CreateTargetGroupCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
+            var targetObject = command.context as GameObject;
+            var parent = targetObject == null || targetObject.transform.parent == null 
+                ? null : targetObject.transform.parent.gameObject;
+            var vcam = CreateCinemachineObject<CmCamera>("Cm Camera", parent, false);
+            vcam.Lens = MatchSceneViewCamera(vcam.transform);
+
+            Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
+            Undo.AddComponent<CinemachineFollow>(vcam.gameObject);
+            Undo.AddComponent<CinemachineGroupFraming>(vcam.gameObject).enabled = false;
+
+            var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
+                "Target Group", parent, true);
+            vcam.Follow = targetGroup.transform;
+            targetGroup.AddMember(targetObject == null ? null : targetObject.transform, 1, 0.5f);
+        }
+        
         [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
         static void CreateBlendListCamera(MenuCommand command)
         {
@@ -81,8 +134,8 @@ namespace Cinemachine.Editor
                 "Blend List Camera", command.context as GameObject, true);
 
             // We give the camera a couple of children as an example of setup
-            var childVcam1 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
-            var childVcam2 = CreateDefaultVirtualCamera(parentObject: blendListCamera.gameObject);
+            var childVcam1 = CreatePassiveCmCamera(parentObject: blendListCamera.gameObject);
+            var childVcam2 = CreatePassiveCmCamera(parentObject: blendListCamera.gameObject);
             childVcam2.Lens.FieldOfView = 10;
 
             // Set up initial instruction set
@@ -103,24 +156,36 @@ namespace Cinemachine.Editor
                 "State-Driven Camera", command.context as GameObject, true);
 
             // We give the camera a child as an example setup
-            CreateDefaultVirtualCamera(parentObject: stateDrivenCamera.gameObject);
+            CreatePassiveCmCamera(parentObject: stateDrivenCamera.gameObject);
         }
 #endif
 
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "ClearShot Camera", false, m_GameObjectMenuPriority)]
-        static void CreateClearShotVirtualCamera(MenuCommand command)
+        static void CreateClearShotCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("ClearShot Camera");
             var clearShotCamera = CreateCinemachineObject<CinemachineClearShot>(
                 "ClearShot Camera", command.context as GameObject, true);
 
             // We give the camera a child as an example setup
-            var childVcam = CreateDefaultVirtualCamera(parentObject: clearShotCamera.gameObject);
-            Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).AvoidObstacles = false;
+            var childVcam = CreatePassiveCmCamera(parentObject: clearShotCamera.gameObject);
+            Undo.AddComponent<CinemachineDeoccluder>(childVcam.gameObject).AvoidObstacles = false;
         }
 #endif
 
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_GameObjectMenuPriority)]
+        static void CreateMixingCamera(MenuCommand command)
+        {
+            CinemachineEditorAnalytics.SendCreateEvent("Mixing Camera");
+            var mixingCamera = CreateCinemachineObject<CinemachineMixingCamera>(
+                "Mixing Camera", command.context as GameObject, true);
+
+            // We give the camera a couple of children as an example of setup
+            CreatePassiveCmCamera(parentObject: mixingCamera.gameObject);
+            CreatePassiveCmCamera(parentObject: mixingCamera.gameObject);
+        }
+        
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Spline", false, m_GameObjectMenuPriority)]
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
@@ -151,36 +216,6 @@ namespace Cinemachine.Editor
                 "Dolly Cart", command.context as GameObject, true).Spline = splineContainer;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Target Group Camera", false, m_GameObjectMenuPriority)]
-        static void CreateTargetGroupCamera(MenuCommand command)
-        {
-            CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
-            var vcam = CreateCinemachineObject<CmCamera>(
-                "Cm Camera", command.context as GameObject, false);
-            vcam.Lens = MatchSceneViewCamera(vcam.transform);
-
-            Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
-            Undo.AddComponent<CinemachineFollow>(vcam.gameObject);
-            Undo.AddComponent<CinemachineGroupFraming>(vcam.gameObject);
-
-            var targetGroup = CreateCinemachineObject<CinemachineTargetGroup>(
-                "Target Group", command.context as GameObject, true);
-            vcam.LookAt = targetGroup.transform;
-            vcam.Follow = targetGroup.transform;
-        }
-
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Mixing Camera", false, m_GameObjectMenuPriority)]
-        static void CreateMixingCamera(MenuCommand command)
-        {
-            CinemachineEditorAnalytics.SendCreateEvent("Mixing Camera");
-            var mixingCamera = CreateCinemachineObject<CinemachineMixingCamera>(
-                "Mixing Camera", command.context as GameObject, true);
-
-            // We give the camera a couple of children as an example of setup
-            CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
-            CreateDefaultVirtualCamera(parentObject: mixingCamera.gameObject);
-        }
-
         /// <summary>
         /// Sets the specified <see cref="Transform"/> to match the position and 
         /// rotation of the <see cref="SceneView"/> camera, and returns the scene view 
@@ -202,7 +237,10 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
             {
                 var src = SceneView.lastActiveSceneView.camera;
-                sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
+                // Respect scene view preferences - Create Objects at Origin:
+                // only set position and rotation, if sceneObject is not in the exact center
+                if (!AtOrigin(sceneObject.transform.position))
+                    sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
                 if (lens.Orthographic == src.orthographic)
                 {
                     if (src.orthographic)
@@ -212,24 +250,14 @@ namespace Cinemachine.Editor
                 }
             }
             return lens;
+
+            static bool AtOrigin(Vector3 a) => a.x == 0f && a.y == 0f && a.z == 0f;
         }
 
         /// <summary>
-        /// Creates a <see cref="CinemachineVirtualCamera"/> with standard procedural components.
+        /// Creates a <see cref="CmCamera"/> with no procedural components.
         /// </summary>
-        public static CmCamera CreateDefaultVirtualCamera(
-            string name = "Cm Camera", GameObject parentObject = null, bool select = false)
-        {
-            var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
-            vcam.Lens = MatchSceneViewCamera(vcam.transform);
-
-            return vcam;
-        }
-
-        /// <summary>
-        /// Creates a <see cref="CinemachineVirtualCamera"/> with no procedural components.
-        /// </summary>
-        public static CmCamera CreatePassiveVirtualCamera(
+        public static CmCamera CreatePassiveCmCamera(
             string name = "Cm Camera", GameObject parentObject = null, bool select = false)
         {
             var vcam = CreateCinemachineObject<CmCamera>(name, parentObject, select);
@@ -252,19 +280,14 @@ namespace Cinemachine.Editor
 
             // We use ObjectFactory to create a new GameObject as it automatically supports undo/redo
             var go = ObjectFactory.CreateGameObject(name);
-            T component = Undo.AddComponent<T>(go);
-
-            if (parentObject != null)
-                Undo.SetTransformParent(go.transform, parentObject.transform, "Set parent of " + name);
+            var component = Undo.AddComponent<T>(go);
 
             // We ensure that the new object has a unique name, for example "Camera (1)".
             // This must be done after setting the parent in order to get an accurate unique name
             GameObjectUtility.EnsureUniqueNameForSibling(go);
 
-            // We set the new object to be at the current pivot of the scene.
-            // GML TODO: Support the "Place Objects At World Origin" preference option in 2020.3+, see GOCreationCommands.cs
-            if (SceneView.lastActiveSceneView != null)
-                go.transform.position = SceneView.lastActiveSceneView.pivot;
+            // Place vcam as set by the unity editor preferences
+            ObjectFactory.PlaceGameObject(go, parentObject);
 
             if (select)
                 Selection.activeGameObject = go;

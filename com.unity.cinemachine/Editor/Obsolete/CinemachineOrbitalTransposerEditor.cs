@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
     [CanEditMultipleObjects]
-    internal class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
+    class CinemachineOrbitalTransposerEditor : BaseEditor<CinemachineOrbitalTransposer>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -97,8 +97,8 @@ namespace Cinemachine.Editor
             {
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
-                    ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                    : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                    ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                    : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
                 Vector3 up = target.VirtualCamera.State.ReferenceUp;
                 Vector3 pos = target.FollowTargetPosition;

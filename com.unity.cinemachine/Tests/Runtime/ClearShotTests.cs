@@ -27,10 +27,10 @@ namespace Tests.Runtime
             CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
             
             // a ClearShot camera
-            var clearShotHolder = CreateGameObject("CM ClearShot", typeof(CinemachineClearShot), typeof(CinemachineCollider));
+            var clearShotHolder = CreateGameObject("CM ClearShot", typeof(CinemachineClearShot), typeof(CinemachineDeoccluder));
             m_ClearShot = clearShotHolder.GetComponent<CinemachineClearShot>();
             m_ClearShot.LookAt = m_Character.transform;
-            var clearShotCollider = clearShotHolder.GetComponent<CinemachineCollider>();
+            var clearShotCollider = clearShotHolder.GetComponent<CinemachineDeoccluder>();
             clearShotCollider.MinimumDistanceFromTarget = 0.1f;
 
             // a stationary vcam1 with a hard lookat

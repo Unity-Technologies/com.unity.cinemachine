@@ -10,7 +10,7 @@ namespace Cinemachine
     /// Just add it as a component alongside an existing Unity Camera component.
     /// </summary>
     [RequireComponent(typeof(Camera)), DisallowMultipleComponent]
-    [AddComponentMenu("Cinemachine/CinemachineExternalCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine External Camera")]
     [ExecuteAlways]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
@@ -23,11 +23,11 @@ namespace Cinemachine
         [FormerlySerializedAs("m_LookAt")]
         public Transform LookAtTarget = null;
 
-        /// <summary>Hint for blending to and from this virtual camera</summary>
-        [Tooltip("Hint for blending to and from this virtual camera")]
+        /// <summary>Hint for transitioning to and from this virtual camera</summary>
+        [Tooltip("Hint for transitioning to and from this virtual camera")]
         [FormerlySerializedAs("m_PositionBlending")]
         [FormerlySerializedAs("m_BlendHint")]
-        public BlendHint TransitionBlendHint = BlendHint.None;
+        public BlendHint TransitionHint = 0;
 
         Camera m_Camera;
         CameraState m_State = CameraState.Default;
@@ -43,6 +43,7 @@ namespace Cinemachine
         }
         
         /// <summary>This vcam defines no targets</summary>
+        [HideInInspector]
         public override Transform Follow { get; set; }
 
         /// <summary>Returns the TransitionParams settings</summary>
@@ -73,7 +74,7 @@ namespace Cinemachine
                     m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(
                         dir, State.RawOrientation * Vector3.forward);
             }
-            ApplyPositionBlendMethod(ref m_State, TransitionBlendHint);
+            ApplyPositionBlendMethod(ref m_State, TransitionHint);
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }

@@ -3,27 +3,9 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// Property applied to AxisState.  Used for custom drawing in the inspector.
-    /// </summary>
-    [System.Obsolete]
-    public sealed class AxisStatePropertyAttribute : PropertyAttribute {}
-
-    /// <summary>
     /// Property applied to legacy input axis name specification.  Used for custom drawing in the inspector.
     /// </summary>
     public sealed class InputAxisNamePropertyAttribute : PropertyAttribute {}
-
-    /// <summary>
-    /// Property applied to OrbitalTransposer.Heading.  Used for custom drawing in the inspector.
-    /// </summary>
-    [System.Obsolete]
-    public sealed class OrbitalTransposerHeadingPropertyAttribute : PropertyAttribute {}
-
-    /// <summary>
-    /// This attributs is obsolete and unused.
-    /// </summary>
-    [System.Obsolete]
-    public sealed class LensSettingsPropertyAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Suppresses the top-level foldout on a complex property
@@ -87,26 +69,14 @@ namespace Cinemachine
     /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
     /// </summary>
-    /// GML TODO: delete this
     public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
-
-    /// <summary>
-    /// Invoke play-mode-save for a class.  This class's fields will be scanned
-    /// upon exiting play mode, and its property values will be applied to the scene object.
-    /// This is a stopgap measure that will become obsolete once Unity implements
-    /// play-mode-save in a more general way.
-    /// </summary>
-    public sealed class SaveDuringPlayAttribute : System.Attribute {}
-
-    /// <summary>
-    /// Suppresses play-mode-save for a field.  Use it if the calsee has [SaveDuringPlay] 
-    /// attribute but there are fields in the class that shouldn't be saved.
-    /// </summary>
-    public sealed class NoSaveDuringPlayAttribute : PropertyAttribute {}
 
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
-
+    
+    /// <summary>Property should be treated as enum flags.</summary>
+    public sealed class EnumMaskPropertyAttribute : PropertyAttribute {}
+    
     /// <summary>Property field is a NoiseSettings asset.</summary>
     public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
     
@@ -150,9 +120,4 @@ namespace Cinemachine
         /// <param name="stage">The stage in the Camera Pipeline in which to position this component</param>
         public CameraPipelineAttribute(CinemachineCore.Stage stage) { Stage = stage; }
     }
-
-    /// <summary>
-    /// Attribute used to indicate that an authoring component is a Camera Pipeline extension
-    /// </summary>
-    public sealed class CameraExtensionAttribute : System.Attribute {}
 }

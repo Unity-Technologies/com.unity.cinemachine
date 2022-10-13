@@ -1,3 +1,5 @@
+//#define RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
+
 using Cinemachine.Utility;
 using System;
 using System.Collections;
@@ -74,9 +76,9 @@ namespace Cinemachine
 //    [RequireComponent(typeof(Camera))] // strange but true: we can live without it
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    [AddComponentMenu("Cinemachine/CinemachineBrain")]
+    [AddComponentMenu("Cinemachine/Cinemachine Brain")]
     [SaveDuringPlay]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainProperties.html")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineBrain.html")]
     public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack
     {
         /// <summary>
@@ -115,6 +117,15 @@ namespace Cinemachine
             + "because Virtual Cameras don't like looking straight up or straight down.")]
         [FormerlySerializedAs("m_WorldUpOverride")]
         public Transform WorldUpOverride;
+
+        /// <summary>The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. 
+        /// CmCameras that do not output to one of these channels will be ignored.  Use this in situations where multiple
+        /// CinemachineBrains are needed (for example, Split-screen).</summary>
+        [Tooltip("The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. "
+            + "CmCameras that do not output to one of these channels will be ignored.  Use this in situations "
+            + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
+        [EnumMaskProperty]
+        public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
 
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -266,6 +277,7 @@ namespace Cinemachine
             ShowCameraFrustum = true;
             IgnoreTimeScale = false;
             WorldUpOverride = null;
+            ChannelMask = OutputChannel.Channels.Default;
             UpdateMethod = UpdateMethods.SmartUpdate;
             BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
             LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
@@ -555,9 +567,7 @@ namespace Cinemachine
         {
             // We always update all active virtual cameras
             CinemachineCore.Instance.m_CurrentUpdateFilter = updateFilter;
-            Camera camera = OutputCamera;
-            CinemachineCore.Instance.UpdateAllActiveVirtualCameras(
-                camera == null ? -1 : camera.cullingMask, DefaultWorldUp, deltaTime);
+            CinemachineCore.Instance.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
 
             // Make sure all live cameras get updated, in case some of them are deactivated
             if (SoloCamera != null)
@@ -957,14 +967,12 @@ namespace Cinemachine
         ICinemachineCamera TopCameraFromPriorityQueue()
         {
             CinemachineCore core = CinemachineCore.Instance;
-            Camera outputCamera = OutputCamera;
-            int mask = outputCamera == null ? ~0 : outputCamera.cullingMask;
+            var channelMask = (uint)ChannelMask;
             int numCameras = core.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)
             {
                 var cam = core.GetVirtualCamera(i);
-                GameObject go = cam != null ? cam.gameObject : null;
-                if (go != null && (mask & (1 << go.layer)) != 0)
+                if (cam != null && ((uint)cam.GetChannel() & channelMask) != 0)
                     return cam;
             }
             return null;
@@ -1006,14 +1014,22 @@ namespace Cinemachine
                 Camera cam = OutputCamera;
                 if (cam != null)
                 {
+                    bool isPhysical = cam.usePhysicalProperties;
+#if RESET_PROJECTION_MATRIX
+                    cam.ResetProjectionMatrix();
+#endif
                     cam.nearClipPlane = state.Lens.NearClipPlane;
                     cam.farClipPlane = state.Lens.FarClipPlane;
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
-
-                    bool isPhysical = cam.usePhysicalProperties;
-
+                    
+#if RESET_PROJECTION_MATRIX
+                    if (!LensModeOverride.Enabled)
+                        cam.usePhysicalProperties = isPhysical; // because ResetProjectionMatrix resets it
+                    else
+#else
                     if (LensModeOverride.Enabled)
+#endif
                     {
                         if (state.Lens.ModeOverride != LensSettings.OverrideModes.None)
                         {

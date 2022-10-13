@@ -11,7 +11,7 @@ using UnityEngine.Serialization;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
     // Workaround for Unity scripting bug
@@ -39,7 +39,7 @@ namespace Cinemachine.PostFX
     /// DepthOfField effect that is enabled.
     /// </summary>
     [ExecuteAlways]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Volume Settings")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVolumeSettings.html")]
@@ -88,6 +88,11 @@ namespace Cinemachine.PostFX
         [FormerlySerializedAs("m_FocusOffset")]
         public float FocusOffset;
 
+        /// <summary>
+        /// If Focus tracking is enabled, this will return the calculated focus distance
+        /// </summary>
+        public float CalculatedFocusDistance { get; private set; }
+        
         /// <summary>
         /// This profile will be applied whenever this virtual camera is live
         /// </summary>
@@ -201,7 +206,7 @@ namespace Cinemachine.PostFX
                                 if (focusTarget != null)
                                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
-                            focusDistance = Mathf.Max(0, focusDistance);
+                            CalculatedFocusDistance = focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
 #if CINEMACHINE_HDRP
                             state.Lens.FocusDistance = focusDistance;
@@ -312,9 +317,9 @@ namespace Cinemachine.PostFX
 
                 // Update the volume's layer so it will be seen
 #if CINEMACHINE_HDRP
-                var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
+                brain.gameObject.TryGetComponent<HDAdditionalCameraData>(out var data);
 #elif CINEMACHINE_LWRP_7_3_1
-                var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
+                brain.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var data);
 #endif
                 if (data != null)
                 {

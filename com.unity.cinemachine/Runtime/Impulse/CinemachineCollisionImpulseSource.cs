@@ -20,6 +20,7 @@ namespace Cinemachine
     /// pass the filter, they will cause an impulse event to be generated.
     /// </summary>
     [SaveDuringPlay]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Collision Impulse Source")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCollisionImpulseSource.html")]
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource
     {
@@ -70,10 +71,10 @@ namespace Cinemachine
         void Start()
         {
 #if CINEMACHINE_PHYSICS
-            m_RigidBody = GetComponent<Rigidbody>();
+            TryGetComponent(out m_RigidBody);
 #endif
 #if CINEMACHINE_PHYSICS_2D
-            m_RigidBody2D = GetComponent<Rigidbody2D>();
+            TryGetComponent(out m_RigidBody2D);
 #endif
         }
 

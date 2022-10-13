@@ -17,6 +17,8 @@ namespace Cinemachine
     /// </summary>
     [ExecuteAlways]
     [SaveDuringPlay]
+    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Input Axis Controller")]
+    [HelpURL(Documentation.BaseURL + "manual/InputAxisController.html")]
     public class InputAxisController : MonoBehaviour
     {
         /// <summary>
@@ -30,6 +32,21 @@ namespace Cinemachine
 
             /// <summary>Identifies this owner of the axis controlled by this controller</summary>
             [HideInInspector] public UnityEngine.Object Owner;
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            /// <summary>Action for the Input package (if used).</summary>
+            [Tooltip("Action for the Input package (if used).")]
+            public InputActionReference InputAction;
+
+            /// <summary>The input value is multiplied by this amount prior to processing.
+            /// Controls the input power.  Set it to a negative value to invert the input</summary>
+            [Tooltip("The input value is multiplied by this amount prior to processing.  "
+                + "Controls the input power.  Set it to a negative value to invert the input")]
+            public float Gain;
+
+            /// <summary>The actual action, resolved for player</summary>
+            internal InputAction m_CachedAction;
+#endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
             /// <summary>Axis name for the Legacy Input system (if used).  
@@ -46,20 +63,6 @@ namespace Cinemachine
             public float LegacyGain;
 #endif
 
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            /// <summary>Action for the Input package (if used).</summary>
-            [Tooltip("Action for the Input package (if used).")]
-            public InputActionReference InputAction;
-
-            /// <summary>The input value is multiplied by this amount prior to processing.
-            /// Controls the input power.  Set it to a negative value to invert the input</summary>
-            [Tooltip("The input value is multiplied by this amount prior to processing.  "
-                + "Controls the input power.  Set it to a negative value to invert the input")]
-            public float Gain;
-
-            /// <summary>The actual action, resolved for player</summary>
-            internal InputAction m_CachedAction;
-#endif
             /// <summary>Setting that control the way the input axis responds to user input</summary>
             [HideFoldout]
             public InputAxisControl Control;
@@ -213,14 +216,19 @@ namespace Cinemachine
             {
                 var c = Controllers[i];
 #if ENABLE_LEGACY_INPUT_MANAGER
+                float legacyInputValue = 0;
                 if (!string.IsNullOrEmpty(c.LegacyInput) && GetInputAxisValue != null)
-                    c.Control.InputValue = GetInputAxisValue(c.LegacyInput) * c.LegacyGain;
+                    legacyInputValue = c.Control.InputValue = GetInputAxisValue(c.LegacyInput) * c.LegacyGain;
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (c.InputAction != null && c.InputAction.action != null)
                 {
                     var axis = i < m_Axes.Count ? m_Axes[i].AxisIndex : 0;
-                    c.Control.InputValue = ReadInputAction(c, axis) * c.Gain;
+                    var inputValue = ReadInputAction(c, axis) * c.Gain;
+#if ENABLE_LEGACY_INPUT_MANAGER
+                    if (legacyInputValue == 0 || inputValue != 0)
+#endif
+                        c.Control.InputValue = inputValue;
                 }
 #endif
                 c.Driver.ProcessInput(deltaTime, m_Axes[i].Axis, ref c.Control);
@@ -301,7 +309,7 @@ namespace Cinemachine
                 {
                     case 0: return c.m_CachedAction.ReadValue<Vector2>().x;
                     case 1: return c.m_CachedAction.ReadValue<Vector2>().y;
-                    case 2: return c.m_CachedAction.ReadValue<float>();
+                    default: return c.m_CachedAction.ReadValue<float>();
                 }
             }
             return 0;

@@ -6,19 +6,29 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePanTilt))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachinePanTiltEditor : UnityEditor.Editor
+    class CinemachinePanTiltEditor : UnityEditor.Editor
     {
         CinemachinePanTilt Target => target as CinemachinePanTilt;
 
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_NoControllerHelp;
 
-        void OnEnable() => EditorApplication.update += UpdateHelpBox;
-        void OnDisable() => EditorApplication.update -= UpdateHelpBox;
+        void OnEnable()
+        {
+            m_PipelineUtility = new (this);
+            EditorApplication.update += UpdateHelpBox;
+        }
+        void OnDisable()
+        {
+            m_PipelineUtility.OnDisable();
+            EditorApplication.update -= UpdateHelpBox;
+        }
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ReferenceFrame)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PanAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TiltAxis)));
@@ -32,10 +42,9 @@ namespace Cinemachine.Editor
                 for (int i = 0; i < targets.Length; ++i)
                 {
                     var t = targets[i] as CinemachinePanTilt;
-                    if (!t.HasInputHandler)
+                    if (!t.HasInputHandler && t.VirtualCamera != null)
                     {
-                        var controller = t.VirtualCamera.GetComponent<InputAxisController>();
-                        if (controller == null)
+                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
                             Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {
@@ -46,13 +55,14 @@ namespace Cinemachine.Editor
                 }
             }));
 
+            m_PipelineUtility.UpdateState();
             UpdateHelpBox();
             return ux;
         }
 
         void UpdateHelpBox()
         {
-            if (target == null)
+            if (target == null || m_NoControllerHelp == null)
                 return;  // target was deleted
             bool noHandler = false;
             for (int i = 0; !noHandler && i < targets.Length; ++i)

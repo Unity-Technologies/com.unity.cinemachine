@@ -11,8 +11,7 @@ namespace Cinemachine.Editor
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
-    internal class CinemachineVirtualCameraEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
+    class CinemachineVirtualCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
@@ -151,7 +150,7 @@ namespace Cinemachine.Editor
             }
             BeginInspector();
             DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
+            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_Lens));

@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(VcamTargetPropertyAttribute))]
-    internal sealed class VcamTargetPropertyDrawer : PropertyDrawer
+    class VcamTargetPropertyDrawer : PropertyDrawer
     {
         // old IMGUI implementation must remain until no more IMGUI inspectors are using it
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
 
             var oldEnabled = GUI.enabled;
             var target = property.objectReferenceValue as Transform;
-            if (target == null || target.GetComponent<CinemachineTargetGroup>() != null)
+            if (target == null || target.TryGetComponent<CinemachineTargetGroup>(out var _))
                 GUI.enabled = false;
             if (GUI.Button(rect, EditorGUIUtility.IconContent("_Popup"), GUI.skin.label))
             {

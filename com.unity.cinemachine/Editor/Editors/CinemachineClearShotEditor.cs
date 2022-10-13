@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
 
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
+            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
             DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
             DrawRemainingPropertiesInInspector();
 
@@ -144,8 +144,12 @@ namespace Cinemachine.Editor
         bool ObjectHasEvaluator(object obj)
         {
             var vcam = obj as CinemachineVirtualCameraBase;
-            var evaluator = vcam == null ? null : vcam.GetComponent<IShotQualityEvaluator>() as MonoBehaviour;
-            return evaluator != null && evaluator.enabled;
+            if (vcam != null && vcam.TryGetComponent<IShotQualityEvaluator>(out var evaluator))
+            {
+                var b = evaluator as MonoBehaviour;
+                return b != null && b.enabled;
+            }
+            return false;
         }
 
         void SetupChildList()
@@ -194,7 +198,7 @@ namespace Cinemachine.Editor
 
                     SerializedObject obj = new SerializedObject(element.objectReferenceValue);
                     rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
-                    SerializedProperty priorityProp = obj.FindProperty(() => Target.CameraPriority).FindPropertyRelative("Priority");
+                    SerializedProperty priorityProp = obj.FindProperty(() => Target.PriorityAndChannel).FindPropertyRelative("Priority");
                     float oldWidth = EditorGUIUtility.labelWidth;
                     EditorGUIUtility.labelWidth = hSpace * 2;
                     EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" "));
@@ -215,7 +219,7 @@ namespace Cinemachine.Editor
             m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
                 {
                     var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreateDefaultVirtualCamera(parentObject: Target.gameObject);
+                    var vcam = CinemachineMenu.CreatePassiveCmCamera(parentObject: Target.gameObject);
                     vcam.transform.SetSiblingIndex(index);
                 };
             m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>

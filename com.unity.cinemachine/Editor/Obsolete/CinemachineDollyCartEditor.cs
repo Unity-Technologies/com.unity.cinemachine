@@ -5,7 +5,7 @@ namespace Cinemachine.Editor
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineDollyCart))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineDollyCartEditor : BaseEditor<CinemachineDollyCart>
+    class CinemachineDollyCartEditor : BaseEditor<CinemachineDollyCart>
     {
         public override void OnInspectorGUI()
         {

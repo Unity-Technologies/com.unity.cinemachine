@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 #endif
 
-namespace Cinemachine.PostFX
+namespace Cinemachine
 {
 #if !CINEMACHINE_POST_PROCESSING_V2
     /// <summary>
@@ -46,7 +46,7 @@ namespace Cinemachine.PostFX
     /// DepthOfField effect that is enabled.
     /// </summary>
     [ExecuteAlways]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Post Processing")] // Hide in menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePostProcessing.html")]
@@ -94,6 +94,11 @@ namespace Cinemachine.PostFX
             + "Offsets the sharpest point away from the location of the focus target.")]
         [FormerlySerializedAs("m_FocusOffset")]
         public float FocusOffset;
+
+        /// <summary>
+        /// If Focus tracking is enabled, this will return the calculated focus distance
+        /// </summary>
+        public float CalculatedFocusDistance { get; private set; }
 
         /// <summary>
         /// This Post-Processing profile will be applied whenever this virtual camera is live
@@ -208,7 +213,7 @@ namespace Cinemachine.PostFX
                                 if (focusTarget != null)
                                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
-                            dof.focusDistance.value = Mathf.Max(0, focusDistance);
+                            CalculatedFocusDistance = dof.focusDistance.value = Mathf.Max(0, focusDistance);
                         }
                     }
 

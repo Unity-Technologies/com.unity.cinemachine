@@ -8,10 +8,9 @@ namespace Cinemachine
     /// This is a deprecated component.  Use SplineContainer instead.
     /// </summary>
     [Obsolete("CinemachinePathBase has been deprecated. Use SplineContainer instead")]
-    [AddComponentMenu("Cinemachine/CinemachineSmoothPath")]
+    [AddComponentMenu("")] // Don't display in add component menu
     [SaveDuringPlay]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineSmoothPath.html")]
     public class CinemachineSmoothPath : CinemachinePathBase
     {
         /// <summary>If checked, then the path ends are joined to form a continuous loop</summary>

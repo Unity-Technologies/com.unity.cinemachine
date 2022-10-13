@@ -78,7 +78,7 @@ namespace Cinemachine.Editor
         {
             m_State.refreshIcon = m_State.isProSkin != EditorGUIUtility.isProSkin;
             m_State.isProSkin = EditorGUIUtility.isProSkin;
-            return ScriptableObjectUtility.CinemachineRelativeInstallPath + "/Editor/EditorResources/Handles/" +
+            return $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/" +
                 (m_State.isProSkin ? 
                     (m_State.isSelected ? "Dark-Selected" : "Dark") : 
                     (m_State.isSelected ? "Light-Selected" : "Light")) + "/";
@@ -144,11 +144,11 @@ namespace Cinemachine.Editor
     /// By default, CinemachineToolSettingsOverlay.customToolbarItems is null.
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
-    [Icon("Packages/com.unity.cinemachine/Gizmos/cm_logo.png")]
+    [Icon(ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png")]
     public class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
     {
         static readonly string[] k_CmToolbarItems = { OrbitalFollowOrbitSelection.id };
-
+        
         /// <summary>
         /// Override this method to return your visual element content.
         /// By default, this draws the same visual element as the HorizontalToolbar
@@ -191,12 +191,9 @@ namespace Cinemachine.Editor
             
             m_Icons = new Texture2D[]
             {
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigTop.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
-                AssetDatabase.LoadAssetAtPath<Texture2D>(ScriptableObjectUtility.CinemachineRelativeInstallPath
-                    + "/Editor/EditorResources/Handles/FreelookRigBottom.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/FreelookRigTop.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/FreelookRigMiddle.png"),
+                AssetDatabase.LoadAssetAtPath<Texture2D>($"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Handles/FreelookRigBottom.png"),
             };
         }
 
@@ -212,10 +209,9 @@ namespace Cinemachine.Editor
             var active = Selection.activeObject as GameObject;
             if (active != null)
             {
-                var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
-                if (orbitalFollow != null && 
-                    CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) &&
-                    orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
+                if (active.TryGetComponent<CinemachineOrbitalFollow>(out var orbitalFollow)
+                    && CinemachineSceneToolUtility.IsToolRequired(m_OrbitalFollowSelectionType) 
+                    && orbitalFollow.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
                 {
                     style.display = DisplayStyle.Flex; // display menu
                    
@@ -247,8 +243,7 @@ namespace Cinemachine.Editor
                     var active = Selection.activeObject as GameObject;
                     if (active != null)
                     {
-                        var orbitalFollow = active.GetComponent<CinemachineOrbitalFollow>();
-                        if (orbitalFollow != null)
+                        if (active.TryGetComponent<CinemachineOrbitalFollow>(out var orbitalFollow))
                         {
                             orbitalFollow.VerticalAxis.Value = s_SelectedOrbit switch
                             {

@@ -14,13 +14,13 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(LensSettingsHideModeOverridePropertyAttribute))]
-    internal class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
+    class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
     {
         public LensSettingsHideModeOverridePropertyDrawer() => HideModeOverride = true;
     }
 
     [CustomPropertyDrawer(typeof(LensSettings))]
-    internal class LensSettingsPropertyDrawer : PropertyDrawer
+    class LensSettingsPropertyDrawer : PropertyDrawer
     {
         static LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
 
@@ -395,7 +395,7 @@ namespace Cinemachine.Editor
                     if (presets == null)
                         return -1;
 #if CINEMACHINE_HDRP
-                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(p).y);
+                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(property).y);
                     var aperture = property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue;
                     var iso = property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue;
                     var shutterSpeed = property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue;

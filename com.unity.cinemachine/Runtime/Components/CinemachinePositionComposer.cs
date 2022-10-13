@@ -19,9 +19,10 @@ namespace Cinemachine
     /// For this component to work properly, the camera's tracking target must not be null.
     /// The tracking target will define what the camera is looking at.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Position Composer")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachinePositionComposer.html")]
     public class CinemachinePositionComposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance

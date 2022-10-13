@@ -5,7 +5,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(TargetTracking.TrackerSettings))]
-    internal sealed class TrackerSettingsPropertyDrawer : PropertyDrawer
+    class TrackerSettingsPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {

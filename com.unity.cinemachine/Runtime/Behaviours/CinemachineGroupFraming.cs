@@ -10,7 +10,7 @@ namespace Cinemachine
     /// An attempt will be made to fit the entire target group within the specified framing.
     /// Camera position and/or rotation may be adjusted, depending on the settings.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Group Framing")]
     [ExecuteAlways]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineGroupFraming.html")]

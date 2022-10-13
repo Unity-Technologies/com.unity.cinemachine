@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CameraTarget))]
-    internal sealed class CameraTargetPropertyDrawer : PropertyDrawer
+    class CameraTargetPropertyDrawer : PropertyDrawer
     {
         CameraTarget def;
 
@@ -42,15 +42,15 @@ namespace Cinemachine.Editor
             if (GUI.Button(rect, EditorGUIUtility.IconContent("_Popup"), GUI.skin.label))
             {
                 GenericMenu menu = new GenericMenu();
-                menu.AddItem(new GUIContent("Convert to TargetGroup"), false, () =>
+                menu.AddItem(new GUIContent("Convert to Target Group"), false, () =>
                 {
-                    if (target != null && target.GetComponent<CinemachineTargetGroup>() == null)
+                    if (target != null && !target.TryGetComponent<CinemachineTargetGroup>(out var _))
                     {
-                        GameObject go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
+                        var go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
                         var group = go.GetComponent<CinemachineTargetGroup>();
                    
                         group.RotationMode = CinemachineTargetGroup.RotationModes.GroupAverage;
-                        group.AddMember(target, 1, 1);
+                        group.AddMember(target, 1, 0.5f);
                         property.objectReferenceValue = group.Transform;
                         property.serializedObject.ApplyModifiedProperties();
                     }

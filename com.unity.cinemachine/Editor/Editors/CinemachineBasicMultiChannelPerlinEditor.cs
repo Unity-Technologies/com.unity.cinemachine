@@ -5,8 +5,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBasicMultiChannelPerlin))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineBasicMultiChannelPerlinEditor 
-        : BaseEditor<CinemachineBasicMultiChannelPerlin>
+    class CinemachineBasicMultiChannelPerlinEditor : BaseEditor<CinemachineBasicMultiChannelPerlin>
     {
         private void OnEnable()
         {
@@ -16,6 +15,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
             bool needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)
                 needWarning = (targets[i] as CinemachineBasicMultiChannelPerlin).NoiseProfile == null;

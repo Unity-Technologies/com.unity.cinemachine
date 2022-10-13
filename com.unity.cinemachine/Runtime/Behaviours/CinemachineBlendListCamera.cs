@@ -14,7 +14,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineBlendListCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine Blend List Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBlendListCamera.html")]
     public class CinemachineBlendListCamera : CinemachineCameraManagerBase
     {
@@ -64,9 +64,9 @@ namespace Cinemachine
             Instructions = null;
         }
         
-        protected internal override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
+        protected internal override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
-            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
+            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
             if (streamedVersion < 20220721)
             {
                 DefaultTarget = new DefaultTargetSettings 

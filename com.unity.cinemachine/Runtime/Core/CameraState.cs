@@ -168,6 +168,38 @@ namespace Cinemachine
         /// </summary>
         internal CustomBlendableItems CustomBlendables;
 
+        /// <summary>Add a custom blendable to the pot for eventual application to the camera.
+        /// The base system manages but otherwise ignores this data - it is intended for 
+        /// extension modules</summary>
+        /// <param name="b">The custom blendable to add.  If b.m_Custom is the same as an 
+        /// already-added custom blendable, then they will be merged and the weights combined.</param>
+        public void AddCustomBlendable(CustomBlendableItems.Item b)
+        {
+            // Attempt to merge common blendables to avoid growth
+            var index = this.FindCustomBlendable(b.Custom);
+            if (index >= 0)
+                b.Weight += this.GetCustomBlendable(index).Weight;
+            else
+            {
+                index = CustomBlendables.NumItems;
+                CustomBlendables.NumItems = index + 1;
+            }
+            switch (index)
+            {
+                case 0: CustomBlendables.m_Item0 = b; break;
+                case 1: CustomBlendables.m_Item1 = b; break;
+                case 2: CustomBlendables.m_Item2 = b; break;
+                case 3: CustomBlendables.m_Item3 = b; break;
+                default: 
+                {
+                    if (CustomBlendables.m_Overflow == null)
+                        CustomBlendables.m_Overflow = new();
+                    CustomBlendables.m_Overflow.Add(b);
+                    break;
+                }
+            }
+        }
+
         /// <summary>Intelligently blend the contents of two states.</summary>
         /// <param name="stateA">The first state, corresponding to t=0</param>
         /// <param name="stateB">The second state, corresponding to t=1</param>
@@ -481,37 +513,5 @@ namespace Cinemachine
             }
             return -1;
         }
-
-        /// <summary>Add a custom blendable to the pot for eventual application to the camera.
-        /// The base system manages but otherwise ignores this data - it is intended for 
-        /// extension modules</summary>
-        /// <param name="b">The custom blendable to add.  If b.m_Custom is the same as an 
-        /// already-added custom blendable, then they will be merged and the weights combined.</param>
-        public static void AddCustomBlendable(this CameraState s, CameraState.CustomBlendableItems.Item b)
-        {
-            // Attempt to merge common blendables to avoid growth
-            var index = s.FindCustomBlendable(b.Custom);
-            if (index >= 0)
-                b.Weight += s.GetCustomBlendable(index).Weight;
-            else
-            {
-                index = s.CustomBlendables.NumItems;
-                s.CustomBlendables.NumItems = index + 1;
-            }
-            switch (index)
-            {
-                case 0: s.CustomBlendables.m_Item0 = b; break;
-                case 1: s.CustomBlendables.m_Item1 = b; break;
-                case 2: s.CustomBlendables.m_Item2 = b; break;
-                case 3: s.CustomBlendables.m_Item3 = b; break;
-                default: 
-                {
-                    if (s.CustomBlendables.m_Overflow == null)
-                        s.CustomBlendables.m_Overflow = new();
-                    s.CustomBlendables.m_Overflow.Add(b);
-                    break;
-                }
-            }
-         }
     }
 }

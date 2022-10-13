@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+#if CINEMACHINE_PHYSICS_2D
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineConfiner2D))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
+    class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
     {
         SerializedProperty m_MaxWindowSizeProperty;
         GUIContent m_ComputeSkeletonLabel = new GUIContent(
@@ -42,13 +42,16 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
 
+            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+
             if (Target.BoundingShape2D == null)
                 EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
             else if (Target.BoundingShape2D.GetType() != typeof(PolygonCollider2D)
-                && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D))
+                && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D)
+                && Target.BoundingShape2D.GetType() != typeof(BoxCollider2D))
             {
                 EditorGUILayout.HelpBox(
-                    "Must be a PolygonCollider2D or CompositeCollider2D.",
+                    "Must be a PolygonCollider2D, BoxCollider2D, or CompositeCollider2D.",
                     MessageType.Warning);
             }
             else if (Target.BoundingShape2D.GetType() == typeof(CompositeCollider2D))
@@ -140,7 +143,7 @@ namespace Cinemachine.Editor
             if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
                 return;
 
-            Color color = CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour;
+            Color color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
             Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
             
             var oldMatrix = Gizmos.matrix;
@@ -165,5 +168,5 @@ namespace Cinemachine.Editor
             Gizmos.matrix = oldMatrix;
         }
     }
-#endif
 }
+#endif

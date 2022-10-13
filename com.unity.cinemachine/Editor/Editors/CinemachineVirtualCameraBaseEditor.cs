@@ -15,37 +15,6 @@ using UnityEngine.InputSystem;
     using UnityEngine.Rendering.Universal;
 #endif
 
-#if UNITY_2019_1_OR_NEWER
-    using CameraExtensions = UnityEngine.Camera;
-#else
-    // Needed only for Unity pre-2019.1 because Camera doesn't have these methods
-    static class CameraExtensions
-    {
-        public static float HorizontalToVerticalFieldOfView(float f, float aspect)
-        {
-            return Mathf.Rad2Deg * 2 * Mathf.Atan(Mathf.Tan(f * Mathf.Deg2Rad * 0.5f) / aspect);
-        }
-
-        public static float VerticalToHorizontalFieldOfView(float f, float aspect)
-        {
-            return Mathf.Rad2Deg * 2 * Mathf.Atan(Mathf.Tan(f * Mathf.Deg2Rad * 0.5f) * aspect);
-        }
-
-        public static float FieldOfViewToFocalLength(float fov, float sensorHeight)
-        {
-            return sensorHeight * 0.5f / Mathf.Tan(Mathf.Deg2Rad * fov * 0.5f);
-        }
-
-        public static float FocalLengthToFieldOfView(float focalLength, float sensorHeight)
-        {
-            if (focalLength < UnityVectorExtensions.Epsilon)
-                return 180f;
-            return Mathf.Rad2Deg * 2.0f * Mathf.Atan(sensorHeight * 0.5f / focalLength);
-        }
-    }
-#endif
-
-
 namespace Cinemachine.Editor
 {
     /// <summary>
@@ -53,7 +22,7 @@ namespace Cinemachine.Editor
     /// Handles drawing the header and the basic properties.
     /// </summary>
     /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
-    public class CinemachineVirtualCameraBaseEditor<T> : BaseEditor<T> where T : CinemachineVirtualCameraBase
+    class CinemachineVirtualCameraBaseEditor<T> : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {    
         /// <summary>A collection of GUIContent for use in the inspector</summary>
         public static class Styles
@@ -169,7 +138,7 @@ namespace Cinemachine.Editor
                     for (int i = 0; i < targets.Length; ++i)
                     {
                         var vcam = (CinemachineVirtualCameraBase)targets[i];
-                        if (vcam.GetComponent<AxisState.IInputAxisProvider>() != null)
+                        if (vcam.TryGetComponent<AxisState.IInputAxisProvider>(out var _))
                             continue;
                         var inputProvider = Undo.AddComponent<CinemachineInputProvider>(vcam.gameObject);
                         inputProvider.XYAxis = (InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
@@ -312,31 +281,20 @@ namespace Cinemachine.Editor
             }
         }
 
-        static GUIContent ShowInGameGuidesLabel = new GUIContent(
-            "Game Window Guides",
-            "Enable the display of overlays in the Game window.  "
-                + "You can adjust colours and opacity in Cinemachine Preferences.");
-
-        static GUIContent SaveDuringPlayLabel = new GUIContent(
-            "Save During Play",
-            "If checked, Virtual Camera settings changes made during Play Mode "
-                + "will be propagated back to the scene when Play Mode is exited.");
-
         /// <summary>
         /// Draw the global settings controls in the inspector
         /// </summary>
         protected void DrawGlobalControlsInInspector()
         {
-            CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides
-                = EditorGUILayout.Toggle(ShowInGameGuidesLabel,
-                    CinemachineSettings.CinemachineCoreSettings.ShowInGameGuides);
+            CinemachineCorePrefs.ShowInGameGuides.Value
+                = EditorGUILayout.Toggle(CinemachineCorePrefs.s_ShowInGameGuidesLabel, CinemachineCorePrefs.ShowInGameGuides.Value);
 
             SaveDuringPlay.SaveDuringPlay.Enabled
-                = EditorGUILayout.Toggle(SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+                = EditorGUILayout.Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(
-                    " Virtual Camera settings changes made during Play Mode will be "
+                    "CmCamera settings changes made during Play Mode will be "
                         + "propagated back to the scene when Play Mode is exited.",
                     MessageType.Info);
         }

@@ -10,7 +10,7 @@ namespace Cinemachine
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
-    [AddComponentMenu("")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Storyboard")]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineStoryboard.html")]
@@ -206,10 +206,8 @@ namespace Cinemachine
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
             var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(VirtualCamera);
-            int layer = 1 << gameObject.layer;
-            if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
-                showIt = false;
-            if (s_StoryboardGlobalMute)
+            var channel = (uint)VirtualCamera.GetChannel();
+            if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
             var ci = LocateMyCanvas(brain, showIt);
             if (ci != null && ci.Canvas != null)
@@ -370,13 +368,11 @@ namespace Cinemachine
             {
                 var b = state.GetCustomBlendable(i);
                 var src = b.Custom as CinemachineStoryboard;
-                if (src != null) // in case it was deleted
+                if (src != null && src.VirtualCamera != null) // in case it was deleted
                 {
                     bool showIt = true;
-                    int layer = 1 << src.gameObject.layer;
-                    if (brain.OutputCamera == null || (brain.OutputCamera.cullingMask & layer) == 0)
-                        showIt = false;
-                    if (s_StoryboardGlobalMute)
+                    var channel = (uint)src.VirtualCamera.GetChannel();
+                    if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                         showIt = false;
                     var ci = src.LocateMyCanvas(brain, showIt);
                     if (ci != null)

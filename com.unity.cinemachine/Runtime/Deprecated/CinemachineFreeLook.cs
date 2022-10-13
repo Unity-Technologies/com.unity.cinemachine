@@ -14,8 +14,7 @@ namespace Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/CinemachineFreeLook")]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLook.html")]
+    [AddComponentMenu("")] // Don't display in add component menu
     public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
@@ -48,17 +47,11 @@ namespace Cinemachine
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
-        public TransitionParams m_Transitions;
-
-        /// <summary>Legacy support</summary>
-        [SerializeField] [HideInInspector]
-        [FormerlySerializedAs("m_BlendHint")]
-        [FormerlySerializedAs("m_PositionBlending")] private BlendHint m_LegacyBlendHint;
+        public TransitionParams Transitions;
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
         [Tooltip("The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs")]
-        [AxisStateProperty]
         public AxisState m_YAxis = new AxisState(0, 1, false, true, 2f, 0.2f, 0.1f, "Mouse Y", false);
 
         /// <summary>Controls how automatic recentering of the Y axis is accomplished</summary>
@@ -69,11 +62,9 @@ namespace Cinemachine
         /// the rigs' OrbitalTransposer component</summary>
         [Tooltip("The Horizontal axis.  Value is -180...180.  "
             + "This is passed on to the rigs' OrbitalTransposer component")]
-        [AxisStateProperty]
         public AxisState m_XAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", true);
 
         /// <summary>The definition of Forward.  Camera will follow behind</summary>
-        [OrbitalTransposerHeadingProperty]
         [Tooltip("The definition of Forward.  Camera will follow behind.")]
         public CinemachineOrbitalTransposer.Heading m_Heading
             = new CinemachineOrbitalTransposer.Heading(
@@ -127,23 +118,49 @@ namespace Cinemachine
         private float m_LegacyHeadingBias = float.MaxValue;
         bool mUseLegacyRigDefinitions = false;
 
-        internal protected override void LegacyUpgradeCanBeCalledFromThread(int streamedVersion)
+        [Serializable]
+        struct LegacyTransitionParams
         {
-            base.LegacyUpgradeCanBeCalledFromThread(streamedVersion);
+            [FormerlySerializedAs("m_PositionBlending")]
+            public int m_BlendHint;
+            public bool m_InheritPosition;
+            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+        }
+        [FormerlySerializedAs("m_Transitions")]
+        [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
-            if (m_LegacyHeadingBias != float.MaxValue)
+        internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        {
+            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
+            if (streamedVersion < 20221011)
             {
-                m_Heading.m_Bias= m_LegacyHeadingBias;
-                m_LegacyHeadingBias = float.MaxValue;
-                int heading = (int)m_Heading.m_Definition;
-                if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
-                    m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
-                mUseLegacyRigDefinitions = true;
-            }
-            if (m_LegacyBlendHint != BlendHint.None)
-            {
-                m_Transitions.BlendHint = m_LegacyBlendHint;
-                m_LegacyBlendHint = BlendHint.None;
+                if (m_LegacyHeadingBias != float.MaxValue)
+                {
+                    m_Heading.m_Bias= m_LegacyHeadingBias;
+                    m_LegacyHeadingBias = float.MaxValue;
+                    int heading = (int)m_Heading.m_Definition;
+                    if (m_RecenterToTargetHeading.LegacyUpgrade(ref heading, ref m_Heading.m_VelocityFilterStrength))
+                        m_Heading.m_Definition = (CinemachineOrbitalTransposer.Heading.HeadingDefinition)heading;
+                    mUseLegacyRigDefinitions = true;
+                }
+                if (m_LegacyTransitions.m_BlendHint != 0)
+                {
+                    if (m_LegacyTransitions.m_BlendHint == 3)
+                        Transitions.BlendHint = BlendHint.ScreenSpaceAimWhenTargetsDiffer;
+                    else
+                        Transitions.BlendHint = (BlendHint)m_LegacyTransitions.m_BlendHint;
+                    m_LegacyTransitions.m_BlendHint = 0;
+                }
+                if (m_LegacyTransitions.m_InheritPosition)
+                {
+                    Transitions.BlendHint |= BlendHint.InheritPosition;
+                    m_LegacyTransitions.m_InheritPosition = false;
+                }
+                if (m_LegacyTransitions.m_OnCameraLive != null)
+                {
+                    Transitions.Events.OnCameraLive = m_LegacyTransitions.m_OnCameraLive;
+                    m_LegacyTransitions.m_OnCameraLive = null;
+                }
             }
         }
         
@@ -236,6 +253,7 @@ namespace Cinemachine
         {
             DestroyRigs();
             UpdateRigCache();
+            PriorityAndChannel = OutputChannel.Default;
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
@@ -273,7 +291,7 @@ namespace Cinemachine
 
         /// <summary>Returns the TransitionParams settings</summary>
         /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => m_Transitions;
+        public override TransitionParams GetTransitionParams() => Transitions;
 
         /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
@@ -365,7 +383,7 @@ namespace Cinemachine
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, m_Transitions.BlendHint);
+            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it
@@ -410,7 +428,7 @@ namespace Cinemachine
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
 //            m_YAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && m_Transitions.InheritPosition 
+            if (fromCam != null && Transitions.InheritPosition 
                 && !CinemachineCore.Instance.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
@@ -433,8 +451,8 @@ namespace Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (m_Transitions.OnCameraLive != null)
-                m_Transitions.OnCameraLive.Invoke(this, fromCam);
+            if (Transitions.Events.OnCameraLive != null)
+                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
         
         bool AxisState.IRequiresInput.RequiresInput() => true;
@@ -449,44 +467,60 @@ namespace Cinemachine
                 Vector3 flatDir = dir; flatDir.y = 0;
                 if (!flatDir.AlmostZero())
                 {
-                    float angle = Vector3.SignedAngle(flatDir, Vector3.back, Vector3.up);
+                    float angle = UnityVectorExtensions.SignedAngle(flatDir, Vector3.back, Vector3.up);
                     dir = Quaternion.AngleAxis(angle, Vector3.up) * dir;
                 }
                 dir.x = 0;
 
-                // Sample the spline in a few places, find the 2 closest, and lerp
-                int i0 = 0, i1 = 0;
-                float a0 = 0, a1 = 0;
-                const int NumSamples = 13;
-                float step = 1f / (NumSamples-1);
-                for (int i = 0; i < NumSamples; ++i)
-                {
-                    float a = Vector3.SignedAngle(
-                        dir, GetLocalPositionForCameraFromInput(i * step), Vector3.right);
-                    if (i == 0)
-                        a0 = a1 = a;
-                    else
-                    {
-                        if (Mathf.Abs(a) < Mathf.Abs(a0))
-                        {
-                            a1 = a0;
-                            i1 = i0;
-                            a0 = a;
-                            i0 = i;
-                        }
-                        else if (Mathf.Abs(a) < Mathf.Abs(a1))
-                        {
-                            a1 = a;
-                            i1 = i;
-                        }
-                    }
-                }
-                if (Mathf.Sign(a0) == Mathf.Sign(a1))
-                    return i0 * step;
-                float t = Mathf.Abs(a0) / (Mathf.Abs(a0) + Mathf.Abs(a1));
-                return Mathf.Lerp(i0 * step, i1 * step, t);
+                // We need to find the minimum of the angle of function using steepest descent
+                return SteepestDescent(dir.normalized * (cameraPos - Follow.position).magnitude);
             }
             return m_YAxis.Value; // stay conservative
+        }
+
+        float SteepestDescent(Vector3 cameraOffset)
+        {
+            const int maxIteration = 10;
+            const float epsilon = 0.00005f;
+            var x = InitialGuess(cameraOffset);
+            for (var i = 0; i < maxIteration; ++i)
+            {
+                var angle = AngleFunction(x);
+                var slope = SlopeOfAngleFunction(x);
+                if (Mathf.Abs(slope) < epsilon || Mathf.Abs(angle) < epsilon)
+                    break; // found best
+                x = Mathf.Clamp01(x - (angle / slope)); // clamping is needed so we don't overshoot
+            }
+            return x;
+
+            // localFunctions
+            float AngleFunction(float input)
+            {
+                var point = GetLocalPositionForCameraFromInput(input);
+                return Mathf.Abs(UnityVectorExtensions.SignedAngle(cameraOffset, point, Vector3.right));
+            }
+            // approximating derivative using symmetric difference quotient (finite diff)
+            float SlopeOfAngleFunction(float input)
+            {
+                var angleBehind = AngleFunction(input - epsilon);
+                var angleAfter = AngleFunction(input + epsilon);
+                return (angleAfter - angleBehind) / (2f * epsilon);
+            }
+            // initial guess based on closest line (approximating spline) to point 
+            float InitialGuess(Vector3 cameraPosInRigSpace)
+            {
+                UpdateCachedSpline();
+                var pb = m_CachedKnots[1]; // point at the bottom of spline
+                var pm = m_CachedKnots[2]; // point in the middle of spline
+                var pt = m_CachedKnots[3]; // point at the top of spline
+                var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
+                var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
+                var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
+                var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
+
+                // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
+                return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2);
+            }
         }
 
         CameraState m_State = CameraState.Default;          // Current state this frame

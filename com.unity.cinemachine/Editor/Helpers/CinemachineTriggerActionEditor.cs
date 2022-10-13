@@ -145,8 +145,8 @@ namespace Cinemachine.Editor
                     targetGameObject = targetBehaviour.gameObject;
                 if (targetBehaviour is T)
                     return targetBehaviour as T;
-                if (targetGameObject != null)
-                    return targetGameObject.GetComponent<T>();
+                if (targetGameObject != null && targetGameObject.TryGetComponent<T>(out var t))
+                    return t;
             }
             return null;
         }

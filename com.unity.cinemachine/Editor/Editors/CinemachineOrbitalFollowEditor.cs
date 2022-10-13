@@ -7,15 +7,16 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineOrbitalFollow))]
     [CanEditMultipleObjects]
-    internal class CinemachineOrbitalFollowEditor : UnityEditor.Editor
+    class CinemachineOrbitalFollowEditor : UnityEditor.Editor
     {
         CinemachineOrbitalFollow Target => target as CinemachineOrbitalFollow;
 
-        VisualElement m_NoFollowHelp;
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_NoControllerHelp;
 
         void OnEnable()
         {
+            m_PipelineUtility = new (this);
             EditorApplication.update += UpdateHelpBoxes;
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
@@ -23,6 +24,7 @@ namespace Cinemachine.Editor
         
         void OnDisable()
         {
+            m_PipelineUtility.OnDisable();
             EditorApplication.update -= UpdateHelpBoxes;
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
@@ -32,8 +34,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_NoFollowHelp = ux.AddChild(new HelpBox("Orbital Follow requires a Tracking target.", HelpBoxMessageType.Warning));
-
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
 
@@ -53,8 +54,7 @@ namespace Cinemachine.Editor
                     var t = (CinemachineOrbitalFollow)targets[i];
                     if (!t.HasInputHandler)
                     {
-                        var controller = t.VirtualCamera.GetComponent<InputAxisController>();
-                        if (controller == null)
+                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
                             Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {
@@ -78,24 +78,21 @@ namespace Cinemachine.Editor
                 m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
             }
 
+            m_PipelineUtility.UpdateState();
             UpdateHelpBoxes();
             return ux;
         }
 
         void UpdateHelpBoxes()
         {
-            if (target == null)
+            if (target == null || m_NoControllerHelp == null)
                 return;  // target was deleted
-            bool noFollow = false;
             bool noHandler = false;
             for (int i = 0; i < targets.Length; ++i)
             {
                 var t = (CinemachineOrbitalFollow)targets[i];
-                noFollow |= t.FollowTarget == null;
                 noHandler |= !t.HasInputHandler;
             }
-            if (m_NoFollowHelp != null)
-                m_NoFollowHelp.SetVisible(noFollow);
             if (m_NoControllerHelp != null)
                 m_NoControllerHelp.SetVisible(noHandler);
         }
@@ -199,59 +196,61 @@ namespace Cinemachine.Editor
             var vcam = orbital.VirtualCamera;
             if (vcam != null && vcam.Follow != null)
             {
-                if (orbital.OrbitStyle == CinemachineOrbitalFollow.OrbitStyles.ThreeRing)
+                var color = CinemachineCore.Instance.IsLive(vcam)
+                    ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
+                    : CinemachineCorePrefs.InactiveGizmoColour.Value;
+                var targetPos = orbital.FollowTargetPosition;
+                var orient = orbital.GetReferenceOrientation();
+                var up = orient * Vector3.up;
+                var rotation = orbital.HorizontalAxis.Value;
+                orient = Quaternion.AngleAxis(rotation, up) * orient;
+
+                switch (orbital.OrbitStyle)
                 {
-                    var prevColor = Gizmos.color;
-                    Gizmos.color = CinemachineCore.Instance.IsLive(vcam)
-                        ? CinemachineSettings.CinemachineCoreSettings.BoundaryObjectGizmoColour
-                        : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                    case CinemachineOrbitalFollow.OrbitStyles.ThreeRing:
+                    {
+                        var scale = orbital.RadialAxis.Value;
+                        var prevColor = Handles.color;
+                        Handles.color = color;
+                        Handles.DrawWireDisc(
+                            targetPos + up * orbital.Orbits.Top.Height * scale,
+                            up, orbital.Orbits.Top.Radius * scale);
+                        Handles.DrawWireDisc(
+                            targetPos + up * orbital.Orbits.Center.Height * scale, 
+                            up, orbital.Orbits.Center.Radius * scale);
+                        Handles.DrawWireDisc(
+                            targetPos + up * orbital.Orbits.Bottom.Height * scale,
+                            up, orbital.Orbits.Bottom.Radius * scale);
+                        Handles.color = prevColor;
 
-                    var orient = orbital.GetReferenceOrientation();
-                    var up = orient * Vector3.up;
-                    var rotation = orbital.HorizontalAxis.Value;
-                    orient = Quaternion.AngleAxis(rotation, up) * orient;
-                    var pos = orbital.FollowTargetPosition;
-                    var scale = orbital.RadialAxis.Value;
+                        DrawCameraPath(targetPos, orient, scale, color, orbital);
 
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Top.Height * scale, 
-                        orient, orbital.Orbits.Top.Radius * scale);
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Center.Height * scale, orient, 
-                        orbital.Orbits.Center.Radius * scale);
-                    DrawCircleAtPointWithRadius(
-                        pos + up * orbital.Orbits.Bottom.Height * scale, 
-                        orient, orbital.Orbits.Bottom.Radius * scale);
+                        break;
+                    }
+                    case CinemachineOrbitalFollow.OrbitStyles.Sphere:
+                    {
+                        var fwd = targetPos - vcam.State.RawPosition;
+                        var right = orient * Vector3.right;
+                        up = Vector3.Cross(fwd, right);
 
-                    DrawCameraPath(pos, orient, scale, orbital);
-
-                    Gizmos.color = prevColor;
+                        var prevColor = Handles.color;
+                        Handles.color = color;
+                        Handles.DrawWireDisc(targetPos, up, orbital.Radius);
+                        Handles.DrawWireDisc(targetPos, right, orbital.Radius);
+                        Handles.color = prevColor;
+                        break;
+                    }
                 }
             }
         }
-
-        static void DrawCircleAtPointWithRadius(Vector3 point, Quaternion orient, float radius)
-        {
-            var prevMatrix = Gizmos.matrix;
-            Gizmos.matrix = Matrix4x4.TRS(point, orient, radius * Vector3.one);
-
-            const int kNumPoints = 25;
-            var currPoint = Vector3.forward;
-            var rot = Quaternion.AngleAxis(360f / (float)kNumPoints, Vector3.up);
-            for (int i = 0; i < kNumPoints + 1; ++i)
-            {
-                var nextPoint = rot * currPoint;
-                Gizmos.DrawLine(currPoint, nextPoint);
-                currPoint = nextPoint;
-            }
-            Gizmos.matrix = prevMatrix;
-        }
         
         static void DrawCameraPath(
-            Vector3 pos, Quaternion orient, float scale, CinemachineOrbitalFollow freelook)
+            Vector3 pos, Quaternion orient, float scale, Color color, CinemachineOrbitalFollow freelook)
         {
             var prevMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(pos, orient, scale * Vector3.one);
+            var prevColor = Gizmos.color;
+            Gizmos.color = color;
 
             const float stepSize = 0.1f;
             var lastPos = freelook.GetCameraOffsetForNormalizedAxisValue(-1);
@@ -263,6 +262,7 @@ namespace Cinemachine.Editor
                 lastPos = p;
             }
             Gizmos.matrix = prevMatrix;
+            Gizmos.color = prevColor;
         }
     }
 }

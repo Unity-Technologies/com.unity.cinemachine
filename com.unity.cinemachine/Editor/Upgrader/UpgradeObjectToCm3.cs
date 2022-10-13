@@ -261,7 +261,7 @@ namespace Cinemachine.Editor
             cmCamera.LookAt = vcam.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = vcam.m_Follow != vcam.m_LookAt;
             cmCamera.Lens = vcam.m_Lens;
-            cmCamera.Transitions = vcam.m_Transitions;
+            cmCamera.Transitions = vcam.Transitions;
                 
             // Transfer the component pipeline
             var pipeline = vcam.GetComponentPipeline();
@@ -359,7 +359,7 @@ namespace Cinemachine.Editor
             cmCamera.Follow = freelook.m_Follow;
             cmCamera.LookAt = freelook.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = freelook.m_Follow != freelook.m_LookAt;
-            cmCamera.Transitions = freelook.m_Transitions;
+            cmCamera.Transitions = freelook.Transitions;
                     
             var freeLookModifier = Undo.AddComponent<CinemachineFreeLookModifier>(go);
             ConvertFreelookLens(freelook, cmCamera, freeLookModifier);

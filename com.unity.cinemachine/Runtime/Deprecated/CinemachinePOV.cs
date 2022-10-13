@@ -41,7 +41,6 @@ namespace Cinemachine
 
         /// <summary>The Vertical axis.  Value is -90..90. Controls the vertical orientation</summary>
         [Tooltip("The Vertical axis.  Value is -90..90. Controls the vertical orientation")]
-        [AxisStateProperty]
         public AxisState m_VerticalAxis = new AxisState(-70, 70, false, false, 300f, 0.1f, 0.1f, "Mouse Y", true);
 
         /// <summary>Controls how automatic recentering of the Vertical axis is accomplished</summary>
@@ -50,7 +49,6 @@ namespace Cinemachine
 
         /// <summary>The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation</summary>
         [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
-        [AxisStateProperty]
         public AxisState m_HorizontalAxis = new AxisState(-180, 180, true, false, 300f, 0.1f, 0.1f, "Mouse X", false);
 
         /// <summary>Controls how automatic recentering of the Horizontal axis is accomplished</summary>
@@ -131,17 +129,18 @@ namespace Cinemachine
                 return;
 
             // Only read joystick when game is playing
-            if (deltaTime >= 0 && CinemachineCore.Instance.IsLive(VirtualCamera))
+            if (deltaTime >= 0 && (!VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera)))
+                deltaTime = -1;
+            if (deltaTime >= 0)
             {
                 if (m_HorizontalAxis.Update(deltaTime))
                     m_HorizontalRecentering.CancelRecentering();
                 if (m_VerticalAxis.Update(deltaTime))
                     m_VerticalRecentering.CancelRecentering();
-
-                var recenterTarget = GetRecenterTarget();
-                m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, deltaTime, recenterTarget.x);
-                m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, recenterTarget.y);
             }
+            var recenterTarget = GetRecenterTarget();
+            m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, deltaTime, recenterTarget.x);
+            m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, deltaTime, recenterTarget.y);
 
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);

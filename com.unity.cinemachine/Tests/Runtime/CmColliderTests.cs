@@ -13,7 +13,7 @@ namespace Tests.Runtime
     {
         CinemachineBrain m_Brain;
         CmCamera m_Vcam;
-        CinemachineCollider m_Collider;
+        CinemachineDeoccluder m_Collider;
         GameObject m_FollowObject;
 
         [SetUp]
@@ -22,13 +22,13 @@ namespace Tests.Runtime
             var camera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_Brain = camera.GetComponent<CinemachineBrain>();
 
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineCollider)).GetComponent<CmCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineDeoccluder)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
             var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
             framingTransposer.CameraDistance = 5f;
-            m_Collider = m_Vcam.GetComponent<CinemachineCollider>();
-            m_Collider.Strategy = CinemachineCollider.ResolutionStrategy.PullCameraForward;
+            m_Collider = m_Vcam.GetComponent<CinemachineDeoccluder>();
+            m_Collider.Strategy = CinemachineDeoccluder.ResolutionStrategy.PullCameraForward;
             m_Collider.CollideAgainst = 1;
             m_Collider.AvoidObstacles = true;
             m_Collider.SmoothingTime = 0;

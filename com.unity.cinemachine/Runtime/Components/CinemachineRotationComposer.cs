@@ -13,9 +13,10 @@ namespace Cinemachine
     /// camera where it is, in order to get the desired framing.  To move the camera, you have
     /// to use the virtual camera's Body section.
     /// </summary>
-    [AddComponentMenu("")] // Don't display in add component menu
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Rotation Composer")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineRotationComposer.html")]
     public class CinemachineRotationComposer : CinemachineComponentBase, 
         CinemachineFreeLookModifier.IModifiableComposition
     {
@@ -198,12 +199,12 @@ namespace Cinemachine
                 // No damping, just snap to central bounds, skipping the soft zone
                 rigOrientation = Quaternion.LookRotation(
                     rigOrientation * Vector3.forward, curState.ReferenceUp);
-                Rect rect = mCache.mFovSoftGuideRect;
+                Rect rect = mCache.FovSoftGuideRect;
                 if (CenterOnActivate)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 RotateToScreenBounds(
                     ref curState, rect, curState.ReferenceLookAt,
-                    ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
+                    ref rigOrientation, mCache.Fov, mCache.FovH, -1);
             }
             else
             {
@@ -222,14 +223,14 @@ namespace Cinemachine
 
                 // Move target through the soft zone, with damping
                 RotateToScreenBounds(
-                    ref curState, mCache.mFovSoftGuideRect, TrackedPoint,
-                    ref rigOrientation, mCache.mFov, mCache.mFovH, deltaTime);
+                    ref curState, mCache.FovSoftGuideRect, TrackedPoint,
+                    ref rigOrientation, mCache.Fov, mCache.FovH, deltaTime);
 
                 // Force the actual target (not the lookahead one) into the hard bounds, no damping
                 if (deltaTime < 0 || VirtualCamera.LookAtTargetAttachment > 1 - Epsilon)
                     RotateToScreenBounds(
-                        ref curState, mCache.mFovHardGuideRect, curState.ReferenceLookAt,
-                        ref rigOrientation, mCache.mFov, mCache.mFovH, -1);
+                        ref curState, mCache.FovHardGuideRect, curState.ReferenceLookAt,
+                        ref rigOrientation, mCache.Fov, mCache.FovH, -1);
             }
 
             m_CameraPosPrevFrame = curState.GetCorrectedPosition();
@@ -284,65 +285,64 @@ namespace Cinemachine
         // Cache for some expensive calculations
         struct FovCache
         {
-            public Rect mFovSoftGuideRect;
-            public Rect mFovHardGuideRect;
-            public float mFovH;
-            public float mFov;
+            public Rect FovSoftGuideRect;
+            public Rect FovHardGuideRect;
+            public float FovH;
+            public float Fov;
 
-            float mOrthoSizeOverDistance;
-            float mAspect;
-            Rect mSoftGuideRect;
-            Rect mHardGuideRect;
+            float m_OrthoSizeOverDistance;
+            float m_Aspect;
+            Rect m_SoftGuideRect;
+            Rect m_HardGuideRect;
 
             public void UpdateCache(
                 LensSettings lens, Rect softGuide, Rect hardGuide, float targetDistance)
             {
-                bool recalculate = mAspect != lens.Aspect
-                    || softGuide != mSoftGuideRect || hardGuide != mHardGuideRect;
+                bool recalculate = m_Aspect != lens.Aspect
+                    || softGuide != m_SoftGuideRect || hardGuide != m_HardGuideRect;
                 if (lens.Orthographic)
                 {
                     float orthoOverDistance = Mathf.Abs(lens.OrthographicSize / targetDistance);
-                    if (mOrthoSizeOverDistance == 0
-                        || Mathf.Abs(orthoOverDistance - mOrthoSizeOverDistance) / mOrthoSizeOverDistance
-                            > mOrthoSizeOverDistance * 0.01f)
+                    if (m_OrthoSizeOverDistance == 0
+                        || Mathf.Abs(orthoOverDistance - m_OrthoSizeOverDistance) / m_OrthoSizeOverDistance
+                            > m_OrthoSizeOverDistance * 0.01f)
                         recalculate = true;
                     if (recalculate)
                     {
                         // Calculate effective fov - fake it for ortho based on target distance
-                        mFov = Mathf.Rad2Deg * 2 * Mathf.Atan(orthoOverDistance);
-                        mFovH = Mathf.Rad2Deg * 2 * Mathf.Atan(lens.Aspect * orthoOverDistance);
-                        mOrthoSizeOverDistance = orthoOverDistance;
+                        Fov = Mathf.Rad2Deg * 2 * Mathf.Atan(orthoOverDistance);
+                        FovH = Mathf.Rad2Deg * 2 * Mathf.Atan(lens.Aspect * orthoOverDistance);
+                        m_OrthoSizeOverDistance = orthoOverDistance;
                     }
                 }
                 else
                 {
                     var verticalFOV = lens.FieldOfView;
-                    if (mFov != verticalFOV)
+                    if (Fov != verticalFOV)
                         recalculate = true;
                     if (recalculate)
                     {
-                        mFov = verticalFOV;
-                        double radHFOV = 2 * Math.Atan(Math.Tan(mFov * Mathf.Deg2Rad / 2) * lens.Aspect);
-                        mFovH = (float)(Mathf.Rad2Deg * radHFOV);
-                        mOrthoSizeOverDistance = 0;
+                        Fov = verticalFOV;
+                        double radHFOV = 2 * Math.Atan(Math.Tan(Fov * Mathf.Deg2Rad / 2) * lens.Aspect);
+                        FovH = (float)(Mathf.Rad2Deg * radHFOV);
+                        m_OrthoSizeOverDistance = 0;
                     }
                 }
                 if (recalculate)
                 {
-                    mFovSoftGuideRect = ScreenToFOV(softGuide, mFov, mFovH, lens.Aspect);
-                    mSoftGuideRect = softGuide;
-                    mFovHardGuideRect = ScreenToFOV(hardGuide, mFov, mFovH, lens.Aspect);
-                    mHardGuideRect = hardGuide;
-                    mAspect = lens.Aspect;
+                    FovSoftGuideRect = ScreenToFOV(softGuide, Fov, FovH, lens.Aspect);
+                    m_SoftGuideRect = softGuide;
+                    FovHardGuideRect = ScreenToFOV(hardGuide, Fov, FovH, lens.Aspect);
+                    m_HardGuideRect = hardGuide;
+                    m_Aspect = lens.Aspect;
                 }
             }
 
             // Convert from screen coords to normalized FOV angular coords
-            private Rect ScreenToFOV(Rect rScreen, float fov, float fovH, float aspect)
+            static Rect ScreenToFOV(Rect rScreen, float fov, float fovH, float aspect)
             {
                 Rect r = new Rect(rScreen);
-                var persp = Matrix4x4.identity;
-                Matrix4x4.Inverse3DAffine(Matrix4x4.Perspective(fov, aspect, 0.0001f, 2f), ref persp);
+                var persp = Matrix4x4.Perspective(fov, aspect, 0.0001f, 2f).inverse;
 
                 Vector3 p = persp.MultiplyPoint(new Vector3(0, (r.yMin * 2f) - 1f, 0.5f)); p.z = -p.z;
                 float angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.left);
@@ -373,7 +373,7 @@ namespace Cinemachine
         /// state.ReferenceUp.  If this condition is violated
         /// then you will see crazy spinning.  That's the symptom.
         /// </summary>
-        private void RotateToScreenBounds(
+        void RotateToScreenBounds(
             ref CameraState state, Rect screenRect, Vector3 trackedPoint,
             ref Quaternion rigOrientation, float fov, float fovH, float deltaTime)
         {
@@ -419,7 +419,7 @@ namespace Cinemachine
         /// beyond the vertical in order to produce the desired framing.  We prevent this by
         /// clamping the composer's vertical settings so that this situation can't happen.
         /// </summary>
-        private bool ClampVerticalBounds(ref Rect r, Vector3 dir, Vector3 up, float fov)
+        bool ClampVerticalBounds(ref Rect r, Vector3 dir, Vector3 up, float fov)
         {
             float angle = UnityVectorExtensions.Angle(dir, up);
             float halfFov = (fov / 2f) + 1; // give it a little extra to accommodate precision errors

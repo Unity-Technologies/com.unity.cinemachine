@@ -6,7 +6,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CmCamera))]
     [CanEditMultipleObjects]
-    sealed class CmCameraEditor : UnityEditor.Editor 
+    class CmCameraEditor : UnityEditor.Editor 
     {
         CmCamera Target => target as CmCamera;
         CmCameraInspectorUtility m_CameraUtility = new CmCameraInspectorUtility();
@@ -19,8 +19,7 @@ namespace Cinemachine.Editor
             if (brain != null)
             {
                 cam.Lens = brain.CurrentCameraState.Lens;
-                cam.transform.position = brain.transform.position;
-                cam.transform.rotation = brain.transform.rotation;
+                cam.transform.SetPositionAndRotation(brain.transform.position, brain.transform.rotation);
             }
         }
 
@@ -56,7 +55,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             m_CameraUtility.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraPriority)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
             

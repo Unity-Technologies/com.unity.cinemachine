@@ -12,8 +12,7 @@ namespace Cinemachine
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
-    internal sealed class CinemachineFreeLookEditor
-        : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
+    class CinemachineFreeLookEditor : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -75,7 +74,7 @@ namespace Cinemachine
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.CameraPriority));
+            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
             DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
             DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
@@ -281,8 +280,8 @@ namespace Cinemachine
             Color originalGizmoColour = Gizmos.color;
             bool isActiveVirtualCam = CinemachineCore.Instance.IsLive(vcam);
             Gizmos.color = isActiveVirtualCam
-                ? CinemachineSettings.CinemachineCoreSettings.ActiveGizmoColour
-                : CinemachineSettings.CinemachineCoreSettings.InactiveGizmoColour;
+                ? CinemachineCorePrefs.ActiveGizmoColour.Value
+                : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
             if (vcam.Follow != null)
             {

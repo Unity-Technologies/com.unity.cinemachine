@@ -7,7 +7,7 @@ MonoImporter:
   - CustomTarget: {instanceID: 0}
   - m_ComputeShader: {fileID: 7200000, guid: 70bb111e26536f54da7584ae418a9ed8, type: 3}
   executionOrder: 0
-  icon: {fileID: 2800000, guid: 5f2a108eb023faf43a809979fd3d38f2, type: 3}
+  icon: {fileID: 2800000, guid: 3327a326efc0c4079a8eada111b11d29, type: 3}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
