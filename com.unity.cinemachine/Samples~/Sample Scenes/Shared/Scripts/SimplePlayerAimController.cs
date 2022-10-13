@@ -80,7 +80,7 @@ namespace Cinemachine.Examples
             }
             else
             {
-                // If the player is moving, rotate it yaw to match the camera direction,
+                // If the player is moving, rotate its yaw to match the camera direction,
                 // otherwise let the camera orbit
                 if (m_Controller.IsMoving)
                     RecenterPlayer(RotationDamping);
