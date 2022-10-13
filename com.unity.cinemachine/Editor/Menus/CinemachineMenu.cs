@@ -237,7 +237,10 @@ namespace Cinemachine.Editor
             if (SceneView.lastActiveSceneView != null)
             {
                 var src = SceneView.lastActiveSceneView.camera;
-                sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
+                // Respect scene view preferences - Create Objects at Origin:
+                // only set position and rotation, if sceneObject is not in the exact center
+                if (!AtOrigin(sceneObject.transform.position))
+                    sceneObject.SetPositionAndRotation(src.transform.position, src.transform.rotation);
                 if (lens.Orthographic == src.orthographic)
                 {
                     if (src.orthographic)
@@ -247,6 +250,8 @@ namespace Cinemachine.Editor
                 }
             }
             return lens;
+
+            static bool AtOrigin(Vector3 a) => a.x == 0f && a.y == 0f && a.z == 0f;
         }
 
         /// <summary>
@@ -275,19 +280,14 @@ namespace Cinemachine.Editor
 
             // We use ObjectFactory to create a new GameObject as it automatically supports undo/redo
             var go = ObjectFactory.CreateGameObject(name);
-            T component = Undo.AddComponent<T>(go);
-
-            if (parentObject != null)
-                Undo.SetTransformParent(go.transform, parentObject.transform, "Set parent of " + name);
+            var component = Undo.AddComponent<T>(go);
 
             // We ensure that the new object has a unique name, for example "Camera (1)".
             // This must be done after setting the parent in order to get an accurate unique name
             GameObjectUtility.EnsureUniqueNameForSibling(go);
 
-            // We set the new object to be at the current pivot of the scene.
-            // GML TODO: Support the "Place Objects At World Origin" preference option in 2020.3+, see GOCreationCommands.cs
-            if (SceneView.lastActiveSceneView != null)
-                go.transform.position = SceneView.lastActiveSceneView.pivot;
+            // Place vcam as set by the unity editor preferences
+            ObjectFactory.PlaceGameObject(go, parentObject);
 
             if (select)
                 Selection.activeGameObject = go;
