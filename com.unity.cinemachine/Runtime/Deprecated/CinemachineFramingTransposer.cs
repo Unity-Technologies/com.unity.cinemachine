@@ -692,7 +692,7 @@ namespace Cinemachine
         {
             c.FramingMode = (CinemachineGroupFraming.FramingModes)m_GroupFramingMode; // values are the same
             c.FramingSize = m_GroupFramingSize;
-            c.Damping = 0;
+            c.Damping = m_ZDamping;
             c.SizeAdjustment = (CinemachineGroupFraming.SizeAdjustmentModes)m_AdjustmentMode; // values are the same
             c.LateralAdjustment = CinemachineGroupFraming.LateralAdjustmentModes.ChangePosition;
             c.DollyRange = new Vector2(-m_MaxDollyIn, m_MaxDollyOut);
