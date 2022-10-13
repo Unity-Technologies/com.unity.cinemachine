@@ -160,7 +160,7 @@ namespace Cinemachine
                 return;
 
             var group = vcam.FollowTargetAsGroup;
-            if (group == null || group.Sphere.radius < k_MinimumGroupSize)
+            if (group == null)
                 return;
 
             var extra = GetExtraState<VcamExtraState>(vcam);
