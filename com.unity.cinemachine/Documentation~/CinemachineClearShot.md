@@ -2,7 +2,7 @@
 
 The __Cinemachine ClearShot Camera__ component chooses among its children CmCameras for the best quality shot of the target. Use Clear Shot to set up complex multi-camera coverage of a Scene to guarantee a clear view of the target.
 
-This can be a very powerful tool. CmCamera children with [Cinemachine Deoccluder](CinemachineDeoccluder.md) or other shot quality evaluatore extensions analyze the shot for target obstructions, optimal target distance, and so on. Clear Shot uses this information to choose the best child to activate.
+This can be a very powerful tool. CmCamera children with [Cinemachine Deoccluder](CinemachineDeoccluder.md) or other shot quality evaluator extensions analyze the shot for target obstructions, optimal target distance, and so on. Clear Shot uses this information to choose the best child to activate.
 
 **Tip:** To use a single [Cinemachine Deoccluder](CinemachineDeoccluder.md) for all CmCamera children, add a Cinemachine Deoccluder extension to the ClearShot GameObject instead of each of its CmCamera children. This Cinemachine Deoccluder extension applies to all of the children, as if each of them had that Deoccluder as its own extension.
 
