@@ -4,17 +4,17 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     [InitializeOnLoad]
-    static class CinemachineColliderPrefs
+    static class CinemachineDeoccluderPrefs
     {
         static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Collider_Foldout", false);
         public static CinemachineSettings.ColorItem CameraSphereColor = new("CNMCN_Collider_Camera_Path_Colour", Color.grey);
         public static CinemachineSettings.ColorItem CameraPathColor = new("CNMCN_Collider_Camera_Sphere_Colour", Color.yellow);
 
-        static CinemachineColliderPrefs() => CinemachineSettings.AdditionalCategories += DrawColliderSettings;
+        static CinemachineDeoccluderPrefs() => CinemachineSettings.AdditionalCategories += DrawColliderSettings;
 
         static void DrawColliderSettings()
         {
-            s_SettingsFoldedOut.Value = EditorGUILayout.Foldout(s_SettingsFoldedOut.Value, "Collider Settings", true);
+            s_SettingsFoldedOut.Value = EditorGUILayout.Foldout(s_SettingsFoldedOut.Value, "Deoccluder Settings", true);
             if (s_SettingsFoldedOut.Value)
             {
                 EditorGUI.indentLevel++;

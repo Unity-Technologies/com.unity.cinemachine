@@ -11,19 +11,19 @@ namespace Cinemachine
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that post-processes
     /// the final position of the virtual camera. Based on the supplied settings,
-    /// the Collider will attempt to preserve the line of sight
+    /// the Deoccluder will attempt to preserve the line of sight
     /// with the LookAt target of the virtual camera by moving
     /// away from objects that will obstruct the view.
     ///
-    /// Additionally, the Collider can be used to assess the shot quality and
+    /// Additionally, the Deoccluder can be used to assess the shot quality and
     /// report this as a field in the camera State.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Collider")]
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Deoccluder")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineCollider.html")]
-    public class CinemachineCollider : CinemachineExtension, IShotQualityEvaluator
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineDeoccluder.html")]
+    public class CinemachineDeoccluder : CinemachineExtension, IShotQualityEvaluator
     {
         /// <summary>Objects on these layers will be detected.</summary>
         [Header("Obstacle Detection")]
@@ -84,7 +84,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_CameraRadius")]
         public float CameraRadius = 0.1f;
 
-        /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
+        /// <summary>The way in which the Deoccluder will attempt to preserve sight of the target.</summary>
         public enum ResolutionStrategy
         {
             /// <summary>Camera will be pulled forward along its Z axis until it is in front of
@@ -97,8 +97,8 @@ namespace Cinemachine
             /// return the camera to its original distance from the target</summary>
             PreserveCameraDistance
         };
-        /// <summary>The way in which the Collider will attempt to preserve sight of the target.</summary>
-        [Tooltip("The way in which the Collider will attempt to preserve sight of the target.")]
+        /// <summary>The way in which the Deoccluder will attempt to preserve sight of the target.</summary>
+        [Tooltip("The way in which the Deoccluder will attempt to preserve sight of the target.")]
         [FormerlySerializedAs("m_Strategy")]
         public ResolutionStrategy Strategy = ResolutionStrategy.PreserveCameraHeight;
 

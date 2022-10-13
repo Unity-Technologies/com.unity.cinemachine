@@ -170,7 +170,7 @@ namespace Cinemachine.Editor
 
             // We give the camera a child as an example setup
             var childVcam = CreatePassiveCmCamera(parentObject: clearShotCamera.gameObject);
-            Undo.AddComponent<CinemachineCollider>(childVcam.gameObject).AvoidObstacles = false;
+            Undo.AddComponent<CinemachineDeoccluder>(childVcam.gameObject).AvoidObstacles = false;
         }
 #endif
 
