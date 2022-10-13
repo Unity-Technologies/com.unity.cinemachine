@@ -97,6 +97,20 @@ namespace Cinemachine.TargetTracking
             RotationDamping = Vector3.one,
             QuaternionDamping = 1
         };
+
+        /// <summary>
+        /// Called from OnValidate().  Makes sure the settings are sensible.
+        /// </summary>
+        public void Validate()
+        {
+            PositionDamping.x = Mathf.Max(0, PositionDamping.x);
+            PositionDamping.y = Mathf.Max(0, PositionDamping.y);
+            PositionDamping.z = Mathf.Max(0, PositionDamping.z);
+            RotationDamping.x = Mathf.Max(0, RotationDamping.x);
+            RotationDamping.y = Mathf.Max(0, RotationDamping.y);
+            RotationDamping.z = Mathf.Max(0, RotationDamping.z);
+            QuaternionDamping = Mathf.Max(0, QuaternionDamping);
+        }
     }
 
     /// <summary>
@@ -104,21 +118,6 @@ namespace Cinemachine.TargetTracking
     /// </summary>
     public static class TrackerSettingsExtensions
     {
-        /// <summary>
-        /// Called from OnValidate().  Makes sure the settings are sensible.
-        /// </summary>
-        /// <param name="s">The tracker settings</param>
-        public static void Validate(this TrackerSettings s)
-        {
-            s.PositionDamping.x = Mathf.Max(0, s.PositionDamping.x);
-            s.PositionDamping.y = Mathf.Max(0, s.PositionDamping.y);
-            s.PositionDamping.z = Mathf.Max(0, s.PositionDamping.z);
-            s.RotationDamping.x = Mathf.Max(0, s.RotationDamping.x);
-            s.RotationDamping.y = Mathf.Max(0, s.RotationDamping.y);
-            s.RotationDamping.z = Mathf.Max(0, s.RotationDamping.z);
-            s.QuaternionDamping = Mathf.Max(0, s.QuaternionDamping);
-        }
-
         /// <summary>
         /// Report maximum damping time needed for the current binding mode.
         /// </summary>
