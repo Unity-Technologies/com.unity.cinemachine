@@ -254,7 +254,7 @@ namespace Cinemachine.TargetTracking
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">Current camera up</param>
         /// <param name="desiredCameraOffset">Where we want to put the camera relative to the follow target</param>
-        /// <param name="settings">Ttracker settings</param>
+        /// <param name="settings">Tracker settings</param>
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
         public void TrackTarget(

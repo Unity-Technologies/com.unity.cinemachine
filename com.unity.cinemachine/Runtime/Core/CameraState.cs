@@ -11,10 +11,10 @@ namespace Cinemachine
     /// 
     /// Raw values are what the Cinemachine behaviours generate.  The correction channel
     /// holds perturbations to the raw values - e.g. noise or smoothing, or obstacle
-    /// avoidance corrections.  Coirrections are not considered when making time-based
+    /// avoidance corrections.  Corrections are not considered when making time-based
     /// calculations such as damping.
     /// 
-    /// The Final position and orientation is the comination of the raw values and
+    /// The Final position and orientation is the combination of the raw values and
     /// their corrections.
     /// </summary>
     public struct CameraState
@@ -78,7 +78,7 @@ namespace Cinemachine
         public Quaternion OrientationCorrection;
 
         /// <summary>
-        /// These hints can be or'ed toether to influence how blending is done, and how state
+        /// These hints can be or'ed together to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
         public enum BlendHintValue
@@ -164,7 +164,7 @@ namespace Cinemachine
         /// their weights blend along with the camera weights.  For efficiency, a fixed number of slots
         /// are provided, plus a (more expensive) overflow list.
         /// The base system manages but otherwise ignores this data - it is intended for 
-        /// extension modules.</summary>
+        /// extension modules.
         /// </summary>
         internal CustomBlendableItems CustomBlendables;
 
