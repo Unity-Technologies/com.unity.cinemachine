@@ -53,7 +53,7 @@ namespace Cinemachine.Examples
                 var fwd = transform.forward;
                 if (AimTarget != null)
                     fwd = (AimTarget.position - transform.position).normalized;
-                var go = Instantiate(BulletPrefab, transform.position + fwd, transform.rotation);
+                var go = Instantiate(BulletPrefab, transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
                 if (go.TryGetComponent<SimpleBullet>(out var b))
                     b.Fire(fwd, BulletSpeed);
                 Destroy(go, TimeInAir);
