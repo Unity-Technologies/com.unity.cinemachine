@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
@@ -9,19 +10,40 @@ namespace Cinemachine.Editor
     partial class UpgradeObjectToCm3
     {
         /// <summary>
-        /// Search for these types to find GameObjects to upgrade
+        /// Search for these types to find GameObjects to upgrade.
+        /// The order is important: Referencables first, then NonReferencables for the conversion algorithm.
         /// </summary>
         public readonly List<Type> RootUpgradeComponentTypes = new()
         {
-            // Put the paths first so any vcam references to them will convert
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+
             // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
             typeof(CinemachineFreeLook),
             typeof(CinemachineVirtualCamera),
         };
         
+        /// <summary>
+        /// Any component that may be referenced by vcams or freelooks 
+        /// </summary>
+        public static readonly List<Type> Referencables = new()
+        {
+            typeof(CinemachinePathBase),
+            typeof(CinemachineDollyCart),
+        };
+        
+        public static bool HasReferencableComponent(UnityEngine.GameObject go)
+        {
+            foreach (var referencable in Referencables)
+            {
+                var c = go.GetComponentInChildren(referencable);
+                if (c != null)
+                    return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// After the upgrade is complete, these components should be deleted
         /// </summary>
@@ -48,7 +70,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Maps class upgrades.
         /// </summary>
-        readonly Dictionary<Type, Type> m_ClassUpgradeMap = new()
+        public readonly Dictionary<Type, Type> ClassUpgradeMap = new()
         {
             { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
             { typeof(CinemachineFreeLook), typeof(CmCamera) },

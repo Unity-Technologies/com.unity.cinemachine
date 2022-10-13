@@ -3,12 +3,10 @@
     using UnityEngine.Rendering;
     using UnityEditor.Rendering;
     using System.Collections.Generic;
+
+
 #if CINEMACHINE_HDRP
-    #if CINEMACHINE_HDRP_7_3_1
-        using UnityEngine.Rendering.HighDefinition;
-    #else
-        using UnityEngine.Experimental.Rendering.HDPipeline;
-    #endif
+    using UnityEngine.Rendering.HighDefinition;
 #elif CINEMACHINE_LWRP_7_3_1
     using UnityEngine.Rendering.Universal;
 #endif

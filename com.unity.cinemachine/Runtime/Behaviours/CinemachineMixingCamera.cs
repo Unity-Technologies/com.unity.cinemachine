@@ -175,6 +175,7 @@ namespace Cinemachine
         }
 
         /// <summary>Rebuild the cached list of child cameras.</summary>
+        /// <returns>True, if rebuild was needed. False, otherwise.</returns>
         protected override bool UpdateCameraCache()
         {
             if (!base.UpdateCameraCache())

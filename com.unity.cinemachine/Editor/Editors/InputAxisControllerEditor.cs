@@ -93,7 +93,9 @@ namespace Cinemachine.Editor
                 InputAxisController.SetControlDefaults 
                     = (in IInputAxisSource.AxisDescriptor axis, ref InputAxisController.Controller controller) => 
                 {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var actionName = "";
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
                     var inputName = "";
                     var invertY = false;
                     controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };

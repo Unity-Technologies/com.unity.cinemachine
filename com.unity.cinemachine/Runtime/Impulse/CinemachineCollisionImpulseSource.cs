@@ -4,7 +4,9 @@ using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
+    
 #if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
+    /// <summary>If Physics or Physics 2D is part of the project, this would generate inpulse events.</summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource {}
 #else
@@ -27,9 +29,9 @@ namespace Cinemachine
         [FormerlySerializedAs("m_LayerMask")]
         public LayerMask LayerMask = 1;
 
-        /// <summary>No Impulse evemts will be generated for collisions with objects having these tags</summary>
+        /// <summary>No Impulse events will be generated for collisions with objects having these tags</summary>
         [TagField]
-        [Tooltip("No Impulse evemts will be generated for collisions with objects having these tags")]
+        [Tooltip("No Impulse events will be generated for collisions with objects having these tags")]
         [FormerlySerializedAs("m_IgnoreTag")]
         public string IgnoreTag = string.Empty;
 

@@ -34,13 +34,8 @@
         },
         {
             "name": "com.unity.render-pipelines.high-definition",
-            "expression": "5.3.1",
+            "expression": "14.0.0",
             "define": "CINEMACHINE_HDRP"
-        },
-        {
-            "name": "com.unity.render-pipelines.high-definition",
-            "expression": "7.3.1",
-            "define": "CINEMACHINE_HDRP_7_3_1"
         },
         {
             "name": "com.unity.modules.physics2d",
