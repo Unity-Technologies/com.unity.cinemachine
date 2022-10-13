@@ -21,8 +21,8 @@ api_doc_validation:
     - unity-downloader-cli --fast --wait -u {{ all_tests.first.editors.first }} -c editor
     # Run PVS in PVP mode.
     - upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results "upm-ci~/pvp"
-    # Require that PVP-20-1 (API docs validation) passed
-    - upm-pvp require PVP-20-1 --results "upm-ci~/pvp" --failures "upm-ci~/pvp/failures.json"
+    # Require that PVP-20-1 (API docs validation) passed, also exempt some known errors which are in pvp_api_doc_exemptions.json
+    - upm-pvp require ./pvp_api_doc_exemptions.json --results "upm-ci~/pvp" --failures "upm-ci~/pvp/failures.json"
   artifacts:
     pvp:
       paths:
