@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine
 {
-  public struct Point64
+  struct Point64
   {
     public long X;
     public long Y;
@@ -161,7 +161,7 @@ namespace Cinemachine
     public override int GetHashCode() { return 0; }
   }
 
-  public struct PointD
+  struct PointD
   {
     public double x;
     public double y;
@@ -286,7 +286,7 @@ namespace Cinemachine
     public override int GetHashCode() { return 0; }
   }
 
-  public struct Rect64
+  struct Rect64
   {
     public long left;
     public long top;
@@ -346,7 +346,7 @@ namespace Cinemachine
 
   }
 
-  public struct RectD
+  struct RectD
   {
     public double left;
     public double top;
@@ -400,7 +400,7 @@ namespace Cinemachine
   }
 
   // Note: all clipping operations except for Difference are commutative.
-  public enum ClipType
+  enum ClipType
   {
     None,
     Intersection,
@@ -409,7 +409,7 @@ namespace Cinemachine
     Xor
   };
 
-  public enum PathType
+  enum PathType
   {
     Subject,
     Clip
@@ -418,7 +418,7 @@ namespace Cinemachine
   // By far the most widely used filling rules for polygons are EvenOdd
   // and NonZero, sometimes called Alternate and Winding respectively.
   // https://en.wikipedia.org/wiki/Nonzero-rule
-  public enum FillRule
+  enum FillRule
   {
     EvenOdd,
     NonZero,
@@ -427,14 +427,14 @@ namespace Cinemachine
   };
 
   // PointInPolygon
-  internal enum PipResult
+  enum PipResult
   {
     Inside,
     Outside,
     OnEdge
   };
 
-  public static class InternalClipper
+  static class InternalClipper
   {
 
     internal const double floatingPointTolerance = 1E-15;
