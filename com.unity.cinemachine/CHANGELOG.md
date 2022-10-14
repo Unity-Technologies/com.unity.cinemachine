@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added "Place Objects At World Origin" preference option support.
 - Added Channel setting, to use for multiple CM Brains, instead of piggybacking on the layer system.
 - CinemachineConfiner renamed to CinemachineDeoccluder
+- New inspector and API for composition guides.
+- Game View Guides now indicate when they are hot and can be dragged.
 
 
 ## [3.0.0-pre.1] - 2022-06-01
