@@ -407,8 +407,10 @@ namespace Cinemachine.Editor
             UpdateVisibility(interactiveLabel, interactiveToggle);
             static void UpdateVisibility(Label label, Toggle toggle)
             {
+                toggle.value = CinemachineCorePrefs.DraggableComposerGuides.Value;
                 toggle.SetVisible(CinemachineCorePrefs.ShowInGameGuides.Value);
                 label.style.opacity = CinemachineCorePrefs.DraggableComposerGuides.Value ? 1 : 0.5f;
+                //label.text = CinemachineCorePrefs.DraggableComposerGuides.Value ? "Draggable" : "Not draggable";
                 label.SetVisible(CinemachineCorePrefs.ShowInGameGuides.Value);
             }
 

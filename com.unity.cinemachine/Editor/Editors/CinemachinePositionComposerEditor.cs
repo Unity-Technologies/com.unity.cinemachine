@@ -67,7 +67,6 @@ namespace Cinemachine.Editor
 
         protected virtual void OnGUI()
         {
-            // Draw the camera guides
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
@@ -75,9 +74,8 @@ namespace Cinemachine.Editor
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
-            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
-
             // Screen guides
+            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
             m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
 
             // Draw an on-screen gizmo for the target
