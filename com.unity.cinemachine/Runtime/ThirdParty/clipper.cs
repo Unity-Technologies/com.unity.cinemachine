@@ -28,7 +28,7 @@ namespace Cinemachine
   using PathD = List<PointD>;
   using PathsD = List<List<PointD>>;
 
-  public static class Clipper
+  static class Clipper
   {
 
     public static Rect64 MaxInvalidRect64 = new Rect64(
