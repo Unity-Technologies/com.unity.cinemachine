@@ -531,7 +531,7 @@ namespace Cinemachine
             {
                 Enabled = true,
                 Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-                Bias = new Vector2(m_BiasX, m_BiasY)
+                Bias = new Vector2(m_BiasX, m_BiasY) * 2
             }
         };
     }

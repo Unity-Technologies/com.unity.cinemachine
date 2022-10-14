@@ -116,8 +116,8 @@ namespace Cinemachine
                 var r = new Rect(ScreenPosition - HardLimits.Size / 2 + new Vector2(0.5f, 0.5f), HardLimits.Size);
                 var deadZoneSize = EffectiveDeadZoneSize;
                 r.position += new Vector2(
-                    HardLimits.Bias.x * (HardLimits.Size.x - deadZoneSize.x),
-                    HardLimits.Bias.y * (HardLimits.Size.y - deadZoneSize.y));
+                    HardLimits.Bias.x * 0.5f * (HardLimits.Size.x - deadZoneSize.x),
+                    HardLimits.Bias.y * 0.5f * (HardLimits.Size.y - deadZoneSize.y));
                 return r;
             }
             set
@@ -126,6 +126,7 @@ namespace Cinemachine
                 HardLimits.Size.y = Mathf.Clamp(value.height, 0, 6f);
                 DeadZone.Size.x = Mathf.Min(DeadZone.Size.x, HardLimits.Size.x);
                 DeadZone.Size.y = Mathf.Min(DeadZone.Size.y, HardLimits.Size.y);
+                // GML todo: set bias
             }
         }
         
