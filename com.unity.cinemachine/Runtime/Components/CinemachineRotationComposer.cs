@@ -45,7 +45,7 @@ namespace Cinemachine
 
         /// <summary>Settings for screen-space composition</summary>
         [HideFoldout]
-        public ScreenComposerSettings Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
+        public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
 
         /// <summary>Force target to center of screen when this camera activates.  
         /// If false, will clamp target to the edges of the dead zone</summary>
@@ -58,7 +58,7 @@ namespace Cinemachine
             TrackedObjectOffset = Vector3.zero;
             Lookahead = new LookaheadSettings();
             Damping = new Vector2(0.5f, 0.5f);
-            Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
+            Composition = ScreenComposerSettings.Default;
             CenterOnActivate = true;
         }
 
@@ -70,11 +70,11 @@ namespace Cinemachine
         }
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
-        public override bool IsValid { get { return enabled && LookAtTarget != null; } }
+        public override bool IsValid => enabled && LookAtTarget != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
         /// <summary>Internal API for inspector</summary>
         internal Vector3 TrackedPoint { get; private set; }
@@ -88,7 +88,7 @@ namespace Cinemachine
         internal protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(
             Vector3 lookAt, Vector3 up, float deltaTime)
         {
-            Vector3 pos = lookAt;
+            var pos = lookAt;
             if (LookAtTarget != null)
                 pos += LookAtTargetRotation * TrackedObjectOffset;
 
@@ -171,9 +171,9 @@ namespace Cinemachine
             // while the real target is in front
             if (!(TrackedPoint - curState.ReferenceLookAt).AlmostZero())
             {
-                Vector3 mid = Vector3.Lerp(curState.GetCorrectedPosition(), curState.ReferenceLookAt, 0.5f);
-                Vector3 toLookAt = curState.ReferenceLookAt - mid;
-                Vector3 toTracked = TrackedPoint - mid;
+                var mid = Vector3.Lerp(curState.GetCorrectedPosition(), curState.ReferenceLookAt, 0.5f);
+                var toLookAt = curState.ReferenceLookAt - mid;
+                var toTracked = TrackedPoint - mid;
                 if (Vector3.Dot(toLookAt, toTracked) < 0)
                 {
                     float t = Vector3.Distance(curState.ReferenceLookAt, mid)
@@ -191,7 +191,7 @@ namespace Cinemachine
             }
 
             // Expensive FOV calculations
-            mCache.UpdateCache(curState.Lens, SoftGuideRect, HardGuideRect, targetDistance);
+            m_Cache.UpdateCache(curState.Lens, Composition.DeadZoneRect, Composition.HardLimitsRect, targetDistance);
 
             Quaternion rigOrientation = curState.RawOrientation;
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
@@ -199,17 +199,17 @@ namespace Cinemachine
                 // No damping, just snap to central bounds, skipping the soft zone
                 rigOrientation = Quaternion.LookRotation(
                     rigOrientation * Vector3.forward, curState.ReferenceUp);
-                Rect rect = mCache.FovSoftGuideRect;
+                var rect = m_Cache.FovSoftGuideRect;
                 if (CenterOnActivate)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 RotateToScreenBounds(
                     ref curState, rect, curState.ReferenceLookAt,
-                    ref rigOrientation, mCache.Fov, mCache.FovH, -1);
+                    ref rigOrientation, m_Cache.Fov, m_Cache.FovH, -1);
             }
             else
             {
                 // Start with previous frame's orientation (but with current up)
-                Vector3 dir = m_LookAtPrevFrame - m_CameraPosPrevFrame;
+                var dir = m_LookAtPrevFrame - m_CameraPosPrevFrame;
                 if (dir.AlmostZero())
                     rigOrientation = Quaternion.LookRotation(
                         m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
@@ -223,14 +223,14 @@ namespace Cinemachine
 
                 // Move target through the soft zone, with damping
                 RotateToScreenBounds(
-                    ref curState, mCache.FovSoftGuideRect, TrackedPoint,
-                    ref rigOrientation, mCache.Fov, mCache.FovH, deltaTime);
+                    ref curState, m_Cache.FovSoftGuideRect, TrackedPoint,
+                    ref rigOrientation, m_Cache.Fov, m_Cache.FovH, deltaTime);
 
                 // Force the actual target (not the lookahead one) into the hard bounds, no damping
-                if (deltaTime < 0 || VirtualCamera.LookAtTargetAttachment > 1 - Epsilon)
+                if (Composition.HardLimits.Enabled && (deltaTime < 0 || VirtualCamera.LookAtTargetAttachment > 1 - Epsilon))
                     RotateToScreenBounds(
-                        ref curState, mCache.FovHardGuideRect, curState.ReferenceLookAt,
-                        ref rigOrientation, mCache.Fov, mCache.FovH, -1);
+                        ref curState, m_Cache.FovHardGuideRect, curState.ReferenceLookAt,
+                        ref rigOrientation, m_Cache.Fov, m_Cache.FovH, -1);
             }
 
             m_CameraPosPrevFrame = curState.GetCorrectedPosition();
@@ -240,46 +240,6 @@ namespace Cinemachine
                 m_LookAtPrevFrame - curState.GetCorrectedPosition(), curState.ReferenceUp);
 
             curState.RawOrientation = m_CameraOrientationPrevFrame;
-        }
-
-        /// <summary>Internal API for the inspector editor</summary>
-        internal Rect SoftGuideRect
-        {
-            get => new Rect(
-                    Composition.ScreenPosition - Composition.DeadZoneSize / 2 + new Vector2(0.5f, 0.5f),
-                    Composition.DeadZoneSize);
-            set
-            {
-                Composition.DeadZoneSize = new Vector2(Mathf.Clamp(value.width, 0, 2), Mathf.Clamp(value.height, 0, 2));
-                Composition.ScreenPosition = new Vector2(
-                    Mathf.Clamp(value.x - 0.5f + Composition.DeadZoneSize.x / 2, -1.5f,  1.5f), 
-                    Mathf.Clamp(value.y - 0.5f + Composition.DeadZoneSize.y / 2, -1.5f,  1.5f));
-                Composition.SoftZoneSize = new Vector2(
-                    Mathf.Max(Composition.SoftZoneSize.x, Composition.DeadZoneSize.x),
-                    Mathf.Max(Composition.SoftZoneSize.y, Composition.DeadZoneSize.y));
-            }
-        }
-
-        /// <summary>Internal API for the inspector editor</summary>
-        internal Rect HardGuideRect
-        {
-            get
-            {
-                Rect r = new Rect(
-                    Composition.ScreenPosition - Composition.SoftZoneSize / 2 + new Vector2(0.5f, 0.5f),
-                    Composition.SoftZoneSize);
-                r.position += new Vector2(
-                    Composition.Bias.x * (Composition.SoftZoneSize.x - Composition.DeadZoneSize.x),
-                    Composition.Bias.y * (Composition.SoftZoneSize.y - Composition.DeadZoneSize.y));
-                return r;
-            }
-            set
-            {
-                Composition.SoftZoneSize.x = Mathf.Clamp(value.width, 0, 2f);
-                Composition.SoftZoneSize.y = Mathf.Clamp(value.height, 0, 2f);
-                Composition.DeadZoneSize.x = Mathf.Min(Composition.DeadZoneSize.x, Composition.SoftZoneSize.x);
-                Composition.DeadZoneSize.y = Mathf.Min(Composition.DeadZoneSize.y, Composition.SoftZoneSize.y);
-            }
         }
 
         // Cache for some expensive calculations
@@ -292,14 +252,14 @@ namespace Cinemachine
 
             float m_OrthoSizeOverDistance;
             float m_Aspect;
-            Rect m_SoftGuideRect;
-            Rect m_HardGuideRect;
+            Rect m_DeadZoneRect;
+            Rect m_HardLimitRect;
 
             public void UpdateCache(
                 LensSettings lens, Rect softGuide, Rect hardGuide, float targetDistance)
             {
                 bool recalculate = m_Aspect != lens.Aspect
-                    || softGuide != m_SoftGuideRect || hardGuide != m_HardGuideRect;
+                    || softGuide != m_DeadZoneRect || hardGuide != m_HardLimitRect;
                 if (lens.Orthographic)
                 {
                     float orthoOverDistance = Mathf.Abs(lens.OrthographicSize / targetDistance);
@@ -331,9 +291,9 @@ namespace Cinemachine
                 if (recalculate)
                 {
                     FovSoftGuideRect = ScreenToFOV(softGuide, Fov, FovH, lens.Aspect);
-                    m_SoftGuideRect = softGuide;
+                    m_DeadZoneRect = softGuide;
                     FovHardGuideRect = ScreenToFOV(hardGuide, Fov, FovH, lens.Aspect);
-                    m_HardGuideRect = hardGuide;
+                    m_HardLimitRect = hardGuide;
                     m_Aspect = lens.Aspect;
                 }
             }
@@ -341,10 +301,10 @@ namespace Cinemachine
             // Convert from screen coords to normalized FOV angular coords
             static Rect ScreenToFOV(Rect rScreen, float fov, float fovH, float aspect)
             {
-                Rect r = new Rect(rScreen);
+                var r = new Rect(rScreen);
                 var persp = Matrix4x4.Perspective(fov, aspect, 0.0001f, 2f).inverse;
 
-                Vector3 p = persp.MultiplyPoint(new Vector3(0, (r.yMin * 2f) - 1f, 0.5f)); p.z = -p.z;
+                var p = persp.MultiplyPoint(new Vector3(0, (r.yMin * 2f) - 1f, 0.5f)); p.z = -p.z;
                 float angle = UnityVectorExtensions.SignedAngle(Vector3.forward, p, Vector3.left);
                 r.yMin = ((fov / 2) + angle) / fov;
 
@@ -362,7 +322,7 @@ namespace Cinemachine
                 return r;
             }
         }
-        FovCache mCache;
+        FovCache m_Cache;
 
 
         /// <summary>
@@ -377,8 +337,8 @@ namespace Cinemachine
             ref CameraState state, Rect screenRect, Vector3 trackedPoint,
             ref Quaternion rigOrientation, float fov, float fovH, float deltaTime)
         {
-            Vector3 targetDir = trackedPoint - state.GetCorrectedPosition();
-            Vector2 rotToRect = rigOrientation.GetCameraRotationToTarget(targetDir, state.ReferenceUp);
+            var targetDir = trackedPoint - state.GetCorrectedPosition();
+            var rotToRect = rigOrientation.GetCameraRotationToTarget(targetDir, state.ReferenceUp);
 
             // Bring it to the edge of screenRect, if outside.  Leave it alone if inside.
             ClampVerticalBounds(ref screenRect, targetDir, state.ReferenceUp, fov);

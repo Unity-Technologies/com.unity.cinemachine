@@ -20,10 +20,8 @@ namespace Cinemachine.Editor
         {
             m_PipelineUtility = new (this);
             m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
-            m_ScreenGuideEditor.GetHardGuide = () => Target.HardGuideRect;
-            m_ScreenGuideEditor.GetSoftGuide = () => Target.SoftGuideRect;
-            m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
-            m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
+            m_ScreenGuideEditor.GetComposition = () => Target.Composition;
+            m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => serializedObject;
 
             m_GameViewEventCatcher = new GameViewEventCatcher();
@@ -56,13 +54,12 @@ namespace Cinemachine.Editor
 
             m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DeadZoneDepth)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UnlimitedSoftZone)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
 
             m_PipelineUtility.UpdateState();
             return ux;
@@ -81,7 +78,7 @@ namespace Cinemachine.Editor
             bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
 
             // Screen guides
-            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.UnlimitedSoftZone);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
 
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)

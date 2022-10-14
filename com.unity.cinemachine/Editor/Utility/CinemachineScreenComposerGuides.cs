@@ -5,15 +5,6 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [InitializeOnLoad]
-    static class CinemachineScreenComposerGuidesGlobalDraggable
-    {
-        static CinemachineScreenComposerGuidesGlobalDraggable()
-        {
-            CinemachineScreenComposerGuides.sDraggableGameWindowGuides = CinemachineCorePrefs.DraggableComposerGuides.Value;
-        }
-    }
-    
     // This is necessary because since 2019.3 we don't get mouse events in the game view in Edit mode
     class GameViewEventCatcher
     {
@@ -94,32 +85,25 @@ namespace Cinemachine.Editor
     {
         /// <summary>Delegate for getting the hard/soft guide rects</summary>
         /// <returns>The Hard/Soft guide rect</returns>
-        public delegate Rect RectGetter();
+        public delegate ScreenComposerSettings CompositionGetter();
 
         /// <summary>Delegate for setting the hard/soft guide rects</summary>
         /// <param name="rcam">The value to set</param>
-        public delegate void RectSetter(Rect r);
+        public delegate void CompositionSetter(ScreenComposerSettings s);
 
         /// <summary>Delegate to get the current object whose guides are being drawn</summary>
         /// <returns>The target object whose guides are being drawn</returns>
         public delegate SerializedObject ObjectGetter();
 
-        /// <summary>Get the Hard Guide.  Client must implement this</summary>
-        public RectGetter GetHardGuide;
-        /// <summary>Get the Soft Guide.  Client must implement this</summary>
-        public RectGetter GetSoftGuide;
-        /// <summary>Set the Hard Guide.  Client must implement this</summary>
-        public RectSetter SetHardGuide;
-        /// <summary>Get the Soft Guide.  Client must implement this</summary>
-        public RectSetter SetSoftGuide;
+        /// <summary>Get the Composition settings.  Client must implement this</summary>
+        public CompositionGetter GetComposition;
+        /// <summary>Get the Composition settings.  Client must implement this</summary>
+        public CompositionSetter SetComposition;
         /// <summary>Get the target object whose guides are being drawn.  Client must implement this</summary>
         public ObjectGetter Target;
 
         /// <summary>Width of the draggable guide bar in the game view</summary>
         public const float kGuideBarWidthPx = 3f;
-
-        /// <summary>If true, then allows game window guides to be edited in play mode.</summary>
-        public static bool sDraggableGameWindowGuides = true;
 
         /// <summary>
         /// Helper to set the appropriate new rects in the target object, is something changed.
@@ -133,10 +117,12 @@ namespace Cinemachine.Editor
             if ((oldSoft != newSoft) || (oldHard != newHard))
             {
                 Undo.RecordObject(Target().targetObject, "Composer Bounds");
+                var c = GetComposition();
                 if (oldSoft != newSoft)
-                    SetSoftGuide(newSoft);
+                    c.DeadZoneRect = newSoft;
                 if (oldHard != newHard)
-                    SetHardGuide(newHard);
+                    c.HardLimitsRect = newHard;
+                SetComposition(c);
                 Target().ApplyModifiedProperties();
             }
         }
@@ -207,7 +193,7 @@ namespace Cinemachine.Editor
         /// <param name="outputCamera">Destination camera</param>
         /// <param name="lens">Current lens settings</param>
         /// <param name="showHardGuides">True if hard guides should be shown</param>
-        public void OnGUI_DrawGuides(bool isLive, Camera outputCamera, LensSettings lens, bool showHardGuides)
+        public void OnGUI_DrawGuides(bool isLive, Camera outputCamera, LensSettings lens)
         {
             Rect cameraRect = GetCameraRect(outputCamera, lens);
             float screenWidth = cameraRect.width;
@@ -229,7 +215,7 @@ namespace Cinemachine.Editor
             hardBarsColour.a *= overlayOpacity;
             softBarsColour.a *= overlayOpacity;
 
-            Rect r = showHardGuides ? GetHardGuide() : new Rect(-2, -2, 4, 4);
+            Rect r = GetComposition().HardLimits.Enabled ? GetComposition().HardLimitsRect : new Rect(-2, -2, 4, 4);
             float hardEdgeLeft = r.xMin * screenWidth;
             float hardEdgeTop = r.yMin * screenHeight;
             float hardEdgeRight = r.xMax * screenWidth;
@@ -240,7 +226,7 @@ namespace Cinemachine.Editor
             mDragBars[(int)DragBar.HardBarLineRight] = new Rect(hardEdgeRight - kGuideBarWidthPx / 2f, 0f, kGuideBarWidthPx, screenHeight);
             mDragBars[(int)DragBar.HardBarLineBottom] = new Rect(0f, hardEdgeBottom - kGuideBarWidthPx / 2f, screenWidth, kGuideBarWidthPx);
 
-            r = GetSoftGuide();
+            r = GetComposition().DeadZoneRect;
             float softEdgeLeft = r.xMin * screenWidth;
             float softEdgeTop = r.yMin * screenHeight;
             float softEdgeRight = r.xMax * screenWidth;
@@ -254,7 +240,7 @@ namespace Cinemachine.Editor
             mDragBars[(int)DragBar.Center] = new Rect(softEdgeLeft, softEdgeTop, softEdgeRight - softEdgeLeft, softEdgeBottom - softEdgeTop);
 
             // Handle dragging bars
-            if (sDraggableGameWindowGuides && isLive)
+            if (CinemachineCorePrefs.DraggableComposerGuides.Value && isLive)
                 OnGuiHandleBarDragging(screenWidth, screenHeight);
 
             // Draw the masks
@@ -338,8 +324,8 @@ namespace Cinemachine.Editor
                         Event.current.delta.y / screenHeight);
 
                 // First snapshot some settings
-                Rect newHard = GetHardGuide();
-                Rect newSoft = GetSoftGuide();
+                Rect newHard = GetComposition().HardLimitsRect;
+                Rect newSoft = GetComposition().DeadZoneRect;
                 Vector2 changed = Vector2.zero;
                 switch (mDragging)
                 {
@@ -355,7 +341,7 @@ namespace Cinemachine.Editor
                 }
 
                 // Apply the changes, enforcing the bounds
-                SetNewBounds(GetHardGuide(), GetSoftGuide(), newHard, newSoft);
+                SetNewBounds(GetComposition().HardLimitsRect, GetComposition().DeadZoneRect, newHard, newSoft);
                 Event.current.Use();
             }
         }

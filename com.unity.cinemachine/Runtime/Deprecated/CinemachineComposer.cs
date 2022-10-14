@@ -526,9 +526,13 @@ namespace Cinemachine
         internal ScreenComposerSettings GetScreenComposerSettings() => new ()
         {
             ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
-            DeadZoneSize = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight),
-            SoftZoneSize = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-            Bias = new Vector2(m_BiasX, m_BiasY)
+            DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
+            HardLimits = new () 
+            {
+                Enabled = true,
+                Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
+                Bias = new Vector2(m_BiasX, m_BiasY)
+            }
         };
     }
 }

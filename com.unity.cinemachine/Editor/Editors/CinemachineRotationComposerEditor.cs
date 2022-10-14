@@ -20,10 +20,8 @@ namespace Cinemachine.Editor
         {
             m_PipelineUtility = new (this);
             m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
-            m_ScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
-            m_ScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
-            m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
-            m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
+            m_ScreenGuideEditor.GetComposition = () => Target.Composition;
+            m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => { return serializedObject; };
 
             m_GameViewEventCatcher = new GameViewEventCatcher();
@@ -54,10 +52,10 @@ namespace Cinemachine.Editor
 
             m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.LookAt);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
             m_PipelineUtility.UpdateState();
             return ux;
         }
@@ -76,7 +74,7 @@ namespace Cinemachine.Editor
 
             // Screen guides
             bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
-            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, true);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
 
             // Draw an on-screen gizmo for the target
             if (Target.LookAtTarget != null && isLive)
