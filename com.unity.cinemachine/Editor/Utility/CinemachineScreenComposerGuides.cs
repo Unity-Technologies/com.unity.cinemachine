@@ -290,9 +290,9 @@ namespace Cinemachine.Editor
             if (Event.current.type == EventType.MouseUp)
                 m_IsDragging = m_IsHot = DragBar.NONE;
             if (Event.current.type == EventType.MouseDown)
-                m_IsDragging = GeDragBarUnderPoint(Event.current.mousePosition);
+                m_IsDragging = GetDragBarUnderPoint(Event.current.mousePosition);
             if (Event.current.type == EventType.Repaint)
-                m_IsHot = GeDragBarUnderPoint(Event.current.mousePosition);
+                m_IsHot = m_IsDragging != DragBar.NONE ? m_IsDragging : GetDragBarUnderPoint(Event.current.mousePosition);
 
             // Handle an actual drag event
             if (m_IsDragging != DragBar.NONE && Event.current.type == EventType.MouseDrag)
@@ -322,7 +322,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        DragBar GeDragBarUnderPoint(Vector2 point)
+        DragBar GetDragBarUnderPoint(Vector2 point)
         {
             var bar = DragBar.NONE;
             for (DragBar i = DragBar.Center; i < DragBar.NONE && bar == DragBar.NONE; ++i)
