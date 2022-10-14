@@ -29,14 +29,14 @@ namespace Cinemachine
   // minima and ascend to a local maxima, before descending again.
   [Flags]
 
-  public enum PointInPolygonResult
+  enum PointInPolygonResult
   {
     IsOn = 0,
     IsInside = 1,
     IsOutside = 2
   };
 
-  internal enum VertexFlags
+  enum VertexFlags
   {
     None = 0,
     OpenStart = 1,
@@ -45,7 +45,7 @@ namespace Cinemachine
     LocalMin = 8
   };
 
-  internal class Vertex
+  class Vertex
   {
     public readonly Point64 pt;
     public Vertex? next;
@@ -61,7 +61,7 @@ namespace Cinemachine
     }
   };
 
-  internal struct LocalMinima
+  struct LocalMinima
   {
     public readonly Vertex vertex;
     public readonly PathType polytype;
@@ -99,7 +99,7 @@ namespace Cinemachine
   // IntersectNode: a structure representing 2 intersecting edges.
   // Intersections must be sorted so they are processed from the largest
   // Y coordinates to the smallest while keeping edges adjacent.
-  internal struct IntersectNode
+  struct IntersectNode
   {
     public readonly Point64 pt;
     public readonly Active edge1;
@@ -113,7 +113,7 @@ namespace Cinemachine
     }
   };
 
-  internal struct LocMinSorter : IComparer<LocalMinima>
+  struct LocMinSorter : IComparer<LocalMinima>
   {
     public int Compare(LocalMinima locMin1, LocalMinima locMin2)
     {
@@ -122,7 +122,7 @@ namespace Cinemachine
   }
 
   // OutPt: vertex data structure for clipping solutions
-  internal class OutPt
+  class OutPt
   {
     public Point64 pt;
     public OutPt? next;
@@ -141,7 +141,7 @@ namespace Cinemachine
   };
 
   // OutRec: path data structure for clipping solutions
-  internal class OutRec
+  class OutRec
   {
     public int idx;
     public OutRec? owner;
@@ -161,7 +161,7 @@ namespace Cinemachine
   };
 
   // Joiner: structure used in merging "touching" solution polygons
-  internal class Joiner
+  class Joiner
   {
     public int idx;
     public OutPt op1;
@@ -201,7 +201,7 @@ namespace Cinemachine
   // displays, which is the orientation used in Clipper's development.
   ///////////////////////////////////////////////////////////////////
   
-  internal class Active
+  class Active
   {
     public Point64 bot;
     public Point64 top;
@@ -230,7 +230,7 @@ namespace Cinemachine
     internal bool isLeftBound;
   };
 
-  public class ClipperBase
+  class ClipperBase
   {
     private ClipType _cliptype;
     private FillRule _fillrule;
@@ -3512,7 +3512,7 @@ namespace Cinemachine
   } // ClipperBase class
 
 
-  public class Clipper64 : ClipperBase
+  class Clipper64 : ClipperBase
   {
     public Clipper64() : base() { }
 
@@ -3598,7 +3598,7 @@ namespace Cinemachine
 
   } // Clipper64 class
 
-  public class ClipperD : ClipperBase
+  class ClipperD : ClipperBase
   {
     private readonly double _scale;
     private readonly double _invScale;
@@ -3762,7 +3762,7 @@ namespace Cinemachine
     }
   } // ClipperD class
 
-  public abstract class PolyPathBase : IEnumerable
+  abstract class PolyPathBase : IEnumerable
   {
     internal PolyPathBase? _parent;
     internal List<PolyPathBase> _childs = new List<PolyPathBase>();
@@ -3803,7 +3803,7 @@ namespace Cinemachine
     }
   } // PolyPathBase class
 
-  public class PolyPathEnum : IEnumerator
+  class PolyPathEnum : IEnumerator
   {
     public List<PolyPathBase> _ppbList;
     private int position = -1;
@@ -3837,7 +3837,7 @@ namespace Cinemachine
 
   }
 
-  public class PolyPath64 : PolyPathBase
+  class PolyPath64 : PolyPathBase
   {
     public Path64? Polygon { get; private set; } // polytree root's polygon == null
 
@@ -3870,7 +3870,7 @@ namespace Cinemachine
     }
   }
 
-  public class PolyPathD : PolyPathBase
+  class PolyPathD : PolyPathBase
   {
     internal double Scale { get; set; }
     public PathD? Polygon { get; private set; }
@@ -3905,14 +3905,14 @@ namespace Cinemachine
     }
   }
 
-  public class PolyTree64 : PolyPath64 {}
+  class PolyTree64 : PolyPath64 {}
 
-  public class PolyTreeD : PolyPathD
+  class PolyTreeD : PolyPathD
   {
     public new double Scale => base.Scale;
   }
 
-  public class ClipperLibException : Exception
+  class ClipperLibException : Exception
   {
     public ClipperLibException(string description) : base(description) {}
   }
