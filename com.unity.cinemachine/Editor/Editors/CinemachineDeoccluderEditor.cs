@@ -5,9 +5,9 @@ using System.Collections.Generic;
 #if CINEMACHINE_PHYSICS
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineCollider))]
+    [CustomEditor(typeof(CinemachineDeoccluder))]
     [CanEditMultipleObjects]
-    class CinemachineColliderEditor : BaseEditor<CinemachineCollider>
+    class CinemachineDeoccluderEditor : BaseEditor<CinemachineDeoccluder>
     {
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -24,7 +24,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.DampingWhenOccluded));
                 excluded.Add(FieldPath(x => x.SmoothingTime));
             }
-            else if (Target.Strategy == CinemachineCollider.ResolutionStrategy.PullCameraForward)
+            else if (Target.Strategy == CinemachineDeoccluder.ResolutionStrategy.PullCameraForward)
             {
                 excluded.Add(FieldPath(x => x.MaximumEffort));
             }
@@ -41,8 +41,8 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineCollider))]
-        static void DrawColliderGizmos(CinemachineCollider collider, GizmoType type)
+        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineDeoccluder))]
+        static void DrawColliderGizmos(CinemachineDeoccluder collider, GizmoType type)
         {
             CinemachineVirtualCameraBase vcam = (collider != null) ? collider.VirtualCamera : null;
             if (vcam != null && collider.enabled)
@@ -51,7 +51,7 @@ namespace Cinemachine.Editor
                 Vector3 pos = vcam.State.GetFinalPosition();
                 if (collider.AvoidObstacles && vcam.State.HasLookAt())
                 {
-                    Gizmos.color = CinemachineColliderPrefs.CameraSphereColor.Value;
+                    Gizmos.color = CinemachineDeoccluderPrefs.CameraSphereColor.Value;
                     if (collider.CameraRadius > 0)
                         Gizmos.DrawWireSphere(pos, collider.CameraRadius);
 
@@ -63,7 +63,7 @@ namespace Cinemachine.Editor
                     List<List<Vector3>> debugPaths = collider.DebugPaths;
                     foreach (var path in debugPaths)
                     {
-                        Gizmos.color = CinemachineColliderPrefs.CameraPathColor.Value;
+                        Gizmos.color = CinemachineDeoccluderPrefs.CameraPathColor.Value;
                         Vector3 p0 = vcam.State.ReferenceLookAt;
                         foreach (var p in path)
                         {

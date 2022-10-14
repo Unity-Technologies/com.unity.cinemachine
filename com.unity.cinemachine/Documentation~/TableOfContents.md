@@ -29,7 +29,7 @@
             * [Cinemachine State-Driven camera](CinemachineStateDrivenCamera.md)
         * [CmCamera extensions](CinemachineVirtualCameraExtensions.md)
             * [Extensions for avoiding collisions and evaluating shots](CinemachineColliderConfiner.md)
-                * [Cinemachine Collider](CinemachineCollider.md)
+                * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
                 * [Cinemachine Confiner](CinemachineConfiner.md)
                 * [Cinemachine Confiner2D](CinemachineConfiner2D.md)
             * [Group Framing extension](CinemachineGroupFraming.md)

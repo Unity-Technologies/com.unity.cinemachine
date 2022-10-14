@@ -19,14 +19,14 @@ namespace Cinemachine
   using Paths64 = List<List<Point64>>;
   using PathD = List<PointD>;
   using PathsD = List<List<PointD>>;
-  public enum JoinType
+  enum JoinType
   {
     Square,
     Round,
     Miter
   };
 
-  public enum EndType
+  enum EndType
   {
     Polygon,
     Joined,
@@ -35,7 +35,7 @@ namespace Cinemachine
     Round
   };
 
-  internal class PathGroup
+  class PathGroup
   {
     internal Paths64 _inPaths;
     internal Path64 _outPath;
@@ -55,7 +55,7 @@ namespace Cinemachine
     }
   }
 
-  public class ClipperOffset
+  class ClipperOffset
   {
     private readonly List<PathGroup> _pathGroups = new List<PathGroup>();
     private readonly PathD _normals = new PathD();

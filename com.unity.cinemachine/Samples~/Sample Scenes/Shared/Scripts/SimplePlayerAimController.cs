@@ -53,6 +53,21 @@ namespace Cinemachine.Examples
             }
         }
 
+        public void RecenterPlayer(float damping = 0)
+        {
+            var rot = transform.rotation.eulerAngles;
+            var parentRot = m_Controller.transform.rotation.eulerAngles;
+            var delta = rot.y - parentRot.y;
+            if (delta > 180)
+                delta -= 360;
+            delta = Damper.Damp(delta, damping, Time.deltaTime);
+            parentRot.y += delta;
+            m_Controller.transform.rotation = Quaternion.Euler(parentRot);
+
+            HorizontalLook.Value -= delta;
+            transform.rotation = Quaternion.Euler(rot);
+        }
+
         void UpdateRotation()
         {
             transform.localRotation = Quaternion.Euler(VerticalLook.Value, HorizontalLook.Value, 0);
@@ -65,22 +80,10 @@ namespace Cinemachine.Examples
             }
             else
             {
-                // If the player is moving, rotate it yaw to match the camera direction,
+                // If the player is moving, rotate its yaw to match the camera direction,
                 // otherwise let the camera orbit
                 if (m_Controller.IsMoving)
-                {
-                    var rot = transform.rotation.eulerAngles;
-                    var parentRot = m_Controller.transform.rotation.eulerAngles;
-                    var delta = rot.y - parentRot.y;
-                    if (delta > 180)
-                        delta -= 360;
-                    delta = Damper.Damp(delta, RotationDamping, Time.deltaTime);
-                    parentRot.y += delta;
-                    m_Controller.transform.rotation = Quaternion.Euler(parentRot);
-
-                    HorizontalLook.Value -= delta;
-                    transform.rotation = Quaternion.Euler(rot);
-                }
+                    RecenterPlayer(RotationDamping);
             }
         }
     }

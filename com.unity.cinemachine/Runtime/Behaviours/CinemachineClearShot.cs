@@ -9,7 +9,7 @@ namespace Cinemachine
     /// Virtual Camera gameObject children.  When Live, the ClearShot will check the
     /// children, and choose the one with the best quality shot and make it Live.
     ///
-    /// This can be a very powerful tool.  If the child cameras have CinemachineCollider
+    /// This can be a very powerful tool.  If the child cameras have shot evaluator
     /// extensions, they will analyze the scene for target obstructions, optimal target
     /// distance, and other items, and report their assessment of shot quality back to
     /// the ClearShot parent, who will then choose the best one.  You can use this to set
