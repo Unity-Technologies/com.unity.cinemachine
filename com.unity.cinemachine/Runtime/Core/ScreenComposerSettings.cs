@@ -69,8 +69,8 @@ namespace Cinemachine
             ScreenPosition.y = Mathf.Clamp(ScreenPosition.y, -1.5f, 1.5f);
             DeadZone.Size.x = Mathf.Clamp(DeadZone.Size.x, 0f, 2f);
             DeadZone.Size.y = Mathf.Clamp(DeadZone.Size.y, 0f, 2f);
-            HardLimits.Size.x = Mathf.Clamp(HardLimits.Size.x, 0f, 2f);
-            HardLimits.Size.y = Mathf.Clamp(HardLimits.Size.y, 0f, 2f);
+            HardLimits.Size.x = Mathf.Clamp(HardLimits.Size.x, 0f, 6f);
+            HardLimits.Size.y = Mathf.Clamp(HardLimits.Size.y, 0f, 6f);
             HardLimits.Bias.x = Mathf.Clamp(HardLimits.Bias.x, -1f, 1f);
             HardLimits.Bias.y = Mathf.Clamp(HardLimits.Bias.y, -1f, 1f);
         }
@@ -79,7 +79,7 @@ namespace Cinemachine
         public Vector2 EffectiveDeadZoneSize => DeadZone.Enabled ? DeadZone.Size : Vector2.zero;
 
         /// <summary>Get the effictive hard limits size, taking enabled state into account</summary>
-        public Vector2 EffectiveHardLimitSize => HardLimits.Enabled ? HardLimits.Size : new Vector2(4, 8);
+        public Vector2 EffectiveHardLimitSize => HardLimits.Enabled ? HardLimits.Size : new Vector2(6, 6);
 
         /// <summary>Get/set the screenspace rect for the dead zone region.  This also defines screen position</summary>
         public Rect DeadZoneRect
@@ -111,10 +111,10 @@ namespace Cinemachine
         {
             get
             {
+                if (!HardLimits.Enabled)
+                    return new Rect(Vector2.zero, EffectiveHardLimitSize);
+                var r = new Rect(ScreenPosition - HardLimits.Size / 2 + new Vector2(0.5f, 0.5f), HardLimits.Size);
                 var deadZoneSize = EffectiveDeadZoneSize;
-                var r = new Rect(
-                    ScreenPosition - HardLimits.Size / 2 + new Vector2(0.5f, 0.5f),
-                    HardLimits.Size);
                 r.position += new Vector2(
                     HardLimits.Bias.x * (HardLimits.Size.x - deadZoneSize.x),
                     HardLimits.Bias.y * (HardLimits.Size.y - deadZoneSize.y));
@@ -122,8 +122,8 @@ namespace Cinemachine
             }
             set
             {
-                HardLimits.Size.x = Mathf.Clamp(value.width, 0, 2f);
-                HardLimits.Size.y = Mathf.Clamp(value.height, 0, 2f);
+                HardLimits.Size.x = Mathf.Clamp(value.width, 0, 6f);
+                HardLimits.Size.y = Mathf.Clamp(value.height, 0, 6f);
                 DeadZone.Size.x = Mathf.Min(DeadZone.Size.x, HardLimits.Size.x);
                 DeadZone.Size.y = Mathf.Min(DeadZone.Size.y, HardLimits.Size.y);
             }

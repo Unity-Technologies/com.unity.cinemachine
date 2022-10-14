@@ -215,7 +215,7 @@ namespace Cinemachine.Editor
             hardBarsColour.a *= overlayOpacity;
             softBarsColour.a *= overlayOpacity;
 
-            Rect r = GetComposition().HardLimits.Enabled ? GetComposition().HardLimitsRect : new Rect(-2, -2, 4, 4);
+            Rect r = GetComposition().HardLimitsRect;
             float hardEdgeLeft = r.xMin * screenWidth;
             float hardEdgeTop = r.yMin * screenHeight;
             float hardEdgeRight = r.xMax * screenWidth;
