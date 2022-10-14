@@ -215,7 +215,7 @@ namespace Cinemachine.Editor
                 // Oh gawd there has to be a nicer way to do this
                 const int size = 128;
                 const float th = 1f;
-                var pix = new Color[size * size];
+                var pix = new Color32[size * size];
                 float radius = size / 2 - th;
                 var center = new Vector2(size-1, size-1) / 2;
                 for (int y = 0; y < size; ++y)
@@ -229,7 +229,7 @@ namespace Cinemachine.Editor
                     }
                 }
                 s_TargetMarkerTex = new Texture2D(size, size);
-                s_TargetMarkerTex.SetPixels(pix);
+                s_TargetMarkerTex.SetPixels32(pix);
                 s_TargetMarkerTex.Apply();
             }
             return s_TargetMarkerTex;
