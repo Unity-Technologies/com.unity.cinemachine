@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
@@ -173,6 +174,65 @@ namespace Cinemachine.Editor
                     EditorGUILayout.HelpBox(text, UnityEditor.MessageType.Warning);
                 EditorGUILayout.Space();
             }
+        }
+
+        public static void OnGUI_DrawOnscreenTargetMarker(
+            ICinemachineTargetGroup group, Vector3 worldPoint, 
+            Quaternion vcamRotation, Camera camera)
+        {
+            var c = camera.WorldToScreenPoint(worldPoint);
+            c.y = Screen.height - c.y;
+            if (c.z < 0)
+                return;
+
+            var oldColor = GUI.color;
+            float lookAtRadius = group == null ? 0 : group.Sphere.radius;
+            var p2 = camera.WorldToScreenPoint(worldPoint + vcamRotation * new Vector3(lookAtRadius, 0, 0));
+            float radius = Mathf.Abs(p2.x - c.x);
+            var r = new Rect(c, Vector2.one * CinemachineScreenComposerGuides.kGuideBarWidthPx * 2);
+
+            GUI.color = Color.black;
+            GUI.DrawTexture(r.Inflated(new Vector2(1, 1)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            var color = CinemachineComposerPrefs.TargetColour.Value;
+            GUI.color = color;
+            GUI.DrawTexture(r, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            if (radius > CinemachineScreenComposerGuides.kGuideBarWidthPx)
+            {
+                color.a = Mathf.Lerp(1f, CinemachineComposerPrefs.OverlayOpacity.Value, (radius - 10f) / 50f);
+                GUI.color = color;
+                GUI.DrawTexture(r.Inflated(new Vector2(radius, radius)),
+                    GetTargetMarkerTex(), ScaleMode.StretchToFill);
+            }
+            GUI.color = oldColor;
+        }
+
+        static Texture2D s_TargetMarkerTex = null;
+        static Texture2D GetTargetMarkerTex()
+        {
+            if (s_TargetMarkerTex == null)
+            {
+                // Create a texture from scratch!
+                // Oh gawd there has to be a nicer way to do this
+                const int size = 128;
+                const float th = 1f;
+                var pix = new Color[size * size];
+                float radius = size / 2 - th;
+                var center = new Vector2(size-1, size-1) / 2;
+                for (int y = 0; y < size; ++y)
+                {
+                    for (int x = 0; x < size; ++x)
+                    {
+                        float d = Vector2.Distance(new Vector2(x, y), center);
+                        d = Mathf.Abs((d - radius) / th);
+                        var a = Mathf.Clamp01(1 - d);
+                        pix[y * size + x] = new Color(1, 1, 1, a);
+                    }
+                }
+                s_TargetMarkerTex = new Texture2D(size, size);
+                s_TargetMarkerTex.SetPixels(pix);
+                s_TargetMarkerTex.Apply();
+            }
+            return s_TargetMarkerTex;
         }
     }
 }
