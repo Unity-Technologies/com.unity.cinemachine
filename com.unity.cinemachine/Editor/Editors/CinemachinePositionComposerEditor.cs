@@ -87,7 +87,7 @@ namespace Cinemachine.Editor
             if (Target.FollowTarget != null && isLive)
             {
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
-                    Target.LookAtTargetAsGroup, Target.TrackedPoint, 
+                    null, Target.TrackedPoint, 
                     Target.VcamState.GetFinalOrientation(), brain.OutputCamera);
             }
         }
