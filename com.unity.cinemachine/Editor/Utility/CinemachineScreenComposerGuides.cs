@@ -110,8 +110,8 @@ namespace Cinemachine.Editor
         enum DragBar
         {
             Center,
-            SoftBarLineLeft, SoftBarLineTop, SoftBarLineRight, SoftBarLineBottom,
             HardBarLineLeft, HardBarLineTop, HardBarLineRight, HardBarLineBottom,
+            SoftBarLineLeft, SoftBarLineTop, SoftBarLineRight, SoftBarLineBottom,
             NONE
         };
 
@@ -252,14 +252,17 @@ namespace Cinemachine.Editor
             GUI.DrawTexture(hardBarBottom, Texture2D.whiteTexture, ScaleMode.StretchToFill);
 
             GUI.color = softBarsColour;
-            Rect softBarLeft = new Rect(hardEdgeLeft, softEdgeTop, softEdgeLeft - hardEdgeLeft, softEdgeBottom - softEdgeTop);
-            Rect softBarTop = new Rect(hardEdgeLeft, hardEdgeTop, hardEdgeRight - hardEdgeLeft, softEdgeTop - hardEdgeTop);
-            Rect softBarRight = new Rect(softEdgeRight, softEdgeTop, hardEdgeRight - softEdgeRight, softEdgeBottom - softEdgeTop);
-            Rect softBarBottom = new Rect(hardEdgeLeft, softEdgeBottom, hardEdgeRight - hardEdgeLeft, hardEdgeBottom - softEdgeBottom);
-            GUI.DrawTexture(softBarLeft, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(softBarTop, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(softBarRight, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(softBarBottom, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            if (GetComposition().DeadZone.Enabled)
+            {
+                Rect softBarLeft = new Rect(hardEdgeLeft, softEdgeTop, softEdgeLeft - hardEdgeLeft, softEdgeBottom - softEdgeTop);
+                Rect softBarTop = new Rect(hardEdgeLeft, hardEdgeTop, hardEdgeRight - hardEdgeLeft, softEdgeTop - hardEdgeTop);
+                Rect softBarRight = new Rect(softEdgeRight, softEdgeTop, hardEdgeRight - softEdgeRight, softEdgeBottom - softEdgeTop);
+                Rect softBarBottom = new Rect(hardEdgeLeft, softEdgeBottom, hardEdgeRight - hardEdgeLeft, hardEdgeBottom - softEdgeBottom);
+                GUI.DrawTexture(softBarLeft, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                GUI.DrawTexture(softBarTop, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                GUI.DrawTexture(softBarRight, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                GUI.DrawTexture(softBarBottom, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            }
 
             // Draw the drag bars
             GUI.DrawTexture(m_DragBars[(int)DragBar.SoftBarLineLeft], Texture2D.whiteTexture, ScaleMode.StretchToFill);
@@ -276,7 +279,7 @@ namespace Cinemachine.Editor
             // Highlight the hot one
             if (m_IsHot != DragBar.NONE)
             {
-                GUI.color = new Color(1, 1, 1, 0.2f);
+                GUI.color = new Color(0.5f, 1, 1, 0.2f);
                 var k = m_IsHot == DragBar.Center ? 10 : 2;
                 GUI.DrawTexture(m_DragBars[(int)m_IsHot].Inflated(new Vector2(k, k)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
             }
