@@ -368,55 +368,24 @@ namespace Cinemachine.Editor
         /// </summary>
         public void AddGameViewGuidesToggle(VisualElement ux)
         {
-            var row = new InspectorUtility.LeftRightContainer();
-
-            const string tooltip = "Enable the display of overlays in the Game window.  "
-                    + "You can adjust colours and opacity in Cinemachine Preferences.";
-            var label = row.Left.AddChild(new Label("Game View Guides") 
-            { 
-                tooltip = tooltip, 
-                style = { alignSelf = Align.Center, flexGrow = 1, marginBottom = 1 }
-            });
-            var toggle = row.Right.AddChild(new Toggle("") { tooltip = tooltip, style = { height = InspectorUtility.SingleLineHeight }});
-            toggle.value = CinemachineCorePrefs.ShowInGameGuides.Value;
-
-            const string interactiveTooltip = "Enable this to make the gave view giudes draggable with the mouse.";
-            var interactiveToggle = row.Right.AddChild(new Toggle("") 
-            { 
-                tooltip = interactiveTooltip, 
-                style = { height = InspectorUtility.SingleLineHeight, marginLeft = 8, marginRight = 4 }
-            });
-
-            var interactiveLabel = row.Right.AddChild(new Label("Draggable")
+            var choices = new List<string>() { "Disabled", "Passive", "Interactive" };
+            int index = CinemachineCorePrefs.ShowInGameGuides.Value 
+                ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
+            var dropdown = ux.AddChild(new DropdownField
             {
-                tooltip = interactiveTooltip, 
-                style = { alignSelf = Align.Center, flexGrow = 1, marginBottom = 1 }
+                label = "Game View Guides",
+                tooltip = CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip,
+                choices = choices,
+                index = index,
+                style = { flexGrow = 1 }
             });
-
-            interactiveToggle.RegisterValueChangedCallback((evt) => 
+            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+            dropdown.RegisterValueChangedCallback((evt) => 
             {
-                CinemachineCorePrefs.DraggableComposerGuides.Value = evt.newValue;
-                UpdateVisibility(interactiveLabel, interactiveToggle);
-            });
-
-            toggle.RegisterValueChangedCallback((evt) => 
-            {
-                CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue;
-                UpdateVisibility(interactiveLabel, interactiveToggle);
+                CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue != choices[0];
+                CinemachineCorePrefs.DraggableComposerGuides.Value = evt.newValue == choices[2];
                 InspectorUtility.RepaintGameView();
             });
-
-            UpdateVisibility(interactiveLabel, interactiveToggle);
-            static void UpdateVisibility(Label label, Toggle toggle)
-            {
-                toggle.value = CinemachineCorePrefs.DraggableComposerGuides.Value;
-                toggle.SetVisible(CinemachineCorePrefs.ShowInGameGuides.Value);
-                label.style.opacity = CinemachineCorePrefs.DraggableComposerGuides.Value ? 1 : 0.5f;
-                //label.text = CinemachineCorePrefs.DraggableComposerGuides.Value ? "Draggable" : "Not draggable";
-                label.SetVisible(CinemachineCorePrefs.ShowInGameGuides.Value);
-            }
-
-            ux.Add(row);
         }
 
         static List<MonoBehaviour> s_componentCache = new List<MonoBehaviour>();
