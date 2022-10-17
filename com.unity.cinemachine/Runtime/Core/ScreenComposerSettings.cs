@@ -65,10 +65,15 @@ namespace Cinemachine
         /// <summary>Clamps values to the expected ranges</summary>
         public void Validate()
         {
+            ScreenPosition.x = Mathf.Clamp(ScreenPosition.x, -1.5f, 1.5f);
+            ScreenPosition.y = Mathf.Clamp(ScreenPosition.y, -1.5f, 1.5f);
+            DeadZone.Size.x = Mathf.Clamp(DeadZone.Size.x, 0f, 2f);
+            DeadZone.Size.y = Mathf.Clamp(DeadZone.Size.y, 0f, 2f);
+            HardLimits.Size = new Vector2(
+                Mathf.Clamp(HardLimits.Size.x, DeadZone.Size.x, 3),
+                Mathf.Clamp(HardLimits.Size.y, DeadZone.Size.y, 3));
             HardLimits.Bias.x = Mathf.Clamp(HardLimits.Bias.x, -1f, 1f);
             HardLimits.Bias.y = Mathf.Clamp(HardLimits.Bias.y, -1f, 1f);
-            DeadZoneRect = DeadZoneRect;
-            HardLimitsRect = HardLimitsRect;
         }
 
         /// <summary>Get the effictive dead zone size, taking enabled state into account</summary>
