@@ -128,14 +128,12 @@ namespace Cinemachine
             public Vector3 PosAdjustment;
             public Vector2 RotAdjustment;
             public float FovAdjustment;
-            public bool PreviousStateIsValid;
 
             public void Reset()
             {
                 PosAdjustment = Vector3.zero;
                 RotAdjustment = Vector2.zero;
                 FovAdjustment = 0;
-                PreviousStateIsValid = false;
             }
         };
 
@@ -166,9 +164,8 @@ namespace Cinemachine
                 extra.Reset();
 
             var group = vcam.FollowTargetAsGroup;
-            if (group == null || extra.PreviousStateIsValid && group.Sphere.radius < k_MinimumGroupSize)
+            if (group == null)
                 return;
-            extra.PreviousStateIsValid = true;
 
             if (state.Lens.Orthographic)
                 OrthoFraming(vcam, group, extra, ref state, deltaTime);
