@@ -551,9 +551,9 @@ namespace Cinemachine.Editor
             var bottom = freelook.GetRig(2).GetComponentInChildren<CinemachineComposer>();
             if (middle != null && top != null && bottom != null)
             {
-                var topComposition = top.GetScreenComposerSettings();
-                var middleComposition = middle.GetScreenComposerSettings();
-                var bottomComposition = bottom.GetScreenComposerSettings();
+                var topComposition = top.Composition;
+                var middleComposition = middle.Composition;
+                var bottomComposition = bottom.Composition;
 
                 if (!ScreenComposerSettings.Approximately(middleComposition, topComposition)
                     || !ScreenComposerSettings.Approximately(middleComposition, bottomComposition))
