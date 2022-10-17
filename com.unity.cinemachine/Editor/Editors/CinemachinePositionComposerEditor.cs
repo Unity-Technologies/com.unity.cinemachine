@@ -11,23 +11,17 @@ namespace Cinemachine.Editor
     class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
         CmPipelineComponentInspectorUtility m_PipelineUtility;
-        CinemachineScreenComposerGuides m_ScreenGuideEditor;
-        GameViewEventCatcher m_GameViewEventCatcher;
+        CinemachineScreenComposerGuides m_ScreenGuideEditor = new();
 
         CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
         protected virtual void OnEnable()
         {
             m_PipelineUtility = new (this);
-            m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
-            m_ScreenGuideEditor.GetHardGuide = () => Target.HardGuideRect;
-            m_ScreenGuideEditor.GetSoftGuide = () => Target.SoftGuideRect;
-            m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
-            m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
+            m_ScreenGuideEditor.GetComposition = () => Target.Composition;
+            m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => serializedObject;
-
-            m_GameViewEventCatcher = new GameViewEventCatcher();
-            m_GameViewEventCatcher.OnEnable();
+            m_ScreenGuideEditor.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
@@ -41,7 +35,7 @@ namespace Cinemachine.Editor
         protected virtual void OnDisable()
         {
             m_PipelineUtility.OnDisable();
-            m_GameViewEventCatcher.OnDisable();
+            m_ScreenGuideEditor.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
@@ -56,13 +50,12 @@ namespace Cinemachine.Editor
 
             m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DeadZoneDepth)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UnlimitedSoftZone)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
 
             m_PipelineUtility.UpdateState();
             return ux;
@@ -70,7 +63,6 @@ namespace Cinemachine.Editor
 
         protected virtual void OnGUI()
         {
-            // Draw the camera guides
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
@@ -78,33 +70,16 @@ namespace Cinemachine.Editor
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
-            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
-
             // Screen guides
-            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.UnlimitedSoftZone);
+            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
 
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
             {
-                Vector3 targetScreenPosition = brain.OutputCamera.WorldToScreenPoint(Target.TrackedPoint);
-                if (targetScreenPosition.z > 0)
-                {
-                    targetScreenPosition.y = Screen.height - targetScreenPosition.y;
-
-                    GUI.color = CinemachineComposerPrefs.TargetColour.Value;
-                    Rect r = new Rect(targetScreenPosition, Vector2.zero);
-                    float size = (CinemachineComposerPrefs.TargetSize.Value
-                        + CinemachineScreenComposerGuides.kGuideBarWidthPx) / 2;
-                    GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
-                    size -= CinemachineScreenComposerGuides.kGuideBarWidthPx;
-                    if (size > 0)
-                    {
-                        Vector4 overlayOpacityScalar
-                            = new Vector4(1f, 1f, 1f, CinemachineComposerPrefs.OverlayOpacity.Value);
-                        GUI.color = Color.black * overlayOpacityScalar;
-                        GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
-                    }
-                }
+                CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
+                    null, Target.TrackedPoint, 
+                    Target.VcamState.GetFinalOrientation(), brain.OutputCamera);
             }
         }
 

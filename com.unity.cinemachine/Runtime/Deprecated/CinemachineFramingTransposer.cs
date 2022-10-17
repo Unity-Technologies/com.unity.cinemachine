@@ -662,6 +662,31 @@ namespace Cinemachine
         }
 
         // Helper to upgrade to CM3
+        internal ScreenComposerSettings Composition
+        {
+            get => new ()
+            {
+                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
+                DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
+                HardLimits = new ()
+                {
+                    Enabled = true,
+                    Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
+                    Bias = new Vector2(m_BiasX, m_BiasY) * 2
+                }
+            };
+            set
+            {
+                m_ScreenX = value.ScreenPosition.x + 0.5f;
+                m_ScreenY = value.ScreenPosition.y + 0.5f;
+                m_DeadZoneWidth = value.DeadZone.Size.x;
+                m_DeadZoneHeight = value.DeadZone.Size.y;
+                m_SoftZoneWidth = value.HardLimits.Size.x;
+                m_SoftZoneHeight = value.HardLimits.Size.y;
+            }
+        }
+
+        // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachinePositionComposer c)
         {
             c.TrackedObjectOffset = m_TrackedObjectOffset;
@@ -675,17 +700,9 @@ namespace Cinemachine
             c.CameraDistance = m_CameraDistance;
             c.DeadZoneDepth = m_DeadZoneDepth;
             c.Damping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
-            c.Composition = new ScreenComposerSettings
-            {
-                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
-                DeadZoneSize = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight),
-                SoftZoneSize = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-                Bias = new Vector2(m_BiasX, m_BiasY)
-            };
-            c.UnlimitedSoftZone = m_UnlimitedSoftZone;
+            c.Composition = Composition;
             c.CenterOnActivate = m_CenterOnActivate;
         }
-
 
         // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineGroupFraming c)

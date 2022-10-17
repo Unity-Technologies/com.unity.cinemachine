@@ -345,27 +345,22 @@ namespace Cinemachine.Editor
         /// </summary>
         public void AddSaveDuringPlayToggle(VisualElement ux)
         {
-            var helpBox = new HelpBox("CmCamera settings changes made during Play Mode will be "
-                    + "propagated back to the scene when Play Mode is exited.", 
-                HelpBoxMessageType.Info);
-            helpBox.style.display = (SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying) 
-                ? DisplayStyle.Flex : DisplayStyle.None;
-
-            var toggle = new Toggle("Save During Play") { style = { height = InspectorUtility.SingleLineHeight }};
-
+            var toggle = ux.AddChild(new Toggle("Save During Play") { style = { height = InspectorUtility.SingleLineHeight }});
             toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
-
             toggle.tooltip = "If checked, CmCamera settings changes made during Play Mode "
                 + "will be propagated back to the scene when Play Mode is exited.";
             toggle.value = SaveDuringPlay.SaveDuringPlay.Enabled;
+
+            var helpBox = ux.AddChild(new HelpBox("CmCamera settings changes made during Play Mode will be "
+                    + "propagated back to the scene when Play Mode is exited.", 
+                HelpBoxMessageType.Info));
+            helpBox.SetVisible(SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying);
+
             toggle.RegisterValueChangedCallback((evt) => 
             {
                 SaveDuringPlay.SaveDuringPlay.Enabled = evt.newValue;
-                helpBox.style.display = (evt.newValue && Application.isPlaying) 
-                    ? DisplayStyle.Flex : DisplayStyle.None;
+                helpBox.SetVisible(evt.newValue && Application.isPlaying);
             });
-            ux.Add(toggle);
-            ux.Add(helpBox);
         }
 
         /// <summary>
@@ -373,13 +368,24 @@ namespace Cinemachine.Editor
         /// </summary>
         public void AddGameViewGuidesToggle(VisualElement ux)
         {
-            var toggle = new Toggle("Game View Guides") { style = { height = InspectorUtility.SingleLineHeight }};
-            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
-            toggle.tooltip = "Enable the display of overlays in the Game window.  "
-                + "You can adjust colours and opacity in Cinemachine Preferences.";
-            toggle.value = CinemachineCorePrefs.ShowInGameGuides.Value;
-            toggle.RegisterValueChangedCallback((evt) => CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue);
-            ux.Add(toggle);
+            var choices = new List<string>() { "Disabled", "Passive", "Interactive" };
+            int index = CinemachineCorePrefs.ShowInGameGuides.Value 
+                ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
+            var dropdown = ux.AddChild(new DropdownField
+            {
+                label = "Game View Guides",
+                tooltip = CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip,
+                choices = choices,
+                index = index,
+                style = { flexGrow = 1 }
+            });
+            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+            dropdown.RegisterValueChangedCallback((evt) => 
+            {
+                CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue != choices[0];
+                CinemachineCorePrefs.DraggableComposerGuides.Value = evt.newValue == choices[2];
+                InspectorUtility.RepaintGameView();
+            });
         }
 
         static List<MonoBehaviour> s_componentCache = new List<MonoBehaviour>();

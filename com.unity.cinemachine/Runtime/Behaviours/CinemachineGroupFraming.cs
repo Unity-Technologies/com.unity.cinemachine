@@ -158,15 +158,15 @@ namespace Cinemachine
             // We ignore the noise effect anyway, so it doesn't hurt.
             if (stage != CinemachineCore.Stage.Noise)
                 return;
-
+            
             var group = vcam.FollowTargetAsGroup;
-            if (group == null || group.Sphere.radius < k_MinimumGroupSize)
+            if (group == null)
                 return;
 
             var extra = GetExtraState<VcamExtraState>(vcam);
             if (!vcam.PreviousStateIsValid)
                 extra.Reset();
-            
+
             if (state.Lens.Orthographic)
                 OrthoFraming(vcam, group, extra, ref state, deltaTime);
             else
