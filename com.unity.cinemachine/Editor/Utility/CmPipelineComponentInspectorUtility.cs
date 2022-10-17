@@ -193,13 +193,13 @@ namespace Cinemachine.Editor
                     worldPoint + vcamRotation * new Vector3(group.Sphere.radius, 0, 0));
                 radius = Mathf.Abs(p2.x - c.x);
             }
-            var r = new Rect(c, Vector2.one * CinemachineScreenComposerGuides.kGuideBarWidthPx * 2);
-            GUI.color = Color.black;
+            var r = new Rect(c, Vector2.zero).Inflated(Vector2.one * CinemachineComposerPrefs.TargetSize.Value);
+            GUI.color = new Color(0, 0, 0, CinemachineComposerPrefs.OverlayOpacity.Value);
             GUI.DrawTexture(r.Inflated(new Vector2(1, 1)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
             var color = CinemachineComposerPrefs.TargetColour.Value;
             GUI.color = color;
             GUI.DrawTexture(r, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            if (radius > CinemachineScreenComposerGuides.kGuideBarWidthPx)
+            if (radius > CinemachineComposerPrefs.TargetSize.Value)
             {
                 color.a = Mathf.Lerp(1f, CinemachineComposerPrefs.OverlayOpacity.Value, (radius - 10f) / 50f);
                 GUI.color = color;

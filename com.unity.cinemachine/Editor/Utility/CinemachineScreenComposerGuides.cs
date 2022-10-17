@@ -30,9 +30,6 @@ namespace Cinemachine.Editor
         /// <summary>Get the target object whose guides are being drawn.  Client must implement this</summary>
         public ObjectGetter Target;
 
-        /// <summary>Width of the draggable guide bar in the game view</summary>
-        public const float kGuideBarWidthPx = 3f;
-
         // For dragging the bars - order defines precedence
         enum DragBar
         {
@@ -212,20 +209,21 @@ namespace Cinemachine.Editor
             hard = new (hard.xMin * cameraRect.width, hard.yMin * cameraRect.height, 
                 hard.width * cameraRect.width, hard.height * cameraRect.height);
 
-            const float kHalfBarWidth = kGuideBarWidthPx / 2f;
-            m_DragBars[(int)DragBar.HardLeft] = new Rect(hard.xMin - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
-            m_DragBars[(int)DragBar.HardTop] = new Rect(0f, hard.yMin - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
-            m_DragBars[(int)DragBar.HardRight] = new Rect(hard.xMax - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
-            m_DragBars[(int)DragBar.HardBottom] = new Rect(0f, hard.yMax - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
+            const float kBarSize = 2;
+
+            m_DragBars[(int)DragBar.HardLeft] = new Rect(hard.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
+            m_DragBars[(int)DragBar.HardTop] = new Rect(0f, hard.yMin, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
+            m_DragBars[(int)DragBar.HardRight] = new Rect(hard.xMax, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
+            m_DragBars[(int)DragBar.HardBottom] = new Rect(0f, hard.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
 
             var dead = composition.DeadZoneRect;
             dead = new (dead.xMin * cameraRect.width, dead.yMin * cameraRect.height, 
                 dead.width * cameraRect.width, dead.height * cameraRect.height);
 
-            m_DragBars[(int)DragBar.DeadLeft] = new Rect(dead.xMin - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
-            m_DragBars[(int)DragBar.DeadTop] = new Rect(0f, dead.yMin - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
-            m_DragBars[(int)DragBar.DeadRight] = new Rect(dead.xMax - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
-            m_DragBars[(int)DragBar.DeadBottom] = new Rect(0f, dead.yMax - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
+            m_DragBars[(int)DragBar.DeadLeft] = new Rect(dead.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
+            m_DragBars[(int)DragBar.DeadTop] = new Rect(0f, dead.yMin, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
+            m_DragBars[(int)DragBar.DeadRight] = new Rect(dead.xMax, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
+            m_DragBars[(int)DragBar.DeadBottom] = new Rect(0f, dead.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
 
             m_DragBars[(int)DragBar.Center] = new Rect(dead.xMin, dead.yMin, dead.xMax - dead.xMin, dead.yMax - dead.yMin);
 
