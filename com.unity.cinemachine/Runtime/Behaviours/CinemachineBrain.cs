@@ -442,7 +442,7 @@ namespace Cinemachine
 #if UNITY_EDITOR
         void OnGUI()
         {
-            if (CinemachineDebug.OnGUIHandlers != null)
+            if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
                 CinemachineDebug.OnGUIHandlers();
         }
 #endif

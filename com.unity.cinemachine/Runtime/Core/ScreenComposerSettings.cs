@@ -8,9 +8,9 @@ namespace Cinemachine
     public struct ScreenComposerSettings
     {
         /// <summary>Screen position for target. The camera will adjust to position the 
-        /// tracked object here.  0 is screen center, and 1 is screen edge</summary>
+        /// tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge</summary>
         [Tooltip("Screen position for target. The camera will adjust to position the "
-        + "tracked object here.  0 is screen center, and +1 or -1 is screen edge")]
+        + "tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge")]
         public Vector2 ScreenPosition;
 
         [Serializable]
@@ -19,9 +19,9 @@ namespace Cinemachine
             /// <summary>Enables the Dead Zone settings</summary>
             public bool Enabled;
             /// <summary>The camera will not adjust if the target is within this range of the screen position.  
-            /// 0 is screen center, and +1 or -1 is screen edge</summary>
-            [Tooltip("The camera will not adjust if the target is within this range of the screen position.  "
-                + "0 is screen center, and +1 or -1 is screen edge")]
+            /// Full screen size is 1.</summary>
+            [Tooltip("The camera will not adjust if the target is within this range of the "
+                + "screen position.  Full screen size is 1.")]
             public Vector2 Size;
         }
         /// <summary>The camera will not adjust if the target is within this range of the screen position</summary>
@@ -40,11 +40,11 @@ namespace Cinemachine
             /// <summary>The target will not be allowed to be outside this region.
             /// When the target is within this region, the camera will gradually adjust to re-align
             /// towards the desired position, depending on the damping speed.  
-            /// 0 is screen center, and +1 or -1 is screen edge</summary>
+            /// Full screen size is 1</summary>
             [Tooltip("The target will not be allowed to be outside this region. "
                 + "When the target is within this region, the camera will gradually adjust to re-align "
                 + "towards the desired position, depending on the damping speed.  "
-                + "0 is screen center, and +1 or -1 is screen edge")]
+                + "Full screen size is 1")]
             public Vector2 Size;
             /// <summary>A zero Bias means that the hard limits will be centered around the target screen position.  
             /// A nonzero bias will uncenter the target screen position within the hard limits.
@@ -69,8 +69,9 @@ namespace Cinemachine
             ScreenPosition.y = Mathf.Clamp(ScreenPosition.y, -1.5f, 1.5f);
             DeadZone.Size.x = Mathf.Clamp(DeadZone.Size.x, 0f, 2f);
             DeadZone.Size.y = Mathf.Clamp(DeadZone.Size.y, 0f, 2f);
-            HardLimits.Size.x = Mathf.Clamp(HardLimits.Size.x, 0f, 6f);
-            HardLimits.Size.y = Mathf.Clamp(HardLimits.Size.y, 0f, 6f);
+            HardLimits.Size = new Vector2(
+                Mathf.Clamp(HardLimits.Size.x, DeadZone.Size.x, 3),
+                Mathf.Clamp(HardLimits.Size.y, DeadZone.Size.y, 3));
             HardLimits.Bias.x = Mathf.Clamp(HardLimits.Bias.x, -1f, 1f);
             HardLimits.Bias.y = Mathf.Clamp(HardLimits.Bias.y, -1f, 1f);
         }
@@ -79,7 +80,7 @@ namespace Cinemachine
         public Vector2 EffectiveDeadZoneSize => DeadZone.Enabled ? DeadZone.Size : Vector2.zero;
 
         /// <summary>Get the effictive hard limits size, taking enabled state into account</summary>
-        public Vector2 EffectiveHardLimitSize => HardLimits.Enabled ? HardLimits.Size : new Vector2(6, 6);
+        public Vector2 EffectiveHardLimitSize => HardLimits.Enabled ? HardLimits.Size : new Vector2(3, 3);
 
         /// <summary>Get/set the screenspace rect for the dead zone region.  This also defines screen position</summary>
         public Rect DeadZoneRect
@@ -101,8 +102,8 @@ namespace Cinemachine
                     Mathf.Clamp(value.x - 0.5f + deadZoneSize.x / 2, -1.5f,  1.5f), 
                     Mathf.Clamp(value.y - 0.5f + deadZoneSize.y / 2, -1.5f,  1.5f));
                 HardLimits.Size = new Vector2(
-                    Mathf.Max(HardLimits.Size.x, deadZoneSize.x),
-                    Mathf.Max(HardLimits.Size.y, deadZoneSize.y));
+                    Mathf.Clamp(HardLimits.Size.x, deadZoneSize.x, 3),
+                    Mathf.Clamp(HardLimits.Size.y, deadZoneSize.y, 3));
             }
         }
 

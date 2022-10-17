@@ -507,6 +507,31 @@ namespace Cinemachine
         }
 
         // Helper to upgrade to CM3
+        internal ScreenComposerSettings Composition
+        {
+            get => new ()
+            {
+                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
+                DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
+                HardLimits = new ()
+                {
+                    Enabled = true,
+                    Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
+                    Bias = new Vector2(m_BiasX, m_BiasY) * 2
+                }
+            };
+            set
+            {
+                m_ScreenX = value.ScreenPosition.x + 0.5f;
+                m_ScreenY = value.ScreenPosition.y + 0.5f;
+                m_DeadZoneWidth = value.DeadZone.Size.x;
+                m_DeadZoneHeight = value.DeadZone.Size.y;
+                m_SoftZoneWidth = value.HardLimits.Size.x;
+                m_SoftZoneHeight = value.HardLimits.Size.y;
+            }
+        }
+
+        // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineRotationComposer c)
         {
             c.TrackedObjectOffset = m_TrackedObjectOffset;
@@ -518,21 +543,8 @@ namespace Cinemachine
                 IgnoreY = m_LookaheadIgnoreY
             };
             c.Damping = new Vector2(m_HorizontalDamping, m_VerticalDamping);
-            c.Composition = GetScreenComposerSettings();
+            c.Composition = Composition;
             c.CenterOnActivate = m_CenterOnActivate;
         }
-
-        // Helper to upgrade to CM3
-        internal ScreenComposerSettings GetScreenComposerSettings() => new ()
-        {
-            ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
-            DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
-            HardLimits = new () 
-            {
-                Enabled = true,
-                Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-                Bias = new Vector2(m_BiasX, m_BiasY) * 2
-            }
-        };
     }
 }

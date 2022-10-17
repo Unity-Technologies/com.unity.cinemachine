@@ -1,8 +1,8 @@
-using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -11,21 +11,18 @@ namespace Cinemachine.Editor
     class CinemachineRotationComposerEditor : UnityEditor.Editor
     {
         CmPipelineComponentInspectorUtility m_PipelineUtility;
-        CinemachineScreenComposerGuides m_ScreenGuideEditor;
-        GameViewEventCatcher m_GameViewEventCatcher;
+        CinemachineScreenComposerGuides m_ScreenGuideEditor = new();
 
         CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
         protected virtual void OnEnable()
         {
             m_PipelineUtility = new (this);
-            m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
+
             m_ScreenGuideEditor.GetComposition = () => Target.Composition;
             m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => { return serializedObject; };
-
-            m_GameViewEventCatcher = new GameViewEventCatcher();
-            m_GameViewEventCatcher.OnEnable();
+            m_ScreenGuideEditor.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
@@ -38,7 +35,7 @@ namespace Cinemachine.Editor
         protected virtual void OnDisable()
         {
             m_PipelineUtility.OnDisable();
-            m_GameViewEventCatcher.OnDisable();
+            m_ScreenGuideEditor.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
@@ -79,25 +76,9 @@ namespace Cinemachine.Editor
             // Draw an on-screen gizmo for the target
             if (Target.LookAtTarget != null && isLive)
             {
-                Vector3 targetScreenPosition = brain.OutputCamera.WorldToScreenPoint(Target.TrackedPoint);
-                if (targetScreenPosition.z > 0)
-                {
-                    targetScreenPosition.y = Screen.height - targetScreenPosition.y;
-
-                    GUI.color = CinemachineComposerPrefs.TargetColour.Value;
-                    Rect r = new Rect(targetScreenPosition, Vector2.zero);
-                    float size = (CinemachineComposerPrefs.TargetSize.Value
-                        + CinemachineScreenComposerGuides.kGuideBarWidthPx) / 2;
-                    GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
-                    size -= CinemachineScreenComposerGuides.kGuideBarWidthPx;
-                    if (size > 0)
-                    {
-                        Vector4 overlayOpacityScalar
-                            = new Vector4(1f, 1f, 1f, CinemachineComposerPrefs.OverlayOpacity.Value);
-                        GUI.color = Color.black * overlayOpacityScalar;
-                        GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
-                    }
-                }
+                CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
+                    null, Target.TrackedPoint, 
+                    vcam.State.GetFinalOrientation(), brain.OutputCamera);
             }
         }
 

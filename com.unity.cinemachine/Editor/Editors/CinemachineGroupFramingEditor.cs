@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
@@ -20,9 +21,18 @@ namespace Cinemachine.Editor
         {
             m_PipelineUtility = new(this);
             EditorApplication.update += UpdateVisibility;
+
+            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            CinemachineDebug.OnGUIHandlers += OnGUI;
+            if (CinemachineCorePrefs.ShowInGameGuides.Value)
+                InspectorUtility.RepaintGameView();
         }
         void OnDisable() 
         {
+            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            if (CinemachineCorePrefs.ShowInGameGuides.Value)
+                InspectorUtility.RepaintGameView();
+
             EditorApplication.update -= UpdateVisibility;
             m_PipelineUtility.OnDisable();
         }
@@ -83,6 +93,24 @@ namespace Cinemachine.Editor
             m_OrthoControls.SetVisible(ortho);
         }
 
+        protected virtual void OnGUI()
+        {
+            if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
+                return;
+
+            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
+            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+                return;
+
+            var group = Target.VirtualCamera.LookAtTargetAsGroup;
+            if (group == null)
+                return;
+
+            CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
+                group, group.Sphere.position, 
+                Target.VirtualCamera.State.GetFinalOrientation(), brain.OutputCamera);
+        }
+        
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupFraming))]
         static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
