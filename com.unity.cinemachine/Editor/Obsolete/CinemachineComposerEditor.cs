@@ -13,26 +13,8 @@ namespace Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
-            m_ScreenGuideEditor.GetComposition = () => new ScreenComposerSettings
-            {
-                ScreenPosition = new Vector2(Target.m_ScreenX, Target.m_ScreenY) - new Vector2(0.5f, 0.5f),
-                DeadZone = new () { Enabled = true, Size = new Vector2(Target.m_DeadZoneWidth, Target.m_DeadZoneHeight) },
-                HardLimits = new ()
-                {
-                    Enabled = true,
-                    Size = new Vector2(Target.m_SoftZoneWidth, Target.m_SoftZoneHeight),
-                    Bias = new Vector2(Target.m_BiasX, Target.m_BiasY) * 2
-                }
-            };
-            m_ScreenGuideEditor.SetComposition = (s) =>
-            {
-                Target.m_ScreenX = s.ScreenPosition.x + 0.5f;
-                Target.m_ScreenY = s.ScreenPosition.y + 0.5f;
-                Target.m_DeadZoneWidth = s.DeadZone.Size.x;
-                Target.m_DeadZoneHeight = s.DeadZone.Size.y;
-                Target.m_SoftZoneWidth = s.HardLimits.Size.x;
-                Target.m_SoftZoneHeight = s.HardLimits.Size.y;
-            };
+            m_ScreenGuideEditor.GetComposition = () => Target.Composition;
+            m_ScreenGuideEditor.SetComposition = (s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => { return serializedObject; };
             m_ScreenGuideEditor.OnEnable();
 
