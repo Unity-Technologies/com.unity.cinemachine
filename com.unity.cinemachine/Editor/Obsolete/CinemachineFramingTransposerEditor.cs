@@ -10,6 +10,8 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
     {
+        CinemachineScreenComposerGuides m_ScreenGuideEditor = new();
+
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -77,6 +79,29 @@ namespace Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
+            m_ScreenGuideEditor.GetComposition = () => new ScreenComposerSettings
+            {
+                ScreenPosition = new Vector2(Target.m_ScreenX, Target.m_ScreenY) - new Vector2(0.5f, 0.5f),
+                DeadZone = new () { Enabled = true, Size = new Vector2(Target.m_DeadZoneWidth, Target.m_DeadZoneHeight) },
+                HardLimits = new ()
+                {
+                    Enabled = true,
+                    Size = new Vector2(Target.m_SoftZoneWidth, Target.m_SoftZoneHeight),
+                    Bias = new Vector2(Target.m_BiasX, Target.m_BiasY) * 2
+                }
+            };
+            m_ScreenGuideEditor.SetComposition = (s) =>
+            {
+                Target.m_ScreenX = s.ScreenPosition.x + 0.5f;
+                Target.m_ScreenY = s.ScreenPosition.y + 0.5f;
+                Target.m_DeadZoneWidth = s.DeadZone.Size.x;
+                Target.m_DeadZoneHeight = s.DeadZone.Size.y;
+                Target.m_SoftZoneWidth = s.HardLimits.Size.x;
+                Target.m_SoftZoneHeight = s.HardLimits.Size.y;
+            };
+            m_ScreenGuideEditor.Target = () => { return serializedObject; };
+            m_ScreenGuideEditor.OnEnable();
+
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -88,6 +113,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
+            m_ScreenGuideEditor.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
@@ -108,10 +134,6 @@ namespace Cinemachine.Editor
                         + "Change Body to Do Nothing if you don't want a Follow target.",
                     MessageType.Warning);
 
-            // First snapshot some settings
-            Rect oldHard = Target.HardGuideRect;
-            Rect oldSoft = Target.SoftGuideRect;
-
             // Draw the properties
             DrawRemainingPropertiesInInspector();
         }
@@ -130,8 +152,11 @@ namespace Cinemachine.Editor
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
-            // Draw an on-screen gizmo for the target
+            // Screen guides
             bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
+            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
+            
+            // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
             {
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(

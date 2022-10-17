@@ -8,9 +8,9 @@ namespace Cinemachine
     public struct ScreenComposerSettings
     {
         /// <summary>Screen position for target. The camera will adjust to position the 
-        /// tracked object here.  0 is screen center, and 1 is screen edge</summary>
+        /// tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge</summary>
         [Tooltip("Screen position for target. The camera will adjust to position the "
-        + "tracked object here.  0 is screen center, and +1 or -1 is screen edge")]
+        + "tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge")]
         public Vector2 ScreenPosition;
 
         [Serializable]
@@ -19,9 +19,9 @@ namespace Cinemachine
             /// <summary>Enables the Dead Zone settings</summary>
             public bool Enabled;
             /// <summary>The camera will not adjust if the target is within this range of the screen position.  
-            /// 0 is screen center, and +1 or -1 is screen edge</summary>
-            [Tooltip("The camera will not adjust if the target is within this range of the screen position.  "
-                + "0 is screen center, and +1 or -1 is screen edge")]
+            /// Full screen size is 1.</summary>
+            [Tooltip("The camera will not adjust if the target is within this range of the "
+                + "screen position.  Full screen size is 1.")]
             public Vector2 Size;
         }
         /// <summary>The camera will not adjust if the target is within this range of the screen position</summary>
@@ -40,11 +40,11 @@ namespace Cinemachine
             /// <summary>The target will not be allowed to be outside this region.
             /// When the target is within this region, the camera will gradually adjust to re-align
             /// towards the desired position, depending on the damping speed.  
-            /// 0 is screen center, and +1 or -1 is screen edge</summary>
+            /// Full screen size is 1</summary>
             [Tooltip("The target will not be allowed to be outside this region. "
                 + "When the target is within this region, the camera will gradually adjust to re-align "
                 + "towards the desired position, depending on the damping speed.  "
-                + "0 is screen center, and +1 or -1 is screen edge")]
+                + "Full screen size is 1")]
             public Vector2 Size;
             /// <summary>A zero Bias means that the hard limits will be centered around the target screen position.  
             /// A nonzero bias will uncenter the target screen position within the hard limits.
