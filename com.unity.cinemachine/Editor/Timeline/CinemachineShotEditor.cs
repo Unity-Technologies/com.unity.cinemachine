@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
     sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
     {
         [InitializeOnLoad]
-        public class SyncCacheEnabledSetting
+        class SyncCacheEnabledSetting
         {
             static SyncCacheEnabledSetting() => TargetPositionCache.UseCache = CinemachineTimelinePrefs.UseScrubbingCache.Value;
         }

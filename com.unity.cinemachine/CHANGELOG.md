@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineConfiner renamed to CinemachineDeoccluder
 - New inspector and API for composition guides.
 - Game View Guides now indicate when they are hot and can be dragged.
-- CinemachineTrack assigns the first available brain by default on creation.
+- CinemachineTrack assigns the default CinemachineBrain on creation.
 
 
 ## [3.0.0-pre.1] - 2022-06-01
