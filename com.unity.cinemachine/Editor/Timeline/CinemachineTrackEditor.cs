@@ -9,6 +9,8 @@ namespace Cinemachine.Editor
         public override void OnCreate(TrackAsset track, TrackAsset copiedFrom)
         {
             base.OnCreate(track, copiedFrom);
+            if (CinemachineCore.Instance.BrainCount > 0)
+                TimelineEditor.inspectedDirector.SetGenericBinding(track, CinemachineCore.Instance.GetActiveBrain(0));
         }
     }
 }
