@@ -5,79 +5,6 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    // This is necessary because we don't get mouse events in the game view in Edit mode
-    class GameViewEventCatcher
-    {
-        class Dragger
-        {
-            VisualElement m_Root;
-
-            //bool m_Active;
-            //void OnMouseDown(MouseDownEvent e) { if (m_Root.panel != null) m_Active = true; }
-            //void OnMouseUp(MouseUpEvent e) { m_Active = false; }
-            void OnMouseMove(MouseMoveEvent e)
-            {
-                if (/*m_Active &&*/ m_Root.panel != null)
-                {
-                    if (!Application.isPlaying
-                        && CinemachineCorePrefs.ShowInGameGuides.Value
-                        && CinemachineCorePrefs.DraggableComposerGuides.Value
-                        && CinemachineBrain.SoloCamera == null)
-                    {
-                        InspectorUtility.RepaintGameView();
-                    }
-                }
-            }
-
-            public Dragger(VisualElement root)
-            {
-                m_Root = root;
-                if (m_Root == null || m_Root.panel == null || m_Root.panel.visualTree == null)
-                    return;
-                //m_Root.panel.visualTree.RegisterCallback<MouseDownEvent>(OnMouseDown, TrickleDown.TrickleDown);
-                //m_Root.panel.visualTree.RegisterCallback<MouseUpEvent>(OnMouseUp, TrickleDown.TrickleDown);
-                m_Root.panel.visualTree.RegisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
-            }
-
-            public void Unregister()
-            {
-                if (m_Root == null || m_Root.panel == null || m_Root.panel.visualTree == null)
-                    return;
-                //m_Root.panel.visualTree.UnregisterCallback<MouseDownEvent>(OnMouseDown, TrickleDown.TrickleDown);
-                //m_Root.panel.visualTree.UnregisterCallback<MouseUpEvent>(OnMouseUp, TrickleDown.TrickleDown);
-                m_Root.panel.visualTree.UnregisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
-            }
-        }
-
-        Dragger[] m_Draggers;
-
-        // Create manipulator in each game view
-        public void OnEnable()
-        {
-            System.Reflection.Assembly assembly = typeof(UnityEditor.EditorWindow).Assembly;
-            System.Type type = assembly.GetType( "UnityEditor.GameView" );
-            var gameViews = UnityEngine.Resources.FindObjectsOfTypeAll(type);
-            m_Draggers = new Dragger[gameViews.Length];
-
-            for (int i = 0; i < gameViews.Length; ++i)
-            {
-                var gameViewRoot = (gameViews[i] as UnityEditor.EditorWindow).rootVisualElement;
-                m_Draggers[i] = new Dragger(gameViewRoot);
-            }
-        }
-
-        public void OnDisable()
-        {
-            for (int i = 0; m_Draggers != null && i < m_Draggers.Length; ++i)
-            {
-                var dragger = m_Draggers[i];
-                if (dragger != null)
-                    dragger.Unregister();
-            }
-            m_Draggers = null;
-        }
-    }
-
     /// <summary>
     /// Use an instance of this class to draw screen composer guides in the game view.
     /// This is an internal class, and is not meant to be called outside of Cinemachine.
@@ -110,14 +37,87 @@ namespace Cinemachine.Editor
         enum DragBar
         {
             Center,
-            SoftBarLineLeft, SoftBarLineTop, SoftBarLineRight, SoftBarLineBottom,
-            HardBarLineLeft, HardBarLineTop, HardBarLineRight, HardBarLineBottom,
+            HardLeft, HardTop, HardRight, HardBottom,
+            DeadLeft, DeadTop, DeadRight, DeadBottom,
             NONE
         };
+
+        // This is necessary because we don't get mouse events in the game view in Edit mode.
+        // We need to trigger repaint when the mouse moves over the window.
+        class GameViewEventCatcher
+        {
+            class Dragger
+            {
+                readonly VisualElement m_Root;
+
+                void OnMouseMove(MouseMoveEvent e)
+                {
+                    if (m_Root.panel != null && !Application.isPlaying
+                        && CinemachineCorePrefs.ShowInGameGuides.Value
+                        && CinemachineCorePrefs.DraggableComposerGuides.Value
+                        && CinemachineBrain.SoloCamera == null)
+                    {
+                        InspectorUtility.RepaintGameView();
+                    }
+                }
+
+                public Dragger(VisualElement root)
+                {
+                    m_Root = root;
+                    if (m_Root == null || m_Root.panel == null || m_Root.panel.visualTree == null)
+                        return;
+                    m_Root.panel.visualTree.RegisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
+                }
+
+                public void Unregister()
+                {
+                    if (m_Root == null || m_Root.panel == null || m_Root.panel.visualTree == null)
+                        return;
+                    m_Root.panel.visualTree.UnregisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
+                }
+            }
+
+            // One for each game view
+            Dragger[] m_Draggers;
+
+            // Create manipulator in each game view
+            public void OnEnable()
+            {
+                System.Reflection.Assembly assembly = typeof(EditorWindow).Assembly;
+                System.Type type = assembly.GetType("UnityEditor.GameView");
+                var gameViews = Resources.FindObjectsOfTypeAll(type);
+                m_Draggers = new Dragger[gameViews.Length];
+
+                for (int i = 0; i < gameViews.Length; ++i)
+                {
+                    var gameViewRoot = (gameViews[i] as EditorWindow).rootVisualElement;
+                    m_Draggers[i] = new Dragger(gameViewRoot);
+                }
+            }
+
+            public void OnDisable()
+            {
+                for (int i = 0; m_Draggers != null && i < m_Draggers.Length; ++i)
+                {
+                    var dragger = m_Draggers[i];
+                    if (dragger != null)
+                        dragger.Unregister();
+                }
+                m_Draggers = null;
+            }
+        }
 
         DragBar m_IsDragging = DragBar.NONE;
         DragBar m_IsHot = DragBar.NONE;
         Rect[] m_DragBars = new Rect[9];
+
+        GameViewEventCatcher m_EventCatcher;
+
+        // Call this from inspector's OnEnable()
+        public void OnEnable() { m_EventCatcher = new (); m_EventCatcher.OnEnable(); }
+
+        // Call this from inspector's OnDisble()
+        public void OnDisable() { m_EventCatcher.OnDisable(); m_EventCatcher = null; }
 
         Rect GetCameraRect(Camera outputCamera, LensSettings lens)
         {
@@ -187,14 +187,14 @@ namespace Cinemachine.Editor
         /// <param name="showHardGuides">True if hard guides should be shown</param>
         public void OnGUI_DrawGuides(bool isLive, Camera outputCamera, LensSettings lens)
         {
-            Rect cameraRect = GetCameraRect(outputCamera, lens);
-            float screenWidth = cameraRect.width;
-            float screenHeight = cameraRect.height;
+            var cameraRect = GetCameraRect(outputCamera, lens);
 
             // Rotate the guides along with the dutch
             Matrix4x4 oldMatrix = GUI.matrix;
             GUI.matrix = Matrix4x4.Translate(cameraRect.min);
             GUIUtility.RotateAroundPivot(lens.Dutch, cameraRect.center);
+
+            // Desaturate colors if not live came
             Color hardBarsColour = CinemachineComposerPrefs.HardBoundsOverlayColour.Value;
             Color softBarsColour = CinemachineComposerPrefs.SoftBoundsOverlayColour.Value;
             float overlayOpacity = CinemachineComposerPrefs.OverlayOpacity.Value;
@@ -207,85 +207,90 @@ namespace Cinemachine.Editor
             hardBarsColour.a *= overlayOpacity;
             softBarsColour.a *= overlayOpacity;
 
-            Rect r = GetComposition().HardLimitsRect;
-            float hardEdgeLeft = r.xMin * screenWidth;
-            float hardEdgeTop = r.yMin * screenHeight;
-            float hardEdgeRight = r.xMax * screenWidth;
-            float hardEdgeBottom = r.yMax * screenHeight;
+            var composition = GetComposition();
+            var hard = composition.HardLimitsRect;
+            hard = new (hard.xMin * cameraRect.width, hard.yMin * cameraRect.height, 
+                hard.width * cameraRect.width, hard.height * cameraRect.height);
 
-            m_DragBars[(int)DragBar.HardBarLineLeft] = new Rect(hardEdgeLeft - kGuideBarWidthPx / 2f, 0f, kGuideBarWidthPx, screenHeight);
-            m_DragBars[(int)DragBar.HardBarLineTop] = new Rect(0f, hardEdgeTop - kGuideBarWidthPx / 2f, screenWidth, kGuideBarWidthPx);
-            m_DragBars[(int)DragBar.HardBarLineRight] = new Rect(hardEdgeRight - kGuideBarWidthPx / 2f, 0f, kGuideBarWidthPx, screenHeight);
-            m_DragBars[(int)DragBar.HardBarLineBottom] = new Rect(0f, hardEdgeBottom - kGuideBarWidthPx / 2f, screenWidth, kGuideBarWidthPx);
+            const float kHalfBarWidth = kGuideBarWidthPx / 2f;
+            m_DragBars[(int)DragBar.HardLeft] = new Rect(hard.xMin - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
+            m_DragBars[(int)DragBar.HardTop] = new Rect(0f, hard.yMin - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
+            m_DragBars[(int)DragBar.HardRight] = new Rect(hard.xMax - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
+            m_DragBars[(int)DragBar.HardBottom] = new Rect(0f, hard.yMax - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
 
-            r = GetComposition().DeadZoneRect;
-            float softEdgeLeft = r.xMin * screenWidth;
-            float softEdgeTop = r.yMin * screenHeight;
-            float softEdgeRight = r.xMax * screenWidth;
-            float softEdgeBottom = r.yMax * screenHeight;
+            var dead = composition.DeadZoneRect;
+            dead = new (dead.xMin * cameraRect.width, dead.yMin * cameraRect.height, 
+                dead.width * cameraRect.width, dead.height * cameraRect.height);
 
-            m_DragBars[(int)DragBar.SoftBarLineLeft] = new Rect(softEdgeLeft - kGuideBarWidthPx / 2f, 0f, kGuideBarWidthPx, screenHeight);
-            m_DragBars[(int)DragBar.SoftBarLineTop] = new Rect(0f, softEdgeTop - kGuideBarWidthPx / 2f, screenWidth, kGuideBarWidthPx);
-            m_DragBars[(int)DragBar.SoftBarLineRight] = new Rect(softEdgeRight - kGuideBarWidthPx / 2f, 0f, kGuideBarWidthPx, screenHeight);
-            m_DragBars[(int)DragBar.SoftBarLineBottom] = new Rect(0f, softEdgeBottom - kGuideBarWidthPx / 2f, screenWidth, kGuideBarWidthPx);
+            m_DragBars[(int)DragBar.DeadLeft] = new Rect(dead.xMin - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
+            m_DragBars[(int)DragBar.DeadTop] = new Rect(0f, dead.yMin - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
+            m_DragBars[(int)DragBar.DeadRight] = new Rect(dead.xMax - kHalfBarWidth, 0f, kGuideBarWidthPx, cameraRect.height);
+            m_DragBars[(int)DragBar.DeadBottom] = new Rect(0f, dead.yMax - kHalfBarWidth, cameraRect.width, kGuideBarWidthPx);
 
-            m_DragBars[(int)DragBar.Center] = new Rect(softEdgeLeft, softEdgeTop, softEdgeRight - softEdgeLeft, softEdgeBottom - softEdgeTop);
+            m_DragBars[(int)DragBar.Center] = new Rect(dead.xMin, dead.yMin, dead.xMax - dead.xMin, dead.yMax - dead.yMin);
 
             // Handle dragging bars
             if (CinemachineCorePrefs.DraggableComposerGuides.Value && isLive)
-                OnGuiHandleBarDragging(screenWidth, screenHeight);
+                OnGuiHandleBarDragging(cameraRect.width, cameraRect.height, ref composition);
 
             // Draw the masks
+            var tex = Texture2D.whiteTexture;
             var oldColor = GUI.color;
-            GUI.color = hardBarsColour;
-            Rect hardBarLeft = new Rect(0, hardEdgeTop, Mathf.Max(0, hardEdgeLeft), hardEdgeBottom - hardEdgeTop);
-            Rect hardBarRight = new Rect(hardEdgeRight, hardEdgeTop,
-                    Mathf.Max(0, screenWidth - hardEdgeRight), hardEdgeBottom - hardEdgeTop);
-            Rect hardBarTop = new Rect(Mathf.Min(0, hardEdgeLeft), 0,
-                    Mathf.Max(screenWidth, hardEdgeRight) - Mathf.Min(0, hardEdgeLeft), Mathf.Max(0, hardEdgeTop));
-            Rect hardBarBottom = new Rect(Mathf.Min(0, hardEdgeLeft), hardEdgeBottom,
-                    Mathf.Max(screenWidth, hardEdgeRight) - Mathf.Min(0, hardEdgeLeft),
-                    Mathf.Max(0, screenHeight - hardEdgeBottom));
-            GUI.DrawTexture(hardBarLeft, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(hardBarTop, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(hardBarRight, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(hardBarBottom, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-
+            if (composition.HardLimits.Enabled)
+            {
+                GUI.color = hardBarsColour;
+                var left = new Rect(0, hard.yMin, Mathf.Max(0, hard.xMin), hard.height);
+                var right = new Rect(hard.xMax, hard.yMin, Mathf.Max(0, cameraRect.width - hard.xMax), hard.height);
+                var top = new Rect(Mathf.Min(0, hard.xMin), 0, 
+                    Mathf.Max(cameraRect.width, hard.xMax) - Mathf.Min(0, hard.xMin), Mathf.Max(0, hard.yMin));
+                var bottom = new Rect(Mathf.Min(0, hard.xMin), hard.yMax,
+                    Mathf.Max(cameraRect.width, hard.xMax) - Mathf.Min(0, hard.xMin),
+                    Mathf.Max(0, cameraRect.height - hard.yMax));
+                GUI.DrawTexture(left, tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(top, tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(right, tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(bottom, tex, ScaleMode.StretchToFill);
+            }
             GUI.color = softBarsColour;
-            Rect softBarLeft = new Rect(hardEdgeLeft, softEdgeTop, softEdgeLeft - hardEdgeLeft, softEdgeBottom - softEdgeTop);
-            Rect softBarTop = new Rect(hardEdgeLeft, hardEdgeTop, hardEdgeRight - hardEdgeLeft, softEdgeTop - hardEdgeTop);
-            Rect softBarRight = new Rect(softEdgeRight, softEdgeTop, hardEdgeRight - softEdgeRight, softEdgeBottom - softEdgeTop);
-            Rect softBarBottom = new Rect(hardEdgeLeft, softEdgeBottom, hardEdgeRight - hardEdgeLeft, hardEdgeBottom - softEdgeBottom);
-            GUI.DrawTexture(softBarLeft, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(softBarTop, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(softBarRight, Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(softBarBottom, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            if (composition.DeadZone.Enabled)
+            {
+                var left = new Rect(hard.xMin, dead.yMin, dead.xMin - hard.xMin, dead.height);
+                var top = new Rect(hard.xMin, hard.yMin, hard.xMax - hard.xMin, dead.yMin - hard.yMin);
+                var right = new Rect(dead.xMax, dead.yMin, hard.xMax - dead.xMax, dead.yMax - dead.yMin);
+                var bottom = new Rect(hard.xMin, dead.yMax, hard.xMax - hard.xMin, hard.yMax - dead.yMax);
+                GUI.DrawTexture(left, tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(top, tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(right, tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(bottom, tex, ScaleMode.StretchToFill);
+            }
 
             // Draw the drag bars
-            GUI.DrawTexture(m_DragBars[(int)DragBar.SoftBarLineLeft], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(m_DragBars[(int)DragBar.SoftBarLineTop], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(m_DragBars[(int)DragBar.SoftBarLineRight], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(m_DragBars[(int)DragBar.SoftBarLineBottom], Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            GUI.DrawTexture(m_DragBars[(int)DragBar.DeadLeft], tex, ScaleMode.StretchToFill);
+            GUI.DrawTexture(m_DragBars[(int)DragBar.DeadTop], tex, ScaleMode.StretchToFill);
+            GUI.DrawTexture(m_DragBars[(int)DragBar.DeadRight], tex, ScaleMode.StretchToFill);
+            GUI.DrawTexture(m_DragBars[(int)DragBar.DeadBottom], tex, ScaleMode.StretchToFill);
+            if (composition.HardLimits.Enabled)
+            {
+                GUI.color = hardBarsColour;
+                GUI.DrawTexture(m_DragBars[(int)DragBar.HardLeft], tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(m_DragBars[(int)DragBar.HardTop], tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(m_DragBars[(int)DragBar.HardRight], tex, ScaleMode.StretchToFill);
+                GUI.DrawTexture(m_DragBars[(int)DragBar.HardBottom], tex, ScaleMode.StretchToFill);
 
-            GUI.color = hardBarsColour;
-            GUI.DrawTexture(m_DragBars[(int)DragBar.HardBarLineLeft], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(m_DragBars[(int)DragBar.HardBarLineTop], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(m_DragBars[(int)DragBar.HardBarLineRight], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            GUI.DrawTexture(m_DragBars[(int)DragBar.HardBarLineBottom], Texture2D.whiteTexture, ScaleMode.StretchToFill);
-
+            }
             // Highlight the hot one
             if (m_IsHot != DragBar.NONE)
             {
                 GUI.color = new Color(1, 1, 1, 0.2f);
                 var k = m_IsHot == DragBar.Center ? 10 : 2;
-                GUI.DrawTexture(m_DragBars[(int)m_IsHot].Inflated(new Vector2(k, k)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                GUI.DrawTexture(m_DragBars[(int)m_IsHot].Inflated(new Vector2(k, k)), tex, ScaleMode.StretchToFill);
             }
 
             GUI.matrix = oldMatrix;
             GUI.color = oldColor;
         }
 
-        void OnGuiHandleBarDragging(float screenWidth, float screenHeight)
+        void OnGuiHandleBarDragging(float screenWidth, float screenHeight, ref ScreenComposerSettings composition)
         {
             if (Event.current.type == EventType.MouseUp)
                 m_IsDragging = m_IsHot = DragBar.NONE;
@@ -300,24 +305,24 @@ namespace Cinemachine.Editor
                 var d = new Vector2(Event.current.delta.x / screenWidth, Event.current.delta.y / screenHeight);
 
                 // First snapshot some settings
-                var newHard = GetComposition().HardLimitsRect;
-                var newSoft = GetComposition().DeadZoneRect;
+                var newHard = composition.HardLimitsRect;
+                var newSoft = composition.DeadZoneRect;
                 var changed = Vector2.zero;
                 switch (m_IsDragging)
                 {
                     case DragBar.Center: newSoft.position += d; break;
-                    case DragBar.SoftBarLineLeft: newSoft = newSoft.Inflated(new Vector2(-d.x, 0)); break;
-                    case DragBar.SoftBarLineRight: newSoft = newSoft.Inflated(new Vector2(d.x, 0)); break;
-                    case DragBar.SoftBarLineTop: newSoft = newSoft.Inflated(new Vector2(0, -d.y)); break;
-                    case DragBar.SoftBarLineBottom: newSoft = newSoft.Inflated(new Vector2(0, d.y)); break;
-                    case DragBar.HardBarLineLeft: newHard = newHard.Inflated(new Vector2(-d.x, 0)); break;
-                    case DragBar.HardBarLineRight: newHard = newHard.Inflated(new Vector2(d.x, 0)); break;
-                    case DragBar.HardBarLineBottom: newHard = newHard.Inflated(new Vector2(0, d.y)); break;
-                    case DragBar.HardBarLineTop: newHard = newHard.Inflated(new Vector2(0, -d.y)); break;
+                    case DragBar.DeadLeft: newSoft = newSoft.Inflated(new Vector2(-d.x, 0)); break;
+                    case DragBar.DeadRight: newSoft = newSoft.Inflated(new Vector2(d.x, 0)); break;
+                    case DragBar.DeadTop: newSoft = newSoft.Inflated(new Vector2(0, -d.y)); break;
+                    case DragBar.DeadBottom: newSoft = newSoft.Inflated(new Vector2(0, d.y)); break;
+                    case DragBar.HardLeft: newHard = newHard.Inflated(new Vector2(-d.x, 0)); break;
+                    case DragBar.HardRight: newHard = newHard.Inflated(new Vector2(d.x, 0)); break;
+                    case DragBar.HardBottom: newHard = newHard.Inflated(new Vector2(0, d.y)); break;
+                    case DragBar.HardTop: newHard = newHard.Inflated(new Vector2(0, -d.y)); break;
                 }
 
                 // Apply the changes, enforcing the bounds
-                SetNewBounds(GetComposition().HardLimitsRect, GetComposition().DeadZoneRect, newHard, newSoft);
+                SetNewBounds(composition.HardLimitsRect, composition.DeadZoneRect, newHard, newSoft);
                 Event.current.Use();
             }
         }

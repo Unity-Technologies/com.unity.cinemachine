@@ -1,8 +1,8 @@
-using UnityEngine;
 using UnityEditor;
 using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -11,21 +11,18 @@ namespace Cinemachine.Editor
     class CinemachineRotationComposerEditor : UnityEditor.Editor
     {
         CmPipelineComponentInspectorUtility m_PipelineUtility;
-        CinemachineScreenComposerGuides m_ScreenGuideEditor;
-        GameViewEventCatcher m_GameViewEventCatcher;
+        CinemachineScreenComposerGuides m_ScreenGuideEditor = new();
 
         CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
         protected virtual void OnEnable()
         {
             m_PipelineUtility = new (this);
-            m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
+
             m_ScreenGuideEditor.GetComposition = () => Target.Composition;
             m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => { return serializedObject; };
-
-            m_GameViewEventCatcher = new GameViewEventCatcher();
-            m_GameViewEventCatcher.OnEnable();
+            m_ScreenGuideEditor.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
@@ -38,7 +35,7 @@ namespace Cinemachine.Editor
         protected virtual void OnDisable()
         {
             m_PipelineUtility.OnDisable();
-            m_GameViewEventCatcher.OnDisable();
+            m_ScreenGuideEditor.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
