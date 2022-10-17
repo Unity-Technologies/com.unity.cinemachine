@@ -543,21 +543,8 @@ namespace Cinemachine
                 IgnoreY = m_LookaheadIgnoreY
             };
             c.Damping = new Vector2(m_HorizontalDamping, m_VerticalDamping);
-            c.Composition = GetScreenComposerSettings();
+            c.Composition = Composition;
             c.CenterOnActivate = m_CenterOnActivate;
         }
-
-        // Helper to upgrade to CM3
-        internal ScreenComposerSettings GetScreenComposerSettings() => new ()
-        {
-            ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
-            DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
-            HardLimits = new () 
-            {
-                Enabled = true,
-                Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-                Bias = new Vector2(m_BiasX, m_BiasY) * 2
-            }
-        };
     }
 }
