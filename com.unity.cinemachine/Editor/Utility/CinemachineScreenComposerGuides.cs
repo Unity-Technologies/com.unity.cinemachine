@@ -108,13 +108,13 @@ namespace Cinemachine.Editor
         DragBar m_IsHot = DragBar.NONE;
         Rect[] m_DragBars = new Rect[9];
 
-        GameViewEventCatcher m_EventCatcher;
+        GameViewEventCatcher m_EventCatcher = new ();
 
         // Call this from inspector's OnEnable()
-        public void OnEnable() { m_EventCatcher = new (); m_EventCatcher.OnEnable(); }
+        public void OnEnable() => m_EventCatcher.OnEnable();
 
         // Call this from inspector's OnDisble()
-        public void OnDisable() { m_EventCatcher.OnDisable(); m_EventCatcher = null; }
+        public void OnDisable() => m_EventCatcher.OnDisable();
 
         Rect GetCameraRect(Camera outputCamera, LensSettings lens)
         {
