@@ -403,6 +403,7 @@ namespace Cinemachine.Editor
             {
                 CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue;
                 UpdateVisibility(interactiveLabel, interactiveToggle);
+                InspectorUtility.RepaintGameView();
             });
 
             UpdateVisibility(interactiveLabel, interactiveToggle);
