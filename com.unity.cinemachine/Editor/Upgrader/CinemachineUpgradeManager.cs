@@ -94,7 +94,7 @@ namespace Cinemachine.Editor
                 + "some objects might not be fully converted.\n\n"
                 + "Any custom scripts in your project that reference the Cinemachine API will not be "
                 + "automatically upgraded, and you may have to alter them manually.  "
-                + "Please see the upgrade guide <here>.\n\n"
+                + "Please see the upgrade guide in the user manual.\n\n"
                 + "NOTE: Undo is not supported for this operation.  You are strongly "
                 + "advised to make a full backup of the project before proceeding.\n\n"
                 + "If you prefer, you can cancel this operation and use the package manager to revert "

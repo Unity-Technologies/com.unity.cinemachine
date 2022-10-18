@@ -96,7 +96,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CmCamera");
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CmCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();

@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
 {
     static class UpgradeManagerInspectorHelpers
     {
-        public static void DrawUpgradeControls(UnityEditor.Editor editor, string buttonText)
+        public static void DrawUpgradeControls(UnityEditor.Editor editor, string className)
         {
             var attrs = editor.serializedObject.targetObject.GetType()
                 .GetCustomAttributes(typeof(ObsoleteAttribute), true);
@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
                     "Cinemachine can upgrade your project data automatically", MessageType.Info,
                     new GUIContent("Learn more..."), () =>
                     {
-                        UnityEditor.PopupWindow.Show(pos, new UpgraderPopup() { Editor = editor, ButtonText = buttonText });
+                        UnityEditor.PopupWindow.Show(pos, new UpgraderPopup() { Editor = editor, ClassName = className });
                     });
                 EditorGUILayout.Space();
             }
@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
         class UpgraderPopup : PopupWindowContent
         {
             public UnityEditor.Editor Editor;
-            public string ButtonText;
+            public string ClassName;
 
             // This defines the window width and the max window height
             Vector2 m_windowSize = new(400, 600);
@@ -58,8 +58,10 @@ namespace Cinemachine.Editor
                 {
                     text = "Unity can upgrade the Cinemachine data in this project to the new format.  However, custom "
                         + "scripts that interact with these objects will not necessarily be upgraded.  If your custom scripts "
-                        + "reference obsolete classes and APIs, they will probably break.  Please see the Cinemachine Upgrade Guide "
+                        + "reference obsolete classes and APIs, they will probably break.  "
+                        + "Please see the <a href=\"" + Documentation.BaseURL + "manual/CinemachineUpgradeFrom2.html\">Cinemachine Upgrade Guide</a> "
                         + "for tips and techniques to smooth the upgrade process.",
+                    enableRichText = true,
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
                 ux.AddChild(new Image()
@@ -75,14 +77,15 @@ namespace Cinemachine.Editor
                         + "are prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
+                var text = "Upgrade this object to " + ClassName;
                 ux.AddChild(new Button(() =>
                 {
-                    Undo.SetCurrentGroupName(ButtonText);
+                    Undo.SetCurrentGroupName(text);
                     for (int i = 0; i < Editor.targets.Length; ++i)
                         CinemachineUpgradeManager.UpgradeSingleObject(((MonoBehaviour)Editor.targets[i]).gameObject);
                     editorWindow.Close();
                 }) { 
-                    text = ButtonText, 
+                    text = text, 
                     style = { flexGrow = 0, alignSelf = Align.Center } 
                 }).SetEnabled(!CinemachineUpgradeManager.ObjectsUsePrefabs(Editor.targets));
 
@@ -114,7 +117,7 @@ namespace Cinemachine.Editor
                 {
                     CinemachineUpgradeManager.UpgradeProject();
                     editorWindow.Close();
-                }) { text = "Upgrade all Project data to Cinemachine 3...", style = { flexGrow = 0, alignSelf = Align.Center } });
+                }) { text = "Upgrade Entire Project to Cinemachine 3...", style = { flexGrow = 0, alignSelf = Align.Center } });
                 
                 ux.AddSpace();
             }
