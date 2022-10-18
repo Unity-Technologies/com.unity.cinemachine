@@ -112,6 +112,40 @@ namespace Cinemachine.Editor
                 manager.CleanupPrefabAssets();
             }
         }
+
+        /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public static bool ObjectsUsePrefabs(UnityEngine.Object[] objects)
+        {
+            for (int i = 0; i < objects.Length; ++i)
+            {
+                GameObject go = objects[i] as GameObject;
+                if (go == null)
+                {
+                    var b = objects[i] as MonoBehaviour;
+                    if (b != null)
+                        go = b.gameObject;
+                }
+                if (go != null && PrefabUtility.IsPartOfAnyPrefab(go))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public static bool CurrentSceneUsesPrefabs()
+        {
+            var manager = new CinemachineUpgradeManager();
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var rootObjects = scene.GetRootGameObjects();
+            var upgradable = manager.GetUpgradables(
+                rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true).ToArray();
+            return ObjectsUsePrefabs(upgradable);
+        }
+
         
         /// <summary>
         /// For each scene:
