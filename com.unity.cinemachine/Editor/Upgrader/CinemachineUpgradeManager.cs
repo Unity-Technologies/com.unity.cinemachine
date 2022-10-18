@@ -94,7 +94,7 @@ namespace Cinemachine.Editor
                 + "some objects might not be fully converted.\n\n"
                 + "Any custom scripts in your project that reference the Cinemachine API will not be "
                 + "automatically upgraded, and you may have to alter them manually.  "
-                + "Please see the upgrade guide <here>.\n\n"
+                + "Please see the upgrade guide in the user manual.\n\n"
                 + "NOTE: Undo is not supported for this operation.  You are strongly "
                 + "advised to make a full backup of the project before proceeding.\n\n"
                 + "If you prefer, you can cancel this operation and use the package manager to revert "
@@ -112,6 +112,40 @@ namespace Cinemachine.Editor
                 manager.CleanupPrefabAssets();
             }
         }
+
+        /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public static bool ObjectsUsePrefabs(UnityEngine.Object[] objects)
+        {
+            for (int i = 0; i < objects.Length; ++i)
+            {
+                var go = objects[i] as GameObject;
+                if (go == null)
+                {
+                    var b = objects[i] as MonoBehaviour;
+                    if (b != null)
+                        go = b.gameObject;
+                }
+                if (go != null && PrefabUtility.IsPartOfAnyPrefab(go))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public static bool CurrentSceneUsesPrefabs()
+        {
+            var manager = new CinemachineUpgradeManager();
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var rootObjects = scene.GetRootGameObjects();
+            var upgradable = manager.GetUpgradables(
+                rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true).ToArray();
+            return ObjectsUsePrefabs(upgradable);
+        }
+
         
         /// <summary>
         /// For each scene:

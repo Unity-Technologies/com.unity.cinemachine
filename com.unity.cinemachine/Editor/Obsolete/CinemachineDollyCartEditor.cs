@@ -10,7 +10,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CinemachineSplineCart");
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineSplineCart");
             DrawRemainingPropertiesInInspector();
         }
     }
