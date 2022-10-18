@@ -46,12 +46,12 @@ namespace Cinemachine
                 + "towards the desired position, depending on the damping speed.  "
                 + "Full screen size is 1")]
             public Vector2 Size;
-            /// <summary>A zero Bias means that the hard limits will be centered around the target screen position.  
-            /// A nonzero bias will uncenter the target screen position within the hard limits.
+            /// <summary>A zero Offset means that the hard limits will be centered around the target screen position.  
+            /// A nonzero Offset will uncenter the hard limits relative to the target screen position.
             /// </summary>
-            [Tooltip("A zero Bias means that the hard limits will be centered around the target screen position.  "
-                + "A nonzero bias will uncenter the target screen position within the hard limits.")]
-            public Vector2 Bias;
+            [Tooltip("A zero Offset means that the hard limits will be centered around the target screen position.  "
+                + "A nonzero Offset will uncenter the hard limits relative to the target screen position.")]
+            public Vector2 Offset;
         }
         /// <summary>The target will not be allowed to be outside this region.
         /// When the target is within this region, the camera will gradually adjust to re-align
@@ -72,8 +72,8 @@ namespace Cinemachine
             HardLimits.Size = new Vector2(
                 Mathf.Clamp(HardLimits.Size.x, DeadZone.Size.x, 3),
                 Mathf.Clamp(HardLimits.Size.y, DeadZone.Size.y, 3));
-            HardLimits.Bias.x = Mathf.Clamp(HardLimits.Bias.x, -1f, 1f);
-            HardLimits.Bias.y = Mathf.Clamp(HardLimits.Bias.y, -1f, 1f);
+            HardLimits.Offset.x = Mathf.Clamp(HardLimits.Offset.x, -1f, 1f);
+            HardLimits.Offset.y = Mathf.Clamp(HardLimits.Offset.y, -1f, 1f);
         }
 
         /// <summary>Get the effictive dead zone size, taking enabled state into account</summary>
@@ -117,8 +117,8 @@ namespace Cinemachine
                 var r = new Rect(ScreenPosition - HardLimits.Size / 2 + new Vector2(0.5f, 0.5f), HardLimits.Size);
                 var deadZoneSize = EffectiveDeadZoneSize;
                 r.position += new Vector2(
-                    HardLimits.Bias.x * 0.5f * (HardLimits.Size.x - deadZoneSize.x),
-                    HardLimits.Bias.y * 0.5f * (HardLimits.Size.y - deadZoneSize.y));
+                    HardLimits.Offset.x * 0.5f * (HardLimits.Size.x - deadZoneSize.x),
+                    HardLimits.Offset.y * 0.5f * (HardLimits.Size.y - deadZoneSize.y));
                 return r;
             }
             set
@@ -152,7 +152,7 @@ namespace Cinemachine
                 { 
                     Enabled = a.HardLimits.Enabled || b.HardLimits.Enabled, 
                     Size = Vector2.Lerp(a.EffectiveHardLimitSize, b.EffectiveHardLimitSize, t),
-                    Bias = Vector2.Lerp(a.HardLimits.Bias, b.HardLimits.Bias, t)
+                    Offset = Vector2.Lerp(a.HardLimits.Offset, b.HardLimits.Offset, t)
                 }
             };
         }
@@ -171,8 +171,8 @@ namespace Cinemachine
                 && Mathf.Approximately(a.EffectiveDeadZoneSize.y, b.EffectiveDeadZoneSize.y)
                 && Mathf.Approximately(a.EffectiveHardLimitSize.x, b.EffectiveHardLimitSize.x)
                 && Mathf.Approximately(a.EffectiveHardLimitSize.y, b.EffectiveHardLimitSize.y)
-                && Mathf.Approximately(a.HardLimits.Bias.x, b.HardLimits.Bias.x)
-                && Mathf.Approximately(a.HardLimits.Bias.y, b.HardLimits.Bias.y);
+                && Mathf.Approximately(a.HardLimits.Offset.x, b.HardLimits.Offset.x)
+                && Mathf.Approximately(a.HardLimits.Offset.y, b.HardLimits.Offset.y);
         }
 
         /// <summary>The default screen composition</summary>

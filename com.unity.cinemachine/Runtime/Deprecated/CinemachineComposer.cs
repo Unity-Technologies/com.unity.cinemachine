@@ -517,7 +517,7 @@ namespace Cinemachine
                 {
                     Enabled = true,
                     Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-                    Bias = new Vector2(m_BiasX, m_BiasY) * 2
+                    Offset = new Vector2(m_BiasX, m_BiasY) * 2
                 }
             };
             set
@@ -528,6 +528,8 @@ namespace Cinemachine
                 m_DeadZoneHeight = value.DeadZone.Size.y;
                 m_SoftZoneWidth = value.HardLimits.Size.x;
                 m_SoftZoneHeight = value.HardLimits.Size.y;
+                m_BiasX = value.HardLimits.Offset.x / 2;
+                m_BiasY = value.HardLimits.Offset.y / 2;
             }
         }
 

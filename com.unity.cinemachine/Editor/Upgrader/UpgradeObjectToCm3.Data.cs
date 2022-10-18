@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.Splines;
 
 namespace Cinemachine.Editor
@@ -106,12 +105,12 @@ namespace Cinemachine.Editor
                     { "ZDamping", new("Damping.z", typeof(CinemachinePositionComposer)) },
                     { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachinePositionComposer)) },
                     { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachinePositionComposer)) },
-                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachinePositionComposer)) },
-                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachinePositionComposer)) },
-                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachinePositionComposer)) },
-                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachinePositionComposer)) },
-                    { "BiasX", new("Composition.Bias.x", typeof(CinemachinePositionComposer)) },
-                    { "BiasY", new("Composition.Bias.y", typeof(CinemachinePositionComposer)) },
+                    { "DeadZoneWidth", new("Composition.DeadZone.Size.x", typeof(CinemachinePositionComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZone.Size.y", typeof(CinemachinePositionComposer)) },
+                    { "SoftZoneWidth", new("Composition.HardLimits.Size.x", typeof(CinemachinePositionComposer)) },
+                    { "SoftZoneHeight", new("Composition.HardLimits.Size.y", typeof(CinemachinePositionComposer)) },
+                    { "BiasX", new("Composition.HardLimits.Offset.x", typeof(CinemachinePositionComposer)) },
+                    { "BiasY", new("Composition.HardLimits.Offset.y", typeof(CinemachinePositionComposer)) },
                     { "GroupFramingSize", new("FramingSize", typeof(CinemachineGroupFraming)) },
                     { "FrameDamping", new("Damping", typeof(CinemachineGroupFraming)) },
                     { "MinimumFOV", new("FovRange.x", typeof(CinemachineGroupFraming)) },
@@ -174,12 +173,12 @@ namespace Cinemachine.Editor
                     { "VerticalDamping", new("Damping.y", typeof(CinemachineRotationComposer)) },
                     { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachineRotationComposer)) },
                     { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "BiasX", new("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
-                    { "BiasY", new("Composition.Bias.y", typeof(CinemachineRotationComposer)) }
+                    { "DeadZoneWidth", new("Composition.DeadZone.Size.x", typeof(CinemachineRotationComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZone.Size.y", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneWidth", new("Composition.HardLimits.Size.x", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneHeight", new("Composition.HardLimits.Size.y", typeof(CinemachineRotationComposer)) },
+                    { "BiasX", new("Composition.HardLimits.Offset.x", typeof(CinemachineRotationComposer)) },
+                    { "BiasY", new("Composition.HardLimits.Offset.y", typeof(CinemachineRotationComposer)) }
                 }
             },
             {
@@ -196,8 +195,8 @@ namespace Cinemachine.Editor
                     { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
                     { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
                     { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "BiasX", new("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
-                    { "BiasY", new("Composition.Bias.y", typeof(CinemachineRotationComposer)) },
+                    { "BiasX", new("Composition.Offset.x", typeof(CinemachineRotationComposer)) },
+                    { "BiasY", new("Composition.Offset.y", typeof(CinemachineRotationComposer)) },
                     { "GroupFramingSize", new("FramingSize", typeof(CinemachineGroupFraming)) },
                     { "FrameDamping", new("Damping", typeof(CinemachineGroupFraming)) },
                     { "MinimumFOV", new("FovRange.x", typeof(CinemachineGroupFraming)) },

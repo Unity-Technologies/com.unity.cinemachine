@@ -244,7 +244,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 129940154}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.229352, y: 2.6200004, z: -10}
+  m_LocalPosition: {x: -12.23, y: 3.16, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -288,11 +288,14 @@ MonoBehaviour:
   DeadZoneDepth: 0
   Damping: {x: 1, y: 2, z: 1}
   Composition:
-    ScreenPosition: {x: -0.000079602, y: 0.050000012}
-    DeadZoneSize: {x: 0, y: 0}
-    SoftZoneSize: {x: 0.8, y: 0.77}
-    Bias: {x: 0, y: -0.00000007740863}
-  UnlimitedSoftZone: 0
+    ScreenPosition: {x: 0, y: 0.14}
+    DeadZone:
+      Enabled: 0
+      Size: {x: 0.2, y: 0.2}
+    HardLimits:
+      Enabled: 0
+      Size: {x: 0.8, y: 0.8}
+      Offset: {x: 0, y: 0}
   CenterOnActivate: 1
 --- !u!114 &129940159
 MonoBehaviour:
@@ -306,11 +309,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraPriority:
-    Priority: 10
-    UseCustomPriority: 1
+  PriorityAndChannel:
+    Enabled: 0
+    Channel: 1
+    Priority: 0
   StandbyUpdate: 2
-  m_StreamingVersion: 20220721
+  m_StreamingVersion: 20221011
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1972950443}
@@ -328,10 +332,10 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
   Transitions:
     BlendHint: 0
-    InheritPosition: 0
-    OnCameraLive:
-      m_PersistentCalls:
-        m_Calls: []
+    Events:
+      OnCameraLive:
+        m_PersistentCalls:
+          m_Calls: []
 --- !u!1 &467102228
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,7 +1097,6 @@ GameObject:
   - component: {fileID: 1747380108}
   - component: {fileID: 1747380107}
   - component: {fileID: 1747380106}
-  - component: {fileID: 1747380111}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -1117,6 +1120,7 @@ MonoBehaviour:
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
+  ChannelMask: 1
   UpdateMethod: 2
   BlendUpdateMethod: 1
   LensModeOverride:
@@ -1213,37 +1217,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1747380105}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.89306, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -11.595252, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: -0.628, z: 0}
---- !u!114 &1747380111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1747380105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 30, y: 30}
-  HelpText: 'Turn this window off by removing the script on Main Camera
-
-
-    Use
-    the arrow keys to move the character
-
-
-    This is a simple example showing the
-    Framing Transposer track the character until the Confiner limits the camera movement
-    due to the collision volume on the level'
 --- !u!1 &1763500918
 GameObject:
   m_ObjectHideFlags: 0

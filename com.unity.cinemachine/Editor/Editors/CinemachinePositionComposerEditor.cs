@@ -19,7 +19,7 @@ namespace Cinemachine.Editor
         {
             m_PipelineUtility = new (this);
             m_ScreenGuideEditor.GetComposition = () => Target.Composition;
-            m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
+            m_ScreenGuideEditor.SetComposition = (s) => Target.Composition = s;
             m_ScreenGuideEditor.Target = () => serializedObject;
             m_ScreenGuideEditor.OnEnable();
 

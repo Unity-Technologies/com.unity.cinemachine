@@ -2,7 +2,6 @@ using UnityEditor;
 using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using UnityEngine;
 
 namespace Cinemachine.Editor
 {
@@ -20,8 +19,8 @@ namespace Cinemachine.Editor
             m_PipelineUtility = new (this);
 
             m_ScreenGuideEditor.GetComposition = () => Target.Composition;
-            m_ScreenGuideEditor.SetComposition = (ScreenComposerSettings s) => Target.Composition = s;
-            m_ScreenGuideEditor.Target = () => { return serializedObject; };
+            m_ScreenGuideEditor.SetComposition = (s) => Target.Composition = s;
+            m_ScreenGuideEditor.Target = () => serializedObject;
             m_ScreenGuideEditor.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;

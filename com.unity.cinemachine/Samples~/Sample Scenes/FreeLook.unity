@@ -232,6 +232,7 @@ MonoBehaviour:
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
+  ChannelMask: 1
   UpdateMethod: 2
   BlendUpdateMethod: 1
   LensModeOverride:
@@ -338,10 +339,10 @@ MonoBehaviour:
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1727080744}
-    LegacyInput: 
-    LegacyGain: 0
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 4
+    LegacyInput: 
+    LegacyGain: 0
     Control:
       InputValue: 0
       AccelTime: 0.2
@@ -352,10 +353,10 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 1727080744}
-    LegacyInput: 
-    LegacyGain: 0
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: -4
+    LegacyInput: 
+    LegacyGain: 0
     Control:
       InputValue: 0
       AccelTime: 0.2
@@ -366,10 +367,10 @@ MonoBehaviour:
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 1727080744}
-    LegacyInput: 
-    LegacyGain: 0
     InputAction: {fileID: 0}
     Gain: 4
+    LegacyInput: 
+    LegacyGain: 0
     Control:
       InputValue: 0
       AccelTime: 0
@@ -415,9 +416,13 @@ MonoBehaviour:
   Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
-    DeadZoneSize: {x: 0, y: 0}
-    SoftZoneSize: {x: 0.8, y: 0.8}
-    Bias: {x: 0, y: 0}
+    DeadZone:
+      Enabled: 0
+      Size: {x: 0.2, y: 0.2}
+    HardLimits:
+      Enabled: 0
+      Size: {x: 0.8, y: 0.8}
+      Offset: {x: 0, y: 0}
   CenterOnActivate: 1
 --- !u!114 &1727080744
 MonoBehaviour:
@@ -495,11 +500,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraPriority:
+  PriorityAndChannel:
+    Enabled: 0
+    Channel: 1
     Priority: 0
-    UseCustomPriority: 0
   StandbyUpdate: 2
-  m_StreamingVersion: 20220721
+  m_StreamingVersion: 20221011
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 543450653499076494}
@@ -517,10 +523,10 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
   Transitions:
     BlendHint: 0
-    InheritPosition: 0
-    OnCameraLive:
-      m_PersistentCalls:
-        m_Calls: []
+    Events:
+      OnCameraLive:
+        m_PersistentCalls:
+          m_Calls: []
 --- !u!4 &1727080746
 Transform:
   m_ObjectHideFlags: 0
