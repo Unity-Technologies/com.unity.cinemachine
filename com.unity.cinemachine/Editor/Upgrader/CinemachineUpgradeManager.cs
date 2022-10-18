@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
         {
             for (int i = 0; i < objects.Length; ++i)
             {
-                GameObject go = objects[i] as GameObject;
+                var go = objects[i] as GameObject;
                 if (go == null)
                 {
                     var b = objects[i] as MonoBehaviour;

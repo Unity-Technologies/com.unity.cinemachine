@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEditor;
 using System;
@@ -106,7 +105,7 @@ namespace Cinemachine.Editor
                     style = { flexGrow = 0, alignSelf = Align.Center } 
                 }).SetEnabled(!CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
 
-                // Upgrde project
+                // Upgrade project
                 ux.AddChild(new TextElement()
                 {
                     text = "Unity can upgrade all the Cinemachine objects in the project's scenes and prefabs "

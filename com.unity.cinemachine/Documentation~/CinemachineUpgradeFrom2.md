@@ -16,8 +16,8 @@ One thing to note: the new CmCamera class which replaces CinemachineVirtualCamer
 
 ### New Components with Clearer Names
 
-Old components have beed replaced by new components.  These are not renames, they are new component types.  If your scripts refer to any of them, they will need to be updated.
-- CinemchineVirtualCamera is replaced by [CmCamera](CmCamera.md).
+Old components have been replaced by new components.  These are not renames, they are new component types.  If your scripts refer to any of them, they will need to be updated.
+- CinemachineVirtualCamera is replaced by [CmCamera](CmCamera.md).
 - CinemachineFreeLook is replaced by [CmCamera](CmCamera.md).
 - CinemachinePath and CinemachineSmoothPath are replaced by Spline Container, provided by Unity's new native spline implementation.
 - CinemachineDollyCart is replaced by [CinemachineSplineCart](CinemachineSplineCart.md).
@@ -27,7 +27,7 @@ Old components have beed replaced by new components.  These are not renames, the
 - CinemachineComposer is replaced by [CinemachineRotationComposer](CinemachineRotationComposer.md).
 - CinemachinePOV is replaced by [CinemachinePanTilt](CinemachinePanTilt.md).
 - CinemachineTrackedDolly is replaced by [CinemachineSplineDolly](CinemachineSplineDolly.md).
-- CinemachineGroupComposer is replaced by the [CinemachineGroupFraming](CinemachineGroupFraming.md) extension used in conjunction with [CinemachineRotationCompoer](CinemachineRotationComposer.md).
+- CinemachineGroupComposer is replaced by the [CinemachineGroupFraming](CinemachineGroupFraming.md) extension used in conjunction with [CinemachineRotationComposer](CinemachineRotationComposer.md).
 
 ### Renamed Components
 
@@ -39,12 +39,12 @@ The old convention of using "m_FieldName" has been changed to follow Unity's lat
 
 ### Cleaner Object Structure, No Hidden GameObjects
 
-Cinemachine 2.x implemented the CM pipline on a hidden GameObject child of the vcam, named "cm".  This has beed removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CmCamera GameObject.  You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.
+Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the vcam, named "cm".  This has been removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CmCamera GameObject.  You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.
 
 You will now see the `cm` children of your legacy CM vcams in the hierarchy, because CM3 unhides them.  This is not a license to mess with them.  We recommend that you get rid of them by upgrading the objects to their CM3 equivalents.
 
 ### New Input Handling
-User input has beed decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to to this job, but you could also choose to implement your own input controller.
+User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller.
 
 
 ## Upgrading the Project Data
@@ -57,7 +57,7 @@ You can launch the CM data upgrade tool from any CM VirtualCamera or FreeLook in
 
 ![Upgrader tool](images/Upgrader.png)
 
-If you want to upgrade only the Cinemachine object being inspected, you can do this provided that it isn't a prefab instance.  In this case, it will upgrade only the inspected objects, replacing them with CM3 equiavlents.  Undo is supported, so you can try it out then change your mind if you want.  
+If you want to upgrade only the Cinemachine object being inspected, you can do this provided that it isn't a prefab instance.  In this case, it will upgrade only the inspected objects, replacing them with CM3 equivalents.  Undo is supported, so you can try it out then change your mind if you want.  
 
 Note that any script references to this object will be lost (because the class will change), as will any animation tracks that are writing to fields inside this camera (because classes and field names have changed).  If you have script references or animation tracks or if this camera is part of a prefab or prefab instance, then you need to use the "Upgrade Entire Project" option, which will scan the project for references and make the appropriate updates.
 
