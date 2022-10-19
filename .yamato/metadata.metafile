@@ -42,13 +42,13 @@ all_testprojects:
 all_configurations:
   ci:
     test_names: [isolation_tests]
-    platform_names: [windows]
+    platform_names: [ubuntu]
   nightly:
     test_names: [isolation_tests, promotion_tests]
     platform_names: [windows, ubuntu, macos]
   publish:
     test_names: [vetting_tests]
-    platform_names: [windows]
+    platform_names: [ubuntu]
   promote:
     test_names: [promotion_tests, vetting_tests]
-    platform_names: [windows]
+    platform_names: [ubuntu]
