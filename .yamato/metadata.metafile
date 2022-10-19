@@ -43,9 +43,12 @@ all_configurations:
   ci:
     test_names: [isolation_tests]
     platform_names: [windows]
+  nightly:
+    test_names: [isolation_tests, promotion_tests]
+    platform_names: [windows, ubuntu, macos]
   publish:
     test_names: [vetting_tests]
-    platform_names: [windows, macOS]
+    platform_names: [windows]
   promote:
     test_names: [promotion_tests, vetting_tests]
     platform_names: [windows]
