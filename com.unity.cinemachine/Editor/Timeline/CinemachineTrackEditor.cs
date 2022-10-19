@@ -1,3 +1,4 @@
+#if CINEMACHINE_TIMELINE
 using UnityEditor.Timeline;
 using UnityEngine.Timeline;
 
@@ -14,3 +15,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif
