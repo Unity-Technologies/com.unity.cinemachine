@@ -1,0 +1,29 @@
+{
+  "exempts": {
+    "PVP-20-1": {
+      "errors": [
+        "Missing Doc on System.String Cinemachine.Editor.CinemachineTool::GetIconPath()",
+        "Missing Doc on System.Void Cinemachine.CinemachineBlendListCamera::Reset()",
+        "Missing Doc on System.Void Cinemachine.CinemachineClearShot::Reset()",
+        "Missing Doc on System.Void Cinemachine.CinemachineMixingCamera::Reset()",
+        "Missing Doc on Cinemachine.CinemachineStoryboard",
+        "Missing Doc on System.Void Cinemachine.CinemachineTargetGroup::ISerializationCallbackReceiver.OnBeforeSerialize()",
+        "Missing Doc on System.Void Cinemachine.CinemachineSplineDolly::OnEnable()",
+        "Missing Doc on System.Void Cinemachine.CinemachineCameraManagerBase::Reset()",
+        "Invalid XML on: System.Single Cinemachine.SplineAutoDolly.ISplineAutoDolly::GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single). XML comment has badly formed XML -- \u0027An identifier was expected.\u0027",
+        "Missing Doc on System.Void Cinemachine.SplineAutoDolly.FixedSpeed::Cinemachine.SplineAutoDolly.ISplineAutoDolly.Validate()",
+        "Missing Doc on System.Single Cinemachine.SplineAutoDolly.FixedSpeed::Cinemachine.SplineAutoDolly.ISplineAutoDolly.GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single)",
+        "Missing Doc on System.Void Cinemachine.SplineAutoDolly.NearestPointToTarget::Cinemachine.SplineAutoDolly.ISplineAutoDolly.Validate()",
+        "Missing Doc on System.Single Cinemachine.SplineAutoDolly.NearestPointToTarget::Cinemachine.SplineAutoDolly.ISplineAutoDolly.GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single)",
+        "Missing Doc on System.Boolean Cinemachine.AxisState.IRequiresInput::RequiresInput()",
+        "Missing Doc on System.Boolean Cinemachine.CinemachineFreeLook::Cinemachine.AxisState.IRequiresInput.RequiresInput()",
+        "Missing Doc on System.Boolean Cinemachine.CinemachineOrbitalTransposer::Cinemachine.AxisState.IRequiresInput.RequiresInput()",
+        "Missing Doc on System.Boolean Cinemachine.CinemachinePOV::Cinemachine.AxisState.IRequiresInput.RequiresInput()",
+        "Missing \u003Creturns\u003E on non-void method System.Boolean Cinemachine.CinemachineVirtualCamera::Cinemachine.AxisState.IRequiresInput.RequiresInput()"
+      ]
+    }
+  },
+  "requires": [
+    "PVP-20-1"
+  ]
+}
