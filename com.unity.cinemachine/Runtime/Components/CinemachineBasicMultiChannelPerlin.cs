@@ -29,7 +29,6 @@ namespace Cinemachine
             + "there to make a characteristic noise profile.  Make your own or just use one of the many presets.")]
         [FormerlySerializedAs("m_Definition")]
         [FormerlySerializedAs("m_NoiseProfile")]
-        [NoiseSettingsProperty]
         public NoiseSettings NoiseProfile;
 
         /// <summary>

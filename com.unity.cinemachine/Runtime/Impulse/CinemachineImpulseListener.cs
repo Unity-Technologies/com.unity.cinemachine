@@ -69,7 +69,6 @@ namespace Cinemachine
             /// Secondary shake that will be triggered by the primary impulse
             /// </summary>
             [Tooltip("Secondary shake that will be triggered by the primary impulse.")]
-            [NoiseSettingsProperty]
             public NoiseSettings m_SecondaryNoise;
 
             /// <summary>
