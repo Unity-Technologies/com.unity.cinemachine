@@ -209,7 +209,9 @@ namespace Cinemachine
         {
             m_OrthoFromCamera = false;
             m_PhysicalFromCamera = false;
+#if UNITY_EDITOR
             UseHorizontalFOV = false;
+#endif
             if (camera != null && ModeOverride == OverrideModes.None)
             {
                 m_OrthoFromCamera = camera.orthographic;
