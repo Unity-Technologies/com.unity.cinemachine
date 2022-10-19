@@ -70,7 +70,7 @@ namespace Cinemachine
 
             // Ordinary properties
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CmCamera");
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CmCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();

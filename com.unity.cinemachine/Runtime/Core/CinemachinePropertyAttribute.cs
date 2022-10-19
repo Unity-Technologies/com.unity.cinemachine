@@ -77,9 +77,6 @@ namespace Cinemachine
     /// <summary>Property should be treated as enum flags.</summary>
     public sealed class EnumMaskPropertyAttribute : PropertyAttribute {}
     
-    /// <summary>Property field is a NoiseSettings asset.</summary>
-    public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
-    
     /// <summary>
     /// Used for custom drawing in the inspector.  Inspector will show a foldout with the asset contents
     /// </summary>

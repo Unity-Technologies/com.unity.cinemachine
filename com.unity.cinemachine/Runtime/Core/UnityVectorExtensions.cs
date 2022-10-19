@@ -394,6 +394,10 @@ namespace Cinemachine.Utility
         /// <returns>The inflated rect</returns>
         public static Rect Inflated(this Rect r, Vector2 delta)
         {
+            if (r.width + delta.x * 2 < 0)
+                delta.x = -r.width / 2;
+            if (r.height + delta.y * 2 < 0)
+                delta.y = -r.height / 2;
             return new Rect(
                 r.xMin - delta.x, r.yMin - delta.y,
                 r.width + delta.x * 2, r.height + delta.y * 2);

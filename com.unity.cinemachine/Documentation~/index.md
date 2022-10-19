@@ -32,7 +32,7 @@ This version of Cinemachine is supported by the following versions of the Unity 
 
 Cinemachine 3.0 is a major version change from CM 2.X, and the API and data format have changed significantly. Scripts written for the CM 2.X API are unlikely to run with 3.X without manual intervention. Also, the CM Camera instances in your project will themselves need upgrading.
 
-While it is possible to upgrade an existing project from CM 2.X, you should think carefully about whether you are willing to put in the work. It might be better in many cases just to stick with CM 2.X, which will continue to be supported for a while in parallel with CM 3.X.  If you do choose to upgrade your project, please see the upgrade guide located [here](https://to be written).
+While it is possible to upgrade an existing project from CM 2.X, you should think carefully about whether you are willing to put in the work. It might be better in many cases just to stick with CM 2.X, which will continue to be supported for a while in parallel with CM 3.X.  If you do choose to upgrade your project, please see the upgrade guide located [here](CinemachineUpgradeFrom2.md).
 
 ### Upgrading from the old Asset Store version of Cinemachine
 
