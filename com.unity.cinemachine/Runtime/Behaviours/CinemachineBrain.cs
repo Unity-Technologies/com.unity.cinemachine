@@ -345,8 +345,12 @@ namespace Cinemachine
         /// <summary>Get the default world up for the virtual cameras.</summary>
         public Vector3 DefaultWorldUp => (WorldUpOverride != null) ? WorldUpOverride.transform.up : Vector3.up;
 
+        /// <summary>Used for caching camera names for blends so that we don't get GC everytime for the name just once</summary>
+        Dictionary<ICinemachineCamera, string> m_CameraNameCache = new();
         void OnEnable()
         {
+            m_CameraNameCache.Clear();
+            
             // Make sure there is a first stack frame
             if (m_FrameStack.Count == 0)
                 m_FrameStack.Add(new BrainFrame());
@@ -990,14 +994,21 @@ namespace Cinemachine
             CinemachineBlendDefinition blend = DefaultBlend;
             if (CustomBlends != null)
             {
-                string fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
-                string toCameraName = (toKey != null) ? toKey.Name : string.Empty;
+                string fromCameraName = (fromKey != null) ? GetCameraName(fromKey) : string.Empty;
+                string toCameraName = (toKey != null) ? GetCameraName(toKey) : string.Empty;
                 blend = CustomBlends.GetBlendForVirtualCameras(
                         fromCameraName, toCameraName, blend);
             }
             if (CinemachineCore.GetBlendOverride != null)
                 blend = CinemachineCore.GetBlendOverride(fromKey, toKey, blend, this);
             return blend;
+
+            string GetCameraName(ICinemachineCamera cam)
+            {
+                if (!m_CameraNameCache.ContainsKey(cam)) 
+                    m_CameraNameCache.Add(cam, cam.Name);
+                return m_CameraNameCache[cam];
+            }
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
