@@ -1,8 +1,8 @@
 # Upgrading a Project from Cinemachine 2.X
 
-Cinemachine 3.0 is a major version change from CM 2.X, and the API and data format have changed significantly. Scripts written for the CM 2.X API are unlikely to run with 3.X without manual intervention. Also, the CM camera instances in your project will themselves need upgrading.
+Cinemachine 3.0 is a major version change from CM 2.X, and the API and data format have changed significantly. Scripts written for the CM 2.X API are unlikely to run with 3.X without manual intervention. Also, the CM objects in your project data will themselves need upgrading.
 
-While it is possible to upgrade an existing project from CM 2.X, you should think carefully about whether you are willing to put in the work. __It might be better in many cases just to stick with CM 2.X__, which will continue to be supported for a while in parallel with CM 3.X.  If you do choose to consider upgrading your project, this guide will show you some pointers to make the process smoother.
+While it is possible to upgrade an existing project from CM 2.X, you should think carefully about whether you are willing to put in the work. __It might be better in many cases just to stick with CM 2.X__, which will continue to be supported for a while in parallel with CM 3.X.  If you do choose to consider upgrading your project, this guide will give you some pointers to make the process smoother.
 
 ## Upgrading your Project Step by Step
 Here are the steps to take when upgrading an existing project from CM 2.X:
@@ -46,7 +46,7 @@ The old convention of using "m_FieldName" has been changed to follow Unity's lat
 
 Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the vcam, named "cm".  This has been removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CmCamera GameObject.  You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.
 
-You will now see the `cm` children of your legacy CM vcams in the hierarchy, because CM3 unhides them.  This is not a license to mess with these objects.  We recommend that you get rid of them by upgrading the objects to their CM3 equivalents.
+You will now see the `cm` child objects of your legacy CM vcams in the hierarchy, because CM3 unhides them.  This is not a license to mess with these objects - they were hidden for a reason.  We recommend that you get rid of them by upgrading the parent objects to their CM3 equivalents.
 
 ### New Input Handling
 User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller.
