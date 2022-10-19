@@ -9,7 +9,7 @@ namespace Cinemachine.Editor
     /// Use an instance of this class to draw screen composer guides in the game view.
     /// This is an internal class, and is not meant to be called outside of Cinemachine.
     /// </summary>
-    class CinemachineScreenComposerGuides
+    class GameViewComposerGuides
     {
         /// <summary>Delegate for getting the hard/soft guide rects</summary>
         /// <returns>The Hard/Soft guide rect</returns>
@@ -29,15 +29,6 @@ namespace Cinemachine.Editor
         public CompositionSetter SetComposition;
         /// <summary>Get the target object whose guides are being drawn.  Client must implement this</summary>
         public ObjectGetter Target;
-
-        // For dragging the bars - order defines precedence
-        enum DragBar
-        {
-            Center,
-            HardLeft, HardTop, HardRight, HardBottom,
-            DeadLeft, DeadTop, DeadRight, DeadBottom,
-            NONE
-        };
 
         // This is necessary because we don't get mouse events in the game view in Edit mode.
         // We need to trigger repaint when the mouse moves over the window.
@@ -103,6 +94,15 @@ namespace Cinemachine.Editor
                 m_Draggers = null;
             }
         }
+
+        // For dragging the bars - order defines precedence
+        enum DragBar
+        {
+            Center,
+            HardRight, HardBottom, HardLeft, HardTop, 
+            DeadRight, DeadBottom, DeadLeft, DeadTop, 
+            NONE
+        };
 
         DragBar m_IsDragging = DragBar.NONE;
         DragBar m_IsHot = DragBar.NONE;
@@ -301,26 +301,51 @@ namespace Cinemachine.Editor
             if (m_IsDragging != DragBar.NONE && Event.current.type == EventType.MouseDrag)
             {
                 var d = new Vector2(Event.current.delta.x / screenWidth, Event.current.delta.y / screenHeight);
-
-                // First snapshot some settings
-                var newHard = composition.HardLimitsRect;
-                var newSoft = composition.DeadZoneRect;
-                var changed = Vector2.zero;
+                var hard = composition.HardLimitsRect;
+                var dead = composition.DeadZoneRect;
                 switch (m_IsDragging)
                 {
-                    case DragBar.Center: newSoft.position += d; break;
-                    case DragBar.DeadLeft: newSoft = newSoft.Inflated(new Vector2(-d.x, 0)); break;
-                    case DragBar.DeadRight: newSoft = newSoft.Inflated(new Vector2(d.x, 0)); break;
-                    case DragBar.DeadTop: newSoft = newSoft.Inflated(new Vector2(0, -d.y)); break;
-                    case DragBar.DeadBottom: newSoft = newSoft.Inflated(new Vector2(0, d.y)); break;
-                    case DragBar.HardLeft: newHard = newHard.Inflated(new Vector2(-d.x, 0)); break;
-                    case DragBar.HardRight: newHard = newHard.Inflated(new Vector2(d.x, 0)); break;
-                    case DragBar.HardBottom: newHard = newHard.Inflated(new Vector2(0, d.y)); break;
-                    case DragBar.HardTop: newHard = newHard.Inflated(new Vector2(0, -d.y)); break;
+                    case DragBar.Center: dead.position += d; break;
+                    case DragBar.DeadLeft: 
+                    {
+                        if (composition.DeadZone.Enabled) 
+                            dead = dead.Inflated(new Vector2(-d.x, 0)); 
+                        else 
+                            dead.position += new Vector2(d.x, 0);
+                        break;
+                    }
+                    case DragBar.DeadRight:
+                    {
+                        if (composition.DeadZone.Enabled) 
+                            dead = dead.Inflated(new Vector2(d.x, 0)); 
+                        else 
+                            dead.position += new Vector2(d.x, 0);
+                        break;
+                    }
+                    case DragBar.DeadTop:
+                    {
+                        if (composition.DeadZone.Enabled) 
+                            dead = dead.Inflated(new Vector2(0, -d.y)); 
+                        else 
+                            dead.position += new Vector2(0, d.y);
+                        break;
+                    }
+                    case DragBar.DeadBottom:
+                    {
+                        if (composition.DeadZone.Enabled) 
+                            dead = dead.Inflated(new Vector2(0, d.y)); 
+                        else 
+                            dead.position += new Vector2(0, d.y);
+                        break;
+                    }
+                    case DragBar.HardLeft: hard = hard.Inflated(new Vector2(-d.x, 0)); break;
+                    case DragBar.HardRight: hard = hard.Inflated(new Vector2(d.x, 0)); break;
+                    case DragBar.HardBottom: hard = hard.Inflated(new Vector2(0, d.y)); break;
+                    case DragBar.HardTop: hard = hard.Inflated(new Vector2(0, -d.y)); break;
                 }
 
                 // Apply the changes, enforcing the bounds
-                SetNewBounds(composition.HardLimitsRect, composition.DeadZoneRect, newHard, newSoft);
+                SetNewBounds(hard, dead, ref composition);
                 Event.current.Use();
             }
         }
@@ -348,20 +373,18 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Helper to set the appropriate new rects in the target object, if something changed.
         /// </summary>
-        /// <param name="oldHard">Current hard guide</param>
-        /// <param name="oldSoft">Current soft guide</param>
-        /// <param name="newHard">New hard guide</param>
-        /// <param name="newSoft">New soft guide</param>
-        void SetNewBounds(Rect oldHard, Rect oldSoft, Rect newHard, Rect newSoft)
+        void SetNewBounds(Rect hard, Rect dead, ref ScreenComposerSettings composition)
         {
-            if ((oldSoft != newSoft) || (oldHard != newHard))
+            var oldHard = composition.HardLimitsRect;
+            var oldDead = composition.DeadZoneRect;
+            if (oldDead != dead || oldHard != hard)
             {
                 Undo.RecordObject(Target().targetObject, "Composer Bounds");
                 var c = GetComposition();
-                if (oldSoft != newSoft)
-                    c.DeadZoneRect = newSoft;
-                if (oldHard != newHard)
-                    c.HardLimitsRect = newHard;
+                if (oldDead != dead)
+                    c.DeadZoneRect = dead;
+                if (oldHard != hard)
+                    c.HardLimitsRect = hard;
                 SetComposition(c);
                 Target().ApplyModifiedProperties();
             }

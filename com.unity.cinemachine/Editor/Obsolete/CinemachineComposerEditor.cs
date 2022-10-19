@@ -9,14 +9,14 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineComposerEditor : BaseEditor<CinemachineComposer>
     {
-        CinemachineScreenComposerGuides m_ScreenGuideEditor = new();
+        GameViewComposerGuides m_GameViewGuides = new();
 
         protected virtual void OnEnable()
         {
-            m_ScreenGuideEditor.GetComposition = () => Target.Composition;
-            m_ScreenGuideEditor.SetComposition = (s) => Target.Composition = s;
-            m_ScreenGuideEditor.Target = () => { return serializedObject; };
-            m_ScreenGuideEditor.OnEnable();
+            m_GameViewGuides.GetComposition = () => Target.Composition;
+            m_GameViewGuides.SetComposition = (s) => Target.Composition = s;
+            m_GameViewGuides.Target = () => { return serializedObject; };
+            m_GameViewGuides.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             CinemachineDebug.OnGUIHandlers += OnGUI;
@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
-            m_ScreenGuideEditor.OnDisable();
+            m_GameViewGuides.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGUI;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
@@ -69,7 +69,7 @@ namespace Cinemachine.Editor
 
             // Screen guides
             bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
-            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
+            m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
 
             // Draw an on-screen gizmo for the target
             if (Target.LookAtTarget != null && isLive)
