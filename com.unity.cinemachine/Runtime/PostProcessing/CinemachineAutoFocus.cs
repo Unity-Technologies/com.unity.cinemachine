@@ -226,8 +226,9 @@ namespace Cinemachine
                         m_CustomPassVolume.isGlobal = true;
                         m_CustomPassVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
                         m_CustomPassVolume.targetCamera = cam;
+#if UNITY_EDITOR
                         m_CustomPassVolume.runInEditMode = true;
-
+#endif
                         var pass = m_CustomPassVolume.AddPassOfType<FocusDistance>() as FocusDistance;
                         pass.ComputeShader = m_ComputeShader;
                         pass.PushToCamera = false;
