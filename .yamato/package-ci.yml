@@ -27,7 +27,7 @@ ci_trigger:
     {% endfor %}
     {% endfor %}
     - .yamato/package-coverage.yml#coverage_ubuntu_trunk
-    - .yamato/package-validation.yml.yml#api_doc_validation
+    - .yamato/package-validation.yml#api_doc_validation
 
 nightly_trigger:
   name: Package Nightly tests
@@ -60,5 +60,5 @@ nightly_trigger:
     {% endfor %}
     {% endfor %}
     - .yamato/package-coverage.yml#coverage_ubuntu_trunk
-    - .yamato/package-validation.yml.yml#api_doc_validation
+    - .yamato/package-validation.yml#api_doc_validation
 
