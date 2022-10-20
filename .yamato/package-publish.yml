@@ -22,13 +22,6 @@ publish:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/package-pack.yml#pack
-    - .yamato/project-pack.yml#pack
-    {% for test_project in all_testprojects %}
-      {% for editor in test_project.editors %}
-    - .yamato/project-test.yml#test_windows_{{editor}}_{{test_project.name}}
-    - .yamato/project-test.yml#test_macos_{{editor}}_{{test_project.name}}
-      {% endfor %}
-    {% endfor %}
     {% for test_name in all_configurations.publish.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
