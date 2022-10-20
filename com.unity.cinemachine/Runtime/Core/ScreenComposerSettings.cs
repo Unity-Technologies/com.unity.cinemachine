@@ -13,6 +13,7 @@ namespace Cinemachine
         + "tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge")]
         public Vector2 ScreenPosition;
 
+        /// <summary>Settings for DeadZone, which is an area within which the camera will not adjust itself.</summary>
         [Serializable]
         public struct DeadZoneSettings
         {
