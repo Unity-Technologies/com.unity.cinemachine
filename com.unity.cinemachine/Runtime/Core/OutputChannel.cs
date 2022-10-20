@@ -63,10 +63,14 @@ namespace Cinemachine
             Enabled = true;
         }
 
+        
         /// <summary>Get the effective priority.  Returns 0 if not Enabled.</summary>
+        /// <returns>Gets the priority value, when priority is Enabled. 0 otherwise.</returns>
         public int GetPriority() => Enabled ? Priority : 0;
-
-        /// <summary>Get the effective output channel.  Returns Channels.Default if not Enabled.</summary>
+        
+        /// <summary>Get the effective output channel mask.</summary>
+        /// <returns>Returns the effective output channel mask, when Custom Priority is enabled.
+        /// Returns Channels.Default otherwise.</returns>
         public Channels GetChannel() => Enabled ? Channel : Channels.Default;
     }
 }

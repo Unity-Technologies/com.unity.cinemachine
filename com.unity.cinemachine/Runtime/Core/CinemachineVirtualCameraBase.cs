@@ -402,7 +402,10 @@ namespace Cinemachine
             set => PriorityAndChannel.SetPriority(value);
         }
 
-        /// <summary>Get the effective output channel mask.  Returns Channels.Default if Custom Priority is not Enabled.</summary>
+        
+        /// <summary>Get the effective output channel mask.</summary>
+        /// <returns>Returns the effective output channel mask, when Custom Priority is enabled.
+        /// Returns Channels.Default otherwise.</returns>
         public OutputChannel.Channels GetChannel() => PriorityAndChannel.GetChannel();
 
         /// <summary>Hint for transitioning to and from this virtual camera</summary>
