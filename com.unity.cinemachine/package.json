@@ -4,7 +4,7 @@
   "version": "3.0.0-pre.2",
   "unity": "2022.2",
   "unityRelease": "0b8",
-  "description": "Smart camera tools for passionate creators. \n\nNew starting from 2.7.1: Are you looking for the Cinemachine menu? It has moved to the GameObject menu.\n\nIMPORTANT NOTE: If you are upgrading from the legacy Asset Store version of Cinemachine, delete the Cinemachine asset from your project BEFORE installing this version from the Package Manager.",
+  "description": "Smart camera tools for passionate creators. \n\n Cinemachine 3.0 is a newer and better version of Cinemachine, but upgrading an existing project from 2.X will likely require some effort.  If you're considering upgrading an older project, please see our upgrade guide in the user manual.",
   "keywords": [
     "camera",
     "follow",

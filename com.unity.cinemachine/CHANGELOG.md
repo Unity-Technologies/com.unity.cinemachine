@@ -4,24 +4,23 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-pre.1] - 2022-10-20
-- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
-- Bugfix: Occasional 1-frame glitch when transitioning between some freelooks
-- Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
-- Add support for HDRP 14 (Unity 2022.2)
-- Bugfix: InputValueGain mode of axis input was not framerate-independent
-- Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
-- Bugfix: POV starts up in its centered position, if recentering is enabled
-- Add Show Hierarchy Icon preference option
+## [3.0.0-pre.2] - 2022-10-20
+- Add Show Hierarchy Icon preference option.
 - New icons for cinemachine (cameras, components, extensions, tracks).
 - Freelook ForcePosition is more precise now.
 - Confiner2D supports BoxCollider2D now.
 - Added "Place Objects At World Origin" preference option support.
 - Added Channel setting, to use for multiple CM Brains, instead of piggybacking on the layer system.
-- CinemachineConfiner renamed to CinemachineDeoccluder
+- CinemachineConfiner renamed to CinemachineDeoccluder.
 - New inspector and API for composition guides.
 - Game View Guides now indicate when they are hot and can be dragged.
 - CinemachineTrack assigns the default CinemachineBrain on creation.
+- Add support for HDRP 14 (Unity 2022.2).
+- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress.
+- Bugfix: Occasional 1-frame glitch when transitioning between some freelooks.
+- Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
+- Bugfix: InputValueGain mode of axis input was not framerate-independent.
+- Bugfix: POV starts up in its centered position, if recentering is enabled.
 
 
 ## [3.0.0-pre.1] - 2022-06-01
