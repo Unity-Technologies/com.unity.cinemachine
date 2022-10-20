@@ -22,7 +22,6 @@ promote:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/package-pack.yml#pack
-    - .yamato/package-publish.yml#publish
     {% for test_name in all_configurations.promote.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
