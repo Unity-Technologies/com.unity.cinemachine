@@ -6,9 +6,9 @@ using UnityEngine.TestTools;
 using Cinemachine;
 using UnityEngine.TestTools.Utils;
 
+#if CINEMACHINE_PHYSICS
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS
     public class CmColliderTests : CinemachineFixtureBase
     {
         CinemachineBrain m_Brain;
@@ -176,5 +176,5 @@ namespace Tests.Runtime
             Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
         }
     }
-#endif
 }
+#endif
