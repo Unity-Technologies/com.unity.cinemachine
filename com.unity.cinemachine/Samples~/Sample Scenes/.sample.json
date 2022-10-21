@@ -1,5 +1,5 @@
 {
-  "displayName": "Cinemachine Example Scenes",
-  "interactiveImport": "false",
-  "description": "Samples showing various configurations of Cinemachine"
+  "displayName": "Cinemachine Example Scenes",  
+  "description": "Samples showing various configurations of Cinemachine",
+  "createSeparatePackage": false
 }

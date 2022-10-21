@@ -1,5 +1,5 @@
 {
   "displayName": "Old Samples from CM2",
-  "interactiveImport": "false",
-  "description": "Samples made with CM 2.X, using obsolete API"
+  "description": "Samples made with CM 2.X, using obsolete API",
+  "createSeparatePackage": false
 }
