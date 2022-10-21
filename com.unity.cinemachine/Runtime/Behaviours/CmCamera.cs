@@ -65,6 +65,7 @@ namespace Cinemachine
 
         /// <summary>Parameters that influence how this CmCamera transitions from other CmCameras.</summary>
         [Tooltip("Parameters that influence how this CmCamera transitions from other CmCameras")]
+        [HideFoldout]
         public TransitionParams Transitions;
 
         void Reset()
