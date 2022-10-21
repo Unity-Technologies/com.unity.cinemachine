@@ -83,8 +83,9 @@ namespace Cinemachine.Editor
             var children = Target.ChildCameras; // force the child cache to rebuild
 
             DrawCameraStatusInInspector();
-            DrawGlobalControlsInInspector();
+            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
             DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
+            DrawGlobalControlsInInspector();
             DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
             DrawRemainingPropertiesInInspector();
 
