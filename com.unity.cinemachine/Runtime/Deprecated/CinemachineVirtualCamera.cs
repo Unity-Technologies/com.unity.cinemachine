@@ -619,9 +619,8 @@ namespace Cinemachine
                 Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
         
-        /// <summary>
-        /// Returns true, when the vcam has an extension or components that require input.
-        /// </summary>
+        /// <summary>Tells whether this vcam requires input.</summary>
+        /// <returns>Returns true, when the vcam has an extension or components that require input.</returns>
         bool AxisState.IRequiresInput.RequiresInput() 
         {
             if (Extensions != null)
