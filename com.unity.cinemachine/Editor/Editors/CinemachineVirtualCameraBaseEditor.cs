@@ -281,16 +281,36 @@ namespace Cinemachine.Editor
             }
         }
 
+        GUIContent m_GuidesLabel;
+        static GUIContent[] s_GuidesChoices = new [] { new GUIContent("Disabled"), new GUIContent("Passive"), new GUIContent("Interactive") };
+
         /// <summary>
         /// Draw the global settings controls in the inspector
         /// </summary>
         protected void DrawGlobalControlsInInspector()
         {
-            CinemachineCorePrefs.ShowInGameGuides.Value
-                = EditorGUILayout.Toggle(CinemachineCorePrefs.s_ShowInGameGuidesLabel, CinemachineCorePrefs.ShowInGameGuides.Value);
+            if (m_GuidesLabel == null)
+                m_GuidesLabel = new ("Game Guides:", CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip);
 
-            SaveDuringPlay.SaveDuringPlay.Enabled
-                = EditorGUILayout.Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+            var labelWidth = EditorGUIUtility.labelWidth;
+            var rect = EditorGUILayout.GetControlRect();
+            var w1 = labelWidth + InspectorUtility.SingleLineHeight + 5;
+            var w2 = rect.width - w1;
+            rect.width = w1;
+            SaveDuringPlay.SaveDuringPlay.Enabled = EditorGUI.Toggle(
+                rect, CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+            rect.x += w1; rect.width = w2;
+            EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(m_GuidesLabel).x;
+            int index = CinemachineCorePrefs.ShowInGameGuides.Value 
+                ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
+            var newIndex = EditorGUI.Popup(rect, m_GuidesLabel, index, s_GuidesChoices);
+            if (index != newIndex)
+            {
+                CinemachineCorePrefs.ShowInGameGuides.Value = newIndex != 0;
+                CinemachineCorePrefs.DraggableComposerGuides.Value = newIndex == 2;
+                InspectorUtility.RepaintGameView();
+            }
+            EditorGUIUtility.labelWidth = labelWidth;
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(

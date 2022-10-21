@@ -60,9 +60,10 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
+            ux.AddHeader("Global Controls");
+            m_CameraUtility.AddGlobalControls(ux);
+
             ux.AddHeader("Procedural Motion");
-            m_CameraUtility.AddSaveDuringPlayToggle(ux);
-            m_CameraUtility.AddGameViewGuidesToggle(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
             m_CameraUtility.AddPipelineDropdowns(ux);
 
