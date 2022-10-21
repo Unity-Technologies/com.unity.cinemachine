@@ -71,15 +71,16 @@ namespace Cinemachine.Editor
 #endif
                     if (numFields > 0)
                     {
-                        rect.x += EditorGUIUtility.labelWidth - height;
-                        rect.width -= EditorGUIUtility.labelWidth - height;
+                        var blankLabelWidth = height / numFields;
+                        rect.x += EditorGUIUtility.labelWidth - blankLabelWidth;
+                        rect.width -= EditorGUIUtility.labelWidth - blankLabelWidth;
                         rect.width /= numFields;
 
                         int oldIndent = EditorGUI.indentLevel;
                         float oldLabelWidth = EditorGUIUtility.labelWidth;
 
                         EditorGUI.indentLevel = 0;
-                        EditorGUIUtility.labelWidth = height / numFields;
+                        EditorGUIUtility.labelWidth = blankLabelWidth;
 
                         if (actionProperty != null)
                         {
