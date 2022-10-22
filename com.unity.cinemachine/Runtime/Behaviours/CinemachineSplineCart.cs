@@ -42,9 +42,7 @@ namespace Cinemachine
 
         /// <summary>Controls how automatic dollying occurs</summary>
         [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
-        [SerializeReference]
-        [AutoDollySelector]
-        public SplineAutoDolly.ISplineAutoDolly AutomaticDolly;
+        public SplineAutoDolly AutomaticDolly;
         
         /// <summary>Used only by Automatic Dolly settings that require it</summary>
         [Tooltip("Used only by Automatic Dolly settings that require it")]
@@ -60,8 +58,8 @@ namespace Cinemachine
 
         private void OnValidate()
         {
-            if (AutomaticDolly != null)
-                AutomaticDolly.Validate();
+            if (AutomaticDolly.Implementation != null)
+                AutomaticDolly.Implementation.Validate();
         }
 
         void Reset()
@@ -69,7 +67,7 @@ namespace Cinemachine
             Spline = null;
             UpdateMethod = UpdateMethods.Update;
             PositionUnits = PathIndexUnit.Distance;
-            AutomaticDolly = null;
+            AutomaticDolly.Implementation = null;
             TrackingTarget = null;
             SplinePosition = 0;
         }
@@ -103,8 +101,8 @@ namespace Cinemachine
 
         void UpdateCartPosition()
         {
-            if (AutomaticDolly != null)
-                SplinePosition = AutomaticDolly.GetSplinePosition(
+            if (AutomaticDolly.Implementation != null)
+                SplinePosition = AutomaticDolly.Implementation.GetSplinePosition(
                     this, TrackingTarget, Spline, SplinePosition, PositionUnits, Time.deltaTime);
             SetCartPosition(SplinePosition);
         }

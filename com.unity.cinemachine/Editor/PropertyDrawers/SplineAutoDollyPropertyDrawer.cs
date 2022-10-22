@@ -5,45 +5,55 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEditor.Rendering;
 
 namespace Cinemachine.Editor
 {
-    [CustomPropertyDrawer(typeof(AutoDollySelectorAttribute))]
+    [CustomPropertyDrawer(typeof(SplineAutoDolly))]
     class SplineAutoDollyPropertyDrawer : PropertyDrawer
     {
-#if false // Has refresh problems in 2023.1.0a13
+        SerializedProperty GetImplementation(SerializedProperty p) => p.FindPropertyRelative("Implementation");
+
+        int GetImplementationIndex(SerializedProperty p)
+        {
+            var value = GetImplementation(p).managedReferenceValue;
+            return AutoDollyMenuItems.GetTypeIndex(value == null ? null : value.GetType());
+        }
+
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var ux = new VisualElement();
 
-            var value = property.managedReferenceValue;
-            var index = AutoDollyMenuItems.GetTypeIndex(value == null ? null : value.GetType());
             var dropdown = ux.AddChild(new DropdownField
             {
                 label = property.name,
                 tooltip = property.tooltip,
                 choices = AutoDollyMenuItems.s_ItemNames,
-                index = index,
                 style = { flexGrow = 1 }
             });
             dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
             dropdown.RegisterValueChangedCallback((evt) => 
             {
-                var value = property.managedReferenceValue;
-                var oldIndex = AutoDollyMenuItems.GetTypeIndex(value == null ? null : value.GetType());
-                index = AutoDollyMenuItems.GetTypeIndex(evt.newValue);
-                if (oldIndex != index)
+                var index = AutoDollyMenuItems.GetTypeIndex(evt.newValue);
+                if (index != GetImplementationIndex(property))
                 {
-                    property.managedReferenceValue = (index == 0) 
+                    GetImplementation(property).managedReferenceValue = (index == 0) 
                         ? null : Activator.CreateInstance(AutoDollyMenuItems.s_AllItems[index]);
                     property.serializedObject.ApplyModifiedProperties();
-                    UpdateChildren();
                 }
             });
-            UpdateChildren();
-
-            void UpdateChildren()
+            
+            Update();
+            ux.TrackPropertyValue(property, (p) => 
             {
+                Update();
+                ux.Bind(p.serializedObject); // Bind is not automatic after the the initial creation
+            });
+
+            void Update()
+            {
+                dropdown.index = GetImplementationIndex(property);
+
                 // First delete the existing element
                 const string kElementName = "ActiveAutoDollyContainer";
                 var old = ux.Q(kElementName);
@@ -51,13 +61,14 @@ namespace Cinemachine.Editor
                     old.RemoveFromHierarchy();
 
                 // Create a new one
-                var type = AutoDollyMenuItems.s_AllItems[index];
+                var type = AutoDollyMenuItems.s_AllItems[dropdown.index];
                 if (type != null)
                 {
                     // GML todo: fix indenting hack
                     var children = ux.AddChild(new VisualElement() 
                         { name = kElementName, style = { marginLeft = InspectorUtility.SingleLineHeight } });
-                    var childProperty = property.Copy();
+
+                    var childProperty = GetImplementation(property);
                     var endProperty = childProperty.GetEndProperty();
                     childProperty.NextVisible(true);
                     while (!SerializedProperty.EqualContents(childProperty, endProperty))
@@ -70,7 +81,6 @@ namespace Cinemachine.Editor
 
             return ux;
         }
-#endif
 
         [InitializeOnLoad]
         static class AutoDollyMenuItems
@@ -93,7 +103,6 @@ namespace Cinemachine.Editor
             // These lists are synchronized
             public static List<Type> s_AllItems = new ();
             public static List<string> s_ItemNames = new ();
-            public static GUIContent[] s_ItemContents = Array.Empty<GUIContent>(); // GML todo: delete me
 
             // This code dynamically discovers eligible classes and builds the menu data 
             static AutoDollyMenuItems()
@@ -111,53 +120,7 @@ namespace Cinemachine.Editor
                 s_ItemNames.Add("None");
                 for (int i = 1; i < s_AllItems.Count; ++i)
                     s_ItemNames.Add(InspectorUtility.NicifyClassName(s_AllItems[i]));
-
-                s_ItemContents = new GUIContent[s_AllItems.Count];
-                s_ItemContents[0] = new GUIContent("None");
-                for (int i = 1; i < s_AllItems.Count; ++i)
-                    s_ItemContents[i] = new GUIContent(InspectorUtility.NicifyClassName(s_AllItems[i]));
             }
-        }
-
-
-        // IMGUI implementation (to be removed)
-        readonly float vSpace = EditorGUIUtility.standardVerticalSpacing;
-
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-        {
-            var value = property.managedReferenceValue;
-            Type type = value == null ? null : value.GetType();
-
-            EditorGUI.BeginProperty(rect, label, property);
-            var r = rect; r.height = EditorGUIUtility.singleLineHeight;
-            r = EditorGUI.PrefixLabel(r, label);
-            int selection = EditorGUI.Popup(r, AutoDollyMenuItems.GetTypeIndex(type), AutoDollyMenuItems.s_ItemContents);
-            if (selection >= 0)
-            {
-                Type newType = AutoDollyMenuItems.s_AllItems[selection];
-                if (type != newType)
-                {
-                    property.managedReferenceValue = (newType == null) ? null : Activator.CreateInstance(newType);
-                    property.serializedObject.ApplyModifiedProperties();
-                    type = newType;
-                }
-            }
-            if (type != null)
-            {
-                rect.y += r.height + vSpace; rect.height -= r.height - vSpace;
-                ++EditorGUI.indentLevel;
-                InspectorUtility.DrawChildProperties(rect, property);
-                --EditorGUI.indentLevel;
-            }
-            EditorGUI.EndProperty();
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            var height = EditorGUIUtility.singleLineHeight;
-            if (property.managedReferenceValue != null)
-                height += InspectorUtility.PropertyHeightOfChidren(property) + vSpace;
-            return height;
         }
     }
 }
