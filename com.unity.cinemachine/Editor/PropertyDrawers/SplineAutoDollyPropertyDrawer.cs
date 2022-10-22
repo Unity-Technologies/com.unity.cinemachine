@@ -64,16 +64,14 @@ namespace Cinemachine.Editor
                 var type = AutoDollyMenuItems.s_AllItems[dropdown.index];
                 if (type != null)
                 {
-                    // GML todo: fix indenting hack
-                    var children = ux.AddChild(new VisualElement() 
-                        { name = kElementName, style = { marginLeft = InspectorUtility.SingleLineHeight } });
-
+                    var foldout = ux.AddChild(new Foldout() { name = kElementName, value = true });
+                    foldout.Q<Toggle>(className: "unity-foldout__toggle").RemoveFromHierarchy(); // remove the header
                     var childProperty = GetImplementation(property);
                     var endProperty = childProperty.GetEndProperty();
                     childProperty.NextVisible(true);
                     while (!SerializedProperty.EqualContents(childProperty, endProperty))
                     {
-                        children.Add(new PropertyField(childProperty));
+                        foldout.Add(new PropertyField(childProperty));
                         childProperty.NextVisible(false);
                     }
                 }
