@@ -23,6 +23,8 @@ namespace Cinemachine.Editor
         {
             BeginInspector();
             DrawCameraStatusInInspector();
+            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
+            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
             DrawGlobalControlsInInspector();
             DrawRemainingPropertiesInInspector();
 

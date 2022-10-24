@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             var a = (FoldoutWithEnabledButtonAttribute)attribute;
-            InspectorUtility.EnabledFoldout(rect, property, a.EnabledPropertyName);
+            InspectorUtility.EnabledFoldout(rect, property, a.EnabledPropertyName, a.ToggleDisabledText);
         }
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -30,7 +30,8 @@ namespace Cinemachine.Editor
             // Don't set the text of the Foldout as this will set the Toggle.text,
             // which is on the right side of the checkbox
             var foldout = new Foldout(); // { style = { marginTop = 2 }}; // GML this hack would compensate for the current uneven line spacing
-            var foldoutToggle = foldout.Q<Toggle>(className: "unity-foldout__toggle");
+            const string kToggleClassName = "unity-foldout__toggle";
+            var foldoutToggle = foldout.Q<Toggle>(className: kToggleClassName);
 
             // This is to counter the auto-adding of the "unity-foldout__toggle--inspector" class that
             // adds -12px margin-left. Not ideal. I raised this as an issue.
@@ -40,7 +41,7 @@ namespace Cinemachine.Editor
             foldoutToggle.AddToClassList(Toggle.alignedFieldUssClassName);
 
             // Change from arrow to checkbox
-            foldoutToggle.RemoveFromClassList("unity-foldout__toggle");
+            foldoutToggle.RemoveFromClassList(kToggleClassName);
 
             // Bind toggle to the enabled property while displaying the main property text
             foldoutToggle.label = property.displayName;
@@ -57,6 +58,12 @@ namespace Cinemachine.Editor
                     foldout.Add(new PropertyField(childProperty));
                 childProperty.NextVisible(false);
             }
+
+            // toggle.text is to the right side of the checkbox
+            UpdateToggleText(enabledProp);
+            foldout.TrackPropertyValue(enabledProp, UpdateToggleText);
+            void UpdateToggleText(SerializedProperty p) => foldoutToggle.text = p.boolValue ? null : a.ToggleDisabledText;
+
             return foldout;
         }
     }

@@ -47,7 +47,7 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        [FoldoutWithEnabledButton]
+        [FoldoutWithEnabledButton(toggleText: "(using default)")]
         public OutputChannel PriorityAndChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
