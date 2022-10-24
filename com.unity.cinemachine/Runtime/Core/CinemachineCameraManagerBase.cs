@@ -221,43 +221,12 @@ namespace Cinemachine
             base.OnEnable();
             InvalidateCameraCache();
             m_BlendStartPosition = 0;
-            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
-        }
-
-        /// <summary>
-        /// Uninstall the GUI handler
-        /// </summary>
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>
         protected virtual void OnTransformChildrenChanged()
         {
             InvalidateCameraCache();
-        }
-
-        /// <summary>
-        /// Will only be called in Unity Editor - never in build.  Show debugging info in the game view.
-        /// </summary>
-        protected virtual void OnGuiHandler()
-        {
-#if CINEMACHINE_UNITY_IMGUI
-            if (!ShowDebugText)
-                CinemachineDebug.ReleaseScreenPos(this);
-            else
-            {
-                var sb = CinemachineDebug.SBFromPool();
-                sb.Append(Name); sb.Append(": "); sb.Append(Description);
-                var text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
-                GUI.Label(r, text, GUI.skin.box);
-                CinemachineDebug.ReturnToPool(sb);
-            }
-#endif
         }
 
         /// <summary>Create a blend between 2 virtual cameras, taking into account
