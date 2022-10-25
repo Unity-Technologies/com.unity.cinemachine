@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Cinemachine.Examples
 {
-    public class CarController : MonoBehaviour, IInputAxisSource
+    public class SimpleCarController : MonoBehaviour, IInputAxisSource
     {
         public float MotorStrength;
         public float BrakeStrength;
@@ -38,7 +38,7 @@ namespace Cinemachine.Examples
         {
             axes.Add(new IInputAxisSource.AxisDescriptor { Axis = MoveX, Name = "Move X", AxisIndex = 0 });
             axes.Add(new IInputAxisSource.AxisDescriptor { Axis = MoveZ, Name = "Move Z", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = Brake, Name = "Brake" });
+            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = Brake, Name = "Brake",  AxisIndex = 2 });
         }
 
         void Update()
