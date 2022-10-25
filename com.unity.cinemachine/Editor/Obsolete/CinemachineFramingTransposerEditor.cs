@@ -84,8 +84,8 @@ namespace Cinemachine.Editor
             m_GameViewGuides.Target = () => { return serializedObject; };
             m_GameViewGuides.OnEnable();
 
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
-            CinemachineDebug.OnGUIHandlers += OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
@@ -96,7 +96,7 @@ namespace Cinemachine.Editor
         protected virtual void OnDisable()
         {
             m_GameViewGuides.OnDisable();
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
@@ -120,7 +120,7 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
         
-        protected virtual void OnGUI()
+        protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             // Draw the camera guides
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -130,20 +130,23 @@ namespace Cinemachine.Editor
             if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
+            var vcam = Target.VirtualCamera;
+            if (!brain.IsValidChannel(vcam))
+                return;
+
             // Screen guides
-            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
-            m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
+            bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
+            m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
             
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
             {
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
                     Target.LookAtTargetAsGroup, Target.TrackedPoint, 
-                    Target.VcamState.GetFinalOrientation(), brain.OutputCamera);
+                    vcam.State.GetFinalOrientation(), brain.OutputCamera);
             }
         }
 

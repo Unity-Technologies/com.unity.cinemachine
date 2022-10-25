@@ -396,12 +396,10 @@ namespace Cinemachine
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
         }
 
-        void OnGuiHandler()
+        void OnGuiHandler(CinemachineBrain brain)
         {
 #if CINEMACHINE_UNITY_IMGUI
-            if (!ShowDebugText)
-                CinemachineDebug.ReleaseScreenPos(this);
-            else
+            if (ShowDebugText && brain == this)
             {
                 // Show the active camera and blend
                 var sb = CinemachineDebug.SBFromPool();
@@ -425,13 +423,17 @@ namespace Cinemachine
                         sb.Append("(none)");
                     else
                     {
-                        sb.Append("[");
                         sb.Append(vcam.Name);
-                        sb.Append("]");
+                        var desc = vcam.Description;
+                        if (!string.IsNullOrEmpty(desc))
+                        {
+                            sb.Append(" ");
+                            sb.Append(desc);
+                        }
                     }
                 }
                 string text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(this, text, GUI.skin.box);
+                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
                 GUI.Label(r, text, GUI.skin.box);
                 GUI.color = color;
                 CinemachineDebug.ReturnToPool(sb);
@@ -443,7 +445,7 @@ namespace Cinemachine
         void OnGUI()
         {
             if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
-                CinemachineDebug.OnGUIHandlers();
+                CinemachineDebug.OnGUIHandlers(this);
         }
 #endif
 
@@ -960,6 +962,11 @@ namespace Cinemachine
         /// </summary>
         public CameraState CurrentCameraState { get; private set; }
 
+        /// <summary>Returns true if camera is on a channel that is handles by this Brain.</summary>
+        /// <param name="vcam">The camera to check</param>
+        /// <returns></returns>
+        public bool IsValidChannel(CinemachineVirtualCameraBase vcam) => vcam != null && ((uint)vcam.GetChannel() & (uint)ChannelMask) != 0;
+
         /// <summary>
         /// Get the highest-priority Enabled ICinemachineCamera
         /// that is visible to my camera.  Culling Mask is used to test visibility.
@@ -967,12 +974,11 @@ namespace Cinemachine
         ICinemachineCamera TopCameraFromPriorityQueue()
         {
             CinemachineCore core = CinemachineCore.Instance;
-            var channelMask = (uint)ChannelMask;
             int numCameras = core.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)
             {
                 var cam = core.GetVirtualCamera(i);
-                if (cam != null && ((uint)cam.GetChannel() & channelMask) != 0)
+                if (IsValidChannel( core.GetVirtualCamera(i)))
                     return cam;
             }
             return null;
