@@ -5,19 +5,18 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using UnityEditor.Rendering;
 
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(SplineAutoDolly))]
     class SplineAutoDollyPropertyDrawer : PropertyDrawer
     {
-        SerializedProperty GetImplementation(SerializedProperty p) => p.FindPropertyRelative("Implementation");
+        static SerializedProperty GetImplementation(SerializedProperty p) => p.FindPropertyRelative("Implementation");
 
-        int GetImplementationIndex(SerializedProperty p)
+        static int GetImplementationIndex(SerializedProperty p)
         {
             var value = GetImplementation(p).managedReferenceValue;
-            return AutoDollyMenuItems.GetTypeIndex(value == null ? null : value.GetType());
+            return AutoDollyMenuItems.GetTypeIndex(value?.GetType());
         }
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
