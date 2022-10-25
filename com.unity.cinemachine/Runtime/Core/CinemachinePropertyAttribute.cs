@@ -103,11 +103,6 @@ namespace Cinemachine
     public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
 
     /// <summary>
-    /// Draw an AutoDolly selector widget
-    /// </summary>
-    public sealed class AutoDollySelectorAttribute : PropertyAttribute {}
-
-    /// <summary>
     /// Attribute used by camera pipeline authoring components to indicate
     /// which stage of the pipeline they belong in.
     /// </summary>

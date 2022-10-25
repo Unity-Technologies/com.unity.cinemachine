@@ -118,9 +118,8 @@ namespace Cinemachine
         
         /// <summary>Controls how automatic dollying occurs</summary>
         [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
-        [SerializeReference] [NoSaveDuringPlay]
-        [AutoDollySelector]
-        public SplineAutoDolly.ISplineAutoDolly AutomaticDolly;
+        [NoSaveDuringPlay]
+        public SplineAutoDolly AutomaticDolly;
 
         // State info for damping
         float m_PreviousSplinePosition;
@@ -135,8 +134,8 @@ namespace Cinemachine
             Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
             Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
             Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
-            if (AutomaticDolly != null)
-                AutomaticDolly.Validate();
+            if (AutomaticDolly.Implementation != null)
+                AutomaticDolly.Implementation.Validate();
         }
 
         void Reset()
@@ -147,7 +146,7 @@ namespace Cinemachine
             SplineOffset = Vector3.zero;
             CameraUp = CameraUpMode.Default;
             Damping = default;
-            AutomaticDolly = null;
+            AutomaticDolly.Implementation = null;
         }
 
         protected override void OnEnable()
@@ -195,8 +194,8 @@ namespace Cinemachine
             }
 
             // Invoke AutoDolly algorithm to get new desired spline position
-            if (AutomaticDolly != null)
-                splinePos = AutomaticDolly.GetSplinePosition(
+            if (AutomaticDolly.Implementation != null)
+                splinePos = AutomaticDolly.Implementation.GetSplinePosition(
                     this, FollowTarget, Spline, splinePos, PositionUnits, deltaTime);
 
             // Apply damping in the spline direction
