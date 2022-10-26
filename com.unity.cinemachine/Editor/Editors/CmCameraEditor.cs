@@ -55,17 +55,15 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             m_CameraUtility.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
-            
-            ux.AddHeader("Camera");
-            var lensProperty = serializedObject.FindProperty(() => Target.Lens);
-            ux.Add(new PropertyField(lensProperty));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
+
+            ux.AddHeader("Global Controls");
+            m_CameraUtility.AddGlobalControls(ux);
 
             ux.AddHeader("Procedural Motion");
-            m_CameraUtility.AddSaveDuringPlayToggle(ux);
-            m_CameraUtility.AddGameViewGuidesToggle(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
             m_CameraUtility.AddPipelineDropdowns(ux);
 

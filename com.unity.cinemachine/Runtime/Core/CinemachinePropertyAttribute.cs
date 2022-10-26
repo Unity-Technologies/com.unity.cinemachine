@@ -20,13 +20,16 @@ namespace Cinemachine
         /// <summary>The name of the field controlling the enabled state</summary>
         public string EnabledPropertyName; 
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
+        /// <summary>Text to display to the right of the toggle button when disabled</summary>
+        public string ToggleDisabledText;
+
+        /// <summary>Constructor</summary>
         /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
-        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled") 
+        /// <param name="toggleText">Text to display to the right of the toggle button</param>
+        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled", string toggleText = "") 
         { 
             EnabledPropertyName = enabledProperty; 
+            ToggleDisabledText = toggleText;
         }
     }
 
