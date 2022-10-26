@@ -3,9 +3,9 @@ using UnityEngine;
 namespace Cinemachine.Utility
 {
     /// <summary>
-    /// This is a utility class to implement position predicting.
+    /// This is a utility to implement position predicting.
     /// </summary>
-    public class PositionPredictor
+    public struct PositionPredictor
     {
         Vector3 m_Velocity;
         Vector3 m_SmoothDampVelocity;
@@ -21,7 +21,9 @@ namespace Cinemachine.Utility
         /// Have any positions been logged for smoothing?
         /// </summary>
         /// <returns>True if no positions have yet been logged, in which case smoothing is impossible</returns>
-        public bool IsEmpty() { return !m_HavePos; }
+        public bool IsEmpty => !m_HavePos;
+
+        public Vector3 CurrentPosition => m_Pos;
 
         /// <summary>
         /// Apply a delta to the target's position, which will be ignored for 
@@ -41,8 +43,7 @@ namespace Cinemachine.Utility
         /// <summary>Add a new target position to the history buffer</summary>
         /// <param name="pos">The new target position</param>
         /// <param name="deltaTime">deltaTime since the last target position was added</param>
-        /// <param name="lookaheadTime">Current lookahead time setting (unused)</param>
-        public void AddPosition(Vector3 pos, float deltaTime, float lookaheadTime)
+        public void AddPosition(Vector3 pos, float deltaTime)
         {
             if (deltaTime < 0)
                 Reset();
@@ -64,14 +65,6 @@ namespace Cinemachine.Utility
         public Vector3 PredictPositionDelta(float lookaheadTime)
         {
             return m_Velocity * lookaheadTime;
-        }
-
-        /// <summary>Predict the target's position a given time from now</summary>
-        /// <param name="lookaheadTime">How far ahead in time to predict</param>
-        /// <returns>The predicted position</returns>
-        public Vector3 PredictPosition(float lookaheadTime)
-        {
-            return m_Pos + PredictPositionDelta(lookaheadTime);
         }
     }
 
