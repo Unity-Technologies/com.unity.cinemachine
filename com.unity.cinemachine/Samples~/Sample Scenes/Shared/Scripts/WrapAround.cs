@@ -36,7 +36,7 @@ namespace Cinemachine.Examples
                 // Handle objects driven by a Rigidbody.
                 // This is actually quite naive - it might sometimes introduce a little pop.
                 if (TryGetComponent<Rigidbody>(out var rb))
-                    rb.position = newPos;
+                    rb.MovePosition(newPos);
 
                 // Notify any CmCameras that are targeting this object
                 CinemachineCore.Instance.OnTargetObjectWarped(transform, delta);
