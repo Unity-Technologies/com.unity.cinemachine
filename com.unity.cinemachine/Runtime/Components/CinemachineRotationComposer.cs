@@ -85,7 +85,7 @@ namespace Cinemachine
         /// <param name="up">Currest effective world up</param>
         /// <param name="deltaTime">Current effective deltaTime</param>
         /// <returns>The LookAt point with the offset applied</returns>
-        internal protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(
+        Vector3 GetLookAtPointAndSetTrackedPoint(
             Vector3 lookAt, Vector3 up, float deltaTime)
         {
             var pos = lookAt;
@@ -98,13 +98,13 @@ namespace Cinemachine
             {
                 var resetLookahead = VirtualCamera.LookAtTargetChanged || !VirtualCamera.PreviousStateIsValid;
                 m_Predictor.Smoothing = Lookahead.Smoothing;
-                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime, Lookahead.Time);
+                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime);
                 var delta = m_Predictor.PredictPositionDelta(Lookahead.Time);
                 if (Lookahead.IgnoreY)
                     delta = delta.ProjectOntoPlane(up);
                 TrackedPoint = pos + delta;
             }
-            return pos;
+            return TrackedPoint;
         }
 
         /// <summary>State information for damping</summary>
@@ -112,7 +112,7 @@ namespace Cinemachine
         Vector3 m_LookAtPrevFrame = Vector3.zero;
         Vector2 m_ScreenOffsetPrevFrame = Vector2.zero;
         Quaternion m_CameraOrientationPrevFrame = Quaternion.identity;
-        internal PositionPredictor m_Predictor = new PositionPredictor();
+        internal PositionPredictor m_Predictor = new PositionPredictor(); // internal for tests
 
         /// <summary>This is called to notify the user that a target got warped,
         /// so that we can update its internal state to make the camera

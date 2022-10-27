@@ -448,7 +448,7 @@ namespace Cinemachine
             if (m_LookaheadTime > Epsilon)
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(followTargetPosition, deltaTime, m_LookaheadTime);
+                m_Predictor.AddPosition(followTargetPosition, deltaTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
                     delta = delta.ProjectOntoPlane(curState.ReferenceUp);

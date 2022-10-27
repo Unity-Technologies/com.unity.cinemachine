@@ -79,8 +79,7 @@ namespace Cinemachine
 
         /// <summary>State information for damping</summary>
         Vector3 m_PreviousCameraPosition = Vector3.zero;
-        internal PositionPredictor m_Predictor = new PositionPredictor();
-        float m_prevFOV; // State for frame damping
+        internal PositionPredictor m_Predictor = new PositionPredictor(); // internal for tests
         Quaternion m_prevRotation;
 
         bool m_InheritingPosition;
@@ -232,7 +231,6 @@ namespace Cinemachine
             if (!previousStateIsValid)
             {
                 m_PreviousCameraPosition = curState.RawPosition;
-                m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
                 if (!m_InheritingPosition && CenterOnActivate)
                 {
@@ -252,14 +250,12 @@ namespace Cinemachine
             if (Lookahead.Enabled && Lookahead.Time > Epsilon)
             {
                 m_Predictor.Smoothing = Lookahead.Smoothing;
-                m_Predictor.AddPosition(followTargetPosition, deltaTime, Lookahead.Time);
+                m_Predictor.AddPosition(followTargetPosition, deltaTime);
                 var delta = m_Predictor.PredictPositionDelta(Lookahead.Time);
                 if (Lookahead.IgnoreY)
                     delta = delta.ProjectOntoPlane(curState.ReferenceUp);
-                var p = followTargetPosition + delta;
-                TrackedPoint = p;
+                TrackedPoint = followTargetPosition + delta;
             }
-
             if (!curState.HasLookAt())
                 curState.ReferenceLookAt = followTargetPosition;
 
