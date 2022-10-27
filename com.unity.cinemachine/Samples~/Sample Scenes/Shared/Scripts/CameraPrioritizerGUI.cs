@@ -10,34 +10,48 @@ namespace Cinemachine.Examples
     public class CameraPrioritizerGUI : MonoBehaviour
     {
         public Vector2 Position = new Vector3(30, 10);
-        public float Width = 100;
-        public int Priority = 100;
-
+        public int Priority = 0;
         public List<CinemachineVirtualCameraBase> Cameras = new();
 
-        public void OnGUI()
+        Vector2 m_Size = Vector2.zero;
+        Color m_LiveColor;
+
+        void OnGUI()
         {
             var numNodes = Cameras?.Count;
             if (numNodes == 0)
                 return;
-            var style = GUI.skin.button;
+
+            // Establish button size and color (only once)
+            if (m_Size == Vector2.zero)
+            {
+                m_LiveColor = Color.Lerp(Color.red, Color.yellow, 0.8f);
+                for (int i = 0; i < Cameras.Count; ++i)
+                {
+                    if (Cameras[i] == null)
+                        continue;
+                    var size = GUI.skin.button.CalcSize(new GUIContent(Cameras[i].Name));
+                    m_Size.x = Mathf.Max(m_Size.x, size.x);
+                    m_Size.y = Mathf.Max(m_Size.y, size.y);
+                }
+            }
+
+            // Draw the seletion buttons
             var pos = Position;
-            var size = style.CalcSize(new GUIContent("Button")); size.x = Width;
             const float vSpace = 3.0f;
             var baseColor = GUI.color;
-            var liveColor = Color.Lerp(Color.red, Color.yellow, 0.8f);
             for (int i = 0; i < numNodes; ++i)
             {
                 var vcam = Cameras[i];
                 if (vcam != null)
                 {
-                    GUI.color = CinemachineCore.Instance.IsLive(vcam) ? liveColor : baseColor;
-                    if (GUI.Button(new Rect(pos, size), vcam.Name))
+                    GUI.color = CinemachineCore.Instance.IsLive(vcam) ? m_LiveColor : baseColor;
+                    if (GUI.Button(new Rect(pos, m_Size), vcam.Name))
                     {
                         vcam.Priority = Priority;
                         vcam.Prioritize();
                     }
-                    pos.y += size.y + vSpace;
+                    pos.y += m_Size.y + vSpace;
                 }
             }
             GUI.color = baseColor;
