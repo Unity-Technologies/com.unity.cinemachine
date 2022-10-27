@@ -20,13 +20,13 @@ namespace Cinemachine.Examples
         public Transform RearRightWheel;
 
         [Header("Input Axes")]
-        [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
+        [Tooltip("X Axis movement.  Value is -1..1.  Controls the turning amount")]
         public InputAxis MoveX = new InputAxis { Range = new Vector2(-1, 1) };
 
-        [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward movement")]
+        [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward acceleration")]
         public InputAxis MoveZ = new InputAxis { Range = new Vector2(-1, 1) };
 
-        [Tooltip("Jump movement.  Value is 0 or 1. Controls the braking movement")]
+        [Tooltip("Braking.  Value is 0 to 1. Controls the braking force")]
         public InputAxis Brake = new InputAxis { Range = new Vector2(0, 1) };
 
 
