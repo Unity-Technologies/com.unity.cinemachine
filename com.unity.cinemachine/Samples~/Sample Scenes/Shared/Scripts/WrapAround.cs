@@ -32,6 +32,9 @@ namespace Cinemachine.Examples
             if (!delta.AlmostZero())
             {
                 transform.position = newPos;
+
+                // Handle objects driven by a Rigidbody.
+                // This is actually quite naive - it might sometimes introduce a little pop.
                 if (TryGetComponent<Rigidbody>(out var rb))
                     rb.position = newPos;
 
