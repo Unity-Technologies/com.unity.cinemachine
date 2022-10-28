@@ -277,6 +277,67 @@ MonoBehaviour:
       OnCameraLive:
         m_PersistentCalls:
           m_Calls: []
+--- !u!1 &628253629
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 628253631}
+  - component: {fileID: 628253630}
+  m_Layer: 0
+  m_Name: Help
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &628253630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628253629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  HelpText: 'This scene shows the importance of choosing the correct Brain Update
+    Mode, and of animating all targeted objects the same way.
+
+
+    Both cars are
+    driven by Rigidbodies, but one uses Rigidbody Interpolation, and the other does
+    not.  As a result, the cars'' positions are not updated at the same time.  Consequently,
+    they cannot both be smooth in the frame.
+
+
+    The three panels on the screen
+    are three independent CM wolds, each with its own CM Brain.  All worlds are driving
+    cameras looking at the same 2 cars.  Depending on the update mode, one of the
+    two cars will be smooth on-screen.  This shows the reltionship between update
+    mode and animation method.'
+--- !u!4 &628253631
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628253629}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.21569087, y: -1.5554366, z: 14.337207}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &841852429
 GameObject:
   m_ObjectHideFlags: 0
@@ -321,8 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 212491a1730d03b4b843e7aed2eab0df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 30, y: 40}
-  Priority: 100
+  Position: {x: 0.05, y: 0.05}
   Cameras:
   - {fileID: 1607092320}
   - {fileID: 1839922281}

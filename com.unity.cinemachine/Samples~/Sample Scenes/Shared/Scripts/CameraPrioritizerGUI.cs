@@ -9,8 +9,9 @@ namespace Cinemachine.Examples
     [SaveDuringPlay]
     public class CameraPrioritizerGUI : MonoBehaviour
     {
-        public Vector2 Position = new Vector3(30, 10);
-        public int Priority = 0;
+        [Tooltip("Screen position in normalized screen coords")]
+        public Vector2 Position = new Vector3(0.05f, 0.05f);
+
         public List<CinemachineVirtualCameraBase> Cameras = new();
 
         Vector2 m_Size = Vector2.zero;
@@ -36,8 +37,8 @@ namespace Cinemachine.Examples
                 }
             }
 
-            // Draw the seletion buttons
-            var pos = Position;
+            // Draw the selection buttons
+            var pos = Position * new Vector2(Screen.width, Screen.height);
             const float vSpace = 3.0f;
             var baseColor = GUI.color;
             for (int i = 0; i < numNodes; ++i)
@@ -47,10 +48,7 @@ namespace Cinemachine.Examples
                 {
                     GUI.color = CinemachineCore.Instance.IsLive(vcam) ? m_LiveColor : baseColor;
                     if (GUI.Button(new Rect(pos, m_Size), vcam.Name))
-                    {
-                        vcam.Priority = Priority;
                         vcam.Prioritize();
-                    }
                     pos.y += m_Size.y + vSpace;
                 }
             }
