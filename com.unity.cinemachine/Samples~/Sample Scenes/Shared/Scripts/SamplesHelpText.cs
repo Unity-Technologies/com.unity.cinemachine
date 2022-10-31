@@ -3,18 +3,29 @@ using UnityEngine.SceneManagement;
 
 namespace Cinemachine.Examples
 {
+    /// <summary>
+    /// Displays a button in the game view that will bring up a window with text.
+    /// </summary>
     public class SamplesHelpText : MonoBehaviour
     {
+        [Tooltip("The text to display on the button")]
         public string ButtonText = "Help";
-        public Vector2 Position = new Vector3(30, 30);
+
+        [Tooltip("Screen position of the button in normalized screen coords")]
+        public Vector2 Position = new Vector3(0.9f, 0.05f);
 
         [TextArea(minLines: 10, maxLines: 50)]
         public string HelpText;
 
         bool m_ToggleState = false;
+        Vector2 m_Size = Vector2.zero;
 
         private void OnGUI()
         {
+            // Establish button size (only once)
+            if (m_Size == Vector2.zero)
+                m_Size = GUI.skin.button.CalcSize(new GUIContent(ButtonText));
+
             if (m_ToggleState)
             {
                 var size = GUI.skin.label.CalcSize(new GUIContent(HelpText));
@@ -37,9 +48,8 @@ namespace Cinemachine.Examples
             }
             else
             {
-                var size = GUI.skin.button.CalcSize(new GUIContent(ButtonText));
-                var pos = new Vector2(Screen.width - Position.x - size.x, Position.y);
-                if (GUI.Button(new Rect(pos, size), ButtonText))
+                var pos = Position * new Vector2(Screen.width, Screen.height);
+                if (GUI.Button(new Rect(pos, m_Size), ButtonText))
                     m_ToggleState = true;
             }
         }
