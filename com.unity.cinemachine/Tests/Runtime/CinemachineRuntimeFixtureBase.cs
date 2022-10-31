@@ -19,8 +19,6 @@ namespace Tests.Runtime
         public override void TearDown()
         {
             base.TearDown();
-            
-            CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
     }
 }
