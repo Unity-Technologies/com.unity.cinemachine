@@ -9,7 +9,7 @@ using UnityEngine.TestTools.Utils;
 #if CINEMACHINE_PHYSICS
 namespace Tests.Runtime
 {
-    public class CmColliderTests : CinemachineTimeInvariantFixtureBase
+    public class CmColliderTests : CinemachineRuntimeTimeInvariantFixtureBase
     {
         CmCamera m_Vcam;
         CinemachineDeoccluder m_Collider;
