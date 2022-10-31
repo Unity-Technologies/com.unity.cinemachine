@@ -363,6 +363,15 @@ namespace Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
+        public static bool GetUseHorizontalFOV(Camera camera)
+        {
+            if (camera == null)
+                return false;
+
+            // This should really be a global setting, but for now there is no better way than this!
+            var p = new SerializedObject(camera).FindProperty("m_FOVAxisMode");
+            return (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
+        }
 
         ///==============================================================================================
         ///==============================================================================================

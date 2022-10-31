@@ -33,8 +33,9 @@ namespace Cinemachine.Editor
         static Vector2 SensorSize(SerializedProperty property) => AccessProperty<Vector2>(
             typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "SensorSize");
 
-        static bool UseHorizontalFOV(SerializedProperty property) => AccessProperty<bool>(
-            typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "UseHorizontalFOV");
+        static bool UseHorizontalFOV(SerializedProperty property) => 
+            InspectorUtility.GetUseHorizontalFOV(AccessProperty<Camera>(
+                typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "SourceCamera"));
 
         static T AccessProperty<T>(Type type, object obj, string memberName)
         {
