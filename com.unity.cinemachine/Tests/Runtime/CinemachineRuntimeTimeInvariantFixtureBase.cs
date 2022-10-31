@@ -9,10 +9,10 @@ namespace Tests.Runtime
         CinemachineBrain m_Brain;
         public override void SetUp()
         {
+            base.SetUp();
+            
             var camera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_Brain = camera.GetComponent<CinemachineBrain>();
-            
-            base.SetUp();
             
             // Manual update is needed because when waiting for physics frame, we may pass 1-3 frames. Without manual
             // update the test won't be deterministic, because we would update 1-3 times, instead of just once.
