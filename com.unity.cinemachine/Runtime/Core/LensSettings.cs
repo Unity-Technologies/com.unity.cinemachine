@@ -132,7 +132,7 @@ namespace Cinemachine
         }
 
 #if UNITY_EDITOR
-        internal bool UseHorizontalFOV { get; private set; }
+        internal Camera SourceCamera { get; private set; }
 #endif
 
         /// <summary>For physical cameras only: position of the gate relative to 
@@ -209,9 +209,6 @@ namespace Cinemachine
         {
             m_OrthoFromCamera = false;
             m_PhysicalFromCamera = false;
-#if UNITY_EDITOR
-            UseHorizontalFOV = false;
-#endif
             if (camera != null && ModeOverride == OverrideModes.None)
             {
                 m_OrthoFromCamera = camera.orthographic;
@@ -235,9 +232,7 @@ namespace Cinemachine
                 LensShift = Vector2.zero;
             }
 #if UNITY_EDITOR
-            // This should really be a global setting, but for now there is no better way than this!
-            var p = new UnityEditor.SerializedObject(camera).FindProperty("m_FOVAxisMode");
-            UseHorizontalFOV = (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
+            SourceCamera = camera;
 #endif
         }
 
