@@ -50,11 +50,5 @@ namespace Tests.Runtime
             
             CinemachineCore.UniformDeltaTimeOverride = -1f;
         }
-
-        protected static IEnumerator WaitForOnePhysicsFrame()
-        {
-            yield return new WaitForFixedUpdate(); // this is needed to ensure physics system is up-to-date
-            yield return null; 
-        }
     }
 }
