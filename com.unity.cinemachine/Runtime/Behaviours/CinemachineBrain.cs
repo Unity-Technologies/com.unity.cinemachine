@@ -989,6 +989,7 @@ namespace Cinemachine
 #if CINEMACHINE_HDRP
     #if CINEMACHINE_HDRP_14
                         //cam.focusDistance = state.Lens.FocusDistance; // implemented in CM 3.0
+                        cam.focalLength = Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y);
                         cam.iso = state.Lens.Iso;
                         cam.shutterSpeed = state.Lens.ShutterSpeed;
                         cam.aperture = state.Lens.Aperture;
