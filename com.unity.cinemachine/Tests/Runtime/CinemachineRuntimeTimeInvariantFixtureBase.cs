@@ -33,11 +33,10 @@ namespace Tests.Runtime
         /// <param name="t">Time in seconds.</param>
         protected IEnumerator WaitForSeconds(float t)
         {
-            var timer = 0f;
-            while (timer <= t)
+            var startTime = CinemachineCore.CurrentTimeOverride;
+            while (CinemachineCore.CurrentTimeOverride - startTime <= t)
             {
                 UpdateCinemachine();
-                timer += CinemachineCore.UniformDeltaTimeOverride;
                 yield return null;
             } 
         }
