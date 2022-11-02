@@ -6,7 +6,7 @@ namespace Tests.Runtime
 {
     public class CinemachineRuntimeTimeInvariantFixtureBase : CinemachineRuntimeFixtureBase
     {
-        CinemachineBrain m_Brain;
+        protected CinemachineBrain m_Brain;
         public override void SetUp()
         {
             base.SetUp();
