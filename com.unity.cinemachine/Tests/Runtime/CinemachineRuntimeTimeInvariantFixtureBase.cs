@@ -1,5 +1,6 @@
 using System.Collections;
 using Cinemachine;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Tests.Runtime
@@ -7,6 +8,7 @@ namespace Tests.Runtime
     public class CinemachineRuntimeTimeInvariantFixtureBase : CinemachineRuntimeFixtureBase
     {
         protected CinemachineBrain m_Brain;
+        [SetUp]
         public override void SetUp()
         {
             base.SetUp();
@@ -19,6 +21,12 @@ namespace Tests.Runtime
             m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
             CinemachineCore.CurrentTimeOverride = 0;
             CinemachineCore.CurrentUnscaledTimeTimeOverride = 0;
+        }
+        
+        [TearDown]
+        public override void TearDown()
+        {
+            base.TearDown();
         }
 
         /// <summary>Triggers manual update and increments cinemachine time.</summary>
