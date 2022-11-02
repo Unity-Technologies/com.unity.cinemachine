@@ -43,22 +43,19 @@ namespace Tests.Runtime
         public IEnumerator BlendFromSourceToTarget()
         {
             // Check that source vcam is active
-            UpdateCinemachine();
+            yield return UpdateCinemachine();
             Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
-            yield return null;
             
             // Active target and blend from source to target completely
             m_Target.enabled = true;
             var startTime = CinemachineCore.CurrentTimeOverride;
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
-                yield return null;
+                yield return UpdateCinemachine();
             }
 
             Assert.That(m_Brain.IsBlending, Is.False);
@@ -68,44 +65,39 @@ namespace Tests.Runtime
         public IEnumerator BlendBetweenSourceAndTarget()
         {
             // Check that source vcam is active
-            UpdateCinemachine();
+            yield return UpdateCinemachine();
             Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
-            yield return null;
             
             // Activate Target vcam and blend 50% between source and target
             m_Target.enabled = true;
             var startTime = CinemachineCore.CurrentTimeOverride;
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
 
             CinemachineBlend activeBlend;
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.5f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
+                yield return UpdateCinemachine();
                 activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
                 Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
-                yield return null;
             }
             
             // Blend back to source from 50% between source and target
             m_Target.enabled = false;
             startTime = CinemachineCore.CurrentTimeOverride;
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.3f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
+                yield return UpdateCinemachine();
                 
                 activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
                 Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
-                yield return null;
             }
             
             activeBlend = m_Brain.ActiveBlend;
@@ -118,8 +110,7 @@ namespace Tests.Runtime
             while (CinemachineCore.CurrentTimeOverride - startTime < timeToFinish)
             {
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
-                yield return null;
+                yield return UpdateCinemachine();
             }
             Assert.That(m_Brain.IsBlending, Is.False);
         }
@@ -129,58 +120,50 @@ namespace Tests.Runtime
         public IEnumerator DoesInterruptedBlendingBetweenCamerasTakesDoubleTime()
         {
             // Check that source vcam is active
-            UpdateCinemachine();
+            yield return UpdateCinemachine();
             Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
-            yield return null;
             
             // Start blending
             m_Target.enabled = true;
             var startTime = CinemachineCore.CurrentTimeOverride;
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
         
-            CinemachineBlend activeBlend = null;
             // Blend 90% between source and target
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.9f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
-                activeBlend = m_Brain.ActiveBlend;
+                yield return UpdateCinemachine();
+                var activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
                 Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
-                yield return null;
             }
 
             m_Target.enabled = false;
             startTime = CinemachineCore.CurrentTimeOverride;
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             // Blend 10% backwards
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.1f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
-                activeBlend = m_Brain.ActiveBlend;
+                yield return UpdateCinemachine();
+                var activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
                 Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
-                yield return null;
             }
 
             m_Target.enabled = true;
             startTime = CinemachineCore.CurrentTimeOverride;
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             // finish blend
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.2f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
-                UpdateCinemachine();
-                yield return null;
+                yield return UpdateCinemachine();
             }
             Assert.That(m_Brain.IsBlending, Is.False);
         }
@@ -189,18 +172,14 @@ namespace Tests.Runtime
         public IEnumerator SetActiveBlend()
         {
             // Check that source vcam is active
-            UpdateCinemachine();
+            yield return UpdateCinemachine();
             Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
-            yield return null;
             
             // Active target vcam and wait for 5 frames
             m_Target.enabled = true;
-            for (int i = 0; i < 5; ++i)
-            {
-                UpdateCinemachine();
-                yield return null;
-            }
-        
+            for (var i = 0; i < 5; ++i)
+                yield return UpdateCinemachine();
+
             var blend = m_Brain.ActiveBlend;
             Assert.That(blend, Is.Not.Null);
             // Save current blend progress
@@ -211,8 +190,7 @@ namespace Tests.Runtime
             m_Brain.ActiveBlend = blend;
         
             // Wait a frame and check that blend progress is the same
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             blend = m_Brain.ActiveBlend;
             Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(FloatEqualityComparer.Instance));
         
@@ -221,17 +199,14 @@ namespace Tests.Runtime
             m_Brain.ActiveBlend = blend;
         
             // Wait a frame and check that blend is finished
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             Assert.That(m_Brain.ActiveBlend, Is.Null);
         
             // Disable target, blend back to source, wait 5 frames
             m_Target.enabled = false;
-            for (int i = 0; i < 5; ++i)
-            {
-                UpdateCinemachine();
-                yield return null;
-            }
+            for (var i = 0; i < 5; ++i)
+                yield return UpdateCinemachine();
+            
             blend = m_Brain.ActiveBlend;
             Assert.That(blend, Is.Not.Null);
             Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(FloatEqualityComparer.Instance));
@@ -240,8 +215,7 @@ namespace Tests.Runtime
             m_Brain.ActiveBlend = null;
         
             // Wait a frame and check that blend is finished
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             Assert.That(m_Brain.ActiveBlend == null);
         }
     }

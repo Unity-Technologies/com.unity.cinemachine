@@ -49,8 +49,7 @@ namespace Tests.Runtime
             m_Collider.DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
 
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
 
@@ -58,8 +57,7 @@ namespace Tests.Runtime
             obstacle.transform.position = originalCamPosition; // place obstacle so that camera needs to move
             
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes affect
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             // Camera moved check
             Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
@@ -69,8 +67,7 @@ namespace Tests.Runtime
 
             yield return WaitForOnePhysicsFrame(); // ensure that the obstacle's collider is removed
             yield return WaitForSeconds(m_Collider.SmoothingTime);
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
         }
@@ -83,8 +80,7 @@ namespace Tests.Runtime
             m_Collider.DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
 
@@ -92,8 +88,7 @@ namespace Tests.Runtime
             obstacle.transform.position = originalCamPosition; // place obstacle so that camera needs to move
 
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes affect
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             // we are pulling away from obstacle
             Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
@@ -101,16 +96,14 @@ namespace Tests.Runtime
             
             var previousPosition = m_Vcam.State.GetFinalPosition();
             yield return WaitForSeconds(0.5f);
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             Assert.That(previousPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
             Assert.That(new Vector3(0,0,-4.423887f), Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
             UnityEngine.Object.Destroy(obstacle);
 
             yield return WaitForOnePhysicsFrame(); // ensure that the obstacle's collider is removed
-            UpdateCinemachine();
-            yield return null;
+            yield return UpdateCinemachine();
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
         }
@@ -123,8 +116,7 @@ namespace Tests.Runtime
             m_Collider.DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
 
-            UpdateCinemachine();
-            yield return null; 
+            yield return UpdateCinemachine();
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
 
@@ -132,8 +124,7 @@ namespace Tests.Runtime
             obstacle.transform.position = originalCamPosition; // place obstacle so that camera needs to move
 
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes affect
-            UpdateCinemachine();
-            yield return null; 
+            yield return UpdateCinemachine();
             
             // camera moved check
             Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
@@ -142,15 +133,13 @@ namespace Tests.Runtime
             Assert.That(originalCamPosition, !Is.EqualTo(obstructedPosition).Using(Vector3EqualityComparer.Instance));
 
             // wait another frame to avoid snap - we need to have a previous damp time to avoid snap
-            UpdateCinemachine();
-            yield return null; 
+            yield return UpdateCinemachine();
             Assert.That(obstructedPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(Vector3EqualityComparer.Instance));
             
             UnityEngine.Object.Destroy(obstacle);
             
             yield return WaitForOnePhysicsFrame(); // ensure that the obstacle's collider is removed
-            UpdateCinemachine();
-            yield return null; 
+            yield return UpdateCinemachine();
             
             // camera has moved and it is not yet back at its original position because damping > 0.
             var finalPosition = m_Vcam.State.GetFinalPosition();

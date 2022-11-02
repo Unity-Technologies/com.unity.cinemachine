@@ -1,3 +1,4 @@
+using System.Collections;
 using Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
@@ -22,6 +23,13 @@ namespace Tests.Runtime
         public override void TearDown()
         {
             base.TearDown();
+        }
+        
+        /// <summary>Ensures to wait until at least one physics frame.</summary>
+        protected static IEnumerator WaitForOnePhysicsFrame()
+        {
+            yield return new WaitForFixedUpdate(); // this is needed to ensure physics system is up-to-date
+            yield return null; // this is so that the frame is completed (since physics frames are not aligned)
         }
     }
 }

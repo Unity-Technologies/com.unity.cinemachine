@@ -29,12 +29,13 @@ namespace Tests.Runtime
             base.TearDown();
         }
 
-        /// <summary>Triggers manual update and increments cinemachine time.</summary>
-        protected void UpdateCinemachine()
+        /// <summary>Triggers manual update, increments cinemachine time, and waits one frame</summary>
+        protected IEnumerator UpdateCinemachine()
         {
             m_Brain.ManualUpdate();
             CinemachineCore.CurrentTimeOverride += CinemachineCore.UniformDeltaTimeOverride;
             CinemachineCore.CurrentUnscaledTimeTimeOverride += CinemachineCore.UniformDeltaTimeOverride;
+            yield return null;
         }
         
         /// <summary>Waits for the t seconds.</summary>
@@ -43,17 +44,7 @@ namespace Tests.Runtime
         {
             var startTime = CinemachineCore.CurrentTimeOverride;
             while (CinemachineCore.CurrentTimeOverride - startTime <= t)
-            {
-                UpdateCinemachine();
-                yield return null;
-            } 
-        }
-        
-        /// <summary>Ensures to wait until at least one physics frame.</summary>
-        protected static IEnumerator WaitForOnePhysicsFrame()
-        {
-            yield return new WaitForFixedUpdate(); // this is needed to ensure physics system is up-to-date
-            yield return null; 
+                yield return UpdateCinemachine();
         }
     }
 }
