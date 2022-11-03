@@ -770,8 +770,8 @@ namespace Cinemachine
             state.ReferenceUp = worldUp;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-            if (brain != null)
-                lens.SnapshotCameraReadOnlyProperties(brain.OutputCamera);
+            if (brain != null && brain.OutputCamera != null)
+                lens.PullInheritedPropertiesFromCamera(brain.OutputCamera);
 
             state.Lens = lens;
             return state;
