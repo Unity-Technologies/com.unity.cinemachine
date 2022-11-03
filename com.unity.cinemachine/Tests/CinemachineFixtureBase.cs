@@ -7,7 +7,7 @@ namespace Tests
 {
     public class CinemachineFixtureBase
     {
-        readonly List<GameObject> m_GameObjectsToDestroy = new List<GameObject>();
+        readonly List<GameObject> m_GameObjectsToDestroy = new();
 
         /// <summary>
         /// Creates gameObject and keeps track of it, so it is cleaned up properly at [TearDown].
@@ -37,7 +37,6 @@ namespace Tests
         {
             var go = GameObject.CreatePrimitive(type);
             m_GameObjectsToDestroy.Add(go);
-
             return go;
         }
 

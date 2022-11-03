@@ -73,7 +73,7 @@ namespace Tests.Runtime
             var startTime = CinemachineCore.CurrentTimeOverride;
             yield return UpdateCinemachine();
 
-            CinemachineBlend activeBlend;
+            CinemachineBlend activeBlend = null;
             while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.5f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
@@ -100,11 +100,8 @@ namespace Tests.Runtime
                 Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
             }
             
-            activeBlend = m_Brain.ActiveBlend;
-            Assert.That(activeBlend, Is.Not.Null); 
-            Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
-            
             // wait for blend to finish
+            Assert.NotNull(activeBlend);
             var timeToFinish = activeBlend.Duration - activeBlend.TimeInBlend;
             startTime = CinemachineCore.CurrentTimeOverride;
             while (CinemachineCore.CurrentTimeOverride - startTime < timeToFinish)

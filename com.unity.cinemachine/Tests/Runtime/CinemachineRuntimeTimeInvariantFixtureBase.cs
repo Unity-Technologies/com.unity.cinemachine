@@ -26,6 +26,10 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
+            m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.SmartUpdate;
+            CinemachineCore.CurrentTimeOverride = -1f;
+            CinemachineCore.CurrentUnscaledTimeTimeOverride = -1f;
+            
             base.TearDown();
         }
 

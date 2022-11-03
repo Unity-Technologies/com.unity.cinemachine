@@ -22,6 +22,9 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
+            CinemachineCore.UniformDeltaTimeOverride = -1f;
+            CinemachineCore.FrameDeltaCompensationEnabled = true;
+            
             base.TearDown();
         }
         
