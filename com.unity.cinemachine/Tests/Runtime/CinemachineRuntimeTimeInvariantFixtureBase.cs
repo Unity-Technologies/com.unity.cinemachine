@@ -26,6 +26,9 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
+            CinemachineCore.CurrentTimeOverride = -1;
+            CinemachineCore.CurrentUnscaledTimeTimeOverride = -1;
+            RuntimeUtility.DestroyObject(m_Brain.gameObject);
             base.TearDown();
         }
 
