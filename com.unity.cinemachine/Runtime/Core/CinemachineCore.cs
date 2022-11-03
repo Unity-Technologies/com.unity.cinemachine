@@ -140,8 +140,8 @@ namespace Cinemachine
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public int BrainCount => m_ActiveBrains.Count;
 
-        /// <summary>Enables frame delta compensation for not updated frames. False is useful for deterministic test results. </summary>
-        internal static bool FrameDeltaCompensationEnabled = true;
+        /// <summary>Special mode for deterministic unit tests.</summary>
+        internal static bool UnitTestMode = false;
 
         /// <summary>Access the array of active CinemachineBrains in the scene
         /// without generating garbage</summary>
@@ -353,7 +353,7 @@ namespace Cinemachine
                 if (frameDelta == 0 && status.lastUpdateMode == updateClock
                         && status.lastUpdateDeltaTime == deltaTime)
                     return; // already updated
-                if (FrameDeltaCompensationEnabled && frameDelta > 0)
+                if (!UnitTestMode && frameDelta > 0)
                     deltaTime *= frameDelta; // try to catch up if multiple frames
             }
 

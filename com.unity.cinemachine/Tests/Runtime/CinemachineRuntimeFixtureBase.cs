@@ -20,15 +20,17 @@ namespace Tests.Runtime
             CinemachineCore.UniformDeltaTimeOverride = 0.1f;
             
             // disable delta time compensation for deterministic test results
-            CinemachineCore.FrameDeltaCompensationEnabled = false;
+            CinemachineCore.UnitTestMode = true;
         }
         
         [TearDown]
         public override void TearDown()
         {
-            CinemachineCore.UniformDeltaTimeOverride = -1f;
-            CinemachineCore.FrameDeltaCompensationEnabled = true;
+            // force a uniform deltaTime, otherwise tests will be unstable
+            CinemachineCore.UniformDeltaTimeOverride = -1;
             
+            // disable delta time compensation for deterministic test results
+            CinemachineCore.UnitTestMode = false;
             base.TearDown();
         }
         
