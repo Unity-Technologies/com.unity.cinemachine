@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 326221292}
   - component: {fileID: 326221291}
   m_Layer: 0
-  m_Name: Tracking non-interpolated car
+  m_Name: Tracking Near Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -287,8 +287,10 @@ GameObject:
   m_Component:
   - component: {fileID: 628253631}
   - component: {fileID: 628253630}
+  - component: {fileID: 628253632}
+  - component: {fileID: 628253633}
   m_Layer: 0
-  m_Name: Help
+  m_Name: GUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -308,21 +310,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
-  HelpText: 'This scene shows the importance of choosing the correct Brain Update
-    Mode, and of animating all targeted objects the same way.
-
-
-    Both cars are
-    driven by Rigidbodies, but one uses Rigidbody Interpolation, and the other does
-    not.  As a result, the cars'' positions are not updated at the same time.  Consequently,
-    they cannot both be smooth in the frame.
-
-
-    The three panels on the screen
-    are three independent CM wolds, each with its own CM Brain.  All worlds are driving
-    cameras looking at the same 2 cars.  Depending on the update mode, one of the
-    two cars will be smooth on-screen.  This shows the reltionship between update
-    mode and animation method.'
+  HelpText: "This scene shows the importance of choosing the correct Brain Update
+    Mode, and of animating all targeted objects the same way.\r\n\r\nBoth cars are
+    driven by Rigidbodies, but unless both use Rigidbody Interpolation the same way,
+    they cannot both be smooth on the screen at the same time, because they are updated
+    on different clocks.  Use the on-screen toggles to change the cars' interpolation
+    settings, and see the result.  Rigidbodies normally apply their animation on
+    the FixedUpdate clock.  With Interpolation enabled, the animation is applied
+    on the Update clock.\r\n\r\nThe three panels on the screen are three independent
+    CM worlds, each with its own CM Brain.  All worlds are running  cameras looking
+    at the same two cars.  Depending on the update mode in the world's CM Brain,
+    the cars may or may not be smooth on-screen.  \r\n\r\nSmartUpdate dynamically
+    adjusts its update clock to match how the current target is being animated.  "
 --- !u!4 &628253631
 Transform:
   m_ObjectHideFlags: 0
@@ -338,51 +337,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &841852429
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 841852430}
-  - component: {fileID: 841852431}
-  m_Layer: 0
-  m_Name: Selector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &841852430
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 841852429}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4274981, y: -0.0001373291, z: 8.376324}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1313270463}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &841852431
+--- !u!114 &628253632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 841852429}
+  m_GameObject: {fileID: 628253629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ec2a6f356d5711438672a28513e461b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Position: {x: 0.05, y: 0.05}
+  Items:
+  - Text: ' Enable Far Car Interpolation'
+    Rb: {fileID: 1570214456050329276}
+  - Text: ' Enable Near Car Interpolation'
+    Rb: {fileID: 1245728188}
+--- !u!114 &628253633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628253629}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 212491a1730d03b4b843e7aed2eab0df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 0.05, y: 0.05}
+  Position: {x: 0.05, y: 0.15}
   Cameras:
   - {fileID: 1607092320}
   - {fileID: 1839922281}
@@ -445,7 +430,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Name
-      value: Car - Interpolation Off
+      value: Near Car
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332478, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: MoveX.Value
@@ -493,6 +478,11 @@ MonoBehaviour:
   Axis: 2
   MinRange: -100
   MaxRange: 100
+--- !u!54 &1245728188 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+  m_PrefabInstance: {fileID: 1245728184}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1254209701
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,7 +758,6 @@ Transform:
   - {fileID: 1300810984}
   - {fileID: 1607092317}
   - {fileID: 1839922278}
-  - {fileID: 841852430}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -846,7 +835,7 @@ GameObject:
   - component: {fileID: 1607092319}
   - component: {fileID: 1607092318}
   m_Layer: 0
-  m_Name: Tracking interpolated car
+  m_Name: Tracking Far Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1089,7 +1078,7 @@ GameObject:
   - component: {fileID: 1839922280}
   - component: {fileID: 1839922279}
   m_Layer: 0
-  m_Name: Tracking non-interpolated car
+  m_Name: Tracking Near Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1243,7 +1232,7 @@ GameObject:
   - component: {fileID: 1967210316}
   - component: {fileID: 1967210315}
   m_Layer: 0
-  m_Name: Tracking interpolated car
+  m_Name: Tracking Far Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1405,7 +1394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Name
-      value: Car - Interpolation On
+      value: Far Car
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332478, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: MoveX.Value
@@ -1424,6 +1413,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1868264081772963622}
   m_SourcePrefab: {fileID: 100100000, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+--- !u!54 &1570214456050329276 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+  m_PrefabInstance: {fileID: 1570214456050329275}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1868264081772963616 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}

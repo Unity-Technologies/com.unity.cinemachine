@@ -6,7 +6,7 @@ namespace Cinemachine.Examples
     /// <summary>
     /// Displays a button in the game view that will bring up a window with text.
     /// </summary>
-    public class SamplesHelpText : MonoBehaviour
+    public class SamplesHelpGUI : MonoBehaviour
     {
         [Tooltip("The text to display on the button")]
         public string ButtonText = "Help";
