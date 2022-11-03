@@ -30,7 +30,7 @@ namespace Tests.Runtime
             var oldPos = m_Vcam.transform.position;
             m_FollowObject.transform.position += new Vector3(2, 2, 2);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(oldPos).Using(m_Vector3EqualityComparer));
         }
 
         [UnityTest]
@@ -40,7 +40,7 @@ namespace Tests.Runtime
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(m_Vector3EqualityComparer));
         }
 
         [UnityTest]
@@ -53,7 +53,7 @@ namespace Tests.Runtime
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(new Vector3(10, 0, -cameraDistance)).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(new Vector3(10, 0, -cameraDistance)).Using(m_Vector3EqualityComparer));
         }
 
         [UnityTest]
@@ -63,7 +63,7 @@ namespace Tests.Runtime
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(m_Vector3EqualityComparer));
         }
 
         [UnityTest]
@@ -76,7 +76,7 @@ namespace Tests.Runtime
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(m_Vector3EqualityComparer));
         }
 
         [UnityTest]
@@ -89,7 +89,7 @@ namespace Tests.Runtime
             var oldPos = m_Vcam.transform.position;
             m_FollowObject.transform.position += new Vector3(2, 2, 2);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(oldPos).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(oldPos).Using(m_Vector3EqualityComparer));
         }
 
         [UnityTest]
@@ -101,7 +101,7 @@ namespace Tests.Runtime
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;
-            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(m_FollowObject.transform.position).Using(m_Vector3EqualityComparer));
         }
     }
 }

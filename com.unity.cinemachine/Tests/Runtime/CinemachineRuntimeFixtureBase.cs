@@ -2,11 +2,15 @@ using System.Collections;
 using Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
     public class CinemachineRuntimeFixtureBase : CinemachineFixtureBase
     {
+        protected FloatEqualityComparer m_FloatEqualityComparer = new(0.0001f);
+        protected Vector3EqualityComparer m_Vector3EqualityComparer = new(0.0001f);
+        
         [SetUp]
         public override void SetUp()
         {

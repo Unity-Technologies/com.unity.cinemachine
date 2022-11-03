@@ -81,7 +81,7 @@ namespace Tests.Runtime
                 yield return UpdateCinemachine();
                 activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(m_FloatEqualityComparer));
             }
             
             // Blend back to source from 50% between source and target
@@ -97,7 +97,7 @@ namespace Tests.Runtime
                 
                 activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(m_FloatEqualityComparer));
             }
             
             // wait for blend to finish
@@ -133,7 +133,7 @@ namespace Tests.Runtime
                 yield return UpdateCinemachine();
                 var activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(m_FloatEqualityComparer));
             }
 
             m_Target.enabled = false;
@@ -148,7 +148,7 @@ namespace Tests.Runtime
                 yield return UpdateCinemachine();
                 var activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(m_FloatEqualityComparer));
             }
 
             m_Target.enabled = true;
@@ -189,7 +189,7 @@ namespace Tests.Runtime
             // Wait a frame and check that blend progress is the same
             yield return UpdateCinemachine();
             blend = m_Brain.ActiveBlend;
-            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(FloatEqualityComparer.Instance));
+            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(m_FloatEqualityComparer));
         
             // Force the blend to complete
             blend.Duration = 0;
@@ -206,7 +206,7 @@ namespace Tests.Runtime
             
             blend = m_Brain.ActiveBlend;
             Assert.That(blend, Is.Not.Null);
-            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(FloatEqualityComparer.Instance));
+            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(m_FloatEqualityComparer));
         
             // Kill the blend
             m_Brain.ActiveBlend = null;
