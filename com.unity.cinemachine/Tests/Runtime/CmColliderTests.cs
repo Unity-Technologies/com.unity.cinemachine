@@ -55,7 +55,7 @@ namespace Tests.Runtime
             var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
             obstacle.transform.position = originalCamPosition; // place obstacle so that camera needs to move
             
-            yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes affect
+            yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
             yield return UpdateCinemachine();
             
             // Camera moved check
@@ -86,7 +86,7 @@ namespace Tests.Runtime
             var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
             obstacle.transform.position = originalCamPosition; // place obstacle so that camera needs to move
 
-            yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes affect
+            yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
             yield return UpdateCinemachine();
             
             // we are pulling away from obstacle
@@ -122,7 +122,7 @@ namespace Tests.Runtime
             var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
             obstacle.transform.position = originalCamPosition; // place obstacle so that camera needs to move
 
-            yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes affect
+            yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
             yield return UpdateCinemachine();
             
             // camera moved check

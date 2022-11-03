@@ -18,7 +18,6 @@ namespace Tests.Runtime
             
             // force a uniform deltaTime, otherwise tests will be unstable
             CinemachineCore.UniformDeltaTimeOverride = 0.1f;
-            
             // disable delta time compensation for deterministic test results
             CinemachineCore.UnitTestMode = true;
         }
@@ -28,9 +27,9 @@ namespace Tests.Runtime
         {
             // force a uniform deltaTime, otherwise tests will be unstable
             CinemachineCore.UniformDeltaTimeOverride = -1;
-            
             // disable delta time compensation for deterministic test results
             CinemachineCore.UnitTestMode = false;
+            
             base.TearDown();
         }
         
