@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cinemachine.Examples
 {
     /// <summary>
-    /// Displays a button in the game view that will bring up a window with text.
+    /// Displays buttons in the game view to toggle interpplation state of rigidbodies
     /// </summary>
     public class ToggleInterpolationGUI : MonoBehaviour
     {
