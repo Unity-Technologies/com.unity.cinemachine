@@ -50,5 +50,7 @@ namespace Tests.Runtime
             while (CinemachineCore.CurrentTimeOverride - startTime <= t)
                 yield return UpdateCinemachine();
         }
+
+        protected float CurrentTime() => CinemachineCore.CurrentTime;
     }
 }

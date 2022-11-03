@@ -4,7 +4,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
-using UnityEngine.TestTools.Utils;
 
 #if CINEMACHINE_PHYSICS
 namespace Tests.Runtime
