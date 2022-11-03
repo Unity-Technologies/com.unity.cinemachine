@@ -50,6 +50,6 @@ namespace Tests.Runtime
                 yield return UpdateCinemachine();
         }
 
-        protected float CurrentTime() => CinemachineCore.CurrentTime;
+        protected static float CurrentTime => CinemachineCore.CurrentTime;
     }
 }
