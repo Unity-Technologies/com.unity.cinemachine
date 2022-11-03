@@ -26,9 +26,10 @@ namespace Tests.Runtime
         [TearDown]
         public override void TearDown()
         {
-            CinemachineCore.CurrentTimeOverride = -1;
-            CinemachineCore.CurrentUnscaledTimeTimeOverride = -1;
-            RuntimeUtility.DestroyObject(m_Brain.gameObject);
+            m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.SmartUpdate;
+            CinemachineCore.CurrentTimeOverride = -1f;
+            CinemachineCore.CurrentUnscaledTimeTimeOverride = -1f;
+            
             base.TearDown();
         }
 
@@ -49,5 +50,7 @@ namespace Tests.Runtime
             while (CinemachineCore.CurrentTimeOverride - startTime <= t)
                 yield return UpdateCinemachine();
         }
+
+        protected float CurrentTime() => CinemachineCore.CurrentTime;
     }
 }

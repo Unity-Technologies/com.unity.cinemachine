@@ -3,7 +3,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
-using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
@@ -48,10 +47,10 @@ namespace Tests.Runtime
             
             // Active target and blend from source to target completely
             m_Target.enabled = true;
-            var startTime = CinemachineCore.CurrentTimeOverride;
+            var startTime = CurrentTime();
             yield return UpdateCinemachine();
             
-            while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime)
+            while (CurrentTime() - startTime < k_BlendingTime)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
@@ -70,26 +69,26 @@ namespace Tests.Runtime
             
             // Activate Target vcam and blend 50% between source and target
             m_Target.enabled = true;
-            var startTime = CinemachineCore.CurrentTimeOverride;
+            var startTime = CurrentTime();
             yield return UpdateCinemachine();
 
-            CinemachineBlend activeBlend;
-            while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.5f)
+            CinemachineBlend activeBlend = null;
+            while (CurrentTime() - startTime < k_BlendingTime * 0.5f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
                 yield return UpdateCinemachine();
                 activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CurrentTime() - startTime).Using(m_FloatEqualityComparer));
             }
             
             // Blend back to source from 50% between source and target
             m_Target.enabled = false;
-            startTime = CinemachineCore.CurrentTimeOverride;
+            startTime = CurrentTime();
             yield return UpdateCinemachine();
             
-            while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.3f)
+            while (CurrentTime() - startTime < k_BlendingTime * 0.3f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
                 Assert.That(m_Brain.IsBlending, Is.True);
@@ -97,17 +96,14 @@ namespace Tests.Runtime
                 
                 activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CurrentTime() - startTime).Using(m_FloatEqualityComparer));
             }
             
-            activeBlend = m_Brain.ActiveBlend;
-            Assert.That(activeBlend, Is.Not.Null); 
-            Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
-            
             // wait for blend to finish
+            Assert.NotNull(activeBlend);
             var timeToFinish = activeBlend.Duration - activeBlend.TimeInBlend;
-            startTime = CinemachineCore.CurrentTimeOverride;
-            while (CinemachineCore.CurrentTimeOverride - startTime < timeToFinish)
+            startTime = CurrentTime();
+            while (CurrentTime() - startTime < timeToFinish)
             {
                 Assert.That(m_Brain.IsBlending, Is.True);
                 yield return UpdateCinemachine();
@@ -125,41 +121,41 @@ namespace Tests.Runtime
             
             // Start blending
             m_Target.enabled = true;
-            var startTime = CinemachineCore.CurrentTimeOverride;
+            var startTime = CurrentTime();
             yield return UpdateCinemachine();
         
             // Blend 90% between source and target
-            while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.9f)
+            while (CurrentTime() - startTime < k_BlendingTime * 0.9f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
                 yield return UpdateCinemachine();
                 var activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CurrentTime() - startTime).Using(m_FloatEqualityComparer));
             }
 
             m_Target.enabled = false;
-            startTime = CinemachineCore.CurrentTimeOverride;
+            startTime = CurrentTime();
             yield return UpdateCinemachine();
             
             // Blend 10% backwards
-            while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.1f)
+            while (CurrentTime() - startTime < k_BlendingTime * 0.1f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
                 Assert.That(m_Brain.IsBlending, Is.True);
                 yield return UpdateCinemachine();
                 var activeBlend = m_Brain.ActiveBlend;
                 Assert.That(activeBlend, Is.Not.Null); 
-                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CinemachineCore.CurrentTimeOverride - startTime).Using(FloatEqualityComparer.Instance));
+                Assert.That(activeBlend.TimeInBlend, Is.EqualTo(CurrentTime() - startTime).Using(m_FloatEqualityComparer));
             }
 
             m_Target.enabled = true;
-            startTime = CinemachineCore.CurrentTimeOverride;
+            startTime = CurrentTime();
             yield return UpdateCinemachine();
             
             // finish blend
-            while (CinemachineCore.CurrentTimeOverride - startTime < k_BlendingTime * 0.2f)
+            while (CurrentTime() - startTime < k_BlendingTime * 0.2f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
@@ -192,7 +188,7 @@ namespace Tests.Runtime
             // Wait a frame and check that blend progress is the same
             yield return UpdateCinemachine();
             blend = m_Brain.ActiveBlend;
-            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(FloatEqualityComparer.Instance));
+            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(m_FloatEqualityComparer));
         
             // Force the blend to complete
             blend.Duration = 0;
@@ -209,7 +205,7 @@ namespace Tests.Runtime
             
             blend = m_Brain.ActiveBlend;
             Assert.That(blend, Is.Not.Null);
-            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(FloatEqualityComparer.Instance));
+            Assert.That(percentComplete, Is.EqualTo(blend.TimeInBlend / blend.Duration).Using(m_FloatEqualityComparer));
         
             // Kill the blend
             m_Brain.ActiveBlend = null;

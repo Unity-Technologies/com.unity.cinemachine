@@ -63,7 +63,7 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(m_Vector3EqualityComparer));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
@@ -107,7 +107,7 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(m_Vector3EqualityComparer));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
@@ -141,7 +141,7 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(m_Vector3EqualityComparer));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame

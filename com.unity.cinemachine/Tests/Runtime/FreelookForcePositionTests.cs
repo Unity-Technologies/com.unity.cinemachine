@@ -118,7 +118,6 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(RigSetups))]
         public IEnumerator Test_Freelook_ForcePosition_AllBindings(TestData rigSetup)
         {
-            
             m_OrbitalFollow.OrbitStyle = rigSetup.OrbitStyle;
             var floatEqualityComparer = new FloatEqualityComparer(rigSetup.Precision);
             var axisRange = Setup(rigSetup.OrbitStyle);
