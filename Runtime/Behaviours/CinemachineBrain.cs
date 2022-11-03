@@ -910,6 +910,7 @@ namespace Cinemachine
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
+                        cam.focalLength = Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y);
 #if CINEMACHINE_HDRP
     #if UNITY_2019_2_OR_NEWER
                         cam.TryGetComponent<HDAdditionalCameraData>(out var hda);
