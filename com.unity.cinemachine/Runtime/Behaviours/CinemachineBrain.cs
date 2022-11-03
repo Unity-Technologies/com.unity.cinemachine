@@ -1048,13 +1048,14 @@ namespace Cinemachine
                             cam.orthographic = LensModeOverride.DefaultMode == LensSettings.OverrideModes.Orthographic;
                         }
                         cam.usePhysicalProperties = isPhysical;
-                        cam.lensShift = state.Lens.LensShift;
                     }
 
                     if (isPhysical)
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
+                        cam.focalLength = Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y);
+                        cam.lensShift = state.Lens.LensShift;
 #if CINEMACHINE_HDRP
                         cam.focusDistance = state.Lens.FocusDistance;
                         cam.iso = state.Lens.Iso;

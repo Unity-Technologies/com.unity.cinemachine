@@ -237,9 +237,8 @@ namespace Cinemachine
                 CinemachineVirtualCameraBase vcam, 
                 ref CameraState state, float deltaTime, float modifierValue) 
             {
-                Top.SnapshotCameraReadOnlyProperties(ref state.Lens);
-                Bottom.SnapshotCameraReadOnlyProperties(ref state.Lens);
-                Top.ModeOverride = Bottom.ModeOverride = LensSettings.OverrideModes.None;
+                Top.CopyCameraMode(ref state.Lens);
+                Bottom.CopyCameraMode(ref state.Lens);
                 if (modifierValue >= 0)
                     state.Lens.Lerp(Top, modifierValue);
                 else

@@ -169,8 +169,9 @@ namespace Cinemachine.Editor
             cameraRect.yMin = cameraRect.yMax - h;
 
             // Shift the guides along with the lens
-            cameraRect.position += new Vector2(
-                -screenWidth * lens.LensShift.x, screenHeight * lens.LensShift.y);
+            if (lens.IsPhysicalCamera)
+                cameraRect.position += new Vector2(
+                    -screenWidth * lens.LensShift.x, screenHeight * lens.LensShift.y);
 
             return cameraRect;
         }
