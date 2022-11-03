@@ -345,45 +345,34 @@ namespace Cinemachine.Editor
         /// </summary>
         public void AddGlobalControls(VisualElement ux)
         {
-            var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
-
             var helpBox = ux.AddChild(new HelpBox("CmCamera settings changes made during Play Mode will be "
                     + "propagated back to the scene when Play Mode is exited.", 
                 HelpBoxMessageType.Info));
             helpBox.SetVisible(SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying);
 
-            row.Left.Add(new Label(CinemachineCorePrefs.s_SaveDuringPlayLabel.text) 
+            var toggle = ux.AddChild(new Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel.text) 
             { 
                 tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
-                style = { alignSelf = Align.Center, flexGrow = 1, height = InspectorUtility.SingleLineHeight }
-            });
-            var toggle = row.Right.AddChild(new Toggle("") 
-            { 
-                tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
-                style = { alignSelf = Align.Center },
                 value = SaveDuringPlay.SaveDuringPlay.Enabled
             });
+            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
             toggle.RegisterValueChangedCallback((evt) => 
             {
                 SaveDuringPlay.SaveDuringPlay.Enabled = evt.newValue;
                 helpBox.SetVisible(evt.newValue && Application.isPlaying);
             });
 
-            row.Right.Add(new Label("Game Guides:") 
-            { 
-                tooltip = CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip,
-                style = { marginLeft = 8, alignSelf = Align.Center, flexGrow = 0, height = InspectorUtility.SingleLineHeight }
-            });
             var choices = new List<string>() { "Disabled", "Passive", "Interactive" };
             int index = CinemachineCorePrefs.ShowInGameGuides.Value 
                 ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
-            var dropdown = row.Right.AddChild(new DropdownField
+            var dropdown = ux.AddChild(new DropdownField("Game View Guides")
             {
                 tooltip = CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip,
                 choices = choices,
                 index = index,
                 style = { flexGrow = 1 }
             });
+            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
             dropdown.RegisterValueChangedCallback((evt) => 
             {
                 CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue != choices[0];
