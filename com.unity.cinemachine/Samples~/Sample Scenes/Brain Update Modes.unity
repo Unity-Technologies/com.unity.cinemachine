@@ -182,7 +182,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326221289}
-  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -322,7 +322,10 @@ MonoBehaviour:
     CM worlds, each with its own CM Brain.  All worlds are running  cameras looking
     at the same two cars.  Depending on the update mode in the world's CM Brain,
     the cars may or may not be smooth on-screen.  \r\n\r\nSmartUpdate dynamically
-    adjusts its update clock to match how the current target is being animated.  "
+    adjusts its update clock to match how the current target is being animated. 
+    When the Interpolation settings on the cars are different from each other, you
+    can use the camera switcher buttons to see how the Brain adapts to the current
+    target's update mode."
 --- !u!4 &628253631
 Transform:
   m_ObjectHideFlags: 0
@@ -496,7 +499,7 @@ GameObject:
   - component: {fileID: 1254209703}
   - component: {fileID: 1254209705}
   m_Layer: 0
-  m_Name: Late Update
+  m_Name: Late Update Brain
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -560,7 +563,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1254209701}
-  m_LocalRotation: {x: 0.050126117, y: -0.7053279, z: 0.050126113, w: 0.70532787}
+  m_LocalRotation: {x: 0.05012611, y: -0.7053279, z: 0.050126106, w: 0.70532787}
   m_LocalPosition: {x: 13.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -618,7 +621,7 @@ GameObject:
   - component: {fileID: 1300810986}
   - component: {fileID: 1300810985}
   m_Layer: 0
-  m_Name: Smart Update
+  m_Name: Smart Update Brain
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -631,7 +634,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300810983}
-  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -956,7 +959,7 @@ GameObject:
   - component: {fileID: 1675424142}
   - component: {fileID: 1675424140}
   m_Layer: 0
-  m_Name: Fixed Update
+  m_Name: Fixed Update Brain
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -969,7 +972,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675424138}
-  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1092,7 +1095,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1839922277}
-  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1333,7 +1336,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1967210314}
-  m_LocalRotation: {x: 0.050126117, y: -0.7053279, z: 0.050126113, w: 0.70532787}
+  m_LocalRotation: {x: 0.05012611, y: -0.7053279, z: 0.050126106, w: 0.70532787}
   m_LocalPosition: {x: 13.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
