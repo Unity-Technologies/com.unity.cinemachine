@@ -36,6 +36,7 @@ namespace Cinemachine.Examples
             }
 
             // Draw buttons
+            const float vSpace = 3.0f;
             var pos = Position * new Vector2(Screen.width, Screen.height);
             for (int i = 0; i < Items.Count; ++i)
             {
@@ -48,7 +49,7 @@ namespace Cinemachine.Examples
                     var newValue = GUI.Toggle(r, oldValue, Items[i].Text);
                     if (oldValue != newValue)
                         rb.interpolation = newValue ? RigidbodyInterpolation.Interpolate : RigidbodyInterpolation.None;
-                    pos.y += m_Size.y;
+                    pos.y += m_Size.y + vSpace;
                 }
             }
         }
