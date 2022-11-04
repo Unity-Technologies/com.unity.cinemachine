@@ -327,5 +327,25 @@ namespace Cinemachine
             return result;
         }
 #endif
+        
+        
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineThirdPersonFollow c)
+        {
+            c.Damping = Damping;
+            c.ShoulderOffset = ShoulderOffset;
+            c.VerticalArmLength = VerticalArmLength;
+            c.CameraDistance = CameraDistance;
+            c.CameraSide = CameraSide;
+            c.Obstacles = new CinemachineThirdPersonFollow.ObstacleSettings
+            {
+                Enabled = true,
+                CameraCollisionFilter = CameraCollisionFilter,
+                IgnoreTag = IgnoreTag,
+                CameraRadius = CameraRadius,
+                DampingFromCollision = DampingFromCollision,
+                DampingIntoCollision = DampingIntoCollision,
+            };
+        }
     }
 }
