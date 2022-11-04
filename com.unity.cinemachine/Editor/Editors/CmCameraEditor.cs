@@ -60,7 +60,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
-            ux.AddHeader("Global Controls");
+            ux.AddHeader("Global Settings");
             m_CameraUtility.AddGlobalControls(ux);
 
             ux.AddHeader("Procedural Motion");
