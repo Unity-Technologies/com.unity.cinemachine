@@ -290,27 +290,20 @@ namespace Cinemachine.Editor
         protected void DrawGlobalControlsInInspector()
         {
             if (m_GuidesLabel == null)
-                m_GuidesLabel = new ("Game Guides:", CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip);
+                m_GuidesLabel = new ("Game View Guides", CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip);
 
-            var labelWidth = EditorGUIUtility.labelWidth;
-            var rect = EditorGUILayout.GetControlRect();
-            var w1 = labelWidth + InspectorUtility.SingleLineHeight + 5;
-            var w2 = rect.width - w1;
-            rect.width = w1;
-            SaveDuringPlay.SaveDuringPlay.Enabled = EditorGUI.Toggle(
-                rect, CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
-            rect.x += w1; rect.width = w2;
-            EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(m_GuidesLabel).x;
+            SaveDuringPlay.SaveDuringPlay.Enabled = EditorGUILayout.Toggle(
+                CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+
             int index = CinemachineCorePrefs.ShowInGameGuides.Value 
                 ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
-            var newIndex = EditorGUI.Popup(rect, m_GuidesLabel, index, s_GuidesChoices);
+            var newIndex = EditorGUILayout.Popup(m_GuidesLabel, index, s_GuidesChoices);
             if (index != newIndex)
             {
                 CinemachineCorePrefs.ShowInGameGuides.Value = newIndex != 0;
                 CinemachineCorePrefs.DraggableComposerGuides.Value = newIndex == 2;
                 InspectorUtility.RepaintGameView();
             }
-            EditorGUIUtility.labelWidth = labelWidth;
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(
