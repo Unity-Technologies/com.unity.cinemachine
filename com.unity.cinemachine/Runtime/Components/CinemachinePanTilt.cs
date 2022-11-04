@@ -131,9 +131,9 @@ namespace Cinemachine
             curState.RawOrientation = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
 
             if (VirtualCamera.PreviousStateIsValid)
-                curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousCameraRotation * Vector3.forward, 
-                    rot * Vector3.forward, curState.ReferenceUp).eulerAngles;
+                    rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
         }
 

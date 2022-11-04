@@ -71,7 +71,7 @@ namespace Cinemachine
         public InputAxis RadialAxis = DefaultRadial;
 
         // State information
-        Vector3 m_PreviousWorldOffset;
+        Vector3 m_PreviousOffset;
 
         // Helper object to track the Follow target
         Tracker m_TargetTracker;
@@ -362,7 +362,7 @@ namespace Cinemachine
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
                 m_ResetHandler?.Invoke();
 
-            Vector3 offset = GetCameraPoint();
+            var rawOffset = GetCameraPoint();
             if (TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 HorizontalAxis.Restrictions 
                     &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
@@ -373,11 +373,11 @@ namespace Cinemachine
                     |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
             }
             m_TargetTracker.TrackTarget(
-                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
+                this, deltaTime, curState.ReferenceUp, rawOffset, TrackerSettings,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera
-            offset = orient * offset;
+            var offset = orient * rawOffset;
             curState.ReferenceUp = orient * Vector3.up;
 
             // Respect minimum target distance on XZ plane
@@ -387,18 +387,27 @@ namespace Cinemachine
                 curState.ReferenceUp, targetPosition);
             curState.RawPosition = pos + offset;
 
+#if true
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
+                && m_PreviousOffset.sqrMagnitude > 0.01f && offset.sqrMagnitude > 0.01f)
+            {
+                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                    m_PreviousOffset, offset, curState.ReferenceUp);
+            }
+#else
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 var lookAt = targetPosition;
                 if (LookAtTarget != null)
                     lookAt = LookAtTargetPosition;
-                var dir0 = m_TargetTracker.PreviousTargetPosition + m_PreviousWorldOffset - lookAt;
+                var dir0 = m_TargetTracker.PreviousTargetPosition + m_PreviousOffset - lookAt;
                 var dir1 = curState.RawPosition - lookAt;
                 if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
-                    curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                        dir0, dir1, curState.ReferenceUp).eulerAngles;
+                    curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                        dir0, dir1, curState.ReferenceUp);
             }
-            m_PreviousWorldOffset = offset;
+#endif
+            m_PreviousOffset = offset;
         }
 
         /// For the inspector
