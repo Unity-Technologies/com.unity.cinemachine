@@ -6,7 +6,7 @@ namespace Cinemachine.Examples
     /// <summary>
     /// Displays a button in the game view that will bring up a window with text.
     /// </summary>
-    public class SamplesHelpText : MonoBehaviour
+    public class SamplesHelpGUI : MonoBehaviour
     {
         [Tooltip("The text to display on the button")]
         public string ButtonText = "Help";
@@ -14,10 +14,12 @@ namespace Cinemachine.Examples
         [Tooltip("Screen position of the button in normalized screen coords")]
         public Vector2 Position = new Vector3(0.9f, 0.05f);
 
+        [Tooltip("Text is displayed when this is checked")]
+        public bool Displayed = false;
+
         [TextArea(minLines: 10, maxLines: 50)]
         public string HelpText;
 
-        bool m_ToggleState = false;
         Vector2 m_Size = Vector2.zero;
 
         private void OnGUI()
@@ -26,7 +28,7 @@ namespace Cinemachine.Examples
             if (m_Size == Vector2.zero)
                 m_Size = GUI.skin.button.CalcSize(new GUIContent(ButtonText));
 
-            if (m_ToggleState)
+            if (Displayed)
             {
                 var size = GUI.skin.label.CalcSize(new GUIContent(HelpText));
                 var halfSize = size * 0.5f;
@@ -43,14 +45,14 @@ namespace Cinemachine.Examples
                     GUILayout.Label(HelpText);
                     GUILayout.EndVertical();
                     if (GUILayout.Button("Got it!"))
-                        m_ToggleState = false;
+                        Displayed = false;
                 }, title);
             }
             else
             {
                 var pos = Position * new Vector2(Screen.width, Screen.height);
                 if (GUI.Button(new Rect(pos, m_Size), ButtonText))
-                    m_ToggleState = true;
+                    Displayed = true;
             }
         }
     }
