@@ -4,12 +4,12 @@ using System;
 namespace Cinemachine
 {
     /// <summary>
-    /// This structure holds settings for procedual lookahead.
+    /// This structure holds settings for procedural lookahead.
     /// </summary>
     [Serializable]
     public struct LookaheadSettings
     {
-        /// <summary>Enable or disable procedual lookahead</summary>
+        /// <summary>Enable or disable procedural lookahead</summary>
         public bool Enabled;
 
         /// <summary>Predict the position this many seconds into the future.  

@@ -61,6 +61,7 @@ namespace Cinemachine.Editor
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
             typeof(CinemachinePipeline),
+            typeof(Cinemachine3rdPersonFollow),
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
 #endif
@@ -83,6 +84,7 @@ namespace Cinemachine.Editor
             { typeof(CinemachinePath), typeof(SplineContainer) },
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
+            { typeof(Cinemachine3rdPersonFollow), typeof(CinemachineThirdPersonFollow) },
         };
         
         /// <summary>
@@ -218,6 +220,16 @@ namespace Cinemachine.Editor
                 {
                     { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
                     { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                }
+            },
+            {
+                typeof(Cinemachine3rdPersonFollow), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "CameraCollisionFilter", new("Obstacles.CameraCollisionFilter", typeof(CinemachineThirdPersonFollow)) },
+                    { "IgnoreTag", new("Obstacles.IgnoreTag", typeof(CinemachineThirdPersonFollow)) },
+                    { "CameraRadius", new("Obstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingIntoCollision", new("Obstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingFromCollision", new("Obstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
                 }
             }
         };

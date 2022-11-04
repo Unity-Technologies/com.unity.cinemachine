@@ -97,7 +97,7 @@ namespace Cinemachine.Editor
             var vcam = CreatePassiveCmCamera("Third Person Aim Camera", parent, true);
             if (targetObject != null)
                 vcam.Follow = targetObject.transform;
-            var thirdPersonFollow = Undo.AddComponent<Cinemachine3rdPersonFollow>(vcam.gameObject);
+            var thirdPersonFollow = Undo.AddComponent<CinemachineThirdPersonFollow>(vcam.gameObject);
             thirdPersonFollow.ShoulderOffset = new Vector3(0.8f, -0.4f, 0f);
             thirdPersonFollow.CameraSide = 1;
             thirdPersonFollow.VerticalArmLength = 1.2f;

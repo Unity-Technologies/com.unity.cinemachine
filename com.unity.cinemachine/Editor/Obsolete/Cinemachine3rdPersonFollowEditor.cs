@@ -3,6 +3,7 @@ using UnityEditor;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(Cinemachine3rdPersonFollow))]
     [CanEditMultipleObjects]
     class Cinemachine3rdPersonFollowEditor : BaseEditor<Cinemachine3rdPersonFollow>
