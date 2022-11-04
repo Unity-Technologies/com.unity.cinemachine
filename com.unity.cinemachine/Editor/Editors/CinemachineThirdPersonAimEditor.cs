@@ -7,7 +7,7 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineThirdPersonAim))]
     [CanEditMultipleObjects]
-    class Cinemachine3rdPersonAimEditor : UnityEditor.Editor
+    class CinemachineThirdPersonAimEditor : UnityEditor.Editor
     {
         CinemachineThirdPersonAim Target => target as CinemachineThirdPersonAim;
 
