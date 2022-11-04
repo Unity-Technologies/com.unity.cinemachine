@@ -5,11 +5,11 @@ using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(Cinemachine3rdPersonAim))]
+    [CustomEditor(typeof(CinemachineThirdPersonAim))]
     [CanEditMultipleObjects]
     class Cinemachine3rdPersonAimEditor : UnityEditor.Editor
     {
-        Cinemachine3rdPersonAim Target => target as Cinemachine3rdPersonAim;
+        CinemachineThirdPersonAim Target => target as CinemachineThirdPersonAim;
 
         CmPipelineComponentInspectorUtility m_PipelineUtility;
 

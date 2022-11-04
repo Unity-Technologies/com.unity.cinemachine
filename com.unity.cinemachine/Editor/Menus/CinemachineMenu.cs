@@ -102,7 +102,7 @@ namespace Cinemachine.Editor
             thirdPersonFollow.CameraSide = 1;
             thirdPersonFollow.VerticalArmLength = 1.2f;
             thirdPersonFollow.CameraDistance = 4f;
-            Undo.AddComponent<Cinemachine3rdPersonAim>(vcam.gameObject);
+            Undo.AddComponent<CinemachineThirdPersonAim>(vcam.gameObject);
         }
 #endif
 
