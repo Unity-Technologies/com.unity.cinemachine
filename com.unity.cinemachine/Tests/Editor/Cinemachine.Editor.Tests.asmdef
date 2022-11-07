@@ -1,0 +1,20 @@
+{
+    "name": "Cinemachine.Editor.Tests",
+    "references": [
+        "Cinemachine",
+        "com.unity.cinemachine.editor",
+        "Cinemachine.Shared.Tests"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
