@@ -194,6 +194,7 @@ namespace Cinemachine
                     lens.Iso = fromCamera.iso;
                     lens.ShutterSpeed = fromCamera.shutterSpeed;
                     lens.Aperture = fromCamera.aperture;
+                    lens.FocusDistance = fromCamera.focusDistance;
                     lens.BladeCount = fromCamera.bladeCount;
                     lens.Curvature = fromCamera.curvature;
                     lens.BarrelClipping = fromCamera.barrelClipping;
@@ -273,6 +274,7 @@ namespace Cinemachine
             Iso = 200;
             ShutterSpeed = 0.005f;
             Aperture = 16;
+            FocusDistance = 10;
             BladeCount = 5;
             Curvature = new Vector2(2, 11);
             BarrelClipping = 0.25f;
@@ -300,7 +302,7 @@ namespace Cinemachine
             else
             {
                 var blendedLens = lensB; 
-                blendedLens.Lerp(lensA, t);
+                blendedLens.Lerp(lensA, 1 - t);
                 return blendedLens;
             }
         }
@@ -324,6 +326,7 @@ namespace Cinemachine
             Iso = Mathf.RoundToInt(Mathf.Lerp((float)Iso, (float)lensB.Iso, t));
             ShutterSpeed = Mathf.Lerp(ShutterSpeed, lensB.ShutterSpeed, t);
             Aperture = Mathf.Lerp(Aperture, lensB.Aperture, t);
+            FocusDistance = Mathf.Lerp(FocusDistance, lensB.FocusDistance, t);
             BladeCount = Mathf.RoundToInt(Mathf.Lerp(BladeCount, lensB.BladeCount, t));;
             Curvature = Vector2.Lerp(Curvature, lensB.Curvature, t);
             BarrelClipping = Mathf.Lerp(BarrelClipping, lensB.BarrelClipping, t);
@@ -341,6 +344,7 @@ namespace Cinemachine
 #if CINEMACHINE_HDRP
             ShutterSpeed = Mathf.Max(0, ShutterSpeed);
             Aperture = Mathf.Clamp(Aperture, Camera.kMinAperture, Camera.kMaxAperture);
+            FocusDistance = Mathf.Max(FocusDistance, 0.01f);
             BladeCount = Mathf.Clamp(BladeCount, Camera.kMinBladeCount, Camera.kMaxBladeCount);
             BarrelClipping = Mathf.Clamp01(BarrelClipping);
             Curvature.x = Mathf.Clamp(Curvature.x, Camera.kMinAperture, Camera.kMaxAperture);
@@ -372,6 +376,7 @@ namespace Cinemachine
                 && Mathf.Approximately(a.Iso, b.Iso)
                 && Mathf.Approximately(a.ShutterSpeed, b.ShutterSpeed)
                 && Mathf.Approximately(a.Aperture, b.Aperture)
+                && Mathf.Approximately(a.FocusDistance, b.FocusDistance)
                 && a.BladeCount == b.BladeCount
                 && Mathf.Approximately(a.Curvature.x, b.Curvature.x)
                 && Mathf.Approximately(a.Curvature.y, b.Curvature.y)
