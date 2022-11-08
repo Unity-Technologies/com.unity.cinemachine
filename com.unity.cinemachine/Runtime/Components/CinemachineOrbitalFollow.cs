@@ -388,7 +388,7 @@ namespace Cinemachine
             curState.RawPosition = pos + offset;
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
-                && m_PreviousOffset.sqrMagnitude > 0.01f && offset.sqrMagnitude > 0.01f)
+                && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
                 curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousOffset, offset, curState.ReferenceUp);
