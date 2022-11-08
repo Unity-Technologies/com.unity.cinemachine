@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Cinemachine;
-using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -29,7 +28,7 @@ namespace Tests
             m_CmCamera = CreateGameObject("CmCamera", typeof(CmCamera)).GetComponent<CmCamera>();
             m_CmCamera.Priority = 100;
             
-            s_AllCinemachineComponents = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
+            s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
                 typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
                 && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                 && t.GetCustomAttribute<ObsoleteAttribute>() == null);
