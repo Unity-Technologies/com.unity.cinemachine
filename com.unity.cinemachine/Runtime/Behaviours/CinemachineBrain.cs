@@ -985,6 +985,7 @@ namespace Cinemachine
                     {
                         cam.sensorSize = state.Lens.SensorSize;
                         cam.gateFit = state.Lens.GateFit;
+                        cam.focalLength = Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y);
 #if CINEMACHINE_HDRP
     #if CINEMACHINE_HDRP_14
                         //cam.focusDistance = state.Lens.FocusDistance; // implemented in CM 3.0
