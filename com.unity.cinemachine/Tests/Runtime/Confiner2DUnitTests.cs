@@ -1,14 +1,13 @@
+#if CINEMACHINE_PHYSICS_2D
 using System.Collections;
 using Cinemachine;
 using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS_2D
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
         Camera m_Cam;
@@ -160,5 +159,5 @@ namespace Tests.Runtime
             Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
     }
-#endif
 }
+#endif

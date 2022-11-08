@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using Cinemachine.Editor;
 using System.IO;
-using UnityEditor;
 
 namespace Tests.Editor
 {

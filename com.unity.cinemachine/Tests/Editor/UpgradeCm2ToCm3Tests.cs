@@ -8,7 +8,6 @@ using Cinemachine.Editor;
 using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Tests.Editor

@@ -3,7 +3,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
-using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {

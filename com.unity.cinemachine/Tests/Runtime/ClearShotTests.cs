@@ -2,7 +2,6 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using Cinemachine;
-using NUnit.Framework.Interfaces;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime
@@ -11,10 +10,10 @@ namespace Tests.Runtime
     [TestFixture]
     public class ClearShotTests : CinemachineRuntimeFixtureBase
     {
-        private GameObject m_Character;
-        private CinemachineClearShot m_ClearShot;
-        private CmCamera m_Vcam1;
-        private CmCamera m_Vcam2;
+        GameObject m_Character;
+        CinemachineClearShot m_ClearShot;
+        CmCamera m_Vcam1;
+        CmCamera m_Vcam2;
         
         [SetUp]
         public override void SetUp()
@@ -56,7 +55,7 @@ namespace Tests.Runtime
             base.SetUp();
         }
 
-        private static IEnumerable ClearShotTestCases
+        static IEnumerable ClearShotTestCases
         {
             get
             {
