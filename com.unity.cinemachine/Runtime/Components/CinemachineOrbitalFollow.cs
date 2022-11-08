@@ -362,7 +362,7 @@ namespace Cinemachine
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
                 m_ResetHandler?.Invoke();
 
-            var rawOffset = GetCameraPoint();
+            Vector3 offset = GetCameraPoint();
             if (TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 HorizontalAxis.Restrictions 
                     &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
@@ -373,11 +373,11 @@ namespace Cinemachine
                     |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
             }
             m_TargetTracker.TrackTarget(
-                this, deltaTime, curState.ReferenceUp, rawOffset, TrackerSettings,
+                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera
-            var offset = orient * rawOffset;
+            offset = orient * offset;
             curState.ReferenceUp = orient * Vector3.up;
 
             // Respect minimum target distance on XZ plane
