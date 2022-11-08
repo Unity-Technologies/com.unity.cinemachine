@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - Bugfix: VirtualCameras did not set the focal length property of physical cameras.
+- Bugfix: could not set main camera to physical mode while a vcam with ModeOverride = None was active
 
 
 ## [2.9.2] - 2022-10-21
