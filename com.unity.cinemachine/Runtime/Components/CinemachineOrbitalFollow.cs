@@ -387,26 +387,12 @@ namespace Cinemachine
                 curState.ReferenceUp, targetPosition);
             curState.RawPosition = pos + offset;
 
-#if true
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > 0.01f && offset.sqrMagnitude > 0.01f)
             {
                 curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousOffset, offset, curState.ReferenceUp);
             }
-#else
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
-            {
-                var lookAt = targetPosition;
-                if (LookAtTarget != null)
-                    lookAt = LookAtTargetPosition;
-                var dir0 = m_TargetTracker.PreviousTargetPosition + m_PreviousOffset - lookAt;
-                var dir1 = curState.RawPosition - lookAt;
-                if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
-                    curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                        dir0, dir1, curState.ReferenceUp);
-            }
-#endif
             m_PreviousOffset = offset;
         }
 
