@@ -12,10 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for HDRP 14 (Unity 2022.2)
 - Bugfix: InputValueGain mode of axis input was not framerate-independent
 - Bugfix: POV starts up in its centered position, if recentering is enabled
-- Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
 - Freelook ForcePosition is more precise now.
 - Bugfix: VirtualCameras did not set the focal length property of physical cameras.
-
+ 
 
 ## [2.8.9] - 2022-08-24
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
