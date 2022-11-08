@@ -4,6 +4,10 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- Bugfix: could not set main camera to physical mode while a vcam with ModeOverride = None was active
+
+
 ## [2.9.2] - 2022-10-21
 - Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
 - Bugfix: Occasional 1-frame glitch when transitioning between some freelooks
