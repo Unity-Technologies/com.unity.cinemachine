@@ -35,7 +35,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator ThirdPerson()
         {
-            m_Vcam.gameObject.AddComponent<Cinemachine3rdPersonFollow>();
+            m_Vcam.gameObject.AddComponent<CinemachineThirdPersonFollow>();
             m_Vcam.Follow = m_FollowObject.transform;
             m_FollowObject.transform.position += new Vector3(10, 0, 0);
             yield return null;

@@ -1,6 +1,6 @@
-# Cinemachine 3rd Person Aim Extension
+# Cinemachine Third Person Aim Extension
 
-This extension is created to be a part of a 3rd-person camera rig.  
+This extension is created to be a part of a third-person camera rig.  
 
 To preserve aiming accuracy, this extension deliberately cancels out all rotational noise, and forces a hard look at the target point. However, it's still possible to use camera noise with this extension, provided that the noise affects the camera position, instead of the rotation.
 

@@ -334,7 +334,7 @@ namespace Cinemachine
             c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp; // enum values match
             if (m_AutoDolly.m_Enabled)
             {
-                c.AutomaticDolly = new SplineAutoDolly.NearestPointToTarget
+                c.AutomaticDolly.Implementation = new SplineAutoDolly.NearestPointToTarget
                 {
                     PositionOffset = m_AutoDolly.m_PositionOffset,
                     SearchResolution = m_AutoDolly.m_SearchResolution,

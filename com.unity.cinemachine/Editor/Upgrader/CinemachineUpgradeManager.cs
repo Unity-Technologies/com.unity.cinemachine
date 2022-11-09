@@ -74,7 +74,7 @@ namespace Cinemachine.Editor
                     rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 var upgradedObjects = new HashSet<GameObject>();
                 manager.UpgradeNonPrefabs(upgradable, upgradedObjects, null);
-                manager.UpgradeObjectReferences(rootObjects);
+                UpgradeObjectReferences(rootObjects);
 
                 foreach (var go in upgradedObjects)
                     manager.m_ObjectUpgrader.DeleteObsoleteComponents(go);
@@ -396,9 +396,9 @@ namespace Cinemachine.Editor
             m_CurrentSceneOrPrefab = string.Empty;
         }
 
-        void UpgradeObjectReferences(GameObject[] rootObjects)
+        static void UpgradeObjectReferences(GameObject[] rootObjects)
         {
-            var map = m_ObjectUpgrader.ClassUpgradeMap;
+            var map = UpgradeObjectToCm3.ClassUpgradeMap;
             foreach (var go in rootObjects) 
             {
                 if (go == null)

@@ -13,6 +13,7 @@ namespace Cinemachine
         + "tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge")]
         public Vector2 ScreenPosition;
 
+        /// <summary>Settings for DeadZone, which is an area within which the camera will not adjust itself.</summary>
         [Serializable]
         public struct DeadZoneSettings
         {
@@ -88,7 +89,7 @@ namespace Cinemachine
             get
             {
                 var deadZoneSize = EffectiveDeadZoneSize;
-                return new Rect(ScreenPosition - deadZoneSize / 2 + new Vector2(0.5f, 0.5f), deadZoneSize);
+                return new Rect(ScreenPosition - deadZoneSize * 0.5f + new Vector2(0.5f, 0.5f), deadZoneSize);
             }
             set
             {
@@ -99,8 +100,8 @@ namespace Cinemachine
                     DeadZone.Size = deadZoneSize;
                 }
                 ScreenPosition = new Vector2(
-                    Mathf.Clamp(value.x - 0.5f + deadZoneSize.x / 2, -1.5f,  1.5f), 
-                    Mathf.Clamp(value.y - 0.5f + deadZoneSize.y / 2, -1.5f,  1.5f));
+                    Mathf.Clamp(value.x - 0.5f + deadZoneSize.x * 0.5f, -1.5f,  1.5f), 
+                    Mathf.Clamp(value.y - 0.5f + deadZoneSize.y * 0.5f, -1.5f,  1.5f));
                 HardLimits.Size = new Vector2(
                     Mathf.Clamp(HardLimits.Size.x, deadZoneSize.x, 3),
                     Mathf.Clamp(HardLimits.Size.y, deadZoneSize.y, 3));
@@ -113,8 +114,8 @@ namespace Cinemachine
             get
             {
                 if (!HardLimits.Enabled)
-                    return new Rect(Vector2.zero, EffectiveHardLimitSize);
-                var r = new Rect(ScreenPosition - HardLimits.Size / 2 + new Vector2(0.5f, 0.5f), HardLimits.Size);
+                    return new Rect(-EffectiveHardLimitSize * 0.5f, EffectiveHardLimitSize);
+                var r = new Rect(ScreenPosition - HardLimits.Size * 0.5f + new Vector2(0.5f, 0.5f), HardLimits.Size);
                 var deadZoneSize = EffectiveDeadZoneSize;
                 r.position += new Vector2(
                     HardLimits.Offset.x * 0.5f * (HardLimits.Size.x - deadZoneSize.x),

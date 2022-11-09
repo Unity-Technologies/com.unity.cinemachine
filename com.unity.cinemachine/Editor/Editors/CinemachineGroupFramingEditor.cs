@@ -22,14 +22,14 @@ namespace Cinemachine.Editor
             m_PipelineUtility = new(this);
             EditorApplication.update += UpdateVisibility;
 
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
-            CinemachineDebug.OnGUIHandlers += OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
         }
         void OnDisable() 
         {
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
@@ -93,22 +93,25 @@ namespace Cinemachine.Editor
             m_OrthoControls.SetVisible(ortho);
         }
 
-        protected virtual void OnGUI()
+        protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
-            var group = Target.VirtualCamera.LookAtTargetAsGroup;
+            var vcam = Target.VirtualCamera;
+            if (!brain.IsValidChannel(vcam))
+                return;
+
+            var group = vcam.LookAtTargetAsGroup;
             if (group == null)
                 return;
 
             CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
                 group, group.Sphere.position, 
-                Target.VirtualCamera.State.GetFinalOrientation(), brain.OutputCamera);
+                vcam.State.GetFinalOrientation(), brain.OutputCamera);
         }
         
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupFraming))]

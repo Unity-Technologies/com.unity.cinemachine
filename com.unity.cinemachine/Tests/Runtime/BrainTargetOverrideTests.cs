@@ -77,7 +77,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator ThirdPerson()
         {
-            m_Vcam.gameObject.AddComponent<Cinemachine3rdPersonFollow>();
+            m_Vcam.gameObject.AddComponent<CinemachineThirdPersonFollow>();
             m_Vcam.Lens.FieldOfView = 50;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();

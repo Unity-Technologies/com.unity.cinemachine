@@ -343,37 +343,30 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Draw the global settings controls in the inspector
         /// </summary>
-        public void AddSaveDuringPlayToggle(VisualElement ux)
+        public void AddGlobalControls(VisualElement ux)
         {
-            var toggle = ux.AddChild(new Toggle("Save During Play") { style = { height = InspectorUtility.SingleLineHeight }});
-            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
-            toggle.tooltip = "If checked, CmCamera settings changes made during Play Mode "
-                + "will be propagated back to the scene when Play Mode is exited.";
-            toggle.value = SaveDuringPlay.SaveDuringPlay.Enabled;
-
             var helpBox = ux.AddChild(new HelpBox("CmCamera settings changes made during Play Mode will be "
                     + "propagated back to the scene when Play Mode is exited.", 
                 HelpBoxMessageType.Info));
             helpBox.SetVisible(SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying);
 
+            var toggle = ux.AddChild(new Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel.text) 
+            { 
+                tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
+                value = SaveDuringPlay.SaveDuringPlay.Enabled
+            });
+            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
             toggle.RegisterValueChangedCallback((evt) => 
             {
                 SaveDuringPlay.SaveDuringPlay.Enabled = evt.newValue;
                 helpBox.SetVisible(evt.newValue && Application.isPlaying);
             });
-        }
 
-        /// <summary>
-        /// Draw the global settings controls in the inspector
-        /// </summary>
-        public void AddGameViewGuidesToggle(VisualElement ux)
-        {
             var choices = new List<string>() { "Disabled", "Passive", "Interactive" };
             int index = CinemachineCorePrefs.ShowInGameGuides.Value 
                 ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
-            var dropdown = ux.AddChild(new DropdownField
+            var dropdown = ux.AddChild(new DropdownField("Game View Guides")
             {
-                label = "Game View Guides",
                 tooltip = CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip,
                 choices = choices,
                 index = index,

@@ -132,7 +132,7 @@ namespace Cinemachine
         }
 
 #if UNITY_EDITOR
-        internal bool UseHorizontalFOV { get; private set; }
+        internal Camera SourceCamera { get; private set; }
 #endif
 
         /// <summary>For physical cameras only: position of the gate relative to 
@@ -177,17 +177,20 @@ namespace Cinemachine
             LensSettings lens = Default;
             if (fromCamera != null)
             {
+                lens.PullInheritedPropertiesFromCamera(fromCamera);
+
                 lens.FieldOfView = fromCamera.fieldOfView;
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
-                lens.LensShift = fromCamera.lensShift;
-                lens.GateFit = fromCamera.gateFit;
-                lens.SnapshotCameraReadOnlyProperties(fromCamera);
 
-#if CINEMACHINE_HDRP
                 if (lens.IsPhysicalCamera)
                 {
+                    lens.FieldOfView = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, fromCamera.focalLength), fromCamera.sensorSize.y);
+                    lens.SensorSize = fromCamera.sensorSize;
+                    lens.LensShift = fromCamera.lensShift;
+                    lens.GateFit = fromCamera.gateFit;
+#if CINEMACHINE_HDRP
                     lens.Iso = fromCamera.iso;
                     lens.ShutterSpeed = fromCamera.shutterSpeed;
                     lens.Aperture = fromCamera.aperture;
@@ -195,66 +198,54 @@ namespace Cinemachine
                     lens.Curvature = fromCamera.curvature;
                     lens.BarrelClipping = fromCamera.barrelClipping;
                     lens.Anamorphism = fromCamera.anamorphism;
-                }
 #endif
+                }
             }
             return lens;
         }
 
         /// <summary>
-        /// Snapshot the properties that are read-only in the Camera
+        /// In the event that there is no camera mode override, camera mode is driven
+        /// by the Camera's state.
         /// </summary>
         /// <param name="camera">The Camera from which we will take the info</param>
-        public void SnapshotCameraReadOnlyProperties(Camera camera)
+        public void PullInheritedPropertiesFromCamera(Camera camera)
         {
-            m_OrthoFromCamera = false;
-            m_PhysicalFromCamera = false;
-#if UNITY_EDITOR
-            UseHorizontalFOV = false;
-#endif
-            if (camera != null && ModeOverride == OverrideModes.None)
+            if (ModeOverride == OverrideModes.None)
             {
                 m_OrthoFromCamera = camera.orthographic;
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
-                m_SensorSize = camera.sensorSize;
-                GateFit = camera.gateFit;
             }
-            if (IsPhysicalCamera)
+            if (!IsPhysicalCamera)
             {
-                // If uninitialized, do an initial pull from the camera
-                if (camera != null && m_SensorSize == Vector2.zero)
-                {
-                    m_SensorSize = camera.sensorSize;
-                    GateFit = camera.gateFit;
-                }
-            }
-            else
-            {
-                if (camera != null)
-                    m_SensorSize = new Vector2(camera.aspect, 1f);
+                // For nonphysical cameras, aspect is encoded in the sensor size
+                m_SensorSize = new Vector2(camera.aspect, 1f);
                 LensShift = Vector2.zero;
             }
+
 #if UNITY_EDITOR
-            // This should really be a global setting, but for now there is no better way than this!
-            var p = new UnityEditor.SerializedObject(camera).FindProperty("m_FOVAxisMode");
-            UseHorizontalFOV = (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
+            SourceCamera = camera; // hack because of missng Unity API to get horizontal or vertical fov mode
 #endif
         }
 
         /// <summary>
-        /// Snapshot the properties that are read-only in the Camera
+        /// Copy the properties controlled by camera mode.  If ModeOverride is None, then
+        /// some internal state information must be transferred.
         /// </summary>
-        /// <param name="lens">The LensSettings from which we will take the info</param>
-        public void SnapshotCameraReadOnlyProperties(ref LensSettings lens)
+        /// <param name="fromLens">The LensSettings from which we will take the info</param>
+        public void CopyCameraMode(ref LensSettings fromLens)
         {
+            ModeOverride = fromLens.ModeOverride;
             if (ModeOverride == OverrideModes.None)
             {
-                m_OrthoFromCamera = lens.Orthographic;
-                m_SensorSize = lens.m_SensorSize;
-                m_PhysicalFromCamera = lens.IsPhysicalCamera;
+                m_OrthoFromCamera = fromLens.Orthographic;
+                m_PhysicalFromCamera = fromLens.IsPhysicalCamera;
             }
             if (!IsPhysicalCamera)
+            {
                 LensShift = Vector2.zero;
+                m_SensorSize = fromLens.m_SensorSize;
+            }
         }
 
         /// <summary>

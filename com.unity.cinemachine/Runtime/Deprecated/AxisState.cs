@@ -179,9 +179,7 @@ namespace Cinemachine
         IInputAxisProvider m_InputAxisProvider;
         int m_InputAxisIndex;
 
-        /// <summary>
-        /// IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead.
-        /// </summary>
+        /// <summary>IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead.</summary>
         [Obsolete("IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead")]
         public interface IRequiresInput 
         {

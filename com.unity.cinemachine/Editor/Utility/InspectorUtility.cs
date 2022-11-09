@@ -295,7 +295,7 @@ namespace Cinemachine.Editor
         }
 
         public static bool EnabledFoldout(
-            Rect rect, SerializedProperty property, string enabledPropertyName,
+            Rect rect, SerializedProperty property, string enabledPropertyName, string disabledToggleLabel,
             GUIContent label = null)
         {
             var enabledProp = property.FindPropertyRelative(enabledPropertyName);
@@ -310,8 +310,16 @@ namespace Cinemachine.Editor
             if (label == null)
                 label = new GUIContent(property.displayName, enabledProp.tooltip);
             EditorGUI.PropertyField(rect, enabledProp, label);
-            rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            if (enabledProp.boolValue)
+            if (!enabledProp.boolValue)
+            {
+                if (!string.IsNullOrEmpty(disabledToggleLabel))
+                {
+                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
+                    var r = rect; r.x += w; r.width -= w;
+                    EditorGUI.LabelField(r, disabledToggleLabel);
+                }
+            }
+            else
             {
                 ++EditorGUI.indentLevel;
                 var childProperty = property.Copy();
@@ -321,9 +329,9 @@ namespace Cinemachine.Editor
                 {
                     if (!SerializedProperty.EqualContents(childProperty, enabledProp))
                     {
+                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
                         rect.height = EditorGUI.GetPropertyHeight(childProperty);
                         EditorGUI.PropertyField(rect, childProperty, true);
-                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
                     }
                     childProperty.NextVisible(false);
                 }
@@ -355,6 +363,15 @@ namespace Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
+        public static bool GetUseHorizontalFOV(Camera camera)
+        {
+            if (camera == null)
+                return false;
+
+            // This should really be a global setting, but for now there is no better way than this!
+            var p = new SerializedObject(camera).FindProperty("m_FOVAxisMode");
+            return (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
+        }
 
         ///==============================================================================================
         ///==============================================================================================

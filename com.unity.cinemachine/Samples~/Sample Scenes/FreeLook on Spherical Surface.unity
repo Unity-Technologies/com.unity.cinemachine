@@ -168,10 +168,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ButtonText: Help
-  Position: {x: 30, y: 30}
-  HelpText: WASD to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera. 
-    The player is used as the CinemachineBrain's World Up Override.  This allows
-    the camera to track the player even while it is upside-down.
+  Position: {x: 0.9, y: 0.05}
+  HelpText: "WASD to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera.
+    \n\nIf using Input package, right mouse button to jump and middle mouse button
+    to sprint.\n\nThis scene shows a basic FreeLook camera tracking a player walking
+    on the surface of a sphere.  To allow the cameras to correctly use the player's
+    local Up direction, the player is used as a WorldUpOverride in the CM BRain."
 --- !u!1 &364965555
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,7 +407,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
-  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
+  m_LocalRotation: {x: 0.20065226, y: -0.000000016856447, z: 0.000000003452499, w: 0.97966254}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -571,7 +573,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
+  m_LocalRotation: {x: 0.20065226, y: -0.000000016856447, z: 0.000000003452499, w: 0.97966254}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

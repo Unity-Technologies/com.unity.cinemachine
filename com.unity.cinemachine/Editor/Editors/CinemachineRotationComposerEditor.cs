@@ -23,8 +23,8 @@ namespace Cinemachine.Editor
             m_GameViewGuides.Target = () => serializedObject;
             m_GameViewGuides.OnEnable();
 
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
-            CinemachineDebug.OnGUIHandlers += OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
    
@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
         {
             m_PipelineUtility.OnDisable();
             m_GameViewGuides.OnDisable();
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
   
@@ -56,21 +56,23 @@ namespace Cinemachine.Editor
             return ux;
         }
 
-        protected virtual void OnGUI()
+        protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             // Draw the camera guides
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
             // Don't draw the guides if rendering to texture
-            var vcam = Target.VirtualCamera;
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+                return;
+
+            var vcam = Target.VirtualCamera;
+            if (!brain.IsValidChannel(vcam))
                 return;
 
             // Screen guides
             bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
-            m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens);
+            m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
 
             // Draw an on-screen gizmo for the target
             if (Target.LookAtTarget != null && isLive)

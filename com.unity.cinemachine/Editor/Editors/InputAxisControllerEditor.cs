@@ -71,15 +71,16 @@ namespace Cinemachine.Editor
 #endif
                     if (numFields > 0)
                     {
-                        rect.x += EditorGUIUtility.labelWidth - height;
-                        rect.width -= EditorGUIUtility.labelWidth - height;
+                        var blankLabelWidth = height / numFields;
+                        rect.x += EditorGUIUtility.labelWidth - blankLabelWidth;
+                        rect.width -= EditorGUIUtility.labelWidth - blankLabelWidth;
                         rect.width /= numFields;
 
                         int oldIndent = EditorGUI.indentLevel;
                         float oldLabelWidth = EditorGUIUtility.labelWidth;
 
                         EditorGUI.indentLevel = 0;
-                        EditorGUIUtility.labelWidth = height / numFields;
+                        EditorGUIUtility.labelWidth = blankLabelWidth;
 
                         if (actionProperty != null)
                         {
@@ -111,25 +112,14 @@ namespace Cinemachine.Editor
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
                     var inputName = "";
                     var invertY = false;
-                    controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
+                    controller.Recentering = InputAxisRecenteringSettings.Default;
 
                     if (axis.Name.Contains("Look"))
                     {
                         actionName = "Player/Look";
                         inputName = axis.AxisIndex == 0 ? "Mouse X" : (axis.AxisIndex == 1 ? "Mouse Y" : "");
                         invertY = axis.AxisIndex == 1;
-                        controller.Recentering = InputAxisRecenteringSettings.Default;
                         controller.Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f };
-                    }
-                    if (axis.Name.Contains("Move"))
-                    {
-                        actionName = "Player/Move";
-                        inputName = axis.AxisIndex == 0 ? "Horizontal" : (axis.AxisIndex == 1 ? "Vertical" : "");
-                    }
-                    if (axis.Name.Contains("Fire"))
-                    {
-                        actionName = "Player/Fire";
-                        inputName = "Fire";
                     }
 #if false
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
@@ -138,10 +128,23 @@ namespace Cinemachine.Editor
                         inputName = "Mouse ScrollWheel";
                     }
 #endif
+                    if (axis.Name.Contains("Move"))
+                    {
+                        actionName = "Player/Move";
+                        inputName = axis.AxisIndex == 0 ? "Horizontal" : (axis.AxisIndex == 1 ? "Vertical" : "");
+                        controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
+                    }
+                    if (axis.Name.Contains("Fire"))
+                    {
+                        actionName = "Player/Fire";
+                        inputName = "Fire";
+                        controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
+                    }
                     if (axis.Name.Contains("Jump"))
                     {
                         actionName = "UI/RightClick"; // best we can do
                         inputName = "Jump";
+                        controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
                     }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM

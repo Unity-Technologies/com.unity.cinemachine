@@ -47,7 +47,7 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        [FoldoutWithEnabledButton]
+        [FoldoutWithEnabledButton(toggleText: "(using default)")]
         public OutputChannel PriorityAndChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
@@ -100,6 +100,9 @@ namespace Cinemachine
             + "unless the virtual camera is doing shot evaluation.")]
         [FormerlySerializedAs("m_StandbyUpdate")]
         public StandbyUpdateMode StandbyUpdate = StandbyUpdateMode.RoundRobin;
+
+        // Cache for GameObject name, to avoid GC allocs
+        string m_CachedName;
 
         //============================================================================
         // Legacy streaming support
@@ -388,8 +391,21 @@ namespace Cinemachine
         }
 
         /// <summary>Get the name of the Virtual Camera.  Base implementation
-        /// returns the owner GameObject's name.</summary>
-        public string Name => name;
+        /// returns a cache of the owner GameObject's name.</summary>
+        public string Name 
+        {
+            get 
+            {
+#if UNITY_EDITOR
+                // Allow vcam name changes when not playing
+                if (!Application.isPlaying || m_CachedName == null)
+#else
+                if (m_CachedName == null)
+#endif
+                    m_CachedName = name;
+                return m_CachedName;
+            }
+        }
 
         /// <summary>Gets a brief debug description of this virtual camera, for use when displayiong debug info</summary>
         public virtual string Description => "";
@@ -754,8 +770,8 @@ namespace Cinemachine
             state.ReferenceUp = worldUp;
 
             CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-            if (brain != null)
-                lens.SnapshotCameraReadOnlyProperties(brain.OutputCamera);
+            if (brain != null && brain.OutputCamera != null)
+                lens.PullInheritedPropertiesFromCamera(brain.OutputCamera);
 
             state.Lens = lens;
             return state;
