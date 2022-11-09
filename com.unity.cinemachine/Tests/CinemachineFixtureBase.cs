@@ -33,30 +33,27 @@ namespace Tests
         /// <returns></returns>
         protected GameObject CreateGameObject(string name, params System.Type[] components)
         {
-            GameObject go;
 #if UNITY_EDITOR
-            if (Application.isPlaying)
-                go = new GameObject(name);
-            else
-                go = ObjectFactory.CreateGameObject(name);
+            var go = Application.isPlaying ? new GameObject(name) : ObjectFactory.CreateGameObject(name);
 #else
-            go = new GameObject(name);
+            var go = new GameObject(name);
 #endif
             m_GameObjectsToDestroy.Add(go);
         
             foreach(var c in components)
                 if (c.IsSubclassOf(typeof(Component)))
-#if UNITY_EDITOR
-                    if (Application.isPlaying)
-                        go.AddComponent(c);
-                    else
-                        Undo.AddComponent(go, c);
-#else
-                    go.AddComponent(c);
-#endif
-                    
-        
+                    AddComponent(go, c);
+            
             return go;
+        }
+
+        protected Component AddComponent(GameObject go, System.Type c)
+        {
+#if UNITY_EDITOR
+            return Application.isPlaying ? go.AddComponent(c) : Undo.AddComponent(go, c);
+#else
+            return go.AddComponent(c);
+#endif
         }
 
         /// <summary>
@@ -66,14 +63,10 @@ namespace Tests
         /// <returns></returns>
         protected GameObject CreatePrimitive(PrimitiveType type)
         {
-            GameObject go;
 #if UNITY_EDITOR
-            if (Application.isPlaying) 
-                go = GameObject.CreatePrimitive(type);
-            else
-                go = ObjectFactory.CreatePrimitive(type);
+            var go = Application.isPlaying ? GameObject.CreatePrimitive(type) : ObjectFactory.CreatePrimitive(type);
 #else
-            go = GameObject.CreatePrimitive(type);
+            var go = GameObject.CreatePrimitive(type);
 #endif
             m_GameObjectsToDestroy.Add(go);
             return go;
