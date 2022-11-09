@@ -9,6 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
+    [TestFixture]
     public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase
     {
         CmCamera m_CmCamera;

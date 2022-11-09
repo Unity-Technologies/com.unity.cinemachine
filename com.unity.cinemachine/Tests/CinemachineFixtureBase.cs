@@ -7,7 +7,6 @@ using UnityEngine;
 namespace Tests
 {
     /// <summary>Base class that handles creation and deletion of GameObjects.</summary>
-    [TestFixture]
     public class CinemachineFixtureBase
     {
         readonly List<GameObject> m_GameObjectsToDestroy = new();

@@ -8,6 +8,7 @@ using UnityEngine.TestTools;
 
 namespace Tests.Runtime
 {
+    [TestFixture]
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_Vcam;

@@ -6,6 +6,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
+    [TestFixture]
     public class CameraPositionTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_Vcam;

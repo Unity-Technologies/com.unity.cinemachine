@@ -5,6 +5,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Editor
 {
+    [TestFixture]
     public class UnityVectorExtensionTests
     {
         public enum IntersectionResult

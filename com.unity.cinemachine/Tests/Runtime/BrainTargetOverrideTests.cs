@@ -6,6 +6,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
+    [TestFixture]
     public class BrainTargetOverrideTests : CinemachineFixtureBase
     {
         GameObject m_CameraHolderWithBrain, m_CameraHolderWithoutBrain, m_GoWithBrain, m_GoWithoutBrain;

@@ -10,6 +10,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
+    [TestFixture]
     public class SplineDollyCameraTest : CinemachineRuntimeFixtureBase
     {
         CmCamera m_CmCam;

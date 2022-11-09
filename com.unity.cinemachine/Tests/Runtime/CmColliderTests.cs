@@ -8,6 +8,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
+    [TestFixture]
     public class CmColliderTests : CinemachineRuntimeTimeInvariantFixtureBase
     {
         CmCamera m_Vcam;

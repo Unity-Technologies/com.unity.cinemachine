@@ -12,6 +12,7 @@ using UnityEngine.TestTools;
 
 namespace Tests.Editor
 {
+    [TestFixture]
     public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
     {
         static IEnumerable<Type> s_AllCinemachineComponents;

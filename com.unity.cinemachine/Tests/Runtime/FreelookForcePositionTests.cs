@@ -9,6 +9,7 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
+    [TestFixture]
     public class FreelookForcePositionTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_CmCamera;
