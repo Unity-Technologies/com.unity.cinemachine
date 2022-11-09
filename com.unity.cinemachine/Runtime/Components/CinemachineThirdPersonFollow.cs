@@ -60,6 +60,7 @@ namespace Cinemachine
         {
             /// <summary>Enable or disable obstacle handling.  
             /// If enabled, camera will be pulled in front of occluding obstacles.</summary>
+            [Tooltip("If enabled, camera will be pulled in front of occluding obstacles")]
             public bool Enabled;
             
             /// <summary>Camera will avoid obstacles on these layers.</summary>
