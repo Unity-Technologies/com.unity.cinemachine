@@ -52,15 +52,19 @@ namespace Cinemachine
         public float CameraDistance;
 
 #if CINEMACHINE_PHYSICS
+        /// <summary>
+        /// Holds settings for collision resolution.
+        /// </summary>
         [Serializable]
         public struct ObstacleSettings
         {
-            /// <summary>Enable or disable obstacle handling</summary>
+            /// <summary>Enable or disable obstacle handling.  
+            /// If enabled, camera will be pulled in front of occluding obstacles.</summary>
             public bool Enabled;
             
             /// <summary>Camera will avoid obstacles on these layers.</summary>
             [Tooltip("Camera will avoid obstacles on these layers")]
-            public LayerMask CameraCollisionFilter;
+            public LayerMask CollisionFilter;
 
             /// <summary>
             /// Obstacles with this tag will be ignored.  It is a good idea 
@@ -97,6 +101,7 @@ namespace Cinemachine
             public float DampingFromCollision;
         }
 
+        /// <summary>If enabled, camera will be pulled in front of occluding obstacles.</summary>
         [FoldoutWithEnabledButton]
         public ObstacleSettings Obstacles;
 #endif
@@ -129,10 +134,11 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
 #if CINEMACHINE_PHYSICS
-            Obstacles.CameraCollisionFilter = 0;
+            Obstacles.Enabled = false;
+            Obstacles.CollisionFilter = 1;
             Obstacles.CameraRadius = 0.2f;
             Obstacles.DampingIntoCollision = 0;
-            Obstacles.DampingFromCollision = 2f;
+            Obstacles.DampingFromCollision = 0.5f;
 #endif
         }
 
@@ -311,7 +317,7 @@ namespace Cinemachine
             Vector3 root, Vector3 tip, float deltaTime, 
             float cameraRadius, ref float collisionCorrection)
         {
-            if (Obstacles.CameraCollisionFilter.value == 0)
+            if (Obstacles.CollisionFilter.value == 0)
                 return tip;
             
             var dir = tip - root;
@@ -323,7 +329,7 @@ namespace Cinemachine
 
             if (RuntimeUtility.SphereCastIgnoreTag(
                 root, cameraRadius, dir, out RaycastHit hitInfo, 
-                len, Obstacles.CameraCollisionFilter, Obstacles.IgnoreTag))
+                len, Obstacles.CollisionFilter, Obstacles.IgnoreTag))
             {
                 var desiredResult = hitInfo.point + hitInfo.normal * cameraRadius;
                 desiredCorrection = (desiredResult - tip).magnitude;

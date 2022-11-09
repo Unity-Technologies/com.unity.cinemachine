@@ -72,7 +72,6 @@ namespace Cinemachine.Editor
             }
         }
 
-
         void OnSceneGUI()
         {
             var thirdPerson = Target;

@@ -341,7 +341,7 @@ namespace Cinemachine
             c.Obstacles = new CinemachineThirdPersonFollow.ObstacleSettings
             {
                 Enabled = true,
-                CameraCollisionFilter = CameraCollisionFilter,
+                CollisionFilter = CameraCollisionFilter,
                 IgnoreTag = IgnoreTag,
                 CameraRadius = CameraRadius,
                 DampingFromCollision = DampingFromCollision,
