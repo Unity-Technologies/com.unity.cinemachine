@@ -5,9 +5,24 @@ using UnityEngine;
 
 namespace Tests
 {
+    /// <summary>Base class that handles creation and deletion of GameObjects.</summary>
     public class CinemachineFixtureBase
     {
         readonly List<GameObject> m_GameObjectsToDestroy = new();
+        
+        [SetUp]
+        public virtual void SetUp()
+        {
+        }
+        
+        [TearDown]
+        public virtual void TearDown()
+        {
+            foreach (var go in m_GameObjectsToDestroy) 
+                RuntimeUtility.DestroyObject(go);
+
+            m_GameObjectsToDestroy.Clear();
+        }
 
         /// <summary>
         /// Creates gameObject and keeps track of it, so it is cleaned up properly at [TearDown].
@@ -38,22 +53,6 @@ namespace Tests
             var go = GameObject.CreatePrimitive(type);
             m_GameObjectsToDestroy.Add(go);
             return go;
-        }
-
-        [SetUp]
-        public virtual void SetUp()
-        {
-        }
-        
-        [TearDown]
-        public virtual void TearDown()
-        {
-            foreach (var go in m_GameObjectsToDestroy)
-            {
-                RuntimeUtility.DestroyObject(go);
-            }
-
-            m_GameObjectsToDestroy.Clear();
         }
     }
 }

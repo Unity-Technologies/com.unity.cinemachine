@@ -6,6 +6,9 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
+    /// <summary>
+    /// A class that handles creation and deletion of GameObjects, and gets set up for RunTime testing.
+    /// </summary>
     public class CinemachineRuntimeFixtureBase : CinemachineFixtureBase
     {
         protected Camera m_Cam;

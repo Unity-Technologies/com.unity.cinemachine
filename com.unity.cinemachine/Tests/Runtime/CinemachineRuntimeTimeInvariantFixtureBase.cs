@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace Tests.Runtime
 {
+    /// <summary>
+    /// A class that handles creation and deletion of GameObjects, and gets set up for Time Invariant RunTime testing.
+    /// </summary>
     public class CinemachineRuntimeTimeInvariantFixtureBase : CinemachineRuntimeFixtureBase
     {
         [SetUp]
