@@ -56,7 +56,7 @@ The __Position Control__ properties offer the following procedural algorithms fo
 * __Orbital Follow__: Move in a variable relationship to the __Tracking__ target, optionally controlled by player input.
 * __Spline Dolly__: Move along a predefined Spline path.
 * __Hard Lock to Target__: Use the same position and as the __Tracking__ target.
-* __3rd Person Follow__: Place the camera on a configurable rigid rig attached to the __Tracking__ target.  The rig rotates with the target.  This is useful for TPS and POV cameras.
+* __Third Person Follow__: Place the camera on a configurable rigid rig attached to the __Tracking__ target.  The rig rotates with the target.  This is useful for TPS and POV cameras.
 * __Do Nothing__: Do not procedurally move the CmCamera.  Position is controlled directly by the CmCamera's transform, which can be controlled by a custom script.
 
 The __Rotation Control__ properties offer the following procedural algorithms for rotating a CmCamera to face the __Look At__ target:
