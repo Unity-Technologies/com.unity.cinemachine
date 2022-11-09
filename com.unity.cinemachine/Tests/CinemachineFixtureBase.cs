@@ -22,7 +22,7 @@ namespace Tests
 #if UNITY_EDITOR
                 Undo.DestroyObjectImmediate(go);
 #else
-                Destroy(go);
+                Object.Destroy(go);
 #endif
 
             m_GameObjectsToDestroy.Clear();
