@@ -67,24 +67,6 @@ namespace Tests.Editor
         }
 
         [UnityTest]
-        public IEnumerator ConvertTrackedDolly()
-        {
-            var vcamGo = CreateGameObject("TestVcam", typeof(CinemachineVirtualCamera));
-            Assert.IsTrue(vcamGo.TryGetComponent(out CinemachineVirtualCamera vcam));
-            vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
-            vcam.InvalidateComponentPipeline();
-            CinemachineUpgradeManager.UpgradeSingleObject(vcamGo);
-            yield return null;
-            
-            Assert.That(vcamGo.TryGetComponent(out CinemachineVirtualCamera _), Is.False);
-            Assert.That(vcamGo.TryGetComponent(out CinemachineTrackedDolly _), Is.False);
-            Assert.That(vcamGo.transform.childCount, Is.Zero);
-            Assert.That(vcamGo.GetComponent<CmCamera>(), Is.Not.Null);
-            Assert.That(vcamGo.GetComponent<CinemachineSplineDolly>(), Is.Not.Null);
-            Assert.That(vcamGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(2));
-        } 
-
-        [UnityTest]
         public IEnumerator ConvertFreelook()
         {
             var freelookGo = CreateGameObject("TestVcam", typeof(CinemachineFreeLook));
