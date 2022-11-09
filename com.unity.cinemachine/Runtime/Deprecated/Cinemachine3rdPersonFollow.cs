@@ -8,10 +8,10 @@ namespace Cinemachine
     /// Third-person follower, with complex pivoting: horizontal about the origin, 
     /// vertical about the shoulder.  
     /// </summary>
-    [Obsolete("CinemachineComposer has been deprecated. Use CinemachineRotationComposer instead")]
-    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine 3rd Person Follow")]
-    [SaveDuringPlay]
+    [Obsolete("Cinemachine3rdPersonFollow has been deprecated. Use CinemachineThirdPersonFollow instead")]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [AddComponentMenu("")]
+    [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/Cinemachine3rdPersonFollow.html")]
     public class Cinemachine3rdPersonFollow : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifierValueSource
@@ -337,6 +337,7 @@ namespace Cinemachine
             c.VerticalArmLength = VerticalArmLength;
             c.CameraDistance = CameraDistance;
             c.CameraSide = CameraSide;
+#if CINEMACHINE_PHYSICS
             c.Obstacles = new CinemachineThirdPersonFollow.ObstacleSettings
             {
                 Enabled = true,
@@ -346,6 +347,7 @@ namespace Cinemachine
                 DampingFromCollision = DampingFromCollision,
                 DampingIntoCollision = DampingIntoCollision,
             };
+ #endif
         }
     }
 }

@@ -115,12 +115,9 @@ namespace Cinemachine
             Damping.y = Mathf.Max(0, Damping.y);
             Damping.z = Mathf.Max(0, Damping.z);
 #if CINEMACHINE_PHYSICS
-            if (Obstacles.Enabled)
-            {
-                Obstacles.CameraRadius = Mathf.Max(0.001f, Obstacles.CameraRadius);
-                Obstacles.DampingIntoCollision = Mathf.Max(0, Obstacles.DampingIntoCollision);
-                Obstacles.DampingFromCollision = Mathf.Max(0, Obstacles.DampingFromCollision);
-            }
+            Obstacles.CameraRadius = Mathf.Max(0.001f, Obstacles.CameraRadius);
+            Obstacles.DampingIntoCollision = Mathf.Max(0, Obstacles.DampingIntoCollision);
+            Obstacles.DampingFromCollision = Mathf.Max(0, Obstacles.DampingFromCollision);
 #endif
         }
 
@@ -132,13 +129,10 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
 #if CINEMACHINE_PHYSICS
-            if (Obstacles.Enabled)
-            {
-                Obstacles.CameraCollisionFilter = 0;
-                Obstacles.CameraRadius = 0.2f;
-                Obstacles.DampingIntoCollision = 0;
-                Obstacles.DampingFromCollision = 2f;
-            }
+            Obstacles.CameraCollisionFilter = 0;
+            Obstacles.CameraRadius = 0.2f;
+            Obstacles.DampingIntoCollision = 0;
+            Obstacles.DampingFromCollision = 2f;
 #endif
         }
 
@@ -179,7 +173,6 @@ namespace Cinemachine
         /// Always returns the Aim stage</summary>
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
-#if CINEMACHINE_PHYSICS
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
@@ -187,10 +180,13 @@ namespace Cinemachine
         public override float GetMaxDampTime() 
         { 
             return Mathf.Max(
-                Obstacles.Enabled ? Mathf.Max(Obstacles.DampingIntoCollision, Obstacles.DampingFromCollision) : 0, 
+#if CINEMACHINE_PHYSICS
+                Obstacles.Enabled ? Mathf.Max(Obstacles.DampingIntoCollision, Obstacles.DampingFromCollision) : 0,
+#else
+                0,
+#endif
                 Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)));
         }
-#endif
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
