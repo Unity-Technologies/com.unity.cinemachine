@@ -229,11 +229,11 @@ namespace Cinemachine.Editor
             {
                 typeof(Cinemachine3rdPersonFollow), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "CameraCollisionFilter", new("Obstacles.CollisionFilter", typeof(CinemachineThirdPersonFollow)) },
-                    { "IgnoreTag", new("Obstacles.IgnoreTag", typeof(CinemachineThirdPersonFollow)) },
-                    { "CameraRadius", new("Obstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
-                    { "DampingIntoCollision", new("Obstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
-                    { "DampingFromCollision", new("Obstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                    { "CameraCollisionFilter", new("AvoidObstacles.CollisionFilter", typeof(CinemachineThirdPersonFollow)) },
+                    { "IgnoreTag", new("AvoidObstacles.IgnoreTag", typeof(CinemachineThirdPersonFollow)) },
+                    { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingIntoCollision", new("AvoidObstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
                 }
             },
             {
