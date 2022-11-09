@@ -20,7 +20,7 @@
 //         [SetUp]
 //         public override void SetUp()
 //         {
-//             CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
+//             base.SetUp();
 //
 //             // Create a minimal character controller
 //             var character = CreateGameObject("Character", typeof(Animator));
@@ -47,8 +47,6 @@
 //             m_Animator = character.GetComponent<Animator>();
 //             m_Vcam1 = vcam1;
 //             m_Vcam2 = vcam2;
-//
-//             base.SetUp();
 //         }
 //
 //         [UnityTest]
@@ -73,4 +71,3 @@
 //     }
 // }
 // #endif
-//
