@@ -17,7 +17,7 @@ namespace Tests.Editor
             l2_p2
         }
 
-        static object[] IntersectionTestCases =
+        static object[] s_IntersectionTestCases =
         {
             // l1_p1, l1_p2, l2_p1, l2_p2, expectedIntersectionType, expectedIntersectionResult
             new object[] {new Vector2(0, 1), new Vector2(0, -1), new Vector2(-1, 0), new Vector2(1, 0), 2, IntersectionResult.Zero},
@@ -38,7 +38,7 @@ namespace Tests.Editor
             new object[] {new Vector2(0, 5), new Vector2(0, 3), new Vector2(0, 9), new Vector2(0, 5), 4, IntersectionResult.l2_p2}
         };
         
-        [Test, TestCaseSource(nameof(IntersectionTestCases))]
+        [Test, TestCaseSource(nameof(s_IntersectionTestCases))]
         public void FindIntersectionTest(Vector2 l1_p1, Vector2 l1_p2, Vector2 l2_p1, Vector2 l2_p2, 
             int expectedIntersectionType, IntersectionResult expectedIntersectionResult)
         {

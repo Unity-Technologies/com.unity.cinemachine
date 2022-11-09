@@ -36,7 +36,7 @@ namespace Tests.Runtime
             
         }
 
-        Vector3 m_Delta = new Vector3(10, 0, 0);
+        Vector3 m_Delta = new(10, 0, 0);
         IEnumerator CheckThatBrainsAreControllingTheirTargets()
         {
             m_FollowObject.transform.position += m_Delta;
@@ -88,9 +88,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator PositionComposer()
         {
-            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
-            framingTransposer.Damping = Vector3.zero;
-            framingTransposer.CameraDistance = 1f;
+            var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+            positionComposer.Damping = Vector3.zero;
+            positionComposer.CameraDistance = 1f;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
@@ -108,10 +108,10 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator OrbitalFollow()
         {
-            var orbitalTransposer = m_Vcam.gameObject.AddComponent<CinemachineOrbitalFollow>();
-            orbitalTransposer.TrackerSettings.PositionDamping = Vector3.zero;
-            orbitalTransposer.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
-            orbitalTransposer.Radius = 0;
+            var orbitalFollow = m_Vcam.gameObject.AddComponent<CinemachineOrbitalFollow>();
+            orbitalFollow.TrackerSettings.PositionDamping = Vector3.zero;
+            orbitalFollow.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
+            orbitalFollow.Radius = 0;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
@@ -120,9 +120,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator Follow()
         {
-            var transposer = m_Vcam.gameObject.AddComponent<CinemachineFollow>();
-            transposer.TrackerSettings.PositionDamping = Vector3.zero;
-            transposer.FollowOffset = Vector3.zero;
+            var follow = m_Vcam.gameObject.AddComponent<CinemachineFollow>();
+            follow.TrackerSettings.PositionDamping = Vector3.zero;
+            follow.FollowOffset = Vector3.zero;
             m_Vcam.Follow = m_FollowObject.transform;
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();

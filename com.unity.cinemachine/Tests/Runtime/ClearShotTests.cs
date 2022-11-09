@@ -1,3 +1,4 @@
+#if CINEMACHINE_PHYSICS
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -6,7 +7,6 @@ using UnityEngine.TestTools;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS
     [TestFixture]
     public class ClearShotTests : CinemachineRuntimeFixtureBase
     {
@@ -74,5 +74,5 @@ namespace Tests.Runtime
             Assert.That(m_ClearShot.LiveChild.Name, Is.EqualTo(expectedVcamName));
         }
     }
-#endif
 }
+#endif

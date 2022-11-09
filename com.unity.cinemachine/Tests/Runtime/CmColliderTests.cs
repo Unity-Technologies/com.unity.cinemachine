@@ -1,3 +1,4 @@
+#if CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -5,7 +6,6 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
 
-#if CINEMACHINE_PHYSICS
 namespace Tests.Runtime
 {
     public class CmColliderTests : CinemachineRuntimeTimeInvariantFixtureBase
@@ -22,8 +22,8 @@ namespace Tests.Runtime
             m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineDeoccluder)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
-            var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
-            framingTransposer.CameraDistance = 5f;
+            var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+            positionComposer.CameraDistance = 5f;
             m_Collider = m_Vcam.GetComponent<CinemachineDeoccluder>();
             m_Collider.Strategy = CinemachineDeoccluder.ResolutionStrategy.PullCameraForward;
             m_Collider.CollideAgainst = 1;
