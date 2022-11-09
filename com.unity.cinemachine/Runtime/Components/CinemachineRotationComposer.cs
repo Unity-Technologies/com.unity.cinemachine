@@ -215,7 +215,7 @@ namespace Cinemachine
                         m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
                 else
                 {
-                    dir = Quaternion.Euler(curState.PositionDampingBypass) * dir;
+                    dir = curState.RotationDampingBypass * dir;
                     rigOrientation = Quaternion.LookRotation(dir, curState.ReferenceUp);
                     rigOrientation = rigOrientation.ApplyCameraRotation(
                         -m_ScreenOffsetPrevFrame, curState.ReferenceUp);

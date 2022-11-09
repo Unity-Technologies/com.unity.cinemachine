@@ -31,7 +31,7 @@ public class PositionAimTargetAndReticle : MonoBehaviour
             var liveCam = brain.ActiveVirtualCamera as CmCamera;
             if (liveCam != null)
             {
-                if (liveCam.TryGetComponent<Cinemachine3rdPersonAim>(out var aim) && aim.enabled)
+                if (liveCam.TryGetComponent<CinemachineThirdPersonAim>(out var aim) && aim.enabled)
                 {
                     // Set the worldspace aim target position so that we can know what gets hit
                     enableReticle = true;

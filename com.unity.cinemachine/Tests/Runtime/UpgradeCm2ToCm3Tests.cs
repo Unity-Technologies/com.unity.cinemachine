@@ -14,7 +14,7 @@ namespace Tests.Runtime
     public class UpgradeCm2ToCm3Tests : CinemachineRuntimeFixtureBase
     {
         static IEnumerable<Type> s_AllCinemachineComponents;
-        
+
         [SetUp]
         public override void SetUp()
         {

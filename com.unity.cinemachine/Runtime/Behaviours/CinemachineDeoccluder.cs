@@ -313,7 +313,7 @@ namespace Cinemachine
                     var initialCamPos = state.GetCorrectedPosition();
 
                     // Rotate the previous collision correction along with the camera
-                    var dampingBypass = Quaternion.Euler(state.PositionDampingBypass);
+                    var dampingBypass = state.RotationDampingBypass;
                     extra.PreviousDisplacement = dampingBypass * extra.PreviousDisplacement;
 
                     // Calculate the desired collision correction
@@ -380,8 +380,8 @@ namespace Cinemachine
                         var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
                         var dir1 = cameraPos - state.ReferenceLookAt;
                         if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
-                            state.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                                dir0, dir1, state.ReferenceUp).eulerAngles;
+                            state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                                dir0, dir1, state.ReferenceUp);
                     }
 
                     extra.PreviousDisplacement = displacement;
