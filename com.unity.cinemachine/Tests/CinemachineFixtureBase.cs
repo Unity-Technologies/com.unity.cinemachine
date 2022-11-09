@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Cinemachine;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 
 namespace Tests
@@ -19,7 +19,11 @@ namespace Tests
         public virtual void TearDown()
         {
             foreach (var go in m_GameObjectsToDestroy) 
-                RuntimeUtility.DestroyObject(go);
+#if UNITY_EDITOR
+                Undo.DestroyObjectImmediate(go);
+#else
+                Destroy(go);
+#endif
 
             m_GameObjectsToDestroy.Clear();
         }
@@ -32,13 +36,21 @@ namespace Tests
         /// <returns></returns>
         protected GameObject CreateGameObject(string name, params System.Type[] components)
         {
-            var go = new GameObject();
+#if UNITY_EDITOR
+            var go = ObjectFactory.CreateGameObject(name);
+#else
+            var go = new GameObject(name);
+#endif
             m_GameObjectsToDestroy.Add(go);
-            go.name = name;
         
             foreach(var c in components)
                 if (c.IsSubclassOf(typeof(Component)))
+#if UNITY_EDITOR
+                    Undo.AddComponent(go, c);
+#else
                     go.AddComponent(c);
+#endif
+                    
         
             return go;
         }
@@ -50,7 +62,11 @@ namespace Tests
         /// <returns></returns>
         protected GameObject CreatePrimitive(PrimitiveType type)
         {
+#if UNITY_EDITOR
+            var go = ObjectFactory.CreatePrimitive(type);
+#else
             var go = GameObject.CreatePrimitive(type);
+#endif
             m_GameObjectsToDestroy.Add(go);
             return go;
         }

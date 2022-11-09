@@ -1,4 +1,3 @@
-#if FALSE
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using Cinemachine;
 using Cinemachine.Editor;
 using Cinemachine.Utility;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -60,7 +60,7 @@ namespace Tests.Editor
             yield return null;
             
             var pipeline = vcam.GetComponentInChildren<CinemachinePipeline>();
-            pipeline.gameObject.AddComponent(type);
+            Undo.AddComponent(pipeline.gameObject, type);
             vcam.InvalidateComponentPipeline();
             yield return null;
             
@@ -121,4 +121,3 @@ namespace Tests.Editor
 #pragma warning restore CS0618
     }
 }
-#endif

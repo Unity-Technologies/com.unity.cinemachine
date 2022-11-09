@@ -353,7 +353,7 @@ namespace Cinemachine.Editor
             {
                 notUpgradable = Object.Instantiate(go);
                 notUpgradable.SetActive(false);
-                notUpgradable.AddComponent<CinemachineDoNotUpgrade>();
+                Undo.AddComponent<CinemachineDoNotUpgrade>(notUpgradable);
                 Undo.RegisterCreatedObjectUndo(notUpgradable, "Upgrader: clone of non upgradable");
             }
 
@@ -672,7 +672,7 @@ namespace Cinemachine.Editor
                 default:
                 {
                     // GML todo: handle this message properly
-                    pathBase.gameObject.AddComponent<CinemachineDoNotUpgrade>();
+                    Undo.AddComponent<CinemachineDoNotUpgrade>(pathBase.gameObject);
                     Debug.LogError($"{go.name}: Path type {pathBase.GetType().Name} is not handled by the upgrader");
                     break;
                 }
