@@ -58,20 +58,19 @@ namespace Cinemachine.Utility
             Vector2 s = s1 - s0;
             float len2 = Vector2.SqrMagnitude(s);
             if (len2 < Epsilon)
-                return 0; // degenrate segment
+                return 0; // degenerate segment
             return Mathf.Clamp01(Vector2.Dot(p - s0, s) / len2);
         }
 
         /// <summary>
-        /// Returns a non-normalized projection of the supplied vector onto a plane
-        /// as described by its normal
+        /// Returns a non-normalized projection of the supplied vector onto a plane as described by its normal
         /// </summary>
-        /// <param name="vector"></param>
+        /// <param name="vector">Vector to project.</param>
         /// <param name="planeNormal">The normal that defines the plane.  Must have a length of 1.</param>
         /// <returns>The component of the vector that lies in the plane</returns>
         public static Vector3 ProjectOntoPlane(this Vector3 vector, Vector3 planeNormal)
         {
-            return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
+            return vector - Vector3.Dot(vector, planeNormal) * planeNormal;
         }
         
         /// <summary>
