@@ -50,27 +50,19 @@ namespace Tests.Editor
         public IEnumerator ConvertAllDefaultOnes(Type type)
         {
             var vcamGo = CreateGameObject("TestVcam", typeof(CinemachineVirtualCamera));
-            yield return null;
-            
-            var vcam = vcamGo.GetComponent<CinemachineVirtualCamera>();
+            Assert.IsTrue(vcamGo.TryGetComponent(out CinemachineVirtualCamera vcam));
             vcam.InvalidateComponentPipeline();
-            yield return null;
-            
             m_Brain.ManualUpdate(); // ensure pipeline is built
-            yield return null;
-            
             var pipeline = vcam.GetComponentInChildren<CinemachinePipeline>();
             Undo.AddComponent(pipeline.gameObject, type);
             vcam.InvalidateComponentPipeline();
-            yield return null;
-            
             CinemachineUpgradeManager.UpgradeSingleObject(vcamGo);
             yield return null;
 
-            Assert.That(vcamGo.GetComponent<CinemachineVirtualCamera>(), Is.Null);
+            Assert.That(vcamGo.TryGetComponent(out CinemachineVirtualCamera _), Is.False);
+            Assert.That(vcamGo.TryGetComponent(type, out _), Is.False);  // old component is deleted
             Assert.That(vcamGo.transform.childCount, Is.Zero);
             Assert.That(vcamGo.GetComponent<CmCamera>(), Is.Not.Null); 
-            Assert.That(vcamGo.GetComponent(type), Is.Null);  // old component is deleted
             Assert.That(vcamGo.GetComponent(UpgradeObjectToCm3.ClassUpgradeMap[type]), Is.Not.Null); // new component is added
         }
 
@@ -78,21 +70,14 @@ namespace Tests.Editor
         public IEnumerator ConvertTrackedDolly()
         {
             var vcamGo = CreateGameObject("TestVcam", typeof(CinemachineVirtualCamera));
-
-            yield return null;
-            
-            var vcam = vcamGo.GetComponent<CinemachineVirtualCamera>();
+            Assert.IsTrue(vcamGo.TryGetComponent(out CinemachineVirtualCamera vcam));
             vcam.AddCinemachineComponent<CinemachineTrackedDolly>();
             vcam.InvalidateComponentPipeline();
-
+            CinemachineUpgradeManager.UpgradeSingleObject(vcamGo);
             yield return null;
             
-            CinemachineUpgradeManager.UpgradeSingleObject(vcamGo);
-
-            yield return null;
-
-            Assert.That(vcamGo.GetComponent<CinemachineVirtualCamera>(), Is.Null);
-            Assert.That(vcamGo.GetComponent<CinemachineTrackedDolly>(), Is.Null);
+            Assert.That(vcamGo.TryGetComponent(out CinemachineVirtualCamera _), Is.False);
+            Assert.That(vcamGo.TryGetComponent(out CinemachineTrackedDolly _), Is.False);
             Assert.That(vcamGo.transform.childCount, Is.Zero);
             Assert.That(vcamGo.GetComponent<CmCamera>(), Is.Not.Null);
             Assert.That(vcamGo.GetComponent<CinemachineSplineDolly>(), Is.Not.Null);
@@ -103,13 +88,10 @@ namespace Tests.Editor
         public IEnumerator ConvertFreelook()
         {
             var freelookGo = CreateGameObject("TestVcam", typeof(CinemachineFreeLook));
-
-            yield return null;
-            
             CinemachineUpgradeManager.UpgradeSingleObject(freelookGo);
             yield return null;
 
-            Assert.That(freelookGo.GetComponent<CinemachineFreeLook>(), Is.Null);
+            Assert.That(freelookGo.TryGetComponent(out CinemachineFreeLook _), Is.False);
             Assert.That(freelookGo.transform.childCount, Is.Zero);
             Assert.That(freelookGo.GetComponent<CmCamera>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineOrbitalFollow>(), Is.Not.Null);
