@@ -89,6 +89,9 @@ namespace Cinemachine.Editor
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
             { typeof(Cinemachine3rdPersonFollow), typeof(CinemachineThirdPersonFollow) },
+#if CINEMACHINE_PHYSICS
+            { typeof(CinemachineCollider), typeof(CinemachineDeoccluder) },
+#endif
         };
         
         /// <summary>
@@ -236,6 +239,7 @@ namespace Cinemachine.Editor
                     { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
                 }
             },
+#if CINEMACHINE_PHYSICS
             {
                 typeof(CinemachineCollider), new Dictionary<string, Tuple<string, Type>>
                 {
@@ -251,6 +255,7 @@ namespace Cinemachine.Editor
                     { "OptimalTargetDistance", new("ShotQualityEvaluation.OptimalDistance", typeof(CinemachineDeoccluder)) },
                 }
             }
+#endif
         };
     }
 }
