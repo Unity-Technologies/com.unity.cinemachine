@@ -993,7 +993,7 @@ MonoBehaviour:
   VerticalArmLength: 0.3
   CameraSide: 1
   CameraDistance: 3.8
-  Obstacles:
+  AvoidObstacles:
     Enabled: 1
     CollisionFilter:
       serializedVersion: 2

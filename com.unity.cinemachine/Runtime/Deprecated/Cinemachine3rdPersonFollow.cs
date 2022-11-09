@@ -338,7 +338,7 @@ namespace Cinemachine
             c.CameraDistance = CameraDistance;
             c.CameraSide = CameraSide;
 #if CINEMACHINE_PHYSICS
-            c.Obstacles = new CinemachineThirdPersonFollow.ObstacleSettings
+            c.AvoidObstacles = new CinemachineThirdPersonFollow.ObstacleSettings
             {
                 Enabled = true,
                 CollisionFilter = CameraCollisionFilter,
