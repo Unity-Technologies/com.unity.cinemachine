@@ -65,6 +65,10 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
 #endif
+#if CINEMACHINE_PHYSICS
+            typeof(CinemachineCollider),
+#endif
+
         };
         
         /// <summary>
@@ -230,6 +234,21 @@ namespace Cinemachine.Editor
                     { "CameraRadius", new("Obstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
                     { "DampingIntoCollision", new("Obstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
                     { "DampingFromCollision", new("Obstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                }
+            },
+            {
+                typeof(CinemachineCollider), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "AvoidObstacles", new("AvoidObstacles.Enabled", typeof(CinemachineDeoccluder)) },
+                    { "DistanceLimit", new("AvoidObstacles.DistanceLimit", typeof(CinemachineDeoccluder)) },
+                    { "MinimumOcclusionTime", new("AvoidObstacles.MinimumOcclusionTime", typeof(CinemachineDeoccluder)) },
+                    { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineDeoccluder)) },
+                    { "Strategy", new("AvoidObstacles.Strategy", typeof(CinemachineDeoccluder)) },
+                    { "MaximumEffort", new("AvoidObstacles.MaximumEffort", typeof(CinemachineDeoccluder)) },
+                    { "SmoothingTime", new("AvoidObstacles.SmoothingTime", typeof(CinemachineDeoccluder)) },
+                    { "Damping", new("AvoidObstacles.Damping", typeof(CinemachineDeoccluder)) },
+                    { "DampingWhenOccluded", new("AvoidObstacles.DampingWhenOccluded", typeof(CinemachineDeoccluder)) },
+                    { "OptimalTargetDistance", new("ShotQualityEvaluation.OptimalDistance", typeof(CinemachineDeoccluder)) },
                 }
             }
         };
