@@ -1,5 +1,6 @@
 ﻿#if CINEMACHINE_PHYSICS
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -10,12 +11,12 @@ namespace Cinemachine
     /// This is useful for third-person style aim cameras that want a dead-accurate
     /// aim at all times, even in the presence of positional or rotational noise.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine 3rd Person Aim")]
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Third Person Aim")]
     [ExecuteAlways]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/Cinemachine3rdPersonAim.html")]
-    public class Cinemachine3rdPersonAim : CinemachineExtension
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineThirdPersonAim.html")]
+    public class CinemachineThirdPersonAim : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>
         [Header("Aim Target Detection")]

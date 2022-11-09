@@ -91,6 +91,9 @@ namespace Cinemachine.Editor
                      ConvertInputAxis(go, "Look Orbit X", ref orbital.m_XAxis, ref orbital.m_RecenterToTargetHeading);
                 }
 
+                if (ReplaceComponent<Cinemachine3rdPersonFollow, CinemachineThirdPersonFollow>(go)) 
+                    go.GetComponent<Cinemachine3rdPersonFollow>().UpgradeToCm3(go.GetComponent<CinemachineThirdPersonFollow>());
+
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                 {
                     var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();

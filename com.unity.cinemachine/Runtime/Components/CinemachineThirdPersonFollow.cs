@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Cinemachine.Utility;
 
@@ -7,11 +8,11 @@ namespace Cinemachine
     /// Third-person follower, with complex pivoting: horizontal about the origin, 
     /// vertical about the shoulder.  
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine 3rd Person Follow")]
+    [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Third Person Follow")]
     [SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Body)]
-    [HelpURL(Documentation.BaseURL + "manual/Cinemachine3rdPersonFollow.html")]
-    public class Cinemachine3rdPersonFollow : CinemachineComponentBase
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineThirdPersonFollow.html")]
+    public class CinemachineThirdPersonFollow : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
@@ -51,44 +52,59 @@ namespace Cinemachine
         public float CameraDistance;
 
 #if CINEMACHINE_PHYSICS
-        /// <summary>Camera will avoid obstacles on these layers.</summary>
-        [Header("Obstacles")]
-        [Tooltip("Camera will avoid obstacles on these layers")]
-        public LayerMask CameraCollisionFilter;
-
         /// <summary>
-        /// Obstacles with this tag will be ignored.  It is a good idea 
-        /// to set this field to the target's tag
+        /// Holds settings for collision resolution.
         /// </summary>
-        [TagField]
-        [Tooltip("Obstacles with this tag will be ignored.  "
-            + "It is a good idea to set this field to the target's tag")]
-        public string IgnoreTag = string.Empty;
+        [Serializable]
+        public struct ObstacleSettings
+        {
+            /// <summary>Enable or disable obstacle handling.  
+            /// If enabled, camera will be pulled in front of occluding obstacles.</summary>
+            [Tooltip("If enabled, camera will be pulled in front of occluding obstacles")]
+            public bool Enabled;
+            
+            /// <summary>Camera will avoid obstacles on these layers.</summary>
+            [Tooltip("Camera will avoid obstacles on these layers")]
+            public LayerMask CollisionFilter;
 
-        /// <summary>
-        /// Specifies how close the camera can get to obstacles
-        /// </summary>
-        [Tooltip("Specifies how close the camera can get to obstacles")]
-        [RangeSlider(0, 1)]
-        public float CameraRadius;
+            /// <summary>
+            /// Obstacles with this tag will be ignored.  It is a good idea 
+            /// to set this field to the target's tag
+            /// </summary>
+            [TagField]
+            [Tooltip("Obstacles with this tag will be ignored.  "
+                + "It is a good idea to set this field to the target's tag")]
+            public string IgnoreTag;
+
+            /// <summary>
+            /// Specifies how close the camera can get to obstacles
+            /// </summary>
+            [Tooltip("Specifies how close the camera can get to obstacles")]
+            [RangeSlider(0, 1)]
+            public float CameraRadius;
         
-        /// <summary>
-        /// How gradually the camera moves to correct for occlusions.  
-        /// Higher numbers will move the camera more gradually.
-        /// </summary>
-        [RangeSlider(0, 10)]
-        [Tooltip("How gradually the camera moves to correct for occlusions.  " +
-            "Higher numbers will move the camera more gradually.")]
-        public float DampingIntoCollision;
+            /// <summary>
+            /// How gradually the camera moves to correct for occlusions.  
+            /// Higher numbers will move the camera more gradually.
+            /// </summary>
+            [RangeSlider(0, 10)]
+            [Tooltip("How gradually the camera moves to correct for occlusions.  " +
+                "Higher numbers will move the camera more gradually.")]
+            public float DampingIntoCollision;
 
-        /// <summary>
-        /// How gradually the camera returns to its normal position after having been corrected by the built-in
-        /// collision resolution system. Higher numbers will move the camera more gradually back to normal.
-        /// </summary>
-        [RangeSlider(0, 10)]
-        [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
-            "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
-        public float DampingFromCollision;
+            /// <summary>
+            /// How gradually the camera returns to its normal position after having been corrected by the built-in
+            /// collision resolution system. Higher numbers will move the camera more gradually back to normal.
+            /// </summary>
+            [RangeSlider(0, 10)]
+            [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
+                "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
+            public float DampingFromCollision;
+        }
+
+        /// <summary>If enabled, camera will be pulled in front of occluding obstacles.</summary>
+        [FoldoutWithEnabledButton]
+        public ObstacleSettings Obstacles;
 #endif
 
         // State info
@@ -105,9 +121,9 @@ namespace Cinemachine
             Damping.y = Mathf.Max(0, Damping.y);
             Damping.z = Mathf.Max(0, Damping.z);
 #if CINEMACHINE_PHYSICS
-            CameraRadius = Mathf.Max(0.001f, CameraRadius);
-            DampingIntoCollision = Mathf.Max(0, DampingIntoCollision);
-            DampingFromCollision = Mathf.Max(0, DampingFromCollision);
+            Obstacles.CameraRadius = Mathf.Max(0.001f, Obstacles.CameraRadius);
+            Obstacles.DampingIntoCollision = Mathf.Max(0, Obstacles.DampingIntoCollision);
+            Obstacles.DampingFromCollision = Mathf.Max(0, Obstacles.DampingFromCollision);
 #endif
         }
 
@@ -119,10 +135,11 @@ namespace Cinemachine
             CameraDistance = 2.0f;
             Damping = new Vector3(0.1f, 0.5f, 0.3f);
 #if CINEMACHINE_PHYSICS
-            CameraCollisionFilter = 0;
-            CameraRadius = 0.2f;
-            DampingIntoCollision = 0;
-            DampingFromCollision = 2f;
+            Obstacles.Enabled = false;
+            Obstacles.CollisionFilter = 1;
+            Obstacles.CameraRadius = 0.2f;
+            Obstacles.DampingIntoCollision = 0;
+            Obstacles.DampingFromCollision = 0.5f;
 #endif
         }
 
@@ -163,7 +180,6 @@ namespace Cinemachine
         /// Always returns the Aim stage</summary>
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
-#if CINEMACHINE_PHYSICS
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
@@ -171,10 +187,13 @@ namespace Cinemachine
         public override float GetMaxDampTime() 
         { 
             return Mathf.Max(
-                Mathf.Max(DampingIntoCollision, DampingFromCollision), 
+#if CINEMACHINE_PHYSICS
+                Obstacles.Enabled ? Mathf.Max(Obstacles.DampingIntoCollision, Obstacles.DampingFromCollision) : 0,
+#else
+                0,
+#endif
                 Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)));
         }
-#endif
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
@@ -235,13 +254,16 @@ namespace Cinemachine
             var camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
 
 #if CINEMACHINE_PHYSICS
-            // Check if hand is colliding with something, if yes, then move the hand 
-            // closer to the player. The radius is slightly enlarged, to avoid problems 
-            // next to walls
-            float dummy = 0;
-            var collidedHand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
-            camPos = ResolveCollisions(
-                collidedHand, camPos, deltaTime, CameraRadius, ref m_CamPosCollisionCorrection);
+            if (Obstacles.Enabled)
+            {
+                // Check if hand is colliding with something, if yes, then move the hand 
+                // closer to the player. The radius is slightly enlarged, to avoid problems 
+                // next to walls
+                float dummy = 0;
+                var collidedHand = ResolveCollisions(root, hand, -1, Obstacles.CameraRadius * 1.05f, ref dummy);
+                camPos = ResolveCollisions(
+                    collidedHand, camPos, deltaTime, Obstacles.CameraRadius, ref m_CamPosCollisionCorrection);
+            }
 #endif
             // Set state
             curState.RawPosition = camPos;
@@ -262,8 +284,11 @@ namespace Cinemachine
             root = m_PreviousFollowTargetPosition;
             GetRawRigPositions(root, targetRot, heading, out shoulder, out hand);
 #if CINEMACHINE_PHYSICS
-            float dummy = 0;
-            hand = ResolveCollisions(root, hand, -1, CameraRadius * 1.05f, ref dummy);
+            if (Obstacles.Enabled)
+            {
+                float dummy = 0;
+                hand = ResolveCollisions(root, hand, -1, Obstacles.CameraRadius * 1.05f, ref dummy);
+            }
 #endif
         }
 
@@ -293,10 +318,8 @@ namespace Cinemachine
             Vector3 root, Vector3 tip, float deltaTime, 
             float cameraRadius, ref float collisionCorrection)
         {
-            if (CameraCollisionFilter.value == 0)
-            {
+            if (Obstacles.CollisionFilter.value == 0)
                 return tip;
-            }
             
             var dir = tip - root;
             var len = dir.magnitude;
@@ -307,7 +330,7 @@ namespace Cinemachine
 
             if (RuntimeUtility.SphereCastIgnoreTag(
                 root, cameraRadius, dir, out RaycastHit hitInfo, 
-                len, CameraCollisionFilter, IgnoreTag))
+                len, Obstacles.CollisionFilter, Obstacles.IgnoreTag))
             {
                 var desiredResult = hitInfo.point + hitInfo.normal * cameraRadius;
                 desiredCorrection = (desiredResult - tip).magnitude;
@@ -315,7 +338,7 @@ namespace Cinemachine
 
             collisionCorrection += deltaTime < 0 ? desiredCorrection - collisionCorrection : Damper.Damp(
                 desiredCorrection - collisionCorrection, 
-                desiredCorrection > collisionCorrection ? DampingIntoCollision : DampingFromCollision, 
+                desiredCorrection > collisionCorrection ? Obstacles.DampingIntoCollision : Obstacles.DampingFromCollision, 
                 deltaTime);
 
             // Apply the correction

@@ -1,7 +1,7 @@
-# 3rd Person Follow
-Use Cinemachine CmCamera’s **3rd Person Follow** to keep the camera at a constant position and distance relative to a Tracking Target (subject to damping controls), tracking the target’s movement and rotation.
+# Third Person Follow
+Use Cinemachine CmCamera’s **Third Person Follow** to keep the camera at a constant position and distance relative to a Tracking Target (subject to damping controls), tracking the target’s movement and rotation.
 
-The 3rd Person Follow’s mini-rig setup defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a 3rd-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.
+The Third Person Follow’s mini-rig setup defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a third-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.
 
 For example, a rig set up with these values:
 
@@ -59,11 +59,11 @@ For an example, see the **AimingRig** sample scene.
 
 ## Built-in Collision Resolution
 
-The 3rd-person Follow component has a built-in collision resolution system, so when the target moves close to an obstacle, the camera position is adjusted so that it will never be inside an obstacle; the built-in collision resolution means the camera always keeps the target in sight, despite intervening obstacles. When the target moves too close to an obstacle, the rig bends and stretches to keep the camera outside the obstacle but always with the target in view.
+The Third-person Follow component has a built-in collision resolution system, so when the target moves close to an obstacle, the camera position is adjusted so that it will never be inside an obstacle; the built-in collision resolution means the camera always keeps the target in sight, despite intervening obstacles. When the target moves too close to an obstacle, the rig bends and stretches to keep the camera outside the obstacle but always with the target in view.
 
 ## Shaky Movement, Steady Aim
 
-When combined with the [Cinemachine3rdPersonAim](Cinemachine3rdPersonAim.md) extension, the result is a powerful rig that can maintain steady aim for a shooter-type game, even when the camera movement is shaky or noisy. Cinemachine3rdPersonAim re-adjusts the camera orientation to maintain a fixed point at the center of the screen, correcting for variations due to hand-held camera noise or shaking target motion.
+When combined with the [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md) extension, the result is a powerful rig that can maintain steady aim for a shooter-type game, even when the camera movement is shaky or noisy. CinemachineThirdPersonAim re-adjusts the camera orientation to maintain a fixed point at the center of the screen, correcting for variations due to camera noise.
 
 ## Properties:
 
