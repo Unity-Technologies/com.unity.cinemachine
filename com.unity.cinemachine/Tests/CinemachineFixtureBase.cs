@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cinemachine;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -18,12 +19,8 @@ namespace Tests
         [TearDown]
         public virtual void TearDown()
         {
-            foreach (var go in m_GameObjectsToDestroy) 
-#if UNITY_EDITOR
-                Undo.DestroyObjectImmediate(go);
-#else
-                Object.Destroy(go);
-#endif
+            foreach (var go in m_GameObjectsToDestroy)
+                RuntimeUtility.DestroyObject(go);
 
             m_GameObjectsToDestroy.Clear();
         }
@@ -36,17 +33,24 @@ namespace Tests
         /// <returns></returns>
         protected GameObject CreateGameObject(string name, params System.Type[] components)
         {
+            GameObject go;
 #if UNITY_EDITOR
-            var go = ObjectFactory.CreateGameObject(name);
+            if (Application.isPlaying)
+                go = new GameObject(name);
+            else
+                go = ObjectFactory.CreateGameObject(name);
 #else
-            var go = new GameObject(name);
+            go = new GameObject(name);
 #endif
             m_GameObjectsToDestroy.Add(go);
         
             foreach(var c in components)
                 if (c.IsSubclassOf(typeof(Component)))
 #if UNITY_EDITOR
-                    Undo.AddComponent(go, c);
+                    if (Application.isPlaying)
+                        go.AddComponent(c);
+                    else
+                        Undo.AddComponent(go, c);
 #else
                     go.AddComponent(c);
 #endif
@@ -62,10 +66,14 @@ namespace Tests
         /// <returns></returns>
         protected GameObject CreatePrimitive(PrimitiveType type)
         {
+            GameObject go;
 #if UNITY_EDITOR
-            var go = ObjectFactory.CreatePrimitive(type);
+            if (Application.isPlaying) 
+                go = GameObject.CreatePrimitive(type);
+            else
+                go = ObjectFactory.CreatePrimitive(type);
 #else
-            var go = GameObject.CreatePrimitive(type);
+            go = GameObject.CreatePrimitive(type);
 #endif
             m_GameObjectsToDestroy.Add(go);
             return go;
