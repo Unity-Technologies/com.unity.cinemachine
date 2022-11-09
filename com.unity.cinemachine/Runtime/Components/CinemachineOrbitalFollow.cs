@@ -71,7 +71,7 @@ namespace Cinemachine
         public InputAxis RadialAxis = DefaultRadial;
 
         // State information
-        Vector3 m_PreviousWorldOffset;
+        Vector3 m_PreviousOffset;
 
         // Helper object to track the Follow target
         Tracker m_TargetTracker;
@@ -387,18 +387,13 @@ namespace Cinemachine
                 curState.ReferenceUp, targetPosition);
             curState.RawPosition = pos + offset;
 
-            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+            if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
+                && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
-                var lookAt = targetPosition;
-                if (LookAtTarget != null)
-                    lookAt = LookAtTargetPosition;
-                var dir0 = m_TargetTracker.PreviousTargetPosition + m_PreviousWorldOffset - lookAt;
-                var dir1 = curState.RawPosition - lookAt;
-                if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
-                    curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                        dir0, dir1, curState.ReferenceUp).eulerAngles;
+                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                    m_PreviousOffset, offset, curState.ReferenceUp);
             }
-            m_PreviousWorldOffset = offset;
+            m_PreviousOffset = offset;
         }
 
         /// For the inspector

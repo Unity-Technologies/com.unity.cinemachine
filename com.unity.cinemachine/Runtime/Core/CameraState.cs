@@ -51,11 +51,11 @@ namespace Cinemachine
         /// </summary>
         public Quaternion RawOrientation;
 
-        /// <summary>This is a way for the Body component to bypass aim damping,
+        /// <summary>This is a way for the Body component to set a bypass hint for aim damping,
         /// useful for when the body needs to rotate its point of view, but does not
-        /// want interference from the aim damping.  The value is the camera
-        /// rotation, in Euler degrees.</summary>
-        public Vector3 PositionDampingBypass;
+        /// want interference from the aim damping.  The value is the amount that the camera
+        /// has been rotated, in world coords.</summary>
+        public Quaternion RotationDampingBypass;
 
         /// <summary>
         /// Subjective estimation of how "good" the shot is.
@@ -122,7 +122,7 @@ namespace Cinemachine
             ShotQuality = 1,
             PositionCorrection = Vector3.zero,
             OrientationCorrection = Quaternion.identity,
-            PositionDampingBypass = Vector3.zero,
+            RotationDampingBypass = Quaternion.identity,
             BlendHint = BlendHintValue.Nothing
         };
 

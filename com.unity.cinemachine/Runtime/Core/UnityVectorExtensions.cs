@@ -254,10 +254,18 @@ namespace Cinemachine.Utility
         /// <returns>Rotation between the vectors</returns>
         public static Quaternion SafeFromToRotation(Vector3 v1, Vector3 v2, Vector3 up)
         {
-            var axis = Vector3.Cross(v1, v2);
-            if (axis.AlmostZero())
-                axis = up; // in case they are pointing in opposite directions
-            return Quaternion.AngleAxis(Angle(v1, v2), axis);
+            var p1 = v1.ProjectOntoPlane(up);
+            var p2 = v2.ProjectOntoPlane(up);
+            if (p1.sqrMagnitude < Epsilon || p2.sqrMagnitude < Epsilon)
+            {
+                var axis = Vector3.Cross(v1, v2);
+                if (axis.AlmostZero())
+                    axis = up; // in case they are pointing in opposite directions
+                return Quaternion.AngleAxis(Angle(v1, v2), axis);
+            }
+            var pitchChange = Vector3.Angle(v2, up) - Vector3.Angle(v1, up);
+            return Quaternion.AngleAxis(SignedAngle(p1, p2, up), up)
+                * Quaternion.AngleAxis(pitchChange, Vector3.Cross(up, v1).normalized);
         }
 
         /// <summary>This is a slerp that mimics a camera operator's movement in that
