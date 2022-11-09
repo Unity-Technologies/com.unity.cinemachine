@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] - 2022-11-01
 - Bugfix: Physical lens settings were not being properly applied
+- 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
