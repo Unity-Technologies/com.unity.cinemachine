@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Cinemachine;
 using Cinemachine.Editor;
@@ -10,16 +9,11 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Editor
+namespace Tests.Runtime
 {
     public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
     {
         static IEnumerable<Type> s_AllCinemachineComponents;
-        // We ignore fields that don't have proper equality overloads
-        static readonly string[] k_IgnoreFieldList = {
-            "m_HorizontalRecentering", "m_VerticalRecentering",
-            "m_RecenterToTargetHeading", "m_RecenterTarget", "m_HorizontalAxis", "m_VerticalAxis"
-        };
         CinemachineBrain m_Brain;
         
         [SetUp]
