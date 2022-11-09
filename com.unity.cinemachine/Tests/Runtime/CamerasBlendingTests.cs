@@ -19,9 +19,8 @@ namespace Tests.Runtime
             base.SetUp();
 
             // Blending
-            m_Brain.DefaultBlend = new CinemachineBlendDefinition(
-                CinemachineBlendDefinition.Style.Linear,
-                k_BlendingTime);
+            m_Brain.DefaultBlend = 
+                new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Linear, k_BlendingTime);
             
 #if CINEMACHINE_V3_OR_HIGHER
             m_Source = CreateGameObject("A", typeof(CmCamera)).GetComponent<CmCamera>();

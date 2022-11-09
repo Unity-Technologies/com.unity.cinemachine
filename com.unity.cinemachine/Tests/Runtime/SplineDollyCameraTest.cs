@@ -19,10 +19,11 @@ namespace Tests.Runtime
         [SetUp]
         public void Setup()
         {
+            base.SetUp();
+            
             m_SplineContainer = CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
             m_SplineContainer.Spline = SplineFactory.CreateLinear(
-                new List<float3> { new float3(7, 1, -6), new float3(13, 1, -6), new float3(13, 1, 1), new float3(7, 1, 1) },
-                true);
+                new List<float3> { new(7, 1, -6), new(13, 1, -6), new(13, 1, 1), new(7, 1, 1) }, true);
             
             m_CmCam = CreateGameObject("CM vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_CmCam.Follow = CreatePrimitive(PrimitiveType.Cube).transform;
@@ -30,6 +31,12 @@ namespace Tests.Runtime
             m_Dolly.Spline = m_SplineContainer;
             m_Dolly.CameraUp = CinemachineSplineDolly.CameraUpMode.Default;
             m_Dolly.Damping.Enabled = false;
+        }
+        
+        [TearDown]
+        public override void TearDown()
+        {
+            base.TearDown();
         }
 
         [UnityTest]

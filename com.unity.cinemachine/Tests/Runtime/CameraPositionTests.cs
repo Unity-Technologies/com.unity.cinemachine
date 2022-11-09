@@ -14,12 +14,11 @@ namespace Tests.Runtime
         [SetUp]
         public override void SetUp()
         {
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
+            
             m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
             m_FollowObject = CreateGameObject("Follow Object");
-            
-            base.SetUp();
         }
 
         [UnityTest]

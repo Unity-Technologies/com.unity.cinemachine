@@ -18,13 +18,12 @@ namespace Tests.Runtime
         [SetUp]
         public override void SetUp()
         {
+            base.SetUp();
+            
             // a basic "character" to use as a lookat
             m_Character = CreateGameObject("Character");
             m_Character.transform.position = new Vector3(10, 0, 1);
 
-            // main camera
-            CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
-            
             // a ClearShot camera
             var clearShotHolder = CreateGameObject("CM ClearShot", typeof(CinemachineClearShot), typeof(CinemachineDeoccluder));
             m_ClearShot = clearShotHolder.GetComponent<CinemachineClearShot>();
@@ -51,8 +50,6 @@ namespace Tests.Runtime
             var wall = CreatePrimitive(PrimitiveType.Quad);
             wall.transform.SetPositionAndRotation(new Vector3(0, 0, 4), Quaternion.Euler(0, 180, 0));
             wall.transform.localScale = new Vector3(2, 2, 2);
-
-            base.SetUp();
         }
 
         static IEnumerable ClearShotTestCases

@@ -10,14 +10,14 @@ namespace Tests.Runtime
 {
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
-        Camera m_Cam;
         CmCamera m_Vcam;
         CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
         public override void SetUp()
         {
-            m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
+            base.SetUp();
+            
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
             m_Vcam = vcamHolder.GetComponent<CmCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
@@ -26,15 +26,11 @@ namespace Tests.Runtime
             m_Vcam.AddExtension(m_Confiner2D);
 
             m_Vcam.Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
-
-            base.SetUp();
         }
 
         [TearDown]
         public override void TearDown()
         {
-            m_Vcam.Lens.OrthographicSize = 1;
-            
             base.TearDown();
         }
 

@@ -6,7 +6,7 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
-    public class BrainTargetOverrideTests : CinemachineRuntimeFixtureBase
+    public class BrainTargetOverrideTests : CinemachineFixtureBase
     {
         GameObject m_CameraHolderWithBrain, m_CameraHolderWithoutBrain, m_GoWithBrain, m_GoWithoutBrain;
         CmCamera m_Vcam;
@@ -16,6 +16,8 @@ namespace Tests.Runtime
         [SetUp]
         public override void SetUp()
         {
+            base.SetUp();
+            
             m_CameraHolderWithBrain = CreateGameObject("MainCamera 1", typeof(Camera), typeof(CinemachineBrain));
             
             m_CameraHolderWithoutBrain = CreateGameObject("MainCamera 2", typeof(Camera));
@@ -32,7 +34,6 @@ namespace Tests.Runtime
             m_Vcam.Priority = 100;
             m_FollowObject = CreateGameObject("Follow Object");
             
-            base.SetUp();
         }
 
         Vector3 m_Delta = new Vector3(10, 0, 0);
@@ -75,7 +76,7 @@ namespace Tests.Runtime
         }
 
         [UnityTest]
-        public IEnumerator ThirdPerson()
+        public IEnumerator ThirdPersonFollow()
         {
             m_Vcam.gameObject.AddComponent<CinemachineThirdPersonFollow>();
             m_Vcam.Lens.FieldOfView = 50;
@@ -85,7 +86,7 @@ namespace Tests.Runtime
         }
         
         [UnityTest]
-        public IEnumerator FramingTransposer()
+        public IEnumerator PositionComposer()
         {
             var framingTransposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
             framingTransposer.Damping = Vector3.zero;
@@ -105,7 +106,7 @@ namespace Tests.Runtime
         }
 
         [UnityTest]
-        public IEnumerator OrbTransposer()
+        public IEnumerator OrbitalFollow()
         {
             var orbitalTransposer = m_Vcam.gameObject.AddComponent<CinemachineOrbitalFollow>();
             orbitalTransposer.TrackerSettings.PositionDamping = Vector3.zero;
@@ -117,7 +118,7 @@ namespace Tests.Runtime
         }
 
         [UnityTest]
-        public IEnumerator Transposer()
+        public IEnumerator Follow()
         {
             var transposer = m_Vcam.gameObject.AddComponent<CinemachineFollow>();
             transposer.TrackerSettings.PositionDamping = Vector3.zero;

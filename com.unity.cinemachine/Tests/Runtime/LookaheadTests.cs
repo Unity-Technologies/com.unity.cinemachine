@@ -17,8 +17,8 @@ namespace Tests.Runtime
         [SetUp]
         public override void SetUp()
         {
-            // Camera
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
+            
             m_Target = CreateGameObject("Target Object").transform;
 
             // Source vcam
@@ -31,7 +31,6 @@ namespace Tests.Runtime
             m_FramingTransposer.Lookahead.Time = m_Composer.Lookahead.Time = 10;
             m_FramingTransposer.Lookahead.Enabled = m_Composer.Lookahead.Enabled = true;
 
-            base.SetUp();
         }
 
         [UnityTest]

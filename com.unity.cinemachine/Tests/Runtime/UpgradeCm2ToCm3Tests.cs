@@ -11,19 +11,15 @@ using UnityEngine.TestTools;
 
 namespace Tests.Runtime
 {
-    public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
+    public class UpgradeCm2ToCm3Tests : CinemachineRuntimeFixtureBase
     {
         static IEnumerable<Type> s_AllCinemachineComponents;
-        CinemachineBrain m_Brain;
         
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            var mainCamera = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
-            m_Brain = mainCamera.GetComponent<CinemachineBrain>();
             m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
-            CinemachineCore.UniformDeltaTimeOverride = 0.1f;
         }
 
         [TearDown]
@@ -45,7 +41,7 @@ namespace Tests.Runtime
             }
         }
 
-#pragma warning disable CS0618
+#pragma warning disable CS0618 // disable obsolete warnings
         [UnityTest, TestCaseSource(nameof(ConvertTestCases))]
         public IEnumerator ConvertAllDefaultOnes(Type type)
         {

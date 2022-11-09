@@ -8,6 +8,8 @@ namespace Tests.Runtime
 {
     public class CinemachineRuntimeFixtureBase : CinemachineFixtureBase
     {
+        protected Camera m_Cam;
+        protected CinemachineBrain m_Brain;
         protected FloatEqualityComparer m_FloatEqualityComparer = new(0.0001f);
         protected Vector3EqualityComparer m_Vector3EqualityComparer = new(0.0001f);
         
@@ -15,6 +17,9 @@ namespace Tests.Runtime
         public override void SetUp()
         {
             base.SetUp();
+
+            m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
+            m_Brain = m_Cam.GetComponent<CinemachineBrain>();
             
             // force a uniform deltaTime, otherwise tests will be unstable
             CinemachineCore.UniformDeltaTimeOverride = 0.1f;
