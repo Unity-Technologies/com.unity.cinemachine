@@ -1,62 +1,78 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineThirdPersonFollow))]
     [CanEditMultipleObjects]
-    class CinemachineThirdPersonFollowEditor : BaseEditor<CinemachineThirdPersonFollow>
+    class CinemachineThirdPersonFollowEditor : UnityEditor.Editor
     {
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineThirdPersonFollow))]
-        static void DrawThirdPersonGizmos(CinemachineThirdPersonFollow target, GizmoType selectionType)
-        {
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-                return; // don't draw gizmo when using handles
-            
-            if (target.IsValid)
-            {
-                var isLive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
-                Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = isLive
-                    ? CinemachineCorePrefs.ActiveGizmoColour.Value
-                    : CinemachineCorePrefs.InactiveGizmoColour.Value;
-
-                target.GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand);
-                Gizmos.DrawLine(root, shoulder);
-                Gizmos.DrawLine(shoulder, hand);
-                Gizmos.DrawSphere(root, 0.02f);
-                Gizmos.DrawSphere(shoulder, 0.02f);
-#if CINEMACHINE_PHYSICS
-                if (target.Obstacles.Enabled)
-                {
-                    Gizmos.DrawSphere(hand, target.Obstacles.CameraRadius);
-
-                    if (isLive)
-                        Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
-
-                    Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, target.Obstacles.CameraRadius);
-                }
-#endif
-
-                Gizmos.color = originalGizmoColour;
-            }
-        }
+        CinemachineThirdPersonFollow Target => target as CinemachineThirdPersonFollow;
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+        
+//         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineThirdPersonFollow))]
+//         static void DrawThirdPersonGizmos(CinemachineThirdPersonFollow target, GizmoType selectionType)
+//         {
+//             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+//                 return; // don't draw gizmo when using handles
+//             
+//             if (target.IsValid)
+//             {
+//                 var isLive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
+//                 Color originalGizmoColour = Gizmos.color;
+//                 Gizmos.color = isLive
+//                     ? CinemachineCorePrefs.ActiveGizmoColour.Value
+//                     : CinemachineCorePrefs.InactiveGizmoColour.Value;
+//
+//                 target.GetRigPositions(out Vector3 root, out Vector3 shoulder, out Vector3 hand);
+//                 Gizmos.DrawLine(root, shoulder);
+//                 Gizmos.DrawLine(shoulder, hand);
+//                 Gizmos.DrawSphere(root, 0.02f);
+//                 Gizmos.DrawSphere(shoulder, 0.02f);
+// #if CINEMACHINE_PHYSICS
+//                 if (target.Obstacles.Enabled)
+//                 {
+//                     Gizmos.DrawSphere(hand, target.Obstacles.CameraRadius);
+//
+//                     if (isLive)
+//                         Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
+//
+//                     Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, target.Obstacles.CameraRadius);
+//                 }
+// #endif
+//
+//                 Gizmos.color = originalGizmoColour;
+//             }
+//         }
         
         protected virtual void OnEnable()
         {
+            m_PipelineUtility = new CmPipelineComponentInspectorUtility(this);
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         }
 
         protected virtual void OnDisable()
         {
+            m_PipelineUtility.OnDisable();
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
-            DrawRemainingPropertiesInInspector();
+            var ux = new VisualElement();
+
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShoulderOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalArmLength)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraSide)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Obstacles)));
+
+            m_PipelineUtility.UpdateState();
+            return ux;
         }
 
         void OnSceneGUI()
