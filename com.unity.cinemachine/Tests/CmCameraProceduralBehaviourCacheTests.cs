@@ -1,3 +1,4 @@
+#if UNITY_EDITOR // Cinemachine.Utility.ReflectionHelpers
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -86,3 +87,4 @@ namespace Tests
         }
     }
 }
+#endif
