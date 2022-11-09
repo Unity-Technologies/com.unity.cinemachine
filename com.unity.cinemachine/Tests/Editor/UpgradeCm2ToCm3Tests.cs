@@ -1,3 +1,4 @@
+#if FALSE
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,16 +10,19 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace Tests.Editor
 {
-    public class UpgradeCm2ToCm3Tests : CinemachineRuntimeFixtureBase
+    public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
     {
         static IEnumerable<Type> s_AllCinemachineComponents;
+        CinemachineBrain m_Brain;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
+            m_Brain = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain))
+                .GetComponent<CinemachineBrain>();
             m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
         }
 
@@ -117,3 +121,4 @@ namespace Tests.Runtime
 #pragma warning restore CS0618
     }
 }
+#endif

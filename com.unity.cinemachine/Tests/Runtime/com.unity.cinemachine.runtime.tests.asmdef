@@ -10,9 +10,6 @@
         "Unity.Splines",
         "Unity.Mathematics"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
