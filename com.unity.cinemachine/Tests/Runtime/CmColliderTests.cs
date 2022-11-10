@@ -1,4 +1,4 @@
-#if !CINEMACHINE_PHYSICS
+#if CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -66,7 +66,7 @@ namespace Tests.Runtime
             UnityEngine.Object.Destroy(obstacle);
 
             yield return WaitForOnePhysicsFrame(); // ensure that the obstacle's collider is removed
-            yield return WaitForSeconds(m_Collider.SmoothingTime);
+            yield return WaitForSeconds(m_Collider.AvoidObstacles.SmoothingTime);
             yield return UpdateCinemachine();
             
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
