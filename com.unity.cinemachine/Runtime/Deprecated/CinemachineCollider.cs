@@ -1,3 +1,5 @@
+#if CINEMACHINE_PHYSICS
+
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -6,7 +8,6 @@ using System;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS
     /// <summary>
     /// This is a deprecated component.  Use CinemachineDeoccluder instead.
     /// </summary>
@@ -808,5 +809,5 @@ namespace Cinemachine
                 c.ShotQualityEvaluation.OptimalDistance = m_OptimalTargetDistance;
         }
     }
-#endif
 }
+#endif

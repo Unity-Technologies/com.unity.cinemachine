@@ -57,8 +57,9 @@ namespace Tests.Runtime
             yield return UpdateCinemachine();
             
             // Camera moved check
-            Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
-            Assert.That(new Vector3(0, 0, -4.4f), Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
+            var camPos = m_Vcam.State.GetFinalPosition();
+            Assert.That(originalCamPosition, Is.Not.EqualTo(camPos).Using(m_Vector3EqualityComparer));
+            Assert.That(new Vector3(0, 0, -4.49900007f), Is.EqualTo(camPos).Using(m_Vector3EqualityComparer));
             UnityEngine.Object.Destroy(obstacle);
             yield return WaitForOnePhysicsFrame(); // ensure that the obstacle's collider is removed
             yield return WaitForSeconds(m_Collider.AvoidObstacles.SmoothingTime);
@@ -83,14 +84,16 @@ namespace Tests.Runtime
             yield return UpdateCinemachine();
             
             // we are pulling away from obstacle
-            Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
-            Assert.That(new Vector3(0,0,-4.778574f), Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
+            var camPos = m_Vcam.State.GetFinalPosition();
+            Assert.That(originalCamPosition, Is.Not.EqualTo(camPos).Using(m_Vector3EqualityComparer));
+            Assert.That(new Vector3(0,0,-4.81510973f), Is.EqualTo(camPos).Using(m_Vector3EqualityComparer));
             var previousPosition = m_Vcam.State.GetFinalPosition();
             yield return WaitForSeconds(0.5f);
             yield return UpdateCinemachine();
             
-            Assert.That(previousPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
-            Assert.That(new Vector3(0,0,-4.423887f), Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
+            camPos = m_Vcam.State.GetFinalPosition();
+            Assert.That(previousPosition, Is.Not.EqualTo(camPos).Using(m_Vector3EqualityComparer));
+            Assert.That(new Vector3(0,0,-4.51894522f), Is.EqualTo(camPos).Using(m_Vector3EqualityComparer));
             UnityEngine.Object.Destroy(obstacle);
             yield return WaitForOnePhysicsFrame(); // ensure that the obstacle's collider is removed
             yield return UpdateCinemachine();
@@ -129,7 +132,7 @@ namespace Tests.Runtime
             var finalPosition = m_Vcam.State.GetFinalPosition();
             Assert.That(obstructedPosition, Is.Not.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
             Assert.That(originalCamPosition, Is.Not.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
-            Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
+            Assert.That(new Vector3(0, 0, -4.75853252f), Is.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
         }
     }
 }
