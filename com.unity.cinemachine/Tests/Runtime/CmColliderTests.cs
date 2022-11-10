@@ -83,6 +83,8 @@ namespace Tests.Runtime
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
             yield return UpdateCinemachine();
             
+// TODO: damping should no be checked exactly, instead check if it moved and it moved less then before
+
             // we are pulling away from obstacle
             var camPos = m_Vcam.State.GetFinalPosition();
             Assert.That(originalCamPosition, Is.Not.EqualTo(camPos).Using(m_Vector3EqualityComparer));
