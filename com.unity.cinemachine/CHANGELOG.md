@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Physical lens settings were not being properly applied
 - 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
 - Bugfix: Lens blending was wrong
+- CinemachineDeoccluder is a new class, not just a rename of CinemachineCollider.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
@@ -21,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Confiner2D supports BoxCollider2D now.
 - Added "Place Objects At World Origin" preference option support.
 - Added Channel setting, to use for multiple CM Brains, instead of piggybacking on the layer system.
-- CinemachineConfiner renamed to CinemachineDeoccluder.
+- CinemachineCollider renamed to CinemachineDeoccluder.
 - New inspector and API for composition guides.
 - Game View Guides now indicate when they are hot and can be dragged.
 - CinemachineTrack assigns the default CinemachineBrain on creation.

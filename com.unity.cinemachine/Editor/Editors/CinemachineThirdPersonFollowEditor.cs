@@ -34,7 +34,9 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalArmLength)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraSide)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Obstacles)));
+#if CINEMACHINE_PHYSICS
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AvoidObstacles)));
+#endif
 
             m_PipelineUtility.UpdateState();
             return ux;
@@ -63,7 +65,7 @@ namespace Cinemachine.Editor
                 Gizmos.DrawSphere(root, sphereRadius);
                 Gizmos.DrawSphere(shoulder, sphereRadius);
 #if CINEMACHINE_PHYSICS
-                sphereRadius = target.Obstacles.Enabled ? target.Obstacles.CameraRadius : sphereRadius;
+                sphereRadius = target.AvoidObstacles.Enabled ? target.AvoidObstacles.CameraRadius : sphereRadius;
 #endif
                 Gizmos.DrawSphere(hand, sphereRadius);
                 Gizmos.DrawSphere(target.VirtualCamera.State.RawPosition, sphereRadius);

@@ -1,4 +1,4 @@
-#if CINEMACHINE_PHYSICS
+#if !CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -26,12 +26,12 @@ namespace Tests.Runtime
             var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
             positionComposer.CameraDistance = 5f;
             m_Collider = m_Vcam.GetComponent<CinemachineDeoccluder>();
-            m_Collider.Strategy = CinemachineDeoccluder.ResolutionStrategy.PullCameraForward;
+            m_Collider.AvoidObstacles.Strategy = CinemachineDeoccluder.ObstacleAvoidance.ResolutionStrategy.PullCameraForward;
             m_Collider.CollideAgainst = 1;
-            m_Collider.AvoidObstacles = true;
-            m_Collider.SmoothingTime = 0;
-            m_Collider.Damping = 0;
-            m_Collider.DampingWhenOccluded = 0;
+            m_Collider.AvoidObstacles.Enabled = true;
+            m_Collider.AvoidObstacles.SmoothingTime = 0;
+            m_Collider.AvoidObstacles.Damping = 0;
+            m_Collider.AvoidObstacles.DampingWhenOccluded = 0;
             m_Vcam.AddExtension(m_Collider);
         }
 
@@ -44,9 +44,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckSmoothingTime()
         {
-            m_Collider.SmoothingTime = 1;
-            m_Collider.Damping = 0;
-            m_Collider.DampingWhenOccluded = 0;
+            m_Collider.AvoidObstacles.SmoothingTime = 1;
+            m_Collider.AvoidObstacles.Damping = 0;
+            m_Collider.AvoidObstacles.DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
 
             yield return UpdateCinemachine();
@@ -75,9 +75,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckDampingWhenOccluded()
         {
-            m_Collider.SmoothingTime = 0;
-            m_Collider.Damping = 0;
-            m_Collider.DampingWhenOccluded = 1;
+            m_Collider.AvoidObstacles.SmoothingTime = 0;
+            m_Collider.AvoidObstacles.Damping = 0;
+            m_Collider.AvoidObstacles.DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             
             yield return UpdateCinemachine();
@@ -111,9 +111,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckDamping()
         {
-            m_Collider.SmoothingTime = 0;
-            m_Collider.Damping = 1;
-            m_Collider.DampingWhenOccluded = 0;
+            m_Collider.AvoidObstacles.SmoothingTime = 0;
+            m_Collider.AvoidObstacles.Damping = 1;
+            m_Collider.AvoidObstacles.DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
 
             yield return UpdateCinemachine();
