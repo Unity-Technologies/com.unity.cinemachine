@@ -13,8 +13,8 @@ namespace Tests.Runtime
     {
         protected Camera m_Cam;
         protected CinemachineBrain m_Brain;
-        protected FloatEqualityComparer m_FloatEqualityComparer = new(0.0001f);
-        protected Vector3EqualityComparer m_Vector3EqualityComparer = new(0.0001f);
+        protected readonly FloatEqualityComparer m_FloatEqualityComparer = new(0.0001f);
+        protected readonly Vector3EqualityComparer m_Vector3EqualityComparer = new(0.0001f);
         
         [SetUp]
         public override void SetUp()
