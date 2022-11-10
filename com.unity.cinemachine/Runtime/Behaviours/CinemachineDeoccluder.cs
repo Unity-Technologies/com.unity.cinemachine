@@ -8,10 +8,10 @@ using System;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that post-processes
-    /// the final position of the virtual camera. Based on the supplied settings,
+    /// An add-on module for CmCamera that post-processes
+    /// the final position of the camera. Based on the supplied settings,
     /// the Deoccluder will attempt to preserve the line of sight
-    /// with the LookAt target of the virtual camera by moving
+    /// with the LookAt target of the camera by moving
     /// away from objects that will obstruct the view.
     ///
     /// Additionally, the Deoccluder can be used to assess the shot quality and

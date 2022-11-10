@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// An abstract representation of a mutator acting on a Cinemachine Virtual Camera
+    /// An abstract representation of a mutator acting on a CmCamera
     /// </summary>
     [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
