@@ -165,7 +165,7 @@ namespace Cinemachine
 
         /// <summary>
         /// This is an interface to override default querying of Unity's legacy Input system.
-        /// If a befaviour implementing this interface is attached to a Cinemachine virtual camera that 
+        /// If a befaviour implementing this interface is attached to a CmCamera that 
         /// requires input, that interface will be polled for input instead of the standard Input system.
         /// </summary>
         [Obsolete("IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead")]

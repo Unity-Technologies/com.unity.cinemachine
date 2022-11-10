@@ -8,9 +8,9 @@ namespace Cinemachine
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that post-processes
-    /// the final position of the virtual camera. It will confine the virtual
-    /// camera's position to the volume specified in the Bounding Volume field.
+    /// An add-on module for CmCamera that post-processes
+    /// the final position of the camera. It will confine the camera's position 
+    /// to the volume specified in the Bounding Volume field.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner")]
     [SaveDuringPlay]

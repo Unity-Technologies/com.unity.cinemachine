@@ -8,7 +8,7 @@ using UnityEngine.Timeline;
 namespace Cinemachine
 {
     /// <summary>
-    /// Timeline track for Cinemachine virtual camera activation
+    /// Timeline track for CmCamera activation
     /// </summary>
     [Serializable]
     [TrackClipType(typeof(CinemachineShot))]

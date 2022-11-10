@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// Base class for a Cinemachine Virtual Camera extension module.
+    /// Base class for a CmCamera extension module.
     /// Hooks into the Cinemachine Pipeline.  Use this to add extra processing 
     /// to the vcam, modifying its generated state
     /// </summary>

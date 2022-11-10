@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is an add-on for Cinemachine virtual cameras containing the OrbitalFollow component.
+    /// This is an add-on for CmCameras containing the OrbitalFollow component.
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
     [SaveDuringPlay] 

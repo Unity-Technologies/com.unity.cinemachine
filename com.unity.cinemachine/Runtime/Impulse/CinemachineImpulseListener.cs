@@ -6,8 +6,8 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// An extension for Cinemachine Virtual Camera which post-processes
-    /// the final position of the virtual camera.  It listens for CinemachineImpulse
+    /// An extension for CmCamera which post-processes
+    /// the final position of the camera.  It listens for CinemachineImpulse
     /// signals on the specified channels, and moves the camera in response to them.
     /// </summary>
     [SaveDuringPlay]

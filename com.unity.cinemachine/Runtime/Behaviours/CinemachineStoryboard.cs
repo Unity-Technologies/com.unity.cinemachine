@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space
+    /// An add-on module for CmCamera that places an image in screen space
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
