@@ -660,7 +660,8 @@ namespace Cinemachine.Editor
                 case CinemachineSmoothPath smoothPath:
                 {
                     var waypoints = smoothPath.m_Waypoints;
-                    spline.Spline = new Spline(waypoints.Length, smoothPath.Looped) { EditType = SplineType.CatmullRom };
+                    spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
+                    
                     for (var i = 0; i < waypoints.Length; i++)
                     {
                         spline.Spline.Add(new BezierKnot
@@ -670,6 +671,7 @@ namespace Cinemachine.Editor
                         });
                         splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
                     }
+                    spline.Spline.SetTangentMode(TangentMode.AutoSmooth);
                     break;
                 }
                 default:
