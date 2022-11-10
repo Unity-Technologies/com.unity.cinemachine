@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+            typeof(CinemachineCollider),
 
             // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
             typeof(CinemachineFreeLook),
@@ -65,6 +66,10 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
 #endif
+#if CINEMACHINE_PHYSICS
+            typeof(CinemachineCollider),
+#endif
+
         };
         
         /// <summary>
@@ -85,6 +90,9 @@ namespace Cinemachine.Editor
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
             { typeof(Cinemachine3rdPersonFollow), typeof(CinemachineThirdPersonFollow) },
+#if CINEMACHINE_PHYSICS
+            { typeof(CinemachineCollider), typeof(CinemachineDeoccluder) },
+#endif
         };
         
         /// <summary>
@@ -225,13 +233,30 @@ namespace Cinemachine.Editor
             {
                 typeof(Cinemachine3rdPersonFollow), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "CameraCollisionFilter", new("Obstacles.CollisionFilter", typeof(CinemachineThirdPersonFollow)) },
-                    { "IgnoreTag", new("Obstacles.IgnoreTag", typeof(CinemachineThirdPersonFollow)) },
-                    { "CameraRadius", new("Obstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
-                    { "DampingIntoCollision", new("Obstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
-                    { "DampingFromCollision", new("Obstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                    { "CameraCollisionFilter", new("AvoidObstacles.CollisionFilter", typeof(CinemachineThirdPersonFollow)) },
+                    { "IgnoreTag", new("AvoidObstacles.IgnoreTag", typeof(CinemachineThirdPersonFollow)) },
+                    { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingIntoCollision", new("AvoidObstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                }
+            },
+#if CINEMACHINE_PHYSICS
+            {
+                typeof(CinemachineCollider), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "AvoidObstacles", new("AvoidObstacles.Enabled", typeof(CinemachineDeoccluder)) },
+                    { "DistanceLimit", new("AvoidObstacles.DistanceLimit", typeof(CinemachineDeoccluder)) },
+                    { "MinimumOcclusionTime", new("AvoidObstacles.MinimumOcclusionTime", typeof(CinemachineDeoccluder)) },
+                    { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineDeoccluder)) },
+                    { "Strategy", new("AvoidObstacles.Strategy", typeof(CinemachineDeoccluder)) },
+                    { "MaximumEffort", new("AvoidObstacles.MaximumEffort", typeof(CinemachineDeoccluder)) },
+                    { "SmoothingTime", new("AvoidObstacles.SmoothingTime", typeof(CinemachineDeoccluder)) },
+                    { "Damping", new("AvoidObstacles.Damping", typeof(CinemachineDeoccluder)) },
+                    { "DampingWhenOccluded", new("AvoidObstacles.DampingWhenOccluded", typeof(CinemachineDeoccluder)) },
+                    { "OptimalTargetDistance", new("ShotQualityEvaluation.OptimalDistance", typeof(CinemachineDeoccluder)) },
                 }
             }
+#endif
         };
     }
 }
