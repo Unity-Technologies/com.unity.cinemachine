@@ -19,10 +19,10 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            m_Target = CreateGameObject("Target Object").transform;
+            m_Target = CreateGameObjectSafe("Target Object").transform;
 
             // Source vcam
-            m_VCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_VCam = CreateGameObjectSafe("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
             m_PositionComposer = m_VCam.gameObject.AddComponent<CinemachinePositionComposer>();
@@ -43,7 +43,7 @@ namespace Tests.Runtime
             Assert.That(m_VCam.FollowTargetChanged, Is.False);
             Assert.That(m_VCam.LookAtTargetChanged, Is.False);
             
-            var newTarget = CreateGameObject("Target Object 2").transform;
+            var newTarget = CreateGameObjectSafe("Target Object 2").transform;
             m_VCam.LookAt = newTarget;
 
             yield return null;

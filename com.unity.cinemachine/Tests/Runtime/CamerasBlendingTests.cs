@@ -23,8 +23,8 @@ namespace Tests.Runtime
                 new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Linear, k_BlendingTime);
             
 #if CINEMACHINE_V3_OR_HIGHER
-            m_Source = CreateGameObject("A", typeof(CmCamera)).GetComponent<CmCamera>();
-            m_Target = CreateGameObject("B", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_Source = CreateGameObjectSafe("A", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_Target = CreateGameObjectSafe("B", typeof(CmCamera)).GetComponent<CmCamera>();
 #else
             m_Source = CreateGameObject("A", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
             m_Target = CreateGameObject("B", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();

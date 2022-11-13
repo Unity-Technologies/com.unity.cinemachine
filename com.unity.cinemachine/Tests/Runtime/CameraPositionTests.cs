@@ -17,9 +17,9 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_Vcam = CreateGameObjectSafe("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
-            m_FollowObject = CreateGameObject("Follow Object");
+            m_FollowObject = CreateGameObjectSafe("Follow Object");
         }
 
         [UnityTest]

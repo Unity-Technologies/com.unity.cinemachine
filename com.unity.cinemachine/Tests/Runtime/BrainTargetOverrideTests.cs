@@ -19,21 +19,21 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            m_CameraHolderWithBrain = CreateGameObject("MainCamera 1", typeof(Camera), typeof(CinemachineBrain));
+            m_CameraHolderWithBrain = CreateGameObjectSafe("MainCamera 1", typeof(Camera), typeof(CinemachineBrain));
             
-            m_CameraHolderWithoutBrain = CreateGameObject("MainCamera 2", typeof(Camera));
-            m_BrainAlone = CreateGameObject("BrainAlone for MainCamera 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>();
+            m_CameraHolderWithoutBrain = CreateGameObjectSafe("MainCamera 2", typeof(Camera));
+            m_BrainAlone = CreateGameObjectSafe("BrainAlone for MainCamera 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>();
             m_BrainAlone.ControlledObject = m_CameraHolderWithoutBrain;
             
-            m_GoWithBrain = CreateGameObject("Empty 1", typeof(CinemachineBrain));
+            m_GoWithBrain = CreateGameObjectSafe("Empty 1", typeof(CinemachineBrain));
 
-            m_GoWithoutBrain = CreateGameObject("Empty 2");
-            m_BrainAlone2 = CreateGameObject("BrainAlone for Empty 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>(); 
+            m_GoWithoutBrain = CreateGameObjectSafe("Empty 2");
+            m_BrainAlone2 = CreateGameObjectSafe("BrainAlone for Empty 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>(); 
             m_BrainAlone2.ControlledObject = m_GoWithoutBrain;
             
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_Vcam = CreateGameObjectSafe("CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
-            m_FollowObject = CreateGameObject("Follow Object");
+            m_FollowObject = CreateGameObjectSafe("Follow Object");
             
         }
 

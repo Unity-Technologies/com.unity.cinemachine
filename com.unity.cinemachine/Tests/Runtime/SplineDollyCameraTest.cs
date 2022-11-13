@@ -22,12 +22,12 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            m_SplineContainer = CreateGameObject("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
+            m_SplineContainer = CreateGameObjectSafe("Dolly Track", typeof(SplineContainer)).GetComponent<SplineContainer>();
             m_SplineContainer.Spline = SplineFactory.CreateLinear(
                 new List<float3> { new(7, 1, -6), new(13, 1, -6), new(13, 1, 1), new(7, 1, 1) }, true);
             
-            m_CmCam = CreateGameObject("CM vcam", typeof(CmCamera)).GetComponent<CmCamera>();
-            m_CmCam.Follow = CreatePrimitive(PrimitiveType.Cube).transform;
+            m_CmCam = CreateGameObjectSafe("CM vcam", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_CmCam.Follow = CreatePrimitiveSafe(PrimitiveType.Cube).transform;
             m_Dolly = m_CmCam.gameObject.AddComponent<CinemachineSplineDolly>();
             m_Dolly.Spline = m_SplineContainer;
             m_Dolly.CameraUp = CinemachineSplineDolly.CameraUpMode.Default;

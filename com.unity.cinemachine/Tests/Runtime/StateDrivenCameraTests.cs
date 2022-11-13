@@ -24,16 +24,16 @@ namespace Tests.Runtime
             base.SetUp();
 
             // Create a minimal character controller
-            var character = CreateGameObject("Character", typeof(Animator));
+            var character = CreateGameObjectSafe("Character", typeof(Animator));
             var controller = AssetDatabase.LoadMainAssetAtPath("Packages/com.unity.cinemachine/Tests/Runtime/TestController.controller") as AnimatorController;
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
             // Create a state-driven camera with two vcams 
-            var stateDrivenCamera = CreateGameObject("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
+            var stateDrivenCamera = CreateGameObjectSafe("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
             stateDrivenCamera.AnimatedTarget = character.GetComponent<Animator>();
 
-            var vcam1 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
-            var vcam2 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
+            var vcam1 = CreateGameObjectSafe("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
+            var vcam2 = CreateGameObjectSafe("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
             vcam1.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
             vcam2.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
 

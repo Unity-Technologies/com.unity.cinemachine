@@ -24,13 +24,13 @@ namespace Tests.Runtime
         {
             base.SetUp();
 
-            var camGo = CreateGameObject("CM Freelook", typeof(CmCamera));
+            var camGo = CreateGameObjectSafe("CM Freelook", typeof(CmCamera));
             m_CmCamera = camGo.GetComponent<CmCamera>();
             m_OrbitalFollow = camGo.AddComponent<CinemachineOrbitalFollow>();
             
             camGo.AddComponent<CinemachineHardLookAt>();
             
-            m_FollowTargetGo = CreatePrimitive(PrimitiveType.Cube);
+            m_FollowTargetGo = CreatePrimitiveSafe(PrimitiveType.Cube);
             m_FollowTargetGo.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             m_CmCamera.Target.TrackingTarget = m_FollowTargetGo.transform;
         }

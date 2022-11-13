@@ -26,8 +26,8 @@ namespace Tests
         public override void SetUp()
         {
             base.SetUp();
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
-            m_CmCamera = CreateGameObject("CmCamera", typeof(CmCamera)).GetComponent<CmCamera>();
+            CreateGameObjectSafe("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            m_CmCamera = CreateGameObjectSafe("CmCamera", typeof(CmCamera)).GetComponent<CmCamera>();
             m_CmCamera.Priority = 100;
             
             s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
