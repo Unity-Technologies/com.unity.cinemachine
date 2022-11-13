@@ -61,7 +61,7 @@ namespace Tests
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        protected GameObject CreatePrimitive(PrimitiveType type)
+        protected virtual GameObject CreatePrimitive(PrimitiveType type)
         {
 #if UNITY_EDITOR
             var go = Application.isPlaying ? GameObject.CreatePrimitive(type) : ObjectFactory.CreatePrimitive(type);
