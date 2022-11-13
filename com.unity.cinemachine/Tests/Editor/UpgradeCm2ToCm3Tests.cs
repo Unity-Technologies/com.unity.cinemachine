@@ -22,7 +22,7 @@ namespace Tests.Editor
         public override void SetUp()
         {
             base.SetUp();
-            m_Brain = CreateGameObjectSafe("MainCamera", typeof(Camera), typeof(CinemachineBrain))
+            m_Brain = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain))
                 .GetComponent<CinemachineBrain>();
             m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
         }
@@ -50,7 +50,7 @@ namespace Tests.Editor
         [UnityTest, TestCaseSource(nameof(ConvertTestCases))]
         public IEnumerator ConvertAllDefaultOnes(Type type)
         {
-            var vcamGo = CreateGameObjectSafe("TestVcam", typeof(CinemachineVirtualCamera));
+            var vcamGo = CreateGameObject("TestVcam", typeof(CinemachineVirtualCamera));
             Assert.IsTrue(vcamGo.TryGetComponent(out CinemachineVirtualCamera vcam));
             vcam.InvalidateComponentPipeline();
             m_Brain.ManualUpdate(); // ensure pipeline is built
@@ -70,7 +70,7 @@ namespace Tests.Editor
         [UnityTest]
         public IEnumerator ConvertFreelook()
         {
-            var freelookGo = CreateGameObjectSafe("TestVcam", typeof(CinemachineFreeLook));
+            var freelookGo = CreateGameObject("TestVcam", typeof(CinemachineFreeLook));
             CinemachineUpgradeManager.UpgradeSingleObject(freelookGo);
             yield return null;
 

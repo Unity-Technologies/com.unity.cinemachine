@@ -24,15 +24,15 @@ namespace Tests
 
             m_GameObjectsToDestroy.Clear();
         }
-
+        
         /// <summary>
         /// Creates gameObject and keeps track of it, so it is cleaned up properly at [TearDown].
-        /// Uses appropriate method depending on being in Editor (playmode, editmode) or in Build.
+        /// Uses appropriate method depending on whether the test is playing.
         /// </summary>
         /// <param name="name">Name of the gameObject.</param>
         /// <param name="components">Components to add to the gameObject.</param>
         /// <returns>GameObject created.</returns>
-        protected GameObject CreateGameObjectSafe(string name, params System.Type[] components)
+        protected GameObject CreateGameObject(string name, params System.Type[] components)
         {
 #if UNITY_EDITOR
             var go = Application.isPlaying ? new GameObject(name) : ObjectFactory.CreateGameObject(name);
@@ -59,11 +59,11 @@ namespace Tests
 
         /// <summary>
         /// Creates the specified primitive and keeps track of it, so it is cleaned up properly at [TearDown].
-        /// Uses appropriate method depending on being in Editor (playmode, editmode) or in Build.
+        /// Uses appropriate method depending on whether the test is playing.
         /// </summary>
         /// <param name="type">Type of primitive.</param>
         /// <returns>GameObject created.</returns>
-        protected virtual GameObject CreatePrimitiveSafe(PrimitiveType type)
+        protected virtual GameObject CreatePrimitive(PrimitiveType type)
         {
 #if UNITY_EDITOR
             var go = Application.isPlaying ? GameObject.CreatePrimitive(type) : ObjectFactory.CreatePrimitive(type);

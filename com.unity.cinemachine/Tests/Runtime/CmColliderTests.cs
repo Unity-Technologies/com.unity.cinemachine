@@ -21,9 +21,9 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            m_Vcam = CreateGameObjectSafe("CM Vcam", typeof(CmCamera), typeof(CinemachineDeoccluder)).GetComponent<CmCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineDeoccluder)).GetComponent<CmCamera>();
             m_Vcam.Priority = 100;
-            m_Vcam.Follow = CreateGameObjectSafe("Follow Object").transform;
+            m_Vcam.Follow = CreateGameObject("Follow Object").transform;
             var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
             positionComposer.CameraDistance = 5f;
             m_Collider = m_Vcam.GetComponent<CinemachineDeoccluder>();
@@ -52,18 +52,20 @@ namespace Tests.Runtime
             yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
 
-            // 1. Place an obstacle where the camera is currently and see if it has moved without damping to the appropriate location.
-            var obstacle = CreatePrimitiveSafe(PrimitiveType.Cube);
-            obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity); // place obstacle so that camera needs to move
+            // 1. Place an obstacle where the camera is currently to force the camera to move
+            var obstacle = CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity);
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
+            
+            // 2. See if it has snapped (due to obstacle, no damping) to the appropriate location.
             yield return UpdateCinemachine();
             // Camera snapped in front of the box at position -4.5 (imprecision is due to slush in collider algorithm)
             Assert.That(new Vector3(0, 0, -4.49900007f), Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
 
-            // 2. Remove obstacle
+            // 3. Remove obstacle
             yield return PhysicsDestroy(obstacle);
             
-            // 3. Wait and see that smoothing stops any correction applied for its duration
+            // 4. Wait and see that smoothing stops any correction applied for its duration
             yield return WaitForSecondsWhileCheckingMovement(m_Collider.AvoidObstacles.SmoothingTime);
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
 
@@ -71,11 +73,11 @@ namespace Tests.Runtime
             IEnumerator WaitForSecondsWhileCheckingMovement(float t)
             {
                 var startTime = CinemachineCore.CurrentTimeOverride;
+                var initialPosition = m_Vcam.State.GetFinalPosition();
                 while (CinemachineCore.CurrentTimeOverride - startTime <= t)
                 {
-                    var pos = m_Vcam.State.GetFinalPosition();
+                    Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(initialPosition));
                     yield return UpdateCinemachine();
-                    Assert.That(m_Vcam.State.GetFinalPosition(), CinemachineCore.CurrentTimeOverride - startTime > t ? Is.Not.EqualTo(pos) : Is.EqualTo(pos));
                 }
             }
         }
@@ -88,16 +90,20 @@ namespace Tests.Runtime
             m_Collider.AvoidObstacles.DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             yield return UpdateCinemachine();
-            
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
-            var obstacle = CreatePrimitiveSafe(PrimitiveType.Cube);
-            obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity); // place obstacle so that camera needs to move
+            
+            // 1. Place an obstacle where the camera is currently to force the camera to move.
+            var obstacle = CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity);
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
 
-            yield return WaitForSecondsWhileTestingDamping(k_WaitTime); // damped correction in front of obstacle
+            // 2. Wait roughly as much time as it needs to complete the correction with damping and test that damping is applied.
+            yield return WaitForSecondsWhileTestingDamping(k_WaitTime);
             
-            // Remove obstacle and check if cameras has snapped back to its original location
+            // 3. Remove obstacle 
             yield return PhysicsDestroy(obstacle);
+            
+            // 4. Check if cameras has snapped back to its original location
             yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
         }
@@ -111,24 +117,28 @@ namespace Tests.Runtime
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             yield return UpdateCinemachine();
             
+            // 1. Place an obstacle where the camera is currently to force the camera to move.
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
-            var obstacle = CreatePrimitiveSafe(PrimitiveType.Cube);
-            obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity); // place obstacle so that camera needs to move
+            var obstacle = CreatePrimitive(PrimitiveType.Cube);
+            obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity);
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
-            yield return UpdateCinemachine();
             
-            // camera moved check
+            // 2. Check that camera moved (no damping, so it snapped).
+            yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.Not.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
             var obstructedPosition = m_Vcam.State.GetFinalPosition();
-            Assert.That(originalCamPosition, !Is.EqualTo(obstructedPosition).Using(m_Vector3EqualityComparer));
-            // wait another frame to avoid snap - we need to have a previous damp time to avoid snap
-            yield return UpdateCinemachine();
             
+            // 3. Check that camera still has not moved 
+            yield return UpdateCinemachine(); // wait another frame to avoid snap - we need to have a previous damp time to avoid snap
             Assert.That(obstructedPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
+            
+            // 4. Remove obstacle
             yield return PhysicsDestroy(obstacle);
             
-            yield return WaitForSecondsWhileTestingDamping(k_WaitTime); // damped return to original pos
-            
+            // 5. Wait roughly as much time as it needs to return to the starting position with damping and test that damping is applied.
+            yield return WaitForSecondsWhileTestingDamping(k_WaitTime);
+
+            // 6. Check that camera is back to original position
             yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
         }

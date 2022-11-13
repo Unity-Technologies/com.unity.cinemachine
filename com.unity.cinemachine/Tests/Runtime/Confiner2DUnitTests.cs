@@ -19,7 +19,7 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            var vcamHolder = CreateGameObjectSafe("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
+            var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
             m_Vcam = vcamHolder.GetComponent<CmCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
             m_Vcam.Priority = 100;
@@ -47,7 +47,7 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(ColliderTestCases))]
         public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_PolygonCollider2D(Vector2[] testPoints)
         {
-            var polygonCollider2D = CreateGameObjectSafe("PolygonCollider2DHolder", typeof(PolygonCollider2D)).GetComponent<PolygonCollider2D>();
+            var polygonCollider2D = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D)).GetComponent<PolygonCollider2D>();
             m_Confiner2D.BoundingShape2D = polygonCollider2D;
             m_Confiner2D.Damping = 0;
             m_Confiner2D.MaxWindowSize = 0;
@@ -81,7 +81,7 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(ColliderTestCases))]
         public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_CompositeCollider2D(Vector2[] testPoints)
         {
-            var compositeHolder = CreateGameObjectSafe("CompositeCollider2DHolder", typeof(Rigidbody2D), typeof(CompositeCollider2D));
+            var compositeHolder = CreateGameObject("CompositeCollider2DHolder", typeof(Rigidbody2D), typeof(CompositeCollider2D));
             var rigidbody2D = compositeHolder.GetComponent<Rigidbody2D>();
             rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
             rigidbody2D.isKinematic = true;
@@ -89,7 +89,7 @@ namespace Tests.Runtime
             var compositeCollider2D = compositeHolder.GetComponent<CompositeCollider2D>();
             compositeCollider2D.geometryType = CompositeCollider2D.GeometryType.Polygons;
 
-            var polyHolder = CreateGameObjectSafe("PolygonCollider2DHolder", typeof(PolygonCollider2D));
+            var polyHolder = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D));
             polyHolder.transform.parent = compositeHolder.transform;
             var polygonCollider2D = polyHolder.GetComponent<PolygonCollider2D>();
             polygonCollider2D.usedByComposite = true;
@@ -125,7 +125,7 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator Test_SimpleSquareConfiner_BoxCollider2D()
         {
-            var boxCollider2D = CreateGameObjectSafe("BoxCollider2DHolder", typeof(BoxCollider2D)).GetComponent<BoxCollider2D>();
+            var boxCollider2D = CreateGameObject("BoxCollider2DHolder", typeof(BoxCollider2D)).GetComponent<BoxCollider2D>();
             m_Confiner2D.BoundingShape2D = boxCollider2D;
             m_Confiner2D.Damping = 0;
             m_Confiner2D.MaxWindowSize = 0;

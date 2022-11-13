@@ -21,7 +21,7 @@ namespace Tests.Runtime
         {
             base.SetUp();
 
-            m_Cam = CreateGameObjectSafe("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
+            m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
             m_Brain = m_Cam.GetComponent<CinemachineBrain>();
             
             // force a uniform deltaTime, otherwise tests will be unstable
@@ -53,7 +53,7 @@ namespace Tests.Runtime
         /// <param name="go">GameObject to destroy.</param>
         protected static IEnumerator PhysicsDestroy(GameObject go)
         {
-            Object.Destroy(go);
+            RuntimeUtility.DestroyObject(go);
             yield return WaitForOnePhysicsFrame(); // important to ensure the collider is destroyed.
         }
     }

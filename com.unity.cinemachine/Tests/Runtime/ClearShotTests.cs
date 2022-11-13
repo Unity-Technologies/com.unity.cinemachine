@@ -21,18 +21,18 @@ namespace Tests.Runtime
             base.SetUp();
             
             // a basic "character" to use as a lookat
-            m_Character = CreateGameObjectSafe("Character");
+            m_Character = CreateGameObject("Character");
             m_Character.transform.position = new Vector3(10, 0, 1);
 
             // a ClearShot camera
-            var clearShotHolder = CreateGameObjectSafe("CM ClearShot", typeof(CinemachineClearShot), typeof(CinemachineDeoccluder));
+            var clearShotHolder = CreateGameObject("CM ClearShot", typeof(CinemachineClearShot), typeof(CinemachineDeoccluder));
             m_ClearShot = clearShotHolder.GetComponent<CinemachineClearShot>();
             m_ClearShot.LookAt = m_Character.transform;
             var clearShotCollider = clearShotHolder.GetComponent<CinemachineDeoccluder>();
             clearShotCollider.MinimumDistanceFromTarget = 0.1f;
 
             // a stationary vcam1 with a hard lookat
-            var vcam1Holder = CreateGameObjectSafe("CM Vcam1", typeof(CmCamera));
+            var vcam1Holder = CreateGameObject("CM Vcam1", typeof(CmCamera));
             vcam1Holder.transform.SetParent(clearShotHolder.transform);
             vcam1Holder.transform.position = new Vector3(0, 0, 8); 
             m_Vcam1 = vcam1Holder.GetComponent<CmCamera>();
@@ -40,14 +40,14 @@ namespace Tests.Runtime
             m_Vcam1.Priority = 20;
             
             // a completely locked vcam2
-            var vcam2Holder = CreateGameObjectSafe("CM Vcam2", typeof(CmCamera));
+            var vcam2Holder = CreateGameObject("CM Vcam2", typeof(CmCamera));
             vcam2Holder.transform.SetParent(clearShotHolder.transform);
             vcam2Holder.transform.position = new Vector3(0, 0, -2);
             m_Vcam2 = vcam2Holder.GetComponent<CmCamera>();
             m_Vcam2.Priority = 10;
 
             // a "wall" composed of a single quad that partially obscures vcam1, but not vcam2
-            var wall = CreatePrimitiveSafe(PrimitiveType.Quad);
+            var wall = CreatePrimitive(PrimitiveType.Quad);
             wall.transform.SetPositionAndRotation(new Vector3(0, 0, 4), Quaternion.Euler(0, 180, 0));
             wall.transform.localScale = new Vector3(2, 2, 2);
         }
