@@ -83,8 +83,6 @@ namespace Tests.Runtime
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
             yield return UpdateCinemachine();
             
-// TODO: damping should no be checked exactly, instead check if it moved and it moved less then before
-
             // we are pulling away from obstacle
             var camPos = m_Vcam.State.GetFinalPosition();
             Assert.That(originalCamPosition, Is.Not.EqualTo(camPos).Using(m_Vector3EqualityComparer));
@@ -135,6 +133,25 @@ namespace Tests.Runtime
             Assert.That(obstructedPosition, Is.Not.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
             Assert.That(originalCamPosition, Is.Not.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
             Assert.That(new Vector3(0, 0, -4.75853252f), Is.EqualTo(finalPosition).Using(m_Vector3EqualityComparer));
+        }
+    }
+    
+    /// <summary>Waits for the t seconds.</summary>
+    /// <param name="t">Time in seconds.</param>
+    protected IEnumerator WaitForSecondsAndTestDamping(float t)
+    {
+        var previousDelta = -1f;
+        var startTime = CinemachineCore.CurrentTimeOverride;
+        while (CinemachineCore.CurrentTimeOverride - startTime <= t)
+        {
+            var startPosition = m_Vcam.State.GetFinalPosition();
+            yield return UpdateCinemachine();
+            var newPosition = m_Vcam.State.GetFinalPosition();
+            var delta = newPosition - startPosition;
+            if (previousDelta != -1f)
+            {
+                Assert.That(delta, Is.LessThan(previousDelta));
+            }
         }
     }
 }
