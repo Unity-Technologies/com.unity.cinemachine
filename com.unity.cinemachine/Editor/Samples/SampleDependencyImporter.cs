@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -101,11 +103,14 @@ namespace Cinemachine.Editor
                         var sampleEntry = m_SampleConfiguration.GetEntry(m_Samples[i]);
                         if (sampleEntry != null)
                         {
-                            // Import the common asset dependencies
+                            // Import common asset dependencies
                             assetsImported = ImportDependencies(m_PackageInfo, m_SampleConfiguration.CommonAssetDependencies);
 
-                            // Import the sample-specific dependencies
+                            // Import sample-specific dependencies
                             assetsImported |= ImportDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
+                            
+                            // Import sample-specific package dependencies
+                            assetsImported |= ImportPackageDependencies(sampleEntry.PackageDependencies);
                         }
                     }
                 }
@@ -137,6 +142,14 @@ namespace Cinemachine.Editor
             return assetsImported;
         }
 
+        static bool ImportPackageDependencies(string[] packages)
+        {
+            foreach (var package in packages) 
+                Client.Add(package);
+            
+            return packages.Length != 0;
+        }
+        
         /// <summary>
         /// Returns all samples part of the specified package.
         /// </summary>

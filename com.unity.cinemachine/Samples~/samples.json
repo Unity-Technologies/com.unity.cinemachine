@@ -5,13 +5,17 @@
   ],
   "SampleEntries": [
     {
-      "Path": "2D Samples"
+      "Path": "2D Samples",
+      "AssetDependencies": [],
+      "PackageDependencies": []
     },
     {
-      "Path": "3D Samples"
+      "Path": "3D Samples",
+      "AssetDependencies": []
     },
     {
-      "Path": "Old Samples from CM2"
+      "Path": "Old Samples from CM2",
+      "AssetDependencies": []
     }
   ]
 }

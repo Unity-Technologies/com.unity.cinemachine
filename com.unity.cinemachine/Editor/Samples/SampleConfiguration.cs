@@ -19,6 +19,7 @@ namespace Cinemachine.Editor
         {
             public string Path { get; set; }
             public string[] AssetDependencies { get; set; }
+            public string[] PackageDependencies { get; set; }
         }
 
         /// <summary>
