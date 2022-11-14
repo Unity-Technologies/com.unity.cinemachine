@@ -53,15 +53,12 @@ namespace Cinemachine.Editor
         static bool TryLoadSampleConfiguration(PackageInfo packageInfo, out SampleConfiguration configuration)
         {
             var configurationPath = $"{packageInfo.assetPath}/Samples~/samples.json";
-
             if (File.Exists(configurationPath))
             {
                 var configurationText = File.ReadAllText(configurationPath);
                 configuration = JsonUtility.FromJson<SampleConfiguration>(configurationText);
-
                 return true;
             }
-
             configuration = null;
             return false;
         }
@@ -71,7 +68,6 @@ namespace Cinemachine.Editor
             if (m_SampleConfiguration != null)
             {
                 var assetsImported = false;
-
                 foreach (var sample in m_Samples)
                 {
                     if (assetPath.EndsWith(sample.displayName))
@@ -80,10 +76,12 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
+                            assetsImported = 
+                                ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
 
                             // Import sample-specific dependencies
-                            assetsImported |= ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
+                            assetsImported |= 
+                                ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
                             
                             // Import sample-specific package dependencies using the editor update loop, because
                             // adding package dependencies need to be done in sequence one after the other

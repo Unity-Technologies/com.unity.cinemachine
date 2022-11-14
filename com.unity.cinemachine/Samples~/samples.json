@@ -18,7 +18,8 @@
       "AssetDependencies": [],
       "PackageDependencies": [
         "com.unity.modules.physics",
-        "com.unity.modules.physics2d"
+        "com.unity.modules.physics2d",
+        "com.unity.modules.vehicles"
       ]
     },
     {
