@@ -9,11 +9,13 @@ namespace Tests
     /// <summary>Base class that handles creation and deletion of GameObjects.</summary>
     public class CinemachineFixtureBase
     {
-        readonly List<GameObject> m_GameObjectsToDestroy = new();
+        List<GameObject> m_GameObjectsToDestroy;
         
         [SetUp]
         public virtual void SetUp()
         {
+            Unity.Collections.NativeLeakDetection.Mode = Unity.Collections.NativeLeakDetectionMode.EnabledWithStackTrace;
+            m_GameObjectsToDestroy = new List<GameObject>();
         }
         
         [TearDown]
@@ -23,6 +25,8 @@ namespace Tests
                 RuntimeUtility.DestroyObject(go);
 
             m_GameObjectsToDestroy.Clear();
+            m_GameObjectsToDestroy = null;
+            Unity.Collections.NativeLeakDetection.Mode = Unity.Collections.NativeLeakDetectionMode.Disabled;
         }
         
         /// <summary>
