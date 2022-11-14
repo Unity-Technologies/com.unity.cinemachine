@@ -14,6 +14,14 @@
       "PackageDependencies": []
     },
     {
+      "Path": "Physics Samples",
+      "AssetDependencies": [],
+      "PackageDependencies": [
+        "com.unity.modules.physics",
+        "com.unity.modules.physics2d"
+      ]
+    },
+    {
       "Path": "Old Samples from CM2",
       "AssetDependencies": [],
       "PackageDependencies": []
