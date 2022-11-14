@@ -21,7 +21,7 @@ namespace Cinemachine.Editor
         SampleConfiguration m_SampleConfiguration;
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
-        string[] m_PackageDependencies;
+        string[] m_PackageDependencies = Array.Empty<string>();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
@@ -34,14 +34,15 @@ namespace Cinemachine.Editor
         /// </summary>
         void IPackageManagerExtension.OnPackageSelectionChange(PackageInfo packageInfo)
         {
-            if (packageInfo != null && packageInfo.name.StartsWith(k_CinemachinePackageName))
+            var cmPackageInfo = packageInfo != null && packageInfo.name.StartsWith(k_CinemachinePackageName);
+            if (m_PackageInfo == null && cmPackageInfo)
             {
                 m_PackageInfo = packageInfo;
                 m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
                 if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration)) 
                     SamplePostprocessor.AssetImported += LoadAssetDependencies;
             }
-            else
+            else if (!cmPackageInfo)
             {
                 m_PackageInfo = null;
                 SamplePostprocessor.AssetImported -= LoadAssetDependencies;
@@ -71,13 +72,11 @@ namespace Cinemachine.Editor
             {
                 var assetsImported = false;
 
-                foreach (var t in m_Samples)
+                foreach (var sample in m_Samples)
                 {
-                    // Import dependencies if we are importing the root directory of the sample
-                    var isSampleDirectory = assetPath.EndsWith(t.displayName);
-                    if (isSampleDirectory)
+                    if (assetPath.EndsWith(sample.displayName))
                     {
-                        var sampleEntry = m_SampleConfiguration.GetEntry(t);
+                        var sampleEntry = m_SampleConfiguration.GetEntry(sample);
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
@@ -92,6 +91,8 @@ namespace Cinemachine.Editor
                             m_PackageDependencies = sampleEntry.PackageDependencies;
                             EditorApplication.update += ImportPackageDependencies;
                         }
+
+                        break;
                     }
                 } 
 
@@ -129,7 +130,7 @@ namespace Cinemachine.Editor
                     m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
                 else
                 {
-                    m_PackageDependencies = null;
+                    m_PackageDependencies = Array.Empty<string>();
                     m_PackageAddRequest = null;
                     EditorApplication.update -= ImportPackageDependencies;
                 }
