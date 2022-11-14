@@ -1,14 +1,12 @@
-# Multiple Unity cameras
+# Split-Screen and Multiple Unity Cameras
 
-Split-screen and picture-in-picture effects require the use of more than one Unity camera. Each Unity camera presents its own view on the player’s screen.
+By design, CmCameras are not directly linked to CinemachineBrains.  Instead, active CmCameras in the scene are dynamically found by the Brain, allowing them to be dynamically brought into existence via prefab instantiation or scene loading.  By default, if multiple CinemachineBrains exist in the scene, they will all find the same CmCameras and consequently display the same thing.  To assign a specific CmCamera to a specific Brain, Cinemachine Channels are used.  This works the same way as Unity Layers.  
 
-To use a multi-camera split-screen for two players:
+First, set your CmCamera to output to the desired channel:
 
-1. For each player, [create a layer](https://docs.unity3d.com/Manual/Layers.html). For example, for two players, create layers named P1 and P2.
+![Cinemachine Channels Camera](images/CinemachineChannels-camera.png)
 
-2. Add two Unity cameras to your Scene, set up their viewports, and give each one its own Cinemachine Brain component.
+Next, add that channel to the CinemachineBrain's Channel mask.  Multiple channels may be prsent simultaneously in the mask.  The CinemachineBrain will use only those CmCameras that output to channels that are present in the mask.  All other CmCameras will be ignored.
 
-3. For each Unity camera, set the __Culling Mask__ to the appropriate layer while excluding the other layer. For example, set the first Unity camera to include layer P1 while excluding P2.
-
-4. Add 2 Virtual Cameras, one to follow each player to follow the players. Assign each Virtual Camera to a player layer.
+![Cinemachine Channels   Brain](images/CinemachineChannels%20-%20brain.png)
 

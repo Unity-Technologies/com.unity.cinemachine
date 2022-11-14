@@ -16,7 +16,7 @@ Cinemachine Brain holds the following key properties:
 
 * __Blend Settings__: A list that defines how to blend from one CmCamera to another.  For example, add an item to the list for a 4 second blend from vcam1 to vcam2 then add another item for a 1 second blend from vcam2 back to vcam1. If a blend between two cameras isn’t defined, Cinemachine Brain uses its default blend.
 
-* __Layer Filter__:  Cinemachine Brain uses only those CmCameras that pass the culling mask of the Unity camera.  You can set up [split-screen environments](CinemachineMultipleCameras.md) by using the culling mask to filter layers.
+* __Channel Filter__:  Cinemachine Brain uses only those CmCameras that output to Channels present in the Channel Mask.  You can set up [split-screen environments](CinemachineMultipleCameras.md) by using the Channel Mask mask to filter channels.
 
 * __Event Dispatching__:  Cinemachine Brain fires events when it changes shot. It fires an event when a CmCamera goes live. It also fires an event when it cuts from one CmCamera to another. Use the latter event to reset temporal post effects.
 

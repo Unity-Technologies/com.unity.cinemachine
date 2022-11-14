@@ -45,7 +45,7 @@
         * [Using Spline paths](CinemachineUsingSplinePaths.md)
     		* [Cinemachine Spline Roll](CinemachineSplineRoll.md)
         * [Cinemachine Spline Cart](CinemachineSplineCart.md)
-        * [Multiple Unity cameras](CinemachineMultipleCameras.md)
+        * [Split-Screen and Multiple Unity Cameras](CinemachineMultipleCameras.md)
         * [Cinemachine External Camera](CinemachineExternalCamera.md)
         * [Cinemachine Target Group](CinemachineTargetGroup.md)
     * [Cinemachine Brain](CinemachineBrain.md)
