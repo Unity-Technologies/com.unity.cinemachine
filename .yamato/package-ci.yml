@@ -5,7 +5,7 @@ ci_trigger:
   triggers:
     branches:
       only:
-      - "/^(master)|(release[/]\\d+[.]\\d+)$/"
+      - "/^(main)|(release[/]\\d+[.]\\d+)$/"
     pull_requests:
       - targets:
           only:
@@ -33,7 +33,7 @@ nightly_trigger:
   name: Package Nightly tests
   triggers:
      recurring:
-      - branch: master
+      - branch: main
         frequency: daily
   dependencies:
     {% for test_project in all_testprojects %}
