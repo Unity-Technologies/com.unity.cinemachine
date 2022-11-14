@@ -113,7 +113,7 @@ namespace Cinemachine.Editor
                             assetsImported |= ImportPackageDependencies(sampleEntry.PackageDependencies);
                         }
                     }
-                }
+                }git 
 
                 if (assetsImported)
                     AssetDatabase.Refresh();
