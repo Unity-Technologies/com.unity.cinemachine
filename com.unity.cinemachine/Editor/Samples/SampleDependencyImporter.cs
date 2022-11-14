@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,6 +19,9 @@ namespace Cinemachine.Editor
         PackageInfo m_PackageInfo;
         IEnumerable<Sample> m_Samples;
         SampleConfiguration m_SampleConfiguration;
+        AddRequest m_PackageAddRequest;
+        int m_PackageDependencyIndex;
+        string[] m_PackageDependencies;
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
@@ -82,8 +86,11 @@ namespace Cinemachine.Editor
                             // Import sample-specific dependencies
                             assetsImported |= ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
                             
-                            // Import sample-specific package dependencies
-                            assetsImported |= ImportPackageDependencies(sampleEntry.PackageDependencies);
+                            // Import sample-specific package dependencies using the editor update loop, because
+                            // adding package dependencies need to be done in sequence one after the other
+                            m_PackageDependencyIndex = 0;
+                            m_PackageDependencies = sampleEntry.PackageDependencies;
+                            EditorApplication.update += ImportPackageDependencies;
                         }
                     }
                 } 
@@ -113,12 +120,19 @@ namespace Cinemachine.Editor
                 return assetsImported;
             }
 
-            static bool ImportPackageDependencies(string[] packages)
+            void ImportPackageDependencies()
             {
-                foreach (var package in packages) 
-                    Client.Add(package);
-            
-                return packages.Length != 0;
+                if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
+                    return; // wait while we have a request pending
+
+                if (m_PackageDependencyIndex < m_PackageDependencies.Length)
+                    m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
+                else
+                {
+                    m_PackageDependencies = null;
+                    m_PackageAddRequest = null;
+                    EditorApplication.update -= ImportPackageDependencies;
+                }
             }
         }
 
