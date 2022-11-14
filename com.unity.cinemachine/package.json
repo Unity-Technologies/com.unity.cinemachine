@@ -47,7 +47,7 @@
     },
     {
       "displayName": "Physics Samples",
-      "description": "Sample scenes illustrating various ways to use Cinemachine when Unity.Physics is installed. This sample is going to install Unity.Physics if it is not present.",
+      "description": "Sample scenes illustrating various ways to use Cinemachine with Unity.Physics. This sample is going to install Unity.Physics if it is not present.",
       "path": "Samples~/Physics Samples"
     },
     {

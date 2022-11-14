@@ -91,7 +91,6 @@ namespace Cinemachine.Editor
                             m_PackageDependencies = sampleEntry.PackageDependencies;
                             EditorApplication.update += ImportPackageDependencies;
                         }
-
                         break;
                     }
                 } 
