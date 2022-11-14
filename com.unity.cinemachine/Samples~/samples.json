@@ -1,0 +1,17 @@
+{
+  "DocumentationURL": "",
+  "CommonAssetDependencies": [
+    "Shared"
+  ],
+  "SampleEntries": [
+    {
+      "Path": "2D Samples"
+    },
+    {
+      "Path": "3D Samples"
+    },
+    {
+      "Path": "Old Samples from CM2"
+    }
+  ]
+}

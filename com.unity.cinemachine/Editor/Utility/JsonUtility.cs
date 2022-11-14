@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -6,7 +7,8 @@ namespace Cinemachine.Editor
 {
     public static class JsonSerialization
     {
-        public static T? Deserialize<T>(string json)
+        [CanBeNull]
+        public static T Deserialize<T>(string json)
         {
             try
             {

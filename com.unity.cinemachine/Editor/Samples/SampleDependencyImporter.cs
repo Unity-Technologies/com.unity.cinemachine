@@ -46,6 +46,7 @@ namespace Cinemachine.Editor
         /// </summary>
         void IPackageManagerExtension.OnPackageSelectionChange(PackageInfo packageInfo)
         {
+            
             var isCmPackage = packageInfo != null && packageInfo.name.StartsWith(k_CinemachinePackageName);
             if (isCmPackage)
             {
@@ -68,7 +69,7 @@ namespace Cinemachine.Editor
         /// </summary>
         static bool TryLoadSampleConfiguration(PackageInfo packageInfo, out SampleConfiguration configuration)
         {
-            var configurationPath = $"{packageInfo.assetPath}/samples.json";
+            var configurationPath = $"{packageInfo.assetPath}/Samples~/samples.json";
 
             if (File.Exists(configurationPath))
             {
