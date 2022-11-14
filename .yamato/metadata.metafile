@@ -50,7 +50,7 @@ all_testprojects:
 
 all_configurations:
   ci:
-    test_names: [isolation_tests]
+    test_names: [isolation_tests, promotion_tests]
     platform_names: [ubuntu]
   nightly:
     test_names: [isolation_tests, promotion_tests]
