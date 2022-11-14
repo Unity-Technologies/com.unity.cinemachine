@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.PackageManager;
-using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -21,10 +20,11 @@ namespace Cinemachine.Editor
         {
             public static event Action<string> AssetImported;
 
-            static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+            static void OnPostprocessAllAssets(string[] importedAssets, 
+                string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
             {
-                for (int i = 0; i < importedAssets.Length; i++)
-                    AssetImported?.Invoke(importedAssets[i]);
+                foreach (var importedAsset in importedAssets)
+                    AssetImported?.Invoke(importedAsset);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
 
         const string k_CinemachinePackageName = "com.unity.cinemachine";
         PackageInfo m_PackageInfo;
-        List<Sample> m_Samples;
+        IEnumerable<Sample> m_Samples;
         SampleConfiguration m_SampleConfiguration;
 
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
@@ -48,16 +48,13 @@ namespace Cinemachine.Editor
         /// </summary>
         void IPackageManagerExtension.OnPackageSelectionChange(PackageInfo packageInfo)
         {
-            
             var isCmPackage = packageInfo != null && packageInfo.name.StartsWith(k_CinemachinePackageName);
             if (isCmPackage)
             {
                 m_PackageInfo = packageInfo;
-                m_Samples = GetSamples(packageInfo);
-                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration))
-                {
+                m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
+                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration)) 
                     SamplePostprocessor.AssetImported += LoadAssetDependencies;
-                }
             }
             else
             {
@@ -76,7 +73,7 @@ namespace Cinemachine.Editor
             if (File.Exists(configurationPath))
             {
                 var configurationText = File.ReadAllText(configurationPath);
-                configuration = JsonSerialization.Deserialize<SampleConfiguration>(configurationText);
+                configuration = Newtonsoft.Json.JsonConvert.DeserializeObject<SampleConfiguration>(configurationText);
 
                 return true;
             }
@@ -94,20 +91,20 @@ namespace Cinemachine.Editor
             {
                 var assetsImported = false;
 
-                for (int i = 0; i < m_Samples.Count; ++i)
+                foreach (var t in m_Samples)
                 {
                     // Import dependencies if we are importing the root directory of the sample
-                    var isSampleDirectory = assetPath.EndsWith(m_Samples[i].displayName);
+                    var isSampleDirectory = assetPath.EndsWith(t.displayName);
                     if (isSampleDirectory)
                     {
-                        var sampleEntry = m_SampleConfiguration.GetEntry(m_Samples[i]);
+                        var sampleEntry = m_SampleConfiguration.GetEntry(t);
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = ImportDependencies(m_PackageInfo, m_SampleConfiguration.CommonAssetDependencies);
+                            assetsImported = ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.CommonAssetDependencies);
 
                             // Import sample-specific dependencies
-                            assetsImported |= ImportDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
+                            assetsImported |= ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
                             
                             // Import sample-specific package dependencies
                             assetsImported |= ImportPackageDependencies(sampleEntry.PackageDependencies);
@@ -118,48 +115,34 @@ namespace Cinemachine.Editor
                 if (assetsImported)
                     AssetDatabase.Refresh();
             }
-        }
-
-        /// <summary>
-        /// Imports specified dependencies from the package into the project.
-        /// </summary>
-        static bool ImportDependencies(PackageInfo packageInfo, string[] paths)
-        {
-            if (paths == null)
-                return false;
-
-            var assetsImported = false;
-            for (int i = 0; i < paths.Length; ++i)
+            
+            // local functions
+            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths)
             {
-                var dependencyPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/{paths[i]}");
-                if (Directory.Exists(dependencyPath))
+                if (paths == null)
+                    return false;
+
+                var assetsImported = false;
+                foreach (var path in paths)
                 {
-                    CopyDirectory(dependencyPath, $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{paths[i]}");
-                    assetsImported = true;
+                    var dependencyPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/{path}");
+                    if (Directory.Exists(dependencyPath))
+                    {
+                        CopyDirectory(dependencyPath, $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}");
+                        assetsImported = true;
+                    }
                 }
+
+                return assetsImported;
             }
 
-            return assetsImported;
-        }
-
-        static bool ImportPackageDependencies(string[] packages)
-        {
-            foreach (var package in packages) 
-                Client.Add(package);
+            static bool ImportPackageDependencies(string[] packages)
+            {
+                foreach (var package in packages) 
+                    Client.Add(package);
             
-            return packages.Length != 0;
-        }
-        
-        /// <summary>
-        /// Returns all samples part of the specified package.
-        /// </summary>
-        /// <param name="packageInfo"></param>
-        /// <returns></returns>
-        static List<Sample> GetSamples(PackageInfo packageInfo)
-        {
-            // Find all samples for the package
-            var samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
-            return new List<Sample>(samples);
+                return packages.Length != 0;
+            }
         }
 
         /// <summary>
