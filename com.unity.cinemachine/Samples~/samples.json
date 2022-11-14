@@ -1,5 +1,4 @@
 {
-  "DocumentationURL": "",
   "CommonAssetDependencies": [
     "Shared"
   ],
@@ -7,7 +6,7 @@
     {
       "Path": "2D Samples",
       "AssetDependencies": [],
-      "PackageDependencies": ["com.unity.formats.alembic"]
+      "PackageDependencies": []
     },
     {
       "Path": "3D Samples",

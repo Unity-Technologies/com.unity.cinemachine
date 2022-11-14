@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.UI;
@@ -13,43 +14,23 @@ namespace Cinemachine.Editor
     [InitializeOnLoad]
     class SampleDependencyImporter : IPackageManagerExtension
     {
-        /// <summary>
-        /// An implementation of AssetPostProcessor which will raise an event when a new asset is imported.
-        /// </summary>
-        class SamplePostprocessor : AssetPostprocessor
-        {
-            public static event Action<string> AssetImported;
-
-            static void OnPostprocessAllAssets(string[] importedAssets, 
-                string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
-            {
-                foreach (var importedAsset in importedAssets)
-                    AssetImported?.Invoke(importedAsset);
-            }
-        }
-
-        static SampleDependencyImporter()
-        {
-            PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
-        }
-
         const string k_CinemachinePackageName = "com.unity.cinemachine";
         PackageInfo m_PackageInfo;
         IEnumerable<Sample> m_Samples;
         SampleConfiguration m_SampleConfiguration;
 
+        static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
         public void OnPackageAddedOrUpdated(PackageInfo packageInfo) {}
         public void OnPackageRemoved(PackageInfo packageInfo) {}
 
         /// <summary>
         /// Called when the package selection changes in the Package Manager window.
-        /// The dependency importer will track the selected package and its sample configuration.
+        /// It loads Cinemachine package info and configuration, when Cinemachine is selected.
         /// </summary>
         void IPackageManagerExtension.OnPackageSelectionChange(PackageInfo packageInfo)
         {
-            var isCmPackage = packageInfo != null && packageInfo.name.StartsWith(k_CinemachinePackageName);
-            if (isCmPackage)
+            if (packageInfo != null && packageInfo.name.StartsWith(k_CinemachinePackageName))
             {
                 m_PackageInfo = packageInfo;
                 m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
@@ -63,9 +44,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        /// <summary>
-        /// Load the sample configuration for the specified package, if one is available.
-        /// </summary>
+        /// <summary>Load the sample configuration for the specified package, if one is available.</summary>
         static bool TryLoadSampleConfiguration(PackageInfo packageInfo, out SampleConfiguration configuration)
         {
             var configurationPath = $"{packageInfo.assetPath}/Samples~/samples.json";
@@ -73,7 +52,7 @@ namespace Cinemachine.Editor
             if (File.Exists(configurationPath))
             {
                 var configurationText = File.ReadAllText(configurationPath);
-                configuration = Newtonsoft.Json.JsonConvert.DeserializeObject<SampleConfiguration>(configurationText);
+                configuration = JsonUtility.FromJson<SampleConfiguration>(configurationText);
 
                 return true;
             }
@@ -82,9 +61,6 @@ namespace Cinemachine.Editor
             return false;
         }
 
-        /// <summary>
-        /// Handles loading common asset dependencies if required.
-        /// </summary>
         void LoadAssetDependencies(string assetPath)
         {
             if (m_SampleConfiguration != null)
@@ -145,9 +121,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        /// <summary>
-        /// Copies a directory from the source to target path. Overwrites existing directories.
-        /// </summary>
+        /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
             // Verify source directory
@@ -175,6 +149,40 @@ namespace Cinemachine.Editor
                 var newDirectoryPath = Path.Combine(targetPath, child.Name);
                 CopyDirectory(child.FullName, newDirectoryPath);
             }
+        }
+        
+        /// <summary>An AssetPostProcessor which will raise an event when a new asset is imported.</summary>
+        class SamplePostprocessor : AssetPostprocessor
+        {
+            public static event Action<string> AssetImported;
+
+            static void OnPostprocessAllAssets(string[] importedAssets, 
+                string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+            {
+                foreach (var importedAsset in importedAssets)
+                    AssetImported?.Invoke(importedAsset);
+            }
+        }
+        
+        /// <summary>A configuration class defining information related to samples for the package.</summary>
+        [Serializable]
+        class SampleConfiguration
+        {
+            /// <summary>This class defines the path and dependencies for a specific sample.</summary>
+            [Serializable]
+            public class SampleEntry
+            {
+                public string Path;
+                public string[] AssetDependencies;
+                public string[] PackageDependencies;
+            }
+
+            public string[] CommonAssetDependencies;
+
+            public SampleEntry[] SampleEntries;
+
+            public SampleEntry GetEntry(Sample sample) =>
+                SampleEntries?.FirstOrDefault(t => sample.resolvedPath.EndsWith(t.Path));
         }
     }
 }
