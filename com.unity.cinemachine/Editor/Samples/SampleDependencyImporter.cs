@@ -77,7 +77,7 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.CommonAssetDependencies);
+                            assetsImported = ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
 
                             // Import sample-specific dependencies
                             assetsImported |= ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
@@ -104,7 +104,8 @@ namespace Cinemachine.Editor
                     var dependencyPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/{path}");
                     if (Directory.Exists(dependencyPath))
                     {
-                        CopyDirectory(dependencyPath, $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}");
+                        CopyDirectory(dependencyPath, 
+                            $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}");
                         assetsImported = true;
                     }
                 }
@@ -177,7 +178,7 @@ namespace Cinemachine.Editor
                 public string[] PackageDependencies;
             }
 
-            public string[] CommonAssetDependencies;
+            public string[] SharedAssetDependencies;
 
             public SampleEntry[] SampleEntries;
 

@@ -1,5 +1,5 @@
 {
-  "CommonAssetDependencies": [
+  "SharedAssetDependencies": [
     "Shared"
   ],
   "SampleEntries": [
