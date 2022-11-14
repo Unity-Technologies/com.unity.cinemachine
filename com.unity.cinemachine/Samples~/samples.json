@@ -7,15 +7,17 @@
     {
       "Path": "2D Samples",
       "AssetDependencies": [],
-      "PackageDependencies": []
+      "PackageDependencies": ["com.unity.formats.alembic"]
     },
     {
       "Path": "3D Samples",
-      "AssetDependencies": []
+      "AssetDependencies": [],
+      "PackageDependencies": []
     },
     {
       "Path": "Old Samples from CM2",
-      "AssetDependencies": []
+      "AssetDependencies": [],
+      "PackageDependencies": []
     }
   ]
 }
