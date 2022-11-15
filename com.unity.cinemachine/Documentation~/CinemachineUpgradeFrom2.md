@@ -34,6 +34,11 @@ Old components have been replaced by new components. These are not renames, they
 - CinemachineTrackedDolly is replaced by [CinemachineSplineDolly](CinemachineSplineDolly.md).
 - CinemachineGroupComposer is replaced by the [CinemachineGroupFraming](CinemachineGroupFraming.md) extension used in conjunction with [CinemachineRotationComposer](CinemachineRotationComposer.md).
 - CinemachineCollider is replaced by [CinemachineDeoccluder](CinemachineDeoccluder.md)
+- Cinemachine3rdPersonFollow is replaced by [CinemachineThirdPersonFollow](CinemachineThirdPersonFollow.md).
+
+### Renamed Components
+
+- Cinemachine3rdPersonAim has been renamed to [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md).
 
 ### Renamed Fields 
 
