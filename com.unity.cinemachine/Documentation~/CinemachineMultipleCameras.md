@@ -6,7 +6,7 @@ First, set your CmCamera to output to the desired channel:
 
 ![Cinemachine Channels Camera](images/CinemachineChannels-camera.png)
 
-Next, add that channel to the CinemachineBrain's Channel mask.  Multiple channels may be prsent simultaneously in the mask.  The CinemachineBrain will use only those CmCameras that output to channels that are present in the mask.  All other CmCameras will be ignored.
+Next, add that channel to the CinemachineBrain's Channel mask.  Multiple channels may be present simultaneously in the mask.  The CinemachineBrain will use only those CmCameras that output to channels that are present in the mask.  All other CmCameras will be ignored.
 
 ![Cinemachine Channels   Brain](images/CinemachineChannels%20-%20brain.png)
 
