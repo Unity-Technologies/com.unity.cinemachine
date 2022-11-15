@@ -31,13 +31,10 @@ all_tests:
 all_testprojects:
     - name: URP
       path: Projects/URP
-      editors: [2022.2, trunk]
-    - name: Standalone
-      path: Projects/Standalone
-      editors: [2022.2, trunk]
+      editors: [trunk]
     - name: HDRP
       path: Projects/HDRP
-      editors: [2022.2, trunk]
+      editors: [trunk]
 
 all_configurations:
   ci:
