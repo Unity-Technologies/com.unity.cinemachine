@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -688,18 +688,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266000008609813
+      rid: 8796266002720751629
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266000008609813
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 8796266002720751629
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
-        Speed: 13
+        Speed: 11
 --- !u!1 &1093510071
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,6 +772,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2f2697aa2d246eaa1bbac01e1cfe23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LowerPlatform: {fileID: 275253957}
+  LoseSightAtRange: 20
 --- !u!1 &1166162569
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,18 +875,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266000008609810
-  TrackingTarget: {fileID: 0}
+      rid: 8796266002720751632
+  TrackingTarget: {fileID: 1166162573}
   SplinePosition: 59.99
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266000008609810
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 8796266002720751632
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
-        Speed: 9
+        Speed: 13
 --- !u!1 &1383110408
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,20 +911,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1383110408}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Title: Aiming Rig
-  m_Description: 'A sample scene demonstrating a simplified 4 player fighting game.
-    The players are moved on a predefined path using CinemachineSmoothPath (dolly
-    track).
-
-    The players are all framed when above the platform using Framing
-    Transposer and a TargetGroup.
-
-    When a player falls off the lower platform,
-    the target group loses sight of them gradually (See LoseSightWhenTargetsFallsOffThePlatform
-    script on TargetGroup).'
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  Displayed: 0
+  HelpText: 
 --- !u!4 &1383110410
 Transform:
   m_ObjectHideFlags: 0
@@ -1253,18 +1244,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266000008609811
+      rid: 8796266002720751631
   TrackingTarget: {fileID: 0}
   SplinePosition: 40
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266000008609811
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 8796266002720751631
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
-        Speed: 15
+        Speed: 8
 --- !u!1 &1609023126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1583,19 +1572,12 @@ MonoBehaviour:
     m_Length: 176.15828
     m_MetaData:
     - Mode: 3
-      Tension: 0.33333334
     - Mode: 3
-      Tension: 0.33333334
     - Mode: 3
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 0
-      Tension: 0.33333334
     - Mode: 0
-      Tension: 0.33333334
     - Mode: 0
-      Tension: 0.33333334
     m_Closed: 1
   m_Knots:
     m_KnotsLink: []
@@ -1700,18 +1682,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266000008609812
+      rid: 8796266002720751630
   TrackingTarget: {fileID: 0}
   SplinePosition: 10
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266000008609812
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 8796266002720751630
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
-        Speed: 11
+        Speed: 9
 --- !u!1 &1942116116
 GameObject:
   m_ObjectHideFlags: 0
@@ -1945,21 +1925,13 @@ MonoBehaviour:
     m_Length: 79.26462
     m_MetaData:
     - Mode: 3
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     - Mode: 2
-      Tension: 0.33333334
     m_Closed: 1
   m_Knots:
     m_KnotsLink: []

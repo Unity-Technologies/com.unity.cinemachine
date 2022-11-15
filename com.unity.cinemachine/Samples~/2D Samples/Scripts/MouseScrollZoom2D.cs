@@ -51,11 +51,16 @@ namespace Cinemachine.Examples
         void Update()
         {
 #if ENABLE_LEGACY_INPUT_MANAGER
-            var zoom = m_CmCamera.Lens.OrthographicSize + Input.mouseScrollDelta.y * ZoomMultiplier;
             if (m_CmCamera.Lens.Orthographic)
+            {
+                var zoom = m_CmCamera.Lens.OrthographicSize + Input.mouseScrollDelta.y * ZoomMultiplier;
                 m_CmCamera.Lens.OrthographicSize = Mathf.Clamp(zoom, MinZoom, MaxZoom);
+            }
             else
+            {
+                var zoom = m_CmCamera.Lens.FieldOfView + Input.mouseScrollDelta.y * ZoomMultiplier;
                 m_CmCamera.Lens.FieldOfView = Mathf.Clamp(zoom, MinZoom, MaxZoom);
+            }
 #else
             InputSystemHelper.EnableBackendsWarningMessage();
 #endif
