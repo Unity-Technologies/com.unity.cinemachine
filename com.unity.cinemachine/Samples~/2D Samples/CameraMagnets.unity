@@ -234,7 +234,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2446333134024907606, guid: feed14e8e5b6943b8843014699ed6857, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.065195
+      value: -9.058822
       objectReference: {fileID: 0}
     - target: {fileID: 2446333134024907606, guid: feed14e8e5b6943b8843014699ed6857, type: 3}
       propertyPath: m_LocalPosition.y
@@ -609,7 +609,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491548575}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.229061, y: 1.6200001, z: -10}
+  m_LocalPosition: {x: -12.22906, y: 1.6200001, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -832,6 +832,61 @@ Transform:
   - {fileID: 58796834}
   m_Father: {fileID: 0}
   m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1857484626
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1857484628}
+  - component: {fileID: 1857484627}
+  m_Layer: 0
+  m_Name: Instructions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1857484627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857484626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  Displayed: 0
+  HelpText: "A sample scene illustrating a technique to use TargetGroup to dynamically
+    frame the player and a number of objects of interests, here called CameraMagnets.
+    \n\nThe CameraMagnets gameObject has a script that dynamically sets each magnet's
+    weight in the target group based on the proximity of the player and the strength
+    of the magnet.\n\nTo toggle between projection modes, you can use the Orthographic
+    Camera toggle in the top left corner of the Game View.\nNote, when the camera's
+    projection mode changes, Confiner2D cache is invalidated to force a recomputation
+    of the confiner."
+--- !u!4 &1857484628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857484626}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1880460617
 GameObject:

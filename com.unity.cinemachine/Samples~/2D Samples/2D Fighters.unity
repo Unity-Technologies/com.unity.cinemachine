@@ -917,7 +917,12 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 
+  HelpText: "A sample scene demonstrating a simplified 4 player fighting game. \n\nThe
+    players are moved on a predefined path (Spline) using CinemachineSplineCart.
+    The players are framed when above the lower platform using PositionComposer and
+    a TargetGroup.\n\nWhen a player falls off the lower platform, the target group
+    loses sight of them gradually.\n\nFor more details, see LoseSightWhenTargetsFallsOffThePlatform
+    script on the TargetGroup.\n"
 --- !u!4 &1383110410
 Transform:
   m_ObjectHideFlags: 0
@@ -2044,7 +2049,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 9.884109
+  orthographic size: 9.873457
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

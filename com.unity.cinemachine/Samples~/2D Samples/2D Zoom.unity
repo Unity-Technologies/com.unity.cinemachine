@@ -748,9 +748,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1843694283}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 803b00b1c55094e499a99684ddbd9b57, type: 3}
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  Displayed: 0
+  HelpText: "A sample scene where where you can zoom in/out with the mouse scrollwheel.
+    \n\nZooming is done by changing the orthographic size or field of view of the
+    camera.\n\nTo toggle between projection modes, you can use the Orthographic Camera
+    toggle in the top left corner of the Game View.\n\nFor more details, see MouseScrollZoom2D.cs
+    script on CM ZoomCam."
 --- !u!4 &1843694285
 Transform:
   m_ObjectHideFlags: 0
