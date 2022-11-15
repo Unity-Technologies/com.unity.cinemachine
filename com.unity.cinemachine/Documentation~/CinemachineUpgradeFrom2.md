@@ -56,7 +56,7 @@ In CM2, CinemachineBrain would only process CmCameras that were assigned to laye
 
 ![Cinemachine Channels Camera](images/CinemachineChannels-camera.png)
 
-![Cinemachine Channels   Brain](images/CinemachineChannels%20-%20brain.png)
+![Cinemachine Channels Brain](images/CinemachineChannels-brain.png)
 
 
 ## Upgrading the Project Data
