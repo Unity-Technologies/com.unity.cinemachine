@@ -46,11 +46,6 @@
       "path": "Samples~/3D Samples"
     },
     {
-      "displayName": "Physics Samples",
-      "description": "Sample scenes illustrating various ways to use Cinemachine with Unity.Physics. This sample is going to install Unity.Physics if it is not present.",
-      "path": "Samples~/Physics Samples"
-    },
-    {
       "displayName": "Old Samples from CM2",
       "description": "Samples made with CM 2.X, using obsolete API",
       "path": "Samples~/Old Samples from CM2"
