@@ -52,7 +52,7 @@ User input has been decoupled from the Cinemachine Components: they no longer di
 Cinemachine's paths are now implemented using Unity's native Splines, which provide equivalent functionality. The Cinemachine Upgrader will automatically convert your CM paths to Splines. The CM path implementations still exist, but are now deprecated.
 
 ### Decoupled from Unity Layers
-In CM2, CinemachineBrain would only process CmCameras that were assigned to layers included in the associated Camera's culling mask.  This menchanism was useful in situations such as split-screen, to cause specific CmCameras to be assigned to specific Brains.  In CM3, this has been replaced by **Cinemachine Channels**.  These are dedicated layers that only Cinemachine uses, so that Unity layers don't get needlessy squandered.  CmCameras are assigned to a Cinemachine Channel, and the CinemachineBrain has a channel mask.  Normally, the "Default" channel is used, and only needs to be changed in specific situations where channel separation is a requirement.
+In CM2, CinemachineBrain would only process CmCameras that were assigned to layers included in the associated Camera's culling mask.  This mechanism was useful in situations such as split-screen, to cause specific CmCameras to be assigned to specific Brains.  In CM3, this has been replaced by **Cinemachine Channels**.  These are dedicated layers that only Cinemachine uses, so that Unity layers don't get needlessly squandered.  CmCameras are assigned to a Cinemachine Channel, and the CinemachineBrain has a channel mask.  Normally, the "Default" channel is used, and only needs to be changed in specific situations where channel separation is a requirement.
 
 ![Cinemachine Channels Camera](images/CinemachineChannels-camera.png)
 
