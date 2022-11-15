@@ -73,7 +73,7 @@ namespace Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
-
+        
         void OnSceneGUI()
         {
             var thirdPerson = Target;

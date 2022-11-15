@@ -70,7 +70,6 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
             typeof(CinemachineCollider),
 #endif
-
         };
         
         /// <summary>

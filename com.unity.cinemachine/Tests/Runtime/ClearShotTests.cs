@@ -1,31 +1,29 @@
+#if CINEMACHINE_PHYSICS
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using Cinemachine;
-using NUnit.Framework.Interfaces;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS
     [TestFixture]
     public class ClearShotTests : CinemachineRuntimeFixtureBase
     {
-        private GameObject m_Character;
-        private CinemachineClearShot m_ClearShot;
-        private CmCamera m_Vcam1;
-        private CmCamera m_Vcam2;
+        GameObject m_Character;
+        CinemachineClearShot m_ClearShot;
+        CmCamera m_Vcam1;
+        CmCamera m_Vcam2;
         
         [SetUp]
         public override void SetUp()
         {
+            base.SetUp();
+            
             // a basic "character" to use as a lookat
             m_Character = CreateGameObject("Character");
             m_Character.transform.position = new Vector3(10, 0, 1);
 
-            // main camera
-            CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
-            
             // a ClearShot camera
             var clearShotHolder = CreateGameObject("CM ClearShot", typeof(CinemachineClearShot), typeof(CinemachineDeoccluder));
             m_ClearShot = clearShotHolder.GetComponent<CinemachineClearShot>();
@@ -52,11 +50,9 @@ namespace Tests.Runtime
             var wall = CreatePrimitive(PrimitiveType.Quad);
             wall.transform.SetPositionAndRotation(new Vector3(0, 0, 4), Quaternion.Euler(0, 180, 0));
             wall.transform.localScale = new Vector3(2, 2, 2);
-
-            base.SetUp();
         }
 
-        private static IEnumerable ClearShotTestCases
+        static IEnumerable ClearShotTestCases
         {
             get
             {
@@ -78,5 +74,5 @@ namespace Tests.Runtime
             Assert.That(m_ClearShot.LiveChild.Name, Is.EqualTo(expectedVcamName));
         }
     }
-#endif
 }
+#endif

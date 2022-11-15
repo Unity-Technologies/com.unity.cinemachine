@@ -1,14 +1,11 @@
 {
-    "name": "Cinemachine.Runtime.Tests",
+    "name": "com.unity.cinemachine.shared.tests",
     "rootNamespace": "",
     "references": [
-        "Cinemachine",
+        "com.unity.cinemachine",
         "com.unity.cinemachine.editor",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "Unity.Splines",
-        "Unity.Mathematics",
-        "Cinemachine.Shared.Tests"
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -36,16 +33,6 @@
             "name": "com.unity.modules.animation",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_ANIMATION"
-        },
-        {
-            "name": "com.unity.splines",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_UNITY_SPLINES"
-        },
-        {
-            "name": "com.unity.cinemachine",
-            "expression": "3.0.0-pre.1",
-            "define": "CINEMACHINE_V3_OR_HIGHER"
         }
     ],
     "noEngineReferences": false

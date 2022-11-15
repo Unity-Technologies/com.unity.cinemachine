@@ -1,5 +1,5 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("com.unity.cinemachine.editor")]
-[assembly: InternalsVisibleTo("Cinemachine.Shared.Tests")]
-[assembly: InternalsVisibleTo("Cinemachine.Editor.Tests")]
-[assembly: InternalsVisibleTo("Cinemachine.Runtime.Tests")]
+[assembly: InternalsVisibleTo("com.unity.cinemachine.shared.tests")]
+[assembly: InternalsVisibleTo("com.unity.cinemachine.editor.tests")]
+[assembly: InternalsVisibleTo("com.unity.cinemachine.runtime.tests")]
