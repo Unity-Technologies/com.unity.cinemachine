@@ -7,7 +7,7 @@ While it is possible to upgrade an existing project from CM 2.X, you should thin
 ## Upgrading your Project Step by Step
 Here are the steps to take when upgrading an existing project from CM 2.X:
 1. Back up your project. Don't skip this step.
-1. Get your custom scripts to compile by updating the broken CM field names. For the most part, this just means removing the `m_` prefix. At this point your project should run as before, using the obsolete classes.
+1. Get your custom scripts to compile by updating the broken CM field names. For the most part, this just means removing the `m_` prefix. At this point your project should run as before, using the obsolete classes.  **Exception**: If you are using layers to filter cameras into separate split-screen brains, that filtering will stop working until after you have upgraded to CmCameras and switched the filtering over to Channels.
 1. The new `CmCamera` class that replaces `CinemachineVirtualCamera` and `CinemachineFreeLook` inherits from `CinemachineVirtualCameraBase`.  Where possible, replace your script references to use this base class rather than the derived type. If you do this, existing object references will be preserved when the data is upgraded, since the old and new classes all inherit from this same base class.
 1. Upgrade the project data by running the Cinemachine Upgrader. You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLook inspector.
 1. Because CM component types have changed, you will have to manually go through your scripts and update any specific references to be to the new type. The console log is your friend: "obsolete" warnings will point you to the places that need attention.
@@ -33,11 +33,11 @@ Old components have been replaced by new components. These are not renames, they
 - CinemachinePOV is replaced by [CinemachinePanTilt](CinemachinePanTilt.md).
 - CinemachineTrackedDolly is replaced by [CinemachineSplineDolly](CinemachineSplineDolly.md).
 - CinemachineGroupComposer is replaced by the [CinemachineGroupFraming](CinemachineGroupFraming.md) extension used in conjunction with [CinemachineRotationComposer](CinemachineRotationComposer.md).
+- CinemachineCollider is replaced by [CinemachineDeoccluder](CinemachineDeoccluder.md)
 - Cinemachine3rdPersonFollow is replaced by [CinemachineThirdPersonFollow](CinemachineThirdPersonFollow.md).
 
 ### Renamed Components
 
-- CinemachineCollider has been renamed to [CinemachineDeoccluder](CinemachineDeoccluder.md).
 - Cinemachine3rdPersonAim has been renamed to [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md).
 
 ### Renamed Fields 
@@ -55,6 +55,13 @@ User input has been decoupled from the Cinemachine Components: they no longer di
 
 ### New Spline Implementation
 Cinemachine's paths are now implemented using Unity's native Splines, which provide equivalent functionality. The Cinemachine Upgrader will automatically convert your CM paths to Splines. The CM path implementations still exist, but are now deprecated.
+
+### Decoupled from Unity Layers
+In CM2, CinemachineBrain would only process CmCameras that were assigned to layers included in the associated Camera's culling mask.  This mechanism was useful in situations such as split-screen, to cause specific CmCameras to be assigned to specific Brains.  In CM3, this has been replaced by **Cinemachine Channels**.  These are dedicated layers that only Cinemachine uses, so that Unity layers don't get needlessly squandered.  CmCameras are assigned to a Cinemachine Channel, and the CinemachineBrain has a channel mask.  Normally, the "Default" channel is used, and only needs to be changed in specific situations where channel separation is a requirement.
+
+![Cinemachine Channels Camera](images/CinemachineChannels-camera.png)
+
+![Cinemachine Channels Brain](images/CinemachineChannels-brain.png)
 
 
 ## Upgrading the Project Data
