@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Cinemachine;
+using Cinemachine.Utility;
 
 namespace Tests.Runtime
 {
@@ -14,7 +15,6 @@ namespace Tests.Runtime
         CmCamera m_Vcam;
         CinemachineDeoccluder m_Collider;
         GameObject m_FollowObject;
-        const float k_WaitTime = 0.5f; // this is roughly the time it takes to damp back
 
         [SetUp]
         public override void SetUp()
@@ -66,15 +66,15 @@ namespace Tests.Runtime
             yield return PhysicsDestroy(obstacle);
             
             // 4. Wait and see that smoothing stops any correction applied for its duration
-            yield return WaitForSecondsWhileCheckingMovement(m_Collider.AvoidObstacles.SmoothingTime);
+            yield return WaitForSmoothingTimeWhileCheckingMovement();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
 
             // local function
-            IEnumerator WaitForSecondsWhileCheckingMovement(float t)
+            IEnumerator WaitForSmoothingTimeWhileCheckingMovement()
             {
                 var startTime = CinemachineCore.CurrentTimeOverride;
                 var initialPosition = m_Vcam.State.GetFinalPosition();
-                while (CinemachineCore.CurrentTimeOverride - startTime <= t)
+                while (CinemachineCore.CurrentTimeOverride - startTime <= m_Collider.AvoidObstacles.SmoothingTime)
                 {
                     Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(initialPosition));
                     yield return UpdateCinemachine();
@@ -97,8 +97,8 @@ namespace Tests.Runtime
             obstacle.transform.SetPositionAndRotation(originalCamPosition, Quaternion.identity);
             yield return WaitForOnePhysicsFrame(); // ensure that moving the collider (obstacle) takes effect
 
-            // 2. Wait roughly as much time as it needs to complete the correction with damping and test that damping is applied.
-            yield return WaitForSecondsWhileTestingDamping(k_WaitTime);
+            // 2. Wait for correction damping as the camera is positioned in front of the obstacle and test damping.
+            yield return WaitForDamping();
             
             // 3. Remove obstacle 
             yield return PhysicsDestroy(obstacle);
@@ -135,29 +135,28 @@ namespace Tests.Runtime
             // 4. Remove obstacle
             yield return PhysicsDestroy(obstacle);
             
-            // 5. Wait roughly as much time as it needs to return to the starting position with damping and test that damping is applied.
-            yield return WaitForSecondsWhileTestingDamping(k_WaitTime);
+            // 5. Wait for correction damping as the camera is returning to the starting position and test damping.
+            yield return WaitForDamping();
 
             // 6. Check that camera is back to original position
             yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
         }
         
-        IEnumerator WaitForSecondsWhileTestingDamping(float t)
+        IEnumerator WaitForDamping()
         {
             var previousDelta = -1f;
-            var startTime = CinemachineCore.CurrentTimeOverride;
-            while (CinemachineCore.CurrentTimeOverride - startTime <= t)
+            do
             {
                 var startPosition = m_Vcam.State.GetFinalPosition();
                 yield return UpdateCinemachine();
                 var delta = (m_Vcam.State.GetFinalPosition() - startPosition).sqrMagnitude;
                 Assert.That(delta, Is.Not.Negative);
                 if (previousDelta >= 0)
-                    Assert.That(delta, Is.LessThanOrEqualTo(previousDelta));
+                    Assert.That(delta, Is.LessThanOrEqualTo(previousDelta / 2f));
 
                 previousDelta = delta;
-            }
+            } while (previousDelta > UnityVectorExtensions.Epsilon);
         }
     }
 }

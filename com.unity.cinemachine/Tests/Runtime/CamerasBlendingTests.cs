@@ -166,13 +166,16 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator SetActiveBlend()
         {
+            var halfBlendIterationCount = 
+                Mathf.FloorToInt((k_BlendingTime / 2f) / CinemachineCore.UniformDeltaTimeOverride);
+            
             // Check that source vcam is active
             yield return UpdateCinemachine();
             Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
             
-            // Active target vcam and wait for 5 frames
+            // Active target vcam and wait for half blend duration
             m_Target.enabled = true;
-            for (var i = 0; i < 5; ++i)
+            for (var i = 0; i < halfBlendIterationCount; ++i)
                 yield return UpdateCinemachine();
 
             var blend = m_Brain.ActiveBlend;
@@ -199,7 +202,7 @@ namespace Tests.Runtime
         
             // Disable target, blend back to source, wait 5 frames
             m_Target.enabled = false;
-            for (var i = 0; i < 5; ++i)
+            for (var i = 0; i < halfBlendIterationCount; ++i)
                 yield return UpdateCinemachine();
             
             blend = m_Brain.ActiveBlend;

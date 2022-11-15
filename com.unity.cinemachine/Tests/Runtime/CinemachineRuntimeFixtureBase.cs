@@ -1,5 +1,6 @@
 using System.Collections;
 using Cinemachine;
+using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools.Utils;
@@ -13,8 +14,8 @@ namespace Tests.Runtime
     {
         protected Camera m_Cam;
         protected CinemachineBrain m_Brain;
-        protected readonly FloatEqualityComparer m_FloatEqualityComparer = new(0.0001f);
-        protected readonly Vector3EqualityComparer m_Vector3EqualityComparer = new(0.0001f);
+        protected readonly FloatEqualityComparer m_FloatEqualityComparer = new(UnityVectorExtensions.Epsilon);
+        protected readonly Vector3EqualityComparer m_Vector3EqualityComparer = new(UnityVectorExtensions.Epsilon);
         
         [SetUp]
         public override void SetUp()
