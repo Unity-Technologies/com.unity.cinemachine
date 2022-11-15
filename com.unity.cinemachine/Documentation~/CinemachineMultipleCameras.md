@@ -1,6 +1,6 @@
 # Split-Screen and Multiple Unity Cameras
 
-By design, CmCameras are not directly linked to CinemachineBrains.  Instead, active CmCameras in the scene are dynamically found by the Brain, allowing them to be dynamically brought into existence via prefab instantiation or scene loading.  By default, if multiple CinemachineBrains exist in the scene, they will all find the same CmCameras and consequently display the same thing.  To assign a specific CmCamera to a specific Brain, Cinemachine Channels are used.  This works the same way as Unity Layers.  
+By design, CmCameras are not directly linked to CinemachineBrains.  Instead, active CmCameras in the scene are dynamically found by the Brain, allowing them to be brought into existence via prefab instantiation or scene loading.  By default, if multiple CinemachineBrains exist in the scene, they will all find the same CmCameras and consequently display the same thing.  To assign a specific CmCamera to a specific Brain, Cinemachine Channels are used.  This works the same way as Unity Layers.  
 
 First, set your CmCamera to output to the desired channel:
 
