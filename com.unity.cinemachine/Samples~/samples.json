@@ -1,17 +1,30 @@
 {
   "SharedAssetDependencies": [
-    "Shared"
   ],
   "SampleEntries": [
     {
       "Path": "2D Samples",
-      "AssetDependencies": [],
-      "PackageDependencies": []
+      "AssetDependencies": [
+        "Shared"
+      ],
+      "PackageDependencies": [
+        "com.unity.modules.animation",
+        "com.unity.modules.vehicles",
+        "com.unity.modules.physics",
+        "com.unity.modules.physics2d"
+      ]
     },
     {
       "Path": "3D Samples",
-      "AssetDependencies": [],
-      "PackageDependencies": []
+      "AssetDependencies": [
+        "Shared"
+      ],
+      "PackageDependencies": [
+        "com.unity.modules.animation",
+        "com.unity.modules.vehicles",
+        "com.unity.modules.physics",
+        "com.unity.modules.physics2d"
+      ]
     },
     {
       "Path": "Old Samples from CM2",
