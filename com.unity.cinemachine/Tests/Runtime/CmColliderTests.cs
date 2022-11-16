@@ -145,18 +145,33 @@ namespace Tests.Runtime
         
         IEnumerator WaitForDamping()
         {
-            var previousDelta = -1f;
-            do
+            var startTime = CinemachineCore.CurrentTimeOverride;
+            var previousDeltaMagnitude = -1f;
+            var previousDelta = Vector3.zero;
+            
+            while (true)
             {
                 var startPosition = m_Vcam.State.GetFinalPosition();
                 yield return UpdateCinemachine();
-                var delta = (m_Vcam.State.GetFinalPosition() - startPosition).sqrMagnitude;
-                Assert.That(delta, Is.Not.Negative);
-                if (previousDelta >= 0)
-                    Assert.That(delta, Is.LessThanOrEqualTo(previousDelta / 2f));
-
+                var delta = (m_Vcam.State.GetFinalPosition() - startPosition);
+                var deltaMagnitude = delta.magnitude;
+                if (deltaMagnitude < UnityVectorExtensions.Epsilon)
+                    break; // stop when delta is small enough
+                
+                if (previousDeltaMagnitude >= 0)
+                {
+                    Assert.That(delta.normalized, 
+                        Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
+                    Assert.That(deltaMagnitude, Is.LessThan(previousDeltaMagnitude)); // decreasing
+                }
+                
+                previousDeltaMagnitude = deltaMagnitude;
                 previousDelta = delta;
-            } while (previousDelta > UnityVectorExtensions.Epsilon);
+            } 
+            
+            // It should take approximately the damping time to get to the destination
+            Assert.That(CinemachineCore.CurrentTimeOverride - startTime, Is.GreaterThanOrEqualTo(
+                Mathf.Max(m_Collider.AvoidObstacles.Damping, m_Collider.AvoidObstacles.DampingWhenOccluded)));
         }
     }
 }
