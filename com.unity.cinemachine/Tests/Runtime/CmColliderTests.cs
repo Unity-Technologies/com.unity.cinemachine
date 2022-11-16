@@ -145,7 +145,6 @@ namespace Tests.Runtime
         
         IEnumerator WaitForDamping()
         {
-            var startTime = CinemachineCore.CurrentTimeOverride;
             var previousDeltaMagnitude = -1f;
             var previousDelta = Vector3.zero;
             
@@ -162,16 +161,12 @@ namespace Tests.Runtime
                 {
                     Assert.That(delta.normalized, 
                         Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
-                    Assert.That(deltaMagnitude, Is.LessThan(previousDeltaMagnitude)); // decreasing
+                    Assert.That(deltaMagnitude, Is.LessThan(previousDeltaMagnitude)); // strictly decreasing
                 }
                 
                 previousDeltaMagnitude = deltaMagnitude;
                 previousDelta = delta;
             } 
-            
-            // It should take approximately the damping time to get to the destination
-            Assert.That(CinemachineCore.CurrentTimeOverride - startTime, Is.GreaterThanOrEqualTo(
-                Mathf.Max(m_Collider.AvoidObstacles.Damping, m_Collider.AvoidObstacles.DampingWhenOccluded)));
         }
     }
 }
