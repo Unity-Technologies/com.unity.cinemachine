@@ -5,7 +5,8 @@ using Cinemachine;
 using UnityEngine;
 
 namespace Tests.Editor
-{
+{    
+    [TestFixture]
     public class InputAxisTests
     {
         const float k_DeltaTime = 0.1f;

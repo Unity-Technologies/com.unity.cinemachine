@@ -9,7 +9,8 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-    public class FreelookForcePositionTests : CinemachineFixtureBase
+    [TestFixture]
+    public class FreelookForcePositionTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_CmCamera;
         CinemachineOrbitalFollow m_OrbitalFollow;
@@ -18,10 +19,10 @@ namespace Tests.Runtime
         Quaternion m_OriginalOrientation;
         static readonly Array k_BindingModes = Enum.GetValues(typeof(BindingMode));
 
-        [OneTimeSetUp]
+        [SetUp]
         public override void SetUp()
         {
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
 
             var camGo = CreateGameObject("CM Freelook", typeof(CmCamera));
             m_CmCamera = camGo.GetComponent<CmCamera>();
@@ -32,8 +33,6 @@ namespace Tests.Runtime
             m_FollowTargetGo = CreatePrimitive(PrimitiveType.Cube);
             m_FollowTargetGo.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             m_CmCamera.Target.TrackingTarget = m_FollowTargetGo.transform;
-
-            base.SetUp();
         }
 
         [TearDown]
@@ -118,7 +117,6 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(RigSetups))]
         public IEnumerator Test_Freelook_ForcePosition_AllBindings(TestData rigSetup)
         {
-            
             m_OrbitalFollow.OrbitStyle = rigSetup.OrbitStyle;
             var floatEqualityComparer = new FloatEqualityComparer(rigSetup.Precision);
             var axisRange = Setup(rigSetup.OrbitStyle);

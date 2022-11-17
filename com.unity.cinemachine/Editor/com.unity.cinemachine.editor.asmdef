@@ -2,7 +2,7 @@
     "name": "com.unity.cinemachine.editor",
     "rootNamespace": "",
     "references": [
-        "Cinemachine",
+        "com.unity.cinemachine",
         "Unity.Timeline",
         "Unity.Timeline.Editor",
         "Unity.Postprocessing.Runtime",
