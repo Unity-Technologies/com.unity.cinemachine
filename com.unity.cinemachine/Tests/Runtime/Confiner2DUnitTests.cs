@@ -1,24 +1,24 @@
+#if CINEMACHINE_PHYSICS_2D
 using System.Collections;
 using Cinemachine;
 using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS_2D
+    [TestFixture]
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
-        Camera m_Cam;
         CmCamera m_Vcam;
         CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
         public override void SetUp()
         {
-            m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
+            base.SetUp();
+            
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
             m_Vcam = vcamHolder.GetComponent<CmCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
@@ -27,15 +27,11 @@ namespace Tests.Runtime
             m_Vcam.AddExtension(m_Confiner2D);
 
             m_Vcam.Lens.OrthographicSize = UnityVectorExtensions.Epsilon;
-
-            base.SetUp();
         }
 
         [TearDown]
         public override void TearDown()
         {
-            m_Vcam.Lens.OrthographicSize = 1;
-            
             base.TearDown();
         }
 
@@ -63,7 +59,7 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(m_Vector3EqualityComparer));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
@@ -107,7 +103,7 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(m_Vector3EqualityComparer));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
@@ -141,7 +137,7 @@ namespace Tests.Runtime
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
-            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(Vector3EqualityComparer.Instance));
+            Assert.That(m_Vcam.State.GetCorrectedPosition(), Is.EqualTo(Vector3.zero).Using(m_Vector3EqualityComparer));
 
             m_Vcam.transform.position = Vector2.left * 2f;
             yield return null; // wait one frame
@@ -160,5 +156,5 @@ namespace Tests.Runtime
             Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
     }
-#endif
 }
+#endif

@@ -17,8 +17,9 @@ namespace Cinemachine.Editor
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
+#if CINEMACHINE_PHYSICS
             typeof(CinemachineCollider),
-
+#endif
             // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
             typeof(CinemachineFreeLook),
             typeof(CinemachineVirtualCamera),
@@ -69,7 +70,6 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
             typeof(CinemachineCollider),
 #endif
-
         };
         
         /// <summary>

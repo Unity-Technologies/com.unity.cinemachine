@@ -100,9 +100,10 @@ namespace Cinemachine.Editor
                     var splineDolly = go.GetComponent<CinemachineSplineDolly>();
                     obsoleteDolly.UpgradeToCm3(splineDolly);
                 }
-
+#if CINEMACHINE_PHYSICS
                 if (ReplaceComponent<CinemachineCollider, CinemachineDeoccluder>(go)) 
                     go.GetComponent<CinemachineCollider>().UpgradeToCm3(go.GetComponent<CinemachineDeoccluder>());
+#endif
             }
             return notUpgradable;
         }
@@ -356,7 +357,7 @@ namespace Cinemachine.Editor
             {
                 notUpgradable = Object.Instantiate(go);
                 notUpgradable.SetActive(false);
-                notUpgradable.AddComponent<CinemachineDoNotUpgrade>();
+                Undo.AddComponent<CinemachineDoNotUpgrade>(notUpgradable);
                 Undo.RegisterCreatedObjectUndo(notUpgradable, "Upgrader: clone of non upgradable");
             }
 
@@ -677,7 +678,7 @@ namespace Cinemachine.Editor
                 default:
                 {
                     // GML todo: handle this message properly
-                    pathBase.gameObject.AddComponent<CinemachineDoNotUpgrade>();
+                    Undo.AddComponent<CinemachineDoNotUpgrade>(pathBase.gameObject);
                     Debug.LogError($"{go.name}: Path type {pathBase.GetType().Name} is not handled by the upgrader");
                     break;
                 }

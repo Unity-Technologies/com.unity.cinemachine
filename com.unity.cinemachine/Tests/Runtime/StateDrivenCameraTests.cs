@@ -1,5 +1,6 @@
+#if UNITY_EDITOR // AssetDatabase.LoadMainAssetAtPath
+#if CINEMACHINE_UNITY_ANIMATION
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
@@ -10,18 +11,17 @@ using Cinemachine;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_UNITY_ANIMATION
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineRuntimeFixtureBase
     {
-        private CinemachineStateDrivenCamera m_StateDrivenCamera;
-        private Animator m_Animator;
-        private CmCamera m_Vcam1, m_Vcam2;
+        CinemachineStateDrivenCamera m_StateDrivenCamera;
+        Animator m_Animator;
+        CmCamera m_Vcam1, m_Vcam2;
 
         [SetUp]
         public override void SetUp()
         {
-            CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
 
             // Create a minimal character controller
             var character = CreateGameObject("Character", typeof(Animator));
@@ -44,12 +44,10 @@ namespace Tests.Runtime
                 new CinemachineStateDrivenCamera.Instruction() {FullHash = controller.layers[0].stateMachine.states[1].GetHashCode(), Camera = vcam2}
             };
 
-            this.m_StateDrivenCamera = stateDrivenCamera;
+            m_StateDrivenCamera = stateDrivenCamera;
             m_Animator = character.GetComponent<Animator>();
-            this.m_Vcam1 = vcam1;
-            this.m_Vcam2 = vcam2;
-
-            base.SetUp();
+            m_Vcam1 = vcam1;
+            m_Vcam2 = vcam2;
         }
 
         [UnityTest]
@@ -72,5 +70,6 @@ namespace Tests.Runtime
             Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
         }
     }
-#endif
 }
+#endif
+#endif
