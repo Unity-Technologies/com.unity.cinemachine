@@ -38,17 +38,15 @@ namespace Tests.Editor
         {
             get
             {
+                yield return new TestCaseData(Vector3.one * 7f);
+                yield return new TestCaseData(Vector3.one * 5f);
+                yield return new TestCaseData(Vector3.one * 3f);
+                yield return new TestCaseData(Vector3.one * 2f);
                 yield return new TestCaseData(Vector3.one);
                 yield return new TestCaseData(Vector3.one / 2f);
                 yield return new TestCaseData(Vector3.one / 3f);
                 yield return new TestCaseData(Vector3.one / 5f);
                 yield return new TestCaseData(Vector3.one / 7f);
-                yield return new TestCaseData(Vector3.forward);
-                yield return new TestCaseData(Vector3.back);
-                yield return new TestCaseData(Vector3.left);
-                yield return new TestCaseData(Vector3.right);
-                yield return new TestCaseData(Vector3.up);
-                yield return new TestCaseData(Vector3.down);
             }
         }
 
@@ -56,33 +54,39 @@ namespace Tests.Editor
         [Test, TestCaseSource(nameof(AxisDriverAccelTestCases))]
         public void DampVector(Vector3 initial)
         {
-            var previousDeltaMagnitude = -1f;
-            var previousDelta = Vector3.zero;
-            const float deltaTime = 0.1f;
-            const float dampTime = 1f;
-            int iterationCount;
-            for (iterationCount = 0; true; iterationCount++)
+            float[] deltaTimes = { 0.0069444445F, 0.008333334F, 0.016666668F, 0.033333335F, 0.1f }; // 144, 100, 60, 30, 10 fps
+            for (var dampTime = 0.1f; dampTime <= 2f; dampTime += 0.1f)
             {
-                var delta =  Damper.Damp(initial, dampTime, deltaTime);
-                var deltaMagnitude = delta.magnitude;
-
-                if (deltaMagnitude < UnityVectorExtensions.Epsilon)
-                    break; // stop when delta is small enough
-                
-                if (previousDeltaMagnitude >= 0)
+                foreach (var deltaTime in deltaTimes)
                 {
-                    Assert.That(delta.normalized, 
-                        Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
-                    Assert.That(deltaMagnitude, Is.LessThan(previousDeltaMagnitude)); // strictly decreasing
-                }
-                
-                previousDeltaMagnitude = deltaMagnitude;
-                previousDelta = delta;
-                initial -= delta;
-            }
+                    var vectorToDamp = new Vector3(initial.x, initial.y, initial.z);
+                    var previousDeltaMagnitude = -1f;
+                    var previousDelta = Vector3.zero;
+                    int iterationCount;
+                    for (iterationCount = 0; true; iterationCount++)
+                    {
+                        var delta =  Damper.Damp(vectorToDamp, dampTime, deltaTime);
+                        var deltaMagnitude = delta.magnitude;
 
-            var realDampTime = iterationCount * deltaTime;
-            Debug.Log(realDampTime + " seconds instead of " + dampTime + " seconds.");
+                        if (deltaMagnitude < UnityVectorExtensions.Epsilon)
+                            break; // stop when delta is small enough
+                    
+                        if (previousDeltaMagnitude >= 0)
+                        {
+                            Assert.That(delta.normalized, 
+                                Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
+                            Assert.That(deltaMagnitude, Is.LessThan(previousDeltaMagnitude)); // strictly decreasing
+                        }
+                    
+                        previousDeltaMagnitude = deltaMagnitude;
+                        previousDelta = delta;
+                        vectorToDamp -= delta;
+                    }
+
+                    var realDampTime = iterationCount * deltaTime;
+                    Debug.Log(iterationCount + "*" + deltaTime + "=" + realDampTime + " seconds instead of " + dampTime + " seconds.");
+                }
+            }
         }
     }
 }
