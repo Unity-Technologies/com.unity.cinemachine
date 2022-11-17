@@ -10,7 +10,7 @@ using Cinemachine.Utility;
 namespace Tests.Runtime
 {
     [TestFixture]
-    public class CmColliderTests : CinemachineRuntimeTimeInvariantFixtureBase
+    public class CmDeoccluderTests : CinemachineRuntimeTimeInvariantFixtureBase
     {
         CmCamera m_Vcam;
         CinemachineDeoccluder m_Collider;
