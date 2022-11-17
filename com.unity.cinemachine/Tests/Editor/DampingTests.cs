@@ -34,7 +34,7 @@ namespace Tests.Editor
             }
         }
 
-        static IEnumerable AxisDriverAccelTestCases
+        static IEnumerable VectorDampingTestCases
         {
             get
             {
@@ -51,7 +51,7 @@ namespace Tests.Editor
         }
 
         readonly Vector3EqualityComparer m_Vector3EqualityComparer = new(UnityVectorExtensions.Epsilon);
-        [Test, TestCaseSource(nameof(AxisDriverAccelTestCases))]
+        [Test, TestCaseSource(nameof(VectorDampingTestCases))]
         public void DampVector(Vector3 initial)
         {
             float[] deltaTimes = { 0.0069444445F, 0.008333334F, 0.016666668F, 0.033333335F, 0.1f }; // 144, 100, 60, 30, 10 fps
@@ -73,7 +73,7 @@ namespace Tests.Editor
                     }
 
                     var realDampTime = iterations * deltaTime;
-                    Debug.Log($"dt={deltaTime:F8}: actual damp time = {realDampTime/dampTime} * {dampTime}");
+                    Debug.Log($"dt={deltaTime:F8}: actual damp time = {realDampTime/dampTime:F3} * {dampTime}");
                 }
             }
         }
