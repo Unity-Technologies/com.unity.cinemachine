@@ -71,9 +71,10 @@ namespace Tests.Editor
                         vectorToDamp -= delta;
                         previousDelta = delta;
                     }
-
+/*
                     var realDampTime = iterations * deltaTime;
                     Debug.Log($"dt={deltaTime:F8}: actual damp time = {realDampTime/dampTime:F3} * {dampTime}");
+*/
                 }
             }
         }
