@@ -55,32 +55,34 @@ namespace Tests.Editor
         public void DampVector(Vector3 initial)
         {
             float[] deltaTimes = { 0.0069444445F, 0.008333334F, 0.016666668F, 0.033333335F, 0.1f }; // 144, 100, 60, 30, 10 fps
-            for (var dampTime = 0.1f; dampTime <= 2f; dampTime += 0.1f)
+            //for (var dampTime = 0.1f; dampTime <= 2f; dampTime += 0.1f)
+            var dampTime = 1f;
             {
                 foreach (var deltaTime in deltaTimes)
                 {
-                    var vectorToDamp = new Vector3(initial.x, initial.y, initial.z);
-                    var previousDeltaMagnitude = -1f;
-                    var previousDelta = Vector3.zero;
+                    var previousDampedMagnitude = -1f;
+                    var previousDamped = Vector3.zero;
                     int iterationCount;
+                    var damped = initial;
                     for (iterationCount = 0; true; iterationCount++)
                     {
-                        var delta =  Damper.Damp(vectorToDamp, dampTime, deltaTime);
-                        var deltaMagnitude = delta.magnitude;
+                        damped = Damper.Damp(damped, dampTime, deltaTime);
+                        var dampedMagnitude = damped.magnitude;
 
-                        if (deltaMagnitude < UnityVectorExtensions.Epsilon)
+                        if (dampedMagnitude < UnityVectorExtensions.Epsilon)
                             break; // stop when delta is small enough
+                        if (dampedMagnitude == previousDampedMagnitude)
+                            break; // stop 
                     
-                        if (previousDeltaMagnitude >= 0)
+                        if (previousDampedMagnitude >= 0)
                         {
-                            Assert.That(delta.normalized, 
-                                Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
-                            Assert.That(deltaMagnitude, Is.LessThan(previousDeltaMagnitude)); // strictly decreasing
+                            Assert.That(damped.normalized, 
+                                Is.EqualTo(previousDamped.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
+                            Assert.That(dampedMagnitude, Is.LessThan(previousDampedMagnitude)); // strictly decreasing
                         }
                     
-                        previousDeltaMagnitude = deltaMagnitude;
-                        previousDelta = delta;
-                        vectorToDamp -= delta;
+                        previousDampedMagnitude = dampedMagnitude;
+                        previousDamped = damped;
                     }
 
                     var realDampTime = iterationCount * deltaTime;
