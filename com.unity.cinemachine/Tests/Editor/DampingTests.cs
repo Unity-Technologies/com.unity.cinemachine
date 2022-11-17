@@ -38,7 +38,7 @@ namespace Tests.Editor
         {
             get
             {
-                yield return new TestCaseData(Vector3.one);
+                yield return new TestCaseData(Vector3.one.normalized);
                 yield return new TestCaseData(Vector3.forward);
                 yield return new TestCaseData(Vector3.back);
                 yield return new TestCaseData(Vector3.left);
@@ -78,7 +78,7 @@ namespace Tests.Editor
             }
 
             var realDampTime = iterationCount * deltaTime;
-            Debug.Log(realDampTime + "seconds instead of " + dampTime + " seconds.");
+            Debug.Log(realDampTime + " seconds instead of " + dampTime + " seconds.");
         }
     }
 }
