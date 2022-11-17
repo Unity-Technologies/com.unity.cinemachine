@@ -38,7 +38,11 @@ namespace Tests.Editor
         {
             get
             {
-                yield return new TestCaseData(Vector3.one.normalized);
+                yield return new TestCaseData(Vector3.one);
+                yield return new TestCaseData(Vector3.one / 2f);
+                yield return new TestCaseData(Vector3.one / 3f);
+                yield return new TestCaseData(Vector3.one / 5f);
+                yield return new TestCaseData(Vector3.one / 7f);
                 yield return new TestCaseData(Vector3.forward);
                 yield return new TestCaseData(Vector3.back);
                 yield return new TestCaseData(Vector3.left);
