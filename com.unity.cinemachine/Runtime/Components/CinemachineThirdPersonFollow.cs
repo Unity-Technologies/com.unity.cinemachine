@@ -111,7 +111,7 @@ namespace Cinemachine
                 DampingFromCollision = 0.5f
             };
         }
-
+        
         /// <summary>If enabled, camera will be pulled in front of occluding obstacles.</summary>
         [FoldoutWithEnabledButton]
         public ObstacleSettings AvoidObstacles = ObstacleSettings.Default;

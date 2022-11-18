@@ -10,28 +10,27 @@ namespace Tests.Runtime
     public class LookaheadTests : CinemachineRuntimeFixtureBase
     {
         CmCamera m_VCam;
-        CinemachineRotationComposer m_Composer;
-        CinemachinePositionComposer m_FramingTransposer;
+        CinemachineRotationComposer m_RotationComposer;
+        CinemachinePositionComposer m_PositionComposer;
         Transform m_Target;
 
         [SetUp]
         public override void SetUp()
         {
-            // Camera
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
+            
             m_Target = CreateGameObject("Target Object").transform;
 
             // Source vcam
             m_VCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
-            m_FramingTransposer = m_VCam.gameObject.AddComponent<CinemachinePositionComposer>();
-            m_Composer = m_VCam.gameObject.AddComponent<CinemachineRotationComposer>();
-            m_FramingTransposer.Lookahead.Smoothing = m_Composer.Lookahead.Smoothing = 0.3f;
-            m_FramingTransposer.Lookahead.Time = m_Composer.Lookahead.Time = 10;
-            m_FramingTransposer.Lookahead.Enabled = m_Composer.Lookahead.Enabled = true;
+            m_PositionComposer = m_VCam.gameObject.AddComponent<CinemachinePositionComposer>();
+            m_RotationComposer = m_VCam.gameObject.AddComponent<CinemachineRotationComposer>();
+            m_PositionComposer.Lookahead.Smoothing = m_RotationComposer.Lookahead.Smoothing = 0.3f;
+            m_PositionComposer.Lookahead.Time = m_RotationComposer.Lookahead.Time = 10;
+            m_PositionComposer.Lookahead.Enabled = m_RotationComposer.Lookahead.Enabled = true;
 
-            base.SetUp();
         }
 
         [UnityTest]
@@ -71,19 +70,19 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator LookaheadDelta()
         {
-            var delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.Lookahead.Time);
+            var delta = m_RotationComposer.m_Predictor.PredictPositionDelta(m_RotationComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
             
-            delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.Lookahead.Time);
+            delta = m_PositionComposer.m_Predictor.PredictPositionDelta(m_PositionComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
             
             m_Target.Translate(10, 0, 0);
             yield return null;
             
-            delta = m_Composer.m_Predictor.PredictPositionDelta(m_Composer.Lookahead.Time);
+            delta = m_RotationComposer.m_Predictor.PredictPositionDelta(m_RotationComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
             
-            delta = m_FramingTransposer.m_Predictor.PredictPositionDelta(m_FramingTransposer.Lookahead.Time);
+            delta = m_PositionComposer.m_Predictor.PredictPositionDelta(m_PositionComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
         }
     }

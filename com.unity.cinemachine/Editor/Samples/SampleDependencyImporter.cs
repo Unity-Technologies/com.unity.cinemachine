@@ -78,7 +78,7 @@ namespace Cinemachine.Editor
                             // Import common asset dependencies
                             assetsImported = 
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
-                            
+        
                             // Import common package dependencies
                             m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
 
@@ -195,7 +195,6 @@ namespace Cinemachine.Editor
 
             public string[] SharedAssetDependencies;
             public string[] SharedPackageDependencies;
-
             public SampleEntry[] SampleEntries;
 
             public SampleEntry GetEntry(Sample sample) =>

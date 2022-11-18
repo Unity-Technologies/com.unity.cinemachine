@@ -1,15 +1,16 @@
+#if UNITY_EDITOR // Cinemachine.Utility.ReflectionHelpers
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Cinemachine;
-using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
+    [TestFixture]
     public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase
     {
         CmCamera m_CmCamera;
@@ -29,7 +30,7 @@ namespace Tests
             m_CmCamera = CreateGameObject("CmCamera", typeof(CmCamera)).GetComponent<CmCamera>();
             m_CmCamera.Priority = 100;
             
-            s_AllCinemachineComponents = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
+            s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
                 typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
                 && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                 && t.GetCustomAttribute<ObsoleteAttribute>() == null);
@@ -52,7 +53,7 @@ namespace Tests
             {
                 var stage = cmComponent.GetCustomAttribute<CameraPipelineAttribute>().Stage;
                 Assert.True(m_CmCamera.PeekPipelineCacheType(stage) != cmComponent);
-                m_CmCamera.gameObject.AddComponent(cmComponent);
+                AddComponent(m_CmCamera.gameObject, cmComponent);
                 Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after add
             
                 // We expect that the last one added should be in the pipeline
@@ -71,7 +72,7 @@ namespace Tests
             {
                 var stage = cmComponent.GetCustomAttribute<CameraPipelineAttribute>().Stage;
                 Assert.True(m_CmCamera.PeekPipelineCacheType(stage) != cmComponent);
-                m_CmCamera.gameObject.AddComponent(cmComponent);
+                AddComponent(m_CmCamera.gameObject, cmComponent);
                 Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after add
             
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
@@ -86,3 +87,4 @@ namespace Tests
         }
     }
 }
+#endif
