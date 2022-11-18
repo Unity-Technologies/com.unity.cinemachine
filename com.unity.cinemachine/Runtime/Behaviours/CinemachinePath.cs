@@ -98,10 +98,10 @@ namespace Cinemachine
             return pos;
         }
 
-        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <summary>Get a curvespace position of a point along the path</summary>
         /// <param name="pos">Postion along the path.  Need not be normalized.</param>
-        /// <returns>World-space position of the point along at path at pos</returns>
-        public override Vector3 EvaluatePosition(float pos)
+        /// <returns>Curve-space position of the point along at path at pos</returns>
+        public override Vector3 EvaluateCurvePosition(float pos)
         {
             Vector3 result = new Vector3();
             if (m_Waypoints.Length == 0)
@@ -122,7 +122,15 @@ namespace Cinemachine
                         wpB.position - wpB.tangent, wpB.position);
                 }
             }
-            return transform.TransformPoint(result);
+            return result;
+        }
+
+        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <param name="pos">Postion along the path.  Need not be normalized.</param>
+        /// <returns>World-space position of the point along at path at pos</returns>
+        public override Vector3 EvaluatePosition(float pos)
+        {
+            return transform.TransformPoint(EvaluateCurvePosition(pos));
         }
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>

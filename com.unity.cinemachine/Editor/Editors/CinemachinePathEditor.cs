@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using Cinemachine.Utility;
+using System;
 using System.Linq;
 
 namespace Cinemachine.Editor
@@ -385,34 +386,72 @@ namespace Cinemachine.Editor
             }
         }
 
+        static Vector3[] m_StepPoints;
+        static Vector3[] m_LeftRailPoints;
+        static Vector3[] m_RightRailPoints;
+        static Vector3[] m_SleeperPoints;
+
+        static ElementType[] EnsureArraySize<ElementType>(ElementType[] array, int requiredSize)
+        {
+            return ((array == null) || (array.Length < requiredSize)) ? new ElementType[requiredSize] : array;
+        }
+
         public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive)
         {
             // Draw the path
+
+            float step = 1f / path.m_Resolution;
+            float tEnd = path.MaxPos + step / 2;
+
+            int numSteps = (int)((tEnd - path.MinPos) / step);
+
+            m_StepPoints = EnsureArraySize(m_StepPoints, numSteps + 1);
+
+            float t = path.MinPos;
+            for (int stepNum = 0; stepNum <= numSteps; stepNum++)
+            {
+                m_StepPoints[stepNum] = path.EvaluateCurvePosition(t);
+
+                t += step;
+            }
+
+            path.transform.TransformPoints(new Span<Vector3>(m_StepPoints));
+
             Color colorOld = Gizmos.color;
             Gizmos.color = pathColor;
-            float step = 1f / path.m_Resolution;
+
             float halfWidth = path.m_Appearance.width * 0.5f;
-            Vector3 lastPos = path.EvaluatePosition(path.MinPos);
-            Vector3 lastW = (path.EvaluateOrientation(path.MinPos)
-                             * Vector3.right) * halfWidth;
-            float tEnd = path.MaxPos + step / 2;
-            for (float t = path.MinPos + step; t <= tEnd; t += step)
+
+            if (!isActive || halfWidth == 0)
             {
-                Vector3 p = path.EvaluatePosition(t);
-                if (!isActive || halfWidth == 0)
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_StepPoints), false);
+            }
+            else
+            {
+                m_LeftRailPoints = EnsureArraySize(m_LeftRailPoints, numSteps + 1);
+                m_RightRailPoints = EnsureArraySize(m_RightRailPoints, numSteps + 1);
+                m_SleeperPoints = EnsureArraySize(m_SleeperPoints, numSteps * 2);
+                int sleeperPointNum = 0;
+                t = path.MinPos;
+                for (int stepNum = 0; stepNum <= numSteps; stepNum++)
                 {
-                    Gizmos.DrawLine(p, lastPos);
-                }
-                else
-                {
+                    Vector3 p = m_StepPoints[stepNum];
+
                     Quaternion q = path.EvaluateOrientation(t);
                     Vector3 w = (q * Vector3.right) * halfWidth;
                     Vector3 w2 = w * 1.2f;
                     Vector3 p0 = p - w2;
                     Vector3 p1 = p + w2;
-                    Gizmos.DrawLine(p0, p1);
-                    Gizmos.DrawLine(lastPos - lastW, p - w);
-                    Gizmos.DrawLine(lastPos + lastW, p + w);
+
+                    m_LeftRailPoints[stepNum] = p - w;
+                    m_RightRailPoints[stepNum] = p + w;
+
+                    if (stepNum > 0)
+                    {
+                        m_SleeperPoints[sleeperPointNum++] = p0;
+                        m_SleeperPoints[sleeperPointNum++] = p1;
+                    }
+
 #if false
                     // Show the normals, for debugging
                     Gizmos.color = Color.red;
@@ -420,11 +459,14 @@ namespace Cinemachine.Editor
                     Gizmos.DrawLine(p, p + y);
                     Gizmos.color = pathColor;
 #endif
-                    lastW = w;
+                    t += step;
                 }
 
-                lastPos = p;
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_LeftRailPoints, 0, numSteps + 1), false);
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_RightRailPoints, 0, numSteps + 1), false);
+                Gizmos.DrawLineList(new Span<Vector3>(m_SleeperPoints, 0, numSteps * 2));
             }
+
             Gizmos.color = colorOld;
         }
 

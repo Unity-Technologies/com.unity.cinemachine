@@ -97,11 +97,11 @@ namespace Cinemachine
             m_ControlPoints2 = null;
         }
 
-        Waypoint[] m_ControlPoints1;
-        Waypoint[] m_ControlPoints2;
+        internal Waypoint[] m_ControlPoints1;
+        internal Waypoint[] m_ControlPoints2;
         bool m_IsLoopedCache;
 
-        void UpdateControlPoints()
+        internal void UpdateControlPoints()
         {
             int numPoints = (m_Waypoints == null) ? 0 : m_Waypoints.Length;
             if (numPoints > 1 
@@ -161,10 +161,10 @@ namespace Cinemachine
             return pos;
         }
 
-        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <summary>Get a curvespace position of a point along the path</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
-        /// <returns>World-space position of the point along at path at pos</returns>
-        public override Vector3 EvaluatePosition(float pos)
+        /// <returns>Curve-space position of the point along at path at pos</returns>
+        public override Vector3 EvaluateCurvePosition(float pos)
         {
             Vector3 result = Vector3.zero;
             if (m_Waypoints.Length > 0)
@@ -179,7 +179,15 @@ namespace Cinemachine
                         m_Waypoints[indexA].position, m_ControlPoints1[indexA].position,
                         m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
             }
-            return transform.TransformPoint(result);
+            return result;
+        }
+
+        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <param name="pos">Position along the path.  Need not be normalized.</param>
+        /// <returns>World-space position of the point along at path at pos</returns>
+        public override Vector3 EvaluatePosition(float pos)
+        {
+            return transform.TransformPoint(EvaluateCurvePosition(pos));
         }
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
@@ -237,7 +245,7 @@ namespace Cinemachine
         }
         
         // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
-        Quaternion RollAroundForward(float angle)
+        internal static Quaternion RollAroundForward(float angle)
         {
             float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
             return new Quaternion(

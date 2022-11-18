@@ -1,8 +1,11 @@
 using UnityEditor;
 using UnityEngine;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditorInternal;
+using Cinemachine.Utility;
+using UnityEngine.Assertions;
 
 namespace Cinemachine.Editor
 {
@@ -244,13 +247,138 @@ namespace Cinemachine.Editor
             }
         }
 
+        static Vector4[] m_BezierWeights;
+        static int m_BezierWeightsResolution = -1;
+        static Vector3[] m_StepPoints;
+        static Vector3[] m_LeftRailPoints;
+        static Vector3[] m_RightRailPoints;
+        static Vector3[] m_SleeperPoints;
+
+        static ElementType[] EnsureArraySize<ElementType>(ElementType[] array, int requiredSize)
+        {
+            return ((array == null) || (array.Length < requiredSize)) ? new ElementType[requiredSize] : array;
+        }
+
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSmoothPath))]
         static void DrawGizmos(CinemachineSmoothPath path, GizmoType selectionType)
         {
+            int numSegments = path.m_Waypoints.Length - (path.Looped ? 0 : 1);
             var isActive = Selection.activeGameObject == path.gameObject;
-            CinemachinePathEditor.DrawPathGizmo(path,
-                isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
+
+            path.UpdateControlPoints();
+
+            // Pre-calculate the bezier weights for each step along a segment if the resolution has changed
+            if (path.m_Resolution != m_BezierWeightsResolution)
+            {
+                m_BezierWeights = EnsureArraySize(m_BezierWeights, path.m_Resolution + 1);
+                for (int stepNum = 0; stepNum <= path.m_Resolution; stepNum++)
+                {
+                    float t = ((float)stepNum) / path.m_Resolution;
+                    float d = 1.0f - t;
+                    m_BezierWeights[stepNum] = new Vector4(d * d * d, 3f * d * d * t, 3f * d * t * t, t * t * t);
+                }
+                m_BezierWeightsResolution = path.m_Resolution;
+            }
+
+            int numStepPointsRequired = (path.m_Resolution * numSegments) + 1;
+            m_StepPoints = EnsureArraySize(m_StepPoints, numStepPointsRequired);
+
+            // Process each segment of the path
+            int stepPointIndex = 0;
+            for (int startWaypointIndex = 0; startWaypointIndex < numSegments; startWaypointIndex++)
+            {
+                int nextWaypointIndex = (startWaypointIndex + 1) % path.m_Waypoints.Length;
+
+                for (int stepNum = 0; stepNum < path.m_Resolution; stepNum++)
+                {
+                    m_StepPoints[stepPointIndex++] =
+                        (m_BezierWeights[stepNum].x * path.m_Waypoints[startWaypointIndex].position) +
+                        (m_BezierWeights[stepNum].y * path.m_ControlPoints1[startWaypointIndex].position) +
+                        (m_BezierWeights[stepNum].z * path.m_ControlPoints2[startWaypointIndex].position) +
+                        (m_BezierWeights[stepNum].w * path.m_Waypoints[nextWaypointIndex].position);
+                }
+            }
+
+            m_StepPoints[stepPointIndex] = path.Looped ? m_StepPoints[0] : path.m_Waypoints[path.m_Waypoints.Length - 1].position;
+
+            Transform pathTransform = path.transform;
+
+            // Put into world space
+            pathTransform.TransformPoints(new Span<Vector3>(m_StepPoints));
+
+            Color colorOld = Gizmos.color;
+            Gizmos.color = isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor;
+
+            if (!isActive || path.m_Appearance.width == 0)
+            {
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_StepPoints, 0, numStepPointsRequired), false);
+            }
+            else
+            {
+                Quaternion transformRot = pathTransform.rotation;
+                Vector3 transformUp = transformRot * Vector3.up;
+
+                float halfWidth = path.m_Appearance.width * 0.5f;
+                Vector3 halfRight = Vector3.right * halfWidth;
+
+                int numRailPointsRequired = (path.m_Resolution * numSegments) + (path.Looped ? 0 : 1);
+                m_LeftRailPoints = EnsureArraySize(m_LeftRailPoints, numRailPointsRequired);
+                m_RightRailPoints = EnsureArraySize(m_RightRailPoints, numRailPointsRequired);
+
+                int numSleeperPointsRequired = (path.m_Resolution * numSegments * 2) + (path.Looped ? 0 : 2);
+                m_SleeperPoints = EnsureArraySize(m_SleeperPoints, numSleeperPointsRequired);
+
+                stepPointIndex = 0;
+                int sleeperPointIndex = 0;
+                for (int startWaypointIndex = 0; startWaypointIndex < numSegments; startWaypointIndex++)
+                {
+                    int nextWaypointIndex = (startWaypointIndex + 1) % path.m_Waypoints.Length;
+
+                    int numSteps = (path.Looped ? path.m_Resolution : ((startWaypointIndex < numSegments - 1) ? path.m_Resolution : (path.m_Resolution + 1)));
+
+                    Vector3[] bezierTangentWeights = SplineHelpers.BezierTangentWeights3(
+                        path.m_Waypoints[startWaypointIndex].position,
+                        path.m_ControlPoints1[startWaypointIndex].position,
+                        path.m_ControlPoints2[startWaypointIndex].position,
+                        path.m_Waypoints[nextWaypointIndex].position);
+
+                    for (int stepNum = 0; stepNum < numSteps; stepNum++)
+                    {
+                        Vector3 pointOnCurve = m_StepPoints[stepPointIndex];
+
+                        float roll = (m_BezierWeights[stepNum].x * path.m_Waypoints[startWaypointIndex].roll) +
+                            (m_BezierWeights[stepNum].y * path.m_ControlPoints1[startWaypointIndex].roll) +
+                            (m_BezierWeights[stepNum].z * path.m_ControlPoints2[startWaypointIndex].roll) +
+                            (m_BezierWeights[stepNum].w * path.m_Waypoints[nextWaypointIndex].roll);
+
+                        float t = ((float)stepNum) / path.m_Resolution;
+
+                        // From SplineHelpers.BezierTangent3()
+                        Vector3 fwd = (bezierTangentWeights[0] * (t * t)) + (bezierTangentWeights[1] * t) + bezierTangentWeights[2];
+                        fwd = pathTransform.TransformDirection(fwd);
+
+                        Vector3 sideVector = ((!fwd.AlmostZero()) ? Quaternion.LookRotation(fwd, transformUp) * CinemachineSmoothPath.RollAroundForward(roll) : transformRot) * halfRight;
+
+                        m_LeftRailPoints[stepPointIndex] = pointOnCurve - sideVector;
+                        m_RightRailPoints[stepPointIndex] = pointOnCurve + sideVector;
+                        stepPointIndex++;
+
+                        Vector3 elongatedSideVector = sideVector * 1.2f;
+                        m_SleeperPoints[sleeperPointIndex] = pointOnCurve - elongatedSideVector;
+                        m_SleeperPoints[sleeperPointIndex + 1] = pointOnCurve + elongatedSideVector;
+                        sleeperPointIndex += 2;
+                    }
+                }
+                Assert.AreEqual(sleeperPointIndex, numSleeperPointsRequired);
+                Assert.AreEqual(stepPointIndex, numRailPointsRequired);
+
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_LeftRailPoints, 0, numRailPointsRequired), false);
+                Gizmos.DrawLineStrip(new Span<Vector3>(m_RightRailPoints, 0, numRailPointsRequired), false);
+                Gizmos.DrawLineList(new Span<Vector3>(m_SleeperPoints, 0, numSleeperPointsRequired));
+            }
+
+            Gizmos.color = colorOld;
         }
     }
 }
