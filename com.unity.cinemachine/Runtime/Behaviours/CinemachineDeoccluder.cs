@@ -377,8 +377,8 @@ namespace Cinemachine
                         extra.ResetDistanceSmoothing(AvoidObstacles.SmoothingTime);
 
                     // Apply additional correction due to camera radius
-                    var cameraPos = initialCamPos + displacement;
-                    displacement += RespectCameraRadius(cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
+                    //var cameraPos = initialCamPos + displacement;
+                    //displacement += RespectCameraRadius(cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
                     float dampTime = AvoidObstacles.DampingWhenOccluded;
@@ -395,7 +395,7 @@ namespace Cinemachine
                     }
                     
                     state.PositionCorrection += displacement;
-                    cameraPos = state.GetCorrectedPosition();
+                    var cameraPos = state.GetCorrectedPosition();
 
                     // Adjust the damping bypass to account for the displacement
                     if (state.HasLookAt() && VirtualCamera.PreviousStateIsValid)
@@ -498,12 +498,24 @@ namespace Cinemachine
                     rayLength += k_PrecisionSlush;
                     if (rayLength > Epsilon)
                     {
-                        if (RuntimeUtility.RaycastIgnoreTag(
-                            ray, out hitInfo, rayLength, layerMask, IgnoreTag))
+                        if (AvoidObstacles.CameraRadius > 0)
                         {
-                            // Pull camera forward in front of obstacle
-                            float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
-                            displacement = ray.GetPoint(adjustment) - cameraPos;
+                            if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos, AvoidObstacles.CameraRadius,
+                                    dir, out hitInfo, rayLength, layerMask, IgnoreTag))
+                            {
+                                float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
+                                displacement = ray.GetPoint(adjustment) - cameraPos;
+                            }
+                        }
+                        else
+                        {
+                            if (RuntimeUtility.RaycastIgnoreTag(
+                                    ray, out hitInfo, rayLength, layerMask, IgnoreTag))
+                            {
+                                // Pull camera forward in front of obstacle
+                                float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
+                                displacement = ray.GetPoint(adjustment) - cameraPos;
+                            }
                         }
                     }
                 }
@@ -707,6 +719,7 @@ namespace Cinemachine
 
         static Collider[] s_ColliderBuffer = new Collider[5];
 
+        // TODO: this should happen along the axis of displacement!
         Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
         {
             var result = Vector3.zero;
