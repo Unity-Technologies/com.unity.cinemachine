@@ -29,8 +29,8 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalLook, Name = "Horizontal Look", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalLook, Name = "Vertical Look", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref HorizontalLook, Name = "Horizontal Look", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref VerticalLook, Name = "Vertical Look", AxisIndex = 1 });
         }
 
         void OnValidate()
