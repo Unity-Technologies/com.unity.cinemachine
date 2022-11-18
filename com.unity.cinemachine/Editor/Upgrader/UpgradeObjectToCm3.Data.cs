@@ -142,9 +142,9 @@ namespace Cinemachine.Editor
                     { "BindingMode", new("TrackerSettings.BindingMode", typeof(CinemachineOrbitalFollow)) },
                     { "AngularDampingMode", new("TrackerSettings.AngularDampingMode", typeof(CinemachineOrbitalFollow)) },
                     { "AngularDamping", new("TrackerSettings.QuaternionDamping", typeof(CinemachineOrbitalFollow)) },
-                    { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "ZAxis.Value", new("managedReferences[RadialAxis].Value", typeof(CinemachineOrbitalFollow)) }
+                    { "XAxis.Value", new("HorizontalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "YAxis.Value", new("VerticalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "ZAxis.Value", new("RadialAxis.Value", typeof(CinemachineOrbitalFollow)) }
                 }
             },
             {
@@ -219,15 +219,15 @@ namespace Cinemachine.Editor
             {
                 typeof(CinemachinePOV), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "HorizontalAxis.Value", new("managedReferences[PanAxis].Value", typeof(CinemachinePanTilt)) },
-                    { "VerticalAxis.Value", new("managedReferences[TiltAxis].Value", typeof(CinemachinePanTilt)) }
+                    { "HorizontalAxis.Value", new("PanAxis.Value", typeof(CinemachinePanTilt)) },
+                    { "VerticalAxis.Value", new("TiltAxis.Value", typeof(CinemachinePanTilt)) }
                 }
             },
             {
                 typeof(CinemachineFreeLook), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                    { "XAxis.Value", new("HorizontalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "YAxis.Value", new("VerticalAxis.Value", typeof(CinemachineOrbitalFollow)) },
                 }
             },
             {
