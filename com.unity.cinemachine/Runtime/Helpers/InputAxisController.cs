@@ -202,7 +202,7 @@ namespace Cinemachine
         void OnResetInput()
         {
             for (int i = 0; i < Controllers.Count; ++i)
-                Controllers[i].Driver.Reset(m_Axes[i].Axis, Controllers[i].Recentering);
+                Controllers[i].Driver.Reset(ref m_Axes[i].GetAxis(), Controllers[i].Recentering);
         }
 
         void Update()
@@ -231,7 +231,7 @@ namespace Cinemachine
                         c.Control.InputValue = inputValue;
                 }
 #endif
-                c.Driver.ProcessInput(deltaTime, m_Axes[i].Axis, ref c.Control);
+                c.Driver.ProcessInput(deltaTime, ref m_Axes[i].GetAxis(), ref c.Control);
                 gotInput |= Mathf.Abs(c.Control.InputValue) > 0.001f;
             }
 
@@ -241,7 +241,7 @@ namespace Cinemachine
                 // If we got any input, cancel all recentering
                 if (gotInput && Controllers[i].Recentering.Wait > 0.01f)
                     Controllers[i].Driver.CancelRecentering();
-                Controllers[i].Driver.DoRecentering(deltaTime, m_Axes[i].Axis, Controllers[i].Recentering);
+                Controllers[i].Driver.DoRecentering(deltaTime, ref m_Axes[i].GetAxis(), Controllers[i].Recentering);
             }
         }
 

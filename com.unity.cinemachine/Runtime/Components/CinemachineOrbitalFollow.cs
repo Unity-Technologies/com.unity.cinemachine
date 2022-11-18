@@ -53,21 +53,18 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the up vector.")]
-        [SerializeReference]
         public InputAxis HorizontalAxis = DefaultHorizontal;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
         [Tooltip("Axis representing the current vertical rotation.  Value is in degrees "
             + "and represents a rotation about the right vector.")]
-        [SerializeReference]
         public InputAxis VerticalAxis = DefaultVertical;
 
         /// <summary>Axis controlling the scale of the current distance.  Value is a scalar
         /// multiplier and is applied to the specified camera distance</summary>
         [Tooltip("Axis controlling the scale of the current distance.  Value is a scalar "
             + "multiplier and is applied to the specified camera distance.")]
-        [SerializeReference]
         public InputAxis RadialAxis = DefaultRadial;
 
         // State information
@@ -125,9 +122,9 @@ namespace Cinemachine
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = HorizontalAxis, Name = "Look Orbit X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = VerticalAxis, Name = "Look Orbit Y", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = RadialAxis, Name = "Orbit Scale", AxisIndex = 2 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref HorizontalAxis, Name = "Look Orbit X", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref VerticalAxis, Name = "Look Orbit Y", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref RadialAxis, Name = "Orbit Scale", AxisIndex = 2 });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>

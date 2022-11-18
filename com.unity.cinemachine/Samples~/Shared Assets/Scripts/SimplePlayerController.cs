@@ -67,10 +67,10 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = MoveX, Name = "Move X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = MoveZ, Name = "Move Z", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = Jump, Name = "Jump", AxisIndex = 2 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = Sprint, Name = "Sprint", AxisIndex = 3 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref MoveX, Name = "Move X", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref MoveZ, Name = "Move Z", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref Jump, Name = "Jump", AxisIndex = 2 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref Sprint, Name = "Sprint", AxisIndex = 3 });
         }
 
         void Start()
