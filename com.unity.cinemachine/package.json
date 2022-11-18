@@ -36,12 +36,12 @@
   },
   "samples": [
     {
-      "displayName": "2D Samples Scenes",
+      "displayName": "2D Samples",
       "description": "Sample scenes illustrating various ways to use Cinemachine in a 2D setting",
       "path": "Samples~/2D Samples"
     },
     {
-      "displayName": "3D Samples Scenes",
+      "displayName": "3D Samples",
       "description": "Sample scenes illustrating various ways to use Cinemachine in a 3D setting",
       "path": "Samples~/3D Samples"
     },
