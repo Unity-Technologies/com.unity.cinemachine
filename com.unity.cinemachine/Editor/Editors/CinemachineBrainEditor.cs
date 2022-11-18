@@ -71,8 +71,11 @@ namespace Cinemachine.Editor
             });
             foldout.RegisterValueChangedCallback((evt) => 
             {
-                m_EventsExpanded = evt.newValue;
-                evt.StopPropagation();
+                if (evt.target == foldout)
+                {
+                    m_EventsExpanded = evt.newValue;
+                    evt.StopPropagation();
+                }
             });
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));

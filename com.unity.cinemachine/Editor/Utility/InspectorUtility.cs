@@ -510,28 +510,35 @@ namespace Cinemachine.Editor
 
                 // Swap the open and closed foldouts when the foldout is opened or closed
                 closedContainer.SetVisible(!foldout.value);
+                foldout.SetVisible(foldout.value);
+
                 closedFoldout.RegisterValueChangedCallback((evt) =>
                 {
-                    if (evt.newValue)
+                    if (evt.target == closedFoldout)
                     {
-                        closedContainer.SetVisible(false);
-                        foldout.SetVisible(true);
-                        foldout.value = true;
-                        closedFoldout.SetValueWithoutNotify(false);
-                        foldout.Focus(); // GML why doesn't this work?
+                        if (evt.newValue && evt.target == closedFoldout)
+                        {
+                            closedContainer.SetVisible(false);
+                            foldout.SetVisible(true);
+                            foldout.value = true;
+                            closedFoldout.SetValueWithoutNotify(false);
+                            //foldout.Focus(); // GML why doesn't this work?
+                        }
                         evt.StopPropagation();
                     }
                 });
-                foldout.SetVisible(foldout.value);
                 foldout.RegisterValueChangedCallback((evt) =>
                 {
-                    if (!evt.newValue)
+                    if (evt.target == foldout)
                     {
-                        closedContainer.SetVisible(true);
-                        foldout.SetVisible(false);
-                        closedFoldout.SetValueWithoutNotify(false);
-                        foldout.value = false;
-                        closedFoldout.Focus(); // GML why doesn't this work?
+                        if (!evt.newValue)
+                        {
+                            closedContainer.SetVisible(true);
+                            foldout.SetVisible(false);
+                            closedFoldout.SetValueWithoutNotify(false);
+                            foldout.value = false;
+                            //closedFoldout.Focus(); // GML why doesn't this work?
+                        }
                         evt.StopPropagation();
                     }
                 });
