@@ -20,7 +20,7 @@ namespace Cinemachine
             public delegate ref InputAxis AxisGetter();
 
             /// <summary>The axis to drive</summary>
-            public AxisGetter GetAxis;
+            public AxisGetter DrivenAxis;
 
             /// <summary>The name to display for the axis</summary>
             public string Name;

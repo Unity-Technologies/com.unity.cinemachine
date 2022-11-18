@@ -24,7 +24,7 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { GetAxis = () => ref Fire, Name = "Fire", AxisIndex = 2 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Fire, Name = "Fire", AxisIndex = 2 });
         }
 
         void OnValidate()
