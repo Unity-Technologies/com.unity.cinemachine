@@ -377,8 +377,9 @@ namespace Cinemachine
                         extra.ResetDistanceSmoothing(AvoidObstacles.SmoothingTime);
 
                     // Apply additional correction due to camera radius
-                    //var cameraPos = initialCamPos + displacement;
-                    //displacement += RespectCameraRadius(cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
+                    var cameraPos = initialCamPos + displacement;
+                    if (AvoidObstacles.Strategy != ObstacleAvoidance.ResolutionStrategy.PullCameraForward)
+                        displacement += RespectCameraRadius(cameraPos, state.HasLookAt() ? state.ReferenceLookAt : cameraPos);
 
                     // Apply damping
                     float dampTime = AvoidObstacles.DampingWhenOccluded;
@@ -395,7 +396,7 @@ namespace Cinemachine
                     }
                     
                     state.PositionCorrection += displacement;
-                    var cameraPos = state.GetCorrectedPosition();
+                    cameraPos = state.GetCorrectedPosition();
 
                     // Adjust the damping bypass to account for the displacement
                     if (state.HasLookAt() && VirtualCamera.PreviousStateIsValid)
@@ -498,7 +499,8 @@ namespace Cinemachine
                     rayLength += k_PrecisionSlush;
                     if (rayLength > Epsilon)
                     {
-                        if (AvoidObstacles.CameraRadius > 0)
+                        if (AvoidObstacles.Strategy == ObstacleAvoidance.ResolutionStrategy.PullCameraForward 
+                            && AvoidObstacles.CameraRadius > 0)
                         {
                             if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos, AvoidObstacles.CameraRadius,
                                     dir, out hitInfo, rayLength, layerMask, IgnoreTag))
@@ -719,7 +721,6 @@ namespace Cinemachine
 
         static Collider[] s_ColliderBuffer = new Collider[5];
 
-        // TODO: this should happen along the axis of displacement!
         Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
         {
             var result = Vector3.zero;
