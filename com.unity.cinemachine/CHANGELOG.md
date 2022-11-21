@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
 - Bugfix: Lens blending was wrong
 - CinemachineDeoccluder is a new class, not just a rename of CinemachineCollider.
+- CinemachineAutoFocus extension is now available with builtin and URP pipelines, with reduced functionality compared to HDRP.
+- Camera.focusDistance is driven by CM when camera is in physical mode.
 
 
 ## [3.0.0-pre.3] - 2022-10-28

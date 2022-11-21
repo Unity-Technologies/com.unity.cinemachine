@@ -145,6 +145,9 @@ namespace Cinemachine
 
         [SerializeField] Vector2 m_SensorSize;
 
+        /// <summary>Distance from the camera lens at which focus is sharpest.</summary>
+        public float FocusDistance;
+
         bool m_OrthoFromCamera;
         bool m_PhysicalFromCamera;
 
@@ -154,7 +157,6 @@ namespace Cinemachine
         public float ShutterSpeed;
         [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
         public float Aperture;
-        public float FocusDistance;
         [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
         public int BladeCount;
         [MinMaxRangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
@@ -190,11 +192,11 @@ namespace Cinemachine
                     lens.SensorSize = fromCamera.sensorSize;
                     lens.LensShift = fromCamera.lensShift;
                     lens.GateFit = fromCamera.gateFit;
+                    lens.FocusDistance = fromCamera.focusDistance;
 #if CINEMACHINE_HDRP
                     lens.Iso = fromCamera.iso;
                     lens.ShutterSpeed = fromCamera.shutterSpeed;
                     lens.Aperture = fromCamera.aperture;
-                    lens.FocusDistance = fromCamera.focusDistance;
                     lens.BladeCount = fromCamera.bladeCount;
                     lens.Curvature = fromCamera.curvature;
                     lens.BarrelClipping = fromCamera.barrelClipping;
@@ -269,12 +271,12 @@ namespace Cinemachine
             Dutch = dutch;
             m_SensorSize = Vector2.one;
             GateFit = Camera.GateFitMode.Horizontal;
+            FocusDistance = 10;
 
 #if CINEMACHINE_HDRP
             Iso = 200;
             ShutterSpeed = 0.005f;
             Aperture = 16;
-            FocusDistance = 10;
             BladeCount = 5;
             Curvature = new Vector2(2, 11);
             BarrelClipping = 0.25f;
@@ -321,12 +323,12 @@ namespace Cinemachine
             Dutch = Mathf.Lerp(Dutch, lensB.Dutch, t);
             m_SensorSize = Vector2.Lerp(m_SensorSize, lensB.m_SensorSize, t);
             LensShift = Vector2.Lerp(LensShift, lensB.LensShift, t);
+            FocusDistance = Mathf.Lerp(FocusDistance, lensB.FocusDistance, t);
 
 #if CINEMACHINE_HDRP
             Iso = Mathf.RoundToInt(Mathf.Lerp((float)Iso, (float)lensB.Iso, t));
             ShutterSpeed = Mathf.Lerp(ShutterSpeed, lensB.ShutterSpeed, t);
             Aperture = Mathf.Lerp(Aperture, lensB.Aperture, t);
-            FocusDistance = Mathf.Lerp(FocusDistance, lensB.FocusDistance, t);
             BladeCount = Mathf.RoundToInt(Mathf.Lerp(BladeCount, lensB.BladeCount, t));;
             Curvature = Vector2.Lerp(Curvature, lensB.Curvature, t);
             BarrelClipping = Mathf.Lerp(BarrelClipping, lensB.BarrelClipping, t);
@@ -341,10 +343,10 @@ namespace Cinemachine
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
             m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
             m_SensorSize.y = Mathf.Max(m_SensorSize.y, 0.1f);
+            FocusDistance = Mathf.Max(FocusDistance, 0.01f);
 #if CINEMACHINE_HDRP
             ShutterSpeed = Mathf.Max(0, ShutterSpeed);
             Aperture = Mathf.Clamp(Aperture, Camera.kMinAperture, Camera.kMaxAperture);
-            FocusDistance = Mathf.Max(FocusDistance, 0.01f);
             BladeCount = Mathf.Clamp(BladeCount, Camera.kMinBladeCount, Camera.kMaxBladeCount);
             BarrelClipping = Mathf.Clamp01(BarrelClipping);
             Curvature.x = Mathf.Clamp(Curvature.x, Camera.kMinAperture, Camera.kMaxAperture);
@@ -372,11 +374,11 @@ namespace Cinemachine
                 && Mathf.Approximately(a.SensorSize.x, b.SensorSize.x)
                 && Mathf.Approximately(a.SensorSize.y, b.SensorSize.y)
                 && a.GateFit == b.GateFit
+                && Mathf.Approximately(a.FocusDistance, b.FocusDistance)
 #if CINEMACHINE_HDRP
                 && Mathf.Approximately(a.Iso, b.Iso)
                 && Mathf.Approximately(a.ShutterSpeed, b.ShutterSpeed)
                 && Mathf.Approximately(a.Aperture, b.Aperture)
-                && Mathf.Approximately(a.FocusDistance, b.FocusDistance)
                 && a.BladeCount == b.BladeCount
                 && Mathf.Approximately(a.Curvature.x, b.Curvature.x)
                 && Mathf.Approximately(a.Curvature.y, b.Curvature.y)

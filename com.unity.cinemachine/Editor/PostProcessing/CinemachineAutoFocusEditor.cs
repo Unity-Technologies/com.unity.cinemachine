@@ -8,17 +8,11 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineAutoFocus))]
     class CinemachineAutoFocusEditor : UnityEditor.Editor
     {
-#if !CINEMACHINE_HDRP
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-            ux.AddChild(new HelpBox("This component is only valid within HDRP projects.", HelpBoxMessageType.Warning));
-            return ux;
-        }
-#else
         CinemachineAutoFocus Target => target as CinemachineAutoFocus;
 
+#if CINEMACHINE_HDRP
         const string k_ComputeShaderName = "CinemachineFocusDistanceCompute";
+#endif
         CmPipelineComponentInspectorUtility m_PipelineUtility;
 
         void OnEnable() => m_PipelineUtility = new (this);
@@ -28,17 +22,27 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
             m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+#if CINEMACHINE_HDRP
             ux.AddChild(new HelpBox(
                 "Note: focus control requires an active Volume containing a Depth Of Field override "
                     + "having Focus Mode activated and set to Physical Camera, "
                     + "and Focus Distance Mode activated and set to Camera", 
                 HelpBoxMessageType.Info));
+#else
+            ux.AddChild(new HelpBox(
+                "Note: focus control will only set the focusDistance field in the Camera.  This will have no visible "
+                    + "effect unless the Camera is set to physical mode, and something is installed to process that value.",
+                HelpBoxMessageType.Info));
 
+            var hdrpOnlyMessage = ux.AddChild(
+                new HelpBox("ScreenCenter mode is only valid within HDRP projects.", HelpBoxMessageType.Warning));
+#endif
             var focusTargetProp = serializedObject.FindProperty(() => Target.FocusTarget);
             ux.Add(new PropertyField(focusTargetProp));
             var customTarget = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.CustomTarget)));
             var offset = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.FocusDepthOffset)));
             var damping = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+#if CINEMACHINE_HDRP
             var radius = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.AutoDetectionRadius)));
 
             var computeShaderProp = serializedObject.FindProperty("m_ComputeShader");
@@ -66,6 +70,7 @@ namespace Cinemachine.Editor
                 }
                 AssignShaderToTarget(shader);
             }));
+#endif
 
             TrackFocusTarget(focusTargetProp);
             ux.TrackPropertyValue(focusTargetProp, TrackFocusTarget);
@@ -76,6 +81,7 @@ namespace Cinemachine.Editor
                 customTarget.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.CustomTarget);
                 offset.SetVisible(mode != CinemachineAutoFocus.FocusTrackingMode.None);
                 damping.SetVisible(mode != CinemachineAutoFocus.FocusTrackingMode.None);
+#if CINEMACHINE_HDRP
                 radius.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter);
                 shaderDisplay.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter);
                 bool importHelpVisible = false;
@@ -88,8 +94,12 @@ namespace Cinemachine.Editor
                         importHelpVisible = true;
                 }
                 importHelp.SetVisible(importHelpVisible);
+#else
+                hdrpOnlyMessage.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter);
+#endif
             }
 
+#if CINEMACHINE_HDRP
             // Make the import box disappear after import
             ux.TrackPropertyValue(computeShaderProp, (p) =>
             {
@@ -97,11 +107,13 @@ namespace Cinemachine.Editor
                 importHelp.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter
                     && p.objectReferenceValue == null);
             });
+#endif
 
             m_PipelineUtility.UpdateState();
             return ux;
         }
 
+#if CINEMACHINE_HDRP
         static ComputeShader FindShader()
         {
             var guids = AssetDatabase.FindAssets($"{k_ComputeShaderName}, t:ComputeShader", new [] { "Assets" });
