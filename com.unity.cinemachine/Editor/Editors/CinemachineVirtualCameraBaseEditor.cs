@@ -576,6 +576,9 @@ namespace Cinemachine.Editor
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
                         if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
                             EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
+#if UNITY_2022_2_OR_NEWER
+                        EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FocusDistance));
+#endif
 
                         --EditorGUI.indentLevel;
                     }
@@ -584,6 +587,9 @@ namespace Cinemachine.Editor
                     EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift));
                     if (ModeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None)
                         EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.GateFit));
+#if UNITY_2022_2_OR_NEWER
+                    EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FocusDistance));
+#endif
 #endif
                 }
                 EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Dutch));
