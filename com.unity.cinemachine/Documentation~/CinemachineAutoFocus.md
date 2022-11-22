@@ -6,7 +6,7 @@ FocusDistance is only relevant for physical cameras, and appropriate processing 
 
 As of this writing, only HDRP provides out-of-the-box handling to process the Camera's focusDistance.  In HDRP:
 1. Create an active Volume containing a Depth Of Field override.
-1. In the DepthOfField override, activate Focus Mode and set it to Physical Camera, 
+1. In the DepthOfField override, activate Focus Mode and set it to Physical Camera.
 1. In the DepthOfField override, activate Focus Distance Mode and set to Camera.  
  
 With these settings, the focus distance set by Cinemachine Auto Focus will have a visible effect while the camera is within the Volume.
