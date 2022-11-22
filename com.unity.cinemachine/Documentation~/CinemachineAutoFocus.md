@@ -2,7 +2,7 @@
 
 This CmCamera extension drives the Camera's focusDistance property.  It can be used to lock focus onto a specific object, or (in HDRP) to auto-detect what is in front of the camera and focus on that.
 	
-FocusDiatance is only relevant for physical cameras, and appropriate processing must be installed for it to have any visible effect.
+FocusDistance is only relevant for physical cameras, and appropriate processing must be installed for it to have any visible effect.
 
 As of this writing, only HDRP provides out-of-the-box handling to process the Camera's focusDistance.  In HDRP:
 1. Create an active Volume containing a Depth Of Field override.
