@@ -58,10 +58,12 @@ namespace Cinemachine
             return Mathf.Clamp(pos, 0, MaxPos);
         }
 
+#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         /// <summary>Get a curvespace position of a point along the path</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>Curve-space position of the point along at path at pos</returns>
         public abstract Vector3 EvaluateCurvePosition(float pos);
+#endif
 
         /// <summary>Get a worldspace position of a point along the path</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>

@@ -85,6 +85,11 @@
             "name": "com.unity.inputsystem",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.2.0b16",
+            "define": "CINEMACHINE_USE_BATCH_POINT_LINE_APIS"
         }
     ],
     "noEngineReferences": false

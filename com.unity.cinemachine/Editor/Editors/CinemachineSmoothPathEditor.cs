@@ -247,6 +247,7 @@ namespace Cinemachine.Editor
             }
         }
 
+#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         static Vector4[] m_BezierWeights;
         static int m_BezierWeightsResolution = -1;
         static Vector3[] m_StepPoints;
@@ -380,5 +381,16 @@ namespace Cinemachine.Editor
 
             Gizmos.color = colorOld;
         }
+#else
+        // !#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
+        [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
+             | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSmoothPath))]
+        static void DrawGizmos(CinemachineSmoothPath path, GizmoType selectionType)
+        {
+            var isActive = Selection.activeGameObject == path.gameObject;
+            CinemachinePathEditor.DrawPathGizmo(path,
+                isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
+        }
+#endif  // #if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
     }
 }

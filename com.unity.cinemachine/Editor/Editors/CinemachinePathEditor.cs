@@ -386,6 +386,7 @@ namespace Cinemachine.Editor
             }
         }
 
+#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         static Vector3[] m_StepPoints;
         static Vector3[] m_LeftRailPoints;
         static Vector3[] m_RightRailPoints;
@@ -469,6 +470,51 @@ namespace Cinemachine.Editor
 
             Gizmos.color = colorOld;
         }
+#else
+        // !CINEMACHINE_USE_BATCH_POINT_LINE_APIS
+        public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive)
+        {
+            // Draw the path
+            Color colorOld = Gizmos.color;
+            Gizmos.color = pathColor;
+            float step = 1f / path.m_Resolution;
+            float halfWidth = path.m_Appearance.width * 0.5f;
+            Vector3 lastPos = path.EvaluatePosition(path.MinPos);
+            Vector3 lastW = (path.EvaluateOrientation(path.MinPos)
+                             * Vector3.right) * halfWidth;
+            float tEnd = path.MaxPos + step / 2;
+            for (float t = path.MinPos + step; t <= tEnd; t += step)
+            {
+                Vector3 p = path.EvaluatePosition(t);
+                if (!isActive || halfWidth == 0)
+                {
+                    Gizmos.DrawLine(p, lastPos);
+                }
+                else
+                {
+                    Quaternion q = path.EvaluateOrientation(t);
+                    Vector3 w = (q * Vector3.right) * halfWidth;
+                    Vector3 w2 = w * 1.2f;
+                    Vector3 p0 = p - w2;
+                    Vector3 p1 = p + w2;
+                    Gizmos.DrawLine(p0, p1);
+                    Gizmos.DrawLine(lastPos - lastW, p - w);
+                    Gizmos.DrawLine(lastPos + lastW, p + w);
+#if false
+                    // Show the normals, for debugging
+                    Gizmos.color = Color.red;
+                    Vector3 y = (q * Vector3.up) * halfWidth;
+                    Gizmos.DrawLine(p, p + y);
+                    Gizmos.color = pathColor;
+#endif
+                    lastW = w;
+                }
+
+                lastPos = p;
+            }
+            Gizmos.color = colorOld;
+        }
+#endif      // CINEMACHINE_USE_BATCH_POINT_LINE_APIS
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachinePath))]

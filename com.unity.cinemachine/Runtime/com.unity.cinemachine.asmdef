@@ -84,7 +84,12 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "14.0.0",
             "define": "CINEMACHINE_HDRP_14"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.2.0b16",
+            "define": "CINEMACHINE_USE_BATCH_POINT_LINE_APIS"
         }
-    ],
+   ],
     "noEngineReferences": false
 }

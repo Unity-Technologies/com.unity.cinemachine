@@ -161,10 +161,17 @@ namespace Cinemachine
             return pos;
         }
 
+#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         /// <summary>Get a curvespace position of a point along the path</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
         /// <returns>Curve-space position of the point along at path at pos</returns>
         public override Vector3 EvaluateCurvePosition(float pos)
+#else
+        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <param name="pos">Position along the path.  Need not be normalized.</param>
+        /// <returns>World-space position of the point along at path at pos</returns>
+        public override Vector3 EvaluatePosition(float pos)
+#endif
         {
             Vector3 result = Vector3.zero;
             if (m_Waypoints.Length > 0)
@@ -179,9 +186,14 @@ namespace Cinemachine
                         m_Waypoints[indexA].position, m_ControlPoints1[indexA].position,
                         m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
             }
+#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
             return result;
+#else
+            return transform.TransformPoint(result);
+#endif
         }
 
+#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         /// <summary>Get a worldspace position of a point along the path</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
         /// <returns>World-space position of the point along at path at pos</returns>
@@ -189,6 +201,7 @@ namespace Cinemachine
         {
             return transform.TransformPoint(EvaluateCurvePosition(pos));
         }
+#endif
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
