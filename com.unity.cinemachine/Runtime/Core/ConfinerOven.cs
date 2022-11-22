@@ -42,7 +42,8 @@ namespace Cinemachine
                 m_SqrPolygonDiagonal = polygonSizeX * polygonSizeX + polygonSizeY * polygonSizeY;
             }
 
-            public bool IsValid() => m_Solution != null;
+            public bool IsValid(float frustumHeight) => 
+                m_Solution != null && m_FrustumSizeIntSpace == frustumHeight * k_FloatToIntScaler;
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {

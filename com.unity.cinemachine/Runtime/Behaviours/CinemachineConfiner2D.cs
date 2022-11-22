@@ -146,8 +146,8 @@ namespace Cinemachine
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.Vcam = vcam;
-                if (confinerStateChanged || extra.BakedSolution == null 
-                    || !extra.BakedSolution.IsValid())
+                if (confinerStateChanged || extra.BakedSolution == null ||
+                    !extra.BakedSolution.IsValid(Mathf.Min(MaxWindowSize, bakedSpaceFrustumHeight)))
                 {
                     extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
                 }
