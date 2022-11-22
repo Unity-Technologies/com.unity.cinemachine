@@ -148,9 +148,9 @@ namespace Cinemachine.Editor
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed)));
 #endif
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.LensShift)));
+            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FocusDistance)));
 #if CINEMACHINE_HDRP
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Aperture)));
-            physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.FocusDistance)));
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount)));
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.Curvature)));
             physical.Add(new PropertyField(property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping)));

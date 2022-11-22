@@ -37,6 +37,7 @@
             * [Pixel Perfect extension](CinemachinePixelPerfect.md)
             * [Post Processing extension](CinemachinePostProcessing.md)
             * [Volume Settings extension](CinemachineVolumeSettings.md)
+            * [Auto Focus extension](CinemachineAutoFocus.md)
             * [Storyboard extension](CinemachineStoryboard.md)
             * [Third Person Aim extension](CinemachineThirdPersonAim.md)
             * [Recomposer extension](CinemachineRecomposer.md)

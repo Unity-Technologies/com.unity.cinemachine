@@ -208,9 +208,7 @@ namespace Cinemachine
                             }
                             CalculatedFocusDistance = focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
-#if CINEMACHINE_HDRP
                             state.Lens.FocusDistance = focusDistance;
-#endif
                             profile.isDirty = true;
                         }
                     }
