@@ -19,7 +19,7 @@ With these settings, the focus distance set by Cinemachine Auto Focus will have 
 | **Property:** || **Function:** |
 |:---|:---|:---|
 | __FocusTarget__ || The camera's focus distance will be set to the distance from camera to the selected target.  The Focus Offset field will then modify that distance.  |
-| | _None_ | Focus tracking is disabled |
+| | _None_ | Focus tracking is disabled. |
 | | _LookAtTarget_ | Focus offset is relative to the LookAt target. |
 | | _FollowTarget_ | Focus offset is relative to the Follow target. |
 | | _CustomTarget_ | Focus offset is relative to the Custom target set in the _CustomTarget_ field. |
