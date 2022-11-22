@@ -208,8 +208,11 @@ namespace Cinemachine.Editor
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip, value = s_CustomBlendsExpanded };
             foldout.RegisterValueChangedCallback((evt) => 
             {
-                s_CustomBlendsExpanded = evt.newValue;
-                evt.StopPropagation();
+                if (evt.target == foldout)
+                {
+                    s_CustomBlendsExpanded = evt.newValue;
+                    evt.StopPropagation();
+                }
             });
             m_EmbeddedInspectorParent = new VisualElement();
             m_AssignedUx = ux.AddChild(new InspectorUtility.FoldoutWithOverlay(

@@ -40,7 +40,7 @@ namespace Tests.Editor
             // Accelerate to speed
             for (int i = 0; i < 20; ++i)
             {
-                driver.ProcessInput(k_DeltaTime, axis, ref control);
+                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
                 var delta = axis.Value - prevValue;
                 UnityEngine.Assertions.Assert.IsTrue(delta > prevDelta); // must be speeding up
                 prevValue = axis.Value;
@@ -56,7 +56,7 @@ namespace Tests.Editor
             control.InputValue = 0;
             for (int i = 0; i < 20; ++i)
             {
-                driver.ProcessInput(k_DeltaTime, axis, ref control);
+                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
                 var delta = axis.Value - prevValue;
                 UnityEngine.Assertions.Assert.IsTrue(delta < prevDelta); // must be slowing down
                 prevValue = axis.Value;
@@ -111,7 +111,7 @@ namespace Tests.Editor
             var driver = new InputAxisDriver();
             foreach (var result in expectedResults)
             {
-                driver.ProcessInput(k_DeltaTime, axis, ref control);
+                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
                 UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, result);
             }
         }
@@ -167,8 +167,8 @@ namespace Tests.Editor
             var driver = new InputAxisDriver();
             foreach (var result in expectedResults)
             {
-                driver.ProcessInput(k_DeltaTime, axis, ref control);
-                driver.DoRecentering(k_DeltaTime, axis, recentering);
+                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
+                driver.DoRecentering(k_DeltaTime, ref axis, recentering);
                 control.InputValue = 0; // cancel input, so recentering can start
                 CinemachineCore.CurrentUnscaledTimeTimeOverride += k_DeltaTime; // control time for deterministic tests
                 UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, result);

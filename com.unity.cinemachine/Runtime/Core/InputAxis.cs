@@ -15,10 +15,16 @@ namespace Cinemachine
         /// </summary>
         public struct AxisDescriptor
         {
+            /// <summary>Delegate to get a reference to the axis being driven</summary>
+            /// <returns>A reference to the axis being driven</returns>
+            public delegate ref InputAxis AxisGetter();
+
             /// <summary>The axis to drive</summary>
-            public InputAxis Axis;
+            public AxisGetter DrivenAxis;
+
             /// <summary>The name to display for the axis</summary>
             public string Name;
+
             /// <summary>Indicates what axis is being driven: 0=x, 1=y, 2=z.  
             /// Used only for setting up default values.</summary>
             public int AxisIndex;
@@ -59,7 +65,7 @@ namespace Cinemachine
     /// with optional wrapping to form a loop.
     /// </summary>
     [Serializable]
-    public class InputAxis
+    public struct InputAxis
     {
         /// <summary>The current value of the axis.  You can drive this directly from a script</summary>
         [Tooltip("The current value of the axis.  You can drive this directly from a script.")]
@@ -207,7 +213,7 @@ namespace Cinemachine
         /// <param name="axis">The InputAxisValue to update</param>
         /// <param name="control">Parameter for controlling the behaviour of the axis</param>
         public void ProcessInput(
-            float deltaTime, InputAxis axis, 
+            float deltaTime, ref InputAxis axis, 
             ref InputAxisControl control)
         {
             var input = control.InputValue;
@@ -239,7 +245,7 @@ namespace Cinemachine
         /// <param name="deltaTime">Current deltaTime</param>
         /// <param name="axis">The axis to recenter</param>
         /// <param name="recentering">The recentering settings</param>
-        public void DoRecentering(float deltaTime, InputAxis axis, in InputAxisRecenteringSettings recentering)
+        public void DoRecentering(float deltaTime, ref InputAxis axis, in InputAxisRecenteringSettings recentering)
         {
             if (m_ForceRecenter || 
                 (recentering.Enabled 
@@ -285,7 +291,7 @@ namespace Cinemachine
         /// <summary>Reset axis to at-rest state</summary>
         /// <param name="axis">The axis to reset</param>
         /// <param name="recentering">The recentering settings</param>
-        public void Reset(InputAxis axis, in InputAxisRecenteringSettings recentering)
+        public void Reset(ref InputAxis axis, in InputAxisRecenteringSettings recentering)
         {
             m_LastUpdateTime = CurrentTime;
             m_CurrentSpeed = 0;

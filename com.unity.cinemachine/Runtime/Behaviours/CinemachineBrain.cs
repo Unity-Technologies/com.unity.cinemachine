@@ -1056,8 +1056,8 @@ namespace Cinemachine
                         cam.gateFit = state.Lens.GateFit;
                         cam.focalLength = Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y);
                         cam.lensShift = state.Lens.LensShift;
-#if CINEMACHINE_HDRP
                         cam.focusDistance = state.Lens.FocusDistance;
+#if CINEMACHINE_HDRP
                         cam.iso = state.Lens.Iso;
                         cam.shutterSpeed = state.Lens.ShutterSpeed;
                         cam.aperture = state.Lens.Aperture;

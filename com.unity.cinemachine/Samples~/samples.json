@@ -1,0 +1,22 @@
+{
+  "SharedAssetDependencies": [
+    "Shared Assets"
+  ],
+  "SampleEntries": [
+    {
+      "Path": "2D Samples",
+      "AssetDependencies": [],
+      "PackageDependencies": []
+    },
+    {
+      "Path": "3D Samples",
+      "AssetDependencies": [],
+      "PackageDependencies": []
+    },
+    {
+      "Path": "Old Samples from CM2",
+      "AssetDependencies": [],
+      "PackageDependencies": []
+    }
+  ]
+}
