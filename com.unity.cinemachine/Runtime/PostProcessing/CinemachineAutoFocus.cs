@@ -77,7 +77,7 @@ namespace Cinemachine
 
         CustomPassVolume m_CustomPassVolume;
 
-        /// <summary>Serialized so that the compute shader is included in the build</summary>
+        /// <summary>Serialized so that the compute shader is included in the build.</summary>
         [SerializeField]
         ComputeShader m_ComputeShader;
 
