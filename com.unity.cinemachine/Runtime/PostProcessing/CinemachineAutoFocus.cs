@@ -45,7 +45,7 @@ namespace Cinemachine
         };
 
         /// <summary>The camera's focus distance will be set to the distance from the camera to
-        /// the selected target.  The Focus Offset field will then modify that distance</summary>
+        /// the selected target.  The Focus Offset field will then modify that distance.</summary>
         [Tooltip("The camera's focus distance will be set to the distance from the camera to "
             + "the selected target.  The Focus Offset field will then modify that distance.")]
         public FocusTrackingMode FocusTarget;
