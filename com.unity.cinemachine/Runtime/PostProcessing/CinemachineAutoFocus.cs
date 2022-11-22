@@ -39,7 +39,7 @@ namespace Cinemachine
             CustomTarget,
             /// <summary>Focus offset is relative to the camera</summary>
             Camera,
-            /// <summary>HDRP only: Focus will be on whatever is located in the depth buffer 
+            /// <summary>HDRP only: Focus will be on whatever is located in the depth buffer. 
             /// at the center of the screen</summary>
             ScreenCenter
         };
