@@ -1,3 +1,5 @@
+#define MESH_EXPERIMENT
+
 using UnityEditor;
 using UnityEngine;
 using System;
@@ -247,7 +249,7 @@ namespace Cinemachine.Editor
             }
         }
 
-#if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
+#if !MESH_EXPERIMENT && CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         static Vector4[] m_BezierWeights;
         static int m_BezierWeightsResolution = -1;
         static Vector3[] m_StepPoints;

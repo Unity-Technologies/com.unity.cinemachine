@@ -1,3 +1,5 @@
+#define MESH_EXPERIMENT
+
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -385,6 +387,64 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
             }
         }
+#if MESH_EXPERIMENT
+        public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive)
+        {
+            float width = path.m_Appearance.width;
+            int resolution = path.m_Resolution;
+
+            float stepSize = 1f / path.m_Resolution;
+            int numSteps = (int)(path.MaxPos - path.MinPos) * resolution;
+            var halfWidth = width * 0.5f;
+
+            // For efficiency, we create a mesh with the track and draw it in one shot
+            var p = path.EvaluatePosition(path.MinPos);
+            var q = path.EvaluateOrientation(path.MinPos);
+            var w = (q * Vector3.right) * halfWidth;
+
+            var indices = new int[2 * 3 * numSteps];
+            numSteps++; // ceil
+            var vertices = new Vector3[2 * numSteps];
+            var normals = new Vector3[vertices.Length];
+            int vIndex = 0;
+            vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
+            vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
+
+            int iIndex = 0;
+
+            for (int i = 1; i < numSteps; ++i)
+            {
+                var t = i * stepSize;
+                p = path.EvaluatePosition(t);
+                q = path.EvaluateOrientation(t);
+                w = (q * Vector3.right) * halfWidth;
+
+                indices[iIndex++] = vIndex - 2;
+                indices[iIndex++] = vIndex - 1;
+
+                vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
+                vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
+
+                indices[iIndex++] = vIndex - 4;
+                indices[iIndex++] = vIndex - 2;
+                indices[iIndex++] = vIndex - 3;
+                indices[iIndex++] = vIndex - 1;
+            }
+
+            // Draw the path
+            Color colorOld = Gizmos.color;
+            Gizmos.color = pathColor;
+
+            var mesh = new Mesh();
+            mesh.SetVertices(vertices);
+            mesh.SetNormals(normals);
+            mesh.SetIndices(indices, MeshTopology.Lines, 0);
+            Gizmos.DrawWireMesh(mesh);
+
+            Gizmos.color = colorOld;
+        }
+
+#else // MESH_EXPERIMENT
 
 #if CINEMACHINE_USE_BATCH_POINT_LINE_APIS
         static Vector3[] m_StepPoints;
@@ -515,6 +575,8 @@ namespace Cinemachine.Editor
             Gizmos.color = colorOld;
         }
 #endif      // CINEMACHINE_USE_BATCH_POINT_LINE_APIS
+
+#endif // MESH_EXPERIMENT
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachinePath))]
