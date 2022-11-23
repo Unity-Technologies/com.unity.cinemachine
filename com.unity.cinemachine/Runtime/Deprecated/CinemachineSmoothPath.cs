@@ -50,7 +50,7 @@ namespace Cinemachine
         public Waypoint[] m_Waypoints = new Waypoint[0];
 
         /// <summary>The minimum value for the path position</summary>
-        public override float MinPos { get { return 0; } }
+        public override float MinPos => 0;
 
         /// <summary>The maximum value for the path position</summary>
         public override float MaxPos
@@ -64,11 +64,11 @@ namespace Cinemachine
             }
         }
         /// <summary>True if the path ends are joined to form a continuous loop</summary>
-        public override bool Looped { get { return m_Looped; } }
+        public override bool Looped => m_Looped;
 
         /// <summary>When calculating the distance cache, sample the path this many 
         /// times between points</summary>
-        public override int DistanceCacheSampleStepsPerSegment { get { return m_Resolution; } }
+        public override int DistanceCacheSampleStepsPerSegment => m_Resolution;
 
         private void OnValidate() { InvalidateDistanceCache(); }
 
@@ -93,11 +93,11 @@ namespace Cinemachine
             m_ControlPoints2 = null;
         }
         
-        Waypoint[] m_ControlPoints1;
-        Waypoint[] m_ControlPoints2;
+        internal Waypoint[] m_ControlPoints1;
+        internal Waypoint[] m_ControlPoints2;
         bool m_IsLoopedCache;
 
-        void UpdateControlPoints()
+        internal void UpdateControlPoints()
         {
             int numPoints = (m_Waypoints == null) ? 0 : m_Waypoints.Length;
             if (numPoints > 1 
@@ -160,14 +160,13 @@ namespace Cinemachine
         /// <summary>Get a worldspace position of a point along the path</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
         /// <returns>World-space position of the point along at path at pos</returns>
-        public override Vector3 EvaluatePosition(float pos)
+        public override Vector3 EvaluateLocalPosition(float pos)
         {
-            Vector3 result = Vector3.zero;
+            var result = Vector3.zero;
             if (m_Waypoints.Length > 0)
             {
                 UpdateControlPoints();
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
                     result = m_Waypoints[indexA].position;
                 else
@@ -175,43 +174,39 @@ namespace Cinemachine
                         m_Waypoints[indexA].position, m_ControlPoints1[indexA].position,
                         m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
             }
-            return transform.TransformPoint(result);
+            return result;
         }
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
         /// <returns>World-space direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
-        public override Vector3 EvaluateTangent(float pos)
+        public override Vector3 EvaluateLocalTangent(float pos)
         {
-            Vector3 result = transform.rotation * Vector3.forward;
+            var result = Vector3.forward;
             if (m_Waypoints.Length > 1)
             {
                 UpdateControlPoints();
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (!Looped && indexA == m_Waypoints.Length - 1)
                     --indexA;
                 result = SplineHelpers.BezierTangent3(pos - indexA,
                     m_Waypoints[indexA].position, m_ControlPoints1[indexA].position,
                     m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
             }
-            return transform.TransformDirection(result);
+            return result;
         }
 
         /// <summary>Get the orientation the curve at a point along the path.</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
         /// <returns>World-space orientation of the path, as defined by tangent, up, and roll.</returns>
-        public override Quaternion EvaluateOrientation(float pos)
+        public override Quaternion EvaluateLocalOrientation(float pos)
         {
-            Quaternion transformRot = transform.rotation;
-            Vector3 transformUp = transformRot * Vector3.up;
-            Quaternion result = transformRot;
+            var result = Quaternion.identity;
             if (m_Waypoints.Length > 0)
             {
-                float roll = 0;
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                float roll;
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
                     roll = m_Waypoints[indexA].roll;
                 else
@@ -224,24 +219,16 @@ namespace Cinemachine
 
                 Vector3 fwd = EvaluateTangent(pos);
                 if (!fwd.AlmostZero())
-                {
-                    Quaternion q = Quaternion.LookRotation(fwd, transformUp);
-                    result = q * RollAroundForward(roll);
-                }
+                    result = Quaternion.LookRotation(fwd) * RollAroundForward(roll);
             }
             return result;
         }
         
         // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
-        Quaternion RollAroundForward(float angle)
+        static Quaternion RollAroundForward(float angle)
         {
             float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
-            return new Quaternion(
-                0,
-                0,
-                Mathf.Sin(halfAngle),
-                Mathf.Cos(halfAngle));
+            return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
         }
-        
     }
 }
