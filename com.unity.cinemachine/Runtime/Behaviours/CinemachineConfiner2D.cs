@@ -1,3 +1,4 @@
+#if CINEMACHINE_PHYSICS_2D
 using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
@@ -6,8 +7,6 @@ using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
-
-#if CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// <para>
     /// An add-on module for Cinemachine Camera that post-processes the final position 
@@ -22,10 +21,14 @@ namespace Cinemachine
     /// also its aspect ratio. Based on this information and the input polygon, a second (smaller) 
     /// polygon is computed to which the camera's transform is constrained. Computation of this secondary 
     /// polygon is nontrivial and expensive, so it should be done only when absolutely necessary.
+    ///
+    /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
+    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call AdjustConfiner().
     /// </para>
     ///
     /// <para>
-    /// The cached secondary polygon needs to be recomputed in the following circumstances:
+    /// When Oversize Window option is enabled, Confiner2D pre-calculates a cache to speed up calculation.
+    /// The cache needs to be recomputed in the following circumstances:
     /// <list type="bullet">
     /// <item>when the input polygon's points change</item>
     /// <item>when the input polygon is non-uniformly scaled</item>
@@ -44,7 +47,7 @@ namespace Cinemachine
     /// </para>
     ///
     /// <para>
-    /// The cached secondary polygon is not a single polygon, but rather a family of polygons from 
+    /// The cache is not a single polygon, but rather a family of polygons from 
     /// which a member is chosen depending on the current size of the camera view. The number of 
     /// polygons in this family will depend on the complexity of the input polygon, and the maximum 
     /// expected camera view size. The MaxOrthoSize property is provided to give a hint to the 
@@ -101,6 +104,21 @@ namespace Cinemachine
             MaxWindowSize = -1;
         }
 
+        /// <summary>
+        /// Adjusts the confiner to the Cinemachine Camera's window size.
+        /// Call this when you change Orthographic Size or Field of View of the Cinemachine Camera's lens.
+        /// Calculating the new confiner is fast, but causes allocations.
+        /// </summary>
+        /// <remarks>
+        /// Most often, it is more efficient to have more Cinemachine Cameras with different lens settings
+        /// that have their own confiners and blend between them instead of changing
+        /// one Cinemachine Camera's lens and calling this over and over.
+        /// </remarks>
+        public void AdjustConfiner()
+        {
+            m_AdjustConfiner = true;
+        }
+
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
         public void InvalidateCache()
         {
@@ -146,10 +164,11 @@ namespace Cinemachine
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.Vcam = vcam;
-                if (confinerStateChanged || extra.BakedSolution == null ||
-                    !extra.BakedSolution.IsValid(Mathf.Min(MaxWindowSize, bakedSpaceFrustumHeight)))
+                if (confinerStateChanged || m_AdjustConfiner || 
+                    extra.BakedSolution == null || !extra.BakedSolution.IsValid())
                 {
                     extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
+                    m_AdjustConfiner = false;
                 }
 
                 cameraPosLocal = extra.BakedSolution.ConfinePoint(cameraPosLocal);
@@ -210,6 +229,7 @@ namespace Cinemachine
             public CinemachineVirtualCameraBase Vcam;
         };
 
+        bool m_AdjustConfiner;
         ShapeCache m_ShapeCache; 
 
         /// <summary>
@@ -250,7 +270,6 @@ namespace Cinemachine
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="boundingShape2D">Bounding shape</param>
-            /// <param name="maxWindowSize">Max Window size</param>
             /// <param name="maxWindowSize">Max Window size (calculation upper bound)</param>
             /// <param name="aspectRatio">Aspect ratio</param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
@@ -402,5 +421,5 @@ namespace Cinemachine
 #endif
 
     }
-#endif
 }
+#endif
