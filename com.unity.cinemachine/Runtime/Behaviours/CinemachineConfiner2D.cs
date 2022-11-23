@@ -24,6 +24,7 @@ namespace Cinemachine
     ///
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
     /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call AdjustConfiner().
+    /// An inspector button is also provided for this purpose.
     /// </para>
     ///
     /// <para>

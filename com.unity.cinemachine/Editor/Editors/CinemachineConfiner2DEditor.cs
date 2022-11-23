@@ -10,12 +10,15 @@ namespace Cinemachine.Editor
     class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
     {
         SerializedProperty m_MaxWindowSizeProperty;
-        GUIContent m_ComputeSkeletonLabel = new GUIContent(
+        GUIContent m_ComputeSkeletonLabel = new(
             "Oversize Window", "If enabled, the confiner will compute a skeleton polygon to "
                 + "support cases where camera window size is bigger than some regions of the "
                 + "confining polygon.  Enable only if needed, because it's costly");
         GUIContent m_MaxWindowSizeLabel;
-        GUIContent m_InvalidateCacheLabel = new GUIContent(
+        GUIContent m_AdjustConfiner = new(
+            "Adjust Confiner", "Adjusts the confiner to fit the current Cinemachine Camera.  " +
+            "Call this when when the Field of View or Orthographic Size of the Cinemachine Camera's lens changes.");
+        GUIContent m_InvalidateCacheLabel = new(
             "Invalidate Cache", "Force a recomputation of the polygon cache.  "
                 + "This needs to be done if points inside the bounding polygon change");
 
@@ -109,6 +112,12 @@ namespace Cinemachine.Editor
             }
 
             rect = EditorGUILayout.GetControlRect(true);
+            if (GUI.Button(rect, m_AdjustConfiner))
+            {
+                Target.AdjustConfiner();
+                EditorUtility.SetDirty(Target);
+            }
+            rect = EditorGUILayout.GetControlRect(true);
             if (GUI.Button(rect, m_InvalidateCacheLabel))
             {
                 Target.InvalidateCache();
@@ -135,7 +144,7 @@ namespace Cinemachine.Editor
             }
         }
         
-        private static List<List<Vector2>> s_currentPathCache = new List<List<Vector2>>();
+        private static List<List<Vector2>> s_currentPathCache = new();
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
         private static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
