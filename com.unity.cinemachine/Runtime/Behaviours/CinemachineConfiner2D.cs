@@ -117,24 +117,16 @@ namespace Cinemachine
         /// that have their own confiners and blend between them instead of changing
         /// one Cinemachine Camera's lens and calling this over and over.
         /// </remarks>
-        public void AdjustConfiner()
-        {
-            m_AdjustConfiner = true;
-        }
+        public void AdjustConfiner() => m_AdjustConfiner = true;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
-        public void InvalidateCache()
-        {
-            m_ShapeCache.Invalidate();
-        }
+        public void InvalidateCache() => m_ShapeCache.Invalidate();
 
         /// <summary>Validates cache</summary>
         /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
-        public bool ValidateCache(float cameraAspectRatio)
-        {
-            return m_ShapeCache.ValidateCache(BoundingShape2D, MaxWindowSize, cameraAspectRatio, out _);
-        }
+        public bool ValidateCache(float cameraAspectRatio) => 
+            m_ShapeCache.ValidateCache(BoundingShape2D, MaxWindowSize, cameraAspectRatio, out _);
 
         const float k_CornerAngleThreshold = 10f;
         
