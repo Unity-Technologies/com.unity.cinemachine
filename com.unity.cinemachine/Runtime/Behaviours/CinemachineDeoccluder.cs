@@ -500,7 +500,7 @@ namespace Cinemachine
                     if (rayLength > Epsilon)
                     {
                         if (AvoidObstacles.Strategy == ObstacleAvoidance.ResolutionStrategy.PullCameraForward 
-                            && AvoidObstacles.CameraRadius > 0)
+                            && AvoidObstacles.CameraRadius >= Epsilon)
                         {
                             if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos, AvoidObstacles.CameraRadius,
                                     dir, out hitInfo, rayLength, layerMask, IgnoreTag))
