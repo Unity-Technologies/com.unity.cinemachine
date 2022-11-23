@@ -23,7 +23,7 @@ namespace Cinemachine
     /// polygon is nontrivial and expensive, so it should be done only when absolutely necessary.
     ///
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
-    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call AdjustConfiner().
+    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateComputedConfiner().
     /// An inspector button is also provided for this purpose.
     /// </para>
     ///
@@ -108,7 +108,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Adjusts the confiner to the Cinemachine Camera's window size.
+        /// Invalidates the currently computed confiner, so a new one is computed.
         /// Call this when you change Orthographic Size or Field of View of the Cinemachine Camera's lens.
         /// Calculating the new confiner is fast, but causes allocations.
         /// </summary>
@@ -117,9 +117,13 @@ namespace Cinemachine
         /// that have their own confiners and blend between them instead of changing
         /// one Cinemachine Camera's lens and calling this over and over.
         /// </remarks>
-        public void AdjustConfiner() => m_AdjustConfiner = true;
+        public void InvalidateComputedConfiner()
+        {
+            var extra = GetExtraState<VcamExtraState>(VirtualCamera);
+            extra.BakedSolution = null;
+        }
 
-        /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
+        /// <summary>Invalidates cache and consequently trigger a re-bake at next iteration.</summary>
         public void InvalidateCache() => m_ShapeCache.Invalidate();
 
         /// <summary>Validates cache</summary>
@@ -158,12 +162,8 @@ namespace Cinemachine
 
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                if (confinerStateChanged || m_AdjustConfiner || 
-                    extra.BakedSolution == null || !extra.BakedSolution.IsValid())
-                {
+                if (confinerStateChanged || extra.BakedSolution == null || !extra.BakedSolution.IsValid()) 
                     extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
-                    m_AdjustConfiner = false;
-                }
 
                 cameraPosLocal = extra.BakedSolution.ConfinePoint(cameraPosLocal);
                 var newCameraPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
@@ -221,8 +221,7 @@ namespace Cinemachine
             public Vector3 DampedDisplacement;
             public ConfinerOven.BakedSolution BakedSolution;
         };
-
-        bool m_AdjustConfiner;
+        
         ShapeCache m_ShapeCache; 
 
         /// <summary>

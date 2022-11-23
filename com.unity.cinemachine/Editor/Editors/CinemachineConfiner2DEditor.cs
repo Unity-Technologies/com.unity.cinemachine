@@ -16,8 +16,8 @@ namespace Cinemachine.Editor
                 + "support cases where camera window size is bigger than some regions of the "
                 + "confining polygon.  Enable only if needed, because it's costly");
         GUIContent m_MaxWindowSizeLabel;
-        GUIContent m_AdjustConfiner = new(
-            "Adjust Confiner", "Adjusts the confiner to fit the current Cinemachine Camera.  " +
+        GUIContent m_InvalidateComputedConfinerLabel = new(
+            "Invalidate Computed Confiner", "Invalidates the current confiner, so a new one is computed next frame.  " +
             "Call this when when the Field of View or Orthographic Size of the Cinemachine Camera's lens changes.");
         GUIContent m_InvalidateCacheLabel = new(
             "Invalidate Cache", "Force a re-computation of the polygon cache.  "
@@ -112,9 +112,9 @@ namespace Cinemachine.Editor
             }
 
             rect = EditorGUILayout.GetControlRect(true);
-            if (GUI.Button(rect, m_AdjustConfiner))
+            if (GUI.Button(rect, m_InvalidateComputedConfinerLabel))
             {
-                Target.AdjustConfiner();
+                Target.InvalidateComputedConfiner();
                 EditorUtility.SetDirty(Target);
             }
             rect = EditorGUILayout.GetControlRect(true);
