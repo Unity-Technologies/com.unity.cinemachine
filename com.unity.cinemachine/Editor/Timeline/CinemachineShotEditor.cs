@@ -1,15 +1,25 @@
+//#define GML_USE_UITK // This is not working because Timeline assumes IMGUI
+
 #if CINEMACHINE_TIMELINE
 
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor.Timeline;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineShot))]
+#if GML_USE_UITK
+    sealed class CinemachineShotEditor : UnityEditor.Editor
+    {
+        CinemachineShot Target => target as CinemachineShot;
+#else
     sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
     {
+#endif
         [InitializeOnLoad]
         class SyncCacheEnabledSetting
         {
@@ -32,6 +42,53 @@ namespace Cinemachine.Editor
             return vcam;
         }
 
+        void OnDisable() => DestroyComponentEditors();
+        void OnDestroy() => DestroyComponentEditors();
+
+#if GML_USE_UITK
+        public override VisualElement CreateInspectorGUI()
+        {
+            var ux = new VisualElement();
+
+            // Auto-create shots
+            var toggle = ux.AddChild(new Toggle(CinemachineTimelinePrefs.s_AutoCreateLabel.text) 
+            { 
+                tooltip = CinemachineTimelinePrefs.s_AutoCreateLabel.tooltip,
+                value = CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value
+            });
+            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+            toggle.RegisterValueChangedCallback((evt) => CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value = evt.newValue);
+
+            // Cached scrubbing
+            var row = ux.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row }});
+            var cacheToggle = row.AddChild(new Toggle(CinemachineTimelinePrefs.s_ScrubbingCacheLabel.text) 
+            { 
+                tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip,
+                value = CinemachineTimelinePrefs.UseScrubbingCache.Value,
+                style = { flexGrow = 0 }
+            });
+            cacheToggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+
+            row.Add(new Label { text = "(experimental)", style = { flexGrow = 1, alignSelf = Align.Center } });
+            var clearCacheButton = row.AddChild(new Button 
+            {
+                text = "Clear",
+                style = { flexGrow = 0, alignSelf = Align.Center }
+            });
+            clearCacheButton.RegisterCallback<ClickEvent>((evt) => TargetPositionCache.ClearCache());
+            clearCacheButton.SetEnabled(CinemachineTimelinePrefs.UseScrubbingCache.Value);
+            cacheToggle.RegisterValueChangedCallback((evt) => 
+            {
+                CinemachineTimelinePrefs.UseScrubbingCache.Value = evt.newValue;
+                clearCacheButton.SetEnabled(evt.newValue);
+            });
+
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VirtualCamera)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
+
+            return ux;
+        }
+ #else
         readonly GUIContent s_CmCameraLabel = new GUIContent("CmCamera", "The Cinemachine camera to use for this shot");
         readonly GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
 
@@ -41,16 +98,6 @@ namespace Cinemachine.Editor
         {
             base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.VirtualCamera));
-        }
-
-        void OnDisable()
-        {
-            DestroyComponentEditors();
-        }
-
-        void OnDestroy()
-        {
-            DestroyComponentEditors();
         }
 
         public override void OnInspectorGUI()
@@ -126,9 +173,9 @@ namespace Cinemachine.Editor
             // Create an editor for each of the cinemachine virtual cam and its components
             GUIStyle foldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
             UpdateComponentEditors(vcam);
-            if (m_editors != null)
+            if (m_Editors != null)
             {
-                foreach (UnityEditor.Editor e in m_editors)
+                foreach (UnityEditor.Editor e in m_Editors)
                 {
                     if (e == null || e.target == null || (e.target.hideFlags & HideFlags.HideInInspector) != 0)
                         continue;
@@ -147,9 +194,10 @@ namespace Cinemachine.Editor
                 }
             }
         }
+#endif
 
-        CinemachineVirtualCameraBase m_cachedReferenceObject;
-        UnityEditor.Editor[] m_editors = null;
+        CinemachineVirtualCameraBase m_CachedReferenceObject;
+        UnityEditor.Editor[] m_Editors = null;
         static Dictionary<System.Type, bool> s_EditorExpanded = new();
 
         void UpdateComponentEditors(CinemachineVirtualCameraBase obj)
@@ -158,33 +206,33 @@ namespace Cinemachine.Editor
             if (obj != null)
                 components = obj.gameObject.GetComponents<MonoBehaviour>();
             int numComponents = (components == null) ? 0 : components.Length;
-            int numEditors = (m_editors == null) ? 0 : m_editors.Length;
-            if (m_cachedReferenceObject != obj || (numComponents + 1) != numEditors)
+            int numEditors = (m_Editors == null) ? 0 : m_Editors.Length;
+            if (m_CachedReferenceObject != obj || (numComponents + 1) != numEditors)
             {
                 DestroyComponentEditors();
-                m_cachedReferenceObject = obj;
+                m_CachedReferenceObject = obj;
                 if (obj != null)
                 {
-                    m_editors = new UnityEditor.Editor[components.Length + 1];
-                    CreateCachedEditor(obj.gameObject.GetComponent<Transform>(), null, ref m_editors[0]);
+                    m_Editors = new UnityEditor.Editor[components.Length + 1];
+                    CreateCachedEditor(obj.gameObject.GetComponent<Transform>(), null, ref m_Editors[0]);
                     for (int i = 0; i < components.Length; ++i)
-                        CreateCachedEditor(components[i], null, ref m_editors[i + 1]);
+                        CreateCachedEditor(components[i], null, ref m_Editors[i + 1]);
                 }
             }
         }
 
         void DestroyComponentEditors()
         {
-            m_cachedReferenceObject = null;
-            if (m_editors != null)
+            m_CachedReferenceObject = null;
+            if (m_Editors != null)
             {
-                for (int i = 0; i < m_editors.Length; ++i)
+                for (int i = 0; i < m_Editors.Length; ++i)
                 {
-                    if (m_editors[i] != null)
-                        UnityEngine.Object.DestroyImmediate(m_editors[i]);
-                    m_editors[i] = null;
+                    if (m_Editors[i] != null)
+                        UnityEngine.Object.DestroyImmediate(m_Editors[i]);
+                    m_Editors[i] = null;
                 }
-                m_editors = null;
+                m_Editors = null;
             }
         }
     }
