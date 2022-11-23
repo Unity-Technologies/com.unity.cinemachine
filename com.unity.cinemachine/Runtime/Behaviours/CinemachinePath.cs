@@ -25,7 +25,9 @@ namespace Cinemachine
             /// <summary>Offset from the position, which defines the tangent of the curve at the waypoint.  
             /// The length of the tangent encodes the strength of the bezier handle.  
             /// The same handle is used symmetrically on both sides of the waypoint, to ensure smoothness.</summary>
-            [Tooltip("Offset from the position, which defines the tangent of the curve at the waypoint.  The length of the tangent encodes the strength of the bezier handle.  The same handle is used symmetrically on both sides of the waypoint, to ensure smoothness.")]
+            [Tooltip("Offset from the position, which defines the tangent of the curve at the waypoint.  "
+                + "The length of the tangent encodes the strength of the bezier handle.  The same handle "
+                + "is used symmetrically on both sides of the waypoint, to ensure smoothness.")]
             public Vector3 tangent;
 
             /// <summary>Defines the roll of the path at this waypoint.  
@@ -44,7 +46,7 @@ namespace Cinemachine
         public Waypoint[] m_Waypoints = new Waypoint[0];
 
         /// <summary>The minimum value for the path position</summary>
-        public override float MinPos { get { return 0; } }
+        public override float MinPos => 0;
 
         /// <summary>The maximum value for the path position</summary>
         public override float MaxPos
@@ -58,7 +60,7 @@ namespace Cinemachine
             }
         }
         /// <summary>True if the path ends are joined to form a continuous loop</summary>
-        public override bool Looped { get { return m_Looped; } }
+        public override bool Looped => m_Looped;
 
         private void Reset()
         {
@@ -72,9 +74,11 @@ namespace Cinemachine
             InvalidateDistanceCache();
         }
 
+        private void OnValidate() { InvalidateDistanceCache(); }
+
         /// <summary>When calculating the distance cache, sample the path this many 
         /// times between points</summary>
-        public override int DistanceCacheSampleStepsPerSegment { get { return m_Resolution; } }
+        public override int DistanceCacheSampleStepsPerSegment => m_Resolution; 
 
         /// <summary>Returns normalized position</summary>
         float GetBoundingIndices(float pos, out int indexA, out int indexB)
@@ -100,95 +104,88 @@ namespace Cinemachine
 
         /// <summary>Get a worldspace position of a point along the path</summary>
         /// <param name="pos">Postion along the path.  Need not be normalized.</param>
-        /// <returns>World-space position of the point along at path at pos</returns>
-        public override Vector3 EvaluatePosition(float pos)
+        /// <returns>Local-space position of the point along at path at pos</returns>
+        public override Vector3 EvaluateLocalPosition(float pos)
         {
-            Vector3 result = new Vector3();
-            if (m_Waypoints.Length == 0)
-                result = transform.position;
-            else
+            var result = Vector3.zero;
+            if (m_Waypoints.Length > 0)
             {
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
                     result = m_Waypoints[indexA].position;
                 else
                 {
                     // interpolate
-                    Waypoint wpA = m_Waypoints[indexA];
-                    Waypoint wpB = m_Waypoints[indexB];
+                    var wpA = m_Waypoints[indexA];
+                    var wpB = m_Waypoints[indexB];
                     result = SplineHelpers.Bezier3(pos - indexA,
                         m_Waypoints[indexA].position, wpA.position + wpA.tangent,
                         wpB.position - wpB.tangent, wpB.position);
                 }
             }
-            return transform.TransformPoint(result);
+            return result;
         }
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be normalized.</param>
-        /// <returns>World-space direction of the path tangent.
+        /// <returns>Local-space direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
-        public override Vector3 EvaluateTangent(float pos)
+        public override Vector3 EvaluateLocalTangent(float pos)
         {
-            Vector3 result = new Vector3();
-            if (m_Waypoints.Length == 0)
-                result = transform.rotation * Vector3.forward;
-            else
+            var result = Vector3.forward;
+            if (m_Waypoints.Length > 0)
             {
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
                 if (indexA == indexB)
                     result = m_Waypoints[indexA].tangent;
                 else
                 {
-                    Waypoint wpA = m_Waypoints[indexA];
-                    Waypoint wpB = m_Waypoints[indexB];
+                    var wpA = m_Waypoints[indexA];
+                    var wpB = m_Waypoints[indexB];
                     result = SplineHelpers.BezierTangent3(pos - indexA,
                         m_Waypoints[indexA].position, wpA.position + wpA.tangent,
                         wpB.position - wpB.tangent, wpB.position);
                 }
             }
-            return transform.TransformDirection(result);
+            return result;
         }
 
         /// <summary>Get the orientation the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be normalized.</param>
-        /// <returns>World-space orientation of the path, as defined by tangent, up, and roll.</returns>
-        public override Quaternion EvaluateOrientation(float pos)
+        /// <returns>Local-space orientation of the path, as defined by tangent, up, and roll.</returns>
+        public override Quaternion EvaluateLocalOrientation(float pos)
         {
-            Quaternion result = transform.rotation;
+            var result = Quaternion.identity;
             if (m_Waypoints.Length > 0)
             {
-                float roll = 0;
-                int indexA, indexB;
-                pos = GetBoundingIndices(pos, out indexA, out indexB);
-                if (indexA == indexB)
-                    roll = m_Waypoints[indexA].roll;
-                else
-                {
-                    float rollA = m_Waypoints[indexA].roll;
-                    float rollB = m_Waypoints[indexB].roll;
-                    if (indexB == 0)
-                    {
-                        // Special handling at the wraparound - cancel the spins
-                        rollA = rollA % 360;
-                        rollB = rollB % 360;
-                    }
-                    roll = Mathf.Lerp(rollA, rollB, pos - indexA);
-                }
-
-                Vector3 fwd = EvaluateTangent(pos);
+                pos = GetBoundingIndices(pos, out var indexA, out var indexB);
+                var fwd = EvaluateLocalTangent(pos);
                 if (!fwd.AlmostZero())
-                {
-                    Vector3 up = transform.rotation * Vector3.up;
-                    Quaternion q = Quaternion.LookRotation(fwd, up);
-                    result = q * Quaternion.AngleAxis(roll, Vector3.forward);
-                }
+                    result = Quaternion.LookRotation(fwd) * RollAroundForward(GetRoll(indexA, indexB, pos));
             }
             return result;
         }
 
-        private void OnValidate() { InvalidateDistanceCache(); }
+        internal float GetRoll(int indexA, int indexB, float standardizedPos)
+        {
+            if (indexA == indexB)
+                return m_Waypoints[indexA].roll;
+            float rollA = m_Waypoints[indexA].roll;
+            float rollB = m_Waypoints[indexB].roll;
+            if (indexB == 0)
+            {
+                // Special handling at the wraparound - cancel the spins
+                rollA %= 360;
+                rollB %= 360;
+            }
+            return Mathf.Lerp(rollA, rollB, standardizedPos - indexA);
+        }
+
+        // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
+        static Quaternion RollAroundForward(float angle)
+        {
+            float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
+            return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
+        }
     }
 }

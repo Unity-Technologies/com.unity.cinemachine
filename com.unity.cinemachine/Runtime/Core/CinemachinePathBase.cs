@@ -61,18 +61,34 @@ namespace Cinemachine
         /// <summary>Get a worldspace position of a point along the path</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space position of the point along at path at pos</returns>
-        public abstract Vector3 EvaluatePosition(float pos);
+        public virtual Vector3 EvaluatePosition(float pos) => transform.TransformPoint(EvaluateLocalPosition(pos));
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
-        public abstract Vector3 EvaluateTangent(float pos);
+        public virtual  Vector3 EvaluateTangent(float pos) => transform.TransformDirection(EvaluateLocalTangent(pos));
 
         /// <summary>Get the orientation the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space orientation of the path</returns>
-        public abstract Quaternion EvaluateOrientation(float pos);
+        public virtual Quaternion EvaluateOrientation(float pos) => transform.rotation * EvaluateLocalOrientation(pos);
+
+        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
+        /// <returns>Local-space position of the point along at path at pos</returns>
+        public abstract Vector3 EvaluateLocalPosition(float pos);
+
+        /// <summary>Get the tangent of the curve at a point along the path.</summary>
+        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
+        /// <returns>Local-space direction of the path tangent.
+        /// Length of the vector represents the tangent strength</returns>
+        public abstract Vector3 EvaluateLocalTangent(float pos);
+
+        /// <summary>Get the orientation the curve at a point along the path.</summary>
+        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
+        /// <returns>Local-space orientation of the path</returns>
+        public abstract Quaternion EvaluateLocalOrientation(float pos);
 
         /// <summary>Find the closest point on the path to a given worldspace target point.</summary>
         /// <remarks>Performance could be improved by checking the bounding polygon of each segment,
