@@ -502,11 +502,12 @@ namespace Cinemachine
                         if (AvoidObstacles.Strategy == ObstacleAvoidance.ResolutionStrategy.PullCameraForward 
                             && AvoidObstacles.CameraRadius >= Epsilon)
                         {
-                            if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos, AvoidObstacles.CameraRadius,
-                                    dir, out hitInfo, rayLength, layerMask, IgnoreTag))
+                            if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos + dir * AvoidObstacles.CameraRadius, 
+                                    AvoidObstacles.CameraRadius, dir, out hitInfo, 
+                                    rayLength - AvoidObstacles.CameraRadius, layerMask, IgnoreTag))
                             {
-                                float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
-                                displacement = ray.GetPoint(adjustment) - cameraPos;
+                                var desiredResult = hitInfo.point + hitInfo.normal * AvoidObstacles.CameraRadius;
+                                displacement = desiredResult - cameraPos;
                             }
                         }
                         else
