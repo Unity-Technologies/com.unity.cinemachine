@@ -213,7 +213,8 @@ namespace Cinemachine
                                 if (focusTarget != null)
                                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
-                            CalculatedFocusDistance = dof.focusDistance.value = Mathf.Max(0, focusDistance);
+                            CalculatedFocusDistance = state.Lens.FocusDistance 
+                                = dof.focusDistance.value = Mathf.Max(0.01f, focusDistance);
                         }
                     }
 

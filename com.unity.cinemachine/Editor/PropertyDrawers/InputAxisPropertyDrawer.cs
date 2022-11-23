@@ -79,9 +79,12 @@ namespace Cinemachine.Editor
             var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
             foldout.RegisterValueChangedCallback((evt) => 
             {
-                property.isExpanded = evt.newValue;
-                property.serializedObject.ApplyModifiedProperties();
-                evt.StopPropagation();
+                if (evt.target == foldout)
+                {
+                    property.isExpanded = evt.newValue;
+                    property.serializedObject.ApplyModifiedProperties();
+                    evt.StopPropagation();
+                }
             });
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
