@@ -1,8 +1,9 @@
+#if CINEMACHINE_PHYSICS_2D
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-#if CINEMACHINE_PHYSICS_2D
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineConfiner2D))]
@@ -19,7 +20,7 @@ namespace Cinemachine.Editor
             "Adjust Confiner", "Adjusts the confiner to fit the current Cinemachine Camera.  " +
             "Call this when when the Field of View or Orthographic Size of the Cinemachine Camera's lens changes.");
         GUIContent m_InvalidateCacheLabel = new(
-            "Invalidate Cache", "Force a recomputation of the polygon cache.  "
+            "Invalidate Cache", "Force a re-computation of the polygon cache.  "
                 + "This needs to be done if points inside the bounding polygon change");
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -28,7 +29,7 @@ namespace Cinemachine.Editor
             excluded.Add(FieldPath(x => x.MaxWindowSize));
         }
 
-        private void OnEnable()
+        void OnEnable()
         {
             m_MaxWindowSizeProperty = FindProperty(x => x.MaxWindowSize);
             m_MaxWindowSizeLabel = new GUIContent(
@@ -57,10 +58,9 @@ namespace Cinemachine.Editor
                     "Must be a PolygonCollider2D, BoxCollider2D, or CompositeCollider2D.",
                     MessageType.Warning);
             }
-            else if (Target.BoundingShape2D.GetType() == typeof(CompositeCollider2D))
+            else if (Target.BoundingShape2D is CompositeCollider2D compositeCollider2D)
             {
-                CompositeCollider2D poly = Target.BoundingShape2D as CompositeCollider2D;
-                if (poly.geometryType != CompositeCollider2D.GeometryType.Polygons)
+                if (compositeCollider2D.geometryType != CompositeCollider2D.GeometryType.Polygons)
                 {
                     EditorGUILayout.HelpBox(
                         "CompositeCollider2D geometry type must be Polygons",
@@ -143,13 +143,13 @@ namespace Cinemachine.Editor
                     MessageType.Warning);
             }
         }
-        
-        private static List<List<Vector2>> s_currentPathCache = new();
+
+        static List<List<Vector2>> s_CurrentPathCache = new();
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner2D))]
-        private static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
+        static void DrawConfinerGizmos(CinemachineConfiner2D confiner2D, GizmoType type)
         {
-            if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
+            if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_CurrentPathCache, out var pathLocalToWorld))
                 return;
 
             Color color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
@@ -168,7 +168,7 @@ namespace Cinemachine.Editor
 
             // Draw confiner for current camera size
             Gizmos.color = colorDimmed;
-            foreach (var path in s_currentPathCache)
+            foreach (var path in s_CurrentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
                     Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
