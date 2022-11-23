@@ -35,9 +35,9 @@ namespace Cinemachine
     /// <item>when the input polygon is non-uniformly scaled</item>
     /// <item>when the input polygon is rotated</item>
     /// </list>
-    /// For efficiency reasons, Cinemachine will not automatically regenerate the inner polygon 
-    /// in these cases, and it is the responsibility of the client to call the InvalidateCache() 
-    /// method to trigger the recalculation. An inspector button is also provided for this purpose.
+    /// For efficiency reasons, Cinemachine will not automatically regenerate the cache.
+    /// It is the responsibility of the client to call the InvalidateCache() method to trigger the recalculation.
+    /// An inspector button is also provided for this purpose.
     /// </para>
     ///
     /// <para>
@@ -208,7 +208,7 @@ namespace Cinemachine
         /// <param name="state">CameraState for checking if Orthographic or Perspective</param>
         /// <param name="cameraPosLocalZ">camera's z pos in local space</param>
         /// <returns>Frustum height of the camera</returns>
-        float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
+        static float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
         {
             float frustumHeight;
             if (state.Lens.Orthographic)
