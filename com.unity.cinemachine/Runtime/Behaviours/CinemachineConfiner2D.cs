@@ -27,7 +27,7 @@ namespace Cinemachine
     /// </para>
     ///
     /// <para>
-    /// When Oversize Window option is enabled, Confiner2D pre-calculates a cache to speed up calculation.
+    /// Confiner2D pre-calculates a cache to speed up calculation.
     /// The cache needs to be recomputed in the following circumstances:
     /// <list type="bullet">
     /// <item>when the input polygon's points change</item>
@@ -47,10 +47,10 @@ namespace Cinemachine
     /// </para>
     ///
     /// <para>
-    /// The cache is not a single polygon, but rather a family of polygons from 
-    /// which a member is chosen depending on the current size of the camera view. The number of 
+    /// When the Oversize Window is enabled and additional pre-calculation step is added to the caching process.
+    /// This cache is not a single polygon, but rather a family of polygons. The number of 
     /// polygons in this family will depend on the complexity of the input polygon, and the maximum 
-    /// expected camera view size. The MaxOrthoSize property is provided to give a hint to the 
+    /// expected camera view size. The MaxWindowSize property is provided to give a hint to the 
     /// algorithm to stop generating polygons for camera view sizes larger than the one specified. 
     /// This can represent a substantial cost saving when regenerating the cache, so it is a good 
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
@@ -81,6 +81,8 @@ namespace Cinemachine
         /// than this.  This refers to the size in world units of the frustum at the confiner plane 
         /// (for orthographic cameras, this is just the orthographic size).  If set to 0, then this 
         /// parameter is ignored and a polygon cache will be calculated for all potential window sizes.
+        ///
+        /// When the value is less than 0, we consider Oversize Window to be disabled.
         /// </summary>
         [Tooltip("To optimize computation and memory costs, set this to the largest view size that the "
             + "camera is expected to have.  The confiner will not compute a polygon cache for frustum "
@@ -163,7 +165,6 @@ namespace Cinemachine
 
                 // Make sure we have a solution for our current frustum size
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.Vcam = vcam;
                 if (confinerStateChanged || m_AdjustConfiner || 
                     extra.BakedSolution == null || !extra.BakedSolution.IsValid())
                 {
@@ -226,7 +227,6 @@ namespace Cinemachine
             public Vector3 PreviousDisplacement;
             public Vector3 DampedDisplacement;
             public ConfinerOven.BakedSolution BakedSolution;
-            public CinemachineVirtualCameraBase Vcam;
         };
 
         bool m_AdjustConfiner;
