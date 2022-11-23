@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased] - 2022-11-01
-- Bugfix: Physical lens settings were not being properly applied
+- Bugfix: Physical lens settings were not being properly applied.
 - 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
-- Bugfix: Lens blending was wrong
+- Bugfix: Lens blending was wrong.
 - CinemachineDeoccluder is a new class, not just a rename of CinemachineCollider.
 - CinemachineAutoFocus extension is now available for built-in and URP pipelines, with reduced functionality compared to HDRP.
 - Camera.focusDistance is driven by CM when the camera is in physical mode.
+- Path gizmo drawing was optimized.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
