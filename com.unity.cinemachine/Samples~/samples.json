@@ -14,6 +14,13 @@
       "PackageDependencies": []
     },
     {
+      "Path": "Timeline Sample",
+      "AssetDependencies": [],
+      "PackageDependencies": [
+        "com.unity.timeline"
+      ]
+    },
+    {
       "Path": "Old Samples from CM2",
       "AssetDependencies": [],
       "PackageDependencies": []
