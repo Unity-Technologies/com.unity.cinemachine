@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -443,13 +443,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerIndex: -1
-  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1727080744}
-    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 4
     LegacyInput: Mouse X
     LegacyGain: 200
     Control:
@@ -462,8 +458,6 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 1727080744}
-    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: -4
     LegacyInput: Mouse Y
     LegacyGain: -200
     Control:
@@ -476,8 +470,6 @@ MonoBehaviour:
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 1727080744}
-    InputAction: {fileID: 0}
-    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
@@ -615,6 +607,7 @@ MonoBehaviour:
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1, y: 1}
+    FocusDistance: 10
   Transitions:
     BlendHint: 0
     Events:
