@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Unity 2022.2 and up: FocusDistance added to lens settings and is pushed to the camera.
 
-## [2.9.3] - 2022-11-18
+
+## [2.9.4] - 2022-11-18
 - Bugfix: VirtualCameras did not set the focal length property of physical cameras.
 - Bugfix: could not set main camera to physical mode while a vcam with ModeOverride = None was active
 
