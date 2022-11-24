@@ -148,7 +148,7 @@ namespace Cinemachine
         public Camera.GateFitMode GateFit;
 
 #if UNITY_2022_2_OR_NEWER
-        /// <summary>For physical cameras only: how distance from the camera to the point
+        /// <summary>For physical cameras only: how far from the camera to the point
         /// of sharpest focus</summary>
         public float FocusDistance;
 #endif
