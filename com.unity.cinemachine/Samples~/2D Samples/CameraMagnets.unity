@@ -1283,7 +1283,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2990615359123997511, guid: 1cfe56bf71fce48e78401683e1916339, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: InvalidateComputedConfiner
+      value: InvalidateLensCache
       objectReference: {fileID: 0}
     - target: {fileID: 2990615359123997511, guid: 1cfe56bf71fce48e78401683e1916339, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
