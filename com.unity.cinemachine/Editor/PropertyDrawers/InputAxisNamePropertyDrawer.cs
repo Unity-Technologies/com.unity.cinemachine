@@ -1,3 +1,4 @@
+#if ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -15,10 +16,12 @@ namespace Cinemachine.Editor
 
             // Is the axis name valid?
             var nameError = string.Empty;
+
             var nameValue = property.stringValue;
             if (nameValue.Length > 0)
                 try { CinemachineCore.GetInputAxis(nameValue); }
                 catch (ArgumentException e) { nameError = e.Message; }
+
 
             // Show an error icon if there's a problem
             if (nameError.Length > 0)
@@ -61,3 +64,4 @@ namespace Cinemachine.Editor
 #endif
     }
 }
+#endif

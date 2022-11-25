@@ -43,14 +43,12 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the Y axis.")]
-        [SerializeReference]
         public InputAxis PanAxis = DefaultPan;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
         [Tooltip("Axis representing the current vertical rotation.  Value is in degrees "
             + "and represents a rotation about the X axis.")]
-        [SerializeReference]
         public InputAxis TiltAxis = DefaultTilt;
 
         Quaternion m_PreviousCameraRotation;
@@ -82,8 +80,8 @@ namespace Cinemachine
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = PanAxis, Name = "Look X (Pan)", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = TiltAxis, Name = "Look Y (Tilt)", AxisIndex = 1 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref PanAxis, Name = "Look X (Pan)", AxisIndex = 0 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref TiltAxis, Name = "Look Y (Tilt)", AxisIndex = 1 });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>

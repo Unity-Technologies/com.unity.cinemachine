@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -443,9 +443,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1727080744}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
     LegacyInput: Mouse X
     LegacyGain: 200
     Control:
@@ -458,6 +462,8 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 1727080744}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: -4
     LegacyInput: Mouse Y
     LegacyGain: -200
     Control:
@@ -470,6 +476,8 @@ MonoBehaviour:
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 1727080744}
+    InputAction: {fileID: 0}
+    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
@@ -557,38 +565,23 @@ MonoBehaviour:
       Height: 0.1
     SplineCurvature: 0.5
   HorizontalAxis:
-    rid: 1709466907129151517
+    Value: 0
+    Center: 0
+    Range: {x: -180, y: 180}
+    Wrap: 1
+    Restrictions: 0
   VerticalAxis:
-    rid: 1709466907129151518
+    Value: 17.5
+    Center: 17.5
+    Range: {x: -10, y: 45}
+    Wrap: 0
+    Restrictions: 0
   RadialAxis:
-    rid: 1709466907129151519
-  references:
-    version: 2
-    RefIds:
-    - rid: 1709466907129151517
-      type: {class: InputAxis, ns: Cinemachine, asm: Cinemachine}
-      data:
-        Value: 0
-        Center: 0
-        Range: {x: -180, y: 180}
-        Wrap: 1
-        Restrictions: 0
-    - rid: 1709466907129151518
-      type: {class: InputAxis, ns: Cinemachine, asm: Cinemachine}
-      data:
-        Value: 17.5
-        Center: 17.5
-        Range: {x: -10, y: 45}
-        Wrap: 0
-        Restrictions: 0
-    - rid: 1709466907129151519
-      type: {class: InputAxis, ns: Cinemachine, asm: Cinemachine}
-      data:
-        Value: 1
-        Center: 1
-        Range: {x: 1, y: 5}
-        Wrap: 0
-        Restrictions: 0
+    Value: 1
+    Center: 1
+    Range: {x: 1, y: 5}
+    Wrap: 0
+    Restrictions: 0
 --- !u!114 &1727080745
 MonoBehaviour:
   m_ObjectHideFlags: 0
