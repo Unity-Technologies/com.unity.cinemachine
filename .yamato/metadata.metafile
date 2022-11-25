@@ -38,6 +38,15 @@ all_testprojects:
     - name: HDRP
       path: Projects/HDRP
       editors: [2022.2, trunk]
+    - name: URPInputSystem
+      path: Projects/URPInputSystem
+      editors: [2022.2, trunk]
+    - name: StandaloneInputSystem
+      path: Projects/StandaloneInputSystem
+      editors: [2022.2, trunk]
+    - name: HDRPInputSystem
+      path: Projects/HDRPInputSystem
+      editors: [2022.2, trunk]
 
 all_configurations:
   ci:
