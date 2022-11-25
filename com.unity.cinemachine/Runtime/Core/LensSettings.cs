@@ -304,7 +304,7 @@ namespace Cinemachine
             m_SensorSize = new Vector2(1, 1);
             GateFit = Camera.GateFitMode.Horizontal;
 #if UNITY_2022_2_OR_NEWER
-            lens.FocusDistance = 10;
+            FocusDistance = 10;
 #endif
 
 #if CINEMACHINE_HDRP

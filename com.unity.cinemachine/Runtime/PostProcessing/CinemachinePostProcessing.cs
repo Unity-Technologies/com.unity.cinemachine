@@ -206,7 +206,7 @@ namespace Cinemachine.PostFX
                                     focusDistance += (state.FinalPosition - focusTarget.position).magnitude;
                             }
 #if UNITY_2022_2_OR_NEWER
-                            state.FocusDistance = 
+                            state.Lens.FocusDistance = 
 #endif
                             dof.focusDistance.value = Mathf.Max(0, focusDistance);
                         }
