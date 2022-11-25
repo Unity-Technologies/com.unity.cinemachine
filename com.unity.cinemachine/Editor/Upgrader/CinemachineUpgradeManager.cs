@@ -138,7 +138,7 @@ namespace Cinemachine.Editor
         /// <returns></returns>
         public static bool CurrentSceneUsesPrefabs()
         {
-            var manager = new CinemachineUpgradeManager();
+            var manager = new CinemachineUpgradeManager(false);
             var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             var rootObjects = scene.GetRootGameObjects();
             var upgradable = manager.GetUpgradables(
@@ -584,11 +584,12 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        CinemachineUpgradeManager()
+        CinemachineUpgradeManager(bool initPrefabManager = true)
         {
             m_ObjectUpgrader = new UpgradeObjectToCm3();
             m_SceneManager = new SceneManager();
-            m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
+            if (initPrefabManager) 
+                m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
         }
 
         Scene OpenScene(int sceneIndex)
