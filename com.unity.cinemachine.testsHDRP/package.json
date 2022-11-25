@@ -1,0 +1,35 @@
+{
+  "name": "com.unity.cinemachine.tests.hdrp",
+  "displayName": "Cinemachine unit tests HDRP",
+  "version": "1.0.0",
+  "unity": "2022.2",
+  "unityRelease": "0b8",
+  "description": "Smart camera tools for passionate creators. \n\n Cinemachine 3.0 is a newer and better version of Cinemachine, but upgrading an existing project from 2.X will likely require some effort.  If you're considering upgrading an older project, please see our upgrade guide in the user manual.",
+  "keywords": [
+    "camera",
+    "follow",
+    "rig",
+    "fps",
+    "cinematography",
+    "aim",
+    "orbit",
+    "cutscene",
+    "cinematic",
+    "collision",
+    "freelook",
+    "cinemachine",
+    "compose",
+    "composition",
+    "dolly",
+    "track",
+    "clearshot",
+    "noise",
+    "framing",
+    "handheld",
+    "lens",
+    "impulse"
+  ],
+  "category": "unit tests ",
+  "dependencies": {
+  }
+}
