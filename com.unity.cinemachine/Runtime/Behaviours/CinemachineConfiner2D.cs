@@ -108,12 +108,12 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Invalidates the currently computed confiner, so a new one is computed.
-        /// Call this when you change Orthographic Size or Field of View of the Cinemachine Camera's lens.
+        /// Invalidates the current confiner, so a new one is computed next frame.
+        /// Call this when when the Field of View or Orthographic Size changes!
         /// Calculating the new confiner is fast, but causes allocations.
         /// </summary>
         /// <remarks>
-        /// Most often, it is more efficient to have more Cinemachine Cameras with different lens settings
+        /// It is often more efficient to have more Cinemachine Cameras with different lens settings
         /// that have their own confiners and blend between them instead of changing
         /// one Cinemachine Camera's lens and calling this over and over.
         /// </remarks>
@@ -123,7 +123,17 @@ namespace Cinemachine
             extra.BakedSolution = null;
         }
 
-        /// <summary>Invalidates cache and consequently trigger a re-bake at next iteration.</summary>
+        /// <summary>
+        /// Invalidates Bounding Shape Cache.
+        /// Forces a costly re-computation of the whole cache.  This recomputes the bounding shape cache, and
+        /// the computed confiner cache.
+        /// Call this when the input bounding shape changes (non-uniform scale, rotation, or
+        /// points are moved, added or deleted)!
+        /// </summary>
+        /// <remarks>
+        /// It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and
+        /// blend between them instead of changing one Confiner2D's input bounding shape and calling this over and over.
+        /// </remarks>
         public void InvalidateCache() => m_ShapeCache.Invalidate();
 
         /// <summary>Validates cache</summary>

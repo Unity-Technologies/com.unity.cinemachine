@@ -17,11 +17,15 @@ namespace Cinemachine.Editor
                 + "confining polygon.  Enable only if needed, because it's costly");
         GUIContent m_MaxWindowSizeLabel;
         GUIContent m_InvalidateComputedConfinerLabel = new(
-            "Invalidate Computed Confiner", "Invalidates the current confiner, so a new one is computed next frame.  " +
-            "Call this when when the Field of View or Orthographic Size of the Cinemachine Camera's lens changes.");
-        GUIContent m_InvalidateCacheLabel = new(
-            "Invalidate Cache", "Force a re-computation of the polygon cache.  "
-                + "This needs to be done if points inside the bounding polygon change");
+            "Invalidate Computed Confiner", "Invalidates the current confiner, so a new one is computed next frame.\n" +
+            "Call this when when the Field of View or Orthographic Size changes!");
+        GUIContent m_InvalidateFullCacheLabel = new(
+            "Invalidate Bounding Shape Cache", 
+            "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" +
+            "- the bounding shape cache, and \n"+
+            "- the computed confiner cache.\n" +
+            "Call this when the input bounding shape changes " +
+            "(non-uniform scale, rotation, or points are moved, added or deleted)!");
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
@@ -118,7 +122,7 @@ namespace Cinemachine.Editor
                 EditorUtility.SetDirty(Target);
             }
             rect = EditorGUILayout.GetControlRect(true);
-            if (GUI.Button(rect, m_InvalidateCacheLabel))
+            if (GUI.Button(rect, m_InvalidateFullCacheLabel))
             {
                 Target.InvalidateCache();
                 EditorUtility.SetDirty(Target);
