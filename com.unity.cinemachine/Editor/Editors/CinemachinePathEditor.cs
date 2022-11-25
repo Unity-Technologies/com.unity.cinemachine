@@ -461,6 +461,8 @@ namespace Cinemachine.Editor
                             break;
                         float t = ((float)i) / samplesPerSegment;
                         var fwd = (w0 * (t * t)) + (w1 * t) + w2; // from SplineHelpers.BezierTangent3()
+                        if (fwd.sqrMagnitude < 0.001f)
+                            fwd = Vector3.forward;
                         rotations[numRotSamples++] = Quaternion.LookRotation(fwd) * RollAroundForward(path.GetRoll(wp, nextWp, t + wp));
                     }
                 }
