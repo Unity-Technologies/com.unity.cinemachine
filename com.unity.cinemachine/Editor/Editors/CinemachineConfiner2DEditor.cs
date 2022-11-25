@@ -16,14 +16,15 @@ namespace Cinemachine.Editor
                 + "support cases where camera window size is bigger than some regions of the "
                 + "confining polygon.  Enable only if needed, because it's costly");
         GUIContent m_MaxWindowSizeLabel;
-        GUIContent m_InvalidateComputedConfinerLabel = new(
-            "Invalidate Computed Confiner", "Invalidates the current confiner, so a new one is computed next frame.\n" +
+        GUIContent m_InvalidateLensCacheLabel = new(
+            "Invalidate Lens Cache", 
+            "Invalidates the lens cache, so a new one is computed next frame.\n" +
             "Call this when when the Field of View or Orthographic Size changes!");
-        GUIContent m_InvalidateFullCacheLabel = new(
+        GUIContent m_InvalidateBoundingShapeCacheLabel = new(
             "Invalidate Bounding Shape Cache", 
             "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" +
             "- the bounding shape cache, and \n"+
-            "- the computed confiner cache.\n" +
+            "- the lens cache.\n" +
             "Call this when the input bounding shape changes " +
             "(non-uniform scale, rotation, or points are moved, added or deleted)!");
 
@@ -116,15 +117,15 @@ namespace Cinemachine.Editor
             }
 
             rect = EditorGUILayout.GetControlRect(true);
-            if (GUI.Button(rect, m_InvalidateComputedConfinerLabel))
+            if (GUI.Button(rect, m_InvalidateLensCacheLabel))
             {
-                Target.InvalidateComputedConfiner();
+                Target.InvalidateLensCache();
                 EditorUtility.SetDirty(Target);
             }
             rect = EditorGUILayout.GetControlRect(true);
-            if (GUI.Button(rect, m_InvalidateFullCacheLabel))
+            if (GUI.Button(rect, m_InvalidateBoundingShapeCacheLabel))
             {
-                Target.InvalidateCache();
+                Target.InvalidateBoundingShapeCache();
                 EditorUtility.SetDirty(Target);
             }
 

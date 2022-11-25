@@ -108,16 +108,16 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Invalidates the current confiner, so a new one is computed next frame.
+        /// Invalidates the lens cache, so a new one is computed next frame.
         /// Call this when when the Field of View or Orthographic Size changes!
-        /// Calculating the new confiner is fast, but causes allocations.
+        /// Calculating the lens cache is fast, but causes allocations.
         /// </summary>
         /// <remarks>
         /// It is often more efficient to have more Cinemachine Cameras with different lens settings
         /// that have their own confiners and blend between them instead of changing
         /// one Cinemachine Camera's lens and calling this over and over.
         /// </remarks>
-        public void InvalidateComputedConfiner()
+        public void InvalidateLensCache()
         {
             var extra = GetExtraState<VcamExtraState>(VirtualCamera);
             extra.BakedSolution = null;
@@ -134,6 +134,9 @@ namespace Cinemachine
         /// It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and
         /// blend between them instead of changing one Confiner2D's input bounding shape and calling this over and over.
         /// </remarks>
+        public void InvalidateBoundingShapeCache() => m_ShapeCache.Invalidate();
+        
+        [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
         public void InvalidateCache() => m_ShapeCache.Invalidate();
 
         /// <summary>Validates cache</summary>
