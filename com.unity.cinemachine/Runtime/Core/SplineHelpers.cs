@@ -44,7 +44,9 @@ namespace Cinemachine.Utility
         /// <param name="p1">First tangent</param>
         /// <param name="p2">Second point</param>
         /// <param name="p3">Second tangent</param>
-        /// <returns>Weights for the bezier tangent</returns>
+        /// <param name="w0">First output weight</param>
+        /// <param name="w1">Second output weight</param>
+        /// <param name="w2">Third output weight</param>
         public static void BezierTangentWeights3(
             Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3,
             out Vector3 w0, out Vector3 w1, out Vector3 w2)
