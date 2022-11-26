@@ -36,8 +36,8 @@ namespace Cinemachine
     /// <item>when the input polygon is rotated</item>
     /// </list>
     /// For efficiency reasons, Cinemachine will not automatically regenerate the cache.
-    /// It is the responsibility of the client to call the InvalidateCache() method to trigger the recalculation.
-    /// An inspector button is also provided for this purpose.
+    /// It is the responsibility of the client to call the InvalidateBoundingShapeCache() method to trigger
+    /// a recalculation. An inspector button is also provided for this purpose.
     /// </para>
     ///
     /// <para>
@@ -48,7 +48,7 @@ namespace Cinemachine
     /// </para>
     ///
     /// <para>
-    /// When the Oversize Window is enabled and additional pre-calculation step is added to the caching process.
+    /// When the Oversize Window is enabled an additional pre-calculation step is added to the caching process.
     /// This cache is not a single polygon, but rather a family of polygons. The number of 
     /// polygons in this family will depend on the complexity of the input polygon, and the maximum 
     /// expected camera view size. The MaxWindowSize property is provided to give a hint to the 
@@ -109,7 +109,7 @@ namespace Cinemachine
 
         /// <summary>
         /// Invalidates the lens cache, so a new one is computed next frame.
-        /// Call this when when the Field of View or Orthographic Size changes!
+        /// Call this when when the Field of View or Orthographic Size changes.
         /// Calculating the lens cache is fast, but causes allocations.
         /// </summary>
         /// <remarks>
@@ -124,11 +124,11 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Invalidates Bounding Shape Cache.
-        /// Forces a costly re-computation of the whole cache.  This recomputes the bounding shape cache, and
+        /// Invalidates Bounding Shape Cache, so a new one is computed next frame.
+        /// The re-computation of is costly.  This recomputes the bounding shape cache, and
         /// the computed confiner cache.
         /// Call this when the input bounding shape changes (non-uniform scale, rotation, or
-        /// points are moved, added or deleted)!
+        /// points are moved, added or deleted).
         /// </summary>
         /// <remarks>
         /// It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and

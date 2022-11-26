@@ -14,19 +14,19 @@ namespace Cinemachine.Editor
         GUIContent m_ComputeSkeletonLabel = new(
             "Oversize Window", "If enabled, the confiner will compute a skeleton polygon to "
                 + "support cases where camera window size is bigger than some regions of the "
-                + "confining polygon.  Enable only if needed, because it's costly");
+                + "confining polygon.  Enable only if needed, because it's costly.");
         GUIContent m_MaxWindowSizeLabel;
         GUIContent m_InvalidateLensCacheLabel = new(
             "Invalidate Lens Cache", 
             "Invalidates the lens cache, so a new one is computed next frame.\n" +
-            "Call this when when the Field of View or Orthographic Size changes!");
+            "Call this when when the Field of View or Orthographic Size changes.");
         GUIContent m_InvalidateBoundingShapeCacheLabel = new(
             "Invalidate Bounding Shape Cache", 
             "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" +
             "- the bounding shape cache, and \n"+
             "- the lens cache.\n" +
             "Call this when the input bounding shape changes " +
-            "(non-uniform scale, rotation, or points are moved, added or deleted)!");
+            "(non-uniform scale, rotation, or points are moved, added or deleted).");
 
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
