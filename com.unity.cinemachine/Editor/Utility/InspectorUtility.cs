@@ -349,7 +349,8 @@ namespace Cinemachine.Editor
             {
                 var allSources = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => inputType.IsAssignableFrom(t) && !t.IsAbstract 
-                        && typeof(MonoBehaviour).IsAssignableFrom(t));
+                        && typeof(MonoBehaviour).IsAssignableFrom(t)
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var s = string.Empty;
                 foreach (var t in allSources)
                 {
