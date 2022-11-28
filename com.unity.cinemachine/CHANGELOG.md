@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineAutoFocus extension is now available for built-in and URP pipelines, with reduced functionality compared to HDRP.
 - Camera.focusDistance is driven by CM when the camera is in physical mode.
 - Path gizmo drawing was optimized.
+- Confiner2D provides API to adjust the confiner to the current window size.
+- Confiner2D does less gc alloc.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
