@@ -44,9 +44,19 @@ namespace Cinemachine.Editor
                 // It's some kind of vcam.  Check for FreeLook first because it has
                 // hidden child VirtualCameras and we need to remove them
                 if (go.TryGetComponent<CinemachineFreeLook>(out var freelook))
+                {
                     notUpgradable = UpgradeFreelook(freelook);
+                    var manager = freelook.ParentCamera as CinemachineCameraManagerBase;
+                    if (manager != null)
+                        manager.InvalidateCameraCache();
+                }
                 else if (go.TryGetComponent<CinemachineVirtualCamera>(out var vcam))
+                {
                     notUpgradable = UpgradeVcam(vcam);
+                    var manager = vcam.ParentCamera as CinemachineCameraManagerBase;
+                    if (manager != null)
+                        manager.InvalidateCameraCache();
+                }
 
                 // Upgrade the pipeline components (there will be more of these...)
                 if (ReplaceComponent<CinemachineComposer, CinemachineRotationComposer>(go))
