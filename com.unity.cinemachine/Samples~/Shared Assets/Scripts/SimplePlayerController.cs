@@ -147,8 +147,7 @@ namespace Cinemachine.Examples
                 _ => Vector3.forward,
             };
             fwd = fwd.ProjectOntoPlane(up);
-            fwd = fwd.normalized;
-            if (fwd.sqrMagnitude < 0.01f)
+            if (fwd.sqrMagnitude < 0.001f)
             {
                 inputFrame = Quaternion.identity;
                 return false;
