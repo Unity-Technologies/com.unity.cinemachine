@@ -147,7 +147,13 @@ namespace Cinemachine
         /// if the aspect ratios differ</summary>
         public Camera.GateFitMode GateFit;
 
-        [SerializeField]
+#if UNITY_2022_2_OR_NEWER
+        /// <summary>For physical cameras only: how far from the camera to the point
+        /// of sharpest focus</summary>
+        public float FocusDistance;
+#endif
+
+[SerializeField]
         Vector2 m_SensorSize;
         bool m_OrthoFromCamera;
         bool m_PhysicalFromCamera;
@@ -190,6 +196,9 @@ namespace Cinemachine
                 lens.FarClipPlane = fromCamera.farClipPlane;
                 lens.LensShift = fromCamera.lensShift;
                 lens.GateFit = fromCamera.gateFit;
+#if UNITY_2022_2_OR_NEWER
+                lens.FocusDistance = fromCamera.focusDistance;
+#endif
                 lens.SnapshotCameraReadOnlyProperties(fromCamera);
 
 #if CINEMACHINE_HDRP
@@ -294,6 +303,9 @@ namespace Cinemachine
             Dutch = dutch;
             m_SensorSize = new Vector2(1, 1);
             GateFit = Camera.GateFitMode.Horizontal;
+#if UNITY_2022_2_OR_NEWER
+            FocusDistance = 10;
+#endif
 
 #if CINEMACHINE_HDRP
             Iso = 200;
@@ -324,6 +336,9 @@ namespace Cinemachine
             blendedLens.Dutch = Mathf.Lerp(lensA.Dutch, lensB.Dutch, t);
             blendedLens.m_SensorSize = Vector2.Lerp(lensA.m_SensorSize, lensB.m_SensorSize, t);
             blendedLens.LensShift = Vector2.Lerp(lensA.LensShift, lensB.LensShift, t);
+#if UNITY_2022_2_OR_NEWER
+            blendedLens.FocusDistance = Mathf.Lerp(lensA.FocusDistance, lensB.FocusDistance, t);
+#endif
 
 #if CINEMACHINE_HDRP
             blendedLens.Iso = Mathf.RoundToInt(Mathf.Lerp((float)lensA.Iso, (float)lensB.Iso, t));
@@ -344,6 +359,9 @@ namespace Cinemachine
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
             m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
             m_SensorSize.y = Mathf.Max(m_SensorSize.y, 0.1f);
+#if UNITY_2022_2_OR_NEWER
+            FocusDistance = Mathf.Max(FocusDistance, 0.01f);
+#endif
 #if CINEMACHINE_HDRP
     #if CINEMACHINE_HDRP_14
             ShutterSpeed = Mathf.Max(0, ShutterSpeed);
