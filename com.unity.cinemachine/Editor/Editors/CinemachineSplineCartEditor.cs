@@ -16,9 +16,19 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Spline)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PositionUnits)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticDolly)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackingTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplinePosition)));
+
+            var autoDollyProp = serializedObject.FindProperty(() => Target.AutomaticDolly);
+            ux.Add(new PropertyField(autoDollyProp));
+            var targetField = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.TrackingTarget)));
+
+            TrackAutoDolly(autoDollyProp);
+            ux.TrackPropertyValue(autoDollyProp, TrackAutoDolly);
+            void TrackAutoDolly(SerializedProperty p) 
+            {
+                targetField.SetVisible(p.FindPropertyRelative("Implementation").managedReferenceValue != null);
+            }
+
             return ux;
         }
     }
