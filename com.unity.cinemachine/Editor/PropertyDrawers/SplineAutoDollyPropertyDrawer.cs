@@ -8,7 +8,6 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(SplineAutoDolly))]
-    [CanEditMultipleObjects]
     class SplineAutoDollyPropertyDrawer : PropertyDrawer
     {
         SerializedProperty GetImplementation(SerializedProperty p) => p.FindPropertyRelative("Implementation");
