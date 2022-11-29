@@ -20,6 +20,7 @@ namespace Cinemachine.Examples
         public UpModes UpMode = UpModes.World;
 
         public bool Strafe = false;
+        public bool LockCursor = false;
 
         public Action PreUpdate;
         public Action PostUpdate;
@@ -83,6 +84,8 @@ namespace Cinemachine.Examples
             m_CurrentVelocityY = 0;
             m_IsSprinting = false;
             m_IsJumping = false;
+            if (LockCursor)
+                Cursor.lockState = CursorLockMode.Locked;
         }
 
         void Update()
