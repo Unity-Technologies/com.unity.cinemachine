@@ -1,8 +1,4 @@
-#if CINEMACHINE_PHYSICS
-
-using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
@@ -27,4 +23,3 @@ namespace Cinemachine.Editor
         }
     }
 }
-#endif
