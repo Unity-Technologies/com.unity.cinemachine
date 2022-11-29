@@ -8,6 +8,7 @@ using UnityEditor.UIElements;
 namespace Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(SplineAutoDolly))]
+    [CanEditMultipleObjects]
     class SplineAutoDollyPropertyDrawer : PropertyDrawer
     {
         SerializedProperty GetImplementation(SerializedProperty p) => p.FindPropertyRelative("Implementation");
@@ -35,9 +36,16 @@ namespace Cinemachine.Editor
                 var index = AutoDollyMenuItems.GetTypeIndex(evt.newValue);
                 if (index != GetImplementationIndex(property))
                 {
-                    GetImplementation(property).managedReferenceValue = (index == 0) 
-                        ? null : Activator.CreateInstance(AutoDollyMenuItems.s_AllItems[index]);
-                    property.serializedObject.ApplyModifiedProperties();
+                    var p = GetImplementation(property);
+                    var targets = p.serializedObject.targetObjects;
+                    foreach (var t in targets)
+                    {
+                        var o = new SerializedObject(t);
+                        var p2 = o.FindProperty(p.propertyPath);
+                        p2.managedReferenceValue = (index == 0) 
+                            ? null : Activator.CreateInstance(AutoDollyMenuItems.s_AllItems[index]);
+                        o.ApplyModifiedProperties();
+                    }
                 }
             });
             
