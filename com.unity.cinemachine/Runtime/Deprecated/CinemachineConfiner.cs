@@ -1,12 +1,12 @@
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+
 using UnityEngine;
 using System.Collections.Generic;
 using Cinemachine.Utility;
 using System;
-using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     /// <summary>
     /// An add-on module for CmCamera that post-processes
     /// the final position of the camera. It will confine the camera's position 
@@ -30,38 +30,33 @@ namespace Cinemachine
         };
         /// <summary>The confiner can operate using a 2D bounding shape or a 3D bounding volume</summary>
         [Tooltip("The confiner can operate using a 2D bounding shape or a 3D bounding volume")]
-        [FormerlySerializedAs("m_ConfineMode")]
-        public Mode ConfineMode;
+        public Mode m_ConfineMode;
 #endif
 
 #if CINEMACHINE_PHYSICS
         /// <summary>The volume within which the camera is to be contained.</summary>
         [Tooltip("The volume within which the camera is to be contained")]
-        [FormerlySerializedAs("m_BoundingVolume")]
-        public Collider BoundingVolume;
+        public Collider m_BoundingVolume;
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
 
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained")]
-        [FormerlySerializedAs("m_BoundingShape2D")]
-        public Collider2D BoundingShape2D;
+        public Collider2D m_BoundingShape2D;
 
         Collider2D m_BoundingShape2DCache;
 #endif
         /// <summary>If camera is orthographic, screen edges will be confined to the volume.</summary>
         [Tooltip("If camera is orthographic, screen edges will be confined to the volume.  "
             + "If not checked, then only the camera center will be confined")]
-        [FormerlySerializedAs("m_ConfineScreenEdges")]
-        public bool ConfineScreenEdges = true;
+        public bool m_ConfineScreenEdges = true;
 
         /// <summary>How gradually to return the camera to the bounding volume if it goes beyond the borders</summary>
         [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
             + "Higher numbers are more gradual.")]
         [RangeSlider(0, 10)]
-        [FormerlySerializedAs("m_Damping")]
-        public float Damping = 0;
+        public float m_Damping = 0;
         
 
         List<List<Vector2>> m_PathCache;
@@ -88,21 +83,21 @@ namespace Cinemachine
         void Reset()
         {
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
-            ConfineMode = Mode.Confine3D;
+            m_ConfineMode = Mode.Confine3D;
 #endif
 #if CINEMACHINE_PHYSICS
-            BoundingVolume = null;
+            m_BoundingVolume = null;
 #endif
 #if CINEMACHINE_PHYSICS_2D
-            BoundingShape2D = null;
+            m_BoundingShape2D = null;
 #endif
-            ConfineScreenEdges = true;
-            Damping = 0;
+            m_ConfineScreenEdges = true;
+            m_Damping = 0;
 
         }
         void OnValidate()
         {
-            Damping = Mathf.Max(0, Damping);
+            m_Damping = Mathf.Max(0, m_Damping);
         }
 
         /// <summary>
@@ -126,14 +121,14 @@ namespace Cinemachine
             get
             {
 #if CINEMACHINE_PHYSICS && !CINEMACHINE_PHYSICS_2D
-                return BoundingVolume != null && BoundingVolume.enabled && BoundingVolume.gameObject.activeInHierarchy;
+                return m_BoundingVolume != null && m_BoundingVolume.enabled && m_BoundingVolume.gameObject.activeInHierarchy;
 #elif CINEMACHINE_PHYSICS_2D && !CINEMACHINE_PHYSICS
-                return BoundingShape2D != null && BoundingShape2D.enabled && BoundingShape2D.gameObject.activeInHierarchy;
+                return m_BoundingShape2D != null && m_BoundingShape2D.enabled && m_BoundingShape2D.gameObject.activeInHierarchy;
 #else
-                return (ConfineMode == Mode.Confine3D && BoundingVolume != null && BoundingVolume.enabled 
-                            && BoundingVolume.gameObject.activeInHierarchy)
-                       || (ConfineMode == Mode.Confine2D && BoundingShape2D != null && BoundingShape2D.enabled 
-                            && BoundingShape2D.gameObject.activeInHierarchy);
+                return (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null && m_BoundingVolume.enabled 
+                            && m_BoundingVolume.gameObject.activeInHierarchy)
+                       || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null && m_BoundingShape2D.enabled 
+                            && m_BoundingShape2D.gameObject.activeInHierarchy);
 #endif
             }
         }
@@ -142,7 +137,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => Damping;
+        public override float GetMaxDampTime() => m_Damping;
 
         /// <summary>
         /// Callback to do the camera confining
@@ -159,15 +154,15 @@ namespace Cinemachine
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 Vector3 displacement;
-                if (ConfineScreenEdges && state.Lens.Orthographic)
+                if (m_ConfineScreenEdges && state.Lens.Orthographic)
                     displacement = ConfineOrthoCameraToScreenEdges(ref state);
                 else
                     displacement = ConfinePoint(state.GetCorrectedPosition());
 
-                if (Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
                     var delta = displacement - extra.PreviousDisplacement;
-                    delta = Damper.Damp(delta, Damping, deltaTime);
+                    delta = Damper.Damp(delta, m_Damping, deltaTime);
                     displacement = extra.PreviousDisplacement + delta;
                 }
                 extra.PreviousDisplacement = displacement;
@@ -191,16 +186,16 @@ namespace Cinemachine
         bool ValidatePathCache()
         {
 #if CINEMACHINE_PHYSICS_2D
-            if (m_BoundingShape2DCache != BoundingShape2D)
+            if (m_BoundingShape2DCache != m_BoundingShape2D)
             {
                 InvalidateCache();
-                m_BoundingShape2DCache = BoundingShape2D;
+                m_BoundingShape2DCache = m_BoundingShape2D;
             }
             
-            var colliderType = BoundingShape2D == null ? null : BoundingShape2D.GetType();
+            var colliderType = m_BoundingShape2D == null ? null : m_BoundingShape2D.GetType();
             if (colliderType == typeof(PolygonCollider2D))
             {
-                var poly = BoundingShape2D as PolygonCollider2D;
+                var poly = m_BoundingShape2D as PolygonCollider2D;
                 if (m_PathCache == null || m_PathCache.Count != poly.pathCount || m_PathTotalPointCount != poly.GetTotalPointCount())
                 {
                     m_PathCache = new List<List<Vector2>>();
@@ -218,12 +213,12 @@ namespace Cinemachine
             }
             else if (colliderType == typeof(CompositeCollider2D))
             {
-                var poly = BoundingShape2D as CompositeCollider2D;
+                var poly = m_BoundingShape2D as CompositeCollider2D;
                 if (m_PathCache == null || m_PathCache.Count != poly.pathCount || m_PathTotalPointCount != poly.pointCount)
                 {
                     m_PathCache = new List<List<Vector2>>();
                     Vector2[] path = new Vector2[poly.pointCount];
-                    var lossyScale = BoundingShape2D.transform.lossyScale;
+                    var lossyScale = m_BoundingShape2D.transform.lossyScale;
                     var revertCompositeColliderScale = new Vector2(
                         1f / lossyScale.x, 
                         1f / lossyScale.y);
@@ -249,16 +244,16 @@ namespace Cinemachine
 #if CINEMACHINE_PHYSICS
             // 3D version
     #if CINEMACHINE_PHYSICS_2D
-            if (ConfineMode == Mode.Confine3D)
+            if (m_ConfineMode == Mode.Confine3D)
     #endif
-                return BoundingVolume.ClosestPoint(camPos) - camPos;
+                return m_BoundingVolume.ClosestPoint(camPos) - camPos;
 #endif
 
 #if CINEMACHINE_PHYSICS_2D
             // 2D version
             Vector2 p = camPos; // cast Vector3 to Vector2
             var closest = p;
-            if (BoundingShape2D.OverlapPoint(camPos))
+            if (m_BoundingShape2D.OverlapPoint(camPos))
                 return Vector3.zero;
             // Find the nearest point on the shape's boundary
             if (!ValidatePathCache())
@@ -270,11 +265,11 @@ namespace Cinemachine
                 int numPoints = m_PathCache[i].Count;
                 if (numPoints > 0)
                 {
-                    var v0 = BoundingShape2D.transform.TransformPoint(
-                        m_PathCache[i][numPoints - 1] + BoundingShape2D.offset);
+                    var v0 = m_BoundingShape2D.transform.TransformPoint(
+                        m_PathCache[i][numPoints - 1] + m_BoundingShape2D.offset);
                     for (int j = 0; j < numPoints; ++j)
                     {
-                        Vector2 v = BoundingShape2D.transform.TransformPoint(m_PathCache[i][j] + BoundingShape2D.offset);
+                        Vector2 v = m_BoundingShape2D.transform.TransformPoint(m_PathCache[i][j] + m_BoundingShape2D.offset);
                         var c = Vector2.Lerp(v0, v, p.ClosestPointOnSegment(v0, v));
                         var d = Vector2.SqrMagnitude(p - c);
                         if (d < bestDistance)
@@ -325,6 +320,37 @@ namespace Cinemachine
             }
             return displacement;
         }
+    
+        // Helper to upgrade to CM3
+        internal Type UpgradeToCm3_GetTargetType()
+        {
+#if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
+            return m_ConfineMode == Mode.Confine3D ? typeof(CinemachineConfiner3D) : typeof(CinemachineConfiner2D);
+#elif CINEMACHINE_PHYSICS_2D
+            return typeof(CinemachineConfiner2D);
+#else
+            return typeof(CinemachineConfiner3D);
+#endif
+        }
+
+#if CINEMACHINE_PHYSICS
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineConfiner3D c)
+        {
+            c.BoundingVolume = m_BoundingVolume;
+            c.Damping = m_Damping;
+        }
+#endif
+#if CINEMACHINE_PHYSICS_2D
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineConfiner2D c)
+        {
+            c.BoundingShape2D = m_BoundingShape2D;
+            c.Damping = m_Damping;
+            c.MaxWindowSize = -1;
+        }
     }
 #endif
+
 }
+#endif
