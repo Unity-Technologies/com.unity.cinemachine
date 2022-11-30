@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace Cinemachine.Editor
 {
+    [System.Obsolete]
     [CustomEditor(typeof(CinemachineConfiner))]
     [CanEditMultipleObjects]
     class CinemachineConfinerEditor : BaseEditor<CinemachineConfiner>

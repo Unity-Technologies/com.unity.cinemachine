@@ -8,15 +8,13 @@ using System;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera that post-processes
-    /// the final position of the camera. It will confine the camera's position 
-    /// to the volume specified in the Bounding Volume field.
+    /// This is a deprecated component.  Use CinemachineConfiner2D or CinemachineConfiner3D instead.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner")]
+    [Obsolete("CinemachineConfiner has been deprecated. Use CinemachineConfiner2D or CinemachineConfiner3D instead")]
+    [AddComponentMenu("")] // Hide in menu
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineConfiner.html")]
     public class CinemachineConfiner : CinemachineExtension
     {
 #if CINEMACHINE_PHYSICS && CINEMACHINE_PHYSICS_2D
