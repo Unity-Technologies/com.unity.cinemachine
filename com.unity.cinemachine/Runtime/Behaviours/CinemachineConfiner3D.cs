@@ -1,7 +1,6 @@
 #if CINEMACHINE_PHYSICS 
 
 using UnityEngine;
-using Cinemachine.Utility;
 
 namespace Cinemachine
 {
@@ -21,9 +20,8 @@ namespace Cinemachine
         [Tooltip("The volume within which the camera is to be contained")]
         public Collider BoundingVolume;
 
-        [Tooltip("How gradually to return the camera to the bounding volume if it goes beyond the borders.  "
-            + "Higher numbers are more gradual.")]
-        [RangeSlider(0, 10)]
+        /// <summary>Size of the slow-down zone at the edge of the bounding volume.</summary>
+        [Tooltip("Size of the slow-down zone at the edge of the bounding volume.")]
         public float Damping = 0;
         
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
@@ -37,7 +35,7 @@ namespace Cinemachine
         /// virtual camera that owns the confiner, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been repositioned</returns>
         public float GetCameraDisplacementDistance(CinemachineVirtualCameraBase vcam) 
-            => GetExtraState<VcamExtraState>(vcam).ConfinerDisplacement;
+            => GetExtraState<VcamExtraState>(vcam).PreviousDisplacement.magnitude;
 
         void Reset()
         {
@@ -53,7 +51,7 @@ namespace Cinemachine
         class VcamExtraState
         {
             public Vector3 PreviousDisplacement;
-            public float ConfinerDisplacement;
+            public Vector3 PreviousCameraPosition;
         };
 
         /// <summary>Check if the bounding volume is defined</summary>
@@ -65,6 +63,14 @@ namespace Cinemachine
         /// <returns>Highest damping setting in this component</returns>
         public override float GetMaxDampTime() => Damping;
 
+        /// <summary>This is called to notify the extension that a target got warped,
+        /// so that the extension can update its internal state to make the camera
+        /// also warp seamlessly.  Base class implementation does nothing.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
+            => VirtualCamera.PreviousStateIsValid = false;  // invalidate the vcam velocity calcualtion
+        
         /// <summary>
         /// Callback to do the camera confining
         /// </summary>
@@ -76,29 +82,53 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (IsValid && stage == CinemachineCore.Stage.Body)
+            if (stage == CinemachineCore.Stage.Body && IsValid)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                var displacement = ConfinePoint(state.GetCorrectedPosition());
+                var camPos = state.GetCorrectedPosition();
 
-                if (Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                // If initially outside the bounds, snap it in, no damping
+                var newPos = ConfinePoint(camPos);
+                var displacement = newPos - camPos;
+                if (Damping > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
-                    var delta = displacement - extra.PreviousDisplacement;
-                    delta = Damper.Damp(delta, Damping, deltaTime);
-                    displacement = extra.PreviousDisplacement + delta;
+                    // We can only damp if the camera is moving
+                    var prevPos = extra.PreviousCameraPosition;
+                    var dir = newPos - prevPos;
+                    var speed = dir.magnitude;
+                    if (speed > Epsilon)
+                    {
+                        // Reduce the speed if moving towards the edge
+                        dir /= speed;
+                        var slowingThreshold = 2 * Damping; // because the first half of the slowing is barely noticeable
+                        var t = GetDistanceFromEdge(prevPos, dir, slowingThreshold) / slowingThreshold;
+
+                        // This formula is found to give a nice slowing curve while ensuring
+                        // that it comes to a stop in a reasonable time
+                        newPos = Vector3.Lerp(prevPos, newPos, t * t + 0.05f);
+
+                        displacement = newPos - camPos;
+                    }
                 }
-                extra.PreviousDisplacement = displacement;
                 state.PositionCorrection += displacement;
-                extra.ConfinerDisplacement = displacement.magnitude;
+                extra.PreviousCameraPosition = state.GetCorrectedPosition();
+                extra.PreviousDisplacement = displacement;
             }
         }
 
-        Vector3 ConfinePoint(Vector3 camPos)
+        Vector3 ConfinePoint(Vector3 p)
         {
             var mesh = BoundingVolume as MeshCollider;
             if (mesh != null && !mesh.convex)
-                return Vector3.zero;
-            return BoundingVolume.ClosestPoint(camPos) - camPos;
+                return p;
+            return BoundingVolume.ClosestPoint(p);
+        }
+
+        // Returns distance from edge in direwction of motion, or max if distance is greater than max.
+        float GetDistanceFromEdge(Vector3 p, Vector3 dirUnit, float max)
+        {
+            p += dirUnit * max;
+            return max - (ConfinePoint(p) - p).magnitude;
         }
     }
 }
