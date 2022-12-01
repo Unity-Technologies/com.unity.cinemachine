@@ -4,8 +4,6 @@
 using System;
 using System.Linq;
 using Cinemachine.Utility;
-using Codice.Client.BaseCommands;
-using Mono.Cecil;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -129,13 +127,12 @@ namespace Cinemachine.Editor
 
         public static Type GetBehaviorReferenceUpgradeType(MonoBehaviour b)
         {
-            var oldType = b.GetType();
-
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
             // Hack for Confiner upgrade: 2D or 3D?
-            if (oldType == typeof(CinemachineConfiner))
-                return (b as CinemachineConfiner).UpgradeToCm3_GetTargetType();
+            if (b is CinemachineConfiner c)
+                return c.UpgradeToCm3_GetTargetType();
 #endif
+            var oldType = b.GetType();
             if (ClassUpgradeMap.ContainsKey(oldType))
                 return ClassUpgradeMap[oldType];
 
