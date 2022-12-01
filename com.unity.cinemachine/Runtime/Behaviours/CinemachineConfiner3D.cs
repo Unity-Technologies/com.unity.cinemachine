@@ -22,7 +22,7 @@ namespace Cinemachine
 
         /// <summary>Size of the slow-down zone at the edge of the bounding volume.</summary>
         [Tooltip("Size of the slow-down zone at the edge of the bounding volume.")]
-        public float Damping = 0;
+        public float SlowingDistance = 0;
         
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
@@ -40,12 +40,12 @@ namespace Cinemachine
         void Reset()
         {
             BoundingVolume = null;
-            Damping = 0;
+            SlowingDistance = 0;
         }
 
         void OnValidate()
         {
-            Damping = Mathf.Max(0, Damping);
+            SlowingDistance = Mathf.Max(0, SlowingDistance);
         }
 
         class VcamExtraState
@@ -61,7 +61,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => Damping;
+        public override float GetMaxDampTime() => SlowingDistance; // just an approximation - we don't know the time
 
         /// <summary>This is called to notify the extension that a target got warped,
         /// so that the extension can update its internal state to make the camera
@@ -90,7 +90,7 @@ namespace Cinemachine
                 // If initially outside the bounds, snap it in, no damping
                 var newPos = ConfinePoint(camPos);
                 var displacement = newPos - camPos;
-                if (Damping > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                if (SlowingDistance > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
                     // We can only damp if the camera is moving
                     var prevPos = extra.PreviousCameraPosition;
@@ -98,9 +98,9 @@ namespace Cinemachine
                     var speed = dir.magnitude;
                     if (speed > Epsilon)
                     {
-                        // Reduce the speed if moving towards the edge
+                        // Reduce the speed if moving towards the edge and close enough to it
                         dir /= speed;
-                        var slowingThreshold = 2 * Damping; // because the first half of the slowing is barely noticeable
+                        var slowingThreshold = 2 * SlowingDistance; // because the first half of the slowing is barely noticeable
                         var t = GetDistanceFromEdge(prevPos, dir, slowingThreshold) / slowingThreshold;
 
                         // This formula is found to give a nice slowing curve while ensuring
@@ -124,7 +124,7 @@ namespace Cinemachine
             return BoundingVolume.ClosestPoint(p);
         }
 
-        // Returns distance from edge in direwction of motion, or max if distance is greater than max.
+        // Returns distance from edge in direction of motion, or max if distance is greater than max.
         float GetDistanceFromEdge(Vector3 p, Vector3 dirUnit, float max)
         {
             p += dirUnit * max;

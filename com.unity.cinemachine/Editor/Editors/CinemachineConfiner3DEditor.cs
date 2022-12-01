@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
 
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingVolume);
             ux.Add(new PropertyField(volumeProp));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
             m_PipelineUtility.UpdateState();
 
             TrackVolume(volumeProp);

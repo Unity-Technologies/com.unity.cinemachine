@@ -336,7 +336,7 @@ namespace Cinemachine
         internal void UpgradeToCm3(CinemachineConfiner3D c)
         {
             c.BoundingVolume = m_BoundingVolume;
-            c.Damping = m_Damping;
+            //c.SlowingDistance = m_Damping;  // we can't upgrade this because one is time and the other is distance
         }
 #endif
 #if CINEMACHINE_PHYSICS_2D
