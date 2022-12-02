@@ -689,18 +689,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266002720751629
+      rid: 556897202793611290
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266002720751629
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
+    - rid: 556897202793611290
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 11
+        Speed: 9
 --- !u!1 &1093510071
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,18 +876,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266002720751632
+      rid: 556897202793611287
   TrackingTarget: {fileID: 1166162573}
   SplinePosition: 59.99
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266002720751632
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
+    - rid: 556897202793611287
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 13
+        Speed: 9
 --- !u!1 &1383110408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1254,18 +1250,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266002720751631
+      rid: 556897202793611288
   TrackingTarget: {fileID: 0}
   SplinePosition: 40
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266002720751631
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
+    - rid: 556897202793611288
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 8
+        Speed: 11
 --- !u!1 &1609023126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1701,18 +1695,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 8796266002720751630
+      rid: 556897202793611289
   TrackingTarget: {fileID: 0}
   SplinePosition: 10
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 8796266002720751630
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
+    - rid: 556897202793611289
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 9
+        Speed: 13
 --- !u!1 &1942116116
 GameObject:
   m_ObjectHideFlags: 0
