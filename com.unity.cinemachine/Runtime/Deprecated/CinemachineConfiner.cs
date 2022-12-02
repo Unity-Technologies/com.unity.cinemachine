@@ -345,7 +345,6 @@ namespace Cinemachine
         {
             c.BoundingShape2D = m_BoundingShape2D;
             c.Damping = m_Damping;
-            c.MaxWindowSize = -1;
         }
 #endif
     }
