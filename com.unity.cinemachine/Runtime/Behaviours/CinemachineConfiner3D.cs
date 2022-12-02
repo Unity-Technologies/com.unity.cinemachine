@@ -87,29 +87,27 @@ namespace Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 var camPos = state.GetCorrectedPosition();
 
-                // If initially outside the bounds, snap it in, no damping
+                // Snap the point inside the bounds
                 var newPos = ConfinePoint(camPos);
-                var displacement = newPos - camPos;
                 if (SlowingDistance > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
-                    // We can only damp if the camera is moving
+                    // We can only slow down if the camera is moving
                     var prevPos = extra.PreviousCameraPosition;
                     var dir = newPos - prevPos;
                     var speed = dir.magnitude;
                     if (speed > Epsilon)
                     {
-                        // Reduce the speed if moving towards the edge and close enough to it
+                        // Reduce speed if moving towards the edge and close enough to it
                         dir /= speed;
-                        var slowingThreshold = 2 * SlowingDistance; // because the first half of the slowing is barely noticeable
+                        var slowingThreshold = 2 * SlowingDistance; // because the first half of the slowing isn't noticeable
                         var t = GetDistanceFromEdge(prevPos, dir, slowingThreshold) / slowingThreshold;
 
                         // This formula is found to give a nice slowing curve while ensuring
                         // that it comes to a stop in a reasonable time
                         newPos = Vector3.Lerp(prevPos, newPos, t * t + 0.05f);
-
-                        displacement = newPos - camPos;
                     }
                 }
+                var displacement = newPos - camPos;
                 state.PositionCorrection += displacement;
                 extra.PreviousCameraPosition = state.GetCorrectedPosition();
                 extra.PreviousDisplacement = displacement;
