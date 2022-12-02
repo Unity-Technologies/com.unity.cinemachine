@@ -347,8 +347,7 @@ namespace Cinemachine
             c.Damping = m_Damping;
             c.MaxWindowSize = -1;
         }
-    }
 #endif
-
+    }
 }
 #endif
