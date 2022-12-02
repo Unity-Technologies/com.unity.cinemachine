@@ -39,6 +39,24 @@ namespace Cinemachine.Utility
                 -  3f * p0 + 3f * p1;
         }
 
+        /// <summary>Compute the weights for the tangent of a 4-point 3-dimensional bezier spline</summary>
+        /// <param name="p0">First point</param>
+        /// <param name="p1">First tangent</param>
+        /// <param name="p2">Second point</param>
+        /// <param name="p3">Second tangent</param>
+        /// <param name="w0">First output weight</param>
+        /// <param name="w1">Second output weight</param>
+        /// <param name="w2">Third output weight</param>
+        /// <returns>Weights for the bezier tangent</returns>
+        public static void BezierTangentWeights3(
+            Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3,
+            out Vector3 w0, out Vector3 w1, out Vector3 w2)
+        {
+            w0 = -3f * p0 + 9f * p1 - 9f * p2 + 3f * p3;
+            w1 = 6f * p0 - 12f * p1 + 6f * p2;
+            w2 = -3f * p0 + 3f * p1;
+        }
+        
         /// <summary>Compute the value of a 4-point 1-dimensional bezier spline</summary>
         /// <param name="t">How far along the spline (0...1)</param>
         /// <param name="p0">First point</param>

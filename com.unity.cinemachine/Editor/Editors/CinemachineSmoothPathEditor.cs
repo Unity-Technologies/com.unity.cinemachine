@@ -3,11 +3,12 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditorInternal;
+using Cinemachine.Utility;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSmoothPath))]
-    internal sealed class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
+    sealed class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
     {
         private ReorderableList mWaypointList;
 
@@ -249,8 +250,94 @@ namespace Cinemachine.Editor
         static void DrawGizmos(CinemachineSmoothPath path, GizmoType selectionType)
         {
             var isActive = Selection.activeGameObject == path.gameObject;
-            CinemachinePathEditor.DrawPathGizmo(path,
-                isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, isActive);
+            CinemachinePathEditor.DrawPathGizmo(
+                path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, 
+                isActive, LocalSpaceSamplePath);
+        }
+
+        static Vector4[] s_BezierWeightsCache;
+
+        // Optimizer for gizmo drawing
+        static int LocalSpaceSamplePath(CinemachinePathBase pathBase, int samplesPerSegment, Vector3[] positions, Quaternion[] rotations)
+        {
+            CinemachineSmoothPath path = pathBase as CinemachineSmoothPath;
+
+            path.UpdateControlPoints();
+
+            int numSegments = path.m_Waypoints.Length - (path.Looped ? 0 : 1);
+            if (numSegments == 0)
+                return 0;
+
+            // Compute the bezier weights only once - this is shared by all segments
+            if (s_BezierWeightsCache == null || s_BezierWeightsCache.Length < samplesPerSegment)
+                s_BezierWeightsCache = new Vector4[samplesPerSegment];
+            for (int i = 0; i < samplesPerSegment; ++i)
+            {
+                float t = ((float)i) / samplesPerSegment;
+                float d = 1.0f - t;
+                s_BezierWeightsCache[i] = new Vector4(d * d * d, 3f * d * d * t, 3f * d * t * t, t * t * t);
+            }
+
+            // Process the positions
+            int numSamples = 0;
+            for (int wp = 0; wp < numSegments && numSamples < positions.Length; ++wp)
+            {
+                int nextWp = (wp + 1) % path.m_Waypoints.Length;
+                for (int i = 0; i < samplesPerSegment; ++i)
+                {
+                    if (numSamples >= positions.Length)
+                        break;
+                    positions[numSamples++]
+                        = (s_BezierWeightsCache[i].x * path.m_Waypoints[wp].position)
+                        + (s_BezierWeightsCache[i].y * path.m_ControlPoints1[wp].position)
+                        + (s_BezierWeightsCache[i].z * path.m_ControlPoints2[wp].position)
+                        + (s_BezierWeightsCache[i].w * path.m_Waypoints[nextWp].position);
+                }
+            }
+            if (numSamples < positions.Length)
+                positions[numSamples++] = path.Looped ? positions[0] : path.m_Waypoints[path.m_Waypoints.Length - 1].position;
+
+            // Process rotations
+            if (rotations != null && rotations.Length >= numSamples)
+            {
+                int numRotSamples = 0;
+                for (int wp = 0; wp < numSegments && numRotSamples < numSamples; ++wp)
+                {
+                    int nextWp = (wp + 1) % path.m_Waypoints.Length;
+                    SplineHelpers.BezierTangentWeights3(
+                        path.m_Waypoints[wp].position, path.m_ControlPoints1[wp].position,
+                        path.m_ControlPoints2[wp].position, path.m_Waypoints[nextWp].position,
+                        out var w0, out var w1, out var w2);
+
+                    for (int i = 0; i < samplesPerSegment; ++i)
+                    {
+                        if (numRotSamples >= numSamples)
+                            break;
+                        float roll 
+                            = (s_BezierWeightsCache[i].x * path.m_Waypoints[wp].roll) 
+                            + (s_BezierWeightsCache[i].y * path.m_ControlPoints1[wp].roll) 
+                            + (s_BezierWeightsCache[i].z * path.m_ControlPoints2[wp].roll) 
+                            + (s_BezierWeightsCache[i].w * path.m_Waypoints[nextWp].roll);
+
+                        float t = ((float)i) / samplesPerSegment;
+
+                        // From SplineHelpers.BezierTangent3()
+                        var fwd = (w0 * (t * t)) + (w1 * t) + w2;
+                        rotations[numRotSamples++] = Quaternion.LookRotation(fwd) * RollAroundForward(roll);
+                    }
+                }
+                if (numRotSamples < numSamples)
+                    rotations[numRotSamples++] = path.Looped ? rotations[0] : path.EvaluateLocalOrientation(path.MaxPos);
+            }
+
+            return numSamples;
+        }
+
+        // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
+        static Quaternion RollAroundForward(float angle)
+        {
+            var halfAngle = angle * 0.5F * Mathf.Deg2Rad;
+            return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
         }
     }
 }
