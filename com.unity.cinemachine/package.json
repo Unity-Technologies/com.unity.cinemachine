@@ -31,8 +31,7 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.0.0-pre.4",
-    "com.unity.test-framework": "1.1.33"
+    "com.unity.splines": "2.0.0-pre.4"
   },
   "samples": [
     {
