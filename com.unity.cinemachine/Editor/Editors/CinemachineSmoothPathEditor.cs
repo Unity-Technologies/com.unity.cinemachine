@@ -8,7 +8,7 @@ using Cinemachine.Utility;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSmoothPath))]
-    internal sealed class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
+    sealed class CinemachineSmoothPathEditor : BaseEditor<CinemachineSmoothPath>
     {
         private ReorderableList mWaypointList;
 
@@ -336,7 +336,7 @@ namespace Cinemachine.Editor
         // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
         static Quaternion RollAroundForward(float angle)
         {
-            float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
+            var halfAngle = angle * 0.5F * Mathf.Deg2Rad;
             return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
         }
     }

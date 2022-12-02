@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using Cinemachine.Utility;
 using System.Linq;
-using System;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePath))]
-    internal sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
+    sealed class CinemachinePathEditor : BaseEditor<CinemachinePath>
     {
         public static string kPreferTangentSelectionKey = "CinemachinePathEditor.PreferTangentSelection";
         public static bool PreferTangentSelection
@@ -399,7 +398,7 @@ namespace Cinemachine.Editor
         // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
         static Quaternion RollAroundForward(float angle)
         {
-            float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
+            var halfAngle = angle * 0.5F * Mathf.Deg2Rad;
             return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
         }
         
@@ -408,7 +407,7 @@ namespace Cinemachine.Editor
         // Optimizer for gizmo drawing
         static int LocalSpaceSamplePath(CinemachinePathBase pathBase, int samplesPerSegment, Vector3[] positions, Quaternion[] rotations)
         {
-            CinemachinePath path = pathBase as CinemachinePath;
+            var path = pathBase as CinemachinePath;
 
             int numSegments = path.m_Waypoints.Length - (path.Looped ? 0 : 1);
             if (numSegments == 0)
