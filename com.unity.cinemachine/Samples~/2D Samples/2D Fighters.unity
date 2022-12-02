@@ -198,7 +198,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 70681d264c8869e4f93b2577173e5147, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -324,7 +324,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 70681d264c8869e4f93b2577173e5147, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -581,6 +581,7 @@ MonoBehaviour:
     LensShift: {x: 0, y: 0}
     GateFit: 0
     m_SensorSize: {x: 1, y: 1}
+    FocusDistance: 10
   Transitions:
     BlendHint: 0
     Events:
@@ -694,6 +695,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8796266002720751629
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
@@ -881,6 +884,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8796266002720751632
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
@@ -1013,7 +1018,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 70681d264c8869e4f93b2577173e5147, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1118,7 +1123,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 70681d264c8869e4f93b2577173e5147, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1255,6 +1260,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8796266002720751631
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
@@ -1334,7 +1341,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 70681d264c8869e4f93b2577173e5147, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1577,12 +1584,19 @@ MonoBehaviour:
     m_Length: 176.15828
     m_MetaData:
     - Mode: 3
+      Tension: 0.33333334
     - Mode: 3
+      Tension: 0.33333334
     - Mode: 3
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 0
+      Tension: 0.33333334
     - Mode: 0
+      Tension: 0.33333334
     - Mode: 0
+      Tension: 0.33333334
     m_Closed: 1
   m_Knots:
     m_KnotsLink: []
@@ -1693,6 +1707,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 8796266002720751630
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Cinemachine}
       data:
@@ -1930,13 +1946,21 @@ MonoBehaviour:
     m_Length: 79.26462
     m_MetaData:
     - Mode: 3
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     - Mode: 2
+      Tension: 0.33333334
     m_Closed: 1
   m_Knots:
     m_KnotsLink: []
@@ -2049,7 +2073,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 9.873457
+  orthographic size: 9.873632
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
