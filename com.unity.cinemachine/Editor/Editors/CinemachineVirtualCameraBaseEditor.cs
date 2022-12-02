@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine.Utility;
+using System.Reflection;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;
@@ -66,7 +67,8 @@ namespace Cinemachine.Editor
                 names.Add("(select)");
                 var allExtensions
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t) && !t.IsAbstract);
+                            (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t)
+                            && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 foreach (Type t in allExtensions)
                 {
                     exts.Add(t);

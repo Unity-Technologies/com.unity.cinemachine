@@ -203,7 +203,7 @@ namespace Cinemachine.Editor
             splineDolly.Spline = splineContainer;
         }
 
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Spline with Cart", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Cart with Spline", false, m_GameObjectMenuPriority)]
         static void CreateDollyTrackWithCart(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");

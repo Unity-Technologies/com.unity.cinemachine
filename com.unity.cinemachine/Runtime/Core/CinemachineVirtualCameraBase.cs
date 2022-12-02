@@ -402,7 +402,7 @@ namespace Cinemachine
 #else
                 if (m_CachedName == null)
 #endif
-                    m_CachedName = name;
+                    m_CachedName = (this == null) ? "(deleted)" : name;
                 return m_CachedName;
             }
         }
