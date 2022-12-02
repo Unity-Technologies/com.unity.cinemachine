@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineDeoccluder is a new class, not just a rename of CinemachineCollider.
 - CinemachineAutoFocus extension is now available for built-in and URP pipelines, with reduced functionality compared to HDRP.
 - Camera.focusDistance is driven by CM when the camera is in physical mode.
+- Bugfix: CinemachineDeoccluder Pull Forward strategy only pulls forward even with Camera Radius bigger than 0.
 - Path gizmo drawing was optimized.
 - Confiner2D provides API to adjust the confiner to the current window size.
 - Confiner2D does less gc alloc.
