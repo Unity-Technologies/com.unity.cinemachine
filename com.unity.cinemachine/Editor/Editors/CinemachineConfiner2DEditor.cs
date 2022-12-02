@@ -3,150 +3,107 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineConfiner2D))]
     [CanEditMultipleObjects]
-    class CinemachineConfiner2DEditor : BaseEditor<CinemachineConfiner2D>
+    class CinemachineConfiner2DEditor : UnityEditor.Editor
     {
-        SerializedProperty m_MaxWindowSizeProperty;
-        GUIContent m_ComputeSkeletonLabel = new(
-            "Oversize Window", "If enabled, the confiner will compute a skeleton polygon to "
-                + "support cases where camera window size is bigger than some regions of the "
-                + "confining polygon.  Enable only if needed, because it's costly.");
-        GUIContent m_MaxWindowSizeLabel;
-        GUIContent m_InvalidateLensCacheLabel = new(
-            "Invalidate Lens Cache", 
-            "Invalidates the lens cache, so a new one is computed next frame.\n" +
-            "Call this when when the Field of View or Orthographic Size changes.");
-        GUIContent m_InvalidateBoundingShapeCacheLabel = new(
-            "Invalidate Bounding Shape Cache", 
-            "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" +
-            "- the bounding shape cache, and \n"+
-            "- the lens cache.\n" +
-            "Call this when the input bounding shape changes " +
-            "(non-uniform scale, rotation, or points are moved, added or deleted).");
+        CinemachineConfiner2D Target => target as CinemachineConfiner2D;
 
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        CmPipelineComponentInspectorUtility m_PipelineUtility;
+
+        void OnEnable() => m_PipelineUtility = new (this);
+        void OnDisable() => m_PipelineUtility.OnDisable();
+
+        public override VisualElement CreateInspectorGUI()
         {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.MaxWindowSize));
-        }
+            var ux = new VisualElement();
 
-        void OnEnable()
-        {
-            m_MaxWindowSizeProperty = FindProperty(x => x.MaxWindowSize);
-            m_MaxWindowSizeLabel = new GUIContent(
-                m_MaxWindowSizeProperty.displayName, 
-                "To optimize computation and memory costs, set this to the largest view size that the "
-                + "camera is expected to have.  The confiner will not compute a polygon cache for frustum "
-                + "sizes larger than this.  This refers to the size in world units of the frustum at the "
-                + "confiner plane (for orthographic cameras, this is just the orthographic size).  If set "
-                + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
-                + "potential window sizes.");
-        }
+            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
 
-        public override void OnInspectorGUI()
-        {
-            BeginInspector();
+            var boundsHelp = ux.AddChild(new HelpBox(
+                "Bounding Shape must be a PolygonCollider2D, BoxCollider2D, or CompositeCollider2D.", 
+                HelpBoxMessageType.Warning));
+            var polygonsHelp = ux.AddChild(new HelpBox(
+                "CompositeCollider2D geometry type must be Polygons.", 
+                HelpBoxMessageType.Warning));
 
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+            var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
+            ux.Add(new PropertyField(volumeProp));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
-            if (Target.BoundingShape2D == null)
-                EditorGUILayout.HelpBox("A Bounding Shape is required.", MessageType.Warning);
-            else if (Target.BoundingShape2D.GetType() != typeof(PolygonCollider2D)
-                && Target.BoundingShape2D.GetType() != typeof(CompositeCollider2D)
-                && Target.BoundingShape2D.GetType() != typeof(BoxCollider2D))
+            TrackVolume(volumeProp);
+            ux.TrackPropertyValue(volumeProp, TrackVolume);
+            void TrackVolume(SerializedProperty p)
             {
-                EditorGUILayout.HelpBox(
-                    "Must be a PolygonCollider2D, BoxCollider2D, or CompositeCollider2D.",
-                    MessageType.Warning);
+                var c = p.objectReferenceValue;
+                boundsHelp.SetVisible(!(c is PolygonCollider2D || c is BoxCollider2D || c is CompositeCollider2D));
+
+                var cc = c as CompositeCollider2D;
+                polygonsHelp.SetVisible(cc != null && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
             }
-            else if (Target.BoundingShape2D is CompositeCollider2D compositeCollider2D)
+
+            var confiner = Target; // so it gets captured in the lambdas
+            var bakeProgress = ux.AddChild(new ProgressBar { lowValue = 0, highValue = 100 });
+            var bakeTimeout = ux.AddChild(new HelpBox(
+                "Polygon skeleton computation timed out.  Confiner result might be incomplete."
+                + "\n\nTo fix this, reduce the number of points in the confining shape, "
+                + "or set the MaxWindowSize parameter to limit skeleton computation.",
+                HelpBoxMessageType.Warning));
+
+            UpdateBakingProgress();
+            ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
+            void UpdateBakingProgress()
             {
-                if (compositeCollider2D.geometryType != CompositeCollider2D.GeometryType.Polygons)
+                if (confiner == null)
+                    return; // target deleted
+                if (!confiner.OversizeWindow.Enabled)
                 {
-                    EditorGUILayout.HelpBox(
-                        "CompositeCollider2D geometry type must be Polygons",
-                        MessageType.Warning);
+                    bakeTimeout.SetVisible(false);
+                    bakeProgress.SetVisible(false);
+                    return;
                 }
+                var progress = confiner.BakeProgress();
+                bool timedOut = Target.ConfinerOvenTimedOut();
+                bakeProgress.value = progress * 100;
+                bakeProgress.title = timedOut ? "Timed out" : progress == 0 ? "" : progress < 1f ? "Baking" : "Baked";
+                bakeProgress.SetVisible(true);
+                bakeTimeout.SetVisible(timedOut);
             }
 
-#if false
-            // Debugging info
-            if (Target.GetGizmoPaths(out var originalPath, ref s_currentPathCache, out var pathLocalToWorld))
+            ux.Add(new Button(() => 
             {
-                int pointCount0 = 0;
-                foreach (var path in originalPath )
-                    pointCount0 += path.Count;
+                confiner.InvalidateLensCache();
+                EditorUtility.SetDirty(confiner);
+            })
+            { 
+                text = "Invalidate Lens Cache",
+                tooltip = "Invalidates the lens cache, so a new one is computed next frame.  " 
+                    + "Call this when when the Field of View, Orthographic Size, or aspect ratio changes."
+            });
 
-                int pointCount1 = 1;
-                foreach (var path in s_currentPathCache)
-                    pointCount1 += path.Count;
-
-                EditorGUILayout.HelpBox(
-                    $"Original Path: {pointCount0} points in {originalPath.Count} paths\n"
-                    + $"Confiner Path: {pointCount1} points in {s_currentPathCache.Count} paths",
-                    MessageType.Info);
-            }
-#endif
-
-            DrawRemainingPropertiesInInspector();
-
-            float vSpace = EditorGUIUtility.standardVerticalSpacing;
-            float lineHeight = EditorGUIUtility.singleLineHeight;
-            float maxSize = m_MaxWindowSizeProperty.floatValue;
-            bool computeSkeleton = maxSize >= 0;
-            var rect = EditorGUILayout.GetControlRect(true, (lineHeight + vSpace) * (computeSkeleton ? 2 : 1));
-            EditorGUI.BeginProperty(rect, m_ComputeSkeletonLabel, m_MaxWindowSizeProperty);
+            ux.Add(new Button(() => 
             {
-                var r = rect; r.height = lineHeight;
-                computeSkeleton = EditorGUI.Toggle(r, m_ComputeSkeletonLabel, maxSize >= 0);
-                if (!computeSkeleton)
-                    maxSize = -1;
-                else
-                {
-                    r.y += lineHeight + vSpace;
-                    maxSize = Mathf.Max(0, EditorGUI.FloatField(
-                        r, m_MaxWindowSizeLabel, Mathf.Max(0, maxSize)));
-                }
-                m_MaxWindowSizeProperty.floatValue = maxSize;
-                m_MaxWindowSizeProperty.serializedObject.ApplyModifiedProperties();
-                EditorGUI.EndProperty();
-            }
+                confiner.InvalidateBoundingShapeCache();
+                EditorUtility.SetDirty(confiner);
+            })
+            { 
+                text = "Invalidate Bounding Shape Cache",
+                tooltip = "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" 
+                    + "- the bounding shape cache, and \n"
+                    + "- the lens cache.\n" 
+                    + "Call this when the input bounding shape changes " 
+                    + "(non-uniform scale, rotation, or points are moved, added or deleted)."
+            });
 
-            rect = EditorGUILayout.GetControlRect(true);
-            if (GUI.Button(rect, m_InvalidateLensCacheLabel))
-            {
-                Target.InvalidateLensCache();
-                EditorUtility.SetDirty(Target);
-            }
-            rect = EditorGUILayout.GetControlRect(true);
-            if (GUI.Button(rect, m_InvalidateBoundingShapeCacheLabel))
-            {
-                Target.InvalidateBoundingShapeCache();
-                EditorUtility.SetDirty(Target);
-            }
+            m_PipelineUtility.UpdateState();
 
-            bool timedOut = Target.ConfinerOvenTimedOut();
-            if (computeSkeleton)
-            {
-                var progress = Target.BakeProgress();
-                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), progress, 
-                    timedOut ? "Timed out" : progress == 0 ? "" : progress < 1f ? "Baking" : "Baked");
-                if (progress > 0 && progress < 1 && Event.current.type == EventType.Repaint)
-                    EditorUtility.SetDirty(target);
-            }
-            
-            if (timedOut)
-            {
-                EditorGUILayout.HelpBox(
-                    "Polygon skeleton computation timed out.  Confiner result might be incomplete."
-                    + "\n\nTo fix this, reduce the number of points in the confining shape, "
-                    + "or set the MaxWindowSize parameter to limit skeleton computation.",
-                    MessageType.Warning);
-            }
+            return ux;
         }
 
         static List<List<Vector2>> s_CurrentPathCache = new();
@@ -157,8 +114,8 @@ namespace Cinemachine.Editor
             if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_CurrentPathCache, out var pathLocalToWorld))
                 return;
 
-            Color color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
-            Color colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
+            var color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
+            var colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
             
             var oldMatrix = Gizmos.matrix;
             Gizmos.matrix = pathLocalToWorld;

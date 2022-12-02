@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Path gizmo drawing was optimized.
 - Confiner2D provides API to adjust the confiner to the current window size.
 - Confiner2D does less gc alloc.
+- TargetGroup now ignores members whose gameObjects are inactive.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
