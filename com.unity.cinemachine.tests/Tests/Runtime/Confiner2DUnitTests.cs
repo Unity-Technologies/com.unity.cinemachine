@@ -55,7 +55,7 @@ namespace Tests.Runtime
             // clockwise
             polygonCollider2D.points = testPoints;
             
-            m_Confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -99,7 +99,7 @@ namespace Tests.Runtime
             
             // clockwise
             polygonCollider2D.points = testPoints;
-            m_Confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -133,7 +133,7 @@ namespace Tests.Runtime
             // clockwise
             boxCollider2D.size = new Vector2(2f, 2f);
             
-            m_Confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame

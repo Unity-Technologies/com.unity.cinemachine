@@ -4,6 +4,7 @@ using System;
 using Cinemachine.Utility;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Cinemachine.Editor
 {
@@ -188,7 +189,8 @@ namespace Cinemachine.Editor
             Type type = EmbeddedAssetType(property);
             if (mAssetTypes == null)
                 mAssetTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => type.IsAssignableFrom(t) && !t.IsAbstract).ToArray();
+                    (Type t) => type.IsAssignableFrom(t) && !t.IsAbstract 
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToArray();
 
             float iconSize = r.height + 4;
             r.width -= iconSize;

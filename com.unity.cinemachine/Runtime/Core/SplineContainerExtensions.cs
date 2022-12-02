@@ -1,4 +1,5 @@
 using Cinemachine.Utility;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -20,19 +21,20 @@ namespace Cinemachine
         /// <param name="spline">The spline in question</param>
         /// <param name="roll">The additional roll to apply</param>
         /// <param name="tNormalized">The normalized position on the spline</param>
-        /// <param name="position">returned point on the spline</param>
-        /// <param name="rotation">returned rotation at the point on the spline</param>
+        /// <param name="position">returned point on the spline, in spline-local coords</param>
+        /// <param name="rotation">returned rotation at the point on the spline, in spline-local coords</param>
         /// <returns>True if the spline position is valid</returns>
-        public static bool EvaluateSplineWithRoll(
+        public static bool LocalEvaluateSplineWithRoll(
             this SplineContainer spline,
             CinemachineSplineRoll roll,
             Quaternion defaultRotation,
             float tNormalized, 
             out Vector3 position, out Quaternion rotation)
         {
-            if (!spline.Evaluate(tNormalized, out var localPosition, out var localTangent, out var localUp))
+            if (spline.Spline == null || !SplineUtility.Evaluate(
+                spline.Spline, tNormalized, out var localPosition, out var localTangent, out var localUp))
             {
-                position = localPosition;
+                position = float3.zero;
                 rotation = Quaternion.identity;
                 return false;
             }
@@ -70,6 +72,28 @@ namespace Cinemachine
             return true;
         }
 
+        /// <summary>
+        /// Apply to a <see cref="SplineContainer"/>additional roll from <see cref="CinemachineSplineRoll"/>
+        /// </summary>
+        /// <param name="spline">The spline in question</param>
+        /// <param name="roll">The additional roll to apply</param>
+        /// <param name="tNormalized">The normalized position on the spline</param>
+        /// <param name="position">returned point on the spline, in world coords</param>
+        /// <param name="rotation">returned rotation at the point on the spline, in world coords</param>
+        /// <returns>True if the spline position is valid</returns>
+        public static bool EvaluateSplineWithRoll(
+            this SplineContainer spline,
+            CinemachineSplineRoll roll,
+            Quaternion defaultRotation,
+            float tNormalized, 
+            out Vector3 position, out Quaternion rotation)
+        {
+            var result = LocalEvaluateSplineWithRoll(spline, roll, defaultRotation, tNormalized, out position, out rotation);
+            position = spline.transform.TransformPoint(position);
+            rotation = rotation * spline.transform.rotation;
+            return result;
+        }
+        
         /// <summary>
         /// Get the maximum value for the spline position.  Minimum value is always 0.
         /// </summary>

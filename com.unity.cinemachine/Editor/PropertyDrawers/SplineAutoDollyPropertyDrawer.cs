@@ -4,6 +4,7 @@ using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System.Reflection;
 
 namespace Cinemachine.Editor
 {
@@ -106,7 +107,8 @@ namespace Cinemachine.Editor
                 // Get all eligible types
                 var allTypes
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                        (Type t) => typeof(SplineAutoDolly.ISplineAutoDolly).IsAssignableFrom(t) && !t.IsAbstract);
+                        (Type t) => typeof(SplineAutoDolly.ISplineAutoDolly).IsAssignableFrom(t) 
+                            && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
                 s_AllItems.Clear();
                 s_AllItems.Add(null);
