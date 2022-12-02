@@ -324,7 +324,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 70681d264c8869e4f93b2577173e5147, type: 2}
+  - {fileID: 2100000, guid: 3c6a36271c061714fb72ecb0d79d1177, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -885,7 +885,7 @@ MonoBehaviour:
     - rid: 556897202793611287
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 9
+        Speed: 6
 --- !u!1 &1383110408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1259,7 +1259,7 @@ MonoBehaviour:
     - rid: 556897202793611288
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 11
+        Speed: 7
 --- !u!1 &1609023126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1704,7 +1704,7 @@ MonoBehaviour:
     - rid: 556897202793611289
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 13
+        Speed: 5
 --- !u!1 &1942116116
 GameObject:
   m_ObjectHideFlags: 0
