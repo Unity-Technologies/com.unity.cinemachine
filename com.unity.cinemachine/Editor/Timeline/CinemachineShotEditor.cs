@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var m_ParentElement = new VisualElement();
+            m_ParentElement = new VisualElement();
 
             // Auto-create shots
             var toggle = m_ParentElement.AddChild(new Toggle(CinemachineTimelinePrefs.s_AutoCreateLabel.text) 
@@ -124,7 +124,7 @@ namespace Cinemachine.Editor
         }
 
 #else
-        // IMGUI version
+        // IMGUI version - will be deleted asap
 
         UnityEditor.Editor[] m_Editors = null;
 
