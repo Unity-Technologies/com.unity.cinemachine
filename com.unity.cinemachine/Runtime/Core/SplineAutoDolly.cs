@@ -45,6 +45,7 @@ namespace Cinemachine
         public class FixedSpeed : ISplineAutoDolly
         {
             /// <summary>Speed of travel, in current position units per second.</summary>
+            [Tooltip("Speed of travel, in current position units per second.")]
             public float Speed;
 
             void ISplineAutoDolly.Validate() {}

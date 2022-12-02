@@ -77,34 +77,71 @@ namespace Cinemachine
         public float Damping;
 
         /// <summary>
-        /// To optimize computation and memory costs, set this to the largest view size that the camera 
-        /// is expected to have.  The confiner will not compute a polygon cache for frustum sizes larger 
-        /// than this.  This refers to the size in world units of the frustum at the confiner plane 
-        /// (for orthographic cameras, this is just the orthographic size).  If set to 0, then this 
-        /// parameter is ignored and a polygon cache will be calculated for all potential window sizes.
-        ///
-        /// When the value is less than 0, we consider Oversize Window to be disabled.
+        /// Settings to optimize computation and memory costs in the event that the
+        /// window size is expected to be larger than will fit inside the confining shape.
         /// </summary>
-        [Tooltip("To optimize computation and memory costs, set this to the largest view size that the "
-            + "camera is expected to have.  The confiner will not compute a polygon cache for frustum "
-            + "sizes larger than this.  This refers to the size in world units of the frustum at the "
-            + "confiner plane (for orthographic cameras, this is just the orthographic size).  If set "
-            + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
-            + "potential window sizes.")]
-        [FormerlySerializedAs("m_MaxWindowSize")]
-        public float MaxWindowSize;
+        [Serializable]
+        public struct OversizeWindowSettings
+        {
+            /// <summary>
+            /// Enable optimizing of computation and memory costs in the event that the
+            /// window size is expected to be larger than will fit inside the confining shape.
+            /// Enable only if needed, because it's costly.
+            /// </summary>
+            [Tooltip("Enable optimizing of computation and memory costs in the event that the "
+                + "window size is expected to be larger than will fit inside the confining shape.\n"
+                + "Enable only if needed, because it's costly")]
+            public bool Enabled;
+
+            /// <summary>
+            /// To optimize computation and memory costs, set this to the largest view size that the camera 
+            /// is expected to have.  The confiner will not compute a polygon cache for frustum sizes larger 
+            /// than this.  This refers to the size in world units of the frustum at the confiner plane 
+            /// (for orthographic cameras, this is just the orthographic size).  If set to 0, then this 
+            /// parameter is ignored and a polygon cache will be calculated for all potential window sizes.
+            /// </summary>
+            [Tooltip("To optimize computation and memory costs, set this to the largest view size that the "
+                + "camera is expected to have.  The confiner will not compute a polygon cache for frustum "
+                + "sizes larger than this.  This refers to the size in world units of the frustum at the "
+                + "confiner plane (for orthographic cameras, this is just the orthographic size).  If set "
+                + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
+                + "potential window sizes.")]
+            public float MaxWindowSize;
+        }
+
+        /// <summary>
+        /// Settings to optimize computation and memory costs in the event that the
+        /// window size is expected to be larger than will fit inside the confining shape.
+        /// </summary>
+        [FoldoutWithEnabledButton]
+        public OversizeWindowSettings OversizeWindow;
+
+        [SerializeField, HideInInspector, FormerlySerializedAs("m_MaxWindowSize")]
+        float m_LegacyMaxWindowSize = -2; // -2 means there's no legacy upgrade to do
 
         void OnValidate()
         {
             const float maxComputationTimePerFrameInSeconds = 1f / 120f;
             Damping = Mathf.Max(0, Damping);
             m_ShapeCache.maxComputationTimePerFrameInSeconds = maxComputationTimePerFrameInSeconds;
+            OversizeWindow.MaxWindowSize = Mathf.Max(0, OversizeWindow.MaxWindowSize);
+
+            // Legacy upgrade
+            if (m_LegacyMaxWindowSize != -2)
+            {
+                OversizeWindow = new ()
+                {
+                    Enabled = m_LegacyMaxWindowSize >= 0,
+                    MaxWindowSize = Mathf.Max(0, m_LegacyMaxWindowSize)
+                };
+                m_LegacyMaxWindowSize = -2;
+            }
         }
 
         void Reset()
         {
             Damping = 0.5f;
-            MaxWindowSize = -1;
+            OversizeWindow = new ();
         }
 
         /// <summary>
@@ -137,13 +174,13 @@ namespace Cinemachine
         public void InvalidateBoundingShapeCache() => m_ShapeCache.Invalidate();
         
         [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
-        public void InvalidateCache() => m_ShapeCache.Invalidate();
+        public void InvalidateCache() => InvalidateBoundingShapeCache();
 
         /// <summary>Validates cache</summary>
         /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidateCache(float cameraAspectRatio) => 
-            m_ShapeCache.ValidateCache(BoundingShape2D, MaxWindowSize, cameraAspectRatio, out _);
+            m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, cameraAspectRatio, out _);
 
         const float k_CornerAngleThreshold = 10f;
         
@@ -162,7 +199,7 @@ namespace Cinemachine
             {
                 var aspectRatio = state.Lens.Aspect;
                 if (!m_ShapeCache.ValidateCache(
-                    BoundingShape2D, MaxWindowSize, aspectRatio, out bool confinerStateChanged))
+                    BoundingShape2D, OversizeWindow, aspectRatio, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -250,7 +287,7 @@ namespace Cinemachine
             public Matrix4x4 DeltaBakedToWorld;
 
             float m_AspectRatio;
-            float m_MaxWindowSize;
+            OversizeWindowSettings m_OversizeWindowSettings;
             internal float maxComputationTimePerFrameInSeconds;
 
             Matrix4x4 m_BakedToWorld; // defines baked space
@@ -262,7 +299,7 @@ namespace Cinemachine
             public void Invalidate()
             {
                 m_AspectRatio = 0;
-                m_MaxWindowSize = -1;
+                m_OversizeWindowSettings = new ();
                 DeltaBakedToWorld = DeltaWorldToBaked = Matrix4x4.identity;
 
                 m_BoundingShape2D = null;
@@ -270,7 +307,7 @@ namespace Cinemachine
 
                 ConfinerOven = null;
             }
-            
+
             /// <summary>
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
@@ -280,12 +317,12 @@ namespace Cinemachine
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
-            public bool ValidateCache(Collider2D boundingShape2D, float maxWindowSize, float aspectRatio,
+            public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, float aspectRatio,
                 out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
 
-                if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
+                if (IsValid(boundingShape2D, aspectRatio, oversize))
                 {
                     // Advance confiner baking
                     if (ConfinerOven.State == ConfinerOven.BakingState.BAKING)
@@ -367,24 +404,25 @@ namespace Cinemachine
                         return false;
                 }
                 
-                ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, maxWindowSize);
+                ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
                 m_AspectRatio = aspectRatio;
                 m_BoundingShape2D = boundingShape2D;
-                m_MaxWindowSize = maxWindowSize;
+                m_OversizeWindowSettings = oversize;
 
                 CalculateDeltaTransformationMatrix();
 
                 return true;
             }
 
-            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
+            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in OversizeWindowSettings oversize)
             {
                 return boundingShape2D != null && m_BoundingShape2D != null && 
                        m_BoundingShape2D == boundingShape2D && // same boundingShape?
                        OriginalPath != null && // first time?
                        ConfinerOven != null && // cache not empty? 
                        Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_MaxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
+                       m_OversizeWindowSettings.Enabled == oversize.Enabled && // max ortho changed?
+                       Mathf.Abs(m_OversizeWindowSettings.MaxWindowSize - oversize.MaxWindowSize) < UnityVectorExtensions.Epsilon;
             }
 
             void CalculateDeltaTransformationMatrix()
