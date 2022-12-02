@@ -69,7 +69,7 @@ namespace Cinemachine
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
-            => VirtualCamera.PreviousStateIsValid = false;  // invalidate the vcam velocity calcualtion
+            => GetExtraState<VcamExtraState>(VirtualCamera).PreviousCameraPosition += positionDelta;
         
         /// <summary>
         /// Callback to do the camera confining
