@@ -61,3 +61,4 @@
         * [Cinemachine Impulse Listener](CinemachineImpulseListener.md)
         * [Filtering impulses](CinemachineImpulseFiltering.md)
 * [Upgrading from Cinemachine 2.x](CinemachineUpgradeFrom2.md)
+* [Known Issues](KnownIssues.md)

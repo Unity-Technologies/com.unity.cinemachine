@@ -15,7 +15,7 @@ namespace Cinemachine
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    public class CinemachineCollider : CinemachineExtension
+    public class CinemachineCollider : CinemachineExtension, IShotQualityEvaluator
     {
         /// <summary>Objects on these layers will be detected.</summary>
         [Header("Obstacle Detection")]

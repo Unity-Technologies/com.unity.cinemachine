@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
                 + "Upgrade scene?",
                 "Upgrade", "Cancel"))
             {
-                var manager = new CinemachineUpgradeManager();
+                var manager = new CinemachineUpgradeManager(false);
                 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradable = manager.GetUpgradables(
@@ -102,7 +102,7 @@ namespace Cinemachine.Editor
                 + "Upgrade project?",
                 "I made a backup, go ahead", "Cancel"))
             {
-                var manager = new CinemachineUpgradeManager();
+                var manager = new CinemachineUpgradeManager(true);
 
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
                 manager.UpgradePrefabAssets(true);
@@ -579,7 +579,7 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        CinemachineUpgradeManager(bool initPrefabManager = true)
+        CinemachineUpgradeManager(bool initPrefabManager)
         {
             m_ObjectUpgrader = new UpgradeObjectToCm3();
             m_SceneManager = new SceneManager();

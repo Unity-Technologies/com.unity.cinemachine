@@ -60,6 +60,8 @@ namespace Cinemachine.Examples
             var delta = rot.y - parentRot.y;
             if (delta > 180)
                 delta -= 360;
+            if (delta < -180)
+                delta += 360;
             delta = Damper.Damp(delta, damping, Time.deltaTime);
             parentRot.y += delta;
             m_Controller.transform.rotation = Quaternion.Euler(parentRot);
