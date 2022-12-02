@@ -91,20 +91,17 @@ namespace Cinemachine
                 var newPos = ConfinePoint(camPos);
                 if (SlowingDistance > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                 {
-                    // We can only slow down if the camera is moving
+                    // Reduce speed if moving towards the edge and close enough to it
                     var prevPos = extra.PreviousCameraPosition;
                     var dir = newPos - prevPos;
                     var speed = dir.magnitude;
                     if (speed > Epsilon)
                     {
-                        // Reduce speed if moving towards the edge and close enough to it
-                        dir /= speed;
-                        var slowingThreshold = 2 * SlowingDistance; // because the first half of the slowing isn't noticeable
-                        var t = GetDistanceFromEdge(prevPos, dir, slowingThreshold) / slowingThreshold;
+                        var t = GetDistanceFromEdge(prevPos, dir / speed, SlowingDistance) / SlowingDistance;
 
-                        // This formula is found to give a nice slowing curve while ensuring
-                        // that it comes to a stop in a reasonable time
-                        newPos = Vector3.Lerp(prevPos, newPos, t * t + 0.05f);
+                        // This formula is found to give a smooth slowing curve while ensuring
+                        // that it comes to a full stop in a reasonable time
+                        newPos = Vector3.Lerp(prevPos, newPos, t * t * t + 0.05f);
                     }
                 }
                 var displacement = newPos - camPos;
@@ -123,6 +120,7 @@ namespace Cinemachine
         }
 
         // Returns distance from edge in direction of motion, or max if distance is greater than max.
+        // dirUnit must be unit length.
         float GetDistanceFromEdge(Vector3 p, Vector3 dirUnit, float max)
         {
             p += dirUnit * max;
