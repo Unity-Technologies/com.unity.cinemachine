@@ -20,6 +20,9 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
             typeof(CinemachineCollider),
 #endif
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+            typeof(CinemachineConfiner),
+#endif
             // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
             typeof(CinemachineFreeLook),
             typeof(CinemachineVirtualCamera),
@@ -69,6 +72,9 @@ namespace Cinemachine.Editor
 #endif
 #if CINEMACHINE_PHYSICS
             typeof(CinemachineCollider),
+#endif
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+            typeof(CinemachineConfiner),
 #endif
         };
         
@@ -255,7 +261,7 @@ namespace Cinemachine.Editor
                     { "DampingWhenOccluded", new("AvoidObstacles.DampingWhenOccluded", typeof(CinemachineDeoccluder)) },
                     { "OptimalTargetDistance", new("ShotQualityEvaluation.OptimalDistance", typeof(CinemachineDeoccluder)) },
                 }
-            }
+            },
 #endif
         };
     }

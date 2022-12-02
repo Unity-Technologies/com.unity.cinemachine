@@ -13,9 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Camera.focusDistance is driven by CM when the camera is in physical mode.
 - Bugfix: CinemachineDeoccluder Pull Forward strategy only pulls forward even with Camera Radius bigger than 0.
 - Path gizmo drawing was optimized.
-- Confiner2D provides API to adjust the confiner to the current window size.
+- Confiner2D provides API to adjust the confiner to the current window size when the lens or aspect changes.
 - Confiner2D does less gc alloc.
 - TargetGroup now ignores members whose gameObjects are inactive.
+- CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
 
 
 ## [3.0.0-pre.3] - 2022-10-28

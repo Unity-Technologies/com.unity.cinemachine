@@ -105,17 +105,48 @@ namespace Cinemachine.Editor
                     go.GetComponent<Cinemachine3rdPersonFollow>().UpgradeToCm3(go.GetComponent<CinemachineThirdPersonFollow>());
 
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
-                {
-                    var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();
-                    var splineDolly = go.GetComponent<CinemachineSplineDolly>();
-                    obsoleteDolly.UpgradeToCm3(splineDolly);
-                }
+                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
+
 #if CINEMACHINE_PHYSICS
                 if (ReplaceComponent<CinemachineCollider, CinemachineDeoccluder>(go)) 
                     go.GetComponent<CinemachineCollider>().UpgradeToCm3(go.GetComponent<CinemachineDeoccluder>());
 #endif
+
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+                if (go.TryGetComponent<CinemachineConfiner>(out var confiner))
+                {
+    #if CINEMACHINE_PHYSICS
+                    if (confiner.UpgradeToCm3_GetTargetType() == typeof(CinemachineConfiner3D))
+                    {
+                        ReplaceComponent<CinemachineConfiner, CinemachineConfiner3D>(go);
+                        confiner.UpgradeToCm3(go.GetComponent<CinemachineConfiner3D>());
+                    }
+    #endif
+    #if CINEMACHINE_PHYSICS_2D
+                    if (confiner.UpgradeToCm3_GetTargetType() == typeof(CinemachineConfiner2D))
+                    {
+                        ReplaceComponent<CinemachineConfiner, CinemachineConfiner2D>(go);
+                        confiner.UpgradeToCm3(go.GetComponent<CinemachineConfiner2D>());
+                    }
+    #endif
+                }
+#endif
             }
             return notUpgradable;
+        }
+
+        public static Type GetBehaviorReferenceUpgradeType(MonoBehaviour b)
+        {
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+            // Hack for Confiner upgrade: 2D or 3D?
+            if (b is CinemachineConfiner c)
+                return c.UpgradeToCm3_GetTargetType();
+#endif
+            var oldType = b.GetType();
+            if (ClassUpgradeMap.ContainsKey(oldType))
+                return ClassUpgradeMap[oldType];
+
+            return oldType;
         }
 
         /// <summary>

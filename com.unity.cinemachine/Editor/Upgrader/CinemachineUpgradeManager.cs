@@ -398,7 +398,6 @@ namespace Cinemachine.Editor
 
         static void UpgradeObjectReferences(GameObject[] rootObjects)
         {
-            var map = UpgradeObjectToCm3.ClassUpgradeMap;
             foreach (var go in rootObjects) 
             {
                 if (go == null)
@@ -406,13 +405,9 @@ namespace Cinemachine.Editor
                 
                 ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
                 {
-                    var oldType = oldValue.GetType();
-                    if (map.ContainsKey(oldType))
-                    {
-                        var newType = map[oldType];
-                        if (expectedType.IsAssignableFrom(newType))
-                            return oldValue.GetComponent(newType) as MonoBehaviour;
-                    }
+                    var newType = UpgradeObjectToCm3.GetBehaviorReferenceUpgradeType(oldValue);
+                    if (expectedType.IsAssignableFrom(newType))
+                        return oldValue.GetComponent(newType) as MonoBehaviour;
                     return oldValue;
                 });
             }
