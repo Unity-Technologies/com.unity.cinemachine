@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -212,7 +212,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.5035291, z: -4.7685847}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1089719087}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -391,9 +392,12 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "WASD to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera.
-    \n\nIf using Input package, right mouse button to jump and middle mouse button
-    to sprint.\n\nThis scene shows a basic FreeLook camera tracking a player."
+  HelpText: "Sample scene showing a Freelook camera with a Deoccluder to handle collision
+    with walls.\nTransparent objects are ignored by Cinemachine Deoccluder, because
+    Transparent Layers attribute of the Deoccluder is set to the layer on which the
+    transparents objects are. \n\nUse WASD to move around, Spacebar to jump, Shift
+    to sprint.  Mouse moves the camera. \nIf using Input package, right mouse button
+    to jump and middle mouse button to sprint."
 --- !u!4 &1089719087
 Transform:
   m_ObjectHideFlags: 0
@@ -401,13 +405,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1089719085}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
+  m_LocalRotation: {x: -0.052577313, y: -1e-45, z: -0, w: 0.9986169}
+  m_LocalPosition: {x: -8.841223, y: 38.72787, z: -0.3434205}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 140191135}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1727080740
 GameObject:

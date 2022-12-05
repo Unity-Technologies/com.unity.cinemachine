@@ -265,14 +265,23 @@ Transform:
   m_Father: {fileID: 2053145198}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &180469064 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6914426334447213808, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+  m_PrefabInstance: {fileID: 234269493}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &234269493
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2053145198}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[0].LegacyInput
       value: 
@@ -282,12 +291,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: MoveX.Value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: MoveZ.Value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: InputForward
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
-      value: -1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.x
@@ -333,7 +350,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -468,7 +486,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 470754142}
-  m_LocalRotation: {x: -0.0055646775, y: 0.985499, z: -0.16635528, w: -0.032965492}
+  m_LocalRotation: {x: -0.0055549447, y: 0.98550093, z: -0.16635561, w: -0.03290784}
   m_LocalPosition: {x: 2.2, y: 11.8, z: 26.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -679,6 +697,7 @@ GameObject:
   - component: {fileID: 851759821}
   - component: {fileID: 851759820}
   - component: {fileID: 851759819}
+  - component: {fileID: 851759822}
   m_Layer: 1
   m_Name: Cube (5)
   m_TagString: Untagged
@@ -758,7 +777,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -772,6 +791,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 851759817}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &851759822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851759817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d7e5e287b7c6413086331f81c3a8de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 180469064}
 --- !u!1 &921351536
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,14 +953,13 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 'Sample scene showing Clearshot camera. As you move along the z-axis
-    with the player using (W and S), the player is going to get occluded by walls.
-    The clearshot camera is going to select a Cinemachine Camera from its children
-    that can see the Player.
-
-
-    The shot evaluation is done by CinemachineDeoccluder
-    found on the Clearshot camera.'
+  HelpText: "Sample scene showing Clearshot camera. \n\nThe player is moved the z-axis.
+    Observe that once the player is occluded a new camera is selected to frame it.\nCM
+    ClearShot camera has 3 children cameras. Clearshot selects from its children
+    based on visibility. When more than one camera has a clear shot of the player,
+    then their priority value determines which one is selected.\n\nThe shot evaluation
+    (line of sight) is done by CinemachineDeoccluder found on the Clearshot camera.
+    The user can supply their own shot evaluator by implementing IShotQualityEvaluator."
 --- !u!4 &1084503959
 Transform:
   m_ObjectHideFlags: 0
@@ -936,13 +967,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1084503957}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
+  m_LocalRotation: {x: 0.008236974, y: -0.9646143, z: 0.03035149, w: -0.2617829}
+  m_LocalPosition: {x: 13.530037, y: 38.824787, z: 17.73584}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 1397234035}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1132270518
 GameObject:
@@ -1066,6 +1097,7 @@ GameObject:
   - component: {fileID: 1354350178}
   - component: {fileID: 1354350177}
   - component: {fileID: 1354350176}
+  - component: {fileID: 1354350179}
   m_Layer: 1
   m_Name: Cube (4)
   m_TagString: Untagged
@@ -1145,7 +1177,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1159,6 +1191,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1354350174}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1354350179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354350174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d7e5e287b7c6413086331f81c3a8de2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 180469064}
 --- !u!1 &1397234029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1291,11 +1336,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397234029}
-  m_LocalRotation: {x: -0.008191345, y: 0.96500665, z: -0.030363837, w: -0.26033282}
+  m_LocalRotation: {x: -0.008236974, y: 0.9646143, z: -0.03035149, w: -0.2617829}
   m_LocalPosition: {x: 13.014894, y: 2.4203663, z: 9.494938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1084503959}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1324,7 +1370,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1418606827}
-  m_LocalRotation: {x: -0.008191345, y: 0.96500665, z: -0.030363837, w: -0.26033282}
+  m_LocalRotation: {x: -0.008236974, y: 0.9646143, z: -0.03035149, w: -0.2617829}
   m_LocalPosition: {x: 13.014894, y: 2.4203663, z: 9.494938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1602,7 +1648,6 @@ Transform:
   m_Children:
   - {fileID: 1553071303}
   - {fileID: 177048762}
-  - {fileID: 1293185609}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
