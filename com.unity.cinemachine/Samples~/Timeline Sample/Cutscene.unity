@@ -221,18 +221,15 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 'This scene shows how to set up a Timeline that transition to a player
-    controlled Cinemachine Camera.
+  HelpText: 'This scene shows how to set up a Timeline cutscene that transitions
+    to a player controlled setting.
 
 
-    The car controlls are disabled at start
-    and are enabled when the Timeline is stopped.
+    The controls are disabled at start and
+    are enabled when the Timeline is stopped.
 
-
-    WASD to control the car.
-
-
-'
+    Control the player with WASD to
+    move, Spacebar to jump, Shift to sprint.'
 --- !u!4 &498393129
 Transform:
   m_ObjectHideFlags: 0
@@ -240,13 +237,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 498393127}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
+  m_LocalRotation: {x: -0.24410616, y: 0.000000008342932, z: -0.0000000021000914, w: 0.96974856}
+  m_LocalPosition: {x: -8.841223, y: 34.16943, z: -10.468156}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_Father: {fileID: 1147448576}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &539044444
 GameObject:
@@ -273,7 +270,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539044444}
-  m_LocalRotation: {x: 0.05275483, y: 0.9021457, z: -0.115419164, w: 0.4123452}
+  m_LocalRotation: {x: 0.05275482, y: 0.9021457, z: -0.11541914, w: 0.4123452}
   m_LocalPosition: {x: -4.68, y: 2.31, z: 4.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -669,7 +666,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 5, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 498393129}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -709,7 +707,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1565101939}
-  m_LocalRotation: {x: 0.07315163, y: 0.24008302, z: -0.018146377, w: 0.96782213}
+  m_LocalRotation: {x: 0.07315164, y: 0.24008301, z: -0.018146379, w: 0.96782213}
   m_LocalPosition: {x: -2.49, y: 1.51, z: -4.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
