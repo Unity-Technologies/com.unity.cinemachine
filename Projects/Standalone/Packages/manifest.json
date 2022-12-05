@@ -42,6 +42,6 @@
     "com.unity.modules.xr": "1.0.0"
   },
   "testables": [
-    "com.unity.cinemachine.tests"
+    "com.unity.cinemachine"
   ]
 }
