@@ -21,7 +21,7 @@ namespace Cinemachine.Editor
         SampleConfiguration m_SampleConfiguration;
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
-        string[] m_PackageDependencies = Array.Empty<string>();
+        List<string> m_PackageDependencies = new ();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
@@ -78,18 +78,19 @@ namespace Cinemachine.Editor
                             // Import common asset dependencies
                             assetsImported =
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
-
-                            // Import sample-specific dependencies
+                            
+                            // Import sample-specific asset dependencies
                             assetsImported |=
                                 ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
-
-
+                            
+                            // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
-                            m_PackageDependencies = sampleEntry.PackageDependencies;
-                            if (m_PackageDependencies.Length != 0 && PromptUserConfirmation(m_PackageDependencies))
+                            m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
+                            m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
+                            if (m_PackageDependencies.Count != 0 && PromptUserConfirmation(m_PackageDependencies))
                             {
-                                // Import sample-specific package dependencies using the editor update loop, because
-                                // adding package dependencies need to be done in sequence one after the other
+                                // Import package dependencies using the editor update loop, because
+                                // adding packages need to be done in sequence one after the other
                                 EditorApplication.update += ImportPackageDependencies;
                             }
                         }
@@ -127,17 +128,17 @@ namespace Cinemachine.Editor
                 if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
                     return; // wait while we have a request pending
 
-                if (m_PackageDependencyIndex < m_PackageDependencies.Length)
+                if (m_PackageDependencyIndex < m_PackageDependencies.Count)
                     m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
                 else
                 {
-                    m_PackageDependencies = Array.Empty<string>();
+                    m_PackageDependencies.Clear();
                     m_PackageAddRequest = null;
                     EditorApplication.update -= ImportPackageDependencies;
                 }
             }
             
-            static bool PromptUserConfirmation(string[] dependencies)
+            static bool PromptUserConfirmation(List<string> dependencies)
             {
                 return EditorUtility.DisplayDialog(
                     "Import Sample Package Dependencies",
@@ -205,7 +206,7 @@ namespace Cinemachine.Editor
             }
 
             public string[] SharedAssetDependencies;
-
+            public string[] SharedPackageDependencies;
             public SampleEntry[] SampleEntries;
 
             public SampleEntry GetEntry(Sample sample) =>
