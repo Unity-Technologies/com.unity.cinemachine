@@ -76,18 +76,22 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = 
+                            assetsImported =
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
 
                             // Import sample-specific dependencies
-                            assetsImported |= 
+                            assetsImported |=
                                 ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
-                            
-                            // Import sample-specific package dependencies using the editor update loop, because
-                            // adding package dependencies need to be done in sequence one after the other
+
+
                             m_PackageDependencyIndex = 0;
                             m_PackageDependencies = sampleEntry.PackageDependencies;
-                            EditorApplication.update += ImportPackageDependencies;
+                            if (m_PackageDependencies.Length != 0 && PromptUserConfirmation(m_PackageDependencies))
+                            {
+                                // Import sample-specific package dependencies using the editor update loop, because
+                                // adding package dependencies need to be done in sequence one after the other
+                                EditorApplication.update += ImportPackageDependencies;
+                            }
                         }
                         break;
                     }
@@ -132,8 +136,17 @@ namespace Cinemachine.Editor
                     EditorApplication.update -= ImportPackageDependencies;
                 }
             }
+            
+            static bool PromptUserConfirmation(string[] dependencies)
+            {
+                return EditorUtility.DisplayDialog(
+                    "Import Sample Package Dependencies",
+                    "These samples contain package dependencies that your project may not have:" +
+                    dependencies.Aggregate("", (current, dependency) => current + ("- " + dependency + "\n")),
+                    "Yes, import package dependencies!", "No, do not import package dependencies!");
+            }
         }
-
+        
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
