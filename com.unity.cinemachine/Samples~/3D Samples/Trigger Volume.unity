@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -359,8 +359,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 514343318}
-  m_LocalRotation: {x: 0.362523, y: 0.00000006315297, z: -0.000000024565473, w: 0.9319748}
-  m_LocalPosition: {x: -5, y: 11, z: -25}
+  m_LocalRotation: {x: 0.3445145, y: 0, z: 0, w: 0.938781}
+  m_LocalPosition: {x: -5, y: 15, z: -26.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -387,12 +387,12 @@ MonoBehaviour:
     IgnoreY: 0
   Damping: {x: 0.5, y: 1}
   Composition:
-    ScreenPosition: {x: -0.00000011920929, y: 0}
+    ScreenPosition: {x: 0, y: 0.2}
     DeadZone:
-      Enabled: 1
+      Enabled: 0
       Size: {x: 0.1, y: 0.1}
     HardLimits:
-      Enabled: 1
+      Enabled: 0
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
@@ -755,15 +755,16 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "WASD to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera. 
-    \n\nThis scene shows how to use cinemachine trigger volumes to switch active
-    and deactive Cinemachine Cameras. \nThe scene leverages the priority feature
-    of Cinemachine cameras to simplify the activation process. The main Cinemachine
-    Camera (CM vcam Overview) has a priority set to 0. The secondary Cinemachine
-    Cameras (CM vcam Dolly Track and CM vcam Top View) are disabled and have a priority
-    value higher than Cm vcam Overview. \nThe trigger volumes simply enable their
-    Cinemachine Camera on enter, and disable it on exit. The main Cinemachine Camera
-    is always active."
+  HelpText: "Control the player with WASD to move, Spacebar to jump, Shift to sprint.\nMovement
+    direction is determined by world space, not the camera currently active.\n\nWalk
+    on the red squares to trigger the trigger volumes.\n\nThis scene shows how to
+    use cinemachine trigger volumes to switch active and deactive Cinemachine Cameras.
+    \nThe scene leverages the priority feature of Cinemachine cameras to simplify
+    the activation process. The main Cinemachine Camera (CM vcam Overview) has a
+    priority set to 0. The secondary Cinemachine Cameras (CM vcam Dolly Track and
+    CM vcam Top View) are disabled and have a priority value higher than CM vcam
+    Overview. \nThe trigger volumes simply enable their Cinemachine Camera on enter,
+    and disable it on exit. The main Cinemachine Camera is always active."
 --- !u!4 &1348519679
 Transform:
   m_ObjectHideFlags: 0
@@ -771,13 +772,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1348519677}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.9353843, y: -6.0288353, z: 28.169971}
+  m_LocalRotation: {x: -0.362523, y: -0.000000088746965, z: 0.000000034521126, w: 0.9319748}
+  m_LocalPosition: {x: 9.935374, y: 23.375387, z: 50.70127}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_Father: {fileID: 1787124816}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1434473747
 GameObject:
@@ -979,7 +980,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1629969562}
-  m_LocalRotation: {x: -0.1278204, y: -0.493242, z: -0.06139912, w: 0.85825664}
+  m_LocalRotation: {x: -0.12782042, y: -0.493242, z: -0.06139913, w: 0.85825664}
   m_LocalPosition: {x: 0.3979287, y: 5.542756, z: 3.836609}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1108,11 +1109,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1787124812}
-  m_LocalRotation: {x: 0.362523, y: 0.00000006315297, z: -0.000000024565473, w: 0.9319748}
-  m_LocalPosition: {x: -5, y: 11, z: -25}
+  m_LocalRotation: {x: 0.3445145, y: 0, z: 0, w: 0.938781}
+  m_LocalPosition: {x: -5, y: 15, z: -26.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1348519679}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
