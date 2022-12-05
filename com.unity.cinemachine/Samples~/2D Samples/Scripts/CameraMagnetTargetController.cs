@@ -6,13 +6,12 @@ namespace Cinemachine.Examples
     {
         public CinemachineTargetGroup TargetGroup;
 
-        int m_PlayerIndex;
+        const int k_PlayerIndex = 0;
         CameraMagnetProperty[] m_CameraMagnets;
 
         void Start()
         {
             m_CameraMagnets = GetComponentsInChildren<CameraMagnetProperty>();
-            m_PlayerIndex = 0;
         }
 
         void Update()
@@ -20,12 +19,12 @@ namespace Cinemachine.Examples
             var targets = TargetGroup.Targets;
             for (int i = 1; i < targets.Count; ++i)
             {
-                var distance = (targets[m_PlayerIndex].Object.position - targets[i].Object.position).magnitude;
-                if (distance < m_CameraMagnets[i - 1].Proximity)
-                    targets[i].Weight =
-                        m_CameraMagnets[i - 1].MagnetStrength * (1 - (distance / m_CameraMagnets[i - 1].Proximity));
-                else
-                    targets[i].Weight = 0;
+                var target = targets[i];
+                var cameraMagnet = m_CameraMagnets[i - 1];
+                var distance = (targets[k_PlayerIndex].Object.position - target.Object.position).magnitude;
+                target.Weight = distance < cameraMagnet.Proximity
+                    ? target.Weight = cameraMagnet.MagnetStrength * (1 - distance / cameraMagnet.Proximity)
+                    : 0;
             }
         }
     }

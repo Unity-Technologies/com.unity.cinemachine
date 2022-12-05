@@ -509,14 +509,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eb4843bae7d24943842ea23130dcd55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FramingMode: 2
+  FramingMode: 0
   FramingSize: 0.6
   Damping: 5
   SizeAdjustment: 0
   LateralAdjustment: 0
   FovRange: {x: 3, y: 60}
   DollyRange: {x: -5000, y: 5000}
-  OrthoSizeRange: {x: 6, y: 12}
+  OrthoSizeRange: {x: 6, y: 60}
 --- !u!114 &536390826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2065,7 +2065,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 9.873632
+  orthographic size: 9.894958
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
