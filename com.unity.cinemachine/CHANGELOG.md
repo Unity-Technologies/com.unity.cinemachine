@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Confiner2D does less gc alloc.
 - TargetGroup now ignores members whose gameObjects are inactive.
 - CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
+- CinemachineSmoothPath is upgraded to Splines correctly now. 
 
 
 ## [3.0.0-pre.3] - 2022-10-28
