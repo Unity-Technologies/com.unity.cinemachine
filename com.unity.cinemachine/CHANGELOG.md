@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Unity 2022.2 and up: FocusDistance added to lens settings and is pushed to the camera.
 - Optimized path gizmo drawing.  Now 3-5 times faster.
+- TargetGroup now ignores members whose gameObjects are inactive.
 
 
 ## [2.9.4] - 2022-11-18
@@ -17,38 +18,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.9.2] - 2022-10-21
 - Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress
 - Bugfix: Occasional 1-frame glitch when transitioning between some freelooks
-## [3.0.0-pre.4] - 2022-11-01
-- Bugfix: Physical lens settings were not being properly applied.
-- 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
-- Bugfix: Lens blending was wrong.
-- CinemachineDeoccluder is a new class, not just a rename of CinemachineCollider.
-- CinemachineAutoFocus extension is now available for built-in and URP pipelines, with reduced functionality compared to HDRP.
-- Camera.focusDistance is driven by CM when the camera is in physical mode.
-- Bugfix: CinemachineDeoccluder Pull Forward strategy only pulls forward even with Camera Radius bigger than 0.
-- Path gizmo drawing was optimized.
-- Confiner2D provides API to adjust the confiner to the current window size.
-- Confiner2D does less gc alloc.
-- TargetGroup now ignores members whose gameObjects are inactive.
-
-
-## [3.0.0-pre.3] - 2022-10-28
-- Bugfix: rotation composer lookahead sometimes popped
-
-
-## [3.0.0-pre.2] - 2022-10-20
-- Add Show Hierarchy Icon preference option.
-- New icons for cinemachine (cameras, components, extensions, tracks).
-- Freelook ForcePosition is more precise now.
-- Confiner2D supports BoxCollider2D now.
-- Added "Place Objects At World Origin" preference option support.
-- Added Channel setting, to use for multiple CM Brains, instead of piggybacking on the layer system.
-- CinemachineCollider renamed to CinemachineDeoccluder.
-- New inspector and API for composition guides.
-- Game View Guides now indicate when they are hot and can be dragged.
-- CinemachineTrack assigns the default CinemachineBrain on creation.
-- Add support for HDRP 14 (Unity 2022.2).
-- Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress.
-- Bugfix: Occasional 1-frame glitch when transitioning between some freelooks.
 - Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations
 - Add support for HDRP 14 (Unity 2022.2)
