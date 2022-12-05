@@ -142,7 +142,7 @@ namespace Cinemachine.Editor
                 return EditorUtility.DisplayDialog(
                     "Import Sample Package Dependencies",
                     "These samples contain package dependencies that your project may not have: \n" +
-                    dependencies.Aggregate("", (current, dependency) => current + ("- " + dependency + "\n")) +
+                    dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")) +
                     "\nRemark: If your project has these dependencies, they will be updated to the latest recommended version!",
                     "Yes, import package dependencies!", "No, do not import package dependencies!");
             }
