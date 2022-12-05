@@ -21,7 +21,7 @@ namespace Cinemachine.Editor
         SampleConfiguration m_SampleConfiguration;
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
-        string[] m_PackageDependencies = Array.Empty<string>();
+        List<string> m_PackageDependencies = new ();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
@@ -78,6 +78,9 @@ namespace Cinemachine.Editor
                             // Import common asset dependencies
                             assetsImported = 
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
+        
+                            // Import common package dependencies
+                            m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
 
                             // Import sample-specific dependencies
                             assetsImported |= 
@@ -86,7 +89,7 @@ namespace Cinemachine.Editor
                             // Import sample-specific package dependencies using the editor update loop, because
                             // adding package dependencies need to be done in sequence one after the other
                             m_PackageDependencyIndex = 0;
-                            m_PackageDependencies = sampleEntry.PackageDependencies;
+                            m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
                             EditorApplication.update += ImportPackageDependencies;
                         }
                         break;
@@ -123,11 +126,11 @@ namespace Cinemachine.Editor
                 if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
                     return; // wait while we have a request pending
 
-                if (m_PackageDependencyIndex < m_PackageDependencies.Length)
+                if (m_PackageDependencyIndex < m_PackageDependencies.Count)
                     m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
                 else
                 {
-                    m_PackageDependencies = Array.Empty<string>();
+                    m_PackageDependencies.Clear();
                     m_PackageAddRequest = null;
                     EditorApplication.update -= ImportPackageDependencies;
                 }
@@ -191,7 +194,7 @@ namespace Cinemachine.Editor
             }
 
             public string[] SharedAssetDependencies;
-
+            public string[] SharedPackageDependencies;
             public SampleEntry[] SampleEntries;
 
             public SampleEntry GetEntry(Sample sample) =>
