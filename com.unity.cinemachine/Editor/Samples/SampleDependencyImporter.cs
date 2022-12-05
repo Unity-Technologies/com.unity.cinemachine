@@ -76,21 +76,23 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = 
+                            assetsImported =
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
-        
-                            // Import common package dependencies
-                            m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
-
-                            // Import sample-specific dependencies
-                            assetsImported |= 
+                            
+                            // Import sample-specific asset dependencies
+                            assetsImported |=
                                 ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
                             
-                            // Import sample-specific package dependencies using the editor update loop, because
-                            // adding package dependencies need to be done in sequence one after the other
+                            // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
+                            m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
                             m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
-                            EditorApplication.update += ImportPackageDependencies;
+                            if (m_PackageDependencies.Count != 0 && PromptUserConfirmation(m_PackageDependencies))
+                            {
+                                // Import package dependencies using the editor update loop, because
+                                // adding packages need to be done in sequence one after the other
+                                EditorApplication.update += ImportPackageDependencies;
+                            }
                         }
                         break;
                     }
@@ -135,8 +137,18 @@ namespace Cinemachine.Editor
                     EditorApplication.update -= ImportPackageDependencies;
                 }
             }
+            
+            static bool PromptUserConfirmation(List<string> dependencies)
+            {
+                return EditorUtility.DisplayDialog(
+                    "Import Sample Package Dependencies",
+                    "These samples contain package dependencies that your project may not have: \n" +
+                    dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")) +
+                    "\nRemark: If your project has these dependencies, they will be updated to the latest recommended version.",
+                    "Yes, import package dependencies", "No, do not import package dependencies");
+            }
         }
-
+        
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
