@@ -150,7 +150,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 129940154}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.23, y: 2.1599998, z: -10}
+  m_LocalPosition: {x: -12.5, y: 1.25, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -197,7 +197,7 @@ MonoBehaviour:
   DeadZoneDepth: 0
   Damping: {x: 1, y: 2, z: 1}
   Composition:
-    ScreenPosition: {x: 0, y: 0.14}
+    ScreenPosition: {x: 0, y: 0}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -356,7 +356,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 248061844}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.17, y: 2.35, z: 2}
+  m_LocalPosition: {x: 4.17, y: 2.35, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -627,7 +627,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360032427}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 11.1, y: 5.91, z: 2}
+  m_LocalPosition: {x: 11.1, y: 5.91, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -812,7 +812,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 436036890}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1, y: 6, z: 2}
+  m_LocalPosition: {x: -1, y: 6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -887,7 +887,7 @@ MonoBehaviour:
   MagnetStrength: 5
   Proximity: 7
   ProximityVisualization: {fileID: 561357168}
---- !u!1001 &480928922
+--- !u!1001 &457007403
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -896,52 +896,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[1].InputAction
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[1].LegacyInput
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[3].LegacyInput
-      value: Fire3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[2].Recentering.Time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[3].Recentering.Time
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[3].Recentering.Wait
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[2].Control.AccelTime
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[2].Control.DecelTime
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.data[3].Recentering.Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: JumpSpeed
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5995860984952935430, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: m_Radius
-      value: 0.12
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
@@ -949,11 +909,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.23
+      value: -12.5
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.32
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.z
@@ -997,8 +957,31 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6914426334447213808, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1972950444}
+      addedObject: {fileID: 457007405}
   m_SourcePrefab: {fileID: 100100000, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+--- !u!1 &457007404 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6914426334447213808, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+  m_PrefabInstance: {fileID: 457007403}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &457007405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 457007404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eed4d084bee9a604a9bd6dcfe5987fa4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ZPosiion: 0
+--- !u!4 &457007406 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+  m_PrefabInstance: {fileID: 457007403}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &561357167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,7 +1241,7 @@ MonoBehaviour:
   RotationMode: 0
   UpdateMethod: 2
   Targets:
-  - Object: {fileID: 1972950443}
+  - Object: {fileID: 457007406}
     Weight: 1
     Radius: 1
   - Object: {fileID: 436036891}
@@ -1279,7 +1262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838270487}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.23, y: 1.32, z: 0}
+  m_LocalPosition: {x: -12.5, y: 1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2178,29 +2161,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917409110}
   m_CullTransparentMesh: 1
---- !u!1 &1972950437 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6914426334447213808, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-  m_PrefabInstance: {fileID: 480928922}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1972950443 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-  m_PrefabInstance: {fileID: 480928922}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1972950444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1972950437}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eed4d084bee9a604a9bd6dcfe5987fa4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ZPosiion: 0
 --- !u!1 &2125070643
 GameObject:
   m_ObjectHideFlags: 0
@@ -2233,16 +2193,21 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 'A sample scene showing Confiner2D confining the camera, inside a box
-    collider, such that it does see outside the map.
+  HelpText: 'A simple scene showing Confiner2D confining the camera, inside a box
+    collider, such that it does not see outside the map.
 
 
-    To toggle between projection
-    modes, you can use the Orthographic Camera toggle in the top left corner of the
-    Game View.
+    To toggle between
+    projection modes, you can use the Orthographic Camera toggle in the top left
+    corner of the Game View.  Note: when the camera''s projection mode changes, Confiner2D''s
+    lens cache is invalidated to force an adjustment of the confiner to fit the new
+    camera projection mode.
 
-    Note, when the camera''s projection mode changes, Confiner2D
-    cache is invalidated to force a recomputation of the confiner.'
+
+    The Camera Magnets illustrate dynamic modification
+    of the Target Group.  Toggling them on makes them attract the camera''s attention:
+    the closer the player to the magnet, the stronger the attraction.  This is implemented
+    by the CameraMagnetTargetController behaviour on the CameraMagnets object.'
 --- !u!4 &2125070645
 Transform:
   m_ObjectHideFlags: 0
@@ -2408,7 +2373,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.071655, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -8.623612, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
