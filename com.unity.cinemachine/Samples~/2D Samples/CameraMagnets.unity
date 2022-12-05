@@ -2212,7 +2212,7 @@ MonoBehaviour:
     camera projection mode.
 
 
-    The Camera Magnets illustrate dynamic modification
+    The Camera Magnets illustrate a dynamic modification
     of the Target Group.  Toggling them on makes them attract the camera''s attention:
     the closer the player is to the magnet, the stronger the attraction.  This is implemented
     by the CameraMagnetTargetController behaviour on the CameraMagnets object.'
