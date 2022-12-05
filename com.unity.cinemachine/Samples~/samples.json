@@ -1,16 +1,24 @@
 {
-  "SharedAssetDependencies": [
-    "Shared Assets"
+  "SharedAssetDependencies": [],
+  "SharedPackageDependencies": [
+    "com.unity.modules.animation",
+        "com.unity.modules.vehicles",
+        "com.unity.modules.physics",
+        "com.unity.modules.physics2d"
   ],
   "SampleEntries": [
     {
       "Path": "2D Samples",
-      "AssetDependencies": [],
+      "AssetDependencies": [
+        "Shared Assets"
+      ],
       "PackageDependencies": []
     },
     {
       "Path": "3D Samples",
-      "AssetDependencies": [],
+      "AssetDependencies": [
+        "Shared Assets"
+      ],
       "PackageDependencies": []
     },
     {

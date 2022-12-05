@@ -1,6 +1,7 @@
+#if CINEMACHINE_PHYSICS_2D
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine;
 
@@ -110,8 +111,12 @@ namespace Cinemachine
                 
                 bool IsInsideOriginal(IntPoint point)
                 {
-                    return m_OriginalPolygon.Any(
-                        t => Clipper.PointInPolygon(point, t) != PointInPolygonResult.IsOutside);
+                    for (int p = 0; p < m_OriginalPolygon.Count; p++)
+                    {
+                        if (Clipper.PointInPolygon(point, m_OriginalPolygon[p]) != PointInPolygonResult.IsOutside) 
+                            return true;
+                    }
+                    return false;
                 }
 
                 float ClosestPointOnSegment(IntPoint point, IntPoint s0, IntPoint s1)
@@ -579,3 +584,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

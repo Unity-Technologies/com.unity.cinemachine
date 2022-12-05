@@ -50,12 +50,12 @@ namespace Tests.Runtime
             var polygonCollider2D = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D)).GetComponent<PolygonCollider2D>();
             m_Confiner2D.BoundingShape2D = polygonCollider2D;
             m_Confiner2D.Damping = 0;
-            m_Confiner2D.MaxWindowSize = 0;
+            m_Confiner2D.OversizeWindow = new () { Enabled = true, MaxWindowSize = 0 };
 
             // clockwise
             polygonCollider2D.points = testPoints;
             
-            m_Confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -95,11 +95,11 @@ namespace Tests.Runtime
             polygonCollider2D.usedByComposite = true;
             m_Confiner2D.BoundingShape2D = compositeCollider2D;
             m_Confiner2D.Damping = 0;
-            m_Confiner2D.MaxWindowSize = 0;
+            m_Confiner2D.OversizeWindow = new () { Enabled = true, MaxWindowSize = 0 };
             
             // clockwise
             polygonCollider2D.points = testPoints;
-            m_Confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame
@@ -128,12 +128,12 @@ namespace Tests.Runtime
             var boxCollider2D = CreateGameObject("BoxCollider2DHolder", typeof(BoxCollider2D)).GetComponent<BoxCollider2D>();
             m_Confiner2D.BoundingShape2D = boxCollider2D;
             m_Confiner2D.Damping = 0;
-            m_Confiner2D.MaxWindowSize = 0;
+            m_Confiner2D.OversizeWindow = new () { Enabled = true, MaxWindowSize = 0 };
 
             // clockwise
             boxCollider2D.size = new Vector2(2f, 2f);
             
-            m_Confiner2D.InvalidateCache();
+            m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame

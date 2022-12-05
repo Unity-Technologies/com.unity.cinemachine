@@ -21,7 +21,7 @@ namespace Cinemachine.Editor
         SampleConfiguration m_SampleConfiguration;
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
-        string[] m_PackageDependencies = Array.Empty<string>();
+        List<string> m_PackageDependencies = new ();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
@@ -76,18 +76,23 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = 
+                            assetsImported =
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
-
-                            // Import sample-specific dependencies
-                            assetsImported |= 
+                            
+                            // Import sample-specific asset dependencies
+                            assetsImported |=
                                 ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
                             
-                            // Import sample-specific package dependencies using the editor update loop, because
-                            // adding package dependencies need to be done in sequence one after the other
+                            // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
-                            m_PackageDependencies = sampleEntry.PackageDependencies;
-                            EditorApplication.update += ImportPackageDependencies;
+                            m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
+                            m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
+                            if (m_PackageDependencies.Count != 0 && PromptUserConfirmation(m_PackageDependencies))
+                            {
+                                // Import package dependencies using the editor update loop, because
+                                // adding packages need to be done in sequence one after the other
+                                EditorApplication.update += ImportPackageDependencies;
+                            }
                         }
                         break;
                     }
@@ -123,17 +128,27 @@ namespace Cinemachine.Editor
                 if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
                     return; // wait while we have a request pending
 
-                if (m_PackageDependencyIndex < m_PackageDependencies.Length)
+                if (m_PackageDependencyIndex < m_PackageDependencies.Count)
                     m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
                 else
                 {
-                    m_PackageDependencies = Array.Empty<string>();
+                    m_PackageDependencies.Clear();
                     m_PackageAddRequest = null;
                     EditorApplication.update -= ImportPackageDependencies;
                 }
             }
+            
+            static bool PromptUserConfirmation(List<string> dependencies)
+            {
+                return EditorUtility.DisplayDialog(
+                    "Import Sample Package Dependencies",
+                    "These samples contain package dependencies that your project may not have: \n" +
+                    dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")) +
+                    "\nRemark: If your project has these dependencies, they will be updated to the latest recommended version.",
+                    "Yes, import package dependencies", "No, do not import package dependencies");
+            }
         }
-
+        
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
@@ -191,7 +206,7 @@ namespace Cinemachine.Editor
             }
 
             public string[] SharedAssetDependencies;
-
+            public string[] SharedPackageDependencies;
             public SampleEntry[] SampleEntries;
 
             public SampleEntry GetEntry(Sample sample) =>

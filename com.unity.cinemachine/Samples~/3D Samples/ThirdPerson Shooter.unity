@@ -966,6 +966,10 @@ PrefabInstance:
       propertyPath: Strafe
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5995860984952935429, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: LockCursor
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
       value: 2

@@ -331,7 +331,8 @@ namespace Cinemachine.Editor
                 s_ExtentionNames.Add("(select)");
                 var allExtensions
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t) && !t.IsAbstract);
+                            (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t) 
+                                && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 foreach (Type t in allExtensions)
                 {
                     s_ExtentionTypes.Add(t);

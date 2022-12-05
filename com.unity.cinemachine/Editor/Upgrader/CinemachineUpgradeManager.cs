@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
                 + "Upgrade scene?",
                 "Upgrade", "Cancel"))
             {
-                var manager = new CinemachineUpgradeManager();
+                var manager = new CinemachineUpgradeManager(false);
                 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradable = manager.GetUpgradables(
@@ -102,7 +102,7 @@ namespace Cinemachine.Editor
                 + "Upgrade project?",
                 "I made a backup, go ahead", "Cancel"))
             {
-                var manager = new CinemachineUpgradeManager();
+                var manager = new CinemachineUpgradeManager(true);
 
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
                 manager.UpgradePrefabAssets(true);
@@ -138,7 +138,7 @@ namespace Cinemachine.Editor
         /// <returns></returns>
         public static bool CurrentSceneUsesPrefabs()
         {
-            var manager = new CinemachineUpgradeManager();
+            var manager = new CinemachineUpgradeManager(false);
             var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             var rootObjects = scene.GetRootGameObjects();
             var upgradable = manager.GetUpgradables(
@@ -398,7 +398,6 @@ namespace Cinemachine.Editor
 
         static void UpgradeObjectReferences(GameObject[] rootObjects)
         {
-            var map = UpgradeObjectToCm3.ClassUpgradeMap;
             foreach (var go in rootObjects) 
             {
                 if (go == null)
@@ -406,13 +405,9 @@ namespace Cinemachine.Editor
                 
                 ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
                 {
-                    var oldType = oldValue.GetType();
-                    if (map.ContainsKey(oldType))
-                    {
-                        var newType = map[oldType];
-                        if (expectedType.IsAssignableFrom(newType))
-                            return oldValue.GetComponent(newType) as MonoBehaviour;
-                    }
+                    var newType = UpgradeObjectToCm3.GetBehaviorReferenceUpgradeType(oldValue);
+                    if (expectedType.IsAssignableFrom(newType))
+                        return oldValue.GetComponent(newType) as MonoBehaviour;
                     return oldValue;
                 });
             }
@@ -584,11 +579,12 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        CinemachineUpgradeManager()
+        CinemachineUpgradeManager(bool initPrefabManager)
         {
             m_ObjectUpgrader = new UpgradeObjectToCm3();
             m_SceneManager = new SceneManager();
-            m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
+            if (initPrefabManager) 
+                m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
         }
 
         Scene OpenScene(int sceneIndex)

@@ -15,19 +15,18 @@ namespace Cinemachine.Examples
         /// Radius of the look at target.
         /// </summary>
         [Tooltip("Radius of the look at target.")]
-        public float m_LookAtTargetRadius = 1;
-    
-        /// <summary>
-        /// Minimum distance to have fading out effect in front of the camera.
-        /// </summary>
-        [Tooltip("Minimum distance to have fading out effect in front of the camera.")]
-        public float m_MinDistance = 0;
+        public float LookAtTargetRadius = 1;
 
         /// <summary>
-        /// Maximum distance to have fading out effect in front of the camera.
+        /// The range is defined from the camera (x value) towards the look direction (y value) within which objects
+        /// with FadeOut material are going to be transparent.
+        /// The strength of the transparency depends on how far the objects are from the camera and the FadeOut range.
         /// </summary>
-        [Tooltip("Maximum distance to have fading out effect in front of the camera.")]
-        public float m_MaxDistance = 8;
+        [Tooltip("The range is defined from the camera (x value) towards the look direction (y value) within which " +
+            "objects with FadeOut material are going to be transparent. \nThe strength of the transparency depends " +
+            "on how far the objects are from the camera and the FadeOut range.")]
+        [MinMaxRangeSlider(0, 20)]
+        public Vector2 FadeOutRange = new (0f, 10f);
 
         /// <summary>
         /// If true, m_MaxDistance will be set to
@@ -35,13 +34,13 @@ namespace Cinemachine.Examples
         /// </summary>
         [Tooltip("If true, MaxDistance will be set to " +
             "distance between this virtual camera and LookAt target minus LookAtTargetRadius.")]
-        public bool m_SetToCameraToLookAtDistance = false;
+        public bool MaxDistanceControlledByCamera = true;
     
         /// <summary>
         /// Material using the FadeOut shader.
         /// </summary>
         [Tooltip("Material using the FadeOut shader.")]
-        public Material m_FadeOutMaterial;
+        public Material FadeOutMaterial;
 
         static readonly int k_MaxDistanceID = Shader.PropertyToID("_MaxDistance");
         static readonly int k_MinDistanceID = Shader.PropertyToID("_MinDistance");
@@ -59,24 +58,25 @@ namespace Cinemachine.Examples
         {
             if (stage == CinemachineCore.Stage.Finalize)
             {
-                if (m_FadeOutMaterial == null || !m_FadeOutMaterial.HasProperty(k_MaxDistanceID) || 
-                    !m_FadeOutMaterial.HasProperty(k_MinDistanceID)) return;
+                if (FadeOutMaterial == null || 
+                    !FadeOutMaterial.HasProperty(k_MaxDistanceID) || 
+                    !FadeOutMaterial.HasProperty(k_MinDistanceID)) 
+                    return;
             
-                if (m_SetToCameraToLookAtDistance && vcam.LookAt != null)
-                {
-                    m_MaxDistance = Vector3.Distance(vcam.transform.position, vcam.LookAt.position) - m_LookAtTargetRadius;
-                }
+                if (MaxDistanceControlledByCamera && vcam.LookAt != null) 
+                    FadeOutRange.y = Vector3.Distance(vcam.transform.position, vcam.LookAt.position) - LookAtTargetRadius;
 
-                m_FadeOutMaterial.SetFloat(k_MaxDistanceID, m_MaxDistance);
-                m_FadeOutMaterial.SetFloat(k_MinDistanceID, m_MinDistance);
+                FadeOutMaterial.SetFloat(k_MinDistanceID, FadeOutRange.x);
+                FadeOutMaterial.SetFloat(k_MaxDistanceID, FadeOutRange.y);
             }
         }
         
         void OnValidate()
         {
-            m_LookAtTargetRadius = Math.Max(0, m_LookAtTargetRadius);
-            m_MinDistance = Math.Max(0, m_MinDistance);
-            m_MaxDistance = Math.Max(0, m_MaxDistance);
+            LookAtTargetRadius = Math.Max(0, LookAtTargetRadius);
+            FadeOutRange.x = Math.Max(0, FadeOutRange.x);
+            FadeOutRange.y = Math.Max(0, FadeOutRange.y);
+            FadeOutRange.y = Math.Max(FadeOutRange.x, FadeOutRange.y);
         }
     }
 }

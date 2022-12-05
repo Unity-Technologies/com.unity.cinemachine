@@ -77,11 +77,11 @@ namespace Cinemachine
             /// <summary>How much weight to give the target when averaging.  Cannot be negative</summary>
             [Tooltip("How much weight to give the target when averaging.  Cannot be negative")]
             [FormerlySerializedAs("weight")]
-            public float Weight;
+            public float Weight = 1;
             /// <summary>The radius of the target, used for calculating the bounding box.  Cannot be negative</summary>
             [Tooltip("The radius of the target, used for calculating the bounding box.  Cannot be negative")]
             [FormerlySerializedAs("radius")]
-            public float Radius;
+            public float Radius = 0.5f;
         }
 
         /// <summary>How the group's position is calculated</summary>
@@ -141,10 +141,15 @@ namespace Cinemachine
         float m_MaxWeight;
         Vector3 m_AveragePos;
         BoundingSphere m_BoundingSphere;
+
+        // Caches of valid members so we don't keep checking activeInHierarchy
+        List<int> m_ValidMembers = new ();
+        List<bool> m_MemberValidity = new ();
         
         void OnValidate()
         {
-            for (int i = 0; i < Targets.Count; ++i)
+            var count = Targets.Count;
+            for (int i = 0; i < count; ++i)
             {
                 Targets[i].Weight = Mathf.Max(0, Targets[i].Weight);
                 Targets[i].Radius = Mathf.Max(0, Targets[i].Radius);
@@ -196,19 +201,13 @@ namespace Cinemachine
 
         /// <summary>The bounding sphere of the group, computed using the
         /// targets positions and radii</summary>
-        public BoundingSphere Sphere { get => m_BoundingSphere; }
+        public BoundingSphere Sphere => m_BoundingSphere;
 
-        /// <summary>Return true if there are no members with weight > 0</summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                for (int i = 0; i < Targets.Count; ++i)
-                    if (Targets[i].Object != null && Targets[i].Weight > UnityVectorExtensions.Epsilon)
-                        return false;
-                return true;
-            }
-        }
+        /// <summary>Return true if there are no members with weight > 0.  This returns the
+        /// cached member state and is only valid after a call to DoUpdate().  If members
+        /// are added or removed after that call, this will not necessarily return
+        /// correct information before the next update.</summary>
+        public bool IsEmpty => m_ValidMembers.Count == 0;
 
         /// <summary>Add a member to the group</summary>
         /// <param name="t">The member to add</param>
@@ -233,7 +232,8 @@ namespace Cinemachine
         /// <returns>Member index, or -1 if not a member</returns>
         public int FindMember(Transform t)
         {
-            for (int i = Targets.Count-1; i >= 0; --i)
+            var count = Targets.Count;
+            for (int i = 0; i < count; ++i)
                 if (Targets[i].Object == t)
                     return i;
             return -1;
@@ -242,17 +242,23 @@ namespace Cinemachine
         /// <summary>
         /// Get the bounding sphere of a group memebr, with the weight taken into account.
         /// As the member's weight goes to 0, the position lerps to the group average position.
+        /// Note that this result is only valid after DoUpdate has been called. If members
+        /// are added or removed after that call or change their weights or active state, 
+        /// this will not necessarily return correct information before the next update.
         /// </summary>
         /// <param name="index">Member index</param>
         /// <returns>The weighted bounding sphere</returns>
         public BoundingSphere GetWeightedBoundsForMember(int index)
         {
-            if (index < 0 || index >= Targets.Count)
+            if (!IndexIsValid(index) || !m_MemberValidity[index])
                 return Sphere;
-            return WeightedMemberBounds(Targets[index], m_AveragePos, m_MaxWeight);
+            return WeightedMemberBoundsForValidMember(Targets[index], m_AveragePos, m_MaxWeight);
         }
 
-        /// <summary>The axis-aligned bounding box of the group, in a specific reference frame</summary>
+        /// <summary>The axis-aligned bounding box of the group, in a specific reference frame.
+        /// Note that this result is only valid after DoUpdate has been called. If members
+        /// are added or removed after that call or change their weights or active state, 
+        /// this will not necessarily return correct information before the next update.</summary>
         /// <param name="observer">The frame of reference in which to compute the bounding box</param>
         /// <param name="includeBehind">If true, members behind the observer (negative z) will be included</param>
         /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
@@ -262,38 +268,39 @@ namespace Cinemachine
             if (!Matrix4x4.Inverse3DAffine(observer, ref inverseView))
                 inverseView = observer.inverse;
             var b = new Bounds(inverseView.MultiplyPoint3x4(m_AveragePos), Vector3.zero);
-            bool gotOne = false;
-            var unit = 2 * Vector3.one;
-            for (int i = 0; i < Targets.Count; ++i)
+            if (CachedCountIsValid)
             {
-                BoundingSphere s = GetWeightedBoundsForMember(i);
-                s.position = inverseView.MultiplyPoint3x4(s.position);
-                if (s.position.z > 0 || includeBehind)
+                bool gotOne = false;
+                var unit = 2 * Vector3.one;
+                var count = m_ValidMembers.Count;
+                for (int i = 0; i < count; ++i)
                 {
-                    if (gotOne)
-                        b.Encapsulate(new Bounds(s.position, s.radius * unit));
-                    else
-                        b = new Bounds(s.position, s.radius * unit);
-                    gotOne = true;
+                    var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, m_MaxWeight);
+                    s.position = inverseView.MultiplyPoint3x4(s.position);
+                    if (s.position.z > 0 || includeBehind)
+                    {
+                        if (gotOne)
+                            b.Encapsulate(new Bounds(s.position, s.radius * unit));
+                        else
+                            b = new Bounds(s.position, s.radius * unit);
+                        gotOne = true;
+                    }
                 }
             }
             return b;
         }
 
-        private static BoundingSphere WeightedMemberBounds(
-            Target t, Vector3 avgPos, float maxWeight)
+        bool CachedCountIsValid => m_MemberValidity.Count == Targets.Count;
+        bool IndexIsValid(int index) => index >= 0 && index < Targets.Count && CachedCountIsValid;
+
+        static BoundingSphere WeightedMemberBoundsForValidMember(Target t, Vector3 avgPos, float maxWeight)
         {
-            float w = 0;
-            var pos = avgPos;
-            if (t.Object != null)
-            {
-                pos = TargetPositionCache.GetTargetPosition(t.Object);
-                w = Mathf.Max(0, t.Weight);
-                if (maxWeight > UnityVectorExtensions.Epsilon && w < maxWeight)
-                    w /= maxWeight;
-                else
-                    w = 1;
-            }
+            var pos = TargetPositionCache.GetTargetPosition(t.Object);
+            var w = Mathf.Max(0, t.Weight);
+            if (maxWeight > UnityVectorExtensions.Epsilon && w < maxWeight)
+                w /= maxWeight;
+            else
+                w = 1;
             return new BoundingSphere(Vector3.Lerp(avgPos, pos, w), t.Radius * w);
         }
 
@@ -303,8 +310,11 @@ namespace Cinemachine
         /// </summary>
         public void DoUpdate()
         {
+            Targets ??= new (); // in case user set it to null
+
+            UpdateMemberValidity();
             m_AveragePos = CalculateAveragePosition(out m_MaxWeight);
-            BoundingBox = CalculateBoundingBox(m_AveragePos, m_MaxWeight);
+            BoundingBox = CalculateBoundingBox();
             m_BoundingSphere = CalculateBoundingSphere(m_MaxWeight);
 
             switch (PositionMode)
@@ -327,8 +337,64 @@ namespace Cinemachine
             }
         }
 
+        void UpdateMemberValidity()
+        {
+            var count = Targets.Count;
+            m_ValidMembers.Clear();
+            m_ValidMembers.Capacity = Mathf.Max(m_ValidMembers.Capacity, count);
+            m_MemberValidity.Clear();
+            m_MemberValidity.Capacity = Mathf.Max(m_MemberValidity.Capacity, count);
+            for (int i = 0; i < count; ++i)
+            {
+                m_MemberValidity.Add(Targets[i].Object != null 
+                        && Targets[i].Weight > UnityVectorExtensions.Epsilon 
+                        && Targets[i].Object.gameObject.activeInHierarchy);
+                if (m_MemberValidity[i])
+                    m_ValidMembers.Add(i);
+            }
+        }
+
+        // Assumes that UpdateMemberValidity() has been called
+        Vector3 CalculateAveragePosition(out float maxWeight)
+        {
+            var pos = Vector3.zero;
+            float weightSum = 0;
+            maxWeight = 0;
+            var count = m_ValidMembers.Count;
+            for (int i = 0; i < count; ++i)
+            {
+                var targetIndex = m_ValidMembers[i];
+                var weight = Targets[targetIndex].Weight;
+                weightSum += weight;
+                pos += TargetPositionCache.GetTargetPosition(Targets[targetIndex].Object) * weight;
+                maxWeight = Mathf.Max(maxWeight, weight);
+            }
+            if (weightSum > UnityVectorExtensions.Epsilon)
+                pos /= weightSum;
+            else
+                pos = transform.position;
+            return pos;
+        }
+        
+        // Assumes that CalculateAveragePosition() has been called 
+        Bounds CalculateBoundingBox()
+        {
+            var b = new Bounds(m_AveragePos, Vector3.zero);
+            if (m_MaxWeight > UnityVectorExtensions.Epsilon)
+            {
+                var count = m_ValidMembers.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, m_MaxWeight);
+                    b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
+                }
+            }
+            return b;
+        }
+        
         /// <summary>
-        /// Use Ritter's algorithm for calculating an approximate bounding sphere
+        /// Use Ritter's algorithm for calculating an approximate bounding sphere.
+        /// Assumes that CalculateBoundingBox() has been called.
         /// </summary>
         /// <param name="maxWeight">The maximum weight of members in the group</param>
         /// <returns>An approximate bounding sphere.  Will be slightly large.</returns>
@@ -337,11 +403,10 @@ namespace Cinemachine
             var sphere = new BoundingSphere { position = transform.position };
             bool gotOne = false;
 
-            for (int i = 0; i < Targets.Count; ++i)
+            var count = m_ValidMembers.Count;
+            for (int i = 0; i < count; ++i)
             {
-                if (Targets[i].Object == null || Targets[i].Weight < UnityVectorExtensions.Epsilon)
-                    continue;
-                BoundingSphere s = WeightedMemberBounds(Targets[i], m_AveragePos, maxWeight);
+                var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, maxWeight);
                 if (!gotOne)
                 {
                     gotOne = true;
@@ -359,65 +424,24 @@ namespace Cinemachine
             return sphere;
         }
 
-        Vector3 CalculateAveragePosition(out float maxWeight)
-        {
-            var pos = Vector3.zero;
-            float weight = 0;
-            maxWeight = 0;
-            for (int i = 0; i < Targets.Count; ++i)
-            {
-                if (Targets[i].Object != null)
-                {
-                    weight += Targets[i].Weight;
-                    pos += TargetPositionCache.GetTargetPosition(Targets[i].Object) 
-                        * Targets[i].Weight;
-                    maxWeight = Mathf.Max(maxWeight, Targets[i].Weight);
-                }
-            }
-            if (weight > UnityVectorExtensions.Epsilon)
-                pos /= weight;
-            else
-                pos = transform.position;
-            return pos;
-        }
-
+        // Assumes that CalculateBoundingSphere() has been called
         Quaternion CalculateAverageOrientation()
         {
             if (m_MaxWeight <= UnityVectorExtensions.Epsilon)
-            {
                 return transform.rotation;
-            }
             
             float weightedAverage = 0;
-            Quaternion r = Quaternion.identity;
-            for (int i = 0; i < Targets.Count; ++i)
+            var r = Quaternion.identity;
+            var count = m_ValidMembers.Count;
+            for (int i = 0; i < count; ++i)
             {
-                if (Targets[i].Object != null)
-                {
-                    var scaledWeight = Targets[i].Weight / m_MaxWeight;
-                    var rot = TargetPositionCache.GetTargetRotation(Targets[i].Object);
-                    r *= Quaternion.Slerp(Quaternion.identity, rot, scaledWeight);
-                    weightedAverage += scaledWeight;
-                }
+                var targetIndex = m_ValidMembers[i];
+                var scaledWeight = Targets[targetIndex].Weight / m_MaxWeight;
+                var rot = TargetPositionCache.GetTargetRotation(Targets[targetIndex].Object);
+                r *= Quaternion.Slerp(Quaternion.identity, rot, scaledWeight);
+                weightedAverage += scaledWeight;
             }
             return Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
-        }
-
-        Bounds CalculateBoundingBox(Vector3 avgPos, float maxWeight)
-        {
-            Bounds b = new Bounds(avgPos, Vector3.zero);
-            if (maxWeight > UnityVectorExtensions.Epsilon)
-            {
-                for (int i = 0; i < Targets.Count; ++i)
-                {
-                    if (Targets[i].Object != null)
-                    {
-                        var s = WeightedMemberBounds(Targets[i], m_AveragePos, maxWeight);
-                        b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
-                    }
-                }
-            }
-            return b;
         }
 
         void FixedUpdate()
@@ -439,8 +463,11 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Get the local-space angular bounds of the group, from a spoecific point of view.
+        /// Get the local-space angular bounds of the group, from a specific point of view.
         /// Also returns the z depth range of the members.
+        /// Note that this result is only valid after DoUpdate has been called. If members
+        /// are added or removed after that call or change their weights or active state, 
+        /// this will not necessarily return correct information before the next update.
         /// </summary>
         /// <param name="observer">Point of view from which to calculate, and in whose
         /// space the return values are</param>
@@ -456,34 +483,37 @@ namespace Cinemachine
 
             zRange = Vector2.zero;
             var b = new Bounds();
-            bool haveOne = false;
-            for (int i = 0; i < Targets.Count; ++i)
+            if (CachedCountIsValid)
             {
-                BoundingSphere s = GetWeightedBoundsForMember(i);
-                Vector3 p = world2local.MultiplyPoint3x4(s.position);
-                if (p.z < UnityVectorExtensions.Epsilon)
-                    continue; // behind us
+                bool haveOne = false;
+                var count = m_ValidMembers.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, m_MaxWeight);
+                    var p = world2local.MultiplyPoint3x4(s.position);
+                    if (p.z < UnityVectorExtensions.Epsilon)
+                        continue; // behind us
 
-                var rN = s.radius / p.z;
-                var rN2 = new Vector3(rN, rN, 0);
-                var pN = p / p.z;
-                if (!haveOne)
-                {
-                    b.center = pN;
-                    b.extents = rN2;
-                    zRange = new Vector2(p.z, p.z);
-                    haveOne = true;
-                }
-                else
-                {
-                    b.Encapsulate(pN + rN2);
-                    b.Encapsulate(pN - rN2);
-                    zRange.x = Mathf.Min(zRange.x, p.z);
-                    zRange.y = Mathf.Max(zRange.y, p.z);
+                    var rN = s.radius / p.z;
+                    var rN2 = new Vector3(rN, rN, 0);
+                    var pN = p / p.z;
+                    if (!haveOne)
+                    {
+                        b.center = pN;
+                        b.extents = rN2;
+                        zRange = new Vector2(p.z, p.z);
+                        haveOne = true;
+                    }
+                    else
+                    {
+                        b.Encapsulate(pN + rN2);
+                        b.Encapsulate(pN - rN2);
+                        zRange.x = Mathf.Min(zRange.x, p.z);
+                        zRange.y = Mathf.Max(zRange.y, p.z);
+                    }
                 }
             }
-
-            // Don't need the high-precision versions of SignedAngle
+            // Don't need the high-precision versions of UnityVectorExtensions.SignedAngle
             var pMin = b.min;
             var pMax = b.max;
             minAngles = new Vector2(

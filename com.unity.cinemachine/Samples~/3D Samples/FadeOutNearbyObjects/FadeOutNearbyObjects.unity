@@ -967,6 +967,7 @@ GameObject:
   - component: {fileID: 385349254}
   - component: {fileID: 385349259}
   - component: {fileID: 385349255}
+  - component: {fileID: 385349260}
   m_Layer: 0
   m_Name: CM FreeLook
   m_TagString: Untagged
@@ -981,8 +982,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385349248}
-  m_LocalRotation: {x: 0.12216465, y: 0.017321631, z: -0.0021323902, w: 0.9923564}
-  m_LocalPosition: {x: -0.27919602, y: 3, z: -20.235126}
+  m_LocalRotation: {x: 0.18224643, y: 0.000836238, z: -0.00015499721, w: 0.9832525}
+  m_LocalPosition: {x: 0.69673157, y: 3.9945145, z: -16.420446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1105,7 +1106,7 @@ MonoBehaviour:
     Wrap: 1
     Restrictions: 3
   VerticalAxis:
-    Value: 0.5
+    Value: 0.6
     Center: 0.5
     Range: {x: 0, y: 1}
     Wrap: 0
@@ -1171,6 +1172,22 @@ MonoBehaviour:
   Offset: {x: 0, y: 1, z: 0}
   ApplyAfter: 0
   PreserveComposition: 0
+--- !u!114 &385349260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385349248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28e3f754a40cc487cac0f59efb1118db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LookAtTargetRadius: 0
+  FadeOutRange: {x: 0, y: 8.763748}
+  MaxDistanceControlledByCamera: 1
+  FadeOutMaterial: {fileID: 2100000, guid: 6acce4e5006dc40ef87cf9429db19cb3, type: 2}
 --- !u!1 &402555472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2465,11 +2482,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.12216465, y: 0.017321631, z: -0.0021323902, w: 0.9923564}
-  m_LocalPosition: {x: -0.27073166, y: 3.9701426, z: -19.992739}
+  m_LocalRotation: {x: 0.18224643, y: 0.000836238, z: -0.00015499721, w: 0.9832525}
+  m_LocalPosition: {x: 0.6973412, y: 4.9280868, z: -16.062057}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1293009719}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 11.276001, y: 0, z: 0}
@@ -2732,7 +2750,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2862,7 +2880,7 @@ Transform:
   - {fileID: 1781798043}
   - {fileID: 1601848484}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1214348087
 GameObject:
@@ -3145,8 +3163,14 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: Sample scene showing a simple shader that fades out objects with the
-    FadeOut material based on proximity to the Main Camera.
+  HelpText: "Sample scene showing a simple shader that fades out objects with the
+    FadeOut material based on proximity to the Main Camera.\n\nMove around the scene
+    with WASD and observe that obstacles that come between the player and the camera
+    are faded out. \nObstacles that fade out are grouped together under FadeOutObjects
+    gameobject. \nTo make an object fade out, it needs to have the FadeOut material
+    with the FadeOut shader.\n\nThe CM Freelook camera has a custom extension that
+    controls the FadeOut shader's properties.\n\nObstacles in the scene have no colliders
+    so the Player can pass through them."
 --- !u!4 &1293009719
 Transform:
   m_ObjectHideFlags: 0
@@ -3154,13 +3178,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1293009717}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
+  m_LocalRotation: {x: -0.18224643, y: -0.00083625485, z: 0.00015500034, w: 0.9832525}
+  m_LocalPosition: {x: -9.564097, y: 38.168697, z: 1.417408}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 867266297}
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1330089059
 PrefabInstance:
@@ -3172,11 +3196,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.71
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3184,7 +3208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12.24
+      value: -8.62
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalRotation.w

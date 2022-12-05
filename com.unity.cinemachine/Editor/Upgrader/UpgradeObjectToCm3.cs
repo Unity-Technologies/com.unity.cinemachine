@@ -44,9 +44,19 @@ namespace Cinemachine.Editor
                 // It's some kind of vcam.  Check for FreeLook first because it has
                 // hidden child VirtualCameras and we need to remove them
                 if (go.TryGetComponent<CinemachineFreeLook>(out var freelook))
+                {
                     notUpgradable = UpgradeFreelook(freelook);
+                    var manager = freelook.ParentCamera as CinemachineCameraManagerBase;
+                    if (manager != null)
+                        manager.InvalidateCameraCache();
+                }
                 else if (go.TryGetComponent<CinemachineVirtualCamera>(out var vcam))
+                {
                     notUpgradable = UpgradeVcam(vcam);
+                    var manager = vcam.ParentCamera as CinemachineCameraManagerBase;
+                    if (manager != null)
+                        manager.InvalidateCameraCache();
+                }
 
                 // Upgrade the pipeline components (there will be more of these...)
                 if (ReplaceComponent<CinemachineComposer, CinemachineRotationComposer>(go))
@@ -95,17 +105,48 @@ namespace Cinemachine.Editor
                     go.GetComponent<Cinemachine3rdPersonFollow>().UpgradeToCm3(go.GetComponent<CinemachineThirdPersonFollow>());
 
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
-                {
-                    var obsoleteDolly = go.GetComponent<CinemachineTrackedDolly>();
-                    var splineDolly = go.GetComponent<CinemachineSplineDolly>();
-                    obsoleteDolly.UpgradeToCm3(splineDolly);
-                }
+                    go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
+
 #if CINEMACHINE_PHYSICS
                 if (ReplaceComponent<CinemachineCollider, CinemachineDeoccluder>(go)) 
                     go.GetComponent<CinemachineCollider>().UpgradeToCm3(go.GetComponent<CinemachineDeoccluder>());
 #endif
+
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+                if (go.TryGetComponent<CinemachineConfiner>(out var confiner))
+                {
+    #if CINEMACHINE_PHYSICS
+                    if (confiner.UpgradeToCm3_GetTargetType() == typeof(CinemachineConfiner3D))
+                    {
+                        ReplaceComponent<CinemachineConfiner, CinemachineConfiner3D>(go);
+                        confiner.UpgradeToCm3(go.GetComponent<CinemachineConfiner3D>());
+                    }
+    #endif
+    #if CINEMACHINE_PHYSICS_2D
+                    if (confiner.UpgradeToCm3_GetTargetType() == typeof(CinemachineConfiner2D))
+                    {
+                        ReplaceComponent<CinemachineConfiner, CinemachineConfiner2D>(go);
+                        confiner.UpgradeToCm3(go.GetComponent<CinemachineConfiner2D>());
+                    }
+    #endif
+                }
+#endif
             }
             return notUpgradable;
+        }
+
+        public static Type GetBehaviorReferenceUpgradeType(MonoBehaviour b)
+        {
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+            // Hack for Confiner upgrade: 2D or 3D?
+            if (b is CinemachineConfiner c)
+                return c.UpgradeToCm3_GetTargetType();
+#endif
+            var oldType = b.GetType();
+            if (ClassUpgradeMap.ContainsKey(oldType))
+                return ClassUpgradeMap[oldType];
+
+            return oldType;
         }
 
         /// <summary>
@@ -662,17 +703,19 @@ namespace Cinemachine.Editor
                 {
                     var waypoints = smoothPath.m_Waypoints;
                     spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
-                    
                     for (var i = 0; i < waypoints.Length; i++)
                     {
+                        var tangent = smoothPath.EvaluateLocalTangent(i); 
+                        tangent /= 3f; // divide by magic number to match spline tangent scale correctly
                         spline.Spline.Add(new BezierKnot
                         {
                             Position = waypoints[i].position,
                             Rotation = Quaternion.identity,
+                            TangentIn = -tangent,
+                            TangentOut = tangent,
                         });
                         splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
                     }
-                    spline.Spline.SetTangentMode(TangentMode.AutoSmooth);
                     break;
                 }
                 default:
