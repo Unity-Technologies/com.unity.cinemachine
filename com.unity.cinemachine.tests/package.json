@@ -31,6 +31,6 @@
   ],
   "category": "unit tests",
   "dependencies": {
-    "com.unity.test-framework": "1.1.33"
+    "com.unity.cinemachine": "3.0.0-pre.3"
   }
 }
