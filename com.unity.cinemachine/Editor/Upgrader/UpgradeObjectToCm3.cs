@@ -703,17 +703,19 @@ namespace Cinemachine.Editor
                 {
                     var waypoints = smoothPath.m_Waypoints;
                     spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
-                    
                     for (var i = 0; i < waypoints.Length; i++)
                     {
+                        var tangent = smoothPath.EvaluateLocalTangent(i); 
+                        tangent /= 3f; // divide by magic number to match spline tangent scale correctly
                         spline.Spline.Add(new BezierKnot
                         {
                             Position = waypoints[i].position,
                             Rotation = Quaternion.identity,
+                            TangentIn = -tangent,
+                            TangentOut = tangent,
                         });
                         splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
                     }
-                    spline.Spline.SetTangentMode(TangentMode.AutoSmooth);
                     break;
                 }
                 default:
