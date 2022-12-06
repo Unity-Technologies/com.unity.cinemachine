@@ -63,7 +63,7 @@ namespace Cinemachine.Editor
             return false;
         }
 
-        void LoadAssetDependencies(string assetPath)
+        void LoadAssetDependencies(string assetPath, string packageManifest)
         {
             if (m_SampleConfiguration != null)
             {
@@ -87,8 +87,13 @@ namespace Cinemachine.Editor
                             m_PackageDependencyIndex = 0;
                             m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
                             m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
-                            if (m_PackageDependencies.Count != 0 && PromptUserConfirmation(m_PackageDependencies))
+                            
+                            if (m_PackageDependencies.Count != 0 && 
+                                DoDependenciesNeedToBeImported(packageManifest, out var dependenciesToImport) && 
+                                PromptUserConfirmation(dependenciesToImport))
                             {
+                                m_PackageDependencies = dependenciesToImport; // only import dependencies that are missing
+                                
                                 // Import package dependencies using the editor update loop, because
                                 // adding packages need to be done in sequence one after the other
                                 EditorApplication.update += ImportPackageDependencies;
@@ -103,6 +108,33 @@ namespace Cinemachine.Editor
             }
             
             // local functions
+            bool DoDependenciesNeedToBeImported(string manifest, out List<string> packagesToImport)
+            {
+                packagesToImport = new List<string>();
+                foreach (var packageDependency in m_PackageDependencies)
+                {
+                    if (manifest.Contains(packageDependency)) 
+                        packagesToImport.Add(packageDependency);
+                }
+
+                return packagesToImport.Count != 0;
+            }
+            
+            void ImportPackageDependencies()
+            {
+                if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
+                    return; // wait while we have a request pending
+
+                if (m_PackageDependencyIndex < m_PackageDependencies.Count)
+                    m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
+                else
+                {
+                    m_PackageDependencies.Clear();
+                    m_PackageAddRequest = null;
+                    EditorApplication.update -= ImportPackageDependencies;
+                }
+            }
+            
             static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths)
             {
                 if (paths == null)
@@ -123,21 +155,6 @@ namespace Cinemachine.Editor
                 return assetsImported;
             }
 
-            void ImportPackageDependencies()
-            {
-                if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
-                    return; // wait while we have a request pending
-
-                if (m_PackageDependencyIndex < m_PackageDependencies.Count)
-                    m_PackageAddRequest = Client.Add(m_PackageDependencies[m_PackageDependencyIndex++]);
-                else
-                {
-                    m_PackageDependencies.Clear();
-                    m_PackageAddRequest = null;
-                    EditorApplication.update -= ImportPackageDependencies;
-                }
-            }
-            
             static bool PromptUserConfirmation(List<string> dependencies)
             {
                 return EditorUtility.DisplayDialog(
@@ -148,7 +165,7 @@ namespace Cinemachine.Editor
                     "Yes, import package dependencies", "No, do not import package dependencies");
             }
         }
-        
+
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
@@ -182,14 +199,19 @@ namespace Cinemachine.Editor
         /// <summary>An AssetPostProcessor which will raise an event when a new asset is imported.</summary>
         class SamplePostprocessor : AssetPostprocessor
         {
-            public static event Action<string> AssetImported;
+            public static event Action<string, string> AssetImported;
 
             static void OnPostprocessAllAssets(string[] importedAssets, 
                 string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
             {
+                var packageManifest = GetPackageManifest();
                 foreach (var importedAsset in importedAssets)
-                    AssetImported?.Invoke(importedAsset);
+                    AssetImported?.Invoke(importedAsset, packageManifest);
             }
+            
+            // return jsonText.Contains( packageId );
+            static string GetPackageManifest() => 
+                !File.Exists("Packages/manifest.json") ? string.Empty : File.ReadAllText("Packages/manifest.json");
         }
         
         /// <summary>A configuration class defining information related to samples for the package.</summary>
