@@ -126,7 +126,23 @@ namespace Cinemachine.Editor
                                         deleteInstructions += relativePath;
                                         File.WriteAllText("Assets/" + k_SampleName + k_DeleteFile, deleteInstructions);
                                         AssetDatabase.Refresh();
+                                        DeleteSamplesIfUserAborted();
                                         break;
+                                    
+                                        static void DeleteSamplesIfUserAborted()
+                                        {
+                                            var path = "Assets/" + k_SampleName + k_DeleteFile;
+                                            if (File.Exists(path)) // user aborted importing samples
+                                            {
+                                                var contents = File.ReadAllText(path);
+                                                var instructions = contents.Split(",");
+                                                AssetDatabase.DeleteAsset(path); // delete instruction file
+                                                foreach (var instruction in instructions) 
+                                                    AssetDatabase.DeleteAsset("Assets/" + instruction); // delete samples that were aborted
+                    
+                                                AssetDatabase.Refresh();
+                                            }
+                                        }
                                     default:
                                     case UserChoice.ImportSampleButNotPackageDependencies:
                                         break;
@@ -278,23 +294,7 @@ namespace Cinemachine.Editor
 
             public PackageChecker()
             {
-                DeleteSamplesIfUserAborted();
                 RefreshPackageCache();
-            }
-
-            void DeleteSamplesIfUserAborted()
-            {
-                var path = "Assets/" + k_SampleName + k_DeleteFile;
-                if (File.Exists(path)) // user aborted importing samples
-                {
-                    var contents = File.ReadAllText(path);
-                    var instructions = contents.Split(",");
-                    AssetDatabase.DeleteAsset(path); // delete instruction file
-                    foreach (var instruction in instructions) 
-                        AssetDatabase.DeleteAsset("Assets/" + instruction); // delete samples that were aborted
-                    
-                    AssetDatabase.Refresh();
-                }
             }
 
             public void RefreshPackageCache()

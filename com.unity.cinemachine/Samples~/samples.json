@@ -19,7 +19,9 @@
       "AssetDependencies": [
         "Shared Assets"
       ],
-      "PackageDependencies": []
+      "PackageDependencies": [
+        "com.unity.visualscripting"
+      ]
     },
     {
       "Path": "Old Samples from CM2",
