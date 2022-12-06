@@ -304,7 +304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.x
@@ -486,7 +486,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 470754142}
-  m_LocalRotation: {x: -0.0055549447, y: 0.98550093, z: -0.16635561, w: -0.03290784}
+  m_LocalRotation: {x: -0.005557603, y: 0.9855004, z: -0.16635552, w: -0.03292358}
   m_LocalPosition: {x: 2.2, y: 11.8, z: 26.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -883,7 +883,7 @@ Transform:
   - {fileID: 470754144}
   - {fileID: 591947962}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &921351540
 MonoBehaviour:
@@ -953,13 +953,14 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "Sample scene showing Clearshot camera. \n\nThe player is moved the z-axis.
-    Observe that once the player is occluded a new camera is selected to frame it.\nCM
-    ClearShot camera has 3 children cameras. Clearshot selects from its children
-    based on visibility. When more than one camera has a clear shot of the player,
-    then their priority value determines which one is selected.\n\nThe shot evaluation
-    (line of sight) is done by CinemachineDeoccluder found on the Clearshot camera.
-    The user can supply their own shot evaluator by implementing IShotQualityEvaluator."
+  HelpText: "Sample scene showing Clearshot camera. \n\nThe player is moved automatically
+    on the z-axis. Observe that once the player is occluded a new camera is selected
+    to frame it.\nCM ClearShot camera has 3 children cameras. Clearshot selects from
+    its children based on visibility. When more than one camera has a clear shot
+    of the player, then their priority value determines which one is selected.\n\nThe
+    shot evaluation (line of sight) is done by CinemachineDeoccluder found on the
+    Clearshot camera. The user can supply their own shot evaluator by implementing
+    IShotQualityEvaluator."
 --- !u!4 &1084503959
 Transform:
   m_ObjectHideFlags: 0
@@ -967,13 +968,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1084503957}
-  m_LocalRotation: {x: 0.008236974, y: -0.9646143, z: 0.03035149, w: -0.2617829}
-  m_LocalPosition: {x: 13.530037, y: 38.824787, z: 17.73584}
+  m_LocalRotation: {x: -2.3283064e-10, y: -0.00041019917, z: -0, w: 1}
+  m_LocalPosition: {x: -8.832576, y: 40.053345, z: -1.0612526}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1397234035}
-  m_RootOrder: -1
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1132270518
 GameObject:
@@ -1336,12 +1337,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397234029}
-  m_LocalRotation: {x: -0.008236974, y: 0.9646143, z: -0.03035149, w: -0.2617829}
+  m_LocalRotation: {x: -0.008224523, y: 0.96472156, z: -0.030354867, w: -0.26138723}
   m_LocalPosition: {x: 13.014894, y: 2.4203663, z: 9.494938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1084503959}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1370,7 +1370,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1418606827}
-  m_LocalRotation: {x: -0.008236974, y: 0.9646143, z: -0.03035149, w: -0.2617829}
+  m_LocalRotation: {x: -0.008224523, y: 0.96472156, z: -0.030354867, w: -0.26138723}
   m_LocalPosition: {x: 13.014894, y: 2.4203663, z: 9.494938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1649,5 +1649,5 @@ Transform:
   - {fileID: 1553071303}
   - {fileID: 177048762}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
