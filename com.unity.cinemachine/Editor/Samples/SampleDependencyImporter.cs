@@ -16,6 +16,8 @@ namespace Cinemachine.Editor
     class SampleDependencyImporter : IPackageManagerExtension
     {
         const string k_CinemachinePackageName = "com.unity.cinemachine";
+        const string k_SampleName = "Samples/Cinemachine/";
+        const string k_DeleteFile = "DeleteSamplesInstructions.txt";
         PackageInfo m_PackageInfo;
         IEnumerable<Sample> m_Samples;
         SampleConfiguration m_SampleConfiguration;
@@ -69,7 +71,8 @@ namespace Cinemachine.Editor
         {
             if (m_SampleConfiguration != null)
             {
-                var assetsImported = false;
+                var sharedAssetsImported = false;
+                var localAssetsImported = false;
                 foreach (var sample in m_Samples)
                 {
                     if (assetPath.EndsWith(sample.displayName))
@@ -78,11 +81,11 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported =
+                            sharedAssetsImported =
                                 ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
                             
                             // Import sample-specific asset dependencies
-                            assetsImported |=
+                            localAssetsImported =
                                 ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
                             
                             // Import common amd sample specific package dependencies
@@ -105,16 +108,35 @@ namespace Cinemachine.Editor
                                     case UserChoice.ImportSampleButNotPackageDependencies:
                                         break;
                                     case UserChoice.AbortImport:
+                                        // Hack
+                                        // Package import cannot be cancelled and it triggers a domain reload, so we
+                                        // need something persistent to delete samples after they are imported -> file
+                                        var fullPath = sample.importPath;
+                                        var relativePath = fullPath.Substring(fullPath.IndexOf(k_SampleName));
+                                        var version = relativePath.Substring(k_SampleName.Length);
+                                        version = version.Substring(0, version.IndexOf("/") + 1);
+
+                                        var deleteInstructions = string.Empty;
+                                        if (sharedAssetsImported)
+                                            foreach (var folder in m_SampleConfiguration.SharedAssetDependencies) 
+                                                deleteInstructions += k_SampleName + version + folder + ",";
+                                                        
+                                        if (localAssetsImported)
+                                            foreach (var folder in sampleEntry.AssetDependencies)
+                                                deleteInstructions += k_SampleName + version + folder + ",";
+                                                        
+                                        deleteInstructions += relativePath;
+                                        File.WriteAllText("Assets/" + k_SampleName + k_DeleteFile, deleteInstructions);
+                                        AssetDatabase.Refresh();
                                         break;
                                 }
-                                
                             }
                         }
                         break;
                     }
                 } 
 
-                if (assetsImported)
+                if (sharedAssetsImported || localAssetsImported)
                     AssetDatabase.Refresh();
             }
             
@@ -165,6 +187,12 @@ namespace Cinemachine.Editor
 
                 return assetsImported;
             }
+        }
+
+        void DeleteSamplesAfterImport(string packageName)
+        {
+            Debug.Log(packageName + " is imported!");
+            AssetDatabase.importPackageCompleted -= DeleteSamplesAfterImport;
         }
 
         enum UserChoice
@@ -255,6 +283,18 @@ namespace Cinemachine.Editor
 
             public PackageChecker()
             {
+                var path = "Assets/" + k_SampleName + k_DeleteFile;
+                if (File.Exists(path))
+                {
+                    var contents = File.ReadAllText(path);
+                    var instructions = contents.Split(",");
+                    AssetDatabase.DeleteAsset(path);
+                    foreach (var instruction in instructions) 
+                        AssetDatabase.DeleteAsset("Assets/" + instruction);
+                    
+                    AssetDatabase.Refresh();
+                }
+                
                 RefreshPackageCache();
             }
  
