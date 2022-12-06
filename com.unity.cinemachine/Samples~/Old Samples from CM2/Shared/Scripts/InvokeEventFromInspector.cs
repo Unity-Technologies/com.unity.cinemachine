@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
     public class InvokeEventFromInspector : MonoBehaviour
     {

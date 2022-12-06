@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
 
 public class ScriptingExample : MonoBehaviour

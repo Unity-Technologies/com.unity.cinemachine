@@ -1,7 +1,7 @@
 ﻿using Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
     public class PlayerMoveOnSphere : MonoBehaviour
     {

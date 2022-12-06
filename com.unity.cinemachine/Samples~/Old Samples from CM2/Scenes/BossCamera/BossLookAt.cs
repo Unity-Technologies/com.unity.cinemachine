@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
     /// <summary>
     /// Simple script that makes this transform look at a target.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
 
 [AddComponentMenu("")] // Don't display in add component menu

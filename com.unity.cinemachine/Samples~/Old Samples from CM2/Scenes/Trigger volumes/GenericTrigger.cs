@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
     public class GenericTrigger : MonoBehaviour
     {

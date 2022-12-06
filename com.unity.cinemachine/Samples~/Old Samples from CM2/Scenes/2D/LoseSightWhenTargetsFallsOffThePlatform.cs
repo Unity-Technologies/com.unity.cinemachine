@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine.OldExamples
+namespace Cinemachine.Examples
 {
     [RequireComponent(typeof(CinemachineTargetGroup))]
     public class LoseSightWhenTargetsFallsOffThePlatform : MonoBehaviour
