@@ -91,14 +91,23 @@ namespace Cinemachine.Editor
                             m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
                             
                             if (m_PackageDependencies.Count != 0 && 
-                                DoDependenciesNeedToBeImported(out var dependenciesToImport) && 
-                                PromptUserConfirmation(dependenciesToImport))
+                                DoDependenciesNeedToBeImported(out var dependenciesToImport))
                             {
-                                m_PackageDependencies = dependenciesToImport; // only import dependencies that are missing
+                                switch (PromptUserConfirmation(dependenciesToImport))
+                                {
+                                    case UserChoice.ImportPackageDependencies:
+                                        // only import dependencies that are missing
+                                        m_PackageDependencies = dependenciesToImport;
+                                        // Import package dependencies using the editor update loop, because
+                                        // adding packages need to be done in sequence one after the other
+                                        EditorApplication.update += ImportPackageDependencies;
+                                        break;
+                                    case UserChoice.ImportSampleButNotPackageDependencies:
+                                        break;
+                                    case UserChoice.AbortImport:
+                                        break;
+                                }
                                 
-                                // Import package dependencies using the editor update loop, because
-                                // adding packages need to be done in sequence one after the other
-                                EditorApplication.update += ImportPackageDependencies;
                             }
                         }
                         break;
@@ -156,15 +165,23 @@ namespace Cinemachine.Editor
 
                 return assetsImported;
             }
+        }
 
-            static bool PromptUserConfirmation(List<string> dependencies)
-            {
-                return EditorUtility.DisplayDialog(
-                    "Import Sample Package Dependencies",
-                    "These samples contain package dependencies that your project may not have: \n" +
-                    dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
-                    "Yes, import package dependencies", "No, do not import package dependencies");
-            }
+        enum UserChoice
+        {
+            ImportPackageDependencies = 0,
+            ImportSampleButNotPackageDependencies = 1,
+            AbortImport = 2
+        }
+        static UserChoice PromptUserConfirmation(List<string> dependencies)
+        {
+            return (UserChoice) EditorUtility.DisplayDialogComplex(
+                "Import Sample Package Dependencies",
+                "These samples contain package dependencies that your project does not have: \n" +
+                dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
+                "Import samples and its dependencies", 
+                "Import samples but not its dependencies",
+                "Abort importing samples");
         }
 
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
