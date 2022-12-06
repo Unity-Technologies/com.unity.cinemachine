@@ -81,12 +81,12 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            sharedAssetsImported =
-                                ImportAssetDependencies(m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
+                            sharedAssetsImported = ImportAssetDependencies(
+                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, out _);
                             
                             // Import sample-specific asset dependencies
-                            localAssetsImported =
-                                ImportAssetDependencies(m_PackageInfo, sampleEntry.AssetDependencies);
+                            localAssetsImported = ImportAssetDependencies(
+                                m_PackageInfo, sampleEntry.AssetDependencies, out bool reimport);
                             
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
@@ -106,28 +106,28 @@ namespace Cinemachine.Editor
                                         EditorApplication.update += ImportPackageDependencies;
                                         break;
                                     case UserChoice.AbortImport:
-                                        AssetDatabase.Refresh();
+                                        // if samples were already imported, don't delete them
+                                        if (reimport)
+                                            break;
                                         
+                                        AssetDatabase.Refresh();
                                         var fullPath = sample.importPath;
                                         var relativePath = fullPath.Substring(fullPath.IndexOf(k_SampleName));
                                         var version = relativePath.Substring(k_SampleName.Length);
                                         version = version.Substring(0, version.IndexOf("/") + 1);
 
-                                        var deleteInstructions = string.Empty;
+                                        var instructions = new List<string>();
                                         if (sharedAssetsImported)
                                             foreach (var folder in m_SampleConfiguration.SharedAssetDependencies) 
-                                                deleteInstructions += k_SampleName + version + folder + ",";
+                                                instructions.Add("Assets/" + k_SampleName + version + folder);
                                                         
                                         if (localAssetsImported)
                                             foreach (var folder in sampleEntry.AssetDependencies)
-                                                deleteInstructions += k_SampleName + version + folder + ",";
+                                                instructions.Add("Assets/" + k_SampleName + version + folder);
                                                         
-                                        deleteInstructions += relativePath;
+                                        instructions.Add("Assets/" + relativePath);
 
-                                        var instructions = deleteInstructions.Split(",");
-                                        foreach (var instruction in instructions) 
-                                            AssetDatabase.DeleteAsset("Assets/" + instruction); // delete samples that were aborted
-                                        
+                                        AssetDatabase.DeleteAssets(instructions.ToArray(), new List<string>());
                                         AssetDatabase.Refresh();
                                         break;
                                     default:
@@ -172,8 +172,9 @@ namespace Cinemachine.Editor
                 }
             }
             
-            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths)
+            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out bool reimport)
             {
+                reimport = false;
                 if (paths == null)
                     return false;
 
@@ -183,8 +184,10 @@ namespace Cinemachine.Editor
                     var dependencyPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/{path}");
                     if (Directory.Exists(dependencyPath))
                     {
-                        CopyDirectory(dependencyPath, 
-                            $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}");
+                        var copyTo = 
+                            $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
+                        reimport = Directory.Exists(copyTo);
+                        CopyDirectory(dependencyPath, copyTo);
                         assetsImported = true;
                     }
                 }
