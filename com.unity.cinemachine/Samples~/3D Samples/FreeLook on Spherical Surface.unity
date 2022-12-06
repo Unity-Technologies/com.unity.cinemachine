@@ -208,9 +208,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 364965559}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
     LegacyInput: Mouse X
     LegacyGain: 200
     Control:
@@ -223,6 +227,8 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 364965559}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: -4
     LegacyInput: Mouse Y
     LegacyGain: -200
     Control:
@@ -235,6 +241,8 @@ MonoBehaviour:
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 364965559}
+    InputAction: {fileID: 0}
+    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
@@ -242,9 +250,9 @@ MonoBehaviour:
       AccelTime: 0
       DecelTime: 0
     Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0
+      Enabled: 0
+      Wait: 1
+      Time: 2
 --- !u!114 &364965557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,7 +394,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
-  m_LocalRotation: {x: 0.20065226, y: -0.000000016856447, z: 0.000000003452499, w: 0.97966254}
+  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -552,7 +560,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.20065226, y: -0.000000016856447, z: 0.000000003452499, w: 0.97966254}
+  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

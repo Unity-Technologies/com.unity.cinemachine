@@ -982,7 +982,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385349248}
-  m_LocalRotation: {x: 0.18224643, y: 0.00083625485, z: -0.00015500034, w: 0.9832525}
+  m_LocalRotation: {x: 0.18224643, y: 0.000836238, z: -0.00015499721, w: 0.9832525}
   m_LocalPosition: {x: 0.69673157, y: 3.9945145, z: -16.420446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1031,33 +1031,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 385349256}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
     LegacyInput: Mouse X
-    LegacyGain: 300
+    LegacyGain: 200
     Control:
       InputValue: 0
-      AccelTime: 0.1
-      DecelTime: 0.1
+      AccelTime: 0.2
+      DecelTime: 0.2
     Recentering:
       Enabled: 0
       Wait: 1
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 385349256}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: -4
     LegacyInput: Mouse Y
-    LegacyGain: 2
+    LegacyGain: -200
     Control:
       InputValue: 0
       AccelTime: 0.2
-      DecelTime: 0.1
+      DecelTime: 0.2
     Recentering:
       Enabled: 0
       Wait: 1
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 385349256}
+    InputAction: {fileID: 0}
+    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
@@ -2482,8 +2490,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.18224643, y: 0.00083625485, z: -0.00015500034, w: 0.9832525}
-  m_LocalPosition: {x: 0.69734114, y: 4.9280868, z: -16.062057}
+  m_LocalRotation: {x: 0.18224643, y: 0.000836238, z: -0.00015499721, w: 0.9832525}
+  m_LocalPosition: {x: 0.6973412, y: 4.9280868, z: -16.062057}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
