@@ -16,14 +16,9 @@ namespace Cinemachine.Editor
     class SampleDependencyImporter : IPackageManagerExtension
     {
         const string k_CinemachinePackageName = "com.unity.cinemachine";
-        const string k_SampleName = "Samples/Cinemachine/";
-        const string k_DeleteFile = "DeleteSamplesInstructions.txt";
         PackageInfo m_PackageInfo;
         IEnumerable<Sample> m_Samples;
         SampleConfiguration m_SampleConfiguration;
-        AddRequest m_PackageAddRequest;
-        int m_PackageDependencyIndex;
-        List<string> m_PackageDependencies = new ();
         PackageChecker m_PackageChecker = new ();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
@@ -66,7 +61,11 @@ namespace Cinemachine.Editor
             configuration = null;
             return false;
         }
-
+        
+        const string k_SampleName = "Samples/Cinemachine/";
+        AddRequest m_PackageAddRequest;
+        int m_PackageDependencyIndex;
+        List<string> m_PackageDependencies = new ();
         void LoadAssetDependencies(string assetPath)
         {
             if (m_SampleConfiguration != null)
@@ -82,11 +81,13 @@ namespace Cinemachine.Editor
                         {
                             // Import common asset dependencies
                             sharedAssetsImported = ImportAssetDependencies(
-                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, out _);
+                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, 
+                                out bool sharedAssetsReimported);
                             
                             // Import sample-specific asset dependencies
                             localAssetsImported = ImportAssetDependencies(
-                                m_PackageInfo, sampleEntry.AssetDependencies, out bool reimport);
+                                m_PackageInfo, sampleEntry.AssetDependencies, 
+                                out bool localAssetsReimported);
                             
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
@@ -107,28 +108,10 @@ namespace Cinemachine.Editor
                                         break;
                                     case UserChoice.AbortImport:
                                         // if samples were already imported, don't delete them
-                                        if (reimport)
-                                            break;
-                                        
-                                        AssetDatabase.Refresh();
-                                        var fullPath = sample.importPath;
-                                        var relativePath = fullPath.Substring(fullPath.IndexOf(k_SampleName));
-                                        var version = relativePath.Substring(k_SampleName.Length);
-                                        version = version.Substring(0, version.IndexOf("/") + 1);
-
-                                        var instructions = new List<string>();
-                                        if (sharedAssetsImported)
-                                            foreach (var folder in m_SampleConfiguration.SharedAssetDependencies) 
-                                                instructions.Add("Assets/" + k_SampleName + version + folder);
-                                                        
-                                        if (localAssetsImported)
-                                            foreach (var folder in sampleEntry.AssetDependencies)
-                                                instructions.Add("Assets/" + k_SampleName + version + folder);
-                                                        
-                                        instructions.Add("Assets/" + relativePath);
-
-                                        AssetDatabase.DeleteAssets(instructions.ToArray(), new List<string>());
-                                        AssetDatabase.Refresh();
+                                        if (!localAssetsReimported)
+                                            DeleteSampleImported(sample.importPath, 
+                                                !sharedAssetsReimported, m_SampleConfiguration.SharedAssetDependencies,
+                                                localAssetsImported, sampleEntry.AssetDependencies);
                                         break;
                                     default:
                                     case UserChoice.ImportSampleButNotPackageDependencies:
@@ -193,6 +176,30 @@ namespace Cinemachine.Editor
                 }
 
                 return assetsImported;
+            }
+
+            static void DeleteSampleImported(string importPath, 
+                bool sharedAssetsImported, string[] sharedAssetDependencies, 
+                bool localAssetsImported, string[] localAssetDependencies)
+            {
+                AssetDatabase.Refresh();
+                var relativePath = importPath.Substring(importPath.IndexOf(k_SampleName));
+                var version = relativePath.Substring(k_SampleName.Length);
+                version = version.Substring(0, version.IndexOf("/") + 1);
+
+                var instructions = new List<string>();
+                if (sharedAssetsImported)
+                    foreach (var folder in sharedAssetDependencies) 
+                        instructions.Add("Assets/" + k_SampleName + version + folder);
+                                                        
+                if (localAssetsImported)
+                    foreach (var folder in localAssetDependencies)
+                        instructions.Add("Assets/" + k_SampleName + version + folder);
+                                                        
+                instructions.Add("Assets/" + relativePath);
+
+                AssetDatabase.DeleteAssets(instructions.ToArray(), new List<string>());
+                AssetDatabase.Refresh();
             }
         }
 
