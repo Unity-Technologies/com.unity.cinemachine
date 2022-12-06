@@ -26,7 +26,7 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/project-pack.yml#pack
 {% endfor %}
 {% endfor %}
 {% endfor %}
