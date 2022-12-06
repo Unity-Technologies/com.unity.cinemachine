@@ -299,7 +299,7 @@ namespace Cinemachine.Editor
                 if (m_Request != null && !m_Request.IsCompleted)
                     return; // need to wait for previous request to finish
                 
-                m_Request = Client.List(offlineMode: true);
+                m_Request = Client.List(true);
                 EditorApplication.update += WaitForRequestToComplete;
             }
  
