@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 36baaa8bdcb9d8b49b9199833965d2c3, type: 3}
-  m_Name: RoadieRunBlends
+  m_Name: ThirdPerson Shooter Blends
   m_EditorClassIdentifier: 
   CustomBlends:
-  - From: CM walk
-    To: CM run
+  - From: Third Person Aim Camera
+    To: RoadieRun Camera
     Blend:
-      m_Style: 4
-      m_Time: 0.5
+      m_Style: 5
+      m_Time: 1.2
       m_CustomCurve:
         serializedVersion: 2
         m_Curve: []
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
-  - From: CM run
-    To: CM walk
+  - From: RoadieRun Camera
+    To: Third Person Aim Camera
     Blend:
-      m_Style: 5
-      m_Time: 1.25
+      m_Style: 4
+      m_Time: 0.5
       m_CustomCurve:
         serializedVersion: 2
         m_Curve: []
