@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Cinemachine.OldExamples
 {
     /// <summary>
     /// This is an add-on for Cinemachine virtual cameras containing the ThirdPersonFollow component.

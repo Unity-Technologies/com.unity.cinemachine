@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Cinemachine.OldExamples
 {
     [RequireComponent(typeof(CinemachineVirtualCamera))]
     [SaveDuringPlay] // Enable SaveDuringPlay for this class

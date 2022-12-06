@@ -2,7 +2,7 @@
 using Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Cinemachine.OldExamples
 {
     public class PlayerMove : MonoBehaviour
     {

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Cinemachine.OldExamples
 {
     [ExecuteInEditMode]
     public class CameraMagnetProperty : MonoBehaviour
