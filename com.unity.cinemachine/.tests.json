@@ -1,0 +1,7 @@
+{
+    "createSeparatePackage": true,
+    "displayName": "CM ests Package",
+    "dependencies": {
+       "com.unity.test-framework": "1.1.33"
+    }
+}
