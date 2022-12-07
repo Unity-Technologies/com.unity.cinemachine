@@ -7,13 +7,10 @@ namespace Cinemachine.Examples
     /// An example add-on module for Cinemachine Virtual Camera for controlling
     /// the FadeOut shader included in our example package.
     /// </summary>
-    [AddComponentMenu("")] // Hide in menu
     [ExecuteAlways]
-    public class CinemachineFadeOutNearbyObjects : CinemachineExtension
+    public class CinemachineFadeOutShaderController : CinemachineExtension
     {
-        /// <summary>
-        /// Radius of the look at target.
-        /// </summary>
+        /// <summary>Radius of the look at target.</summary>
         [Tooltip("Radius of the look at target.")]
         public float LookAtTargetRadius = 1;
 
@@ -36,18 +33,14 @@ namespace Cinemachine.Examples
             "distance between this virtual camera and LookAt target minus LookAtTargetRadius.")]
         public bool MaxDistanceControlledByCamera = true;
     
-        /// <summary>
-        /// Material using the FadeOut shader.
-        /// </summary>
+        /// <summary>Material using the FadeOut shader.</summary>
         [Tooltip("Material using the FadeOut shader.")]
         public Material FadeOutMaterial;
 
         static readonly int k_MaxDistanceID = Shader.PropertyToID("_MaxDistance");
         static readonly int k_MinDistanceID = Shader.PropertyToID("_MinDistance");
 
-        /// <summary>
-        /// Updates FadeOut shader on the specified FadeOutMaterial.
-        /// </summary>
+        /// <summary>Updates FadeOut shader on the specified FadeOutMaterial.</summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="stage">The current pipeline stage</param>
         /// <param name="state">The current virtual camera state</param>
