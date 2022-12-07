@@ -1,6 +1,6 @@
 {
     "createSeparatePackage": true,
-    "displayName": "CM ests Package",
+    "displayName": "Cinemachine Test Package",
     "dependencies": {
        "com.unity.test-framework": "1.1.33"
     }
