@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -155,7 +155,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &129940157
 MonoBehaviour:
@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 139026125}
   - component: {fileID: 139026126}
   m_Layer: 0
-  m_Name: Proximity
+  m_Name: Visualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -319,7 +319,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a29985f57f2a444dcae5c5e3a1ad420b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e0264e299e9f7b5449afd103be8cd224, type: 3}
   m_Color: {r: 0.07843137, g: 1, b: 0.4453238, a: 0.19215687}
   m_FlipX: 0
   m_FlipY: 0
@@ -405,8 +405,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a29985f57f2a444dcae5c5e3a1ad420b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: e0264e299e9f7b5449afd103be8cd224, type: 3}
+  m_Color: {r: 0.8396226, g: 0.2690523, b: 0.21782663, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -425,12 +425,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 248061844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fcfa0014d36647088b460fa895c23d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 6aefb4603cbd49d4691e1aea49f45b00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MagnetStrength: 30
-  Proximity: 4
-  ProximityVisualization: {fileID: 139026125}
+  Strength: 30
+  Range: 4
+  RangeVisualizer: {fileID: 139026125}
 --- !u!1 &305873301
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,8 +676,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a29985f57f2a444dcae5c5e3a1ad420b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: e0264e299e9f7b5449afd103be8cd224, type: 3}
+  m_Color: {r: 0.8396226, g: 0.2690523, b: 0.21782663, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -696,12 +696,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 360032427}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fcfa0014d36647088b460fa895c23d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 6aefb4603cbd49d4691e1aea49f45b00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MagnetStrength: 10
-  Proximity: 6
-  ProximityVisualization: {fileID: 360139935}
+  Strength: 10
+  Range: 6
+  RangeVisualizer: {fileID: 360139935}
 --- !u!1 &360139934
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,7 +713,7 @@ GameObject:
   - component: {fileID: 360139935}
   - component: {fileID: 360139936}
   m_Layer: 0
-  m_Name: Proximity
+  m_Name: Visualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -775,7 +775,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a29985f57f2a444dcae5c5e3a1ad420b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e0264e299e9f7b5449afd103be8cd224, type: 3}
   m_Color: {r: 0.08018869, g: 0.24546729, b: 1, a: 0.19215687}
   m_FlipX: 0
   m_FlipY: 0
@@ -861,8 +861,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a29985f57f2a444dcae5c5e3a1ad420b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: e0264e299e9f7b5449afd103be8cd224, type: 3}
+  m_Color: {r: 0.8396226, g: 0.2690523, b: 0.21782663, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -881,12 +881,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 436036890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fcfa0014d36647088b460fa895c23d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 6aefb4603cbd49d4691e1aea49f45b00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MagnetStrength: 5
-  Proximity: 7
-  ProximityVisualization: {fileID: 561357168}
+  Strength: 5
+  Range: 7
+  RangeVisualizer: {fileID: 561357168}
 --- !u!1001 &457007403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1001,7 +1001,7 @@ GameObject:
   - component: {fileID: 561357168}
   - component: {fileID: 561357169}
   m_Layer: 0
-  m_Name: Proximity
+  m_Name: Visualizer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1063,7 +1063,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a29985f57f2a444dcae5c5e3a1ad420b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e0264e299e9f7b5449afd103be8cd224, type: 3}
   m_Color: {r: 0.9283185, g: 1, b: 0.07843137, a: 0.19215687}
   m_FlipX: 0
   m_FlipY: 0
@@ -1164,7 +1164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6730909480988340408, guid: 083208d2392614ed684d6eeda5e44908, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6730909480988340408, guid: 083208d2392614ed684d6eeda5e44908, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1822,7 +1822,7 @@ Transform:
   - {fileID: 248061845}
   - {fileID: 360032428}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1526790105
 MonoBehaviour:
@@ -1833,7 +1833,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1526790103}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ace3da63156d542cfaa364312c5f2cb1, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f6129fefa8c2eb41a2b757c190472af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TargetGroup: {fileID: 838270488}
@@ -2180,7 +2180,7 @@ GameObject:
   - component: {fileID: 2125070645}
   - component: {fileID: 2125070644}
   m_Layer: 0
-  m_Name: Instructions
+  m_Name: Help
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2201,15 +2201,15 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "A simple scene showing Confiner2D confining the camera, inside a box
-    collider, such that it does not see outside the map.\n\nTo toggle between projection
-    modes, you can use the Orthographic Camera toggle in the top left corner of the
-    Game View.  \nNote: When the camera's projection mode changes, Confiner2D's lens
-    cache is invalidated to force an adjustment of the confiner to fit the new camera
-    projection mode.\n\nThe Camera Magnets illustrate a dynamic modification of the
-    Target Group.  Toggling them on makes them attract the camera's attention: the
-    closer the player is to the magnet, the stronger the attraction.  This is implemented
-    by the CameraMagnetTargetController behaviour on the CameraMagnets object."
+  HelpText: "This scene shows Confiner2D confining the camera inside a box collider,
+    such that it does not see outside the map.\n\nTo toggle between projection modes,
+    you can use the Orthographic Camera toggle in the top left corner of the Game
+    View.  \nNote: When the camera's projection mode changes, Confiner2D's lens cache
+    is invalidated to force an adjustment of the confiner to fit the new camera projection
+    mode.\n\nThe Camera Magnets illustrate a dynamic modification of the Target Group. 
+    Toggling them on makes them attract the camera's attention: the closer the player
+    is to the magnet, the stronger the attraction.  This is implemented by the MagnetGroupController
+    behaviour on the CameraMagnets object."
 --- !u!4 &2125070645
 Transform:
   m_ObjectHideFlags: 0
@@ -2218,12 +2218,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2125070643}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.071655, y: -3.249998, z: 10}
+  m_LocalPosition: {x: -2.4893465, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7726835707821803376}
-  m_RootOrder: -1
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4808701948474512475
 PrefabInstance:
@@ -2235,7 +2235,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2990615358078798225, guid: 1cfe56bf71fce48e78401683e1916339, type: 3}
       propertyPath: m_Name
-      value: UI Toggle for camera lens
+      value: UI with Toggles
       objectReference: {fileID: 0}
     - target: {fileID: 2990615358078798229, guid: 1cfe56bf71fce48e78401683e1916339, type: 3}
       propertyPath: m_Pivot.x
@@ -2375,12 +2375,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.623612, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -11.561002, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7726835708644564430}
-  - {fileID: 2125070645}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: -0.628, z: 0}
@@ -2416,7 +2415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugText: 1
+  ShowDebugText: 0
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
