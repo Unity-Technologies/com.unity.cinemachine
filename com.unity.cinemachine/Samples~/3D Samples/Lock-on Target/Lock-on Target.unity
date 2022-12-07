@@ -524,7 +524,7 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
     FocusDistance: 10
   Transitions:
-    BlendHint: -1
+    BlendHint: 4
     Events:
       OnCameraLive:
         m_PersistentCalls:
@@ -542,7 +542,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &838339819
 MonoBehaviour:
@@ -677,7 +677,7 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
     FocusDistance: 10
   Transitions:
-    BlendHint: 0
+    BlendHint: 4
     Events:
       OnCameraLive:
         m_PersistentCalls:
@@ -689,13 +689,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1106812490}
-  m_LocalRotation: {x: 0.018337065, y: 0.48311153, z: -0.0101208305, w: 0.8753083}
+  m_LocalRotation: {x: 0.00078948576, y: 0.48321733, z: -0.00043574316, w: 0.87549996}
   m_LocalPosition: {x: -23.999393, y: 1.6889423, z: -15.118191}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1106812494
 MonoBehaviour:
@@ -735,7 +735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0.5, z: 0}
+  TrackedObjectOffset: {x: 0, y: 0, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -743,7 +743,7 @@ MonoBehaviour:
     IgnoreY: 0
   Damping: {x: 0.5, y: 0.5}
   Composition:
-    ScreenPosition: {x: 0, y: 0}
+    ScreenPosition: {x: 0, y: 0.05}
     DeadZone:
       Enabled: 1
       Size: {x: 0, y: 0}
@@ -917,9 +917,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3624950987233539952, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalScale.x
@@ -1363,7 +1367,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1519050427}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 3.052, z: 0}
+  m_LocalEulerAnglesHint: {x: 1.54, y: 3.052, z: 0}
 --- !u!114 &2072584706
 MonoBehaviour:
   m_ObjectHideFlags: 0
