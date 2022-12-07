@@ -99,14 +99,14 @@ namespace Cinemachine.Editor
                             {
                                 switch (PromptUserConfirmation(dependenciesToImport))
                                 {
-                                    case UserChoice.ImportPackageDependencies:
+                                    case UserChoice.ImportSamplesWithDependencies:
                                         // only import dependencies that are missing
                                         m_PackageDependencies = dependenciesToImport;
                                         // Import package dependencies using the editor update loop, because
                                         // adding packages need to be done in sequence one after the other
                                         EditorApplication.update += ImportPackageDependencies;
                                         break;
-                                    case UserChoice.AbortImport:
+                                    case UserChoice.CancelImport:
                                         // if samples were already imported, don't delete them
                                         if (!localAssetsReimported)
                                             DeleteSampleImported(sample.importPath, 
@@ -114,7 +114,7 @@ namespace Cinemachine.Editor
                                                 localAssetsImported, sampleEntry.AssetDependencies);
                                         break;
                                     default:
-                                    case UserChoice.ImportSampleButNotPackageDependencies:
+                                    case UserChoice.ImportSamplesWithoutDependencies:
                                         break;
                                 }
                             }
@@ -205,9 +205,9 @@ namespace Cinemachine.Editor
 
         enum UserChoice
         {
-            ImportPackageDependencies = 0,
-            ImportSampleButNotPackageDependencies = 1,
-            AbortImport = 2
+            ImportSamplesWithDependencies = 0,
+            CancelImport = 1,
+            ImportSamplesWithoutDependencies = 2,
         }
         static UserChoice PromptUserConfirmation(List<string> dependencies)
         {
@@ -216,8 +216,8 @@ namespace Cinemachine.Editor
                 "These samples contain package dependencies that your project does not have: \n" +
                 dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
                 "Import samples and their dependencies", 
-                "Import samples without their dependencies",
-                "Cancel importing the samples");
+                "Cancel importing the samples",
+                "Import samples without their dependencies");
         }
 
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
