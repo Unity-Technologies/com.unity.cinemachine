@@ -215,9 +215,9 @@ namespace Cinemachine.Editor
                 "Import Sample Package Dependencies",
                 "These samples contain package dependencies that your project does not have: \n" +
                 dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
-                "Import samples and its dependencies", 
-                "Import samples but not its dependencies",
-                "Abort importing samples");
+                "Import samples and their dependencies", 
+                "Import samples without their dependencies",
+                "Cancel importing the samples");
         }
 
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
