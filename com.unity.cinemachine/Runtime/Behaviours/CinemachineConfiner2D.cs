@@ -163,7 +163,7 @@ namespace Cinemachine
 
         /// <summary>
         /// Invalidates Bounding Shape Cache, so a new one is computed next frame.
-        /// The re-computation of is costly.  This recomputes the bounding shape cache, and
+        /// The re-computation is costly.  This recomputes the bounding shape cache, and
         /// the computed confiner cache.
         /// Call this when the input bounding shape changes (non-uniform scale, rotation, or
         /// points are moved, added or deleted).
