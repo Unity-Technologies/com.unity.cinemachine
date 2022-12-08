@@ -35,6 +35,10 @@ namespace Cinemachine.Editor
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            var confiner = Target; // so it gets captured in the lambdas
+            if (confiner.IsCameraOversizedForTheConfiner())
+                ux.Add(new HelpBox("The camera window size is bigger than what can fit " +
+                    "perfectly in the confiner.", HelpBoxMessageType.Info));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
             TrackVolume(volumeProp);
@@ -48,7 +52,6 @@ namespace Cinemachine.Editor
                 polygonsHelp.SetVisible(cc != null && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
             }
 
-            var confiner = Target; // so it gets captured in the lambdas
             var bakeProgress = ux.AddChild(new ProgressBar { lowValue = 0, highValue = 100 });
             var bakeTimeout = ux.AddChild(new HelpBox(
                 "Polygon skeleton computation timed out.  Confiner result might be incomplete."

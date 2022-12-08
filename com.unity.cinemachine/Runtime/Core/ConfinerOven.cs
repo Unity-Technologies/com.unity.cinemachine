@@ -24,7 +24,7 @@ namespace Cinemachine
             readonly double m_SqrPolygonDiagonal;
 
             List<List<IntPoint>> m_OriginalPolygon;
-            List<List<IntPoint>> m_Solution;
+            internal List<List<IntPoint>> m_Solution;
 
             const double k_ClipperEpsilon = 0.01f * k_FloatToIntScaler;
 
@@ -235,7 +235,7 @@ namespace Cinemachine
 
         List<List<IntPoint>> m_OriginalPolygon;
         IntPoint m_MidPoint;
-        List<List<IntPoint>> m_Skeleton = new();
+        internal List<List<IntPoint>> m_Skeleton = new();
 
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1f / k_FloatToIntScaler;

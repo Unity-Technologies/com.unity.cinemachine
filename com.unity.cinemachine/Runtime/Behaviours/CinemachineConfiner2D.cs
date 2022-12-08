@@ -459,6 +459,26 @@ namespace Cinemachine
             return originalPath != null;
         }
 
+        internal bool IsCameraOversizedForTheConfiner()
+        {
+            var inputPath = m_ShapeCache.OriginalPath;
+            var allExtraStates = GetAllExtraStates<VcamExtraState>();
+            foreach (var extra in allExtraStates)
+            {
+                if (extra.BakedSolution != null)
+                {
+                    if (m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
+                        return true;
+                    var solution = extra.BakedSolution.m_Solution;
+                    if (solution.Count == 1 && solution[0].Count == 1)
+                        return true;
+                    if (solution.Count != m_ShapeCache.OriginalPath.Count)
+                        return true;
+                }
+            }
+            return false;
+        }
+
         internal float BakeProgress() => m_ShapeCache.ConfinerOven != null ? m_ShapeCache.ConfinerOven.bakeProgress : 0f;
         internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null && 
             m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.TIMEOUT;
