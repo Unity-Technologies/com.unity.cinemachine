@@ -467,12 +467,12 @@ namespace Cinemachine
                 if (extra.BakedSolution != null)
                 {
                     if (m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
-                        return true;
+                        return true; // there is a skeleton, that means some parts are collapsed -> oversized
                     var solution = extra.BakedSolution.m_Solution;
                     if (solution.Count == 1 && solution[0].Count == 1)
-                        return true;
+                        return true; // shrank down to mid point -> oversized
                     if (solution.Count != m_ShapeCache.OriginalPath.Count)
-                        return true;
+                        return true; // polygon count of the input and solution differs -> oversized
                 }
             }
             return false;
