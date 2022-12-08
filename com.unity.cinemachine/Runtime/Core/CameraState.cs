@@ -409,11 +409,33 @@ namespace Cinemachine
                 if ((blendHint & BlendHintValue.CylindricalPositionBlend) != 0)
                 {
                     // Cylindrical interpolation about pivot
+                    DrawX(pivotA, Color.red);
+                    DrawX(pivotB, Color.blue);
+                    DrawX(posA, new Color(1, 0.8f, 0.3f));
+                    DrawX(posB, Color.cyan);
                     var a = Vector3.ProjectOnPlane(posA - pivotA, up);
                     var b = Vector3.ProjectOnPlane(posB - pivotB, up);
+                    // var playerpos = new Vector3(-14.2878551f, 0.850000024f, -13.530262f);
+                    // var a = Vector3.ProjectOnPlane(posA - playerpos, up);
+                    // var b = Vector3.ProjectOnPlane(posB - playerpos, up);
                     var c = Vector3.Slerp(a, b, t);
+                    DrawX(a, Color.yellow);
+                    Debug.DrawLine(Vector3.zero, a, Color.yellow);
+                    DrawX(b, Color.magenta);
+                    Debug.DrawLine(Vector3.zero, b, Color.magenta);
+                    DrawX(c, Color.green);
                     posA = (posA - a) + c;
                     posB = (posB - b) + c;
+
+                    static void DrawX(Vector3 x, Color color)
+                    {
+                        Debug.DrawLine(x, x + Vector3.left, color);
+                        Debug.DrawLine(x, x + Vector3.right, color);
+                        Debug.DrawLine(x, x + Vector3.up, color);
+                        Debug.DrawLine(x, x + Vector3.down, color);
+                        Debug.DrawLine(x, x + Vector3.forward, color);
+                        Debug.DrawLine(x, x + Vector3.back, color);
+                    }
                 }
                 else if ((blendHint & BlendHintValue.SphericalPositionBlend) != 0)
                 {
