@@ -13,7 +13,7 @@ namespace Tests.Runtime
     public class CmDeoccluderTests : CinemachineRuntimeTimeInvariantFixtureBase
     {
         CmCamera m_Vcam;
-        CinemachineDeoccluder m_Collider;
+        CinemachineDeoccluder m_Deoccluder;
         GameObject m_FollowObject;
 
         [SetUp]
@@ -26,14 +26,14 @@ namespace Tests.Runtime
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
             var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
             positionComposer.CameraDistance = 5f;
-            m_Collider = m_Vcam.GetComponent<CinemachineDeoccluder>();
-            m_Collider.CollideAgainst = 1;
-            m_Collider.AvoidObstacles.Strategy = CinemachineDeoccluder.ObstacleAvoidance.ResolutionStrategy.PullCameraForward;
-            m_Collider.AvoidObstacles.Enabled = true;
-            m_Collider.AvoidObstacles.SmoothingTime = 0;
-            m_Collider.AvoidObstacles.Damping = 0;
-            m_Collider.AvoidObstacles.DampingWhenOccluded = 0;
-            m_Vcam.AddExtension(m_Collider);
+            m_Deoccluder = m_Vcam.GetComponent<CinemachineDeoccluder>();
+            m_Deoccluder.CollideAgainst = 1;
+            m_Deoccluder.AvoidObstacles.Strategy = CinemachineDeoccluder.ObstacleAvoidance.ResolutionStrategy.PullCameraForward;
+            m_Deoccluder.AvoidObstacles.Enabled = true;
+            m_Deoccluder.AvoidObstacles.SmoothingTime = 0;
+            m_Deoccluder.AvoidObstacles.Damping = 0;
+            m_Deoccluder.AvoidObstacles.DampingWhenOccluded = 0;
+            m_Vcam.AddExtension(m_Deoccluder);
         }
 
         [TearDown]
@@ -45,9 +45,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckSmoothingTime()
         {
-            m_Collider.AvoidObstacles.SmoothingTime = 1;
-            m_Collider.AvoidObstacles.Damping = 0;
-            m_Collider.AvoidObstacles.DampingWhenOccluded = 0;
+            m_Deoccluder.AvoidObstacles.SmoothingTime = 1;
+            m_Deoccluder.AvoidObstacles.Damping = 0;
+            m_Deoccluder.AvoidObstacles.DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
@@ -74,7 +74,7 @@ namespace Tests.Runtime
             {
                 var startTime = CinemachineCore.CurrentTimeOverride;
                 var initialPosition = m_Vcam.State.GetFinalPosition();
-                while (CinemachineCore.CurrentTimeOverride - startTime <= m_Collider.AvoidObstacles.SmoothingTime)
+                while (CinemachineCore.CurrentTimeOverride - startTime <= m_Deoccluder.AvoidObstacles.SmoothingTime)
                 {
                     Assert.That(m_Vcam.State.GetFinalPosition(), Is.EqualTo(initialPosition));
                     yield return UpdateCinemachine();
@@ -85,9 +85,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckDampingWhenOccluded()
         {
-            m_Collider.AvoidObstacles.SmoothingTime = 0;
-            m_Collider.AvoidObstacles.Damping = 0;
-            m_Collider.AvoidObstacles.DampingWhenOccluded = 1;
+            m_Deoccluder.AvoidObstacles.SmoothingTime = 0;
+            m_Deoccluder.AvoidObstacles.Damping = 0;
+            m_Deoccluder.AvoidObstacles.DampingWhenOccluded = 1;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             yield return UpdateCinemachine();
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.GetFinalPosition()).Using(m_Vector3EqualityComparer));
@@ -111,9 +111,9 @@ namespace Tests.Runtime
         [UnityTest]
         public IEnumerator CheckDamping()
         {
-            m_Collider.AvoidObstacles.SmoothingTime = 0;
-            m_Collider.AvoidObstacles.Damping = 1;
-            m_Collider.AvoidObstacles.DampingWhenOccluded = 0;
+            m_Deoccluder.AvoidObstacles.SmoothingTime = 0;
+            m_Deoccluder.AvoidObstacles.Damping = 1;
+            m_Deoccluder.AvoidObstacles.DampingWhenOccluded = 0;
             var originalCamPosition = m_Vcam.State.GetFinalPosition();
             yield return UpdateCinemachine();
             
