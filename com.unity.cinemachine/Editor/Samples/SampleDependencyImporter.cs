@@ -52,7 +52,7 @@ namespace Cinemachine.Editor
         /// <summary>Load the sample configuration for the specified package, if one is available.</summary>
         static bool TryLoadSampleConfiguration(PackageInfo packageInfo, out SampleConfiguration configuration)
         {
-            var configurationPath = $"{packageInfo.assetPath}/Samples~/samples.json";
+            var configurationPath = $"{packageInfo.assetPath}/Samples~/sampleDependencies.json";
             if (File.Exists(configurationPath))
             {
                 var configurationText = File.ReadAllText(configurationPath);
