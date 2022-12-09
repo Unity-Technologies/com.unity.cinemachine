@@ -25,7 +25,7 @@ namespace Tests.Runtime
 
             // Create a minimal character controller
             var character = CreateGameObject("Character", typeof(Animator));
-            var controller = AssetDatabase.LoadMainAssetAtPath("Packages/com.unity.cinemachine.tests/Tests/Runtime/TestController.controller") as AnimatorController;
+            var controller = AssetDatabase.LoadMainAssetAtPath("Packages/com.unity.cinemachine/Tests/Runtime/TestController.controller") as AnimatorController;
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
             // Create a state-driven camera with two vcams 
