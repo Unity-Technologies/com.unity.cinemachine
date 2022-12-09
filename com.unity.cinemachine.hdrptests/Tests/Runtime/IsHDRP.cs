@@ -9,7 +9,6 @@ namespace Tests.Runtime.HDRP
         [Test]
         public void IsHDRP()
         {
-
             UnityEngine.Assertions.Assert.IsNotNull(GraphicsSettings.renderPipelineAsset);
         }
     }
