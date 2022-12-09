@@ -910,16 +910,18 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "This scene shows a mixing camera that follows a car. The camera mixes
-    two cameras (Cm Camera Slow, Cm Camera Fast) based on the speed of the car. The
-    mixing is done by manipulating the weights on the Mixing Camera. In the sample,
-    this is done by a script called MixCamerasBasedOnSpeed.\nTry accelerating and
-    then breaking hard (with Space).\n\nThe scene also shows a trigger volume (indicated
-    by a transparent gray box) on the ramps - Stunt GameObject. When the car enters
-    the trigger volume, a side view camera (Cm Camera Stunt Sideview) is activated
-    using Cinemachine Trigger Action found on TriggerVolume GameObject. \nCm Camera
-    Stunt Sideview is a static camera that is placed manually and does not have any
-    procedural motion.\n\nThe default blend is set to cut on CinemachineBrain."
+  HelpText: "This scene shows a Mixing Camera that follows a car. Mixing Camera mixes
+    two cameras (Cm Camera Slow, Cm Camera Fast) based on the speed of the car (CapsuleCar).
+    The mixing is done by manipulating the weights of the children of the Mixing
+    Camera. In the sample, this is done by a script called MixCamerasBasedOnSpeed.\n\nTry
+    accelerating and then breaking hard (with Space) to see a nice effect of the
+    mixing.\n\nThe scene also contains a Stunt area (Stunt GameObject), this is located
+    in front of the car. This area has a trigger volume (indicated by a transparent
+    gray box) on the ramps. When the car enters the trigger volume, a side view camera
+    (Cm Camera Stunt Sideview) is activated using Cinemachine Trigger Action found
+    on TriggerVolume GameObject. \nCm Camera Stunt Sideview is a static camera that
+    is placed manually and does not have any procedural motion.\n\nThe default blend
+    is set to cut on CinemachineBrain."
 --- !u!4 &1878244422
 Transform:
   m_ObjectHideFlags: 0
