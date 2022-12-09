@@ -428,7 +428,7 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
     FocusDistance: 10
   Transitions:
-    BlendHint: 0
+    BlendHint: 4
     Events:
       OnCameraLive:
         m_PersistentCalls:
@@ -652,7 +652,6 @@ GameObject:
   - component: {fileID: 1430320359}
   - component: {fileID: 1430320355}
   - component: {fileID: 1430320360}
-  - component: {fileID: 1430320357}
   - component: {fileID: 1430320356}
   m_Layer: 0
   m_Name: RoadieRun Camera
@@ -696,7 +695,7 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
     FocusDistance: 10
   Transitions:
-    BlendHint: 0
+    BlendHint: 4
     Events:
       OnCameraLive:
         m_PersistentCalls:
@@ -718,35 +717,6 @@ MonoBehaviour:
   AmplitudeGain: 2
   FrequencyGain: 3
   mNoiseOffsets: {x: -736.27356, y: -0.11553955, z: 165.45901}
---- !u!114 &1430320357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1430320354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 10
-    IgnoreY: 0
-  Damping: {x: 0, y: 1}
-  Composition:
-    ScreenPosition: {x: -0.03, y: 0.19999999}
-    DeadZone:
-      Enabled: 0
-      Size: {x: 0.1, y: 0.1}
-    HardLimits:
-      Enabled: 1
-      Size: {x: 0.4, y: 0.6}
-      Offset: {x: 0.05, y: -0.4}
-  CenterOnActivate: 1
 --- !u!4 &1430320359
 Transform:
   m_ObjectHideFlags: 0
@@ -754,7 +724,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1430320354}
-  m_LocalRotation: {x: 0.11903609, y: -0.0051523945, z: 0.0006177213, w: 0.9928764}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.14000003, y: 1.6837499, z: -1.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
