@@ -965,8 +965,9 @@ GameObject:
   - component: {fileID: 385349258}
   - component: {fileID: 385349256}
   - component: {fileID: 385349254}
-  - component: {fileID: 385349260}
+  - component: {fileID: 385349259}
   - component: {fileID: 385349255}
+  - component: {fileID: 385349260}
   m_Layer: 0
   m_Name: CM FreeLook
   m_TagString: Untagged
@@ -981,8 +982,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385349248}
-  m_LocalRotation: {x: 0.18578051, y: 0.00083569635, z: -0.00015800685, w: 0.9825909}
-  m_LocalPosition: {x: 0.69701153, y: 3.9945145, z: -16.255875}
+  m_LocalRotation: {x: 0.18224643, y: 0.000836238, z: -0.00015499721, w: 0.9832525}
+  m_LocalPosition: {x: 0.69673157, y: 3.9945145, z: -16.420446}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1030,9 +1031,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 385349256}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
     LegacyInput: Mouse X
     LegacyGain: 200
     Control:
@@ -1045,6 +1050,8 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 385349256}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: -4
     LegacyInput: Mouse Y
     LegacyGain: -200
     Control:
@@ -1057,6 +1064,8 @@ MonoBehaviour:
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 385349256}
+    InputAction: {fileID: 0}
+    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
@@ -1095,7 +1104,7 @@ MonoBehaviour:
       Radius: 8
       Height: 3
     Bottom:
-      Radius: 7
+      Radius: 5
       Height: 0.5
     SplineCurvature: 0.2
   HorizontalAxis:
@@ -1156,6 +1165,21 @@ MonoBehaviour:
       OnCameraLive:
         m_PersistentCalls:
           m_Calls: []
+--- !u!114 &385349259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 385349248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Offset: {x: 0, y: 1, z: 0}
+  ApplyAfter: 0
+  PreserveComposition: 0
 --- !u!114 &385349260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1169,7 +1193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LookAtTargetRadius: 0
-  FadeOutRange: {x: 0, y: 8.617593}
+  FadeOutRange: {x: 0, y: 8.763748}
   MaxDistanceControlledByCamera: 1
   FadeOutMaterial: {fileID: 2100000, guid: 6acce4e5006dc40ef87cf9429db19cb3, type: 2}
 --- !u!1 &402555472
@@ -2466,8 +2490,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.18578051, y: 0.00083569635, z: -0.00015800685, w: 0.9825909}
-  m_LocalPosition: {x: 0.69701153, y: 3.9945145, z: -16.255875}
+  m_LocalRotation: {x: 0.18224643, y: 0.000836238, z: -0.00015499721, w: 0.9832525}
+  m_LocalPosition: {x: 0.6973412, y: 4.9280868, z: -16.062057}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
