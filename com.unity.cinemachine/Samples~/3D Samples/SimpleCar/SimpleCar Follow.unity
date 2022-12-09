@@ -309,7 +309,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 51139488}
-  m_LocalRotation: {x: 0.00040956188, y: 0.9187455, z: 0.0009529805, w: -0.39484867}
+  m_LocalRotation: {x: 0.00040955184, y: 0.9187456, z: 0.00095295743, w: -0.39484867}
   m_LocalPosition: {x: 3.1151953, y: -4.2728024, z: 27.304634}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -910,20 +910,16 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 'This scene shows a mixing camera that follows a car. The camera mixes
+  HelpText: "This scene shows a mixing camera that follows a car. The camera mixes
     two cameras (Cm Camera Slow, Cm Camera Fast) based on the speed of the car. The
     mixing is done by manipulating the weights on the Mixing Camera. In the sample,
-    this is done by a script called MixCamerasBasedOnSpeed.
-
-
-    The scene also
-    shows a trigger volume (indicated by a transparent gray box) on the ramps - Stunt
-    GameObject. When the car enters the trigger volume, a side view camera (Cm Camera
-    Stunt Sideview) is activated using Cinemachine Trigger Action found on TriggerVolume
-    GameObject.
-
-    Cm Camera Stunt Sideview is a static camera that is placed manually
-    and does not have any procedural motion.'
+    this is done by a script called MixCamerasBasedOnSpeed.\nTry accelerating and
+    then breaking hard (with Space).\n\nThe scene also shows a trigger volume (indicated
+    by a transparent gray box) on the ramps - Stunt GameObject. When the car enters
+    the trigger volume, a side view camera (Cm Camera Stunt Sideview) is activated
+    using Cinemachine Trigger Action found on TriggerVolume GameObject. \nCm Camera
+    Stunt Sideview is a static camera that is placed manually and does not have any
+    procedural motion.\n\nThe default blend is set to cut on CinemachineBrain."
 --- !u!4 &1878244422
 Transform:
   m_ObjectHideFlags: 0
