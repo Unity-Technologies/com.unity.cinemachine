@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine.Rendering;
 
-namespace Tests.Runtime.HDRP
+namespace Tests.HDRP.Runtime
 {
     [TestFixture]
     public class IsHDRPTests

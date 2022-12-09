@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-namespace Tests.Runtime.HDRP
+namespace Tests.HDRP
 {
      /// <summary>Base class that handles creation and deletion of GameObjects.</summary>
     public class CinemachineHDRPFixtureBase
@@ -59,23 +59,6 @@ namespace Tests.Runtime.HDRP
 #else
             return go.AddComponent(c);
 #endif
-        }
-
-        /// <summary>
-        /// Creates the specified primitive and keeps track of it, so it is cleaned up properly at [TearDown].
-        /// Uses appropriate method depending on whether the test is playing.
-        /// </summary>
-        /// <param name="type">Type of primitive.</param>
-        /// <returns>GameObject created.</returns>
-        protected virtual GameObject CreatePrimitive(PrimitiveType type)
-        {
-#if UNITY_EDITOR
-            var go = Application.isPlaying ? GameObject.CreatePrimitive(type) : ObjectFactory.CreatePrimitive(type);
-#else
-            var go = GameObject.CreatePrimitive(type);
-#endif
-            m_GameObjectsToDestroy.Add(go);
-            return go;
         }
     }
 }

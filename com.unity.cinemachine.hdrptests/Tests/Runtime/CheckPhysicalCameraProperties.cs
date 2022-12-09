@@ -3,16 +3,14 @@ using Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.TestTools.Utils;
 
-namespace Tests.Runtime.HDRP
+namespace Tests.HDRP.Runtime
 {
     [TestFixture]
     public class CheckPhysicalCameraProperties : CinemachineHDRPFixtureBase
     {
         Camera m_Cam;
         CmCamera m_CmCamera;
-        Vector2EqualityComparer m_Vector2Comparer;
 
         [SetUp]
         public override void SetUp()
@@ -24,8 +22,6 @@ namespace Tests.Runtime.HDRP
             
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
             m_CmCamera = vcamHolder.GetComponent<CmCamera>();
-            
-            m_Vector2Comparer = Vector2EqualityComparer.Instance;
         }
 
         [TearDown]
@@ -38,6 +34,7 @@ namespace Tests.Runtime.HDRP
         public IEnumerator IsPhysical()
         {
             yield return null;
+            
             Assert.True(m_Cam.usePhysicalProperties);
             Assert.True(m_CmCamera.Lens.IsPhysicalCamera);
         }
@@ -45,14 +42,14 @@ namespace Tests.Runtime.HDRP
         [UnityTest]
         public IEnumerator CheckAll()
         {
+            // Check that initial lens state of cmCamera is equal to Camera's lens
             yield return null;
-            
-            // initial state equal
             {
                 var state = m_CmCamera.State;
                 Assert.That(m_Cam.sensorSize, Is.EqualTo(state.Lens.SensorSize));
                 Assert.That(m_Cam.gateFit, Is.EqualTo(state.Lens.GateFit));
-                Assert.That(m_Cam.focalLength, Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y)));
+                Assert.That(m_Cam.focalLength, 
+                    Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y)));
                 Assert.That(m_Cam.lensShift, Is.EqualTo(state.Lens.LensShift));
                 Assert.That(m_Cam.focusDistance, Is.EqualTo(state.Lens.FocusDistance));
                 Assert.That(m_Cam.iso, Is.EqualTo(state.Lens.Iso));
@@ -64,7 +61,7 @@ namespace Tests.Runtime.HDRP
                 Assert.That(m_Cam.anamorphism, Is.EqualTo(state.Lens.Anamorphism));
             }
 
-            // modify lens
+            // Modify lens on cmCamera
             {
                 m_CmCamera.Lens.SensorSize += Vector2.one;
                 m_CmCamera.Lens.GateFit = Camera.GateFitMode.Overscan;
@@ -80,12 +77,31 @@ namespace Tests.Runtime.HDRP
                 m_CmCamera.Lens.Anamorphism = 0.5f;
             }
 
-            // modified state equal
+            // Check that modification is present in cmCamera's state
+            // Check that modification was applied to Camera's lens
+            yield return null;
             {
+                var cnCameraLens = m_CmCamera.Lens;
                 var state = m_CmCamera.State;
+                
+                Assert.That(cnCameraLens.SensorSize, Is.EqualTo(state.Lens.SensorSize));
+                Assert.That(cnCameraLens.GateFit, Is.EqualTo(state.Lens.GateFit));
+                Assert.That(Camera.FieldOfViewToFocalLength(cnCameraLens.FieldOfView, cnCameraLens.SensorSize.y), 
+                    Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y)));
+                Assert.That(cnCameraLens.LensShift, Is.EqualTo(state.Lens.LensShift));
+                Assert.That(cnCameraLens.FocusDistance, Is.EqualTo(state.Lens.FocusDistance));
+                Assert.That(cnCameraLens.Iso, Is.EqualTo(state.Lens.Iso));
+                Assert.That(cnCameraLens.ShutterSpeed, Is.EqualTo(state.Lens.ShutterSpeed));
+                Assert.That(cnCameraLens.Aperture, Is.EqualTo(state.Lens.Aperture));
+                Assert.That(cnCameraLens.BladeCount, Is.EqualTo(state.Lens.BladeCount));
+                Assert.That(cnCameraLens.Curvature, Is.EqualTo(state.Lens.Curvature));
+                Assert.That(cnCameraLens.BarrelClipping, Is.EqualTo(state.Lens.BarrelClipping));
+                Assert.That(cnCameraLens.Anamorphism, Is.EqualTo(state.Lens.Anamorphism));
+                
                 Assert.That(m_Cam.sensorSize, Is.EqualTo(state.Lens.SensorSize));
                 Assert.That(m_Cam.gateFit, Is.EqualTo(state.Lens.GateFit));
-                Assert.That(m_Cam.focalLength, Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y)));
+                Assert.That(m_Cam.focalLength, 
+                    Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y)));
                 Assert.That(m_Cam.lensShift, Is.EqualTo(state.Lens.LensShift));
                 Assert.That(m_Cam.focusDistance, Is.EqualTo(state.Lens.FocusDistance));
                 Assert.That(m_Cam.iso, Is.EqualTo(state.Lens.Iso));
