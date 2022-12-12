@@ -70,8 +70,7 @@ namespace Cinemachine.Editor
         {
             if (m_SampleConfiguration != null)
             {
-                var sharedAssetsImported = false;
-                var localAssetsImported = false;
+                var assetsImported = false;
                 foreach (var sample in m_Samples)
                 {
                     if (assetPath.EndsWith(sample.displayName))
@@ -80,14 +79,12 @@ namespace Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            sharedAssetsImported = ImportAssetDependencies(
-                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, 
-                                out bool sharedAssetsReimported);
+                            assetsImported = ImportAssetDependencies(
+                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
                             
                             // Import sample-specific asset dependencies
-                            localAssetsImported = ImportAssetDependencies(
-                                m_PackageInfo, sampleEntry.AssetDependencies, 
-                                out bool localAssetsReimported);
+                            assetsImported |= ImportAssetDependencies(
+                                m_PackageInfo, sampleEntry.AssetDependencies);
                             
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
@@ -97,25 +94,13 @@ namespace Cinemachine.Editor
                             if (m_PackageDependencies.Count != 0 && 
                                 DoDependenciesNeedToBeImported(out var dependenciesToImport))
                             {
-                                switch (PromptUserConfirmation(dependenciesToImport))
+                                if (PromptUserImportDependencyConfirmation(dependenciesToImport))
                                 {
-                                    case UserChoice.ImportSamplesWithDependencies:
-                                        // only import dependencies that are missing
-                                        m_PackageDependencies = dependenciesToImport;
-                                        // Import package dependencies using the editor update loop, because
-                                        // adding packages need to be done in sequence one after the other
-                                        EditorApplication.update += ImportPackageDependencies;
-                                        break;
-                                    case UserChoice.CancelImport:
-                                        // if samples were already imported, don't delete them
-                                        if (!localAssetsReimported)
-                                            DeleteSampleImported(sample.importPath, 
-                                                !sharedAssetsReimported, m_SampleConfiguration.SharedAssetDependencies,
-                                                localAssetsImported, sampleEntry.AssetDependencies);
-                                        break;
-                                    default:
-                                    case UserChoice.ImportSamplesWithoutDependencies:
-                                        break;
+                                    // only import dependencies that are missing
+                                    m_PackageDependencies = dependenciesToImport;
+                                    // Import package dependencies using the editor update loop, because
+                                    // adding packages need to be done in sequence one after the other
+                                    EditorApplication.update += ImportPackageDependencies;
                                 }
                             }
                         }
@@ -123,7 +108,7 @@ namespace Cinemachine.Editor
                     }
                 } 
 
-                if (sharedAssetsImported || localAssetsImported)
+                if (assetsImported)
                     AssetDatabase.Refresh();
             }
             
@@ -155,9 +140,8 @@ namespace Cinemachine.Editor
                 }
             }
             
-            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out bool reimport)
+            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths)
             {
-                reimport = false;
                 if (paths == null)
                     return false;
 
@@ -169,7 +153,6 @@ namespace Cinemachine.Editor
                     {
                         var copyTo = 
                             $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
-                        reimport = Directory.Exists(copyTo);
                         CopyDirectory(dependencyPath, copyTo);
                         assetsImported = true;
                     }
@@ -178,48 +161,17 @@ namespace Cinemachine.Editor
                 return assetsImported;
             }
 
-            static void DeleteSampleImported(string importPath, 
-                bool sharedAssetsImported, string[] sharedAssetDependencies, 
-                bool localAssetsImported, string[] localAssetDependencies)
+            static bool PromptUserImportDependencyConfirmation(List<string> dependencies)
             {
-                AssetDatabase.Refresh();
-                var relativePath = importPath.Substring(importPath.IndexOf(k_SampleName));
-                var version = relativePath.Substring(k_SampleName.Length);
-                version = version.Substring(0, version.IndexOf("/") + 1);
-
-                var instructions = new List<string>();
-                if (sharedAssetsImported)
-                    foreach (var folder in sharedAssetDependencies) 
-                        instructions.Add("Assets/" + k_SampleName + version + folder);
-                                                        
-                if (localAssetsImported)
-                    foreach (var folder in localAssetDependencies)
-                        instructions.Add("Assets/" + k_SampleName + version + folder);
-                                                        
-                instructions.Add("Assets/" + relativePath);
-
-                AssetDatabase.DeleteAssets(instructions.ToArray(), new List<string>());
-                AssetDatabase.Refresh();
+                return EditorUtility.DisplayDialog(
+                    "Import Sample Package Dependencies",
+                    "These samples contain package dependencies that your project does not have: \n" +
+                    dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
+                    "Import samples and their dependencies", 
+                    "Import samples without their dependencies");
             }
         }
-
-        enum UserChoice
-        {
-            ImportSamplesWithDependencies = 0,
-            CancelImport = 1,
-            ImportSamplesWithoutDependencies = 2,
-        }
-        static UserChoice PromptUserConfirmation(List<string> dependencies)
-        {
-            return (UserChoice) EditorUtility.DisplayDialogComplex(
-                "Import Sample Package Dependencies",
-                "These samples contain package dependencies that your project does not have: \n" +
-                dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
-                "Import samples and their dependencies", 
-                "Cancel importing the samples",
-                "Import samples without their dependencies");
-        }
-
+        
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
