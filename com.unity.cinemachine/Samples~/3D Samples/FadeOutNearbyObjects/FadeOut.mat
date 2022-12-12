@@ -68,7 +68,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MaxDistance: 8.763748
+    - _MaxDistance: 8.563748
     - _Metallic: 0
     - _MinDistance: 0
     - _Mode: 0

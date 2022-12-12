@@ -5,8 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(CinemachineMixingCamera))]
 public class MixCamerasBasedOnSpeed : MonoBehaviour
 {
+    [Tooltip("At and above this speed, the second camera is going to be in control completely.")]
     public float MaxSpeed;
-    public Rigidbody RigidBodyOfCar;
+    public Rigidbody Rigidbody;
     CinemachineMixingCamera m_Mixer;
     void Start()
     {
@@ -20,10 +21,10 @@ public class MixCamerasBasedOnSpeed : MonoBehaviour
 
     void Update()
     {
-        if (RigidBodyOfCar == null)
+        if (Rigidbody == null)
             return;
         
-        var t = Mathf.Clamp01(RigidBodyOfCar.velocity.magnitude / MaxSpeed);
+        var t = Mathf.Clamp01(Rigidbody.velocity.magnitude / MaxSpeed);
         m_Mixer.Weight0 = 1 - t;
         m_Mixer.Weight1 = t;
     }

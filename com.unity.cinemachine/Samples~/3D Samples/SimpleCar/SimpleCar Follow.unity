@@ -402,7 +402,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxSpeed: 15
-  RigidBodyOfCar: {fileID: 1868264081772963620}
+  Rigidbody: {fileID: 1868264081772963620}
 --- !u!1 &742461950
 GameObject:
   m_ObjectHideFlags: 0
