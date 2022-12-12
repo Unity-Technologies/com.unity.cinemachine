@@ -28,7 +28,12 @@ public class PositionAimTargetAndReticle : MonoBehaviour
             CinemachineCore.CameraUpdatedEvent.RemoveListener(SetAimTarget);
         else
         {
-            var liveCam = brain.ActiveVirtualCamera as CmCamera;
+            CmCamera liveCam;
+            if (brain.ActiveVirtualCamera is CinemachineCameraManagerBase managerCam)
+                liveCam = managerCam.LiveChild as CmCamera;
+            else
+                liveCam = brain.ActiveVirtualCamera as CmCamera;
+            
             if (liveCam != null)
             {
                 if (liveCam.TryGetComponent<CinemachineThirdPersonAim>(out var aim) && aim.enabled)
