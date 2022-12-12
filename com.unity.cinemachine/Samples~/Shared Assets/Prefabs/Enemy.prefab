@@ -84,7 +84,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 26725265439910a4e84790e15c9f3a56, type: 2}
+  - {fileID: 2100000, guid: 2125c72c59dd24bbfa7687d45ac370de, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -379,7 +379,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2373813853838208640}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
@@ -389,7 +389,7 @@ Transform:
   - {fileID: 5569801232034940160}
   m_Father: {fileID: 0}
   m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 1, y: -120.188, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!95 &9032680881766067776
 Animator:
   serializedVersion: 4
@@ -1311,7 +1311,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.0141509175, b: 0.0141509175, a: 1}
-  m_Intensity: 2
+  m_Intensity: 6
   m_Range: 3
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
