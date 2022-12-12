@@ -632,7 +632,7 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
     FocusDistance: 10
   Transitions:
-    BlendHint: 0
+    BlendHint: 4
     Events:
       OnCameraLive:
         m_PersistentCalls:
@@ -1758,7 +1758,7 @@ PrefabInstance:
       objectReference: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[3].LegacyInput
-      value: 
+      value: Fire3
       objectReference: {fileID: 0}
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[4].InputAction
@@ -1782,7 +1782,7 @@ PrefabInstance:
       objectReference: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[6].LegacyInput
-      value: Fire3
+      value: Fire1
       objectReference: {fileID: 0}
     - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: Controllers.Array.data[7].InputAction
@@ -2220,7 +2220,7 @@ GameObject:
   - component: {fileID: 8511452450538986278}
   - component: {fileID: 334051332}
   m_Layer: 0
-  m_Name: Third Person Camera
+  m_Name: Third Person Aim Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -46,6 +46,11 @@
       "path": "Samples~/3D Samples"
     },
     {
+      "displayName": "Timeline Sample",
+      "description": "Sample scene showing Cinemachine and Timeline working together. Will import timeline package",
+      "path": "Samples~/Timeline Sample"
+    },
+    {
       "displayName": "Old Samples from CM2",
       "description": "Samples made with CM 2.X, using obsolete API",
       "path": "Samples~/Old Samples from CM2"
