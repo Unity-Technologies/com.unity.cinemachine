@@ -1,16 +1,17 @@
 {% metadata_file .yamato/metadata.metafile %}
 ---
-pack:
-  name: Pack project
+{% for test_project in all_testprojects %}
+pack_{{test_project.name}}:
+  name: Pack project {{test_project.name}}
   agent:
     type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.large
   commands:
-    - rm com.unity.cinemachine/Tests/.tests.json
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project pack --project-path Projects/Standalone
+    - upm-ci project pack --project-path {{test_project.path}}
   artifacts:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
+{% endfor %}
