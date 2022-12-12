@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -147,13 +147,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77596904}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.9353843, y: -6.0288353, z: 28.169971}
+  m_LocalRotation: {x: -0, y: -0.000000034412764, z: -6.661338e-16, w: 1}
+  m_LocalPosition: {x: 4.9353814, y: -6.0288353, z: 28.169971}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &77596907
 MonoBehaviour:
@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
+  Displayed: 0
   HelpText: "WASD to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera.
     \n\nIf using Input package, right mouse button to jump and middle mouse button
     to sprint.\n\nThis scene shows a basic FreeLook camera tracking a player walking
@@ -249,9 +250,9 @@ MonoBehaviour:
       AccelTime: 0
       DecelTime: 0
     Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0
+      Enabled: 0
+      Wait: 1
+      Time: 2
 --- !u!114 &364965557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,38 +330,23 @@ MonoBehaviour:
       Height: 2
     SplineCurvature: 0.5
   HorizontalAxis:
-    rid: 1709466907129151525
+    Value: 0
+    Center: 0
+    Range: {x: -180, y: 180}
+    Wrap: 1
+    Restrictions: 3
   VerticalAxis:
-    rid: 1709466907129151526
+    Value: 17.5
+    Center: 17.5
+    Range: {x: -10, y: 45}
+    Wrap: 0
+    Restrictions: 0
   RadialAxis:
-    rid: 1709466907129151527
-  references:
-    version: 2
-    RefIds:
-    - rid: 1709466907129151525
-      type: {class: InputAxis, ns: Cinemachine, asm: Cinemachine}
-      data:
-        Value: 0
-        Center: 0
-        Range: {x: -180, y: 180}
-        Wrap: 1
-        Restrictions: 3
-    - rid: 1709466907129151526
-      type: {class: InputAxis, ns: Cinemachine, asm: Cinemachine}
-      data:
-        Value: 17.5
-        Center: 17.5
-        Range: {x: -10, y: 45}
-        Wrap: 0
-        Restrictions: 0
-    - rid: 1709466907129151527
-      type: {class: InputAxis, ns: Cinemachine, asm: Cinemachine}
-      data:
-        Value: 1
-        Center: 1
-        Range: {x: 1, y: 5}
-        Wrap: 0
-        Restrictions: 0
+    Value: 1
+    Center: 1
+    Range: {x: 1, y: 5}
+    Wrap: 0
+    Restrictions: 0
 --- !u!114 &364965560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,6 +380,7 @@ MonoBehaviour:
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1, y: 1}
+    FocusDistance: 10
   Transitions:
     BlendHint: 0
     Events:
@@ -407,13 +394,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
-  m_LocalRotation: {x: 0.20065226, y: -0.000000016856447, z: 0.000000003452499, w: 0.97966254}
+  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!850595691 &654365150
 LightingSettings:
@@ -573,7 +560,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.20065226, y: -0.000000016856447, z: 0.000000003452499, w: 0.97966254}
+  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -733,7 +720,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1044979977
 MeshCollider:
@@ -849,7 +836,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1001 &1580768997
 PrefabInstance:
@@ -901,7 +888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.x
