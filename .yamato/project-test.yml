@@ -17,7 +17,7 @@ test_ubuntu_{{editor}}_{{test_project.name}}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/project-pack.yml#pack{{test_project.name}}
+    - .yamato/project-pack.yml#pack_{{test_project.name}}
 
 test_windows_{{editor}}_{{test_project.name}}:
   name : Test project windows {{editor}} {{test_project.name}}
@@ -33,7 +33,7 @@ test_windows_{{editor}}_{{test_project.name}}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/project-pack.yml#pack{{test_project.name}}
+    - .yamato/project-pack.yml#pack_{{test_project.name}}
 
 test_macos_{{editor}}_{{test_project.name}}:
   name : Test project macos {{editor}} {{test_project.name}}
@@ -49,6 +49,6 @@ test_macos_{{editor}}_{{test_project.name}}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/project-pack.yml#pack{{test_project.name}}
+    - .yamato/project-pack.yml#pack_{{test_project.name}}
   {% endfor %}
 {% endfor %}
