@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+namespace Cinemachine.Examples
+{
 public class PointAtAimTarget : MonoBehaviour
 {
     [Tooltip("This object represents the aim target.  We always point toeards this")]
@@ -14,4 +16,5 @@ public class PointAtAimTarget : MonoBehaviour
         if (dir.sqrMagnitude > 0.01f)
             transform.rotation = Quaternion.LookRotation(dir);
     }
+}
 }
