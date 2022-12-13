@@ -140,7 +140,9 @@ namespace Cinemachine
 
         float m_MaxWeight;
         Vector3 m_AveragePos;
+        Bounds m_BoundingBox;
         BoundingSphere m_BoundingSphere;
+        int m_LastUpdateFrame = -1;
 
         // Caches of valid members so we don't keep checking activeInHierarchy
         List<int> m_ValidMembers = new ();
@@ -197,17 +199,43 @@ namespace Cinemachine
 
         /// <summary>The axis-aligned bounding box of the group, computed using the
         /// targets positions and radii</summary>
-        public Bounds BoundingBox { get; private set; }
+        public Bounds BoundingBox 
+        { 
+            get
+            {
+                if (m_LastUpdateFrame != Time.frameCount)
+                    DoUpdate();
+                return m_BoundingBox;
+            }
+            private set => m_BoundingBox = value;
+        }
 
         /// <summary>The bounding sphere of the group, computed using the
         /// targets positions and radii</summary>
-        public BoundingSphere Sphere => m_BoundingSphere;
+        public BoundingSphere Sphere
+        { 
+            get
+            {
+                if (m_LastUpdateFrame != Time.frameCount)
+                    DoUpdate();
+                return m_BoundingSphere;
+            }
+            private set => m_BoundingSphere = value;
+        }
 
         /// <summary>Return true if there are no members with weight > 0.  This returns the
         /// cached member state and is only valid after a call to DoUpdate().  If members
         /// are added or removed after that call, this will not necessarily return
         /// correct information before the next update.</summary>
-        public bool IsEmpty => m_ValidMembers.Count == 0;
+        public bool IsEmpty
+        {
+            get
+            {
+                if (m_LastUpdateFrame != Time.frameCount)
+                    DoUpdate();
+                return m_ValidMembers.Count == 0;
+            }
+        }
 
         /// <summary>Add a member to the group</summary>
         /// <param name="t">The member to add</param>
@@ -250,6 +278,8 @@ namespace Cinemachine
         /// <returns>The weighted bounding sphere</returns>
         public BoundingSphere GetWeightedBoundsForMember(int index)
         {
+            if (m_LastUpdateFrame != Time.frameCount)
+                DoUpdate();
             if (!IndexIsValid(index) || !m_MemberValidity[index])
                 return Sphere;
             return WeightedMemberBoundsForValidMember(Targets[index], m_AveragePos, m_MaxWeight);
@@ -264,6 +294,8 @@ namespace Cinemachine
         /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
         public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer, bool includeBehind)
         {
+            if (m_LastUpdateFrame != Time.frameCount)
+                DoUpdate();
             var inverseView = observer;
             if (!Matrix4x4.Inverse3DAffine(observer, ref inverseView))
                 inverseView = observer.inverse;
@@ -312,6 +344,7 @@ namespace Cinemachine
         {
             Targets ??= new (); // in case user set it to null
 
+            m_LastUpdateFrame = Time.frameCount;
             UpdateMemberValidity();
             m_AveragePos = CalculateAveragePosition(out m_MaxWeight);
             BoundingBox = CalculateBoundingBox();
@@ -477,6 +510,8 @@ namespace Cinemachine
         public void GetViewSpaceAngularBounds(
             Matrix4x4 observer, out Vector2 minAngles, out Vector2 maxAngles, out Vector2 zRange)
         {
+            if (m_LastUpdateFrame != Time.frameCount)
+                DoUpdate();
             var world2local = observer;
             if (!Matrix4x4.Inverse3DAffine(observer, ref world2local))
                 world2local = observer.inverse;

@@ -1,5 +1,4 @@
 using Cinemachine.Utility;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -8,7 +7,7 @@ namespace Cinemachine
     /// <summary>
     /// A collection of helpers for UnityEngine Spline.
     /// </summary>
-    internal static class SplineContainerExtensions
+    static class SplineContainerExtensions
     {
         /// <summary>Check spline container and child spline for null</summary>
         /// <param name="spline">spline continer to check</param>
@@ -34,7 +33,7 @@ namespace Cinemachine
             if (spline.Spline == null || !SplineUtility.Evaluate(
                 spline.Spline, tNormalized, out var localPosition, out var localTangent, out var localUp))
             {
-                position = float3.zero;
+                position = Vector3.zero;
                 rotation = Quaternion.identity;
                 return false;
             }

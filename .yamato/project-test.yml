@@ -9,6 +9,7 @@ test_ubuntu_{{editor}}_{{test_project.name}}:
     image: package-ci/ubuntu:stable
     flavor: b1.large
   commands:
+    - rm com.unity.cinemachine/Tests/.tests.json
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci project test -u {{editor}} --project-path {{test_project.path}} --type project-tests
   artifacts:
@@ -16,7 +17,7 @@ test_ubuntu_{{editor}}_{{test_project.name}}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/project-pack.yml#pack
+    - .yamato/project-pack.yml#pack_{{test_project.name}}
 
 test_windows_{{editor}}_{{test_project.name}}:
   name : Test project windows {{editor}} {{test_project.name}}
@@ -32,7 +33,7 @@ test_windows_{{editor}}_{{test_project.name}}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/project-pack.yml#pack
+    - .yamato/project-pack.yml#pack_{{test_project.name}}
 
 test_macos_{{editor}}_{{test_project.name}}:
   name : Test project macos {{editor}} {{test_project.name}}
@@ -48,6 +49,6 @@ test_macos_{{editor}}_{{test_project.name}}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/project-pack.yml#pack
+    - .yamato/project-pack.yml#pack_{{test_project.name}}
   {% endfor %}
 {% endfor %}
