@@ -961,7 +961,9 @@ MonoBehaviour:
     between the player and the aim point indicated by the crosshair. The crosshair
     is pulled apart to indicate this.\n- When sprinting, the RoadieRun Camera is
     active.\n  This camera takes away the crosshair from the player, moves closer,
-    widens the Field of View, and adds a more intense noise."
+    widens the Field of View, and adds a more intense noise.\n\n\nThe enemies will
+    target the player when the player moves close to them. To visualize the proximity,
+    you can enable the Mesh Renderers on ProximityTriggers."
 --- !u!4 &1040083249
 Transform:
   m_ObjectHideFlags: 0
