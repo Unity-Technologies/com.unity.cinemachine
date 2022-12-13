@@ -246,7 +246,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 737942603}
-  m_LocalRotation: {x: -0.060841378, y: 0.0000000064404397, z: 3.925725e-10, w: 0.9981475}
+  m_LocalRotation: {x: -0.060841378, y: -0.000000006440438, z: -3.925724e-10, w: 0.9981475}
   m_LocalPosition: {x: 0, y: 1.5035291, z: -29.768585}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -321,7 +321,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838339814}
-  m_LocalRotation: {x: -0.060841378, y: 0.0000000064404397, z: 3.925725e-10, w: 0.9981475}
+  m_LocalRotation: {x: -0.060841378, y: -0.000000006440438, z: -3.925724e-10, w: 0.9981475}
   m_LocalPosition: {x: 0, y: 1.5035291, z: -29.768585}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -501,13 +501,16 @@ MonoBehaviour:
     Follow with Lock On Boss.\n\n- The Orbital Follow: is a simple 3rd Person View
     camera that is following and looking at the player while having the ability to
     rotate around the player using the mouse.\n- Follow with Lock On Boss: is also
-    a simple 3rd Person View camera. However, this one is following the player, while
-    looking it at the boss.\n\nThe switch between the two Cinemachine Cameras happens
-    when the player moves close to the boss. This is done using Cinemachine Trigger
-    Action. This proximity is visualized with a transparent cylinder around the boss,
-    see Proximity Trigger GameObject.\n\nUse WASD to move around, Spacebar to jump,
-    Shift to sprint.  Mouse moves the camera. \nIf using Input package, right mouse
-    button to jump and middle mouse button to sprint."
+    a simple 3rd Person View camera. However, this one is following the an invisible
+    GameObject (FollowTarget) on the player, while looking it at the boss. The invisible
+    GameObject is always rotated on the Y axis so it looks towards the boss. This
+    is achieved with the Look At Target script on FollowTarget.\n\nThe switch between
+    the two Cinemachine Cameras happens when the player moves close to the boss.
+    This is done using Cinemachine Trigger Action. This proximity is visualized with
+    a transparent cylinder around the boss, see Proximity Trigger GameObject.\n\nUse
+    WASD to move around, Spacebar to jump, Shift to sprint.  Mouse moves the camera.
+    \nIf using Input package, right mouse button to jump and middle mouse button
+    to sprint."
 --- !u!4 &950181518
 Transform:
   m_ObjectHideFlags: 0
