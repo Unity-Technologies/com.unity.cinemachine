@@ -1,5 +1,4 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Cinemachine.Examples
@@ -13,8 +12,13 @@ namespace Cinemachine.Examples
         [Tooltip("Target to look at.")]
         public Transform Target;
 
-        [Tooltip("Lock rotation along these axes to the initial value.")]
-        public bool3 LockRotation;
+        [Tooltip("Lock rotation along the x axis to the initial value.")]
+        public bool LockRotationX;
+        [Tooltip("Lock rotation along the y axis to the initial value.")]
+        public bool LockRotationY;
+        [Tooltip("Lock rotation along the z axis to the initial value.")]
+        public bool LockRotationZ;
+        
         Vector3 m_Rotation;
         
         void OnEnable()
@@ -34,13 +38,12 @@ namespace Cinemachine.Examples
                 var direction = Target.position - transform.position;
                 transform.rotation = Quaternion.LookRotation(direction);
 
-                if (LockRotation.x || LockRotation.y || LockRotation.z)
+                if (LockRotationX || LockRotationY || LockRotationZ)
                 {
                     var euler = transform.rotation.eulerAngles;
-                    euler.x = LockRotation.x ? m_Rotation.x : euler.x;
-                    euler.y = LockRotation.y ? m_Rotation.y : euler.y;
-                    euler.z = LockRotation.z ? m_Rotation.z : euler.z;
-                
+                    euler.x = LockRotationX ? m_Rotation.x : euler.x;
+                    euler.y = LockRotationY ? m_Rotation.y : euler.y;
+                    euler.z = LockRotationZ ? m_Rotation.z : euler.z;
                     transform.rotation = Quaternion.Euler(euler);
                 }
             }
