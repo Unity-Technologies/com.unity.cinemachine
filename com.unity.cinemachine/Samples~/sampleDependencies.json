@@ -19,11 +19,6 @@
       "AssetDependencies": [
         "Shared Assets"
       ],
-      "PackageDependencies": []
-    },
-    {
-      "Path": "Timeline Sample",
-      "AssetDependencies": [],
       "PackageDependencies": [
         "com.unity.timeline"
       ]
