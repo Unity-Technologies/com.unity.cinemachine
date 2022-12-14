@@ -757,7 +757,7 @@ GameObject:
   m_Component:
   - component: {fileID: 599297603}
   m_Layer: 0
-  m_Name: Treasure
+  m_Name: Treasure Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2549,7 +2549,7 @@ MonoBehaviour:
   LayerMask:
     serializedVersion: 2
     m_Bits: 1
-  WithTag: 
+  WithTag: Player
   WithoutTag: 
   SkipFirst: 0
   Repeating: 1
