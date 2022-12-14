@@ -119,7 +119,7 @@ namespace Cinemachine
                 }
                 else
                 {
-                    var r = Mathf.FloorToInt(Mathf.Min(searchRadius, end - start));
+                    var r = Mathf.FloorToInt(searchRadius);
                     start = Mathf.Max(startSegment - r, MinPos);
                     end = Mathf.Min(startSegment + r + 1, MaxPos);
                 }
