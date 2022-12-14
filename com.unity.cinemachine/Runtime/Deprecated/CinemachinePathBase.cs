@@ -113,15 +113,14 @@ namespace Cinemachine
             {
                 if (Looped)
                 {
-                    var r = Mathf.FloorToInt(Mathf.Min(searchRadius, (end - start) / 2f));
+                    var r = Mathf.Min(searchRadius, Mathf.FloorToInt((end - start) / 2f));
                     start = startSegment - r;
                     end = startSegment + r + 1;
                 }
                 else
                 {
-                    var r = Mathf.FloorToInt(searchRadius);
-                    start = Mathf.Max(startSegment - r, MinPos);
-                    end = Mathf.Min(startSegment + r + 1, MaxPos);
+                    start = Mathf.Max(startSegment - searchRadius, MinPos);
+                    end = Mathf.Min(startSegment + searchRadius + 1, MaxPos);
                 }
             }
             stepsPerSegment = Mathf.RoundToInt(Mathf.Clamp(stepsPerSegment, 1f, 100f));
