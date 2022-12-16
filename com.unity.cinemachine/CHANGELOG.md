@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Unity 2022.2 and up: FocusDistance added to lens settings and is pushed to the camera.
 - Optimized path gizmo drawing.  Now 3-5 times faster.
 - TargetGroup now ignores members whose gameObjects are inactive.
+- CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
+- Cinemachine Samples can import their package dependencies.
+- CinemachineSmoothPath is upgraded to Splines correctly now. 
+- CinemachinePathBase search radius fixed for not looped paths.
 
 
 ## [2.9.4] - 2022-11-18
