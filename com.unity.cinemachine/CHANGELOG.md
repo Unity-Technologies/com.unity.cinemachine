@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Unity 2022.2 and up: FocusDistance added to lens settings and is pushed to the camera.
 - Optimized path gizmo drawing.  Now 3-5 times faster.
 - TargetGroup now ignores members whose gameObjects are inactive.
+- CinemachinePathBase search radius fixed for not looped paths.
 
 
 ## [2.9.4] - 2022-11-18
