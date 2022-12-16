@@ -149,7 +149,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 14930834}
-  m_LocalRotation: {x: 0.18794522, y: 0.11796427, z: -0.022743864, w: 0.9748045}
+  m_LocalRotation: {x: 0.1879452, y: 0.11796432, z: -0.022743868, w: 0.97480446}
   m_LocalPosition: {x: -64.58557, y: 4.0983305, z: -4.434556}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -425,7 +425,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 58846467}
-  m_LocalRotation: {x: 0.18794522, y: 0.11796427, z: -0.022743864, w: 0.9748045}
+  m_LocalRotation: {x: 0.1879452, y: 0.11796432, z: -0.022743868, w: 0.97480446}
   m_LocalPosition: {x: -53.385334, y: 5.55, z: -5.711343}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2093,7 +2093,7 @@ GameObject:
   - component: {fileID: 475353319}
   - component: {fileID: 475353321}
   m_Layer: 0
-  m_Name: RunningPlayer (1)
+  m_Name: Runner (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2201,7 +2201,7 @@ GameObject:
   - component: {fileID: 499961712}
   - component: {fileID: 499961714}
   m_Layer: 0
-  m_Name: RunningPlayer (3)
+  m_Name: Runner (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2403,7 +2403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 518533666}
   m_Layer: 0
-  m_Name: Racers
+  m_Name: Runners
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2427,7 +2427,7 @@ Transform:
   - {fileID: 499961713}
   - {fileID: 1408997802}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &525947113
 GameObject:
@@ -2737,7 +2737,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689268010}
-  m_LocalRotation: {x: 0.022743862, y: 0.9748045, z: -0.18794517, w: 0.117964305}
+  m_LocalRotation: {x: 0.022743855, y: 0.97480446, z: -0.1879452, w: 0.11796424}
   m_LocalPosition: {x: -64.58557, y: 4.0983305, z: 6.9881306}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3251,7 +3251,7 @@ GameObject:
   - component: {fileID: 1007741215}
   - component: {fileID: 1007741217}
   m_Layer: 0
-  m_Name: RunningPlayer
+  m_Name: Runner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3313,6 +3313,62 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpeedRange: {x: 0.5, y: 6.5}
+--- !u!1 &1059971139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1059971141}
+  - component: {fileID: 1059971140}
+  m_Layer: 0
+  m_Name: Help
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1059971140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059971139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  Displayed: 0
+  HelpText: "Sample scene showing Clearshot camera (AlwaysFrameFirstInRace Camera)
+    that ensures that always the leader of the race is framed. The clearshot camera
+    uses a custom shot quality evaluator script (ShotQualityBasedOnSplineCartPosition).
+    This script assigns shot quality to each camera based on how much their follow
+    target has traversed along the spline track. \n\nThe runners run along a spline
+    using CinemachineSplineCart. The speed of the cart is randomized using the CartController
+    script. The spline track for each runner is identical apart for translation.\nThe
+    runners' animation is controlled by AnimateBasedOnCartSpeed script, which propagates
+    the speed of the cart to the Animator found on the Player.\n"
+--- !u!4 &1059971141
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059971139}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1060689966
 GameObject:
   m_ObjectHideFlags: 0
@@ -3505,7 +3561,7 @@ GameObject:
   - component: {fileID: 1085925000}
   - component: {fileID: 1085924999}
   m_Layer: 0
-  m_Name: Track
+  m_Name: Lanes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4094,7 +4150,7 @@ Transform:
   - {fileID: 194279536}
   - {fileID: 689268014}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1253974830
 MonoBehaviour:
@@ -4375,7 +4431,7 @@ GameObject:
   - component: {fileID: 1408997801}
   - component: {fileID: 1408997800}
   m_Layer: 0
-  m_Name: RunningPlayer (4)
+  m_Name: Runner (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4447,7 +4503,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5864,7 +5920,7 @@ GameObject:
   - component: {fileID: 1936781629}
   - component: {fileID: 1936781631}
   m_Layer: 0
-  m_Name: RunningPlayer (2)
+  m_Name: Runner (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6276,7 +6332,7 @@ Transform:
   - {fileID: 1065446231}
   - {fileID: 2073370311}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053172970
 GameObject:
