@@ -274,6 +274,7 @@ namespace Cinemachine
             // Set state
             curState.RawPosition = camPos;
             curState.RawOrientation = targetRot; // not necessary, but left in to avoid breaking scenes that depend on this
+            curState.ReferenceLookAt = camPos + targetForward * 2; // arbitrary position in front of the camera, just to have something
         }
         
         /// <summary>
