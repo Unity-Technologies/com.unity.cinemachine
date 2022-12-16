@@ -22,20 +22,26 @@ public class AnimateBasedOnCartSpeed : MonoBehaviour
     float m_PreviousPosition;
     void Update()
     {
-        if (m_Animator != null)
+        if (m_Animator != null && m_Spline != null)
         {
-            if (SplineCart.AutomaticDolly.Implementation is SplineAutoDolly.FixedSpeed fixedSpeed)
+            var normalizedPosition = m_Spline.ConvertIndexUnit(
+                SplineCart.SplinePosition, SplineCart.PositionUnits, PathIndexUnit.Normalized);
+            if (normalizedPosition >= 1)
+            {
+                m_Animator.SetFloat("SpeedZ", 0);
+            }
+            else if (SplineCart.AutomaticDolly.Implementation is SplineAutoDolly.FixedSpeed fixedSpeed)
             {
                 m_Animator.SetFloat("SpeedZ", fixedSpeed.Speed);
             }
-            else if (m_Spline != null)
+            else
             {
                 var position = m_Spline.ConvertIndexUnit(
                     SplineCart.SplinePosition, SplineCart.PositionUnits, PathIndexUnit.Distance);
                 var delta = position - m_PreviousPosition;
                 m_PreviousPosition = position;
                 
-                m_Animator.SetFloat("SpeedZ", delta / Time.deltaTime);
+                m_Animator.SetFloat("SpeedZ", Mathf.Clamp(delta / Time.deltaTime, 0.1f, 10f));
             }
         }
     }

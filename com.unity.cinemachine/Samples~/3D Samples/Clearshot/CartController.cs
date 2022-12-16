@@ -1,13 +1,14 @@
 using System;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Splines;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(CinemachineSplineCart))]
-public class RandomizeCartSpeed : MonoBehaviour
+public class CartController : MonoBehaviour
 {
     [MinMaxRangeSlider(0.1f, 10f)]
-    [Tooltip("Range for the FOV that this behaviour will generate.")]
+    [Tooltip("Possible range of speed the cart will randomly take")]
     public Vector2 SpeedRange = new(2f, 5f);
     
     CinemachineSplineCart m_Cart;
@@ -26,6 +27,12 @@ public class RandomizeCartSpeed : MonoBehaviour
         if (m_Randomize)
         {
             m_TargetSpeed = Random.Range(SpeedRange.x, SpeedRange.y);
+            if (m_Cart.PositionUnits != PathIndexUnit.Distance && m_Cart.Spline != null)
+            {
+                m_TargetSpeed =
+                    m_Cart.Spline.Spline.ConvertIndexUnit(m_TargetSpeed, m_Cart.PositionUnits, PathIndexUnit.Distance);
+            }
+
             m_Randomize = false;
         }
 
@@ -33,5 +40,10 @@ public class RandomizeCartSpeed : MonoBehaviour
             m_FixedSpeed.Speed = Mathf.Lerp(m_FixedSpeed.Speed, m_TargetSpeed, Time.deltaTime);
         else
             m_Randomize = true;
+    }
+    
+    public void ResetPosition()
+    {
+        m_Cart.SplinePosition = 0;
     }
 }
