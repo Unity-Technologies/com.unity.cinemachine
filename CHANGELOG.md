@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: POV starts up in its centered position, if recentering is enabled
 - Freelook ForcePosition is more precise now.
 - Bugfix: VirtualCameras did not set the focal length property of physical cameras.
+- CinemachinePathBase search radius fixed for not looped paths.
  
 
 ## [2.8.9] - 2022-08-24
