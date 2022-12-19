@@ -23,7 +23,9 @@ namespace Cinemachine.Examples
         Animator m_Animator;
         SimplePlayerController m_Controller;
         Vector3 m_PreviousPosition; // used if m_Controller == null
-        const float k_IdleThreshold = 0.3f;
+        bool m_WasWalking;
+        bool m_WasRunning;
+        const float k_IdleThreshold = 0.2f;
 
         void Start()
         {
@@ -64,8 +66,14 @@ namespace Cinemachine.Examples
             // Set animation params for current velocity
             vel.y = 0; // we don't consider vertical movement
             var speed = vel.magnitude;
-            bool isRunning = speed > NormalWalkSpeed * 2;
-            bool isWalking = !isRunning && speed > k_IdleThreshold;
+
+            // Hysteresis reduction
+            bool isRunning = speed > NormalWalkSpeed * 2 + (m_WasRunning ? -0.15f : 0.15f);
+            bool isWalking = !isRunning && speed > k_IdleThreshold + (m_WasWalking ? -0.05f : 0.05f);
+            m_WasWalking = isWalking;
+            m_WasRunning = isRunning;
+
+            // Set the normalized direction of motion and scale the animation speed to match motion speed
             var dir = speed > k_IdleThreshold ? vel / speed : Vector3.zero;
             var motionScale = isWalking ? speed / NormalWalkSpeed : 1;
 
