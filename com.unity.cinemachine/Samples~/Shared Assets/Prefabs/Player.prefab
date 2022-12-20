@@ -645,6 +645,7 @@ MonoBehaviour:
   InputForward: 0
   UpMode: 1
   Strafe: 0
+  LockCursor: 0
   MoveX:
     Value: 0
     Center: 0
@@ -686,10 +687,10 @@ MonoBehaviour:
   Controllers:
   - Name: Move X
     Owner: {fileID: 5995860984952935429}
-    LegacyInput: Horizontal
-    LegacyGain: 200
     InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 4
+    LegacyInput: Horizontal
+    LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0
@@ -700,10 +701,10 @@ MonoBehaviour:
       Time: 0
   - Name: Move Z
     Owner: {fileID: 5995860984952935429}
-    LegacyInput: Vertical
-    LegacyGain: 200
     InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 4
+    LegacyInput: Vertical
+    LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0
@@ -714,10 +715,10 @@ MonoBehaviour:
       Time: 0
   - Name: Jump
     Owner: {fileID: 5995860984952935429}
-    LegacyInput: Jump
-    LegacyGain: 200
     InputAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 1
+    LegacyInput: Jump
+    LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0.1
@@ -728,10 +729,10 @@ MonoBehaviour:
       Time: 0.01
   - Name: Sprint
     Owner: {fileID: 5995860984952935429}
-    LegacyInput: Fire3
-    LegacyGain: 200
     InputAction: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 4
+    LegacyInput: Fire3
+    LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0
@@ -752,8 +753,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be929e8436c3caf46b4ef616ef0e824e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NormalWalkSpeed: 1.75
-  SprintAnimationScale: 1
+  NormalWalkSpeed: 1.7
+  NormalSprintSpeed: 5
+  MaxSprintScale: 1.4
   JumpAnimationScale: 0.65
 --- !u!1 &6960710989245956327
 GameObject:

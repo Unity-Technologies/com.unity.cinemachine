@@ -50,10 +50,7 @@ namespace Cinemachine.Examples
         // Get velocity relative to player transform
         public Vector3 GetPlayerVelocity()
         {
-            var up = UpDirection;
-            var vel = m_CurrentVelocityXZ.ProjectOntoPlane(up);
-            var fwd = transform.forward.ProjectOntoPlane(up);
-            vel = Quaternion.FromToRotation(fwd, Vector3.forward) * vel;
+            var vel = Quaternion.Inverse(transform.rotation) * m_CurrentVelocityXZ;
             vel.y = m_CurrentVelocityY;
             return vel;
         }
