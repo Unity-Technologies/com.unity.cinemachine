@@ -1,28 +1,31 @@
 using UnityEngine;
 
-public class SimpleBullet : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public LayerMask CollisionLayers = 1;
-
-    Vector3 m_Direction;
-    float m_Speed;
-
-    public void Fire(Vector3 direction, float speed) 
+    public class SimpleBullet : MonoBehaviour
     {
-        m_Direction = direction.normalized;
-        m_Speed = speed;
-    }
+        public LayerMask CollisionLayers = 1;
 
-    void Update()
-    {
-        var t = transform;
-        if (Physics.Raycast(
-            t.position, m_Direction, out var hitInfo, m_Speed * Time.deltaTime, CollisionLayers,
-            QueryTriggerInteraction.Ignore))
+        Vector3 m_Direction;
+        float m_Speed;
+
+        public void Fire(Vector3 direction, float speed) 
         {
-            t.position = hitInfo.point;
-            m_Speed = 0;
+            m_Direction = direction.normalized;
+            m_Speed = speed;
         }
-        t.position += m_Direction * m_Speed * Time.deltaTime;
+
+        void Update()
+        {
+            var t = transform;
+            if (Physics.Raycast(
+                t.position, m_Direction, out var hitInfo, m_Speed * Time.deltaTime, CollisionLayers,
+                QueryTriggerInteraction.Ignore))
+            {
+                t.position = hitInfo.point;
+                m_Speed = 0;
+            }
+            t.position += m_Direction * m_Speed * Time.deltaTime;
+        }
     }
 }

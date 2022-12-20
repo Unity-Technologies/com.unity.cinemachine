@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -246,8 +246,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 737942603}
-  m_LocalRotation: {x: -0.060841378, y: -0.000000006440438, z: -3.925724e-10, w: 0.9981475}
-  m_LocalPosition: {x: 0, y: 1.5035291, z: -29.768585}
+  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492477, z: -8.1628766e-11, w: 0.99927956}
+  m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -321,13 +321,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838339814}
-  m_LocalRotation: {x: -0.060841378, y: -0.000000006440438, z: -3.925724e-10, w: 0.9981475}
-  m_LocalPosition: {x: 0, y: 1.5035291, z: -29.768585}
+  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492477, z: -8.1628766e-11, w: 0.99927956}
+  m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &838339820
 MonoBehaviour:
@@ -433,17 +433,17 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  OrbitStyle: 0
+  OrbitStyle: 1
   Radius: 5
   Orbits:
     Top:
       Radius: 2
-      Height: 5
+      Height: 6
     Center:
       Radius: 4
       Height: 2.25
     Bottom:
-      Radius: 2.5
+      Radius: 2
       Height: 0.1
     SplineCurvature: 0.5
   HorizontalAxis:
@@ -598,7 +598,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1106812495
 MonoBehaviour:
@@ -625,7 +625,7 @@ MonoBehaviour:
       Enabled: 0
       Size: {x: 0, y: 0}
     HardLimits:
-      Enabled: 1
+      Enabled: 0
       Size: {x: 0.1, y: 0.2}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
@@ -667,7 +667,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6106646561195116106, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
       propertyPath: m_LocalPosition.x
@@ -744,7 +744,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.x
@@ -885,7 +885,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalPosition.x
