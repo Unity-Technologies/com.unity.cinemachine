@@ -149,7 +149,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 14930834}
-  m_LocalRotation: {x: 0.18794522, y: 0.11796427, z: -0.022743864, w: 0.9748045}
+  m_LocalRotation: {x: 0.1879452, y: 0.11796432, z: -0.022743868, w: 0.97480446}
   m_LocalPosition: {x: -64.58557, y: 4.0983305, z: -4.434556}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -330,7 +330,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 58846467}
-  m_LocalRotation: {x: 0.18794522, y: 0.11796427, z: -0.022743864, w: 0.9748045}
+  m_LocalRotation: {x: 0.1879452, y: 0.11796432, z: -0.022743868, w: 0.97480446}
   m_LocalPosition: {x: -53.385334, y: 5.55, z: -5.711343}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1304,15 +1304,15 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "Sample scene showing Clearshot camera (AlwaysFrameFirstInRace Camera)
-    that ensures that always the leader of the race is framed. The clearshot camera
-    uses a custom shot quality evaluator script (ShotQualityBasedOnSplineCartPosition).
+  HelpText: "Sample scene showing Clearshot camera (AlwaysFrameLeader Camera) that
+    ensures that always the leader of the race is framed. The clearshot camera uses
+    a custom shot quality evaluator script (ShotQualityBasedOnSplineCartPosition).
     This script assigns shot quality to each camera based on how much their follow
     target has traversed along the spline track. \n\nThe runners run along a spline
     using CinemachineSplineCart. The speed of the cart is randomized using the CartController
     script. The spline track for each runner is identical apart for translation.\nThe
-    runners' animation is controlled by AnimateBasedOnCartSpeed script, which propagates
-    the speed of the cart to the Animator found on the Player.\n"
+    runners' animation changes based on their speed. This is done by SimplePlayerAnimator
+    script.\n"
 --- !u!4 &1059971141
 Transform:
   m_ObjectHideFlags: 0
