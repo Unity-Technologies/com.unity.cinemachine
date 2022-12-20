@@ -1,25 +1,27 @@
-using Cinemachine;
 using UnityEngine;
 using UnityEngine.Splines;
 
-/// <summary>
-/// Calculates shot quality based on how far the Follow target has advances with its CinemachineSplineCart.
-/// </summary>
-public class ShotQualityBasedOnSplineCartPosition : CinemachineExtension, IShotQualityEvaluator
+namespace Cinemachine.Examples
 {
-    protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+    /// <summary>
+    /// Calculates shot quality based on how far the Follow target has advances with its CinemachineSplineCart.
+    /// </summary>
+    public class ShotQualityBasedOnSplineCartPosition : CinemachineExtension, IShotQualityEvaluator
     {
-        if (stage == CinemachineCore.Stage.Finalize)
+        protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (vcam.Follow != null &&
-                vcam.Follow.TryGetComponent(out CinemachineSplineCart cart) &&
-                cart.Spline != null)
+            if (stage == CinemachineCore.Stage.Finalize)
             {
-                state.ShotQuality = cart.Spline.Spline.ConvertIndexUnit(
-                    cart.SplinePosition, cart.PositionUnits, PathIndexUnit.Distance);
+                if (vcam.Follow != null &&
+                    vcam.Follow.TryGetComponent(out CinemachineSplineCart cart) &&
+                    cart.Spline != null)
+                {
+                    state.ShotQuality = cart.Spline.Spline.ConvertIndexUnit(
+                        cart.SplinePosition, cart.PositionUnits, PathIndexUnit.Distance);
+                }
+                else
+                    state.ShotQuality = 0;
             }
-            else
-                state.ShotQuality = 0;
         }
     }
 }
