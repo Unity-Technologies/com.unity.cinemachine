@@ -7,15 +7,19 @@ namespace Cinemachine.Editor
     {
         UnityEditorInternal.ReorderableList m_ChildList;
 
+        /// <summary>
+        /// Use this delegate to control the display of warning icons next to the child cameras
+        /// </summary>
         public delegate string GetChildWarningMessageDelegate(object childObject);
         public GetChildWarningMessageDelegate GetChildWarningMessage = (object childObject) => "";
 
+        /// <summary>Call from inspector's OnEnable</summary>
         public void OnEnable()
         {
             m_ChildList = null;
         }
 
-        /// <summary>Returns true if child list was edited</summary>
+        /// <summary>Call from inspector's OnInspectorGUI.  Returns true if child list was edited</summary>
         public bool OnInspectorGUI(SerializedProperty property)
         {
             if (Selection.objects.Length == 1)
@@ -34,7 +38,8 @@ namespace Cinemachine.Editor
             else
             {
                 EditorGUILayout.HelpBox(
-                    "Child Cameras cannot be displayed when multiple objects are selected.", MessageType.Info);
+                    "Child Cameras cannot be displayed when multiple objects are selected.", 
+                    MessageType.Info);
             }
             return false;
         }
@@ -56,6 +61,7 @@ namespace Cinemachine.Editor
                 rect.width = textDimensions.x;
                 EditorGUI.LabelField(rect, priorityText);
             };
+
             m_ChildList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
                 rect.y += vSpace;
@@ -75,15 +81,13 @@ namespace Cinemachine.Editor
                 EditorGUI.PropertyField(rect, element, GUIContent.none);
                 GUI.enabled = true;
 
-                var obj = new SerializedObject(element.objectReferenceValue);
                 rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
-                var priorityProp = obj.FindProperty("PriorityAndChannel").FindPropertyRelative("Priority");
                 var oldWidth = EditorGUIUtility.labelWidth;
                 EditorGUIUtility.labelWidth = hSpace * 2;
-                EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" "));
+                DrawPropertyField(rect, new SerializedObject(element.objectReferenceValue));
                 EditorGUIUtility.labelWidth = oldWidth;
-                obj.ApplyModifiedProperties();
             };
+
             m_ChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
             {
                 if (l.index < 0 || l.index >= l.serializedProperty.arraySize)
@@ -93,20 +97,38 @@ namespace Cinemachine.Editor
                 if (vcam != null)
                     vcam.transform.SetSiblingIndex(l.index);
             };
-        m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
+
+            m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
             {
                 var b = property.serializedObject.targetObject as MonoBehaviour;
                 var index = l.serializedProperty.arraySize;
                 var vcam = CinemachineMenu.CreatePassiveCmCamera(parentObject: b == null ? null : b.gameObject);
                 vcam.transform.SetSiblingIndex(index);
             };
-        m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
+
+            m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
             {
                 var o = l.serializedProperty.GetArrayElementAtIndex(l.index).objectReferenceValue;
                 var vcam = (o != null) ? (o as CinemachineVirtualCameraBase) : null;
                 if (vcam != null)
                     Undo.DestroyObjectImmediate(vcam.gameObject);
             };
+        }
+
+        void DrawPropertyField(Rect rect, SerializedObject serializedObject)
+        {
+            var prop = serializedObject.FindProperty("PriorityAndChannel");
+            var enabledProp = prop.FindPropertyRelative("Enabled");
+            var priorityProp = prop.FindPropertyRelative("Priority");
+            var priority = enabledProp.boolValue ? priorityProp.intValue : 0;
+            var newPriority = EditorGUI.IntField(rect, " ", priority);
+            if (newPriority != priority)
+            {
+                if (newPriority != 0)
+                    enabledProp.boolValue = true;
+                priorityProp.intValue = newPriority;
+                serializedObject.ApplyModifiedProperties();
+            }
         }
     }
 }
