@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
                 rect.x += rect.width + hSpace; rect.width = floatFieldWidth;
                 var oldWidth = EditorGUIUtility.labelWidth;
                 EditorGUIUtility.labelWidth = hSpace * 2;
-                DrawPropertyField(rect, new SerializedObject(element.objectReferenceValue));
+                DrawPriorityField(rect, new SerializedObject(element.objectReferenceValue));
                 EditorGUIUtility.labelWidth = oldWidth;
             };
 
@@ -115,7 +115,7 @@ namespace Cinemachine.Editor
             };
         }
 
-        void DrawPropertyField(Rect rect, SerializedObject serializedObject)
+        void DrawPriorityField(Rect rect, SerializedObject serializedObject)
         {
             var prop = serializedObject.FindProperty("PriorityAndChannel");
             var enabledProp = prop.FindPropertyRelative("Enabled");
