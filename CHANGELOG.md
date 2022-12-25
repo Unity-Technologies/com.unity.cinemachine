@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Tranpsoser with LockToTarget binding could have gimbal lock
 - Freelook ForcePosition is more precise now.
 - CinemachinePathBase search radius fixed for not looped paths.
+- Regression fix: POV was not handling ReferenceUp correctly
 
 
 ## [2.6.17] - 2022-08-15
