@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Cinemachine Samples can import their package dependencies.
 - CinemachineSmoothPath is upgraded to Splines correctly now. 
 - CinemachinePathBase search radius fixed for not looped paths.
+- Fix priority comparison overflow.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
