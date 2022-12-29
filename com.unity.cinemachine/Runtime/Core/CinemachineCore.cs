@@ -183,7 +183,7 @@ namespace Cinemachine
             if (!m_ActiveCamerasAreSorted && m_ActiveCameras.Count > 1)
             {
                 m_ActiveCameras.Sort((x, y) => 
-                    x.Priority == y.Priority ? y.ActivationId - x.ActivationId : y.Priority - x.Priority);
+                    x.Priority == y.Priority ? y.ActivationId.CompareTo(x.ActivationId) : y.Priority.CompareTo(x.Priority));
                 m_ActiveCamerasAreSorted = true;
             }
             return m_ActiveCameras[index];
