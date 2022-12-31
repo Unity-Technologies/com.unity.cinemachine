@@ -15,14 +15,15 @@ namespace Tests.Runtime
         public override void SetUp()
         {
             base.SetUp();
-
-            m_Brain.DefaultBlend.m_Style = CinemachineBlendDefinition.Style.Cut;
+            
             m_CmCameras = new List<CmCamera>();
         }
 
         [TearDown]
         public override void TearDown()
         {
+            m_CmCameras.Clear();
+            
             base.TearDown();
         }
         
@@ -37,27 +38,25 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(PriorityCases))]
         public IEnumerator CheckPriorityOrder(int[] priorities)
         {
+            yield return null;
+            
             // Create vcams and set priorities
             for (var i = 0; i < priorities.Length; ++i)
             {
                 m_CmCameras.Add(CreateGameObject("CM Vcam " + i, typeof(CmCamera)).GetComponent<CmCamera>());
-                m_CmCameras[i].PriorityAndChannel.Enabled = true;
                 m_CmCameras[i].Priority = priorities[i];
             }
-            
-            yield return null;
 
             // Check that active vcam is the current vcam. Then disable it and check that now the next is the active one.
             foreach (var cmCamera in m_CmCameras)
             {
+                yield return null;
+                
                 var activeCamera = m_Brain.ActiveVirtualCamera as CmCamera;
                 Assert.NotNull(activeCamera);
                 Assert.That(activeCamera, Is.EqualTo(cmCamera));
                 activeCamera.enabled = false;
-                yield return null;
             }
         }
-        
-        
     }
 }
