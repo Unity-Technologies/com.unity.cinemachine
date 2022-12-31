@@ -10,26 +10,21 @@ namespace Tests.Runtime
     [TestFixture]
     public class PriorityTests : CinemachineRuntimeFixtureBase
     {
-        List<CmCamera> m_CmCameras;
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            
-            m_CmCameras = new List<CmCamera>();
         }
 
         [TearDown]
         public override void TearDown()
         {
-            m_CmCameras.Clear();
-            
             base.TearDown();
         }
         
         static IEnumerable PriorityValues
         {
-            // Values must be in descending order
+            // Values must be in descending order - just so CheckPriorityOrder algorithm is simpler
             get
             {
                 yield return new TestCaseData(new[] {40, 30, 20, 10, 0, -10, -20, -30, -40}).SetName("Standard").Returns(null);
@@ -39,18 +34,19 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(PriorityValues))]
         public IEnumerator CheckPriorityOrder(int[] priorities)
         {
+            var cmCameras = new List<CmCamera>();
             // Create vcams and set priorities
             for (var i = 0; i < priorities.Length; ++i)
             {
-                m_CmCameras.Add(CreateGameObject("CM Vcam " + i, typeof(CmCamera)).GetComponent<CmCamera>());
-                m_CmCameras[i].Priority = priorities[i];
+                cmCameras.Add(CreateGameObject("CM Vcam " + i, typeof(CmCamera)).GetComponent<CmCamera>());
+                cmCameras[i].Priority = priorities[i];
             }
             yield return null;
 
             CmCamera activeCamera;
             // Check that activeCamera is equal to cmCamera.
             // Then disable it and check that the next is now the active one.
-            foreach (var cmCamera in m_CmCameras)
+            foreach (var cmCamera in cmCameras)
             {
                 activeCamera = m_Brain.ActiveVirtualCamera as CmCamera;
                 Assert.NotNull(activeCamera);
@@ -60,16 +56,15 @@ namespace Tests.Runtime
             }
 
             // Re-enable all cm cameras
-            foreach (var cmCamera in m_CmCameras)
-            {
+            foreach (var cmCamera in cmCameras)
                 cmCamera.enabled = true;
-            }
+            
             yield return null;
                 
             // Check that the first CmCamera in the list is equal to activeCamera.
             activeCamera = m_Brain.ActiveVirtualCamera as CmCamera;
             Assert.NotNull(activeCamera);
-            Assert.That(activeCamera, Is.EqualTo(m_CmCameras[0]));
+            Assert.That(activeCamera, Is.EqualTo(cmCameras[0]));
         }
     }
 }
