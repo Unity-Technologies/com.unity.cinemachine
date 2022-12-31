@@ -48,7 +48,8 @@ namespace Tests.Runtime
             yield return null;
 
             CmCamera activeCamera;
-            // Check that active vcam is cmCamera. Then disable it and check that the next is now the active one.
+            // Check that activeCamera is equal to cmCamera.
+            // Then disable it and check that the next is now the active one.
             foreach (var cmCamera in m_CmCameras)
             {
                 activeCamera = m_Brain.ActiveVirtualCamera as CmCamera;
@@ -65,7 +66,7 @@ namespace Tests.Runtime
             }
             yield return null;
                 
-            // Check that the first CmCamera in the list is the active one
+            // Check that the first CmCamera in the list is equal to activeCamera.
             activeCamera = m_Brain.ActiveVirtualCamera as CmCamera;
             Assert.NotNull(activeCamera);
             Assert.That(activeCamera, Is.EqualTo(m_CmCameras[0]));
