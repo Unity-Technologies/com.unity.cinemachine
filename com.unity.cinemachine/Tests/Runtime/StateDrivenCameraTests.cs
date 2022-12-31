@@ -1,11 +1,10 @@
-#if CINEMACHINE_UNITY_ANIMATION
+#if false
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEngine.TestTools;
-
 using Cinemachine;
 
 namespace Tests.Runtime
