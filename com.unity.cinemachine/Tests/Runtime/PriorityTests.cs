@@ -47,7 +47,7 @@ namespace Tests.Runtime
                 m_CmCameras[i].Priority = priorities[i];
             }
 
-            // Check that active vcam is the current vcam. Then disable it and check that now the next is the active one.
+            // Check that active vcam is cmCamera. Then disable it and check that the next is now the active one.
             foreach (var cmCamera in m_CmCameras)
             {
                 yield return null;
