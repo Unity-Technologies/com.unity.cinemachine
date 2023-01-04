@@ -46,9 +46,9 @@ namespace Cinemachine.Editor
 
         void SetupChildList(SerializedProperty property)
         {
-            float vSpace = 2;
-            float hSpace = 3;
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            const float vSpace = 2;
+            const float hSpace = 3;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
             m_ChildList = new (property.serializedObject, property, true, true, true, true);
 
@@ -114,8 +114,8 @@ namespace Cinemachine.Editor
                     Undo.DestroyObjectImmediate(vcam.gameObject);
             };
         }
-
-        void DrawPriorityField(Rect rect, SerializedObject serializedObject)
+        
+        static void DrawPriorityField(Rect rect, SerializedObject serializedObject)
         {
             var prop = serializedObject.FindProperty("PriorityAndChannel");
             var enabledProp = prop.FindPropertyRelative("Enabled");
