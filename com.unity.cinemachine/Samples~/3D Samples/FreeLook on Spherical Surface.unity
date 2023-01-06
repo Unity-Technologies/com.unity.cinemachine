@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -153,7 +153,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &77596907
 MonoBehaviour:
@@ -170,11 +170,11 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "WASD to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera.
-    \n\nIf using Input package, right mouse button to jump and middle mouse button
-    to sprint.\n\nThis scene shows a basic FreeLook camera tracking a player walking
-    on the surface of a sphere.  To allow the cameras to correctly use the player's
-    local Up direction, the player is used as a WorldUpOverride in the CM BRain."
+  HelpText: "This scene shows a basic FreeLook camera tracking a player walking on
+    the surface of a sphere.  To allow the cameras to correctly use the player's
+    local Up direction, the player is used as a WorldUpOverride in the CM Brain.\r\n\r\nWASD
+    to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera. \r\nIf using
+    Input package, right mouse button to jump and middle mouse button to sprint."
 --- !u!1 &364965555
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,7 +836,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1001 &1580768997
 PrefabInstance:

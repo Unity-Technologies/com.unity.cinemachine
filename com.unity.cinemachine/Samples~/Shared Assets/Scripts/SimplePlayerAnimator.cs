@@ -4,6 +4,9 @@ namespace Cinemachine.Examples
 {
     /// <summary>
     /// Add-on for SimplePlayerController that controls animation for the Cameron character.
+    /// It is hardcoded specifically to drive the CameronSimpleController animation controller asset.
+    /// If the SimplePlayerController behaviour is present, this behaviour will work with it, otherwise
+    /// it will monitor player velocity and apply the appropriate animation based on player movement.
     /// </summary>
     [RequireComponent(typeof(Animator))]
     public class SimplePlayerAnimator : MonoBehaviour
@@ -22,7 +25,11 @@ namespace Cinemachine.Examples
 
         Animator m_Animator;
         SimplePlayerController m_Controller;
+<<<<<<< HEAD
         Vector3 m_PreviousPosition; // used if m_Controller == null
+=======
+        Vector3 m_PreviousPosition; // used if m_Controller == null or disabled
+>>>>>>> main
         bool m_WasWalking;
         bool m_WasRunning;
         const float k_IdleThreshold = 0.2f;
@@ -33,25 +40,39 @@ namespace Cinemachine.Examples
             TryGetComponent(out m_Animator);
             if (TryGetComponent(out m_Controller))
             {
+                // Install our callbacks to handle jump and animation based on velocity
                 m_Controller.StartJump += () => m_Animator.SetTrigger("Jump");
                 m_Controller.EndJump += () => m_Animator.SetTrigger("Land");
                 m_Controller.PostUpdate += () =>
                 {
+<<<<<<< HEAD
                     var vel = m_Controller.GetPlayerVelocity();
                     UpdateAnimation(vel);
+=======
+                    UpdateAnimation(m_Controller.GetPlayerVelocity());
+>>>>>>> main
                     m_Animator.SetFloat("JumpScale", JumpAnimationScale * (m_Controller.IsSprinting 
                         ? m_Controller.JumpSpeed / m_Controller.SprintJumpSpeed : 1));
                 };
             }
         }
 
+<<<<<<< HEAD
         // LateUpdate so we normally don't have to worry about script execution order:
         // we can assume that the player has already been moved
+=======
+        // We use LateUpdate so we normally don't have to worry about script execution order:
+        // we can assume that the player has already been moved.
+>>>>>>> main
         void LateUpdate()
         {
             // In no-controller mode, we monitor the player's motion and deduce the appropriate animation.
             // We don't support jumping in this mode.
+<<<<<<< HEAD
             if (m_Controller == null)
+=======
+            if (m_Controller == null || !m_Controller.enabled)
+>>>>>>> main
             {
                 // Get velocity in player-local coords
                 var pos = transform.position;
@@ -61,9 +82,15 @@ namespace Cinemachine.Examples
             }
         }
 
+<<<<<<< HEAD
         void UpdateAnimation(Vector3 vel)
         {
             // Set animation params for current velocity
+=======
+        // Set animation params for current velocity
+        void UpdateAnimation(Vector3 vel)
+        {
+>>>>>>> main
             vel.y = 0; // we don't consider vertical movement
             var speed = vel.magnitude;
 

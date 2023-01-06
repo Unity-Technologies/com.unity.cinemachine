@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -208,8 +208,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 140191132}
-  m_LocalRotation: {x: 0.052577313, y: 1e-45, z: 0, w: 0.9986169}
-  m_LocalPosition: {x: 0, y: 1.5035291, z: -4.7685847}
+  m_LocalRotation: {x: 0.15086421, y: 0.000000019017136, z: -0.0000000029022227, w: 0.98855454}
+  m_LocalPosition: {x: 0, y: 2.25, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -391,12 +391,12 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "Sample scene showing a Freelook camera with a Deoccluder to handle collision
-    with walls.\nTransparent objects are ignored by Cinemachine Deoccluder, because
-    Transparent Layers attribute of the Deoccluder is set to the layer on which the
-    transparents objects are. \n\nUse WASD to move around, Spacebar to jump, Shift
-    to sprint.  Mouse moves the camera. \nIf using Input package, right mouse button
-    to jump and middle mouse button to sprint."
+  HelpText: "This scene shows a Freelook camera with a Deoccluder to handle occlusion
+    by walls.\r\n\r\nTransparent objects are ignored by Cinemachine Deoccluder, because
+    the Transparent Layers attribute of the Deoccluder is set to the layer on which
+    the transparents objects are. \r\n\r\nUse WASD to move around, Spacebar to jump,
+    Shift to sprint.  Mouse moves the camera. If using Input package, right mouse
+    button to jump and middle mouse button to sprint."
 --- !u!4 &1089719087
 Transform:
   m_ObjectHideFlags: 0
@@ -446,9 +446,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1727080744}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
     LegacyInput: Mouse X
     LegacyGain: 200
     Control:
@@ -461,6 +465,8 @@ MonoBehaviour:
       Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 1727080744}
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: -4
     LegacyInput: Mouse Y
     LegacyGain: -200
     Control:
@@ -473,6 +479,8 @@ MonoBehaviour:
       Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 1727080744}
+    InputAction: {fileID: 0}
+    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
@@ -530,17 +538,17 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  OrbitStyle: 0
+  OrbitStyle: 1
   Radius: 5
   Orbits:
     Top:
       Radius: 2
-      Height: 5
+      Height: 6.05
     Center:
       Radius: 4
       Height: 2.25
     Bottom:
-      Radius: 2.5
+      Radius: 2.15
       Height: 0.1
     SplineCurvature: 0.5
   HorizontalAxis:
@@ -558,7 +566,7 @@ MonoBehaviour:
   RadialAxis:
     Value: 1
     Center: 1
-    Range: {x: 1, y: 5}
+    Range: {x: 1, y: 1}
     Wrap: 0
     Restrictions: 0
 --- !u!114 &1727080745
@@ -608,8 +616,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1727080740}
-  m_LocalRotation: {x: 0.052577313, y: 1e-45, z: 0, w: 0.9986169}
-  m_LocalPosition: {x: 0, y: 1.5035291, z: -4.7685847}
+  m_LocalRotation: {x: 0.15086421, y: 0.000000019017136, z: -0.0000000029022227, w: 0.98855454}
+  m_LocalPosition: {x: 0, y: 2.25, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -640,12 +648,12 @@ MonoBehaviour:
     Enabled: 1
     DistanceLimit: 0
     MinimumOcclusionTime: 0
-    CameraRadius: 0.5
-    Strategy: 0
-    MaximumEffort: 3
-    SmoothingTime: 0.5
-    Damping: 1
-    DampingWhenOccluded: 1
+    CameraRadius: 0.1
+    Strategy: 1
+    MaximumEffort: 4
+    SmoothingTime: 0
+    Damping: 0.5
+    DampingWhenOccluded: 0.05
   ShotQualityEvaluation:
     Enabled: 0
     OptimalDistance: 10

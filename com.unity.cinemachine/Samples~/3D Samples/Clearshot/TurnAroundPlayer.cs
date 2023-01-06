@@ -1,19 +1,21 @@
-using Cinemachine.Examples;
 using UnityEngine;
 
-public class TurnAroundPlayer : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public GameObject Player;
-    SimplePlayerController m_PlayerController;
+    public class TurnAroundPlayer : MonoBehaviour
+    {
+        public GameObject Player;
+        SimplePlayerController m_PlayerController;
     
-    void Start()
-    {
-        m_PlayerController = Player.GetComponent<SimplePlayerController>();
-    }
+        void Start()
+        {
+            m_PlayerController = Player.GetComponent<SimplePlayerController>();
+        }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag(Player.tag)) 
-            m_PlayerController.MoveZ.Value *= -1f; // flip direction
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag(Player.tag)) 
+                m_PlayerController.MoveZ.Value *= -1f; // flip direction
+        }
     }
 }
