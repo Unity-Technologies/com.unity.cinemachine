@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Freelook ForcePosition is more precise now.
 - Bugfix: VirtualCameras did not set the focal length property of physical cameras.
 - CinemachinePathBase search radius fixed for not looped paths.
- 
+- Regression fix: POV was not handling ReferenceUp correctly
+
 
 ## [2.8.9] - 2022-08-24
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter. 
