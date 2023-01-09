@@ -13,3 +13,7 @@ For all other minor versions of Cinemachine, a new branch is created under relea
 During development, PRs are merged directly on main and maintenance branches. Those branches should always be shippable: the code compiles, features are complete and the CI pipeline is green.
 
 Once a release is done, a branch with the version name is created under releases (e.g. releases/2.9.4, releases/3.0.0-pre.1). No changes are made to those branches. They exist for reference only. 
+
+## Release Procedure
+
+Cinemachine is a supported package from Unity, and as such, can be installed from the official registry in the package manager of the Unity editor. The [Cinemachine Release Procedure](https://docs.google.com/document/d/13K512E28risGGqodOOE3Pb9w5pLmjLhxGzm5r31TuGE/edit?usp=sharing) is an internal document that contains different information to help with the release of a new version of Cinemachine.

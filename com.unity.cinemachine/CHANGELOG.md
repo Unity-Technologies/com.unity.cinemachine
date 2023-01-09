@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineSmoothPath is upgraded to Splines correctly now. 
 - CinemachinePathBase search radius fixed for not looped paths.
 - Bugfix: priority ordering was wrong when priority values were close to the integer min and max values.
+- Regression fix: POV and PanTilt handle ReferenceUp correctly.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
