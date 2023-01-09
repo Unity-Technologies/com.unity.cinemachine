@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - Bugfix: StateDrivenCamera/Clearshot: Transition glitch when backing out of a transition in progress.
+- Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
 - Bugfix: Transposer with LockToTarget binding sometimes had gimbal lock.
 - Bugfix: Collider damping is more robust with extreme FreeLook configurations.
 - Bugfix: AxisState Recentering wait time not work reliably in FixedUpdate.
