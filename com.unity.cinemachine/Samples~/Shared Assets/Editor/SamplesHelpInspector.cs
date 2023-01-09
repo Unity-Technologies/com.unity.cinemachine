@@ -11,7 +11,7 @@ namespace Cinemachine.Examples
     [CanEditMultipleObjects]
     public class SamplesHelpInspector : UnityEditor.Editor
     {
-#if EditCinemachineSamples
+#if EditCinemachineSamples //We don't display the editor by default to simplify the interface for users.
         SerializedProperty m_ButtonText;
         SerializedProperty m_Position;
         SerializedProperty m_Displayed;
@@ -23,6 +23,7 @@ namespace Cinemachine.Examples
 
         const string k_ShowButtonText = "Show";
         const string k_SelectButtonText = "Select";
+        const string k_InspectorWindowName = "Inspector";
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -156,11 +157,9 @@ namespace Cinemachine.Examples
         {
             EditorWindow[] windows = Resources.FindObjectsOfTypeAll<EditorWindow>();
             var inspectorCount = 0;
-            for (var i = windows.Length - 1;
-                 i >= 0;
-                 i--) // We process the list in reverse to keep the tracked window ActiveEditorTracker.sharedTracker.isLocked 
+            for (var i = windows.Length - 1; i >= 0; i--) // We process the list in reverse to keep the tracked window ActiveEditorTracker.sharedTracker.isLocked 
             {
-                if (windows[i].titleContent.text == "Inspector")
+                if (windows[i].titleContent.text == k_InspectorWindowName)
                 {
                     inspectorCount++;
                     if (inspectorCount > 1)
@@ -175,7 +174,7 @@ namespace Cinemachine.Examples
             var inspectorCount = 0;
             foreach (var window in windows)
             {
-                if (window.titleContent.text == "Inspector")
+                if (window.titleContent.text == k_InspectorWindowName)
                 {
                     inspectorCount++;
                     if (inspectorCount > 1)
