@@ -34,33 +34,6 @@ namespace Cinemachine.Examples
             samplesHelpWindow.UpdateText();
         }
 
-        /*void InitializeToolbar()
-        {
-            if(m_Toolbar != null)
-                m_Toolbar.Clear();
-            
-            for (var i = 0; i < m_DisplayedInformation.Length; i++)
-            {
-                var currentInformation = i;
-                var button = new ToolbarButton(() =>
-                {
-                    m_Counter = 0;
-                    m_EnsureExpanded = false;
-                    m_IsShown = false;
-                    m_CurrentlyShown = currentInformation;
-                    Selection.activeGameObject = m_DisplayedInformation[currentInformation].target;
-                    m_CurrentSelection = Selection.activeGameObject;
-                    UpdateText();
-                });
-                button.text = m_DisplayedInformation[i].feature;
-                if (m_CurrentlyShown == i)
-                {
-                    button.Focus();
-                }
-                m_Toolbar.Add(button);
-            }
-        }*/
-        
         void UpdateText()
         {
             if (m_DisplayedInformation is not null && m_DisplayedInformation.Length > 0)
