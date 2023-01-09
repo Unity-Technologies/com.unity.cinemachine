@@ -5,7 +5,6 @@ using UnityEditor;
 #endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace Cinemachine.Examples
 {
@@ -15,7 +14,7 @@ namespace Cinemachine.Examples
     [ExecuteInEditMode]
     public class SamplesHelpGUI : MonoBehaviour
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR //Needed to select the tutorial on open. This must be removed on build
         void Start()
         {
             if (Selection.activeGameObject is null)
