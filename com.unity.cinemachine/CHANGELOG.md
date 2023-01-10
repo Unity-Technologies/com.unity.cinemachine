@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Optimized path gizmo drawing.  Now 3-5 times faster.
 - TargetGroup now ignores members whose gameObjects are inactive.
 - CinemachinePathBase search radius fixed for not looped paths.
+- Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
 
 
 ## [2.9.4] - 2022-11-18
@@ -26,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: When recording with an accumulation buffer, camera lens was not always set correctly
 - Bugfix: POV starts up in its centered position, if recentering is enabled
 - Freelook ForcePosition is more precise now.
+- CinemachinePathBase search radius fixed for not looped paths.
+- Regression fix: POV was not handling ReferenceUp correctly
 
 
 ## [2.9.1] - 2022-08-24
