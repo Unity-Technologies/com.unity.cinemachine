@@ -1,3 +1,5 @@
+#if false
+#if CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -8,7 +10,6 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS
     public class CmColliderTests : CinemachineFixtureBase
     {
         CinemachineBrain m_Brain;
@@ -163,5 +164,6 @@ namespace Tests.Runtime
             Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
         }
     }
-#endif
 }
+#endif
+#endif

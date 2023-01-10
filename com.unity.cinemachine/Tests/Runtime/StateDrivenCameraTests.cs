@@ -1,4 +1,5 @@
 #if false
+#if CINEMACHINE_UNITY_ANIMATION
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -71,4 +72,5 @@ namespace Tests.Runtime
         }
     }
 }
+#endif
 #endif

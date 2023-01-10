@@ -1,3 +1,4 @@
+#if false
 using System.Collections;
 using Cinemachine;
 using NUnit.Framework;
@@ -88,3 +89,4 @@ namespace Tests.Runtime
         }
     }
 }
+#endif

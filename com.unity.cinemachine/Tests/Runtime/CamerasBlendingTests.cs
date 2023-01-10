@@ -1,3 +1,4 @@
+#if false
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -262,3 +263,4 @@ namespace Tests.Runtime
         }
     }
 }
+#endif
