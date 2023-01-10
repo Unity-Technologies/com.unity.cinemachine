@@ -43,7 +43,7 @@ namespace Cinemachine
         /// <summary>The waypoints that define the path.
         /// They will be interpolated using a bezier curve</summary>
         [Tooltip("The waypoints that define the path.  They will be interpolated using a bezier curve.")]
-        public Waypoint[] m_Waypoints = new Waypoint[0];
+        public Waypoint[] m_Waypoints = Array.Empty<Waypoint>();
 
         /// <summary>The minimum value for the path position</summary>
         public override float MinPos => 0;

@@ -130,7 +130,7 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         [Tooltip("The target objects, together with their weights and radii, that will contribute to the "
             + "group's average position, orientation, and size.")]
-        public Target[] m_Targets = new Target[0];
+        public Target[] m_Targets = Array.Empty<Target>();
 
         float m_MaxWeight;
         Vector3 m_AveragePos;
@@ -139,8 +139,8 @@ namespace Cinemachine
         int m_LastUpdateFrame = -1;
 
         // Caches of valid members so we don't keep checking activeInHierarchy
-        List<int> m_ValidMembers = new ();
-        List<bool> m_MemberValidity = new ();
+        List<int> m_ValidMembers = new List<int>();
+        List<bool> m_MemberValidity = new List<bool>();
         
         void OnValidate()
         {
@@ -157,7 +157,7 @@ namespace Cinemachine
             m_PositionMode = PositionMode.GroupCenter;
             m_RotationMode = RotationMode.Manual;
             m_UpdateMethod = UpdateMethod.LateUpdate;
-            m_Targets = new Target[0];
+            m_Targets = Array.Empty<Target>();
         }
 
         /// <summary>
