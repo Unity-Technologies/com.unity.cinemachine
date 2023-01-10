@@ -1,4 +1,4 @@
-#if false
+#if !CINEMACHINE_HDRP
 using System.Collections;
 using Cinemachine;
 using NUnit.Framework;

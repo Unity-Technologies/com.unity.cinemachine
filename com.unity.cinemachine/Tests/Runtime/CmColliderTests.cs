@@ -1,4 +1,4 @@
-#if false
+#if !CINEMACHINE_HDRP
 #if CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
