@@ -813,7 +813,10 @@ namespace Cinemachine
         { 
             static OnDomainReload() 
             {
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2023_1_OR_NEWER
+                var vcams = FindObjectsByType<CinemachineVirtualCameraBase>
+                    (FindObjectsInactive.Include, FindObjectsSortMode.None);
+#elif UNITY_2020_1_OR_NEWER
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
 #else
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>();

@@ -336,7 +336,7 @@ namespace Cinemachine
         internal void ValidateInstructions()
         {
             if (m_Instructions == null)
-                m_Instructions = new Instruction[0];
+                m_Instructions = Array.Empty<Instruction>();
             for (int i = 0; i < m_Instructions.Length; ++i)
             {
                 if (m_Instructions[i].m_VirtualCamera != null

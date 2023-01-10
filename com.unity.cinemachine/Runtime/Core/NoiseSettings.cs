@@ -85,13 +85,13 @@ namespace Cinemachine
         [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups "
             + "typically mix low, medium and high frequencies together, so start with a size of 3")]
         [FormerlySerializedAs("m_Position")]
-        public TransformNoiseParams[] PositionNoise = new TransformNoiseParams[0];
+        public TransformNoiseParams[] PositionNoise = Array.Empty<TransformNoiseParams>();
 
         /// <summary>The array of orientation noise channels for this <c>NoiseSettings</c></summary>
         [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise "
             + "setups typically mix low, medium and high frequencies together, so start with a size of 3")]
         [FormerlySerializedAs("m_Orientation")]
-        public TransformNoiseParams[] OrientationNoise = new TransformNoiseParams[0];
+        public TransformNoiseParams[] OrientationNoise = Array.Empty<TransformNoiseParams>();
 
         /// <summary>Get the noise signal value at a specific time</summary>
         /// <param name="noiseParams">The parameters that define the noise function</param>

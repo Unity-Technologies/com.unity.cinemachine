@@ -96,7 +96,11 @@ namespace Tests.Runtime
             var polyHolder = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D));
             polyHolder.transform.parent = compositeHolder.transform;
             var polygonCollider2D = polyHolder.GetComponent<PolygonCollider2D>();
+#if UNITY_2023_1_OR_NEWER
+            polygonCollider2D.compositeOperation = Collider2D.CompositeOperation.Merge;
+#else
             polygonCollider2D.usedByComposite = true;
+#endif
             m_Confiner2D.m_BoundingShape2D = compositeCollider2D;
             m_Confiner2D.m_Damping = 0;
             m_Confiner2D.m_MaxWindowSize = 0;
