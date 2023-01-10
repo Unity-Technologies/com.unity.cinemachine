@@ -27,13 +27,9 @@ namespace Tests.Runtime
                 CinemachineBlendDefinition.Style.Linear,
                 k_BlendingTime);
             
-#if CINEMACHINE_V3_OR_HIGHER
-            m_Source = CreateGameObject("A", typeof(CmCamera)).GetComponent<CmCamera>();
-            m_Target = CreateGameObject("B", typeof(CmCamera)).GetComponent<CmCamera>();
-#else
             m_Source = CreateGameObject("A", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
             m_Target = CreateGameObject("B", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-#endif
+
             m_Source.Priority = 10;
             m_Target.Priority = 15;
             m_Source.enabled = true;
