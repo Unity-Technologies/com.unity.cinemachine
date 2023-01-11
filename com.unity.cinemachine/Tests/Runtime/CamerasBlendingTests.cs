@@ -1,4 +1,3 @@
-#if !CINEMACHINE_HDRP
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -42,7 +41,7 @@ namespace Tests.Runtime
             m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate; 
         }
 
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator BlendFromSourceToTarget()
         {
             // Check that source vcam is active
@@ -67,7 +66,7 @@ namespace Tests.Runtime
             Assert.That(m_Brain.IsBlending, Is.False);
         }
         
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator BlendBetweenSourceAndTarget()
         {
             // Check that source vcam is active
@@ -132,7 +131,7 @@ namespace Tests.Runtime
         }
         
         // [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator DoesInterruptedBlendingBetweenCamerasTakesDoubleTime()
         {
             // Check that source vcam is active
@@ -198,7 +197,7 @@ namespace Tests.Runtime
             Assert.That(m_Brain.IsBlending, Is.False);
         }
         
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator SetActiveBlend()
         {
             // Check that source vcam is active
@@ -259,4 +258,3 @@ namespace Tests.Runtime
         }
     }
 }
-#endif
