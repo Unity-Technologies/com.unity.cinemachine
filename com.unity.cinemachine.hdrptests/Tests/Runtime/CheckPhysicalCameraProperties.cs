@@ -40,7 +40,7 @@ namespace Tests.HDRP.Runtime
         }
 
         [UnityTest]
-        public IEnumerator CheckAll()
+        public IEnumerator PhysicalPropertiesAreCorrectlyUpdated()
         {
             // Check that initial lens state of cmCamera is equal to Camera's lens
             yield return null;
