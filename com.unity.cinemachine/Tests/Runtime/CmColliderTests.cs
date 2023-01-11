@@ -1,3 +1,5 @@
+#if CINEMACHINE_HDRP
+#if CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -163,3 +165,5 @@ namespace Tests.Runtime
         }
     }
 }
+#endif
+#endif
