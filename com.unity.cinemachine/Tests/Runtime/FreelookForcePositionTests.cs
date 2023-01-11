@@ -1,4 +1,3 @@
-#if !CINEMACHINE_HDRP
 using System.Collections;
 using Cinemachine;
 using NUnit.Framework;
@@ -58,7 +57,7 @@ namespace Tests.Runtime
             }
         }
 
-        [UnityTest, TestCaseSource(nameof(RigSetups))]
+        [UnityTest, TestCaseSource(nameof(RigSetups)), ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator Test_Freelook_ForcePosition_Precision(CinemachineFreeLook.Orbit[] rigSetup)
         {
             for (var i = 0; i < m_Freelook.m_Orbits.Length; ++i) 
@@ -89,4 +88,3 @@ namespace Tests.Runtime
         }
     }
 }
-#endif
