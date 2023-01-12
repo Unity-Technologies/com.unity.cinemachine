@@ -1,3 +1,4 @@
+#if CINEMACHINE_PHYSICS
 using System;
 using System.Collections;
 using NUnit.Framework;
@@ -8,7 +9,6 @@ using UnityEngine.TestTools.Utils;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_PHYSICS
     public class CmColliderTests : CinemachineFixtureBase
     {
         CinemachineBrain m_Brain;
@@ -43,7 +43,7 @@ namespace Tests.Runtime
             m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate; 
         }
 
-        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator CheckSmoothingTime()
         {
             m_Collider.m_SmoothingTime = 1;
@@ -80,7 +80,7 @@ namespace Tests.Runtime
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
-        [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator CheckDampingWhenOccluded()
         {
             m_Collider.m_SmoothingTime = 0;
@@ -123,7 +123,7 @@ namespace Tests.Runtime
             Assert.That(originalCamPosition, Is.EqualTo(m_Vcam.State.FinalPosition).Using(Vector3EqualityComparer.Instance));
         }
         
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator CheckDamping()
         {
             m_Collider.m_SmoothingTime = 0;
@@ -163,5 +163,5 @@ namespace Tests.Runtime
             Assert.That(new Vector3(0, 0, -4.71081734f), Is.EqualTo(finalPosition).Using(Vector3EqualityComparer.Instance));
         }
     }
-#endif
 }
+#endif

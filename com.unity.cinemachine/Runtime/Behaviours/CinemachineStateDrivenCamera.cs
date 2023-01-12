@@ -400,7 +400,7 @@ namespace Cinemachine
         internal void ValidateInstructions()
         {
             if (m_Instructions == null)
-                m_Instructions = new Instruction[0];
+                m_Instructions = Array.Empty<Instruction>();
             mInstructionDictionary = new Dictionary<int, int>();
             for (int i = 0; i < m_Instructions.Length; ++i)
             {

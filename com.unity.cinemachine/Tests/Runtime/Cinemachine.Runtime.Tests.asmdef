@@ -1,18 +1,23 @@
 {
     "name": "Cinemachine.Runtime.Tests",
+    "rootNamespace": "",
     "references": [
-        "Cinemachine"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Cinemachine",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.RenderPipelines.HighDefinition.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [
         {
             "name": "com.unity.modules.physics2d",
@@ -30,9 +35,10 @@
             "define": "CINEMACHINE_UNITY_ANIMATION"
         },
         {
-            "name": "com.unity.cinemachine",
-            "expression": "3.0.0",
-            "define": "CINEMACHINE_V3_OR_HIGHER"
+            "name": "com.unity.render-pipelines.high-definition-config",
+            "expression": "0",
+            "define": "CINEMACHINE_HDRP"
         }
-    ]
+    ],
+    "noEngineReferences": false
 }

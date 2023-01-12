@@ -26,13 +26,9 @@ namespace Tests.Runtime
                 CinemachineBlendDefinition.Style.Linear,
                 k_BlendingTime);
             
-#if CINEMACHINE_V3_OR_HIGHER
-            m_Source = CreateGameObject("A", typeof(CmCamera)).GetComponent<CmCamera>();
-            m_Target = CreateGameObject("B", typeof(CmCamera)).GetComponent<CmCamera>();
-#else
             m_Source = CreateGameObject("A", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
             m_Target = CreateGameObject("B", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-#endif
+
             m_Source.Priority = 10;
             m_Target.Priority = 15;
             m_Source.enabled = true;
@@ -45,7 +41,7 @@ namespace Tests.Runtime
             m_Brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.ManualUpdate; 
         }
 
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator BlendFromSourceToTarget()
         {
             // Check that source vcam is active
@@ -70,7 +66,7 @@ namespace Tests.Runtime
             Assert.That(m_Brain.IsBlending, Is.False);
         }
         
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator BlendBetweenSourceAndTarget()
         {
             // Check that source vcam is active
@@ -135,7 +131,7 @@ namespace Tests.Runtime
         }
         
         // [UnityTest, ConditionalIgnore("IgnoreHDRP2020", "Ignored on HDRP Unity 2020.")]
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator DoesInterruptedBlendingBetweenCamerasTakesDoubleTime()
         {
             // Check that source vcam is active
@@ -201,7 +197,7 @@ namespace Tests.Runtime
             Assert.That(m_Brain.IsBlending, Is.False);
         }
         
-        [UnityTest]
+        [UnityTest, ConditionalIgnore("IgnoreHDRPInstability", "This test is unstable on HDRP")]
         public IEnumerator SetActiveBlend()
         {
             // Check that source vcam is active

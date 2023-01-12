@@ -1,22 +1,20 @@
+#if CINEMACHINE_UNITY_ANIMATION
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEditor;
 using UnityEditor.Animations;
-using UnityEngine.TestTools;
-
 using Cinemachine;
 
 namespace Tests.Runtime
 {
-#if CINEMACHINE_UNITY_ANIMATION
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineFixtureBase
     {
-        private CinemachineStateDrivenCamera m_StateDrivenCamera;
-        private Animator m_Animator;
-        private CinemachineVirtualCamera m_Vcam1, m_Vcam2;
+        CinemachineStateDrivenCamera m_StateDrivenCamera;
+        Animator m_Animator;
+        CinemachineVirtualCamera m_Vcam1, m_Vcam2;
 
         [SetUp]
         public override void SetUp()
@@ -44,10 +42,10 @@ namespace Tests.Runtime
                 new CinemachineStateDrivenCamera.Instruction() {m_FullHash = controller.layers[0].stateMachine.states[1].GetHashCode(), m_VirtualCamera = vcam2}
             };
 
-            this.m_StateDrivenCamera = stateDrivenCamera;
+            m_StateDrivenCamera = stateDrivenCamera;
             m_Animator = character.GetComponent<Animator>();
-            this.m_Vcam1 = vcam1;
-            this.m_Vcam2 = vcam2;
+            m_Vcam1 = vcam1;
+            m_Vcam2 = vcam2;
 
             base.SetUp();
         }
@@ -65,12 +63,12 @@ namespace Tests.Runtime
 
             Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam2.Name));
 
-            m_Animator.SetTrigger(("DoTransitionToState1"));
+            m_Animator.SetTrigger("DoTransitionToState1");
 
             yield return null; // wait one frame
 
             Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
         }
     }
-#endif
 }
+#endif
