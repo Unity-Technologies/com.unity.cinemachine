@@ -815,7 +815,7 @@ namespace Cinemachine
             {
 #if UNITY_2023_1_OR_NEWER
                 var vcams = FindObjectsByType<CinemachineVirtualCameraBase>
-                    (FindObjectsInactive.Include, FindObjectsSortMode.None);
+                    (FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
 #elif UNITY_2020_1_OR_NEWER
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
 #else
