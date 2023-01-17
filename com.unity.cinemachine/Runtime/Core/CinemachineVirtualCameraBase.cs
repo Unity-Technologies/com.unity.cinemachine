@@ -803,7 +803,7 @@ namespace Cinemachine
             {
 #if UNITY_2023_1_OR_NEWER
                 var vcams = FindObjectsByType<CinemachineVirtualCameraBase>
-                    (FindObjectsInactive.Include, FindObjectsSortMode.InstanceID);
+                    (FindObjectsInactive.Include, FindObjectsSortMode.None);
 #else
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
 #endif
