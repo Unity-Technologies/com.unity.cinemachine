@@ -264,7 +264,7 @@ namespace Cinemachine.Editor
             var cam = Camera.main;
             if (cam == null)
 #if UNITY_2023_1_OR_NEWER
-                cam = Object.FindAnyObjectByType<Camera>(FindObjectsInactive.Exclude);
+                cam = Object.FindFirstObjectByType<Camera>(FindObjectsInactive.Exclude);
 #else
                 cam = Object.FindObjectOfType<Camera>();
 #endif
