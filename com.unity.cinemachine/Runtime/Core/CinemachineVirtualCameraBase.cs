@@ -801,7 +801,12 @@ namespace Cinemachine
         { 
             static OnDomainReload() 
             {
+#if UNITY_2023_1_OR_NEWER
+                var vcams = FindObjectsByType<CinemachineVirtualCameraBase>
+                    (FindObjectsInactive.Include, FindObjectsSortMode.None);
+#else
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
+#endif
                 foreach (var vcam in vcams)
                     vcam.InvalidateCachedTargets();
             }
