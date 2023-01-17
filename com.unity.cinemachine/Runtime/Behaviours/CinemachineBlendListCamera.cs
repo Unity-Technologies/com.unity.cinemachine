@@ -57,6 +57,7 @@ namespace Cinemachine
         float m_ActivationTime = -1; // The time at which the current instruction went live
         int m_CurrentInstruction = 0;
 
+        /// <summary>Reset the component to default values.</summary>
         protected override void Reset()
         {
             base.Reset();

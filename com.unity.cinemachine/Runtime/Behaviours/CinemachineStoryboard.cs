@@ -448,6 +448,10 @@ namespace Cinemachine
 // We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
 namespace Cinemachine
 {
+    /// <summary>
+    /// An add-on module for CmCamera that places an image in screen space
+    /// over the camera's output.
+    /// </summary>
     [AddComponentMenu("")] // Hide in menu
     public class CinemachineStoryboard : MonoBehaviour {}
 }
