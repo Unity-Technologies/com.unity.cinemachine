@@ -68,6 +68,7 @@ namespace Cinemachine
         List<CinemachineVirtualCameraBase> m_RandomizedChildren = null;
         ICinemachineCamera m_TransitioningFrom;
 
+        /// <summary>Reset the component to default values.</summary>
         protected override void Reset()
         {
             base.Reset();

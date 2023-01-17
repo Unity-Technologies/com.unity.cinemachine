@@ -152,6 +152,7 @@ namespace Cinemachine
                 SetWeight(i, Mathf.Max(0, GetWeight(i)));
         }
 
+        /// <summary>Reset the component to default values.</summary>
         protected override void Reset()
         {
             base.Reset();

@@ -455,6 +455,8 @@ namespace Cinemachine
                 Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
         
+        /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
+        /// <returns>Returns true when input is required.</returns>
         bool AxisState.IRequiresInput.RequiresInput() => true;
 
         float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up)

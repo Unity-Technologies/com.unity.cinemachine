@@ -183,6 +183,8 @@ namespace Cinemachine
         [Obsolete("IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead")]
         public interface IRequiresInput 
         {
+            /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
+            /// <returns>Returns true when input is required.</returns>
             bool RequiresInput();
         }
 
