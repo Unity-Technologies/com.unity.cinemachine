@@ -37,6 +37,7 @@ namespace Cinemachine.Examples
                 {
                     SpeedRange.y /= 2f;
                     s_SlowDownLeader = false;
+                    m_Randomize = true;
                 }
             }
 
