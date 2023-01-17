@@ -491,8 +491,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194279532}
-  m_LocalRotation: {x: 0.13371924, y: 0.6943479, z: -0.13371919, w: 0.69434816}
-  m_LocalPosition: {x: -72.20023, y: 4.0983305, z: -0.7232168}
+  m_LocalRotation: {x: 0.13371922, y: 0.6943479, z: -0.13371918, w: 0.69434816}
+  m_LocalPosition: {x: -72.20023, y: 4.5983305, z: -0.7232168}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -888,7 +888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedRange: {x: 1.5, y: 6}
+  SpeedRange: {x: 2, y: 6}
 --- !u!1 &499961711
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,7 +962,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedRange: {x: 1.5, y: 6}
+  SpeedRange: {x: 2, y: 6}
 --- !u!1 &518533665
 GameObject:
   m_ObjectHideFlags: 0
@@ -1113,8 +1113,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689268010}
-  m_LocalRotation: {x: 0.13371925, y: 0.69434786, z: -0.13371918, w: 0.6943483}
-  m_LocalPosition: {x: -72.20023, y: 4.5683303, z: -2.723217}
+  m_LocalRotation: {x: 0.13371922, y: 0.6943479, z: -0.13371919, w: 0.69434816}
+  m_LocalPosition: {x: -72.20023, y: 4.5983305, z: -2.723217}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1205,7 +1205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedRange: {x: 1.5, y: 6}
+  SpeedRange: {x: 2, y: 6}
 --- !u!1001 &1009471063
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1304,15 +1304,20 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "Sample scene showing Clearshot camera (AlwaysFrameLeader Camera) that
-    ensures that always the leader of the race is framed. The clearshot camera uses
-    a custom shot quality evaluator script (ShotQualityBasedOnSplineCartPosition).
-    This script assigns shot quality to each camera based on how much their follow
-    target has traversed along the spline track. \n\nThe runners run along a spline
-    using CinemachineSplineCart. The speed of the cart is randomized using the CartController
-    script. The spline track for each runner is identical apart for translation.\nThe
-    runners' animation changes based on their speed. This is done by SimplePlayerAnimator
-    script.\n"
+  HelpText: 'This scene shows Clearshot camera (AlwaysFrameLeader Camera) that ensures
+    that the leader of the race is always centered in the frame. The Clearshot camera
+    uses a custom shot quality evaluator script (ShotQualityBasedOnSplineCartPosition),
+    which assigns shot quality to each camera based on how much their follow target
+    has traveled along the spline track. The Clearshot camera waits a little bit
+    (MinDuration parameter) after switching to a camera to avoid too frequent switches.
+
+
+    The
+    runners run along a spline using CinemachineSplineCart. The speed of the cart
+    is randomized using the CartController script. The spline track for each runner
+    is identical apart from translation.
+
+'
 --- !u!4 &1059971141
 Transform:
   m_ObjectHideFlags: 0
@@ -1768,7 +1773,7 @@ MonoBehaviour:
   - {fileID: 194279533}
   - {fileID: 689268011}
   ActivateAfter: 0
-  MinDuration: 0
+  MinDuration: 0.2
   RandomizeChoice: 0
   DefaultBlend:
     m_Style: 1
@@ -1844,7 +1849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedRange: {x: 1.5, y: 6}
+  SpeedRange: {x: 2, y: 6}
 --- !u!114 &1408997801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2292,7 +2297,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1707911442}
-  m_LocalRotation: {x: 0.13371924, y: 0.6943479, z: -0.13371919, w: 0.69434816}
+  m_LocalRotation: {x: 0.13371922, y: 0.6943479, z: -0.13371918, w: 0.69434816}
   m_LocalPosition: {x: -72.20023, y: 4.5983305, z: 1.2767832}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2853,7 +2858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedRange: {x: 1.5, y: 6}
+  SpeedRange: {x: 2, y: 6}
 --- !u!114 &1963316048 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1963316048, guid: 60ff0b6a14a384d04bb1fab2e63e99c7, type: 3}
