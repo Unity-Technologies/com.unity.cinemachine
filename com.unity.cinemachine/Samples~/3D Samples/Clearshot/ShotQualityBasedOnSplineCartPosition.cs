@@ -1,14 +1,16 @@
-using UnityEngine;
 using UnityEngine.Splines;
 
 namespace Cinemachine.Examples
 {
     /// <summary>
-    /// Calculates shot quality based on how far the Follow target has advances with its CinemachineSplineCart.
+    /// Calculates shot quality based on how far the Follow target has advanced 
+    /// with its CinemachineSplineCart.
     /// </summary>
     public class ShotQualityBasedOnSplineCartPosition : CinemachineExtension, IShotQualityEvaluator
     {
-        protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+        protected override void PostPipelineStageCallback(
+            CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, 
+            ref CameraState state, float deltaTime)
         {
             if (stage == CinemachineCore.Stage.Finalize)
             {

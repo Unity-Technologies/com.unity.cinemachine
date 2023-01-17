@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945, type: 3}
       propertyPath: m_Name
-      value: Player Variant
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945, type: 3}
       propertyPath: m_TagString
@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6594556230918967625, guid: 970e9f2326c0d445f8c78ae675268945, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6594556230918967625, guid: 970e9f2326c0d445f8c78ae675268945, type: 3}
       propertyPath: m_LocalPosition.x
@@ -162,9 +162,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Move X
     Owner: {fileID: 8077383552022060413}
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Horizontal
     LegacyGain: 200
     Control:
@@ -177,6 +181,8 @@ MonoBehaviour:
       Time: 0
   - Name: Move Z
     Owner: {fileID: 8077383552022060413}
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Vertical
     LegacyGain: 200
     Control:
@@ -189,6 +195,8 @@ MonoBehaviour:
       Time: 0
   - Name: Jump
     Owner: {fileID: 8077383552022060413}
+    InputAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Jump
     LegacyGain: 200
     Control:
@@ -201,6 +209,8 @@ MonoBehaviour:
       Time: 0.01
   - Name: Sprint
     Owner: {fileID: 8077383552022060413}
+    InputAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Fire3
     LegacyGain: 200
     Control:

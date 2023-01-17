@@ -62,7 +62,7 @@ MonoBehaviour:
         y: -0
         z: 0
       TangentOut:
-        x: 0
+        x: 1
         y: 0
         z: 0
       Rotation:
@@ -76,7 +76,7 @@ MonoBehaviour:
         y: 0.5
         z: 0
       TangentIn:
-        x: 0
+        x: -1
         y: 0
         z: 0
       TangentOut:
@@ -89,7 +89,7 @@ MonoBehaviour:
           y: 0
           z: 0
           w: 1
-    m_Length: 106
+    m_Length: -1
     m_MetaData:
     - Mode: 0
       Tension: 0.33333334
@@ -130,7 +130,7 @@ Transform:
   m_Children:
   - {fileID: 1963316047}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6339991416873971462
 MeshFilter:
