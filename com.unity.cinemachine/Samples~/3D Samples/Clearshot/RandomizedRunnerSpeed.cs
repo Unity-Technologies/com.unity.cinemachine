@@ -4,35 +4,44 @@ using UnityEngine.Splines;
 
 namespace Cinemachine.Examples
 {
-    [RequireComponent(typeof(CinemachineSplineCart))]
-    public class CartController : MonoBehaviour
+    public class RandomizedRunnerSpeed : SplineAutoDolly.ISplineAutoDolly
     {
         [MinMaxRangeSlider(0.1f, 10f)]
         [Tooltip("Possible range of speed the cart will randomly take")]
         public Vector2 SpeedRange = new(2f, 5f);
-
-        CinemachineSplineCart m_Cart;
-        SplineAutoDolly.FixedSpeed m_FixedSpeed;
-
-        void Start()
-        {
-            m_Cart = GetComponent<CinemachineSplineCart>();
-            m_FixedSpeed = m_Cart.AutomaticDolly.Implementation as SplineAutoDolly.FixedSpeed;
-        }
-
+        
         static bool s_SlowDownLeader = true;
         bool m_Randomize = true;
+        float m_Speed = 0f;
         float m_StartSpeed, m_TargetSpeed;
         float m_LerpTotalTime; // Lerp will take this many seconds
         float m_LerpTime; // Lerp time accumulator
 
-        void Update()
+
+        public void Validate()
         {
-            // Slow down leader to improve chances of at least 1 take over in one run
+            SpeedRange.x = Mathf.Max(0.1f, SpeedRange.x);
+            SpeedRange.y = Mathf.Min(10f, SpeedRange.y);
+        }
+
+        public float GetSplinePosition(MonoBehaviour sender, Transform target, SplineContainer spline, float currentPosition, PathIndexUnit positionUnits, float deltaTime)
+        {
+            // Only works if playing
+            if (Application.isPlaying && (spline != null && spline.Spline != null) && deltaTime > 0)
+            {
+                m_Speed = CalculateRandomizedSpeed(spline, currentPosition, positionUnits);
+                return currentPosition + m_Speed * deltaTime;
+            }
+
+            return currentPosition;
+        }
+
+        float CalculateRandomizedSpeed(SplineContainer spline, float currentPosition, PathIndexUnit positionUnits)
+        {
+            // Slow down leader (first one to reach half point) to improve chances of at least 1 take over in one run
             if (s_SlowDownLeader)
             {
-                var normalizedPos = m_Cart.Spline.Spline.ConvertIndexUnit(
-                    m_Cart.SplinePosition, m_Cart.PositionUnits, PathIndexUnit.Normalized);
+                var normalizedPos = spline.Spline.ConvertIndexUnit(currentPosition, positionUnits, PathIndexUnit.Normalized);
                 if (normalizedPos > 0.5f)
                 {
                     SpeedRange.y /= 2f;
@@ -45,13 +54,10 @@ namespace Cinemachine.Examples
             if (m_Randomize)
             {
                 m_LerpTime = 0f;
-                m_StartSpeed = m_FixedSpeed.Speed;
+                m_StartSpeed = m_Speed;
                 m_TargetSpeed = UnityEngine.Random.Range(SpeedRange.x, SpeedRange.y);
-                if (m_Cart.PositionUnits != PathIndexUnit.Distance && m_Cart.Spline != null)
-                {
-                    m_TargetSpeed =
-                        m_Cart.Spline.Spline.ConvertIndexUnit(m_TargetSpeed, m_Cart.PositionUnits, PathIndexUnit.Distance);
-                }
+                if (positionUnits != PathIndexUnit.Distance) 
+                    m_TargetSpeed = spline.Spline.ConvertIndexUnit(m_TargetSpeed, positionUnits, PathIndexUnit.Distance);
 
                 m_LerpTotalTime = Mathf.Abs(m_TargetSpeed - m_StartSpeed); // lerp time based on speed difference
                 m_Randomize = false;
@@ -68,15 +74,7 @@ namespace Cinemachine.Examples
             var t = m_LerpTime / m_LerpTotalTime; // percentage [0,1]
             t = 1f - Mathf.Cos(t * Mathf.PI * 0.5f); // ease out, just so it is not linear
 
-            // Lerp to selected speed
-            m_FixedSpeed.Speed = Mathf.Lerp(m_StartSpeed, m_TargetSpeed, t);
-        }
-
-        /// <summary>Reset position back to 0.</summary>
-        public void ResetPosition()
-        {
-            s_SlowDownLeader = true;
-            m_Cart.SplinePosition = 0;
+            return Mathf.Lerp(m_StartSpeed, m_TargetSpeed, t);
         }
     }
 }

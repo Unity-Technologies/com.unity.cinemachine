@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7394770885881608385}
   - component: {fileID: 7394770885881608446}
-  - component: {fileID: 7394770885881608384}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -25,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7394770885881608447}
-  m_LocalRotation: {x: -0, y: 0.7071067, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -51, y: 1.05, z: 4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -33,7 +32,7 @@ Transform:
   - {fileID: 4403131764514983679}
   m_Father: {fileID: 0}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: -0.139, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -0, y: 90, z: 0}
 --- !u!114 &7394770885881608446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51,29 +50,16 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 556897513584197635
+      rid: 7377937832176254998
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: 556897513584197635
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 7377937832176254998
+      type: {class: RandomizedRunnerSpeed, ns: Cinemachine.Examples, asm: Assembly-CSharp}
       data:
-        Speed: 0
---- !u!114 &7394770885881608384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7394770885881608447}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SpeedRange: {x: 2, y: 6}
+        SpeedRange: {x: 2, y: 6}
 --- !u!1001 &7394770885881896886
 PrefabInstance:
   m_ObjectHideFlags: 0
