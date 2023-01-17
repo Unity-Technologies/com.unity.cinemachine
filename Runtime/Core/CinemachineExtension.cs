@@ -40,8 +40,11 @@ namespace Cinemachine
         [UnityEditor.Callbacks.DidReloadScripts]
         static void OnScriptReload()
         {
-            var extensions = Resources.FindObjectsOfTypeAll(
-                typeof(CinemachineExtension)) as CinemachineExtension[];
+            var extensions = Resources.FindObjectsOfTypeAll<CinemachineExtension>();
+            // Sort by execution order
+            System.Array.Sort(extensions, (x, y) => 
+                UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(x)) 
+                    - UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(y)));
             foreach (var e in extensions)
                 e.ConnectToVcam(true);
         }

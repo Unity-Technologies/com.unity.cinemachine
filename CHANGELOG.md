@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: VirtualCameras did not set the focal length property of physical cameras.
 - CinemachinePathBase search radius fixed for not looped paths.
 - Regression fix: POV was not handling ReferenceUp correctly
+- Bugfix: Extensions were not respecting execution order on domain reload.
 
 
 ## [2.8.9] - 2022-08-24
