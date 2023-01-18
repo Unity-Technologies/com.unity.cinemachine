@@ -32,7 +32,7 @@ Transform:
   m_Children:
   - {fileID: 4403131764514983679}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -0.139, y: 0, z: 0}
 --- !u!114 &7394770885881608446
 MonoBehaviour:
@@ -60,8 +60,8 @@ MonoBehaviour:
     - rid: 1242842163986563213
       type: {class: RandomizedDollySpeed, ns: Cinemachine.Examples, asm: Assembly-CSharp}
       data:
-        MinSpeed: 4
-        MaxSpeed: 8
+        MinSpeed: 8
+        MaxSpeed: 12
         Acceleration: 1
 --- !u!114 &7394770885881608384
 MonoBehaviour:
