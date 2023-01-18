@@ -90,10 +90,7 @@ namespace Cinemachine.Editor
             { 
                 text = "Invalidate Lens Cache",
                 tooltip = "Invalidates the lens cache, so a new one is computed next frame.  " 
-                    + "Call this when when the Field of View, Orthographic Size, or aspect ratio changes.\n" +
-                    "Remark: This operation is fast, but causes allocations. It is more efficient to have more " +
-                    "Cinemachine Cameras with different lens settings that have their own confiners and blend " +
-                    "between them instead of changing one Cinemachine Camera's lens and calling this over and over."
+                    + "Call this when when the Field of View, Orthographic Size, or aspect ratio changes."
             });
 
             ux.Add(new Button(() => 
@@ -103,14 +100,9 @@ namespace Cinemachine.Editor
             })
             { 
                 text = "Invalidate Bounding Shape Cache",
-                tooltip = "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" 
-                    + "- the bounding shape cache, and \n"
-                    + "- the lens cache.\n" 
+                tooltip = "Invalidates confiner2D cache, so a new one is computed next frame.\n" 
                     + "Call this when the input bounding shape changes " 
-                    + "(non-uniform scale, rotation, or points are moved, added or deleted).\n" +
-                    "Remark: This operation is costly.  It is much more efficient to have more Cinemachine Cameras " +
-                    "with different input bounding shapes and blend between them instead of changing one " +
-                    "Confiner2D's input bounding shape and calling this over and over."
+                    + "(non-uniform scale, rotation, or points are moved, added or deleted)."
             });
 
             m_PipelineUtility.UpdateState();

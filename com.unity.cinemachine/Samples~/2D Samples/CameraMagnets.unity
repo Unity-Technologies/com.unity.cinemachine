@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 0
@@ -2197,14 +2200,15 @@ MonoBehaviour:
     the lens cache of the Confiner2D extension is invalidated to force an adjustment
     of the confiner to fit the new camera projection mode. See the Toggle component
     on CameraModeToggle GameObject for the functions that get called when the On
-    Value Changed event is fired.  \nNote: Confiner2D Extension has two functions
+    Value Changed event is fired.  \n\nNote: Confiner2D Extension has two functions
     to recompute the internal cache state. The components inspector shows these as
-    two buttons. Cache recomputation can be costly; for more information, see the
-    tooltip of the buttons (note that editor tooltips do not appear in Play mode).\n\nThe
-    Camera Magnets illustrate a dynamic modification of the Target Group.  Toggling
-    them on makes them attract the camera's attention: the closer the player is to
-    the magnet, the stronger the attraction.  This is implemented by the MagnetGroupController
-    behaviour on the CameraMagnets object."
+    two buttons. \n\nRemark: Cache recomputation can be costly; it is much more efficient
+    to blend between Cinemachine Cameras with different Confiner2D settings than
+    to re-calculate the cache over and over.\n\nThe Camera Magnets illustrate a dynamic
+    modification of the Target Group.  Toggling them on makes them attract the camera's
+    attention: the closer the player is to the magnet, the stronger the attraction. 
+    This is implemented by the MagnetGroupController behaviour on the CameraMagnets
+    object."
 --- !u!4 &2125070645
 Transform:
   m_ObjectHideFlags: 0
@@ -2370,7 +2374,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.029917, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -7.8430367, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
