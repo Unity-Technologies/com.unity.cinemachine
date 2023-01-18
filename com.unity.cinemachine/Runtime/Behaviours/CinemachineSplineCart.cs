@@ -49,6 +49,7 @@ namespace Cinemachine
         public Transform TrackingTarget;
 
         /// <summary>The cart's current position on the spline, in position units</summary>
+        [NoSaveDuringPlay]
         [Tooltip("The position along the spline at which the cart will be placed.  "
             + "This can be animated directly or, if the velocity is non-zero, will be updated automatically.  "
             + "The value is interpreted according to the Position Units setting.")]
