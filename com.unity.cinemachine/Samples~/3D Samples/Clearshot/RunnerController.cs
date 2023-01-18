@@ -6,14 +6,23 @@ namespace Cinemachine.Examples
     [RequireComponent(typeof(CinemachineSplineCart))]
     public class RunnerController : MonoBehaviour
     {
+        public float WaitTimeAtStart = 1;
+
         CinemachineSplineCart m_Cart;
         static bool s_LeaderWasSlowed;
         bool m_IsTired;
+        float m_StartTime;
 
-        void Start() => m_Cart = GetComponent<CinemachineSplineCart>();
+        void OnEnable()
+        {
+            m_Cart = GetComponent<CinemachineSplineCart>();
+            ResetRace();
+        }
 
         void Update()
         {
+            m_Cart.AutomaticDolly.Enabled = Time.time > m_StartTime + WaitTimeAtStart;
+
             // Slow down leader to improve chances of at least 1 takeover per run
             if (!s_LeaderWasSlowed)
             {
@@ -37,6 +46,8 @@ namespace Cinemachine.Examples
         {
             // Reset position to start
             m_Cart.SplinePosition = 0;
+            m_StartTime = Time.time;
+            m_Cart.AutomaticDolly.Enabled = false;
 
             // Reset slowdown mechanism
             if (m_Cart.AutomaticDolly.Method is RandomizedDollySpeed speedControl)
