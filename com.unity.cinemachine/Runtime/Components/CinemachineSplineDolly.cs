@@ -154,6 +154,8 @@ namespace Cinemachine
         {
             base.OnEnable();
             RefreshRollCache();
+            if (AutomaticDolly.Implementation != null)
+                AutomaticDolly.Implementation.Reset();
         }
 
         /// <summary>True if component is enabled and has a spline</summary>
