@@ -84,8 +84,7 @@ namespace Cinemachine
         {
             if (cam == CamA || cam == CamB)
                 return true;
-            var b = CamA as BlendSourceVirtualCamera;
-            if (b != null && b.Blend.Uses(cam))
+            if (CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
                 return true;
             b = CamB as BlendSourceVirtualCamera;
             return b != null && b.Blend.Uses(cam);
