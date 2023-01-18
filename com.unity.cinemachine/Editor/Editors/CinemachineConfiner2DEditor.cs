@@ -13,7 +13,6 @@ namespace Cinemachine.Editor
     class CinemachineConfiner2DEditor : UnityEditor.Editor
     {
         CinemachineConfiner2D Target => target as CinemachineConfiner2D;
-
         CmPipelineComponentInspectorUtility m_PipelineUtility;
 
         void OnEnable() => m_PipelineUtility = new (this);
@@ -35,12 +34,12 @@ namespace Cinemachine.Editor
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            var confiner = Target; // so it gets captured in the lambdas
-            if (confiner.IsCameraOversizedForTheConfiner())
-                ux.Add(new HelpBox("The camera window size is bigger than what can fit " +
-                    "perfectly in the confiner.", HelpBoxMessageType.Info));
+            var oversizedCameraHelp = ux.AddChild(new HelpBox(
+                "The camera window size is bigger than what can fit perfectly in the confiner. Enable Oversize Window option.",
+                HelpBoxMessageType.Info));
+            
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
-
+            
             TrackVolume(volumeProp);
             ux.TrackPropertyValue(volumeProp, TrackVolume);
             void TrackVolume(SerializedProperty p)
@@ -58,17 +57,21 @@ namespace Cinemachine.Editor
                 + "\n\nTo fix this, reduce the number of points in the confining shape, "
                 + "or set the MaxWindowSize parameter to limit skeleton computation.",
                 HelpBoxMessageType.Warning));
-
+            
+            var confiner = Target; // so it gets captured in the lambdas
             UpdateBakingProgress();
             ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
             void UpdateBakingProgress()
             {
+                oversizedCameraHelp.SetVisible(false);
                 if (confiner == null)
                     return; // target deleted
+                
                 if (!confiner.OversizeWindow.Enabled)
                 {
                     bakeTimeout.SetVisible(false);
                     bakeProgress.SetVisible(false);
+                    oversizedCameraHelp.SetVisible(confiner.IsCameraOversizedForTheConfiner());
                     return;
                 }
                 var progress = confiner.BakeProgress();
@@ -118,7 +121,7 @@ namespace Cinemachine.Editor
                 return;
 
             var pathCacheColor = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
-            var inputColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 1f); // TODO: get 2D Physics preferences - Awake Color (Outline)
+            var inputColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 1f);
 
             var oldMatrix = Gizmos.matrix;
             Gizmos.matrix = pathLocalToWorld;
