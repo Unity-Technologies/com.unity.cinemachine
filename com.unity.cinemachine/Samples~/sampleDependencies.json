@@ -19,7 +19,9 @@
       "AssetDependencies": [
         "Shared Assets"
       ],
-      "PackageDependencies": []
+      "PackageDependencies": [
+        "com.unity.timeline"
+      ]
     },
     {
       "Path": "Old Samples from CM2",

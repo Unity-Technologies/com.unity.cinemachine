@@ -1,6 +1,5 @@
 ﻿#if CINEMACHINE_PHYSICS
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -50,40 +49,10 @@ namespace Cinemachine
             IgnoreTag = string.Empty;
             AimDistance = 200.0f;
         }
-
-        Vector3 ComputeLookAtPoint(Vector3 camPos, Transform player)
-        {
-            // We don't want to hit targets behind the player
-            var aimDistance = AimDistance;
-            var playerOrientation = player.rotation;
-            var fwd = playerOrientation * Vector3.forward;
-            var playerPos = Quaternion.Inverse(playerOrientation) * (player.position - camPos);
-            if (playerPos.z > 0)
-            {
-                camPos += fwd * playerPos.z;
-                aimDistance -= playerPos.z;
-            }
-
-            aimDistance = Mathf.Max(1, aimDistance);
-            bool hasHit = RuntimeUtility.RaycastIgnoreTag(new Ray(camPos, fwd), 
-                out RaycastHit hitInfo, aimDistance, AimCollisionFilter, IgnoreTag);
-            return hasHit ? hitInfo.point : camPos + fwd * aimDistance;
-        }
-        
-        Vector3 ComputeAimTarget(Vector3 cameraLookAt, Transform player)
-        {
-            // Adjust for actual player aim target (may be different due to offset)
-            var playerPos = player.position;
-            var dir = cameraLookAt - playerPos;
-            if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
-                out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
-                return hitInfo.point;
-            return cameraLookAt;
-        }
         
         /// <summary>
         /// Sets the ReferenceLookAt to be the result of a raycast in the direction of camera forward.
-        /// If an object is hit, point is placed there, else it is placed at AimDistance.
+        /// If an object is hit, point is placed there, else it is placed at AimDistance along the ray.
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="stage">The current pipeline stage</param>
@@ -104,7 +73,6 @@ namespace Cinemachine
                         state.ReferenceLookAt = ComputeLookAtPoint(state.GetCorrectedPosition(), player);
                         AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
                     }
-
                     break;
                 }
                 case CinemachineCore.Stage.Finalize:
@@ -116,10 +84,39 @@ namespace Cinemachine
                         state.RawOrientation = Quaternion.LookRotation(dir, state.ReferenceUp);
                         state.OrientationCorrection = Quaternion.identity;
                     }
-
                     break;
                 }
             }
+        }
+
+        Vector3 ComputeLookAtPoint(Vector3 camPos, Transform player)
+        {
+            // We don't want to hit targets behind the player
+            var aimDistance = AimDistance;
+            var playerOrientation = player.rotation;
+            var fwd = playerOrientation * Vector3.forward;
+            var playerPosLocal = Quaternion.Inverse(playerOrientation) * (player.position - camPos);
+            if (playerPosLocal.z > 0)
+            {
+                camPos += fwd * playerPosLocal.z;
+                aimDistance -= playerPosLocal.z;
+            }
+
+            aimDistance = Mathf.Max(1, aimDistance);
+            bool hasHit = RuntimeUtility.RaycastIgnoreTag(new Ray(camPos, fwd), 
+                out RaycastHit hitInfo, aimDistance, AimCollisionFilter, IgnoreTag);
+            return hasHit ? hitInfo.point : camPos + fwd * aimDistance;
+        }
+        
+        Vector3 ComputeAimTarget(Vector3 cameraLookAt, Transform player)
+        {
+            // Adjust for actual player aim target (may be different due to offset)
+            var playerPos = player.position;
+            var dir = cameraLookAt - playerPos;
+            if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
+                out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
+                return hitInfo.point;
+            return cameraLookAt;
         }
     }
 }

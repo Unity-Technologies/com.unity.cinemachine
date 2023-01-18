@@ -74,6 +74,8 @@ namespace Cinemachine.Editor
         {
         }
 
+        /// <summary>Get the path to the tool's icon asset.</summary>
+        /// <returns>The path to the icon asset.</returns>
         private protected string GetIconPath()
         {
             m_State.refreshIcon = m_State.isProSkin != EditorGUIUtility.isProSkin;

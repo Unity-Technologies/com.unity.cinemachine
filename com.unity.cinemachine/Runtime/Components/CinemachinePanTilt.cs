@@ -123,10 +123,9 @@ namespace Cinemachine
         {
             if (!IsValid)
                 return;
-            var referenceFrame = GetReferenceFrame();
+            var referenceFrame = GetReferenceFrame(curState.ReferenceUp);
             var rot = referenceFrame * Quaternion.Euler(TiltAxis.Value, PanAxis.Value, 0);
-            var up = referenceFrame * Vector3.up;
-            curState.RawOrientation = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
+            curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
                 curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
@@ -168,24 +167,24 @@ namespace Cinemachine
         {
             m_ResetHandler?.Invoke(); // Reset the axes
 
-            Vector3 up = VcamState.ReferenceUp;
-            Vector3 fwd = GetReferenceFrame() * Vector3.forward;
+            var up = VcamState.ReferenceUp;
+            var fwd = GetReferenceFrame(up) * Vector3.forward;
 
             PanAxis.Value = 0;
-            Vector3 targetFwd = targetRot * Vector3.forward;
-            Vector3 a = fwd.ProjectOntoPlane(up);
-            Vector3 b = targetFwd.ProjectOntoPlane(up);
+            var targetFwd = targetRot * Vector3.forward;
+            var a = fwd.ProjectOntoPlane(up);
+            var b = targetFwd.ProjectOntoPlane(up);
             if (!a.AlmostZero() && !b.AlmostZero())
                 PanAxis.Value = Vector3.SignedAngle(a, b, up);
 
             TiltAxis.Value = 0;
             fwd = Quaternion.AngleAxis(PanAxis.Value, up) * fwd;
-            Vector3 right = Vector3.Cross(up, fwd);
+            var right = Vector3.Cross(up, fwd);
             if (!right.AlmostZero())
                 TiltAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
         }
 
-        Quaternion GetReferenceFrame()
+        Quaternion GetReferenceFrame(Vector3 up)
         {
             Transform target = null;
             switch (ReferenceFrame)
@@ -195,7 +194,7 @@ namespace Cinemachine
                 case ReferenceFrames.LookAtTarget: target = LookAtTarget; break;
                 case ReferenceFrames.ParentObject: target = VirtualCamera.transform.parent; break;
             }
-            return (target != null) ? target.rotation : Quaternion.identity;
+            return (target != null) ? target.rotation : Quaternion.FromToRotation(Vector3.up, up);
         }
     }
 }

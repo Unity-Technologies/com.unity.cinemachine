@@ -1,13 +1,16 @@
 using UnityEngine;
 
-public class LockPosZ : MonoBehaviour
+namespace Cinemachine.Examples
 {
-    public float ZPosiion;
-
-    void LateUpdate()
+    public class LockPosZ : MonoBehaviour
     {
-        var pos = transform.position;
-        pos.z = ZPosiion;
-        transform.position = pos;
+        public float ZPosiion;
+
+        void LateUpdate()
+        {
+            var pos = transform.position;
+            pos.z = ZPosiion;
+            transform.position = pos;
+        }
     }
 }

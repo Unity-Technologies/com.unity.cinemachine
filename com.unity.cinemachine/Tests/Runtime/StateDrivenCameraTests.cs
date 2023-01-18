@@ -1,5 +1,6 @@
 #if UNITY_EDITOR // AssetDatabase.LoadMainAssetAtPath
 #if CINEMACHINE_UNITY_ANIMATION
+using System;
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -25,7 +26,18 @@ namespace Tests.Runtime
 
             // Create a minimal character controller
             var character = CreateGameObject("Character", typeof(Animator));
-            var controller = AssetDatabase.LoadMainAssetAtPath("Packages/com.unity.cinemachine/Tests/Runtime/TestController.controller") as AnimatorController;
+            AnimatorController controller = null;
+            foreach (var asset in AssetDatabase.FindAssets("t:AnimatorController TestController"))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(asset);
+                controller = AssetDatabase.LoadMainAssetAtPath(path) as AnimatorController;
+            }
+
+            if (controller == null)
+            {
+                throw new ArgumentNullException("controller", "FindAssets did not find the TestController in the project.");
+            }
+            
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
             // Create a state-driven camera with two vcams 

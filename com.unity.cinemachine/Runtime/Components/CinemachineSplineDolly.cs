@@ -149,6 +149,7 @@ namespace Cinemachine
             AutomaticDolly.Implementation = null;
         }
 
+        /// <summary>Called when the behaviour is enabled.</summary>
         protected override void OnEnable()
         {
             base.OnEnable();

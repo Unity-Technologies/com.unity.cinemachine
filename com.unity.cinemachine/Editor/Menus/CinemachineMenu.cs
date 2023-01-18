@@ -305,9 +305,13 @@ namespace Cinemachine.Editor
                 return CinemachineCore.Instance.GetActiveBrain(0);
 
             // Create a CinemachineBrain on the main camera
-            Camera cam = Camera.main;
+            var cam = Camera.main;
             if (cam == null)
+#if UNITY_2023_1_OR_NEWER
+                cam = Object.FindFirstObjectByType<Camera>(FindObjectsInactive.Exclude);
+#else
                 cam = Object.FindObjectOfType<Camera>();
+#endif
             if (cam != null)
                 return Undo.AddComponent<CinemachineBrain>(cam.gameObject);
 

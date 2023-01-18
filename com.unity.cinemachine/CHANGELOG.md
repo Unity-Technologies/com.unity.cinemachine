@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
 - Cinemachine Samples can import their package dependencies.
 - CinemachineSmoothPath is upgraded to Splines correctly now. 
+- CinemachinePathBase search radius fixed for not looped paths.
+- Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
+- Regression fix: POV and PanTilt handle ReferenceUp correctly.
+- Bugfix: Extensions were not respecting execution order on domain reload.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
