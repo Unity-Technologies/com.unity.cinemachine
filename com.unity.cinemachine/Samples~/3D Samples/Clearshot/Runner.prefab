@@ -51,16 +51,18 @@ MonoBehaviour:
   PositionUnits: 0
   AutomaticDolly:
     Implementation:
-      rid: 556897513584197635
+      rid: 1242842163986563213
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: 556897513584197635
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 1242842163986563213
+      type: {class: RandomizedDollySpeed, ns: Cinemachine.Examples, asm: Assembly-CSharp}
       data:
-        Speed: 0
+        MinSpeed: 8
+        MaxSpeed: 12
+        Acceleration: 1
 --- !u!114 &7394770885881608384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,7 +75,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpeedRange: {x: 2, y: 6}
 --- !u!1001 &7394770885881896886
 PrefabInstance:
   m_ObjectHideFlags: 0

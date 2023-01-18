@@ -608,8 +608,7 @@ namespace Cinemachine
             {
                 if (!vcam.IsValid)
                     return null;    // deleted!
-                var bs = vcam as BlendSourceVirtualCamera;
-                if (bs == null)
+                if (vcam is not BlendSourceVirtualCamera bs)
                     break;
                 vcam = bs.Blend.CamB;
             }
@@ -627,8 +626,7 @@ namespace Cinemachine
             // Ignore m_CurrentLiveCameras.CamB
             if (vcam == m_CurrentLiveCameras.CamA)
                 return true;
-            var b = m_CurrentLiveCameras.CamA as BlendSourceVirtualCamera;
-            if (b != null && b.Blend.Uses(vcam))
+            if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(vcam))
                 return true;
             ICinemachineCamera parent = vcam.ParentCamera;
             if (parent != null && parent.IsLiveChild(vcam, false))

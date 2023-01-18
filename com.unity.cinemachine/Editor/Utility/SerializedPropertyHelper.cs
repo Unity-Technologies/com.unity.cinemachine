@@ -27,8 +27,7 @@ namespace Cinemachine.Editor
         /// <returns></returns>
         public static string PropertyName(Expression<Func<object>> exp)
         {
-            var body = exp.Body as MemberExpression;
-            if (body == null)
+            if (exp.Body is not MemberExpression body)
             {
                 var ubody = (UnaryExpression)exp.Body;
                 body = ubody.Operand as MemberExpression;
