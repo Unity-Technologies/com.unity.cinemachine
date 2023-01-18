@@ -10,18 +10,18 @@ namespace Cinemachine.Examples
 
         void Start() => m_Cart = GetComponent<CinemachineSplineCart>();
 
-        static bool s_SlowDownLeader = true;
+        static bool s_LeaderWasSlowed;
         bool m_IsTired;
 
         void Update()
         {
             // Slow down leader to improve chances of at least 1 take over in one run
-            if (s_SlowDownLeader)
+            if (!s_LeaderWasSlowed)
             {
                 if (m_Cart.Spline.Spline.ConvertIndexUnit(
                     m_Cart.SplinePosition, m_Cart.PositionUnits, PathIndexUnit.Normalized) > 0.5f)
                 {
-                    s_SlowDownLeader = false;
+                    s_LeaderWasSlowed = true;
                     var speedControl = m_Cart.AutomaticDolly.Implementation as RandomizedDollySpeed;
                     if (speedControl != null)
                     {
@@ -50,7 +50,7 @@ namespace Cinemachine.Examples
                 }
             }
             m_IsTired = false;
-            s_SlowDownLeader = true;
+            s_LeaderWasSlowed = false;
         }
     }
 }

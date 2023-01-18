@@ -24,8 +24,7 @@ namespace Cinemachine.Examples
             SplineContainer spline, float currentPosition, 
             PathIndexUnit positionUnits, float deltaTime)
         {
-            // Only works if playing
-            if (Application.isPlaying && (spline != null && spline.Spline != null) && deltaTime > 0)
+            if (Application.isPlaying && deltaTime > 0)
             {
                 if (Mathf.Abs(m_Speed - m_TargetSpeed) < 0.01f)
                     m_TargetSpeed = UnityEngine.Random.Range(MinSpeed, MaxSpeed);
