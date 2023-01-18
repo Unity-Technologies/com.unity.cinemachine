@@ -75,6 +75,8 @@ namespace Cinemachine
         void OnEnable()
         {
             RefreshRollCache();
+            if (AutomaticDolly.Implementation != null)
+                AutomaticDolly.Implementation.Reset();
         }
 
         void FixedUpdate()

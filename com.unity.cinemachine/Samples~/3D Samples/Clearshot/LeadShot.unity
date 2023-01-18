@@ -149,7 +149,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 14930834}
-  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
+  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: 5.2767878}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -330,7 +330,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 58846467}
-  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
+  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
   m_LocalPosition: {x: -61, y: 6.55, z: 4.000001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -563,7 +563,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194279532}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: -0.723212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -918,8 +918,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1007741217}
-        m_TargetAssemblyTypeName: CartController, Assembly-CSharp
-        m_MethodName: ResetPosition
+        m_TargetAssemblyTypeName: Cinemachine.Examples.CartController, Assembly-CSharp
+        m_MethodName: ResetRace
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -931,7 +931,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1348193507}
         m_TargetAssemblyTypeName: Cinemachine.Examples.CartController, Assembly-CSharp
-        m_MethodName: ResetPosition
+        m_MethodName: ResetRace
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -943,7 +943,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 2121353336}
         m_TargetAssemblyTypeName: Cinemachine.Examples.CartController, Assembly-CSharp
-        m_MethodName: ResetPosition
+        m_MethodName: ResetRace
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -955,7 +955,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1808679805}
         m_TargetAssemblyTypeName: Cinemachine.Examples.CartController, Assembly-CSharp
-        m_MethodName: ResetPosition
+        m_MethodName: ResetRace
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -967,7 +967,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1952347988}
         m_TargetAssemblyTypeName: Cinemachine.Examples.CartController, Assembly-CSharp
-        m_MethodName: ResetPosition
+        m_MethodName: ResetRace
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

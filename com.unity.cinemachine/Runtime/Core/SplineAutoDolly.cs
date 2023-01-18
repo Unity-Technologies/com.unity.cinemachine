@@ -23,6 +23,12 @@ namespace Cinemachine
             /// <summary>Called from OnValidate() to validate the settings.</summary>
             void Validate();
 
+            /// <summary>Call this to reset any state information contained in the implementation.</summary>
+            void Reset();
+
+            /// <summary>Returns true if this implementation requires a tracking target.</summary>
+            bool RequiresTrackingTarget { get; }
+
             /// <summary>
             /// Compute the desired position on the spline.
             /// </summary>
@@ -50,6 +56,12 @@ namespace Cinemachine
 
             /// <summary>Called from OnValidate() to validate the settings.</summary>
             void ISplineAutoDolly.Validate() {}
+
+            /// <summary>This implementation does nothing.</summary>
+            void ISplineAutoDolly.Reset() {}
+
+            /// <summary>Returns true if this implementation requires a tracking target.</summary>
+            bool ISplineAutoDolly.RequiresTrackingTarget => false;
 
             /// <summary>
             /// Compute the desired position on the spline.
@@ -120,6 +132,12 @@ namespace Cinemachine
                 SearchResolution = Mathf.Max(SearchResolution, 1);
                 SearchIteration = Mathf.Max(SearchIteration, 1);
             }
+
+            /// <summary>This implementation does nothing.</summary>
+            void ISplineAutoDolly.Reset() {}
+
+            /// <summary>Returns true if this implementation requires a tracking target.</summary>
+            bool ISplineAutoDolly.RequiresTrackingTarget => true;
 
             /// <summary>
             /// Compute the desired position on the spline.
