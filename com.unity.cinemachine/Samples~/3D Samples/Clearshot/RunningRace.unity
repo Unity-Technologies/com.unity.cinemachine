@@ -1119,7 +1119,7 @@ Transform:
   - {fileID: 1808679804}
   - {fileID: 1952347987}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &535197903 stripped
 Transform:
@@ -1240,7 +1240,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689268010}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: -2.723212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1312,20 +1312,14 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 'This scene shows Clearshot camera (AlwaysFrameLeader Camera) that ensures
-    that the leader of the race is always centered in the frame. The Clearshot camera
-    uses a custom shot quality evaluator script (ShotQualityBasedOnSplineCartPosition),
-    which assigns shot quality to each camera based on how much their follow target
-    has traveled along the spline track. The Clearshot camera waits a little bit
-    (MinDuration parameter) after switching to a camera to avoid too frequent switches.
-
-
-    The
-    runners run along a spline using CinemachineSplineCart. The speed of the cart
-    is randomized using the CartController script. The spline track for each runner
-    is identical apart from translation.
-
-'
+  HelpText: "This scene shows a Clearshot camera which ensures that the leader of
+    the race is always centered in the frame. \r\n\r\nEach runner has its own follower
+    camera, and the Clearshot camera uses a custom shot quality evaluator script
+    (ShotQualityBasedOnSplineCartPosition), which assigns shot quality to each follower
+    camera based on how much their follow target has traveled along the spline track.
+    \r\n\r\nThe runners run along a spline using a CinemachineSplineCart with a custom
+    Automatic Dolly script (RandomizedDollySpeed) which randomly changes the speed
+    between specified limits. "
 --- !u!4 &1059971141
 Transform:
   m_ObjectHideFlags: 0
@@ -1719,7 +1713,7 @@ GameObject:
   - component: {fileID: 1253974828}
   - component: {fileID: 1253974830}
   m_Layer: 0
-  m_Name: AlwaysFrameLeader Camera
+  m_Name: Leader Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1758,7 +1752,7 @@ MonoBehaviour:
   - {fileID: 194279533}
   - {fileID: 689268011}
   ActivateAfter: 0
-  MinDuration: 0.7
+  MinDuration: 1
   RandomizeChoice: 0
   DefaultBlend:
     m_Style: 1
@@ -1790,7 +1784,7 @@ Transform:
   - {fileID: 194279536}
   - {fileID: 689268014}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1253974830
 MonoBehaviour:
@@ -1846,7 +1840,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2096,7 +2090,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1707911442}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: 1.276788}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2441,7 +2435,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1975165800}
-  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
+  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: 3.276788}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2481,7 +2475,7 @@ Transform:
   - {fileID: 1065446231}
   - {fileID: 2073370311}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2073370310
 GameObject:
