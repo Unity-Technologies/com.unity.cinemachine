@@ -688,14 +688,15 @@ MonoBehaviour:
   UpdateMethod: 0
   PositionUnits: 0
   AutomaticDolly:
-    Implementation:
-      rid: 556897202793611290
+    Enabled: 1
+    Method:
+      rid: 1242842187797626887
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: 556897202793611290
+    - rid: 1242842187797626887
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
         Speed: 9
@@ -875,17 +876,18 @@ MonoBehaviour:
   UpdateMethod: 0
   PositionUnits: 0
   AutomaticDolly:
-    Implementation:
-      rid: 556897202793611287
+    Enabled: 1
+    Method:
+      rid: 1242842187797626884
   TrackingTarget: {fileID: 1166162573}
   SplinePosition: 59.99
   references:
     version: 2
     RefIds:
-    - rid: 556897202793611287
+    - rid: 1242842187797626884
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 6
+        Speed: 5
 --- !u!1 &1383110408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1250,17 +1252,18 @@ MonoBehaviour:
   UpdateMethod: 0
   PositionUnits: 0
   AutomaticDolly:
-    Implementation:
-      rid: 556897202793611288
+    Enabled: 1
+    Method:
+      rid: 1242842187797626885
   TrackingTarget: {fileID: 0}
   SplinePosition: 40
   references:
     version: 2
     RefIds:
-    - rid: 556897202793611288
+    - rid: 1242842187797626885
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 7
+        Speed: 6
 --- !u!1 &1609023126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1695,17 +1698,18 @@ MonoBehaviour:
   UpdateMethod: 0
   PositionUnits: 0
   AutomaticDolly:
-    Implementation:
-      rid: 556897202793611289
+    Enabled: 1
+    Method:
+      rid: 1242842187797626886
   TrackingTarget: {fileID: 0}
   SplinePosition: 10
   references:
     version: 2
     RefIds:
-    - rid: 556897202793611289
+    - rid: 1242842187797626886
       type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
       data:
-        Speed: 5
+        Speed: 7
 --- !u!1 &1942116116
 GameObject:
   m_ObjectHideFlags: 0
@@ -2066,7 +2070,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 16.499054
+  orthographic size: 17.818977
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
