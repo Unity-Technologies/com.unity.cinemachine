@@ -22,12 +22,10 @@ namespace Cinemachine.Examples
                     m_Cart.SplinePosition, m_Cart.PositionUnits, PathIndexUnit.Normalized) > 0.5f)
                 {
                     s_LeaderWasSlowed = true;
-                    var speedControl = m_Cart.AutomaticDolly.Implementation as RandomizedDollySpeed;
-                    if (speedControl != null)
+                    if (m_Cart.AutomaticDolly.Implementation is RandomizedDollySpeed speedControl)
                     {
                         // Leader is tired!
-                        speedControl.MinSpeed /= 2;
-                        speedControl.MaxSpeed /= 2;
+                        speedControl.Speed /= 2;
                         m_IsTired = true;
                     }
                 }
@@ -38,16 +36,11 @@ namespace Cinemachine.Examples
         public void ResetRace()
         {
             m_Cart.SplinePosition = 0;
-            var speedControl = m_Cart.AutomaticDolly.Implementation as RandomizedDollySpeed;
-            if (speedControl != null)
+            if (m_Cart.AutomaticDolly.Implementation is RandomizedDollySpeed speedControl)
             {
                 m_Cart.AutomaticDolly.Implementation.Reset();
-                if (m_IsTired)
-                {
-                    // Restore the speed, leader is no longer tired
-                    speedControl.MinSpeed *= 2;
-                    speedControl.MaxSpeed *= 2;
-                }
+                if (m_IsTired) 
+                    speedControl.Speed *= 2; // Restore the speed, leader is no longer tired
             }
             m_IsTired = false;
             s_LeaderWasSlowed = false;

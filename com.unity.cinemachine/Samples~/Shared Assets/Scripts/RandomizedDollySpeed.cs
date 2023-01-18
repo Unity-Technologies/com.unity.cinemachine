@@ -5,18 +5,18 @@ namespace Cinemachine.Examples
 {
     public class RandomizedDollySpeed : SplineAutoDolly.ISplineAutoDolly
     {
-        [Tooltip("Minimum speed the cart can travel")]
-        public float MinSpeed = 2;
-        [Tooltip("Maximum speed the cart can travel")]
-        public float MaxSpeed = 10;
+        [MinMaxRangeSlider(0.1f, 10f)]
+        [Tooltip("Minimum and maximum speed the cart can travel")]
+        public Vector2 Speed = new(2f, 6f);
+        
         [Tooltip("How quickly the cart can change speed")]
         public float Acceleration = 1;
 
         float m_Speed;
         float m_TargetSpeed;
 
-        void SplineAutoDolly.ISplineAutoDolly.Validate() => MaxSpeed = Mathf.Max(MaxSpeed, MinSpeed);
-        void SplineAutoDolly.ISplineAutoDolly.Reset() => m_Speed = m_TargetSpeed = (MinSpeed + MaxSpeed) / 2;
+        void SplineAutoDolly.ISplineAutoDolly.Validate() => Speed.y = Mathf.Max(Speed.y, Speed.x);
+        void SplineAutoDolly.ISplineAutoDolly.Reset() => m_Speed = m_TargetSpeed = (Speed.x + Speed.y) / 2;
         bool SplineAutoDolly.ISplineAutoDolly.RequiresTrackingTarget => false;
 
         public float GetSplinePosition(
@@ -27,7 +27,7 @@ namespace Cinemachine.Examples
             if (Application.isPlaying && deltaTime > 0)
             {
                 if (Mathf.Abs(m_Speed - m_TargetSpeed) < 0.01f)
-                    m_TargetSpeed = UnityEngine.Random.Range(MinSpeed, MaxSpeed);
+                    m_TargetSpeed = Random.Range(Speed.x, Speed.y);
                 if (m_Speed < m_TargetSpeed)
                     m_Speed = Mathf.Min(m_TargetSpeed, m_Speed + Acceleration * deltaTime);
                 if (m_Speed > m_TargetSpeed)

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,9 +67,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -149,7 +146,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 14930834}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: 5.2767878}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -330,7 +327,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 58846467}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -61, y: 6.55, z: 4.000001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -563,7 +560,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194279532}
-  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
+  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: -0.723212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1071,6 +1068,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 381337818}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: managedReferences[1242842163986563213].Speed.y
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (1)
@@ -1240,7 +1241,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689268010}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: -2.723212}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1693,6 +1694,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 909308763}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: managedReferences[1242842163986563213].Speed.y
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (2)
@@ -2096,7 +2101,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1707911442}
-  m_LocalRotation: {x: 0.13371922, y: 0.69434804, z: -0.1337192, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: 0.69434804, z: -0.13371919, w: 0.69434804}
   m_LocalPosition: {x: -72.20023, y: 5.0983305, z: 1.276788}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2160,6 +2165,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 119660182}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: managedReferences[1242842163986563213].Speed.y
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (3)
@@ -2302,6 +2311,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 1293460385}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: managedReferences[1242842163986563213].Speed.y
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (4)
@@ -2644,6 +2657,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 2090653184}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: managedReferences[1242842163986563213].Speed.y
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner
