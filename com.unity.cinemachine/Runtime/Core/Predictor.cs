@@ -96,8 +96,39 @@ namespace Cinemachine.Utility
                 return initial;
             if (deltaTime < Epsilon)
                 return 0;
+
+#if true || CINEMACHINE_EXPERIMENTAL_DAMPING
+            // Try to reduce damage caused by frametime variability, by pretending
+            // that the value to decay has accumulated steadily over many constant-time subframes.
+            // We simulate being called each subframe.
+            // This does result in a longer damping time.
+            float step = Mathf.Min(deltaTime, Time.fixedDeltaTime / 16);
+            int numSteps = Mathf.FloorToInt(deltaTime / step);
+            float vel = initial * step / deltaTime; // the amount that accumulates each subframe
+            float k = -kLogNegligibleResidual / dampTime; //DecayConstant(dampTime, kNegligibleResidual);
+            k = Mathf.Exp(-k * step);
+
+            // ====================================
+            // This code is equivalent to:
+            //     float r = 0;
+            //     for (int i = 0; i < numSteps; ++i)
+            //         r = (r + vel) * k;
+            float r = vel;
+            if (Mathf.Abs(k - 1) < Epsilon)
+                r *= k * numSteps;
+            else
+            {
+                r *= k - Mathf.Pow(k, numSteps + 1);
+                r /= 1 - k;
+            }
+            // ====================================
+
+            r = Mathf.Lerp(r, (r + vel) * k, (deltaTime - (step * numSteps)) / step);
+            return initial - r;
+#else
             float k = -kLogNegligibleResidual / dampTime; //DecayConstant(dampTime, kNegligibleResidual);
             return initial * (1 - Mathf.Exp(-k * deltaTime));
+#endif
         }
 
         /// <summary>Get a damped version of a quantity.  This is the portion of the
@@ -124,87 +155,6 @@ namespace Cinemachine.Utility
         /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
         public static Vector3 Damp(Vector3 initial, float dampTime, float deltaTime)
-        {
-            for (int i = 0; i < 3; ++i)
-                initial[i] = Damp(initial[i], dampTime, deltaTime);
-            return initial;
-        }
-
-        /// <summary>Get a damped version of a quantity.  This is the portion of the
-        /// quantity that will take effect over the given time.
-        /// 
-        /// This is a special implementation designed to compensate for the effects of a 
-        /// variable timestep, for use in cases where the amount to be damped is proportional
-        /// to deltaTime.
-        /// </summary>
-        /// <param name="initial">The amount that will be damped</param>
-        /// <param name="dampTime">The rate of damping.  This is the time it would
-        /// take to reduce the original amount to a negligible percentage</param>
-        /// <param name="deltaTime">The time over which to damp</param>
-        /// <returns>The damped amount.  This will be the original amount scaled by
-        /// a value between 0 and 1.</returns>
-        public static float SteppedDamp(float initial, float dampTime, float deltaTime)
-        {
-            if (dampTime < Epsilon || Mathf.Abs(initial) < Epsilon)
-                return initial;
-            if (deltaTime < Epsilon)
-                return 0;
-            float k = -kLogNegligibleResidual / dampTime; //DecayConstant(dampTime, kNegligibleResidual);
-
-#if CINEMACHINE_EXPERIMENTAL_DAMPING
-            // Try to reduce damage caused by frametime variability
-            float step = Time.fixedDeltaTime;
-            if (deltaTime != step)
-                step /= 5;
-            int numSteps = Mathf.FloorToInt(deltaTime / step);
-            float vel = initial * step / deltaTime;
-            float decayConstant = Mathf.Exp(-k * step);
-            float r = 0;
-            for (int i = 0; i < numSteps; ++i)
-                r = (r + vel) * decayConstant;
-            float d = deltaTime - (step * numSteps);
-            if (d > Epsilon)
-                r = Mathf.Lerp(r, (r + vel) * decayConstant, d / step);
-            return initial - r;
-#else
-            return initial * (1 - Mathf.Exp(-k * deltaTime));
-#endif
-        }
-
-        /// <summary>Get a damped version of a quantity.  This is the portion of the
-        /// quantity that will take effect over the given time.
-        /// 
-        /// This is a special implementation designed to compensate for the effects of a 
-        /// variable timestep, for use in cases where the amount to be damped is proportional
-        /// to deltaTime.
-        /// </summary>
-        /// <param name="initial">The amount that will be damped</param>
-        /// <param name="dampTime">The rate of damping.  This is the time it would
-        /// take to reduce the original amount to a negligible percentage</param>
-        /// <param name="deltaTime">The time over which to damp</param>
-        /// <returns>The damped amount.  This will be the original amount scaled by
-        /// a value between 0 and 1.</returns>
-        public static Vector3 SteppedDamp(Vector3 initial, Vector3 dampTime, float deltaTime)
-        {
-            for (int i = 0; i < 3; ++i)
-                initial[i] = SteppedDamp(initial[i], dampTime[i], deltaTime);
-            return initial;
-        }
-
-        /// <summary>Get a damped version of a quantity.  This is the portion of the
-        /// quantity that will take effect over the given time.
-        /// 
-        /// This is a special implementation designed to compensate for the effects of a 
-        /// variable timestep, for use in cases where the amount to be damped is proportional
-        /// to deltaTime.
-        /// </summary>
-        /// <param name="initial">The amount that will be damped</param>
-        /// <param name="dampTime">The rate of damping.  This is the time it would
-        /// take to reduce the original amount to a negligible percentage</param>
-        /// <param name="deltaTime">The time over which to damp</param>
-        /// <returns>The damped amount.  This will be the original amount scaled by
-        /// a value between 0 and 1.</returns>
-        public static Vector3 SteppedDamp(Vector3 initial, float dampTime, float deltaTime)
         {
             for (int i = 0; i < 3; ++i)
                 initial[i] = Damp(initial[i], dampTime, deltaTime);
