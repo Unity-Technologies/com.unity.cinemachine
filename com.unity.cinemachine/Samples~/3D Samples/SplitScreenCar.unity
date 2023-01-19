@@ -439,7 +439,7 @@ PrefabInstance:
         type: 3}
       propertyPath: Controllers.Array.data[0].InputAction
       value: 
-      objectReference: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018,
+      objectReference: {fileID: 3364986483885300090, guid: ba1679fafe8a545948be71b9557ead1a,
         type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
         type: 3}
@@ -450,13 +450,19 @@ PrefabInstance:
         type: 3}
       propertyPath: Controllers.Array.data[1].InputAction
       value: 
-      objectReference: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018,
+      objectReference: {fileID: 3364986483885300090, guid: ba1679fafe8a545948be71b9557ead1a,
         type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
         type: 3}
       propertyPath: Controllers.Array.data[1].LegacyInput
       value: Fire1
       objectReference: {fileID: 0}
+    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
+        type: 3}
+      propertyPath: Controllers.Array.data[2].InputAction
+      value: 
+      objectReference: {fileID: -1767273502160521294, guid: ba1679fafe8a545948be71b9557ead1a,
+        type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
         type: 3}
       propertyPath: Controllers.Array.data[2].LegacyInput
