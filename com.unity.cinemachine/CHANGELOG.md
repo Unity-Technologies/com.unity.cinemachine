@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
 - Regression fix: POV and PanTilt handle ReferenceUp correctly.
 - Bugfix: Extensions were not respecting execution order on domain reload.
-- Add SplineAutoDolly.ISplineAutoDolly.Reset() method.
+- Add SplineAutoDolly.ISplineAutoDolly.Reset() method and SplineAutoDolly.Enabled flag.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
