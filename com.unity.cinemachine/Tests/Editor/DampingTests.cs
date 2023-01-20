@@ -16,7 +16,7 @@ namespace Tests.Editor
             const float initial = 100f;
 
             float t = 0;
-            float r = Damper.Damp(initial, dampTime, t);
+            float r = Damper.StandardDamp(initial, dampTime, t);
             Assert.That(r, Is.EqualTo(0f));
             Assert.That(r, Is.LessThan(initial));
             const int iterations = 10;
@@ -28,10 +28,64 @@ namespace Tests.Editor
                     Assert.That(t, Is.LessThan(dampTime));
                 else
                     t = dampTime;
-                float r2 = Damper.Damp(initial, dampTime, t);
+                float r2 = Damper.StandardDamp(initial, dampTime, t);
                 Assert.That(r, Is.LessThan(r2));
                 r = r2;
             }
+        }
+
+        [Test]
+        public void StableDampFloat()
+        {
+            const float kInitial = 100f;
+            const float kDampTime = 1f;
+
+            float t = 0;
+            float r = Damper.StableDamp(kInitial, kDampTime, t);
+            Assert.That(r, Is.EqualTo(0f));
+            Assert.That(r, Is.LessThan(kInitial));
+            const int iterations = 10;
+            for (int i = 0; i < iterations; ++i)
+            {
+                t += kDampTime / iterations;
+
+                if (i != iterations - 1)
+                    Assert.That(t, Is.LessThan(kDampTime));
+                else
+                    t = kDampTime;
+                float r2 = Damper.StableDamp(kInitial, kDampTime, t);
+                Assert.That(r, Is.LessThan(r2));
+                r = r2;
+            }
+            
+            for (int fps = 10; fps <= 1024; fps += 10)
+            {
+                Damper.AverageFrameRateTracker.SetDampTimeScale(fps);
+
+                r = kInitial;
+                float dt = 1.0f / fps;
+                float negligible = Damper.kNegligibleResidual * kInitial;
+
+                float stableTime = 0;
+                while (r > negligible)
+                {
+                    r -= Damper.StableDamp(r, kDampTime, dt);
+                    stableTime += dt;
+                }
+
+                r = kInitial;
+                float standardTime = 0;
+                while (r > negligible)
+                {
+                    r -= Damper.StandardDamp(r, kDampTime, dt);
+                    standardTime += dt;
+                }
+
+                // It should take approx the same amount of time for stable damping and
+                // standard damping, regardless of framerate
+                Assert.That(Mathf.Abs(1.0f - stableTime/standardTime), Is.LessThan(0.07f));
+            }
+            Damper.AverageFrameRateTracker.Reset();
         }
 
         static IEnumerable VectorDampingTestCases
