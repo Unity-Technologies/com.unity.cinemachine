@@ -139,7 +139,7 @@ namespace Cinemachine.Utility
         /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
         // Internal for testing
-        public static float StandardDamp(float initial, float dampTime, float deltaTime)
+        internal static float StandardDamp(float initial, float dampTime, float deltaTime)
         {
             if (dampTime < Epsilon || Mathf.Abs(initial) < Epsilon)
                 return initial;
@@ -164,7 +164,7 @@ namespace Cinemachine.Utility
         /// <returns>The damped amount.  This will be the original amount scaled by
         /// a value between 0 and 1.</returns>
         // Internal for testing
-        public static float StableDamp(float initial, float dampTime, float deltaTime)
+        internal static float StableDamp(float initial, float dampTime, float deltaTime)
         {
             if (dampTime < Epsilon || Mathf.Abs(initial) < Epsilon)
                 return initial;
