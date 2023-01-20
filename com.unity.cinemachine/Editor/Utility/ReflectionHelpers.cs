@@ -314,8 +314,7 @@ namespace Cinemachine.Utility
                     // Handle arrays and nested types
                     else if (type.IsArray)
                     {
-                        var fieldValue = f.GetValue(obj) as Array;
-                        if (fieldValue != null)
+                        if (f.GetValue(obj) is Array fieldValue)
                         {
                             for (int i = 0; i < fieldValue.Length; ++i)
                             {
@@ -332,8 +331,7 @@ namespace Cinemachine.Utility
                     }
                     else if (typeof(IList).IsAssignableFrom(type))
                     {
-                        var fieldValue = obj as IList;
-                        if (fieldValue != null)
+                        if (obj is IList fieldValue)
                         {
                             for (int i = 0; i < fieldValue.Count; ++i)
                             {

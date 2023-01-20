@@ -332,9 +332,10 @@ namespace Cinemachine
             c.Damping.Position = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.Damping.Angular = Mathf.Max(m_YawDamping, Mathf.Max(m_RollDamping, m_PitchDamping));
             c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp; // enum values match
+            c.AutomaticDolly.Enabled = m_AutoDolly.m_Enabled;
             if (m_AutoDolly.m_Enabled)
             {
-                c.AutomaticDolly.Implementation = new SplineAutoDolly.NearestPointToTarget
+                c.AutomaticDolly.Method = new SplineAutoDolly.NearestPointToTarget
                 {
                     PositionOffset = m_AutoDolly.m_PositionOffset,
                     SearchResolution = m_AutoDolly.m_SearchResolution,

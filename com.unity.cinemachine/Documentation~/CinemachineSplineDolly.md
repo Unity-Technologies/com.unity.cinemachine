@@ -25,7 +25,8 @@ Enable __Automatic Dolly__ to move the camera to a position on the spline in an 
 | | _Path No Roll_ | Use the spline’s up vector at the current point, but with the roll set to zero. |
 | | _Follow Target_ | Use the up vector from the Tracking target’s transform. |
 | | _Follow Target No Roll_ | Use the up vector from the Tracking target’s transform, but with the roll zeroed out. |
-| __Auto Dolly__ || Controls how automatic dollying occurs. |
+| __Automatic Dolly__ || Controls whether automatic motion along the spline occurs. |
+| __Method__ || Controls how automatic dollying occurs. You can implement your own extensions to this by writing a custom SplineAutoDolly.ISplineAutoDolly class. |
 | | _None_ | No automatic dollying occurs. You must control the CmCamera's position on the spline by setting PathPosition. |
 | | _Fixed Speed_ | Camera travels along the path at a fixed speed, which you can set. |
 | | _Nearest Point To Target_ | Positions the camera at the point on the spline that is closest to the Tracking Target's position. A Tracking Target is required in the CmCamera. You can also specify an offset from the closest point, to tune the camera's position. |
