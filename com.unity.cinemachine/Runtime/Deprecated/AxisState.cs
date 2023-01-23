@@ -221,7 +221,7 @@ namespace Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             // Cheating: we want the render frame time, not the fixed frame time
-            if (deltaTime >= 0 && m_LastUpdateTime != 0) 
+            if (deltaTime > 0 && m_LastUpdateTime != 0) 
                 deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
             
             m_LastUpdateTime = Time.realtimeSinceStartup;
@@ -437,7 +437,7 @@ namespace Cinemachine
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
                 // Cheating: we want the render frame time, not the fixed frame time
-                if (deltaTime >= 0)
+                if (deltaTime > 0)
                     deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
                 
                 m_LastUpdateTime = Time.realtimeSinceStartup;
