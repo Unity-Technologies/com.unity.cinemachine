@@ -59,6 +59,8 @@ namespace Cinemachine.Editor
                 EditorGUILayout.Separator();
                 if (m_ChildListHelper.OnInspectorGUI(FindProperty(x => x.m_ChildCameras)))
                     Target.ValidateInstructions();
+                if (EditorGUI.EndChangeCheck()) 
+                    serializedObject.ApplyModifiedProperties();
             }
             else
             {
