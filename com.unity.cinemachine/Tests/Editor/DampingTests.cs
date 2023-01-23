@@ -9,83 +9,70 @@ namespace Tests.Editor
     [TestFixture]
     public class DampingTests
     {
+        const float k_Initial = 100f;
+        const float k_DampTime = 1f;
         [Test]
-        public void DampFloat()
+        public void StandardDampFloat()
         {
-            const float dampTime = 10f;
-            const float initial = 100f;
+            DampFloatTest(Damper.StandardDamp);
+        }
 
-            float t = 0;
-            float r = Damper.StandardDamp(initial, dampTime, t);
+        [Test]
+        public void StableDampFloat()
+        {
+            DampFloatTest(Damper.StableDamp);
+        }
+
+        static void DampFloatTest(System.Func<float, float, float, float> dampingAlgorithm)
+        {
+            float t = 0f;
+            float r = Damper.StableDamp(k_Initial, k_DampTime, t);
             Assert.That(r, Is.EqualTo(0f));
-            Assert.That(r, Is.LessThan(initial));
+            Assert.That(r, Is.LessThan(k_Initial));
             const int iterations = 10;
             for (int i = 0; i < iterations; ++i)
             {
-                t += dampTime / iterations;
+                t += k_DampTime / iterations;
 
                 if (i != iterations - 1)
-                    Assert.That(t, Is.LessThan(dampTime));
+                    Assert.That(t, Is.LessThan(k_DampTime));
                 else
-                    t = dampTime;
-                float r2 = Damper.StandardDamp(initial, dampTime, t);
+                    t = k_DampTime;
+                float r2 = dampingAlgorithm(k_Initial, k_DampTime, t);
                 Assert.That(r, Is.LessThan(r2));
                 r = r2;
             }
         }
 
         [Test]
-        public void StableDampFloat()
-        {
-            const float kInitial = 100f;
-            const float kDampTime = 1f;
-
-            float t = 0;
-            float r = Damper.StableDamp(kInitial, kDampTime, t);
-            Assert.That(r, Is.EqualTo(0f));
-            Assert.That(r, Is.LessThan(kInitial));
-            const int iterations = 10;
-            for (int i = 0; i < iterations; ++i)
-            {
-                t += kDampTime / iterations;
-
-                if (i != iterations - 1)
-                    Assert.That(t, Is.LessThan(kDampTime));
-                else
-                    t = kDampTime;
-                float r2 = Damper.StableDamp(kInitial, kDampTime, t);
-                Assert.That(r, Is.LessThan(r2));
-                r = r2;
-            }
-            
+        public void StandardAndStableDampFloatTimeEquivalence() {
+            const float negligible = Damper.kNegligibleResidual * k_Initial;
             for (int fps = 10; fps <= 1024; fps += 10)
             {
                 Damper.AverageFrameRateTracker.SetDampTimeScale(fps);
 
-                r = kInitial;
-                float dt = 1.0f / fps;
-                float negligible = Damper.kNegligibleResidual * kInitial;
-
-                float stableTime = 0;
-                while (r > negligible)
-                {
-                    r -= Damper.StableDamp(r, kDampTime, dt);
-                    stableTime += dt;
-                }
-
-                r = kInitial;
-                float standardTime = 0;
-                while (r > negligible)
-                {
-                    r -= Damper.StandardDamp(r, kDampTime, dt);
-                    standardTime += dt;
-                }
+                var dt = 1.0f / fps;
+                var stableTime = DampTime(negligible, dt, Damper.StableDamp);
+                var standardTime = DampTime(negligible, dt, Damper.StandardDamp);
 
                 // It should take approx the same amount of time for stable damping and
                 // standard damping, regardless of framerate
                 Assert.That(Mathf.Abs(1.0f - stableTime/standardTime), Is.LessThan(0.07f));
             }
             Damper.AverageFrameRateTracker.Reset();
+
+            // local function
+            static float DampTime(float negligible, float dt, System.Func<float, float, float, float> dampingAlgorithm)
+            {
+                var r = k_Initial;
+                float time = 0;
+                while (r > negligible)
+                {
+                    r -= dampingAlgorithm(r, k_DampTime, dt);
+                    time += dt;
+                }
+                return time;
+            }
         }
 
         static IEnumerable VectorDampingTestCases
@@ -111,13 +98,13 @@ namespace Tests.Editor
             float[] deltaTimes = { 0.0069444445F, 0.008333334F, 0.016666668F, 0.033333335F, 0.1f }; // 144, 100, 60, 30, 10 fps
             for (var dampTime = 0.1f; dampTime <= 2f; dampTime += 0.1f)
             {
-                float kNegligibleResidual = (Vector3.one * Damper.kNegligibleResidual).magnitude;
+                float negligibleResidual = (Vector3.one * Damper.kNegligibleResidual).magnitude;
                 foreach (var deltaTime in deltaTimes)
                 {
                     var vectorToDamp = initial;
                     var previousDelta = vectorToDamp;
                     int iterations;
-                    for (iterations = 0; vectorToDamp.magnitude > kNegligibleResidual; iterations++)
+                    for (iterations = 0; vectorToDamp.magnitude > negligibleResidual; iterations++)
                     {
                         var delta = Damper.Damp(vectorToDamp, dampTime, deltaTime);
                         Assert.That(delta.normalized, Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
