@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Path gizmo drawing was optimized.
 - Confiner2D provides API to adjust the confiner to the current window size when the lens or aspect changes.
 - Confiner2D does less gc alloc.
+## [Unreleased] 
+- Bugfix: AxisState was not respecting timescale == 0
+
+
+## [2.9.5] - 2023-01-16
+- Unity 2022.2 and up: FocusDistance added to lens settings and is pushed to the camera.
+- Optimized path gizmo drawing.  Now 3-5 times faster.
 - TargetGroup now ignores members whose gameObjects are inactive.
 - CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
 - Cinemachine Samples can import their package dependencies.
