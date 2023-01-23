@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine.Rendering;
 
-namespace Tests.Runtime.HDRP
+namespace Tests.HDRP.Runtime
 {
     [TestFixture]
     public class IsHDRPTests
@@ -9,7 +9,6 @@ namespace Tests.Runtime.HDRP
         [Test]
         public void IsHDRP()
         {
-
             UnityEngine.Assertions.Assert.IsNotNull(GraphicsSettings.renderPipelineAsset);
         }
     }

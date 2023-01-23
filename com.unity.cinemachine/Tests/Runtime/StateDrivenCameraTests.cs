@@ -37,7 +37,6 @@ namespace Tests.Runtime
             {
                 throw new ArgumentNullException("controller", "FindAssets did not find the TestController in the project.");
             }
-            
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
             // Create a state-driven camera with two vcams 
