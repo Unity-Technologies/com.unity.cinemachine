@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
-                "The camera window size is bigger than what can fit perfectly in the confiner. Enable Oversize Window option.",
+                "The camera window too big for the confiner. Enable the Oversize Window option.",
                 HelpBoxMessageType.Info));
             
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
@@ -118,9 +118,9 @@ namespace Cinemachine.Editor
             if (!confiner2D.GetGizmoPaths(out var originalPath, ref s_CurrentPathCache, out var pathLocalToWorld))
                 return;
 
-            var pathCacheColor = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
-            var inputColliderColor = new Color(145f / 255f, 244f / 255f, 139f / 255f, 1f);
-
+            var inputColliderColor = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
+            var calculatedConfinerColor = 
+                new Color(inputColliderColor.r, inputColliderColor.g, inputColliderColor.b, inputColliderColor.a / 2f);
             var oldMatrix = Gizmos.matrix;
             Gizmos.matrix = pathLocalToWorld;
 
@@ -133,7 +133,7 @@ namespace Cinemachine.Editor
             }
 
             // Draw confiner for current camera size
-            Gizmos.color = pathCacheColor;
+            Gizmos.color = calculatedConfinerColor;
             foreach (var path in s_CurrentPathCache)
             {
                 for (var index = 0; index < path.Count; index++)
