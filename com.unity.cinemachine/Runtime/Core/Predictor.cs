@@ -122,9 +122,23 @@ namespace Cinemachine.Utility
             int numSteps = Mathf.FloorToInt(deltaTime / step);
             float vel = initial * step / deltaTime;
             float decayConstant = Mathf.Exp(-k * step);
-            float r = 0;
-            for (int i = 0; i < numSteps; ++i)
-                r = (r + vel) * decayConstant;
+
+            // ====================================
+            // This code is equivalent to:
+            //     float r = 0;
+            //     for (int i = 0; i < numSteps; ++i)
+            //         r = (r + vel) * decayConstant;
+            // (partial sum of geometric series)
+            float r = vel;
+            if (Mathf.Abs(decayConstant - 1) < Epsilon)
+                r *= decayConstant * numSteps;
+            else
+            {
+                r *= decayConstant - Mathf.Pow(decayConstant, numSteps + 1);
+                r /= 1 - decayConstant;
+            }
+            // ====================================
+
             float d = deltaTime - (step * numSteps);
             if (d > Epsilon)
                 r = Mathf.Lerp(r, (r + vel) * decayConstant, d / step);
