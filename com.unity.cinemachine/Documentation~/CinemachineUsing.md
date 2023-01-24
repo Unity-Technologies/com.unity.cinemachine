@@ -5,7 +5,7 @@ Using Cinemachine requires a new way of thinking about working with cameras. For
 
 ## Cinemachine Cameras
 
-Cinemachine does not create new cameras. Instead, it directs a single Unity camera for multiple shots. You compose these shots with __CmCameras__ (also referred to sometimes as _Virtual Cameras_).  CinemachineCameras move and rotate the Unity camera and control its settings.
+Cinemachine does not create new cameras. Instead, it directs a single Unity camera for multiple shots. You compose these shots with __CinemachineCameras__ (also referred to sometimes as _Virtual Cameras_).  CinemachineCameras move and rotate the Unity camera and control its settings.
 
 The CinemachineCameras are separate GameObjects from the Unity Camera, and behave independently. They are not nested within each other. For example, a Scene might look like this:
 
