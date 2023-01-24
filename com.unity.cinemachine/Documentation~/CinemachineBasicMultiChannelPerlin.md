@@ -1,6 +1,6 @@
 # Noise
 
-Use a Noise behavior in a CmCamera to simulate camera shake. Cinemachine includes a __Basic Multi Channel Perlin__ component, which adds Perlin noise to the movement of the CmCamera. __Perlin noise__ is a technique to compute pseudo-random movement with a natural behavior.
+Use a Noise behavior in a CinemachineCamera to simulate camera shake. Cinemachine includes a __Basic Multi Channel Perlin__ component, which adds Perlin noise to the movement of the camera. __Perlin noise__ is a technique to compute pseudo-random movement with a natural behavior.
 
 ![Choosing the Basic Multi Channel Perlin component to add camera noise](images/CinemachineBasicMultiChannelPerlin.png)
 
@@ -8,7 +8,7 @@ The Basic Multi Channel Perlin component applies a noise profile. A noise profil
 
 To apply noise:
 
-1. Select your CmCamera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
+1. Select your CinemachineCamera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
 
 2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), use the  __Noise__ drop-down menu to choose __Basic Multi Channel Perlin__.  This will add a noise behavior to the CmMCamera.
 

@@ -12,7 +12,7 @@ namespace Tests.Runtime
     [TestFixture]
     public class CmDeoccluderTests : CinemachineRuntimeTimeInvariantFixtureBase
     {
-        CmCamera m_Vcam;
+        CinemachineCamera m_Vcam;
         CinemachineDeoccluder m_Deoccluder;
         GameObject m_FollowObject;
 
@@ -21,7 +21,7 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineDeoccluder)).GetComponent<CmCamera>();
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineDeoccluder)).GetComponent<CinemachineCamera>();
             m_Vcam.Priority = 100;
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
             var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();

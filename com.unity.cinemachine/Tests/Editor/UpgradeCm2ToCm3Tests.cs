@@ -63,7 +63,7 @@ namespace Tests.Editor
             Assert.That(vcamGo.TryGetComponent(out CinemachineVirtualCamera _), Is.False);
             Assert.That(vcamGo.TryGetComponent(type, out _), Is.False);  // old component is deleted
             Assert.That(vcamGo.transform.childCount, Is.Zero);
-            Assert.That(vcamGo.GetComponent<CmCamera>(), Is.Not.Null); 
+            Assert.That(vcamGo.GetComponent<CinemachineCamera>(), Is.Not.Null); 
             Assert.That(vcamGo.GetComponent(UpgradeObjectToCm3.ClassUpgradeMap[type]), Is.Not.Null); // new component is added
         }
 
@@ -76,7 +76,7 @@ namespace Tests.Editor
 
             Assert.That(freelookGo.TryGetComponent(out CinemachineFreeLook _), Is.False);
             Assert.That(freelookGo.transform.childCount, Is.Zero);
-            Assert.That(freelookGo.GetComponent<CmCamera>(), Is.Not.Null);
+            Assert.That(freelookGo.GetComponent<CinemachineCamera>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineOrbitalFollow>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineRotationComposer>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineFreeLookModifier>(), Is.Not.Null);

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is an add-on for CmCameras containing the OrbitalFollow component.
+    /// This is an add-on for CinemachineCameras containing the OrbitalFollow component.
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
     [SaveDuringPlay] 
@@ -131,7 +131,7 @@ namespace Cinemachine
             /// <summary>The CinemachineComponentBase that will be modified.  Cached here for efficiency.</summary>
             protected T CachedComponent;
 
-            /// <summary>True if the CmCamera has the component we intend to modify.</summary>
+            /// <summary>True if the CinemachineCamera has the component we intend to modify.</summary>
             public override bool HasRequiredComponent => CachedComponent != null;
 
             /// <summary>The type of the component being modified</summary>

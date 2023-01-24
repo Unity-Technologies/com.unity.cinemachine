@@ -4,17 +4,17 @@ using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(CmCamera))]
+    [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
     class CmCameraEditor : UnityEditor.Editor 
     {
-        CmCamera Target => target as CmCamera;
+        CinemachineCamera Target => target as CinemachineCamera;
         CmCameraInspectorUtility m_CameraUtility = new CmCameraInspectorUtility();
 
-        [MenuItem("CONTEXT/CmCamera/Adopt Game View Camera Settings")]
+        [MenuItem("CONTEXT/CinemachineCamera/Adopt Game View Camera Settings")]
         static void AdoptGameViewCameraSettings(MenuCommand command)
         {
-            var cam = command.context as CmCamera;
+            var cam = command.context as CinemachineCamera;
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cam);
             if (brain != null)
             {
@@ -23,10 +23,10 @@ namespace Cinemachine.Editor
             }
         }
 
-        [MenuItem("CONTEXT/CmCamera/Adopt Scene View Camera Settings")]
+        [MenuItem("CONTEXT/CinemachineCamera/Adopt Scene View Camera Settings")]
         static void AdoptSceneViewCameraSettings(MenuCommand command)
         {
-            var cam = command.context as CmCamera;
+            var cam = command.context as CinemachineCamera;
             cam.Lens = CinemachineMenu.MatchSceneViewCamera(cam.transform);
         }
 

@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
                     totalWeight += Target.GetWeight(i);
 
             if (numCameras == 0)
-                EditorGUILayout.HelpBox("There are no CmCamera children", MessageType.Warning);
+                EditorGUILayout.HelpBox("There are no CinemachineCamera children", MessageType.Warning);
             else 
             {
                 EditorGUILayout.Separator();

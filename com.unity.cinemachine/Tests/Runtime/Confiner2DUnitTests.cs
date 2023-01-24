@@ -11,7 +11,7 @@ namespace Tests.Runtime
     [TestFixture]
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
     {
-        CmCamera m_Vcam;
+        CinemachineCamera m_Vcam;
         CinemachineConfiner2D m_Confiner2D;
 
         [SetUp]
@@ -19,8 +19,8 @@ namespace Tests.Runtime
         {
             base.SetUp();
             
-            var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
-            m_Vcam = vcamHolder.GetComponent<CmCamera>();
+            var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineConfiner2D));
+            m_Vcam = vcamHolder.GetComponent<CinemachineCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
             m_Vcam.Priority = 100;
             m_Cam.orthographic = true;

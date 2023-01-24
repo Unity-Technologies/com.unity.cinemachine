@@ -2,7 +2,7 @@
 
 Cinemachine cameras don't directly process user input. Instead, they expose axes that are meant to be _driven_, either by script, animation, or by user input. As much as possible Cinemachine remains agnostic about where the input is coming from. This way, it can be compatible with Unity's Input package, Unity's legacy input manager, or other third-party input systems.
 
-Included with Cinemachine is the CinemachineAxisController component. When you add it to a CmCamera, it detects any axes that can be driven by user input and exposes settings that allow you to control those axis values.
+Included with Cinemachine is the CinemachineAxisController component. When you add it to a CinemachineCamera, it detects any axes that can be driven by user input and exposes settings that allow you to control those axis values.
 
 It is compatible with both Unity's Input Package and Unity's legacy input manager, and can even be customized to support 3rd-party input systems. You can also use it as a template for writing your own custom input handlers.
 

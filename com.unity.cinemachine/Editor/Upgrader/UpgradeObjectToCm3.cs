@@ -68,7 +68,7 @@ namespace Cinemachine.Editor
                     if (!go.TryGetComponent<CinemachineGroupFraming>(out var _))
                     {
                         var framer = Undo.AddComponent<CinemachineGroupFraming>(go);
-                        go.GetComponent<CmCamera>().AddExtension(framer);
+                        go.GetComponent<CinemachineCamera>().AddExtension(framer);
                         gc.UpgradeToCm3(framer);
                     }
                 }
@@ -83,7 +83,7 @@ namespace Cinemachine.Editor
                         && !go.TryGetComponent<CinemachineGroupFraming>(out var _))
                     {
                         var framer = Undo.AddComponent<CinemachineGroupFraming>(go);
-                        go.GetComponent<CmCamera>().AddExtension(framer);
+                        go.GetComponent<CinemachineCamera>().AddExtension(framer);
                         ft.UpgradeToCm3(framer);
                     }
                 }
@@ -274,23 +274,23 @@ namespace Cinemachine.Editor
             JsonUtility.FromJsonOverwrite(json, to);
         }
 
-        static CmCamera UpgradeVcamBaseToCmCamera(CinemachineVirtualCameraBase vcam)
+        static CinemachineCamera UpgradeVcamBaseToCmCamera(CinemachineVirtualCameraBase vcam)
         {
             var go = vcam.gameObject;
-            if (!go.TryGetComponent(out CmCamera cmCamera)) // Check if RequireComponent already added CmCamera
+            if (!go.TryGetComponent(out CinemachineCamera cmCamera)) // Check if RequireComponent already added CinemachineCamera
             {
                 // First disable the old vcamBase, or new one will be rejected
                 Undo.RecordObject(vcam, "Upgrader: disable obsolete");
                 vcam.enabled = false;
 
-                cmCamera = Undo.AddComponent<CmCamera>(go);
+                cmCamera = Undo.AddComponent<CinemachineCamera>(go);
                 CopyValues(vcam, cmCamera);
 
                 // Register the extensions with the cmCamera
                 foreach (var extension in vcam.gameObject.GetComponents<CinemachineExtension>())
                     cmCamera.AddExtension(extension);
             }
-            else if (vcam.enabled) // RequireComponent added CmCamera, it should be enabled iff vcam was enabled
+            else if (vcam.enabled) // RequireComponent added CinemachineCamera, it should be enabled iff vcam was enabled
             {
                 Undo.RecordObject(vcam, "Upgrader: disable obsolete");
                 vcam.enabled = false;
@@ -505,7 +505,7 @@ namespace Cinemachine.Editor
 
         static void ConvertFreelookLens(
             CinemachineFreeLook freelook, 
-            CmCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
+            CinemachineCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
             if (freelook.m_CommonLens)
                 cmCamera.Lens = freelook.m_Lens;

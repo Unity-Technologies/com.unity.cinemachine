@@ -7,50 +7,50 @@ namespace Cinemachine
     /// This behaviour is intended to be attached to an empty GameObject,
     /// and it represents a Cinemachine Camera within the Unity scene.
     ///
-    /// The CM Camera will animate its Transform according to the rules contained
+    /// The CinemachineCamera will animate its Transform according to the rules contained
     /// in its CinemachineComponent pipeline (Aim, Body, and Noise).  When the CM
     /// camera is Live, the Unity camera will assume the position and orientation
-    /// of the CM camera.
+    /// of the CinemachineCamera.
     ///
-    /// A CM camera is not a camera. Instead, it can be thought of as a camera controller,
+    /// A CinemachineCamera is not a camera. Instead, it can be thought of as a camera controller,
     /// not unlike a cameraman. It can drive the Unity Camera and control its position,
     /// rotation, lens settings, and PostProcessing effects. Each CM Camera owns
     /// its own Cinemachine Component Pipeline, through which you can provide the instructions
     /// for procedurally tracking specific game objects.  An empty procedural pipeline
-    /// will result in a passive CM camera, which can be controlled in the same way as
+    /// will result in a passive CinemachineCamera, which can be controlled in the same way as
     /// an ordinary GameObject.
     ///
-    /// A CM camera is very lightweight, and does no rendering of its own. It merely
+    /// A CinemachineCamera is very lightweight, and does no rendering of its own. It merely
     /// tracks interesting GameObjects, and positions itself accordingly. A typical game
-    /// can have dozens of CM cameras, each set up to follow a particular character
+    /// can have dozens of CinemachineCameras, each set up to follow a particular character
     /// or capture a particular event.
     ///
-    /// A CM Camera can be in any of three states:
+    /// A CinemachineCamera can be in any of three states:
     ///
-    /// * **Live**: The CM camera is actively controlling the Unity Camera. The
-    /// CM camera is tracking its targets and being updated every frame.
-    /// * **Standby**: The CM camera is tracking its targets and being updated
+    /// * **Live**: The CinemachineCamera is actively controlling the Unity Camera. The
+    /// CinemachineCamera is tracking its targets and being updated every frame.
+    /// * **Standby**: The CinemachineCamera is tracking its targets and being updated
     /// every frame, but no Unity Camera is actively being controlled by it. This is
-    /// the state of a CM camera that is enabled in the scene but perhaps at a
-    /// lower priority than the Live CM camera.
-    /// * **Disabled**: The CM camera is present but disabled in the scene. It is
+    /// the state of a CinemachineCamera that is enabled in the scene but perhaps at a
+    /// lower priority than the Live CinemachineCamera.
+    /// * **Disabled**: The CinemachineCamera is present but disabled in the scene. It is
     /// not actively tracking its targets and so consumes no processing power. However,
-    /// the CM camera can be made live from the Timeline.
+    /// the CinemachineCamera can be made live from the Timeline.
     ///
-    /// The Unity Camera can be driven by any CM camera in the scene. The game
-    /// logic can choose the CM camera to make live by manipulating the CM
+    /// The Unity Camera can be driven by any CinemachineCamera in the scene. The game
+    /// logic can choose the CinemachineCamera to make live by manipulating the CM
     /// camerass enabled flags and/or its priority, based on game logic.
     ///
-    /// In order to be driven by a CM camera, the Unity Camera must have a CinemachineBrain
-    /// behaviour, which will select the most eligible CM camera based on its priority
+    /// In order to be driven by a CinemachineCamera, the Unity Camera must have a CinemachineBrain
+    /// behaviour, which will select the most eligible CinemachineCamera based on its priority
     /// or on other criteria, and will manage blending.
     /// </summary>
     /// 
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    [AddComponentMenu("Cinemachine/CmCamera")]
-    [HelpURL(Documentation.BaseURL + "manual/CmCamera.html")]
-    public sealed class CmCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
+    [AddComponentMenu("Cinemachine/CinemachineCamera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineCamera.html")]
+    public sealed class CinemachineCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]
@@ -63,8 +63,8 @@ namespace Cinemachine
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         public LensSettings Lens = LensSettings.Default;
 
-        /// <summary>Parameters that influence how this CmCamera transitions from other CmCameras.</summary>
-        [Tooltip("Parameters that influence how this CmCamera transitions from other CmCameras")]
+        /// <summary>Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras.</summary>
+        [Tooltip("Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras")]
         public TransitionParams Transitions;
 
         void Reset()
@@ -106,8 +106,8 @@ namespace Cinemachine
         /// <returns>The TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams() => Transitions;
 
-        /// <summary>This is called to notify the CM camera that a target got warped,
-        /// so that the CM camera can update its internal state to make the camera
+        /// <summary>This is called to notify the CinemachineCamera that a target got warped,
+        /// so that the CinemachineCamera can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
@@ -129,7 +129,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Force the CM camera to assume a given position and orientation
+        /// Force the CinemachineCamera to assume a given position and orientation
         /// </summary>
         /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
@@ -151,7 +151,7 @@ namespace Cinemachine
         /// <summary>
         /// Query components and extensions for the maximum damping time.
         /// </summary>
-        /// <returns>Highest damping setting in this CM camera</returns>
+        /// <returns>Highest damping setting in this CinemachineCamera</returns>
         public override float GetMaxDampTime()
         {
             float maxDamp = base.GetMaxDampTime();
@@ -162,7 +162,7 @@ namespace Cinemachine
             return maxDamp;
         }
 
-        /// <summary>Handle transition from another CM camera.  InheritPosition is implemented here.</summary>
+        /// <summary>Handle transition from another CinemachineCamera.  InheritPosition is implemented here.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>

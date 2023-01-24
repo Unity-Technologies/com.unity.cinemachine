@@ -472,7 +472,7 @@ namespace Cinemachine.Editor
                 SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
 #if CINEMACHINE_TIMELINE
                 if (timelineManager != null)
-                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
+                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CinemachineCamera>(), conversionLink);
 #endif
 
                 // Restore original scene state (prefab instance name, delete converted copies)
@@ -624,7 +624,7 @@ namespace Cinemachine.Editor
             // Patch the timeline shots
             if (timelineManager != null && oldComponent != null)
             {
-                var newComponent = go.GetComponent<CmCamera>();
+                var newComponent = go.GetComponent<CinemachineCamera>();
                 if (oldComponent != newComponent)
                     timelineManager.UpdateTimelineReference(oldComponent, newComponent);
             }

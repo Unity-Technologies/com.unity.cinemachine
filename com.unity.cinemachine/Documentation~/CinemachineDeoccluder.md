@@ -1,14 +1,14 @@
 # Cinemachine Deoccluder
 
-__Cinemachine Deoccluder__ is an [extension](CinemachineVirtualCameraExtensions.md) for the CmCamera. It post-processes the final position of the CmCamera to attempt to preserve the line of sight with the __Look At__ target of the CmCamera. It does this by moving away from the GameObjects that obstruct the view.
+__Cinemachine Deoccluder__ is an [extension](CinemachineVirtualCameraExtensions.md) for the CinemachineCamera. It post-processes the final position of the CinemachineCamera to attempt to preserve the line of sight with the __Look At__ target of the CinemachineCamera. It does this by moving away from the GameObjects that obstruct the view.
 
-Add a Cinemachine Deoccluder extension to a CmCamera to do any of the following tasks:
+Add a Cinemachine Deoccluder extension to a CinemachineCamera to do any of the following tasks:
 
 * Push the camera away from obstructing obstacles in the Scene.
 
-* Place the camera in front of obstacles that come between the CmCamera and its __Look At__ target.
+* Place the camera in front of obstacles that come between the CinemachineCamera and its __Look At__ target.
 
-* Evaluate shot quality. __Shot quality__ is a measure of the distance of the CmCamera from its ideal position, the distance of the CmCamera to its target, and the obstacles that block the view of the target. Other modules use shot quality, including [Clear Shot](CinemachineClearShot.md).
+* Evaluate shot quality. __Shot quality__ is a measure of the distance of the CinemachineCamera from its ideal position, the distance of the CinemachineCamera to its target, and the obstacles that block the view of the target. Other modules use shot quality, including [Clear Shot](CinemachineClearShot.md).
 
 The Deoccluder uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script-PhysicsRaycaster.html). Therefore, Cinemachine Deoccluder requires that potential obstacles have [collider](https://docs.unity3d.com/Manual/CollidersOverview.html) volumes. There is a performance cost for this requirement. If this cost is prohibitive in your game, consider implementing this functionality differently.
 

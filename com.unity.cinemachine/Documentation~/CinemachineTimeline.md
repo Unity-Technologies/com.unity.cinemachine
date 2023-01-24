@@ -1,14 +1,14 @@
 # Cinemachine and Timeline
 
-Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CmCameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
+Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CinemachineCameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
 
 **Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera.md) instead of Timeline.
 
-Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CmCamera with the highest Priority setting.
+Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CinemachineCamera with the highest Priority setting.
 
-You control CmCameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a CmCamera to activate and then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
+You control CinemachineCameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a CinemachineCamera to activate and then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
 
-To cut between two CmCameras, place the clips next to each other. To blend between two CmCameras, overlap the clips.
+To cut between two CinemachineCameras, place the clips next to each other. To blend between two CinemachineCameras, overlap the clips.
 
 ![Cinemachine Shot Clips in Timeline, with a cut (red) and a blend (blue)](images/CinemachineTimelineShotClips.png)
 
@@ -34,15 +34,15 @@ To add Cinemachine Shot Clips to a Cinemachine Track:
 
 2. Do one of the following:
 
-    * To add an existing CmCamera to the shot clip, drag and drop it onto the CmCamera property in the Cinemachine Shot component.
+    * To add an existing CinemachineCamera to the shot clip, drag and drop it onto the CinemachineCamera property in the Cinemachine Shot component.
 
-    * To create a new CmCamera and add it to the shot clip, click Create in the Cinemachine Shot component.
+    * To create a new CinemachineCamera and add it to the shot clip, click Create in the Cinemachine Shot component.
 
 3. In the Timeline editor, adjust the order, duration, cutting, and blending of the shot clip.
 
-4. [Adjust the properties of the CmCamera](CmCamera.md) to place it in the Scene and specify what to aim at or follow.
+4. [Adjust the properties of the CinemachineCamera](CinemachineCamera.md) to place it in the Scene and specify what to aim at or follow.
 
-5. To animate properties of the CmCamera, create an Animation Track for it and animate as you would any other GameObject.
+5. To animate properties of the CinemachineCamera, create an Animation Track for it and animate as you would any other GameObject.
 
 6. Organize your Timeline tracks to fine-tune your Scene.
 

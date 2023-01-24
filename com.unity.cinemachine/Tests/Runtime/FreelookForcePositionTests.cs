@@ -12,7 +12,7 @@ namespace Tests.Runtime
     [TestFixture]
     public class FreelookForcePositionTests : CinemachineRuntimeFixtureBase
     {
-        CmCamera m_CmCamera;
+        CinemachineCamera m_CmCamera;
         CinemachineOrbitalFollow m_OrbitalFollow;
         GameObject m_FollowTargetGo;
         Vector3 m_OriginalPosition;
@@ -24,8 +24,8 @@ namespace Tests.Runtime
         {
             base.SetUp();
 
-            var camGo = CreateGameObject("CM Freelook", typeof(CmCamera));
-            m_CmCamera = camGo.GetComponent<CmCamera>();
+            var camGo = CreateGameObject("CM Freelook", typeof(CinemachineCamera));
+            m_CmCamera = camGo.GetComponent<CinemachineCamera>();
             m_OrbitalFollow = camGo.AddComponent<CinemachineOrbitalFollow>();
             
             camGo.AddComponent<CinemachineHardLookAt>();

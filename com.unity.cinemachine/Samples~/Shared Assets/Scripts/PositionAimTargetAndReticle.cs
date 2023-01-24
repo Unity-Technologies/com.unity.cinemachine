@@ -29,11 +29,11 @@ namespace Cinemachine.Examples
                 CinemachineCore.CameraUpdatedEvent.RemoveListener(SetAimTarget);
             else
             {
-                CmCamera liveCam;
+                CinemachineCamera liveCam;
                 if (brain.ActiveVirtualCamera is CinemachineCameraManagerBase managerCam)
-                    liveCam = managerCam.LiveChild as CmCamera;
+                    liveCam = managerCam.LiveChild as CinemachineCamera;
                 else
-                    liveCam = brain.ActiveVirtualCamera as CmCamera;
+                    liveCam = brain.ActiveVirtualCamera as CinemachineCamera;
             
                 if (liveCam != null)
                 {

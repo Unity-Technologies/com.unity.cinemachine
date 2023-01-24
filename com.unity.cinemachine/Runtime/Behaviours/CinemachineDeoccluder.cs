@@ -8,7 +8,7 @@ using System;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera that post-processes
+    /// An add-on module for CinemachineCamera that post-processes
     /// the final position of the camera. Based on the supplied settings,
     /// the Deoccluder will attempt to preserve the line of sight
     /// with the LookAt target of the camera by moving
