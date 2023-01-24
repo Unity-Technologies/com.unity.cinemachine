@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Cinemachine.Utility
 {
@@ -92,30 +93,11 @@ namespace Cinemachine.Utility
         /// a value between 0 and 1.</returns>
         public static float Damp(float initial, float dampTime, float deltaTime)
         {
-            if (dampTime < Epsilon || Mathf.Abs(initial) < Epsilon)
-                return initial;
-            if (deltaTime < Epsilon)
-                return 0;
-            float k = -kLogNegligibleResidual / dampTime; //DecayConstant(dampTime, kNegligibleResidual);
-
 #if CINEMACHINE_EXPERIMENTAL_DAMPING
-            // Try to reduce damage caused by frametime variability
-            float step = Time.fixedDeltaTime;
-            if (deltaTime != step)
-                step /= 5;
-            int numSteps = Mathf.FloorToInt(deltaTime / step);
-            float vel = initial * step / deltaTime;
-            float decayConstant = Mathf.Exp(-k * step);
-            float r = 0;
-            for (int i = 0; i < numSteps; ++i)
-                r = (r + vel) * decayConstant;
-            float d = deltaTime - (step * numSteps);
-            if (d > Epsilon)
-                r = Mathf.Lerp(r, (r + vel) * decayConstant, d / step);
-            return initial - r;
-#else
-            return initial * (1 - Mathf.Exp(-k * deltaTime));
+            if (!Time.inFixedTimeStep)
+                return StableDamp(initial, dampTime, deltaTime);
 #endif
+            return StandardDamp(initial, dampTime, deltaTime);
         }
 
         /// <summary>Get a damped version of a quantity.  This is the portion of the
@@ -146,6 +128,162 @@ namespace Cinemachine.Utility
             for (int i = 0; i < 3; ++i)
                 initial[i] = Damp(initial[i], dampTime, deltaTime);
             return initial;
+        }
+
+        /// <summary>Get a damped version of a quantity.  This is the portion of the
+        /// quantity that will take effect over the given time.</summary>
+        /// <param name="initial">The amount that will be damped</param>
+        /// <param name="dampTime">The rate of damping.  This is the time it would
+        /// take to reduce the original amount to a negligible percentage</param>
+        /// <param name="deltaTime">The time over which to damp</param>
+        /// <returns>The damped amount.  This will be the original amount scaled by
+        /// a value between 0 and 1.</returns>
+        // Internal for testing
+        internal static float StandardDamp(float initial, float dampTime, float deltaTime)
+        {
+            if (dampTime < Epsilon || Mathf.Abs(initial) < Epsilon)
+                return initial;
+            if (deltaTime < Epsilon)
+                return 0;
+            return initial * (1 - Mathf.Exp(kLogNegligibleResidual * deltaTime / dampTime));
+        }
+
+        /// <summary>
+        /// Get a damped version of a quantity.  This is the portion of the
+        /// quantity that will take effect over the given time.
+        /// 
+        /// This is a special implementation that attempts to increase visual stability 
+        /// in the context of an unstable framerate.
+        /// 
+        /// It relies on AverageFrameRateTracker to track the average framerate.
+        /// </summary>
+        /// <param name="initial">The amount that will be damped</param>
+        /// <param name="dampTime">The rate of damping.  This is the time it would
+        /// take to reduce the original amount to a negligible percentage</param>
+        /// <param name="deltaTime">The time over which to damp</param>
+        /// <returns>The damped amount.  This will be the original amount scaled by
+        /// a value between 0 and 1.</returns>
+        // Internal for testing
+        internal static float StableDamp(float initial, float dampTime, float deltaTime)
+        {
+            if (dampTime < Epsilon || Mathf.Abs(initial) < Epsilon)
+                return initial;
+            if (deltaTime < Epsilon)
+                return 0;
+
+            // Try to reduce damage caused by frametime variability, by pretending
+            // that the value to decay has accumulated steadily over many constant-time subframes.
+            // We simulate being called for each subframe.  This does result in a longer damping time,
+            // so we compensate with AverageFrameRateTracker.DampTimeScale, which is calculated
+            // every frame based on the average framerate over the past number of frames.
+            float step = Mathf.Min(deltaTime, AverageFrameRateTracker.kSubframeTime);
+            int numSteps = Mathf.FloorToInt(deltaTime / step);
+            float vel = initial * step / deltaTime; // the amount that accumulates each subframe
+            float k = Mathf.Exp(kLogNegligibleResidual * AverageFrameRateTracker.DampTimeScale * step / dampTime);
+
+            // ====================================
+            // This code is equivalent to:
+            //     float r = 0;
+            //     for (int i = 0; i < numSteps; ++i)
+            //         r = (r + vel) * k;
+            // (partial sum of geometric series)
+            float r = vel;
+            if (Mathf.Abs(k - 1) < Epsilon)
+                r *= k * numSteps;
+            else
+            {
+                r *= k - Mathf.Pow(k, numSteps + 1);
+                r /= 1 - k;
+            }
+            // ====================================
+
+            // Handle any remaining quantity after the last step
+            r = Mathf.Lerp(r, (r + vel) * k, (deltaTime - (step * numSteps)) / step);
+
+            return initial - r;
+        }
+
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoad]
+#endif
+        // Internal for testing.
+        // This class keeps a running calculation of the average framerate over a fixed
+        // time window.  Used to smooth out framerate fluctuations for determining the
+        // correct damping constant.
+        internal static class AverageFrameRateTracker
+        {
+            const int kBufferSize = 100;
+
+            static float[] s_Buffer = new float[kBufferSize];
+            static int s_NumItems = 0;
+            static int s_Head = 0;
+            static float s_Sum = 0;
+
+            public const float kSubframeTime = 1.0f / 1024.0f; // Do not change this without also changing SetDampTimeScale()
+
+            public static float FPS { get; private set; }
+            public static float DampTimeScale { get; private set; }
+
+#if UNITY_EDITOR
+            static AverageFrameRateTracker() => Reset();
+#endif
+
+            [RuntimeInitializeOnLoadMethod]
+            static void Initialize()
+            {
+#if CINEMACHINE_EXPERIMENTAL_DAMPING
+                // GML TODO: use a different hook
+                Application.onBeforeRender -= Append;
+                Application.onBeforeRender += Append;
+
+                SceneManager.sceneLoaded -= OnSceneLoaded;
+                SceneManager.sceneLoaded += OnSceneLoaded;
+#endif
+                Reset();
+            }
+
+            static void OnSceneLoaded(Scene scene, LoadSceneMode mode) => Reset();
+
+            // Internal for testing
+            internal static void Reset()
+            {
+                s_NumItems = 0;
+                s_Head = 0;
+                s_Sum = 0;
+                FPS = 60;
+                SetDampTimeScale(FPS);
+            }
+
+            static void Append()
+            {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    Reset();
+                    return;
+                }
+#endif
+                var dt = Time.unscaledDeltaTime;
+                if (++s_Head == kBufferSize)
+                    s_Head = 0;
+                if (s_NumItems == kBufferSize)
+                    s_Sum -= s_Buffer[s_Head];
+                else
+                    ++s_NumItems;
+                s_Sum += dt;
+                s_Buffer[s_Head] = dt;
+
+                FPS = s_NumItems / s_Sum;
+                SetDampTimeScale(FPS);
+            }
+
+            // Internal for testing
+            internal static void SetDampTimeScale(float fps) 
+            {
+                // Approximation computed heuristically, and curve-fitted to sampled data.
+                // Valid only for kSubframeTime = 1.0f / 1024.0f
+                DampTimeScale = 2.0f - 1.81e-3f * fps + 7.9e-07f * fps * fps;
+            }
         }
     }
 }
