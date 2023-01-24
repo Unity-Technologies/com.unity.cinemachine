@@ -7,9 +7,9 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a deprecated component.  Use CmCamera instead.
+    /// This is a deprecated component.  Use CinemachineCamera instead.
     /// </summary>
-    [Obsolete("CinemachineVirtualCamera is deprecated. Use CmCamera instead.")]
+    [Obsolete("CinemachineVirtualCamera is deprecated. Use CinemachineCamera instead.")]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]

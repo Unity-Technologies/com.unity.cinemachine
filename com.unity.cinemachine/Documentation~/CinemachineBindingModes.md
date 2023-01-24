@@ -5,7 +5,7 @@ The binding mode defines the coordinate space Unity uses to interpret the camera
 
 ### Lock To Target
 
-Makes the CmCamera use the local frame of the Follow target. When the target rotates, the camera rotates with it to maintain the offset and to maintain the same view of the target.
+Makes the CinemachineCamera use the local frame of the Follow target. When the target rotates, the camera rotates with it to maintain the offset and to maintain the same view of the target.
 
 |                                           |                                   |
 | ------------------------------------------------- | --------------------------------------------------- |
@@ -17,7 +17,7 @@ Makes the CmCamera use the local frame of the Follow target. When the target rot
 
 
 
-Makes the CmCamera use the local frame of the Follow target, with roll set to 0.
+Makes the CinemachineCamera use the local frame of the Follow target, with roll set to 0.
 
 |                                                    |                                            |
 | --------------------------------------------------------- | ----------------------------------------------------------- |
@@ -32,7 +32,7 @@ Makes the CmCamera use the local frame of the Follow target, with roll set to 0.
 
 
 
-Makes the orientation of the CmCamera match the local frame of the Follow target, at the moment when the CmCamera is activated or when the target is assigned. This offset remains constant in world space. The camera does not rotate along with the target.
+Makes the orientation of the CinemachineCamera match the local frame of the Follow target, at the moment when the CinemachineCamera is activated or when the target is assigned. This offset remains constant in world space. The camera does not rotate along with the target.
 
 
 
@@ -47,7 +47,7 @@ Makes the orientation of the CmCamera match the local frame of the Follow target
 
 
 
-Makes the CmCamera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw.
+Makes the CinemachineCamera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw.
 
 
 

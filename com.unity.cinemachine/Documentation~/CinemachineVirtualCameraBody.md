@@ -1,10 +1,10 @@
 # Position Control
 
-Use the Position Control behaviors to specify the algorithm that moves the CmCamera in the Scene. To rotate the camera, set the [Rotation Control](CinemachineVirtualCameraAim.md) behaviors.
+Use the Position Control behaviors to specify the algorithm that moves the CinemachineCamera in the Scene. To rotate the camera, set the [Rotation Control](CinemachineVirtualCameraAim.md) behaviors.
 
 ![__Position Control__, with the __Follow__ algorithm (red)](images/CinemachineBody.png)
 
-Cinemachine includes these behaviors for moving a CmCamera:
+Cinemachine includes these behaviors for moving a CinemachineCamera:
 
 - [__None__](CinemachineBodyDoNothing.md): Does not procedurally move the Camera.
 - [__Follow__](CinemachineFollow.md): Moves in a fixed relationship to the __Tracking Target__.

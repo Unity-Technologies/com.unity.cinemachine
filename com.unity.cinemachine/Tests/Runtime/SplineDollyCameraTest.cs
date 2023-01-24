@@ -13,7 +13,7 @@ namespace Tests.Runtime
     [TestFixture]
     public class SplineDollyCameraTest : CinemachineRuntimeFixtureBase
     {
-        CmCamera m_CmCam;
+        CinemachineCamera m_CmCam;
         CinemachineSplineDolly m_Dolly;
         SplineContainer m_SplineContainer;
 
@@ -26,7 +26,7 @@ namespace Tests.Runtime
             m_SplineContainer.Spline = SplineFactory.CreateLinear(
                 new List<float3> { new(7, 1, -6), new(13, 1, -6), new(13, 1, 1), new(7, 1, 1) }, true);
             
-            m_CmCam = CreateGameObject("CM vcam", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_CmCam = CreateGameObject("CM vcam", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_CmCam.Follow = CreatePrimitive(PrimitiveType.Cube).transform;
             m_Dolly = m_CmCam.gameObject.AddComponent<CinemachineSplineDolly>();
             m_Dolly.Spline = m_SplineContainer;

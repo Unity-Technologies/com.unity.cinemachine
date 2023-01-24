@@ -1,6 +1,6 @@
 # Spline Dolly
 
-This CmCamera __Position Control__ behavior restricts the CmCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
+This CinemachineCamera __Position Control__ behavior restricts the CinemachineCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
 
 Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards a point on the spline that is closest to the __Tracking Target__, or in some custom way that you devise.
 
@@ -27,9 +27,9 @@ Enable __Automatic Dolly__ to move the camera to a position on the spline in an 
 | | _Follow Target No Roll_ | Use the up vector from the Tracking target’s transform, but with the roll zeroed out. |
 | __Automatic Dolly__ || Controls whether automatic motion along the spline occurs. |
 | __Method__ || Controls how automatic dollying occurs. You can implement your own extensions to this by writing a custom SplineAutoDolly.ISplineAutoDolly class. |
-| | _None_ | No automatic dollying occurs. You must control the CmCamera's position on the spline by setting PathPosition. |
+| | _None_ | No automatic dollying occurs. You must control the CinemachineCamera's position on the spline by setting PathPosition. |
 | | _Fixed Speed_ | Camera travels along the path at a fixed speed, which you can set. |
-| | _Nearest Point To Target_ | Positions the camera at the point on the spline that is closest to the Tracking Target's position. A Tracking Target is required in the CmCamera. You can also specify an offset from the closest point, to tune the camera's position. |
+| | _Nearest Point To Target_ | Positions the camera at the point on the spline that is closest to the Tracking Target's position. A Tracking Target is required in the CinemachineCamera. You can also specify an offset from the closest point, to tune the camera's position. |
 | __Damping__ || Controls how aggressively the camera moves to its desired point on the spline. Smaller values produce a faster-moving camera, larger values produce a heavier, more slowly-moving camera. |
 | | _Position_ | How aggressively the camera tries to maintain the offset along the x, y, or z directions in spline local space. X represents the axis that is perpendicular to the spline. Use this to smooth out imperfections in the path. This may move the camera off the spline. Y represents the axis that is defined by the spline-local up direction. Use this to smooth out imperfections in the path. This may move the camera off the spline. Z represents the axis that is parallel to the spline. This won't move the camera off the spline. |
 | | _Angular Damping_ | How to set the virtual camera's Up vector. This will affect the screen composition, because the camera Aim behaviours will always try to respect the Up direction. This is only used when the Camera Up is taking its value from the Tracking Target |

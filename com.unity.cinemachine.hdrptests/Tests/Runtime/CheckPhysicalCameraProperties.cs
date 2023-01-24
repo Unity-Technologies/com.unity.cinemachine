@@ -10,7 +10,7 @@ namespace Tests.HDRP.Runtime
     public class CheckPhysicalCameraProperties : CinemachineHDRPFixtureBase
     {
         Camera m_Cam;
-        CmCamera m_CmCamera;
+        CinemachineCamera m_CmCamera;
 
         [SetUp]
         public override void SetUp()
@@ -20,8 +20,8 @@ namespace Tests.HDRP.Runtime
             m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
             m_Cam.usePhysicalProperties = true;
             
-            var vcamHolder = CreateGameObject("CM Vcam", typeof(CmCamera), typeof(CinemachineConfiner2D));
-            m_CmCamera = vcamHolder.GetComponent<CmCamera>();
+            var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineConfiner2D));
+            m_CmCamera = vcamHolder.GetComponent<CinemachineCamera>();
         }
 
         [TearDown]

@@ -90,7 +90,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CmCamera");
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
@@ -301,7 +301,7 @@ namespace Cinemachine.Editor
 
             if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(
-                    "CmCamera settings changes made during Play Mode will be "
+                    "CinemachineCamera settings changes made during Play Mode will be "
                         + "propagated back to the scene when Play Mode is exited.",
                     MessageType.Info);
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera that post-processes
+    /// An add-on module for CinemachineCamera that post-processes
     /// the final position of the camera. It will confine the camera's position 
     /// to the volume specified in the Bounding Volume field.
     /// </summary>

@@ -163,7 +163,7 @@ namespace Cinemachine.Editor
         {
             if (!IsPropertyExcluded("Header"))
             {
-                UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CmCamera");
+                UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
                 DrawInputProviderButtonInInspector();

@@ -7,10 +7,10 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a deprecated component.  Use CmCamera instead.
+    /// This is a deprecated component.  Use CinemachineCamera instead.
     /// </summary>
     [Obsolete("This is deprecated. Use Create -> Cinemachine -> FreeLook camera, or " +
-        "create a CmCamera with appropriate components")]
+        "create a CinemachineCamera with appropriate components")]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]

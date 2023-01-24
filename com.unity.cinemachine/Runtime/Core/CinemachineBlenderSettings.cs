@@ -12,7 +12,7 @@ namespace Cinemachine
     public sealed class CinemachineBlenderSettings : ScriptableObject
     {
         /// <summary>
-        /// Container specifying how two specific CmCamera blend together.
+        /// Container specifying how two specific CinemachineCameras blend together.
         /// </summary>
         [Serializable]
         public struct CustomBlend
