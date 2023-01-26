@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,12 @@ namespace Cinemachine.Examples
         
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
         public Transform AimTarget;
+        
+        [Tooltip("If set, the ImpulseSource will be triggered everytime we fire.")]
+        public CinemachineImpulseSource ImpulseSource;
+
+        [Tooltip("The force of the impulse when firing.")]
+        public float ImpulseForce;
 
         float m_LastFireTime;
 
@@ -56,6 +63,7 @@ namespace Cinemachine.Examples
                 var go = Instantiate(BulletPrefab, transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
                 if (go.TryGetComponent<SimpleBullet>(out var b))
                     b.Fire(fwd, BulletSpeed);
+                ImpulseSource.GenerateImpulseWithForce(ImpulseForce);
                 Destroy(go, TimeInAir);
             }
         }
