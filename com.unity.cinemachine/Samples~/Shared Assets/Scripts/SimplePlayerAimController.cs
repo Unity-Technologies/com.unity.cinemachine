@@ -15,10 +15,10 @@ namespace Cinemachine.Examples
         public float RotationDamping = 0.2f;
 
         [Tooltip("Horizontal Rotation.")]
-        public InputAxis HorizontalLook = new InputAxis { Range = new Vector2(-180, 180), Wrap = true };
+        public InputAxis HorizontalLook = new () { Range = new Vector2(-180, 180), Wrap = true, Recentering = InputAxisRecentering.Default };
 
         [Tooltip("Vertical Rotation.  Value is -1..1. Controls the forward movement")]
-        public InputAxis VerticalLook = new InputAxis { Range = new Vector2(-70, 70) };
+        public InputAxis VerticalLook = new () { Range = new Vector2(-70, 70), Recentering = InputAxisRecentering.Default };
 
 
         SimplePlayerController m_Controller;
@@ -29,8 +29,8 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref HorizontalLook, Name = "Horizontal Look", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref VerticalLook, Name = "Vertical Look", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref HorizontalLook, Name = "Horizontal Look", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref VerticalLook, Name = "Vertical Look", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
         }
 
         void OnValidate()
@@ -87,6 +87,8 @@ namespace Cinemachine.Examples
                 if (m_Controller.IsMoving)
                     RecenterPlayer(RotationDamping);
             }
+            VerticalLook.DoRecentering(Time.deltaTime);
+            HorizontalLook.DoRecentering(Time.deltaTime);
         }
     }
 }

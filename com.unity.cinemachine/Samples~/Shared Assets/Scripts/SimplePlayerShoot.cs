@@ -11,7 +11,7 @@ namespace Cinemachine.Examples
         public float TimeInAir = 3;
         public float PlayerRotationTime = 0.2f;
 
-        public InputAxis Fire = new InputAxis { Range = new Vector2(0, 1) };
+        public InputAxis Fire = new () { Range = new Vector2(0, 1), Recentering = new InputAxisRecentering { Enabled = true } };
         
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
         public Transform AimTarget;
@@ -24,7 +24,7 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Fire, Name = "Fire" });
+            axes.Add(new () { DrivenAxis = () => ref Fire, Name = "Fire" });
         }
 
         void OnValidate()
@@ -58,6 +58,8 @@ namespace Cinemachine.Examples
                     b.Fire(fwd, BulletSpeed);
                 Destroy(go, TimeInAir);
             }
+
+            Fire.DoRecentering(Time.deltaTime);
         }
     }
 }

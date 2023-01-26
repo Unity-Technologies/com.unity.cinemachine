@@ -21,13 +21,13 @@ namespace Cinemachine.Examples
 
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the turning amount")]
-        public InputAxis MoveX = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveX = new () { Range = new Vector2(-1, 1), Recentering = InputAxisRecentering.Default };
 
         [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward acceleration")]
-        public InputAxis MoveZ = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveZ = new () { Range = new Vector2(-1, 1), Recentering = InputAxisRecentering.Default };
 
         [Tooltip("Braking.  Value is 0 to 1. Controls the braking force")]
-        public InputAxis Brake = new InputAxis { Range = new Vector2(0, 1) };
+        public InputAxis Brake = new () { Range = new Vector2(0, 1), Recentering = new InputAxisRecentering { Enabled = true }};
 
 
         /// Report the available input axes to the input axis controller.
@@ -36,9 +36,9 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Brake, Name = "Brake" });
+            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref Brake, Name = "Brake" });
         }
 
         void Update()
@@ -67,6 +67,10 @@ namespace Cinemachine.Examples
             UpdateWheel(FrontRightWheelCollider, FrontRightWhee);
             UpdateWheel(RearRightWheelCollider, RearRightWheel);
             UpdateWheel(RearLeftWheelCollider, RearLeftWheel);
+
+            MoveX.DoRecentering(Time.deltaTime);
+            MoveZ.DoRecentering(Time.deltaTime);
+            Brake.DoRecentering(Time.deltaTime);
         }
 
         void UpdateWheel(WheelCollider c, Transform t)

@@ -211,48 +211,54 @@ MonoBehaviour:
   PlayerIndex: -1
   AutoEnableInputs: 1
   Controllers:
-  - Name: Look Orbit X
-    Owner: {fileID: 364965559}
-    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 4
-    LegacyInput: Mouse X
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 0.2
-      DecelTime: 0.2
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
-  - Name: Look Orbit Y
-    Owner: {fileID: 364965559}
-    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: -4
-    LegacyInput: Mouse Y
-    LegacyGain: -200
-    Control:
-      InputValue: 0
-      AccelTime: 0.2
-      DecelTime: 0.2
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
-  - Name: Orbit Scale
-    Owner: {fileID: 364965559}
-    InputAction: {fileID: 0}
-    Gain: 4
-    LegacyInput: 
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 0
-      DecelTime: 0
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
+  - rid: 1242842372733927428
+  - rid: 1242842372733927429
+  - rid: 1242842372733927430
+  references:
+    version: 2
+    RefIds:
+    - rid: 1242842372733927428
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Look Orbit X
+        Owner: {fileID: 364965559}
+        Enabled: 1
+        InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+        Gain: 4
+        LegacyInput: Mouse X
+        LegacyGain: 200
+        Control:
+          InputValue: 0
+          AccelTime: 0.2
+          DecelTime: 0.2
+    - rid: 1242842372733927429
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Look Orbit Y
+        Owner: {fileID: 364965559}
+        Enabled: 1
+        InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+        Gain: -4
+        LegacyInput: Mouse Y
+        LegacyGain: -200
+        Control:
+          InputValue: 0
+          AccelTime: 0.2
+          DecelTime: 0.2
+    - rid: 1242842372733927430
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Orbit Scale
+        Owner: {fileID: 364965559}
+        Enabled: 1
+        InputAction: {fileID: 0}
+        Gain: 4
+        LegacyInput: 
+        LegacyGain: 200
+        Control:
+          InputValue: 0
+          AccelTime: 0
+          DecelTime: 0
 --- !u!114 &364965557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,7 +295,7 @@ MonoBehaviour:
     IgnoreY: 0
   Damping: {x: 0.5, y: 0.5}
   Composition:
-    ScreenPosition: {x: 0, y: 0.031542122}
+    ScreenPosition: {x: 0.027755141, y: 0.07502794}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -334,18 +340,30 @@ MonoBehaviour:
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 3
   VerticalAxis:
     Value: 17.5
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
   RadialAxis:
     Value: 1
     Center: 1
     Range: {x: 1, y: 5}
     Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
 --- !u!114 &364965560
 MonoBehaviour:
@@ -394,7 +412,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
-  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
+  m_LocalRotation: {x: 0.18512899, y: -0.013614278, z: 0.0025649858, w: 0.9826166}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -560,7 +578,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.20065226, y: 0.00000001685645, z: -0.0000000034524996, w: 0.97966254}
+  m_LocalRotation: {x: 0.18512899, y: -0.013614278, z: 0.0025649858, w: 0.9826166}
   m_LocalPosition: {x: 0, y: 34.571, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -904,6 +922,10 @@ PrefabInstance:
     - target: {fileID: 8077383552022060413, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: SprintJumpSpeed
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8077383552022060413, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: MoveX.Recentering.Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3503563561542408220, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}

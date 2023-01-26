@@ -131,24 +131,40 @@ MonoBehaviour:
     Center: 0
     Range: {x: -1, y: 1}
     Wrap: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
     Restrictions: 0
   MoveZ:
     Value: 0
     Center: 0
     Range: {x: -1, y: 1}
     Wrap: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
     Restrictions: 0
   Jump:
     Value: 0
     Center: 0
     Range: {x: 0, y: 1}
     Wrap: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
     Restrictions: 0
   Sprint:
     Value: 0
     Center: 0
     Range: {x: 0, y: 1}
     Wrap: 0
+    Recentering:
+      Enabled: 1
+      Wait: 0
+      Time: 0
     Restrictions: 0
 --- !u!114 &4417643423713582276
 MonoBehaviour:
@@ -165,59 +181,66 @@ MonoBehaviour:
   PlayerIndex: -1
   AutoEnableInputs: 1
   Controllers:
-  - Name: Move X
-    Owner: {fileID: 8077383552022060413}
-    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Horizontal
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 0
-      DecelTime: 0
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0
-  - Name: Move Z
-    Owner: {fileID: 8077383552022060413}
-    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Vertical
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 0
-      DecelTime: 0
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0
-  - Name: Jump
-    Owner: {fileID: 8077383552022060413}
-    InputAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Jump
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 0.1
-      DecelTime: 0.1
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0.01
-  - Name: Sprint
-    Owner: {fileID: 8077383552022060413}
-    InputAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Fire3
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 0
-      DecelTime: 0
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0.01
+  - rid: 1242842372733927424
+  - rid: 1242842372733927425
+  - rid: 1242842372733927426
+  - rid: 1242842372733927427
+  references:
+    version: 2
+    RefIds:
+    - rid: 1242842372733927424
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Move X
+        Owner: {fileID: 8077383552022060413}
+        Enabled: 1
+        InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+        Gain: 4
+        LegacyInput: Horizontal
+        LegacyGain: 200
+        Control:
+          InputValue: 0
+          AccelTime: 0
+          DecelTime: 0
+    - rid: 1242842372733927425
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Move Z
+        Owner: {fileID: 8077383552022060413}
+        Enabled: 1
+        InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+        Gain: 4
+        LegacyInput: Vertical
+        LegacyGain: 200
+        Control:
+          InputValue: 0
+          AccelTime: 0
+          DecelTime: 0
+    - rid: 1242842372733927426
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Jump
+        Owner: {fileID: 8077383552022060413}
+        Enabled: 1
+        InputAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+        Gain: 4
+        LegacyInput: Jump
+        LegacyGain: 200
+        Control:
+          InputValue: 0
+          AccelTime: 0
+          DecelTime: 0
+    - rid: 1242842372733927427
+      type: {class: InputAxisController/Controller, ns: Cinemachine, asm: com.unity.cinemachine}
+      data:
+        Name: Sprint
+        Owner: {fileID: 8077383552022060413}
+        Enabled: 1
+        InputAction: {fileID: 0}
+        Gain: 4
+        LegacyInput: 
+        LegacyGain: 200
+        Control:
+          InputValue: 0
+          AccelTime: 0
+          DecelTime: 0
