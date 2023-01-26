@@ -13,14 +13,13 @@ namespace Cinemachine.Examples
         {
             if (DoIt && Prefab != null)
             {
-                var rootPos = transform.position;
-                var rot = transform.rotation;
+                var spawner = transform;
                 for (int i = 0; i < Amount; ++i)
                 {
                     var a = Random.Range(0, 360);
                     var pos = new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a));
-                    pos = rootPos + pos * Mathf.Sqrt(Random.Range(0.0f, 1.0f)) * Radius;
-                    Instantiate(Prefab, pos, rot, transform.parent);
+                    pos = spawner.position + pos * (Mathf.Sqrt(Random.Range(0.0f, 1.0f)) * Radius);
+                    Instantiate(Prefab, pos, spawner.rotation, spawner.parent);
                 }
             }
 
