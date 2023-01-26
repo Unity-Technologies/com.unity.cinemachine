@@ -122,9 +122,9 @@ namespace Cinemachine
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale", AxisIndex = 2 });
+            axes.Add(new () { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale" });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>

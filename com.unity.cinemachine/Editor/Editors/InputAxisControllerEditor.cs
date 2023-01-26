@@ -117,8 +117,9 @@ namespace Cinemachine.Editor
                     if (axis.Name.Contains("Look"))
                     {
                         actionName = "Player/Look";
-                        inputName = axis.AxisIndex == 0 ? "Mouse X" : (axis.AxisIndex == 1 ? "Mouse Y" : "");
-                        invertY = axis.AxisIndex == 1;
+                        inputName = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.X ? "Mouse X" 
+                            : (axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y ? "Mouse Y" : "");
+                        invertY = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y;
                         controller.Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f };
                     }
 #if false
@@ -131,7 +132,8 @@ namespace Cinemachine.Editor
                     if (axis.Name.Contains("Move"))
                     {
                         actionName = "Player/Move";
-                        inputName = axis.AxisIndex == 0 ? "Horizontal" : (axis.AxisIndex == 1 ? "Vertical" : "");
+                        inputName = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.X ? "Horizontal" 
+                            : (axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y ? "Vertical" : "");
                         controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
                     }
                     if (axis.Name.Contains("Fire"))

@@ -25,9 +25,20 @@ namespace Cinemachine
             /// <summary>The name to display for the axis</summary>
             public string Name;
 
-            /// <summary>Indicates what axis is being driven: 0=x, 1=y, 2=z.  
-            /// Used only for setting up default values.</summary>
-            public int AxisIndex;
+            /// <summary>
+            /// This provides a hint about the intended usage of the axis.
+            /// </summary>
+            public enum Hints 
+            { 
+                /// <summary>No hint</summary>
+                Default, 
+                /// <summary>Mapping should be the first dimension of a multi-dimensional action</summary>
+                X, 
+                /// <summary>Mapping should be the second dimension of a multi-dimensional action</summary>
+                Y
+            };
+            /// <summary>Indicates what is the intended usage of the axis.  
+            public Hints Hint;
         }
 
         /// <summary>

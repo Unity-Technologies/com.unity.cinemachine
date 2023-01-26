@@ -98,9 +98,9 @@ namespace Cinemachine
         /// <summary>
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisSource"/>
         /// </summary>
-        List<IInputAxisSource.AxisDescriptor> m_Axes = new List<IInputAxisSource.AxisDescriptor>();
-        List<IInputAxisSource> m_AxisOwners = new List<IInputAxisSource>();
-        List<IInputAxisResetSource> m_AxisResetters = new List<IInputAxisResetSource>();
+        List<IInputAxisSource.AxisDescriptor> m_Axes = new ();
+        List<IInputAxisSource> m_AxisOwners = new ();
+        List<IInputAxisResetSource> m_AxisResetters = new ();
 
         void OnValidate()
         {
@@ -223,8 +223,8 @@ namespace Cinemachine
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (c.InputAction != null && c.InputAction.action != null)
                 {
-                    var axis = i < m_Axes.Count ? m_Axes[i].AxisIndex : 0;
-                    var inputValue = ReadInputAction(c, axis) * c.Gain;
+                    var hint = i < m_Axes.Count ? m_Axes[i].Hint : 0;
+                    var inputValue = ReadInputAction(c, hint) * c.Gain;
 #if ENABLE_LEGACY_INPUT_MANAGER
                     if (legacyInputValue == 0 || inputValue != 0)
 #endif
@@ -290,7 +290,7 @@ namespace Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        float ReadInputAction(Controller c, int axis)
+        float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
         {
             ResolveActionForPlayer(c, PlayerIndex);
 
@@ -305,10 +305,10 @@ namespace Cinemachine
 
             if (c.m_CachedAction != null)
             {
-                switch (axis)
+                switch (hint)
                 {
-                    case 0: return c.m_CachedAction.ReadValue<Vector2>().x;
-                    case 1: return c.m_CachedAction.ReadValue<Vector2>().y;
+                    case IInputAxisSource.AxisDescriptor.Hints.X: return c.m_CachedAction.ReadValue<Vector2>().x;
+                    case IInputAxisSource.AxisDescriptor.Hints.Y: return c.m_CachedAction.ReadValue<Vector2>().y;
                     default: return c.m_CachedAction.ReadValue<float>();
                 }
             }

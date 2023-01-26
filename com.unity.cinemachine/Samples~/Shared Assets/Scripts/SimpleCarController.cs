@@ -36,9 +36,9 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveX, Name = "Move X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveZ, Name = "Move Z", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Brake, Name = "Brake",  AxisIndex = 2 });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Brake, Name = "Brake" });
         }
 
         void Update()

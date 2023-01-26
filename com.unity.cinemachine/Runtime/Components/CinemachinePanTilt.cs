@@ -80,8 +80,8 @@ namespace Cinemachine
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref PanAxis, Name = "Look X (Pan)", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref TiltAxis, Name = "Look Y (Tilt)", AxisIndex = 1 });
+            axes.Add(new () { DrivenAxis = () => ref PanAxis, Name = "Look X (Pan)", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref TiltAxis, Name = "Look Y (Tilt)", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
