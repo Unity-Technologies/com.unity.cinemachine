@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -192,7 +192,7 @@ MonoBehaviour:
     DissipationMode: 2
     DissipationDistance: 1000
     PropagationSpeed: 100
-  DefaultVelocity: {x: 0, y: -7, z: 0}
+  DefaultVelocity: {x: 0, y: 1, z: 0}
 --- !u!4 &285243875
 Transform:
   m_ObjectHideFlags: 0
@@ -201,7 +201,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 285243873}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 100}
+  m_LocalPosition: {x: 0, y: 0.5, z: 50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -254,8 +254,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Prefab: {fileID: 6009620850635295375, guid: a4ce03c076ba24a4d8ce31f2b2ef00b0, type: 3}
-  Radius: 100
-  Amount: 2000
+  Radius: 40
+  Amount: 200
   DoIt: 1
 --- !u!1 &833963181
 GameObject:
@@ -416,7 +416,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833963181}
-  m_LocalRotation: {x: 0.17066856, y: -0.008431909, z: 0.0014605442, w: 0.98529136}
+  m_LocalRotation: {x: 0.17067201, y: -0.005632813, z: 0.00097569515, w: 0.9853113}
   m_LocalPosition: {x: 0, y: 9.8, z: -14.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -468,9 +468,9 @@ MonoBehaviour:
   UseCameraSpace: 1
   ReactionSettings:
     m_SecondaryNoise: {fileID: 11400000, guid: e9ce97b7a206dc64d90931ea044e0c72, type: 2}
-    AmplitudeGain: 1
-    FrequencyGain: 2
-    Duration: 1
+    AmplitudeGain: 2
+    FrequencyGain: 1
+    Duration: 2
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!114 &1622520786
 MonoBehaviour:
@@ -567,7 +567,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1622520784}
-  m_LocalRotation: {x: 0.17066856, y: -0.008431909, z: 0.0014605442, w: 0.98529136}
+  m_LocalRotation: {x: 0.17067201, y: -0.005632813, z: 0.00097569515, w: 0.9853113}
   m_LocalPosition: {x: 0, y: 9.8, z: -14.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -726,7 +726,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ButtonText: Impulse Wave
+  ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
   HelpText: 'This scene shows a global impulse listener on the main camera, and impulse
