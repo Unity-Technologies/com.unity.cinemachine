@@ -73,8 +73,8 @@ namespace Cinemachine
             ReferenceFrame = ReferenceFrames.ParentObject;
         }
 
-        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
-        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0 };
+        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxisRecentering.Default };
+        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Recentering = InputAxisRecentering.Default };
         
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
@@ -123,6 +123,10 @@ namespace Cinemachine
         {
             if (!IsValid)
                 return;
+
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
+                m_ResetHandler?.Invoke();
+
             var referenceFrame = GetReferenceFrame(curState.ReferenceUp);
             var rot = referenceFrame * Quaternion.Euler(TiltAxis.Value, PanAxis.Value, 0);
             curState.RawOrientation = rot;
@@ -132,6 +136,9 @@ namespace Cinemachine
                     m_PreviousCameraRotation * Vector3.forward, 
                     rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
+                
+            PanAxis.DoRecentering(deltaTime);
+            TiltAxis.DoRecentering(deltaTime);
         }
 
         /// <summary>
@@ -165,7 +172,7 @@ namespace Cinemachine
         
         void SetAxesForRotation(Quaternion targetRot)
         {
-            m_ResetHandler?.Invoke(); // Reset the axes
+            m_ResetHandler?.Invoke(); // cancel recentering
 
             var up = VcamState.ReferenceUp;
             var fwd = GetReferenceFrame(up) * Vector3.forward;

@@ -42,6 +42,11 @@ namespace Cinemachine.Editor
                             property.FindPropertyRelative(() => def.Wrap)}, 
                     new [] { GUIContent.none, null });
 
+                rect.y += height + EditorGUIUtility.standardVerticalSpacing;
+
+                if ((flags & (int)InputAxis.RestrictionFlags.NoRecentering) == 0)
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Recentering));
+
                 GUI.enabled = enabled;
                 --EditorGUI.indentLevel;
             }
@@ -69,7 +74,12 @@ namespace Cinemachine.Editor
             var lineHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             var height = lineHeight;
             if (property != null && property.isExpanded)
+            {
                 height += 3 * lineHeight;
+                var flags = property.FindPropertyRelative(() => def.Restrictions).intValue;
+                if ((flags & (int)InputAxis.RestrictionFlags.NoRecentering) == 0)
+                    height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative(() => def.Recentering));
+            }
             return height - EditorGUIUtility.standardVerticalSpacing;
         }
 
@@ -102,6 +112,7 @@ namespace Cinemachine.Editor
                 { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5 }});
             rangeContainer.Add(new Label(wrapProp.displayName) 
                 { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
+            var recentering = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
 
             var flagsProp = property.FindPropertyRelative(() => def.Restrictions);
             TrackFlags(flagsProp);
@@ -113,6 +124,7 @@ namespace Cinemachine.Editor
                 var rangeDisabled = (flags & (int)InputAxis.RestrictionFlags.RangeIsDriven) != 0;
                 centerField.SetEnabled(!rangeDisabled);
                 rangeContainer.SetEnabled(!rangeDisabled);
+                recentering.SetVisible((flags & (int)InputAxis.RestrictionFlags.NoRecentering) == 0);
             }
 
             return ux;

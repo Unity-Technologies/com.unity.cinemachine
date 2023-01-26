@@ -112,7 +112,6 @@ namespace Cinemachine.Editor
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
                     var inputName = "";
                     var invertY = false;
-                    controller.Recentering = InputAxisRecenteringSettings.Default;
 
                     if (axis.Name.Contains("Look"))
                     {
@@ -134,19 +133,16 @@ namespace Cinemachine.Editor
                         actionName = "Player/Move";
                         inputName = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.X ? "Horizontal" 
                             : (axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y ? "Vertical" : "");
-                        controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
                     }
                     if (axis.Name.Contains("Fire"))
                     {
                         actionName = "Player/Fire";
                         inputName = "Fire";
-                        controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
                     }
                     if (axis.Name.Contains("Jump"))
                     {
                         actionName = "UI/RightClick"; // best we can do
                         inputName = "Jump";
-                        controller.Recentering = new InputAxisRecenteringSettings { Enabled = true };
                     }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -162,6 +158,7 @@ namespace Cinemachine.Editor
                     controller.LegacyInput = inputName;
                     controller.LegacyGain = 200 * (invertY ? -1 : 1);
 #endif
+                    controller.Enabled = true;
                 };
             }
         }

@@ -145,6 +145,7 @@ namespace Tests.Editor
                 Range = range,
                 Center = 0,
                 Wrap = wrap,
+                Recentering = new () { Enabled = enabled, Time = recenteringTime, Wait = 0 }
             };
             axis.Validate();
             
@@ -155,20 +156,13 @@ namespace Tests.Editor
                 DecelTime = decelTime,
             };
 
-            var recentering = new InputAxisRecenteringSettings
-            {
-                Enabled = enabled,
-                Time = recenteringTime,
-                Wait = 0,
-            };
-            
             control.Validate();
 
             var driver = new InputAxisDriver();
             foreach (var result in expectedResults)
             {
                 driver.ProcessInput(k_DeltaTime, ref axis, ref control);
-                driver.DoRecentering(k_DeltaTime, ref axis, recentering);
+                axis.Recentering.DoRecentering(k_DeltaTime, ref axis);
                 control.InputValue = 0; // cancel input, so recentering can start
                 CinemachineCore.CurrentUnscaledTimeTimeOverride += k_DeltaTime; // control time for deterministic tests
                 UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, result);
