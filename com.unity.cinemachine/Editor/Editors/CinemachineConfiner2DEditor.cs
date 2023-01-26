@@ -90,7 +90,7 @@ namespace Cinemachine.Editor
             { 
                 text = "Invalidate Lens Cache",
                 tooltip = "Invalidates the lens cache, so a new one is computed next frame.  " 
-                    + "Call this when when the Lens of the camera changes."
+                    + "Call this when the Lens of the camera changes."
             });
 
             ux.Add(new Button(() => 
