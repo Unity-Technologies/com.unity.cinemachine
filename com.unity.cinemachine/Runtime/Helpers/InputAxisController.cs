@@ -95,7 +95,6 @@ namespace Cinemachine
 #endif
 
         /// <summary>This list is dynamically populated based on the discovered axes</summary>
-        [SerializeReference]
         public List<Controller> Controllers = new List<Controller>();
 
         /// <summary>
@@ -108,7 +107,8 @@ namespace Cinemachine
         void OnValidate()
         {
             for (var i = 0; i < Controllers.Count; ++i)
-                Controllers[i].Control.Validate();
+                if (Controllers[i] != null)
+                    Controllers[i].Control.Validate();
         }
 
         void Reset()

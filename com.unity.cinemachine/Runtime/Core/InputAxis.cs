@@ -109,7 +109,9 @@ namespace Cinemachine
             /// <summary>Range and center are not editable by the user</summary>
             RangeIsDriven = 1, 
             /// <summary>Indicates that recentering this axis is not possible</summary>
-            NoRecentering = 2
+            NoRecentering = 2,
+            /// <summary>Axis represents a momentary spring-back control</summary>
+            Momentary = 4,
         };
 
         /// <summary>Some usages require restricted functionality.  This is set here.</summary>
@@ -162,6 +164,13 @@ namespace Cinemachine
         /// <summary>Call this to manage recentering axis value to axis center.</summary>
         /// <param name="deltaTime">Current deltaTime, or -1 for immediate recentering</param>
         public void DoRecentering(float deltaTime) => Recentering.DoRecentering(deltaTime, ref this);
+
+        /// <summary>An InputAxis set up as a normalized momentary control ranging from -1...1 with Center = 0</summary>
+        public static InputAxis DefaultMomentary => new () 
+        { 
+            Range = new Vector2(-1, 1), 
+            Restrictions = RestrictionFlags.NoRecentering | RestrictionFlags.Momentary
+        };
     }
 
     /// <summary>Defines the settings for automatic recentering</summary>
@@ -206,7 +215,7 @@ namespace Cinemachine
         /// <param name="axis">The axis to recenter</param>
         public void DoRecentering(float deltaTime, ref InputAxis axis)
         {
-            if ((axis.Restrictions & InputAxis.RestrictionFlags.NoRecentering) != 0)
+            if ((axis.Restrictions & (InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.Momentary)) != 0)
                 return;
             if (Enabled && deltaTime < 0)
             {
@@ -313,26 +322,39 @@ namespace Cinemachine
             ref InputAxisControl control)
         {
             var input = control.InputValue;
-            if (deltaTime < 0)
-                m_CurrentSpeed = 0;
+            var dampTime = Mathf.Abs(input) < Mathf.Abs(m_CurrentSpeed) ? control.DecelTime : control.AccelTime;
+            if ((axis.Restrictions & InputAxis.RestrictionFlags.Momentary) == 0)
+            {
+                if (deltaTime < 0)
+                    m_CurrentSpeed = 0;
+                else
+                {
+                    m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime, deltaTime);
+
+                    // Decelerate to the end points of the range if not wrapping
+                    float range = axis.Range.y - axis.Range.x;
+                    if (!axis.Wrap && control.DecelTime > k_Epsilon && range > UnityVectorExtensions.Epsilon)
+                    {
+                        var v0 = axis.ClampValue(axis.Value);
+                        var v = axis.ClampValue(v0 + m_CurrentSpeed * deltaTime);
+                        var d = (m_CurrentSpeed > 0) ? axis.Range.y - v : v - axis.Range.x;
+                        if (d < (0.1f * range) && Mathf.Abs(m_CurrentSpeed) > k_Epsilon)
+                            m_CurrentSpeed = Damper.Damp(v - v0, control.DecelTime, deltaTime) / deltaTime;
+                    }
+                }
+                axis.Value = axis.ClampValue(axis.Value + m_CurrentSpeed * deltaTime);
+            }
             else
             {
-                var dampTime = Mathf.Abs(input) < Mathf.Abs(m_CurrentSpeed) ? control.DecelTime : control.AccelTime;
-                m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime, deltaTime);
-
-                // Decelerate to the end points of the range if not wrapping
-                float range = axis.Range.y - axis.Range.x;
-                if (!axis.Wrap && control.DecelTime > k_Epsilon && range > UnityVectorExtensions.Epsilon)
+                // For momentary controls, input is the desired offset from center
+                if (deltaTime < 0)
+                    axis.Value = axis.Center;
+                else
                 {
-                    var v0 = axis.ClampValue(axis.Value);
-                    var v = axis.ClampValue(v0 + m_CurrentSpeed * deltaTime);
-                    var d = (m_CurrentSpeed > 0) ? axis.Range.y - v : v - axis.Range.x;
-                    if (d < (0.1f * range) && Mathf.Abs(m_CurrentSpeed) > k_Epsilon)
-                        m_CurrentSpeed = Damper.Damp(v - v0, control.DecelTime, deltaTime) / deltaTime;
+                    var desiredValue =  axis.ClampValue(input + axis.Center);
+                    axis.Value += Damper.Damp(desiredValue - axis.Value, dampTime, deltaTime);
                 }
             }
-            // GML FIXME - this is wrong.  deltaTime is affecting bool inputs
-            axis.Value = axis.ClampValue(axis.Value + m_CurrentSpeed * deltaTime);
         }
 
         /// <summary>Reset axis to at-rest state</summary>

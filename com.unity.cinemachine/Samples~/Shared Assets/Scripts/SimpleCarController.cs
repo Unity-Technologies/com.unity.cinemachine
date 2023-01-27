@@ -21,13 +21,13 @@ namespace Cinemachine.Examples
 
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the turning amount")]
-        public InputAxis MoveX = new () { Range = new Vector2(-1, 1), Recentering = InputAxisRecentering.Default };
+        public InputAxis MoveX = InputAxis.DefaultMomentary;
 
         [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward acceleration")]
-        public InputAxis MoveZ = new () { Range = new Vector2(-1, 1), Recentering = InputAxisRecentering.Default };
+        public InputAxis MoveZ = InputAxis.DefaultMomentary;
 
         [Tooltip("Braking.  Value is 0 to 1. Controls the braking force")]
-        public InputAxis Brake = new () { Range = new Vector2(0, 1), Recentering = new InputAxisRecentering { Enabled = true }};
+        public InputAxis Brake = InputAxis.DefaultMomentary;
 
 
         /// Report the available input axes to the input axis controller.
@@ -67,10 +67,6 @@ namespace Cinemachine.Examples
             UpdateWheel(FrontRightWheelCollider, FrontRightWhee);
             UpdateWheel(RearRightWheelCollider, RearRightWheel);
             UpdateWheel(RearLeftWheelCollider, RearLeftWheel);
-
-            MoveX.DoRecentering(Time.deltaTime);
-            MoveZ.DoRecentering(Time.deltaTime);
-            Brake.DoRecentering(Time.deltaTime);
         }
 
         void UpdateWheel(WheelCollider c, Transform t)

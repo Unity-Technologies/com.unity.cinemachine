@@ -112,6 +112,7 @@ namespace Cinemachine.Editor
 #pragma warning restore CS0219 // Variable is assigned but its value is never used
                     var inputName = "";
                     var invertY = false;
+                    bool isMomentary = (axis.DrivenAxis().Restrictions & InputAxis.RestrictionFlags.Momentary) != 0;
 
                     if (axis.Name.Contains("Look"))
                     {
@@ -152,11 +153,11 @@ namespace Cinemachine.Editor
                             "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").FirstOrDefault(
                                 x => x.name == actionName);
                     }
-                    controller.Gain = 4f * (invertY ? -1 : 1);
+                    controller.Gain = isMomentary ? 1 : 4f * (invertY ? -1 : 1);
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
                     controller.LegacyInput = inputName;
-                    controller.LegacyGain = 200 * (invertY ? -1 : 1);
+                    controller.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
 #endif
                     controller.Enabled = true;
                 };

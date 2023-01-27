@@ -11,7 +11,7 @@ namespace Cinemachine.Examples
         public float TimeInAir = 3;
         public float PlayerRotationTime = 0.2f;
 
-        public InputAxis Fire = new () { Range = new Vector2(0, 1), Recentering = new InputAxisRecentering { Enabled = true } };
+        public InputAxis Fire = InputAxis.DefaultMomentary;
         
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
         public Transform AimTarget;
@@ -58,8 +58,6 @@ namespace Cinemachine.Examples
                     b.Fire(fwd, BulletSpeed);
                 Destroy(go, TimeInAir);
             }
-
-            Fire.DoRecentering(Time.deltaTime);
         }
     }
 }

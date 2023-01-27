@@ -17,7 +17,7 @@ namespace Cinemachine.Examples
         [Tooltip("Horizontal Rotation.")]
         public InputAxis HorizontalLook = new () { Range = new Vector2(-180, 180), Wrap = true, Recentering = InputAxisRecentering.Default };
 
-        [Tooltip("Vertical Rotation.  Value is -1..1. Controls the forward movement")]
+        [Tooltip("Vertical Rotation.")]
         public InputAxis VerticalLook = new () { Range = new Vector2(-70, 70), Recentering = InputAxisRecentering.Default };
 
 

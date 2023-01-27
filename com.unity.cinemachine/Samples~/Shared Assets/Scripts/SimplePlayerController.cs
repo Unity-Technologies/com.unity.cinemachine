@@ -29,16 +29,16 @@ namespace Cinemachine.Examples
 
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
-        public InputAxis MoveX = new () { Range = new Vector2(-1, 1), Recentering = InputAxisRecentering.Default };
+        public InputAxis MoveX = InputAxis.DefaultMomentary;
 
         [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward movement")]
-        public InputAxis MoveZ = new () { Range = new Vector2(-1, 1), Recentering = InputAxisRecentering.Default };
+        public InputAxis MoveZ = InputAxis.DefaultMomentary;
 
         [Tooltip("Jump movement.  Value is 0 or 1. Controls the vertical movement")]
-        public InputAxis Jump = new () { Range = new Vector2(0, 1), Recentering = new InputAxisRecentering { Enabled = true } };
+        public InputAxis Jump = InputAxis.DefaultMomentary;
 
-        [Tooltip("Sprint movement.  Value is 0 or 1. If true, then is sprinting")]
-        public InputAxis Sprint = new () { Range = new Vector2(0, 1), Recentering = new InputAxisRecentering { Enabled = true } };
+        [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
+        public InputAxis Sprint = InputAxis.DefaultMomentary;
 
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
@@ -132,11 +132,6 @@ namespace Cinemachine.Examples
             }
 
             PostUpdate?.Invoke();
-
-            MoveX.DoRecentering(Time.deltaTime);
-            MoveZ.DoRecentering(Time.deltaTime);
-            Jump.DoRecentering(Time.deltaTime);
-            Sprint.DoRecentering(Time.deltaTime);
         }
 
         Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
