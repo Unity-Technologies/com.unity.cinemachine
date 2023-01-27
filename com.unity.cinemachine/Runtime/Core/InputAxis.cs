@@ -243,7 +243,7 @@ namespace Cinemachine
                 Value = Center;
                 CancelRecentering();
             }
-            else if (m_ForceRecenter || (Recentering.Enabled && CurrentTime - m_LastValueChangeTime > Recentering.Wait))
+            else if (m_ForceRecenter || (Recentering.Enabled && CurrentTime - m_LastValueChangeTime >= Recentering.Wait))
             {
                 var v = ClampValue(Value);
                 var c = Center;
