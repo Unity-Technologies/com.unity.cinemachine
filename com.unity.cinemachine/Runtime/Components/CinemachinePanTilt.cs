@@ -73,8 +73,8 @@ namespace Cinemachine
             ReferenceFrame = ReferenceFrames.ParentObject;
         }
 
-        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxisRecentering.Default };
-        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Recentering = InputAxisRecentering.Default };
+        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
+        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
         
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
@@ -136,9 +136,10 @@ namespace Cinemachine
                     m_PreviousCameraRotation * Vector3.forward, 
                     rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
-                
-            PanAxis.DoRecentering(deltaTime);
-            TiltAxis.DoRecentering(deltaTime);
+            
+            var gotInput = PanAxis.TrackValueChange() | TiltAxis.TrackValueChange();
+            PanAxis.DoRecentering(deltaTime, gotInput);
+            TiltAxis.DoRecentering(deltaTime, gotInput);
         }
 
         /// <summary>

@@ -236,16 +236,6 @@ namespace Cinemachine
                 c.Driver.ProcessInput(deltaTime, ref m_Axes[i].DrivenAxis(), ref c.Control);
                 gotInput |= Mathf.Abs(c.Control.InputValue) > 0.001f;
             }
-#if false //GML TODO - FIXME
-            // Do recentering
-            for (int i = 0; i < Controllers.Count; ++i)
-            {
-                // If we got any input, cancel all recentering
-                if (gotInput && Controllers[i].Recentering.Wait > 0.01f)
-                    Controllers[i].Driver.CancelRecentering();
-                Controllers[i].Driver.DoRecentering(deltaTime, ref m_Axes[i].DrivenAxis(), Controllers[i].Recentering);
-            }
-#endif
         }
 
         Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisSource owner)

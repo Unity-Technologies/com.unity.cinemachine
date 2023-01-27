@@ -15,10 +15,10 @@ namespace Cinemachine.Examples
         public float RotationDamping = 0.2f;
 
         [Tooltip("Horizontal Rotation.")]
-        public InputAxis HorizontalLook = new () { Range = new Vector2(-180, 180), Wrap = true, Recentering = InputAxisRecentering.Default };
+        public InputAxis HorizontalLook = new () { Range = new Vector2(-180, 180), Wrap = true, Recentering = InputAxis.RecenteringSettings.Default };
 
         [Tooltip("Vertical Rotation.")]
-        public InputAxis VerticalLook = new () { Range = new Vector2(-70, 70), Recentering = InputAxisRecentering.Default };
+        public InputAxis VerticalLook = new () { Range = new Vector2(-70, 70), Recentering = InputAxis.RecenteringSettings.Default };
 
 
         SimplePlayerController m_Controller;
@@ -87,8 +87,9 @@ namespace Cinemachine.Examples
                 if (m_Controller.IsMoving)
                     RecenterPlayer(RotationDamping);
             }
-            VerticalLook.DoRecentering(Time.deltaTime);
-            HorizontalLook.DoRecentering(Time.deltaTime);
+            var gotInput = VerticalLook.TrackValueChange() | HorizontalLook.TrackValueChange();
+            VerticalLook.DoRecentering(Time.deltaTime, gotInput);
+            HorizontalLook.DoRecentering(Time.deltaTime, gotInput);
         }
     }
 }

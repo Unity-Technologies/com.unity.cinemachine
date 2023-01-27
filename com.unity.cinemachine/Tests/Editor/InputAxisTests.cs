@@ -162,7 +162,8 @@ namespace Tests.Editor
             foreach (var result in expectedResults)
             {
                 driver.ProcessInput(k_DeltaTime, ref axis, ref control);
-                axis.Recentering.DoRecentering(k_DeltaTime, ref axis);
+                axis.TrackValueChange();
+                axis.DoRecentering(k_DeltaTime, false);
                 control.InputValue = 0; // cancel input, so recentering can start
                 CinemachineCore.CurrentUnscaledTimeTimeOverride += k_DeltaTime; // control time for deterministic tests
                 UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, result);

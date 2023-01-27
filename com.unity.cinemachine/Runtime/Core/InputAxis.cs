@@ -96,9 +96,38 @@ namespace Cinemachine
         [Tooltip("If set, then the axis will wrap around at the min/max values, forming a loop")]
         public bool Wrap;
 
+        /// <summary>Defines the settings for automatic recentering</summary>
+        [Serializable] 
+        public struct RecenteringSettings
+        {
+            /// <summary>If set, will enable automatic recentering of the axis</summary>
+            [Tooltip("If set, will enable automatic recentering of the axis")]
+            public bool Enabled;
+
+            /// <summary>If no user input has been detected on the axis for this man
+            /// seconds, recentering will begin.</summary>
+            [Tooltip("If no user input has been detected on the axis for this many "
+                + "seconds, recentering will begin.")]
+            public float Wait;
+
+            /// <summary>How long it takes to reach center once recentering has started</summary>
+            [Tooltip("How long it takes to reach center once recentering has started.")]
+            public float Time;
+
+            /// <summary>Default value</summary>
+            public static RecenteringSettings Default => new() { Wait = 1, Time = 2 };
+
+            /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
+            public void Validate()
+            {
+                Wait = Mathf.Max(0, Wait);
+                Time = Mathf.Max(0, Time); 
+            }
+        }
+        
         /// <summary>Controls automatic recentering of axis</summary>
         [FoldoutWithEnabledButton]
-        public InputAxisRecentering Recentering;
+        public RecenteringSettings Recentering;
         
         /// <summary>Some usages require restricted functionality.  
         /// The possible restrictions are defined here.</summary>
@@ -156,14 +185,10 @@ namespace Cinemachine
         /// <summary>Reset axis to at-rest state</summary>
         public void Reset()
         {
-            Recentering.CancelRecentering();
+            CancelRecentering();
             if (Recentering.Enabled && (Restrictions & RestrictionFlags.NoRecentering) == 0)
                 Value = ClampValue(Center);
         }
-
-        /// <summary>Call this to manage recentering axis value to axis center.</summary>
-        /// <param name="deltaTime">Current deltaTime, or -1 for immediate recentering</param>
-        public void DoRecentering(float deltaTime) => Recentering.DoRecentering(deltaTime, ref this);
 
         /// <summary>An InputAxis set up as a normalized momentary control ranging from -1...1 with Center = 0</summary>
         public static InputAxis DefaultMomentary => new () 
@@ -171,36 +196,7 @@ namespace Cinemachine
             Range = new Vector2(-1, 1), 
             Restrictions = RestrictionFlags.NoRecentering | RestrictionFlags.Momentary
         };
-    }
-
-    /// <summary>Defines the settings for automatic recentering</summary>
-    [Serializable] 
-    public struct InputAxisRecentering
-    {
-        /// <summary>If set, will enable automatic recentering of the axis</summary>
-        [Tooltip("If set, will enable automatic recentering of the axis")]
-        public bool Enabled;
-
-        /// <summary>If no user input has been detected on the axis for this man
-        /// seconds, recentering will begin.</summary>
-        [Tooltip("If no user input has been detected on the axis for this many "
-            + "seconds, recentering will begin.")]
-        public float Wait;
-
-        /// <summary>How long it takes to reach center once recentering has started</summary>
-        [Tooltip("How long it takes to reach center once recentering has started.")]
-        public float Time;
-
-        /// <summary>Default value</summary>
-        public static InputAxisRecentering Default => new() { Wait = 1, Time = 2 };
-
-        /// <summary>Call from OnValidate: Make sure the fields are sensible</summary>
-        public void Validate()
-        {
-            Wait = Mathf.Max(0, Wait);
-            Time = Mathf.Max(0, Time); 
-        }
-  
+        
         /// Internal state for recentering
         const float k_Epsilon = UnityVectorExtensions.Epsilon;
         float m_RecenteringVelocity;
@@ -210,29 +206,49 @@ namespace Cinemachine
 
         static float CurrentTime => CinemachineCore.CurrentUnscaledTime;
 
-        /// <summary>Call this to manage recentering axis value to axis center.</summary>
-        /// <param name="deltaTime">Current deltaTime, or -1 for immediate recentering</param>
-        /// <param name="axis">The axis to recenter</param>
-        public void DoRecentering(float deltaTime, ref InputAxis axis)
+        /// <summary>
+        /// Call this before calling DoRecentering.  Will track any vlue changes so that the recentering clock
+        /// is updated properly.
+        /// </summary>
+        /// <returns>True if value changed.  This value can be used to cancel recentering when multiple
+        /// input axes are coupled.</returns>
+        public bool TrackValueChange()
         {
-            if ((axis.Restrictions & (InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.Momentary)) != 0)
-                return;
-            if (Enabled && deltaTime < 0)
-            {
-                axis.Value = axis.Center;
-                m_ForceRecenter = true;
-            }
-            var v = axis.ClampValue(axis.Value);
+            var v = ClampValue(Value);
             if (v != m_LastValue)
             {
                 m_LastValueChangeTime = CurrentTime;
                 m_LastValue = v;
+                return true;
             }
-            if (m_ForceRecenter || (Enabled && CurrentTime - m_LastValueChangeTime > Wait))
+            return false;
+        }
+
+        /// <summary>Call this to manage recentering axis value to axis center.
+        /// This assumes that TrackValueChange() has beed called already this frame.</summary>
+        /// <param name="deltaTime">Current deltaTime, or -1 for immediate recentering</param>
+        /// <param name="forceCancel">If true, cancel any recentering currently in progress and reset the timer.</param>
+        public void DoRecentering(float deltaTime, bool forceCancel)
+        {
+            if ((Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
+                return;
+
+            if (forceCancel)
             {
-                var c = axis.ClampValue(axis.Center);
+                CancelRecentering();
+                return;
+            }
+            if (m_ForceRecenter || (Recentering.Enabled && deltaTime < 0))
+            {
+                Value = Center;
+                CancelRecentering();
+            }
+            else if (m_ForceRecenter || (Recentering.Enabled && CurrentTime - m_LastValueChangeTime > Recentering.Wait))
+            {
+                var v = ClampValue(Value);
+                var c = Center;
                 var distance = Mathf.Abs(c - v);
-                if (distance < k_Epsilon || Time < k_Epsilon)
+                if (distance < k_Epsilon || Recentering.Time < k_Epsilon)
                 {
                     v = c;
                     m_RecenteringVelocity = 0;
@@ -240,19 +256,19 @@ namespace Cinemachine
                 else
                 {
                     // Determine the direction
-                    float r = axis.Range.y - axis.Range.x;
-                    if (axis.Wrap && distance > r * 0.5f)
+                    float r = Range.y - Range.x;
+                    if (Wrap && distance > r * 0.5f)
                         v += Mathf.Sign(c - v) * r;
 
                     // Damp our way there
                     v = Mathf.SmoothDamp(
                         v, c, ref m_RecenteringVelocity,
-                        Time * 0.5f, 9999, deltaTime);
+                        Recentering.Time * 0.5f, 9999, deltaTime);
                 }
-                axis.Value = m_LastValue = axis.ClampValue(v);
+                Value = m_LastValue = ClampValue(v);
 
                 // Are we there yet?
-                if (Mathf.Abs(axis.Value - c) < k_Epsilon)
+                if (Mathf.Abs(Value - c) < k_Epsilon)
                     m_ForceRecenter = false;
             }
         }
@@ -265,6 +281,7 @@ namespace Cinemachine
         public void CancelRecentering()
         {
             m_LastValueChangeTime = CurrentTime;
+            m_LastValue = ClampValue(Value);
             m_RecenteringVelocity = 0;
             m_ForceRecenter = false;
         }
