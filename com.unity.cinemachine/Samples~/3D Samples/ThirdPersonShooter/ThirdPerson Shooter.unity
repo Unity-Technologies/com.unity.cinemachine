@@ -1013,11 +1013,15 @@ MonoBehaviour:
     would be fired from the center of the player (Player Aiming Core GameObject).\n 
     When the crosshair and the red dot does not align, this means there is an object
     between the player and the aim point indicated by the crosshair. The crosshair
-    is pulled apart to indicate this.\n- When sprinting, the RoadieRun Camera is
-    active.\n  This camera takes away the crosshair from the player, moves closer,
-    widens the Field of View, and adds a more intense noise.\n\n\nThe enemies will
-    target the player when the player moves close to them. To visualize the proximity,
-    you can enable the Mesh Renderers on ProximityTriggers."
+    is pulled apart to indicate this.\n  When in this mode and firing, the camera
+    gets a slight recoil like noise. This is achieved with an CinemachineImpulseSource
+    added to the Player Aiming Core gameobject, which is trigger on fire. The Third
+    Person Aim Camera reacts to the impulse, because it has an CinemachineImpulseListener.\n-
+    When sprinting, the RoadieRun Camera is active.\n  This camera takes away the
+    crosshair from the player, moves closer, widens the Field of View, and adds a
+    more intense noise.\n\n\nThe enemies will target the player when the player moves
+    close to them. To visualize the proximity, you can enable the Mesh Renderers
+    on ProximityTriggers."
 --- !u!4 &1040083249
 Transform:
   m_ObjectHideFlags: 0
@@ -1766,11 +1770,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_RootOrder
-<<<<<<< HEAD
       value: 4
-=======
-      value: 3
->>>>>>> dev/restore-shooter-roadie-run
       objectReference: {fileID: 0}
     - target: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2221,14 +2221,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
   m_PrefabInstance: {fileID: 1802572047}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD
-=======
 --- !u!95 &1802572049 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 7887234737240387235, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
   m_PrefabInstance: {fileID: 1802572047}
   m_PrefabAsset: {fileID: 0}
->>>>>>> dev/restore-shooter-roadie-run
 --- !u!1001 &1972898889
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2621,7 +2618,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3691321985918014319, guid: 0f86c2826e1739146a853e769a639a57, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3691321985918014319, guid: 0f86c2826e1739146a853e769a639a57, type: 3}
       propertyPath: m_LocalPosition.x
