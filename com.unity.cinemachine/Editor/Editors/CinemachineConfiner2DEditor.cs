@@ -35,7 +35,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
-                "The camera window too big for the confiner. Enable the Oversize Window option.",
+                "The camera window is too big for the confiner. Enable the Oversize Window option.",
                 HelpBoxMessageType.Info));
             
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
