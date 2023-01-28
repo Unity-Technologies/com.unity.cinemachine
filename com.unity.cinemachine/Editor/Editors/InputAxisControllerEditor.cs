@@ -51,7 +51,7 @@ namespace Cinemachine.Editor
             var controllersProperty = serializedObject.FindProperty(() => Target.Controllers);
             list.BindProperty(controllersProperty);
 
-            m_ListIsEmptyMessage = ux.AddChild(new HelpBox("No applicable CM components found.  Must have one of: "
+            m_ListIsEmptyMessage = ux.AddChild(new HelpBox("No applicable components found.  Must have one of: "
                     + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisSource)), HelpBoxMessageType.Warning));
 
             m_ListCount = controllersProperty.arraySize;
