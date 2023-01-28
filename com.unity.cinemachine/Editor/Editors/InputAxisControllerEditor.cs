@@ -10,9 +10,6 @@ namespace Cinemachine.Editor
     {
         InputAxisController Target => target as InputAxisController;
 
-        VisualElement m_ListIsEmptyMessage;
-        int m_ListCount;
-
         void OnDisable()
         {
             EditorApplication.update -= UpdateControllersStatus;
@@ -51,27 +48,14 @@ namespace Cinemachine.Editor
             var controllersProperty = serializedObject.FindProperty(() => Target.Controllers);
             list.BindProperty(controllersProperty);
 
-            m_ListIsEmptyMessage = ux.AddChild(new HelpBox("No applicable components found.  Must have one of: "
+            var istIsEmptyMessage = ux.AddChild(new HelpBox("No applicable components found.  Must have one of: "
                     + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisSource)), HelpBoxMessageType.Warning));
 
-            m_ListCount = controllersProperty.arraySize;
             TrackControllerCount(controllersProperty);
             list.TrackPropertyValue(controllersProperty, TrackControllerCount);
+            void TrackControllerCount(SerializedProperty p) => istIsEmptyMessage.SetVisible(p.arraySize == 0);
 
             return ux;
-        }
-
-        void TrackControllerCount(SerializedProperty property)
-        {
-            m_ListIsEmptyMessage.SetVisible(property.arraySize == 0);
-
-            // New elements should be collapsed.  GML todo: how to do this less intrusively?
-            if (property.arraySize != m_ListCount)
-            {
-                m_ListCount = property.arraySize;
-                for (int i = 0; i < m_ListCount; ++i)
-                    property.GetArrayElementAtIndex(i).isExpanded = false;
-            }
         }
 
         [InitializeOnLoad]
@@ -158,13 +142,13 @@ namespace Cinemachine.Editor
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
             overlay.Add(new PropertyField(property.FindPropertyRelative(() => m_def.LegacyInput), "") 
-                { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight, marginLeft = 4}} );
+                { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight, marginLeft = 6}} );
 #endif
             var foldout = new Foldout()
             {
                 text = property.displayName,
                 tooltip = property.tooltip,
-                value = property.isExpanded
+                value = false //property.isExpanded
             };
             var childProperty = property.Copy();
             var endProperty = childProperty.GetEndProperty();
