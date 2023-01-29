@@ -144,12 +144,9 @@ namespace Cinemachine.Editor
             overlay.Add(new PropertyField(property.FindPropertyRelative(() => m_def.LegacyInput), "") 
                 { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight, marginLeft = 6}} );
 #endif
-            var foldout = new Foldout()
-            {
-                text = property.displayName,
-                tooltip = property.tooltip,
-                value = false //property.isExpanded
-            };
+            var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip };
+            foldout.BindProperty(property);
+
             var childProperty = property.Copy();
             var endProperty = childProperty.GetEndProperty();
             childProperty.NextVisible(true);
