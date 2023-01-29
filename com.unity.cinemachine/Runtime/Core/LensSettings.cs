@@ -143,7 +143,8 @@ namespace Cinemachine
         /// if the aspect ratios differ</summary>
         public Camera.GateFitMode GateFit;
 
-        [SerializeField] Vector2 m_SensorSize;
+        // internal for inspector only
+        [SerializeField] internal Vector2 m_SensorSize;
 
         /// <summary>Distance from the camera lens at which focus is sharpest.</summary>
         public float FocusDistance;
