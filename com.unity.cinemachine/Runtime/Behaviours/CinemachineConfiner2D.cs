@@ -77,6 +77,14 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Damping")]
         public float Damping;
 
+        /// <summary>
+        /// Automatically validates the lens cache. If needed it recalculates the lens cache.
+        /// Calculating the lens cache is fast, but causes allocations.
+        /// For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache().
+        /// </summary>
+        [Tooltip("Automatically validates the lens cache. If needed it recalculates the lens cache. " +
+            "Calculating the lens cache is fast, but causes allocations. \n" +
+            "For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache().")]
         public bool AutomaticLensSync;
 
         /// <summary>

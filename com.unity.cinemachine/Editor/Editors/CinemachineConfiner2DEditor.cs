@@ -34,7 +34,9 @@ namespace Cinemachine.Editor
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticLensSync)));
+            var automaticLensSyncProp = serializedObject.FindProperty(() => Target.AutomaticLensSync);
+            ux.Add(new PropertyField(automaticLensSyncProp));
+
             var confiner = Target; // so it gets captured in the lambdas
             var invalidateLensCacheButton = new Button(() =>
             {
@@ -46,8 +48,11 @@ namespace Cinemachine.Editor
                 tooltip = "Invalidates the lens cache, so a new one is computed next frame.  "
                     + "Call this when the Lens of the camera changes."
             };
-            ux.Add(invalidateLensCacheButton); // TODO: hook up to AutomaticLensSync on change value for set visibile!
-            
+            ux.Add(invalidateLensCacheButton);
+            invalidateLensCacheButton.SetVisible(!automaticLensSyncProp.boolValue);
+            ux.TrackPropertyValue(automaticLensSyncProp, TrackAutomaticLensSync);
+            void TrackAutomaticLensSync(SerializedProperty p) => invalidateLensCacheButton.SetVisible(!p.boolValue);
+
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
                 HelpBoxMessageType.Info));
