@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
             void TrackVolume(SerializedProperty p)
             {
                 var c = p.objectReferenceValue;
-                boundsHelp.SetVisible(!(c is PolygonCollider2D || c is BoxCollider2D || c is CompositeCollider2D));
+                boundsHelp.SetVisible(!(c is null || c is PolygonCollider2D || c is BoxCollider2D || c is CompositeCollider2D));
 
                 var cc = c as CompositeCollider2D;
                 polygonsHelp.SetVisible(cc != null && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);

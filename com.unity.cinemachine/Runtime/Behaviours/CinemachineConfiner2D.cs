@@ -461,6 +461,9 @@ namespace Cinemachine
 
         internal bool IsCameraOversizedForTheConfiner()
         {
+            if (BoundingShape2D == null)
+                return false;
+            
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
             foreach (var extra in allExtraStates)
             {
