@@ -421,7 +421,7 @@ namespace Cinemachine
                 return true;
             }
             
-            bool IsLensValid(float frustumHeight, float aspectRatio)
+            bool IsLensValid(float aspectRatio, float frustumHeight)
             {
                 return Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
                     Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
