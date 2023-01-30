@@ -78,11 +78,13 @@ namespace Cinemachine
         public float Damping;
 
         /// <summary>
-        /// Automatically validates the lens cache. If needed it recalculates the lens cache.
+        /// Automatically resizes the confiner to match current lens settings of the camera.             
+        /// This validates and recalculates the lens cache if needed.
         /// Calculating the lens cache is fast, but causes allocations.
-        /// For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache().
+        /// For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache(). 
         /// </summary>
-        [Tooltip("Automatically validates the lens cache. If needed it recalculates the lens cache. " +
+        [Tooltip("Automatically resizes the confiner to match current lens settings of the camera. \n" +
+            "This validates and recalculates the lens cache if needed. " +
             "Calculating the lens cache is fast, but causes allocations. \n" +
             "For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache().")]
         public bool AutomaticLensSync;
