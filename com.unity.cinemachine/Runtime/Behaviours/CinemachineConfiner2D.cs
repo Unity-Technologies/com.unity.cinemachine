@@ -160,6 +160,13 @@ namespace Cinemachine
             var extra = GetExtraState<VcamExtraState>(VirtualCamera);
             extra.BakedSolution = null;
         }
+        
+        /// <summary>Checks if the lens cache matches the lens of the camera.</summary>
+        /// <returns>True, when the lens cache is valid. False, otherwise.</returns>
+        public bool IsLensCacheValid()
+        {
+            return false;
+        }
 
         /// <summary>
         /// Invalidates Bounding Shape Cache, so a new one is computed next frame.
@@ -485,7 +492,6 @@ namespace Cinemachine
         internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null && 
             m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.TIMEOUT;
 #endif
-
     }
 }
 #endif

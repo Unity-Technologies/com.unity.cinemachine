@@ -59,10 +59,13 @@ namespace Cinemachine.Editor
                 HelpBoxMessageType.Warning));
             
             var confiner = Target; // so it gets captured in the lambdas
-            UpdateBakingProgress();
-            ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
-            void UpdateBakingProgress()
+            UpdateDynamicUIElements();
+            ux.schedule.Execute(UpdateDynamicUIElements).Every(250); // GML todo: is there a better way to do this?
+            void UpdateDynamicUIElements()
             {
+                if (!Target.IsLensCacheValid())
+                    Target.InvalidateLensCache();
+                
                 oversizedCameraHelp.SetVisible(false);
                 if (confiner == null)
                     return; // target deleted
