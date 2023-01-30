@@ -34,6 +34,20 @@ namespace Cinemachine.Editor
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticLensSync)));
+            var confiner = Target; // so it gets captured in the lambdas
+            var invalidateLensCacheButton = new Button(() =>
+            {
+                confiner.InvalidateLensCache();
+                EditorUtility.SetDirty(confiner);
+            })
+            {
+                text = "Invalidate Lens Cache",
+                tooltip = "Invalidates the lens cache, so a new one is computed next frame.  "
+                    + "Call this when the Lens of the camera changes."
+            };
+            ux.Add(invalidateLensCacheButton); // TODO: hook up to AutomaticLensSync on change value for set visibile!
+            
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
                 HelpBoxMessageType.Info));
@@ -58,7 +72,6 @@ namespace Cinemachine.Editor
                 + "or set the MaxWindowSize parameter to limit skeleton computation.",
                 HelpBoxMessageType.Warning));
             
-            var confiner = Target; // so it gets captured in the lambdas
             UpdateDynamicUIElements();
             ux.schedule.Execute(UpdateDynamicUIElements).Every(250); // GML todo: is there a better way to do this?
             void UpdateDynamicUIElements() 
@@ -81,17 +94,6 @@ namespace Cinemachine.Editor
                 bakeProgress.SetVisible(true);
                 bakeTimeout.SetVisible(timedOut);
             }
-
-            ux.Add(new Button(() => 
-            {
-                confiner.InvalidateLensCache();
-                EditorUtility.SetDirty(confiner);
-            })
-            { 
-                text = "Invalidate Lens Cache",
-                tooltip = "Invalidates the lens cache, so a new one is computed next frame.  " 
-                    + "Call this when the Lens of the camera changes."
-            });
 
             ux.Add(new Button(() => 
             {

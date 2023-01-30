@@ -77,6 +77,8 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Damping")]
         public float Damping;
 
+        public bool AutomaticLensSync;
+
         /// <summary>
         /// Settings to optimize computation and memory costs in the event that the
         /// window size is expected to be larger than will fit inside the confining shape.
@@ -196,7 +198,7 @@ namespace Cinemachine
                 var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 var currentFrustumHeight = CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
                 if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, 
-                        state.Lens.Aspect, currentFrustumHeight, out bool confinerStateChanged))
+                        state.Lens.Aspect, currentFrustumHeight, AutomaticLensSync, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -280,8 +282,8 @@ namespace Cinemachine
             public Matrix4x4 DeltaWorldToBaked; 
             public Matrix4x4 DeltaBakedToWorld;
 
-            float m_FrustumHeight;
-            float m_AspectRatio;
+            public float m_FrustumHeight;
+            public float m_AspectRatio;
             OversizeWindowSettings m_OversizeWindowSettings;
             internal float maxComputationTimePerFrameInSeconds;
 
@@ -313,12 +315,12 @@ namespace Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, 
-                float aspectRatio, float frustumHeight, 
+                float aspectRatio, float frustumHeight, bool autoUpdateLens,
                 out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
                 
-                if (IsValid(boundingShape2D, aspectRatio, frustumHeight, oversize))
+                if (IsValid(boundingShape2D, oversize) && (!autoUpdateLens || IsLensValid(aspectRatio, frustumHeight)))
                 {
                     // Advance confiner baking
                     if (ConfinerOven.State == ConfinerOven.BakingState.BAKING)
@@ -410,16 +412,19 @@ namespace Cinemachine
 
                 return true;
             }
+            
+            bool IsLensValid(float frustumHeight, float aspectRatio)
+            {
+                return Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
+                    Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
+            }
 
-            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, 
-                in float frustumHeight, in OversizeWindowSettings oversize)
+            bool IsValid(in Collider2D boundingShape2D, in OversizeWindowSettings oversize)
             {
                 return boundingShape2D != null && m_BoundingShape2D != null && 
                        m_BoundingShape2D == boundingShape2D && // same boundingShape?
                        OriginalPath != null && // first time?
                        ConfinerOven != null && // cache not empty? 
-                       Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon && // fov,orthosize,etc changed?
                        m_OversizeWindowSettings.Enabled == oversize.Enabled && // max ortho changed?
                        Mathf.Abs(m_OversizeWindowSettings.MaxWindowSize - oversize.MaxWindowSize) < UnityVectorExtensions.Epsilon;
             }
