@@ -61,7 +61,7 @@ namespace Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => SlowingDistance; // just an approximation - we don't know the time
+        public override float GetMaxDampTime() => SlowingDistance * 0.2f; // just an approximation - we don't know the time
 
         /// <summary>This is called to notify the extension that a target got warped,
         /// so that the extension can update its internal state to make the camera

@@ -32,4 +32,5 @@ Skeleton computation is the most resource-heavy part of the cache calculation, s
 |:---|:---|
 |Bounding Shape 2D|Set the 2D shape you want to confine the camera viewport to.|
 |Damping|Damping Is applied around corners to avoid jumps. Higher numbers are more gradual.|
+| __Slowing Distance__ | Size of the slow-down zone at the edge of the bounding shape.  When the camera is moving towards an edge and is within this distance of it, it will slow down gradually until the edge is reached. |
 |Max Window Size|To optimize computation and memory performance, set this to the largest view size that the camera is expected to have. The Confiner 2D does not compute a polygon cache for frustum sizes larger than this. This refers to the size in world units of the frustum at the confiner plane (for orthographic cameras, this is just the orthographic size). If set to 0, then Cinemachine ignores this parameter and calculates a polygon cache for all potential window sizes.|
