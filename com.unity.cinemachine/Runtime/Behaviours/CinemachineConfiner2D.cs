@@ -160,13 +160,6 @@ namespace Cinemachine
             var extra = GetExtraState<VcamExtraState>(VirtualCamera);
             extra.BakedSolution = null;
         }
-        
-        /// <summary>Checks if the lens cache matches the lens of the camera.</summary>
-        /// <returns>True, when the lens cache is valid. False, otherwise.</returns>
-        public bool IsLensCacheValid()
-        {
-            return false;
-        }
 
         /// <summary>
         /// Invalidates Bounding Shape Cache, so a new one is computed next frame.
@@ -184,12 +177,6 @@ namespace Cinemachine
         [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
         public void InvalidateCache() => InvalidateBoundingShapeCache();
 
-        /// <summary>Validates cache</summary>
-        /// <param name="cameraAspectRatio">Aspect ratio of camera.</param>
-        /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
-        public bool ValidateCache(float cameraAspectRatio) => 
-            m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, cameraAspectRatio, out _);
-
         const float k_CornerAngleThreshold = 10f;
         
         /// <summary>
@@ -205,16 +192,15 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                var aspectRatio = state.Lens.Aspect;
-                if (!m_ShapeCache.ValidateCache(
-                    BoundingShape2D, OversizeWindow, aspectRatio, out bool confinerStateChanged))
+                var oldCameraPos = state.GetCorrectedPosition();
+                var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
+                var currentFrustumHeight = CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
+                if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, 
+                        state.Lens.Aspect, currentFrustumHeight, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
                 
-                var oldCameraPos = state.GetCorrectedPosition();
-                var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-                var currentFrustumHeight = CalculateHalfFrustumHeight(state, cameraPosLocal.z);
                 // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
                 var bakedSpaceFrustumHeight = currentFrustumHeight * m_ShapeCache.DeltaWorldToBaked.lossyScale.x;
 
@@ -255,19 +241,19 @@ namespace Cinemachine
         /// Calculates half frustum height for orthographic or perspective camera.
         /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/> 
         /// </summary>
-        /// <param name="state">CameraState for checking if Orthographic or Perspective</param>
+        /// <param name="lens">Camera Lens for checking if Orthographic or Perspective</param>
         /// <param name="cameraPosLocalZ">camera's z pos in local space</param>
         /// <returns>Frustum height of the camera</returns>
-        static float CalculateHalfFrustumHeight(in CameraState state, in float cameraPosLocalZ)
+        static float CalculateHalfFrustumHeight(in LensSettings lens, in float cameraPosLocalZ)
         {
             float frustumHeight;
-            if (state.Lens.Orthographic)
-                frustumHeight = state.Lens.OrthographicSize;
+            if (lens.Orthographic)
+                frustumHeight = lens.OrthographicSize;
             else
             {
                 // distance between the collider's plane and the camera
                 float distance = cameraPosLocalZ;
-                frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
+                frustumHeight = distance * Mathf.Tan(lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
             }
 
             return Mathf.Abs(frustumHeight);
@@ -294,6 +280,7 @@ namespace Cinemachine
             public Matrix4x4 DeltaWorldToBaked; 
             public Matrix4x4 DeltaBakedToWorld;
 
+            float m_FrustumHeight;
             float m_AspectRatio;
             OversizeWindowSettings m_OversizeWindowSettings;
             internal float maxComputationTimePerFrameInSeconds;
@@ -325,12 +312,13 @@ namespace Cinemachine
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
-            public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, float aspectRatio,
+            public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, 
+                float aspectRatio, float frustumHeight, 
                 out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
-
-                if (IsValid(boundingShape2D, aspectRatio, oversize))
+                
+                if (IsValid(boundingShape2D, aspectRatio, frustumHeight, oversize))
                 {
                     // Advance confiner baking
                     if (ConfinerOven.State == ConfinerOven.BakingState.BAKING)
@@ -414,6 +402,7 @@ namespace Cinemachine
                 
                 ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
                 m_AspectRatio = aspectRatio;
+                m_FrustumHeight = frustumHeight;
                 m_BoundingShape2D = boundingShape2D;
                 m_OversizeWindowSettings = oversize;
 
@@ -422,13 +411,15 @@ namespace Cinemachine
                 return true;
             }
 
-            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in OversizeWindowSettings oversize)
+            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, 
+                in float frustumHeight, in OversizeWindowSettings oversize)
             {
                 return boundingShape2D != null && m_BoundingShape2D != null && 
                        m_BoundingShape2D == boundingShape2D && // same boundingShape?
                        OriginalPath != null && // first time?
                        ConfinerOven != null && // cache not empty? 
                        Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
+                       Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon && // fov,orthosize,etc changed?
                        m_OversizeWindowSettings.Enabled == oversize.Enabled && // max ortho changed?
                        Mathf.Abs(m_OversizeWindowSettings.MaxWindowSize - oversize.MaxWindowSize) < UnityVectorExtensions.Epsilon;
             }

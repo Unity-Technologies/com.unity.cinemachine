@@ -61,11 +61,8 @@ namespace Cinemachine.Editor
             var confiner = Target; // so it gets captured in the lambdas
             UpdateDynamicUIElements();
             ux.schedule.Execute(UpdateDynamicUIElements).Every(250); // GML todo: is there a better way to do this?
-            void UpdateDynamicUIElements()
+            void UpdateDynamicUIElements() 
             {
-                if (!Target.IsLensCacheValid())
-                    Target.InvalidateLensCache();
-                
                 oversizedCameraHelp.SetVisible(false);
                 if (confiner == null)
                     return; // target deleted
