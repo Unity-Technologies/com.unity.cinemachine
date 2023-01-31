@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add SplineAutoDolly.ISplineAutoDolly.Reset() method and SplineAutoDolly.Enabled flag.
 - Bugfix: AxisState was not respecting timescale == 0
 - CmCamera is now CinemachineCamera.
+- ImputAxis refactor for recentering and momentary axis support.
 - Confiner2D and Confiner3D support smooth stop at bounds edge.
 
 

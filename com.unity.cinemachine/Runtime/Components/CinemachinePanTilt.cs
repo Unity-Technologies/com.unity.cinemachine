@@ -73,15 +73,15 @@ namespace Cinemachine
             ReferenceFrame = ReferenceFrames.ParentObject;
         }
 
-        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
-        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0 };
+        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
+        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
         
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref PanAxis, Name = "Look X (Pan)", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref TiltAxis, Name = "Look Y (Tilt)", AxisIndex = 1 });
+            axes.Add(new () { DrivenAxis = () => ref PanAxis, Name = "Look X (Pan)", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref TiltAxis, Name = "Look Y (Tilt)", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
@@ -123,6 +123,10 @@ namespace Cinemachine
         {
             if (!IsValid)
                 return;
+
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
+                m_ResetHandler?.Invoke();
+
             var referenceFrame = GetReferenceFrame(curState.ReferenceUp);
             var rot = referenceFrame * Quaternion.Euler(TiltAxis.Value, PanAxis.Value, 0);
             curState.RawOrientation = rot;
@@ -132,6 +136,10 @@ namespace Cinemachine
                     m_PreviousCameraRotation * Vector3.forward, 
                     rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
+            
+            var gotInput = PanAxis.TrackValueChange() | TiltAxis.TrackValueChange();
+            PanAxis.DoRecentering(deltaTime, gotInput);
+            TiltAxis.DoRecentering(deltaTime, gotInput);
         }
 
         /// <summary>
@@ -165,7 +173,7 @@ namespace Cinemachine
         
         void SetAxesForRotation(Quaternion targetRot)
         {
-            m_ResetHandler?.Invoke(); // Reset the axes
+            m_ResetHandler?.Invoke(); // cancel recentering
 
             var up = VcamState.ReferenceUp;
             var fwd = GetReferenceFrame(up) * Vector3.forward;
