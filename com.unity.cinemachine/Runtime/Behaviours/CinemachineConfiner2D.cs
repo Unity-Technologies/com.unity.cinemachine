@@ -78,18 +78,6 @@ namespace Cinemachine
         public float Damping;
 
         /// <summary>
-        /// Automatically resizes the confiner to match current lens settings of the camera.             
-        /// This validates and recalculates the lens cache if needed.
-        /// Calculating the lens cache is fast, but causes allocations.
-        /// For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache(). 
-        /// </summary>
-        [Tooltip("Automatically resizes the confiner to match current lens settings of the camera. \n" +
-            "This validates and recalculates the lens cache if needed. " +
-            "Calculating the lens cache is fast, but causes allocations. \n" +
-            "For performance reasons, it is better to invalidate lens cache manually by calling InvalidateLensCache().")]
-        public bool AutomaticLensSync;
-
-        /// <summary>
         /// Settings to optimize computation and memory costs in the event that the
         /// window size is expected to be larger than will fit inside the confining shape.
         /// </summary>
@@ -208,7 +196,7 @@ namespace Cinemachine
                 var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
                 var currentFrustumHeight = CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
                 if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, 
-                        state.Lens.Aspect, currentFrustumHeight, AutomaticLensSync, out bool confinerStateChanged))
+                        state.Lens.Aspect, currentFrustumHeight, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -251,12 +239,14 @@ namespace Cinemachine
 
         /// <summary>
         /// Calculates half frustum height for orthographic or perspective camera.
-        /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/> 
+        /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/>.
+        /// 
+        /// Internal for editor. 
         /// </summary>
         /// <param name="lens">Camera Lens for checking if Orthographic or Perspective</param>
         /// <param name="cameraPosLocalZ">camera's z pos in local space</param>
         /// <returns>Frustum height of the camera</returns>
-        static float CalculateHalfFrustumHeight(in LensSettings lens, in float cameraPosLocalZ)
+        internal static float CalculateHalfFrustumHeight(in LensSettings lens, in float cameraPosLocalZ)
         {
             float frustumHeight;
             if (lens.Orthographic)
@@ -278,12 +268,12 @@ namespace Cinemachine
             public ConfinerOven.BakedSolution BakedSolution;
         };
         
-        ShapeCache m_ShapeCache; 
+        internal ShapeCache m_ShapeCache; // internal for editor
 
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
         /// </summary>
-        struct ShapeCache
+        internal struct ShapeCache
         {
             public ConfinerOven ConfinerOven;
             public List<List<Vector2>> OriginalPath;  // in baked space, not including offset
@@ -306,6 +296,7 @@ namespace Cinemachine
             public void Invalidate()
             {
                 m_AspectRatio = 0;
+                m_FrustumHeight = 0;
                 m_OversizeWindowSettings = new ();
                 DeltaBakedToWorld = DeltaWorldToBaked = Matrix4x4.identity;
 
@@ -313,6 +304,12 @@ namespace Cinemachine
                 OriginalPath = null;
 
                 ConfinerOven = null;
+            }
+            
+            public bool IsLensValid(float aspectRatio, float frustumHeight)
+            {
+                return Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
+                    Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
             }
 
             /// <summary>
@@ -325,12 +322,11 @@ namespace Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, 
-                float aspectRatio, float frustumHeight, bool autoUpdateLens,
-                out bool confinerStateChanged)
+                float aspectRatio, float frustumHeight, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
                 
-                if (IsValid(boundingShape2D, oversize) && (!autoUpdateLens || IsLensValid(aspectRatio, frustumHeight)))
+                if (IsValid(boundingShape2D, oversize))
                 {
                     // Advance confiner baking
                     if (ConfinerOven.State == ConfinerOven.BakingState.BAKING)
@@ -421,12 +417,6 @@ namespace Cinemachine
                 CalculateDeltaTransformationMatrix();
 
                 return true;
-            }
-            
-            bool IsLensValid(float aspectRatio, float frustumHeight)
-            {
-                return Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
-                    Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
             }
 
             bool IsValid(in Collider2D boundingShape2D, in OversizeWindowSettings oversize)

@@ -34,25 +34,7 @@ namespace Cinemachine.Editor
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            var automaticLensSyncProp = serializedObject.FindProperty(() => Target.AutomaticLensSync);
-            ux.Add(new PropertyField(automaticLensSyncProp));
-
-            var confiner = Target; // so it gets captured in the lambdas
-            var invalidateLensCacheButton = new Button(() =>
-            {
-                confiner.InvalidateLensCache();
-                EditorUtility.SetDirty(confiner);
-            })
-            {
-                text = "Invalidate Lens Cache",
-                tooltip = "Invalidates the lens cache, so a new one is computed next frame.  "
-                    + "Call this when the Lens of the camera changes."
-            };
-            ux.Add(invalidateLensCacheButton);
-            invalidateLensCacheButton.SetVisible(!automaticLensSyncProp.boolValue);
-            ux.TrackPropertyValue(automaticLensSyncProp, TrackAutomaticLensSync);
-            void TrackAutomaticLensSync(SerializedProperty p) => invalidateLensCacheButton.SetVisible(!p.boolValue);
-
+            
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
                 HelpBoxMessageType.Info));
@@ -76,6 +58,22 @@ namespace Cinemachine.Editor
                 + "\n\nTo fix this, reduce the number of points in the confining shape, "
                 + "or set the MaxWindowSize parameter to limit skeleton computation.",
                 HelpBoxMessageType.Warning));
+            
+            var confiner = Target; // so it gets captured in the lambdas
+
+            UpdateConfinerLensCache();
+            ux.schedule.Execute(UpdateConfinerLensCache).Every(10); // GML todo: is there a better way to do this?
+            void UpdateConfinerLensCache()
+            {
+                var cache = Target.m_ShapeCache;
+                var state = Target.VirtualCamera.State;
+                
+                var oldCameraPos = state.GetCorrectedPosition();
+                var cameraPosLocal = cache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
+                var currentFrustumHeight = CinemachineConfiner2D.CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
+                if (!cache.IsLensValid(state.Lens.Aspect, currentFrustumHeight))
+                    Target.InvalidateLensCache();
+            }
             
             UpdateDynamicUIElements();
             ux.schedule.Execute(UpdateDynamicUIElements).Every(250); // GML todo: is there a better way to do this?
