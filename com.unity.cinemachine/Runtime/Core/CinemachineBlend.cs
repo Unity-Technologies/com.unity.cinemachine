@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// Describes a blend between 2 CmCamera, and holds the current state of the blend.
+    /// Describes a blend between 2 CinemachineCameras, and holds the current state of the blend.
     /// </summary>
     public class CinemachineBlend
     {
@@ -77,7 +77,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Does the blend use a specific CmCamera?</summary>
+        /// <summary>Does the blend use a specific CinemachineCamera?</summary>
         /// <param name="cam">The camera to test</param>
         /// <returns>True if the camera is involved in the blend</returns>
         public bool Uses(ICinemachineCamera cam)

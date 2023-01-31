@@ -1,6 +1,6 @@
 # Cinemachine External Camera - (deprecated)
 
-**Note:** This component is **deprecated** in favour of using a normal CmCamera with _None_ in both __Position Control__ and __Rotation Control__.
+**Note:** This component is **deprecated** in favour of using a normal CinemachineCamera with _None_ in both __Position Control__ and __Rotation Control__.
 
 This component will expose a non-cinemachine camera to the cinemachine ecosystem, allowing it to participate in blends. Just add it as a component alongside an existing Unity Camera component. You will need to take steps (e.g. disabling the Camera component) to ensure that the Camera doesn't fight with the main Cinemachine Camera.
 

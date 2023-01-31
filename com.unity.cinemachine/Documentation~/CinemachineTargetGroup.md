@@ -5,11 +5,11 @@ Use Cinemachine Target Group to treat multiple GameObjects as a single Tracking 
 To create a Target Group:
 1. Add a CinemachineTargetGroup component to an empty GameObject.
 
-To create a CmCamera with a Target Group:
-1. In the Unity menu, choose __GameObject > Cinemachine > Target Group Camera__. <br/>Unity adds a new CmCamera and Target Group to the Scene. The __Follow__ and __Look At__ targets in the CmCamera refer to the new Target Group.
+To create a CinemachineCamera with a Target Group:
+1. In the Unity menu, choose __GameObject > Cinemachine > Target Group Camera__. <br/>Unity adds a new CinemachineCamera and Target Group to the Scene. The __Follow__ and __Look At__ targets in the CinemachineCamera refer to the new Target Group.
 
-To convert an existing CmCamera target to a target group:
-1. Select _Convert to TargetGroup_ from the popup menu to the right of the Tracking Target field in the CmCamera inspector
+To convert an existing CinemachineCamera target to a target group:
+1. Select _Convert to TargetGroup_ from the popup menu to the right of the Tracking Target field in the CinemachineCamera inspector
 
 
 To Populate a Target Group:

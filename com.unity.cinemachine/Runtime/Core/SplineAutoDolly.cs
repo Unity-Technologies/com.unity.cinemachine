@@ -10,9 +10,13 @@ namespace Cinemachine
     [Serializable]
     public struct SplineAutoDolly
     {
+        /// <summary>If set, will enable AutoDolly on a spline</summary>
+        [Tooltip("If set, will enable the selected automatic dolly along the spline")]
+        public bool Enabled;
+        
         /// <summary>This is the object that actually implements the AutoDolly</summary>
         [SerializeReference]
-        public ISplineAutoDolly Implementation;
+        public ISplineAutoDolly Method;
 
         /// <summary>
         /// Interface for procedural spline dolly.

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// An abstract representation of a mutator acting on a CmCamera
+    /// An abstract representation of a mutator acting on a CinemachineCamera
     /// </summary>
     [ExecuteAlways]
     public abstract class CinemachineComponentBase : MonoBehaviour
@@ -35,7 +35,7 @@ namespace Cinemachine
         /// </summary>
         protected virtual void OnEnable()
         {
-            var vcam = VirtualCamera as CmCamera;
+            var vcam = VirtualCamera as CinemachineCamera;
             if (vcam != null)
                 vcam.InvalidatePipelineCache();
         }
@@ -46,7 +46,7 @@ namespace Cinemachine
         /// </summary>
         protected virtual void OnDisable()
         {
-            var vcam = VirtualCamera as CmCamera;
+            var vcam = VirtualCamera as CinemachineCamera;
             if (vcam != null)
                 vcam.InvalidatePipelineCache();
         }

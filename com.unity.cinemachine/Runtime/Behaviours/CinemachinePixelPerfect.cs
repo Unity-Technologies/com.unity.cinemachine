@@ -5,7 +5,7 @@
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera that tweaks the orthographic size
+    /// An add-on module for CinemachineCamera that tweaks the orthographic size
     /// of the camera. It detects the presence of the Pixel Perfect Camera component and use the
     /// settings from that Pixel Perfect Camera to correct the orthographic size so that pixel art
     /// sprites would appear pixel perfect when the camera becomes live.
@@ -61,7 +61,7 @@ namespace Cinemachine
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera Camera that tweaks the orthographic size
+    /// An add-on module for CinemachineCamera Camera that tweaks the orthographic size
     /// of the camera. It detects the presence of the Pixel Perfect Camera component and use the
     /// settings from that Pixel Perfect Camera to correct the orthographic size so that pixel art
     /// sprites would appear pixel perfect when the camera becomes live.

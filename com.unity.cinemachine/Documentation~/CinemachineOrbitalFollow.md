@@ -1,6 +1,6 @@
 # Orbital Follow
 
-This CmCamera __Position Control__ behavior moves the Unity camera in a variable relationship to the CmCamera’s __Tracking Target__. If you add a [Cinemachine Input Axis Controller](CinemachineInputAxisController.md) behavior, the camera position can be driven by [player input](https://docs.unity3d.com/Manual/ConventionalGameInput.html), which allows the player to dynamically control the position of the camera relative to the target.
+This CinemachineCamera __Position Control__ behavior moves the Unity camera in a variable relationship to the CinemachineCamera’s __Tracking Target__. If you add a [Cinemachine Input Axis Controller](CinemachineInputAxisController.md) behavior, the camera position can be driven by [player input](https://docs.unity3d.com/Manual/ConventionalGameInput.html), which allows the player to dynamically control the position of the camera relative to the target.
 
 __Orbital Follow__ operates in 2 modes:
 - Sphere: In this mode, the camera is positioned at any point on a sphere surrounding the target.
@@ -8,7 +8,7 @@ __Orbital Follow__ operates in 2 modes:
 
 The exact position of the camera on the surface is determined by 3 axis values in the __Orbital Follow__ component: horizontal, vertical, and radius. Radius controls the scale, allowing the camera to move towards or away from the target. You can control these values from a custom script, or with an Animator, or by other means that you may devise.
 
-If you attach an input controller to the CmCamera, then the player can control the position of the camera on the defined surface using Unity's input controls. This allows the player to move the camera to any spot on the orbit surface around the target. 
+If you attach an input controller to the CinemachineCamera, then the player can control the position of the camera on the defined surface using Unity's input controls. This allows the player to move the camera to any spot on the orbit surface around the target. 
 
 ![Orbital Transposer](images/OrbitalFollowInspector.png)
 
@@ -17,10 +17,10 @@ If you attach an input controller to the CmCamera, then the player can control t
 | **Property:** || **Function:** |
 |:---|:---|:---|
 | __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. |
-| | _Lock To Target On Assign_ | Makes the orientation of the CmCamera match the local frame of the Tracking target, at the moment when the CmCamera is activated or when the target is assigned. This offset remains constant in world space. The camera doesn't rotate along with the target. |
-| | _Lock To Target With World Up_ | Makes the CmCamera use the local frame of the Tracking target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
-| | _Lock To Target No Roll_ | Makes the CmCamera use the local frame of the Tracking target, with roll set to 0. |
-| | _Lock To Target_ | Makes the CmCamera use the local frame of the Tracking target. When the target rotates, the camera moves with it to maintain the offset and to maintain the same view of the target. |
+| | _Lock To Target On Assign_ | Makes the orientation of the CinemachineCamera match the local frame of the Tracking target, at the moment when the CinemachineCamera is activated or when the target is assigned. This offset remains constant in world space. The camera doesn't rotate along with the target. |
+| | _Lock To Target With World Up_ | Makes the CinemachineCamera use the local frame of the Tracking target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
+| | _Lock To Target No Roll_ | Makes the CinemachineCamera use the local frame of the Tracking target, with roll set to 0. |
+| | _Lock To Target_ | Makes the CinemachineCamera use the local frame of the Tracking target. When the target rotates, the camera moves with it to maintain the offset and to maintain the same view of the target. |
 | | _World Space_ | The offset is interpreted in world space relative to the origin of the Tracking target. The camera will not change position when the target rotates. |
 | | _Simple Tracking With World Up_ | Simple Tracking with world up interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to track a target. The camera attempts to move as little as possible to maintain the same distance from the target; the direction of the camera with respect to the target does not matter. Regardless of the orientation of the target, the camera tries to preserve the same distance and height from it. |
 | __Position Damping__ || How responsively the camera tries to maintain the offset in the x, y, and z axes. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.  |

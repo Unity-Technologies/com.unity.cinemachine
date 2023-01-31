@@ -38,7 +38,7 @@ namespace Cinemachine.Examples
                 if (TryGetComponent<Rigidbody>(out var rb))
                     rb.MovePosition(newPos);
 
-                // Notify any CmCameras that are targeting this object
+                // Notify any CinemachineCameras that are targeting this object
                 CinemachineCore.Instance.OnTargetObjectWarped(transform, delta);
             }
         }

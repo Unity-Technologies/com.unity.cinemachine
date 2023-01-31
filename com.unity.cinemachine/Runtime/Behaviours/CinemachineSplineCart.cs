@@ -41,6 +41,8 @@ namespace Cinemachine
         public PathIndexUnit PositionUnits = PathIndexUnit.Distance;
 
         /// <summary>Controls how automatic dollying occurs</summary>
+        [FoldoutWithEnabledButton]
+        [NoSaveDuringPlay]
         [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
         public SplineAutoDolly AutomaticDolly;
         
@@ -59,8 +61,8 @@ namespace Cinemachine
 
         private void OnValidate()
         {
-            if (AutomaticDolly.Implementation != null)
-                AutomaticDolly.Implementation.Validate();
+            if (AutomaticDolly.Method != null)
+                AutomaticDolly.Method.Validate();
         }
 
         void Reset()
@@ -68,7 +70,7 @@ namespace Cinemachine
             Spline = null;
             UpdateMethod = UpdateMethods.Update;
             PositionUnits = PathIndexUnit.Distance;
-            AutomaticDolly.Implementation = null;
+            AutomaticDolly.Method = null;
             TrackingTarget = null;
             SplinePosition = 0;
         }
@@ -76,8 +78,8 @@ namespace Cinemachine
         void OnEnable()
         {
             RefreshRollCache();
-            if (AutomaticDolly.Implementation != null)
-                AutomaticDolly.Implementation.Reset();
+            if (AutomaticDolly.Method != null)
+                AutomaticDolly.Method.Reset();
         }
 
         void FixedUpdate()
@@ -104,8 +106,8 @@ namespace Cinemachine
 
         void UpdateCartPosition()
         {
-            if (AutomaticDolly.Implementation != null)
-                SplinePosition = AutomaticDolly.Implementation.GetSplinePosition(
+            if (AutomaticDolly.Enabled && AutomaticDolly.Method != null)
+                SplinePosition = AutomaticDolly.Method.GetSplinePosition(
                     this, TrackingTarget, Spline, SplinePosition, PositionUnits, Time.deltaTime);
             SetCartPosition(SplinePosition);
         }

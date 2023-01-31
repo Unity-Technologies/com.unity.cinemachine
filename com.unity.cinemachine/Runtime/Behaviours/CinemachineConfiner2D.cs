@@ -9,15 +9,12 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// <para>
     /// An add-on module for Cinemachine Camera that post-processes the final position 
     /// of the virtual camera.  It will confine the camera's position such that the screen edges stay 
     /// within a shape defined by a 2D polygon.  This will work for orthographic or perspective cameras, 
     /// provided that the camera's forward vector remains parallel to the bounding shape's normal, 
     /// i.e. that the camera is looking straight at the polygon, and not obliquely at it.
-    /// </para>
     /// 
-    /// <para>
     /// When confining the camera, the camera's view size at the polygon plane is considered, and 
     /// also its aspect ratio. Based on this information and the input polygon, a second (smaller) 
     /// polygon is computed to which the camera's transform is constrained. Computation of this secondary 
@@ -26,29 +23,22 @@ namespace Cinemachine
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
     /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateComputedConfiner().
     /// An inspector button is also provided for this purpose.
-    /// </para>
     ///
-    /// <para>
     /// Confiner2D pre-calculates a cache to speed up calculation.
     /// The cache needs to be recomputed in the following circumstances:
-    /// <list type="bullet">
-    /// <item>when the input polygon's points change</item>
-    /// <item>when the input polygon is non-uniformly scaled</item>
-    /// <item>when the input polygon is rotated</item>
-    /// </list>
+    ///  - when the input polygon's points change
+    ///  - when the input polygon is non-uniformly scaled
+    ///  - when the input polygon is rotated
+    ///
     /// For efficiency reasons, Cinemachine will not automatically regenerate the cache.
     /// It is the responsibility of the client to call the InvalidateBoundingShapeCache() method to trigger
     /// a recalculation. An inspector button is also provided for this purpose.
-    /// </para>
     ///
-    /// <para>
     /// If the input polygon scales uniformly or translates, the cache remains valid. If the 
     /// polygon rotates, then the cache degrades in quality (more or less depending on the aspect 
     /// ratio - it's better if the ratio is close to 1:1) but can still be used. 
     /// Regenerating it will eliminate the imperfections.
-    /// </para>
     ///
-    /// <para>
     /// When the Oversize Window is enabled an additional pre-calculation step is added to the caching process.
     /// This cache is not a single polygon, but rather a family of polygons. The number of 
     /// polygons in this family will depend on the complexity of the input polygon, and the maximum 
@@ -56,7 +46,6 @@ namespace Cinemachine
     /// algorithm to stop generating polygons for camera view sizes larger than the one specified. 
     /// This can represent a substantial cost saving when regenerating the cache, so it is a good 
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
-    /// </para>
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner 2D")]
     [SaveDuringPlay]
@@ -77,6 +66,10 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Damping")]
         public float Damping;
 
+        /// <summary>Size of the slow-down zone at the edge of the bounding shape.</summary>
+        [Tooltip("Size of the slow-down zone at the edge of the bounding shape.")]
+        public float SlowingDistance = 0;
+        
         /// <summary>
         /// Settings to optimize computation and memory costs in the event that the
         /// window size is expected to be larger than will fit inside the confining shape.
@@ -124,6 +117,7 @@ namespace Cinemachine
         {
             const float maxComputationTimePerFrameInSeconds = 1f / 120f;
             Damping = Mathf.Max(0, Damping);
+            SlowingDistance = Mathf.Max(0, SlowingDistance);
             m_ShapeCache.maxComputationTimePerFrameInSeconds = maxComputationTimePerFrameInSeconds;
             OversizeWindow.MaxWindowSize = Mathf.Max(0, OversizeWindow.MaxWindowSize);
 
@@ -142,9 +136,24 @@ namespace Cinemachine
         void Reset()
         {
             Damping = 0.5f;
+            SlowingDistance = 0;
             OversizeWindow = new ();
         }
 
+        /// <summary>
+        /// Report maximum damping time needed for this component.
+        /// </summary>
+        /// <returns>Highest damping setting in this component</returns>
+        public override float GetMaxDampTime() => Mathf.Max(Damping, SlowingDistance * 0.2f); // just an approximation - we don't know the time
+        
+        /// <summary>This is called to notify the extension that a target got warped,
+        /// so that the extension can update its internal state to make the camera
+        /// also warp seamlessly.  Base class implementation does nothing.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
+            => GetExtraState<VcamExtraState>(VirtualCamera).PreviousCameraPosition += positionDelta;
+            
         /// <summary>
         /// Invalidates the lens cache, so a new one is computed next frame.
         /// Call this when when the Field of View or Orthographic Size changes.
@@ -192,33 +201,43 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                var oldCameraPos = state.GetCorrectedPosition();
-                var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-                var currentFrustumHeight = CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
-                if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, 
-                        state.Lens.Aspect, currentFrustumHeight, out bool confinerStateChanged))
-                {
+                if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, state, out bool confinerStateChanged))
                     return; // invalid path
-                }
-                
-                // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
-                var bakedSpaceFrustumHeight = currentFrustumHeight * m_ShapeCache.DeltaWorldToBaked.lossyScale.x;
+
+                var extra = GetExtraState<VcamExtraState>(vcam);
+                var camPos = state.GetCorrectedPosition();
 
                 // Make sure we have a solution for our current frustum size
-                var extra = GetExtraState<VcamExtraState>(vcam);
                 if (confinerStateChanged || extra.BakedSolution == null || !extra.BakedSolution.IsValid()) 
-                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(bakedSpaceFrustumHeight);
-
-                cameraPosLocal = extra.BakedSolution.ConfinePoint(cameraPosLocal);
-                var newCameraPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(cameraPosLocal);
-
-                // Don't move the camera along its z-axis
+                {
+                    // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
+                    var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(camPos);
+                    var height = CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z) 
+                        * m_ShapeCache.DeltaWorldToBaked.lossyScale.x;
+                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(height);
+                }
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
-                newCameraPos -= fwd * Vector3.Dot(fwd, newCameraPos - oldCameraPos);
+                var newPos = ConfinePoint(camPos, extra, fwd);
+
+                if (SlowingDistance > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                {
+                    // Reduce speed if moving towards the edge and close enough to it
+                    var prevPos = extra.PreviousCameraPosition;
+                    var dir = newPos - prevPos;
+                    var speed = dir.magnitude;
+                    if (speed > Epsilon)
+                    {
+                        var t = GetDistanceFromEdge(prevPos, dir / speed, SlowingDistance, extra, fwd) / SlowingDistance;
+
+                        // This formula is found to give a smooth slowing curve while ensuring
+                        // that it comes to a full stop in a reasonable time
+                        newPos = Vector3.Lerp(prevPos, newPos, t * t * t + 0.05f);
+                    }
+                }
 
                 // Remember the desired displacement for next frame
                 var prev = extra.PreviousDisplacement;
-                var displacement = newCameraPos - oldCameraPos;
+                var displacement = newPos - camPos;
                 extra.PreviousDisplacement = displacement;
 
                 if (!VirtualCamera.PreviousStateIsValid || deltaTime < 0 || Damping <= 0)
@@ -234,9 +253,28 @@ namespace Cinemachine
                     displacement -= extra.DampedDisplacement;
                 }
                 state.PositionCorrection += displacement;
+                extra.PreviousCameraPosition = state.GetCorrectedPosition();
             }
         }
 
+        Vector3 ConfinePoint(Vector3 pos, VcamExtraState extra, Vector3 fwd)
+        {
+            var posLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(pos);
+            var newPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(
+                extra.BakedSolution.ConfinePoint(posLocal));
+
+            // Don't move the point alog the fwd axis
+            return newPos - fwd * Vector3.Dot(fwd, newPos - pos);
+        }
+
+        // Returns distance from edge in direction of motion, or max if distance is greater than max.
+        // dirUnit must be unit length.
+        float GetDistanceFromEdge(Vector3 p, Vector3 dirUnit, float max, VcamExtraState extra, Vector3 fwd)
+        {
+            p += dirUnit * max;
+            return max - (ConfinePoint(p, extra, fwd) - p).magnitude;
+        }
+        
         /// <summary>
         /// Calculates half frustum height for orthographic or perspective camera.
         /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/>.
@@ -265,6 +303,7 @@ namespace Cinemachine
         {
             public Vector3 PreviousDisplacement;
             public Vector3 DampedDisplacement;
+            public Vector3 PreviousCameraPosition;
             public ConfinerOven.BakedSolution BakedSolution;
         };
         
@@ -322,7 +361,7 @@ namespace Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, 
-                float aspectRatio, float frustumHeight, out bool confinerStateChanged)
+                CameraState cameraState, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
                 
@@ -407,9 +446,12 @@ namespace Cinemachine
                     default:
                         return false;
                 }
-                
+
+                var aspectRatio = cameraState.Lens.Aspect;
                 ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
                 m_AspectRatio = aspectRatio;
+                var frustumHeight = CalculateHalfFrustumHeight(cameraState.Lens, 
+                    DeltaWorldToBaked.MultiplyPoint3x4(cameraState.GetCorrectedPosition()).z);
                 m_FrustumHeight = frustumHeight;
                 m_BoundingShape2D = boundingShape2D;
                 m_OversizeWindowSettings = oversize;

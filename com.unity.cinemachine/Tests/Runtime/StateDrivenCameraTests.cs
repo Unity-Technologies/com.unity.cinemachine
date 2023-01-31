@@ -17,7 +17,7 @@ namespace Tests.Runtime
     {
         CinemachineStateDrivenCamera m_StateDrivenCamera;
         Animator m_Animator;
-        CmCamera m_Vcam1, m_Vcam2;
+        CinemachineCamera m_Vcam1, m_Vcam2;
 
         [SetUp]
         public override void SetUp()
@@ -37,15 +37,14 @@ namespace Tests.Runtime
             {
                 throw new ArgumentNullException("controller", "FindAssets did not find the TestController in the project.");
             }
-            
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
             // Create a state-driven camera with two vcams 
             var stateDrivenCamera = CreateGameObject("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
             stateDrivenCamera.AnimatedTarget = character.GetComponent<Animator>();
 
-            var vcam1 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
-            var vcam2 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
+            var vcam1 = CreateGameObject("Vcam1", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
+            var vcam2 = CreateGameObject("Vcam1", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             vcam1.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
             vcam2.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
 

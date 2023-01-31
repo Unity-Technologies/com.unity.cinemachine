@@ -13,7 +13,7 @@ namespace Tests
     [TestFixture]
     public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase
     {
-        CmCamera m_CmCamera;
+        CinemachineCamera m_CmCamera;
         static IEnumerable<Type> s_AllCinemachineComponents;
 
         void DestroyCinemachineComponents()
@@ -27,7 +27,7 @@ namespace Tests
         {
             base.SetUp();
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
-            m_CmCamera = CreateGameObject("CmCamera", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_CmCamera = CreateGameObject("CinemachineCamera", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_CmCamera.Priority = 100;
             
             s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 

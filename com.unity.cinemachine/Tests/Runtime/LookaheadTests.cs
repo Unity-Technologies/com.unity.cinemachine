@@ -9,7 +9,7 @@ namespace Tests.Runtime
     [TestFixture]
     public class LookaheadTests : CinemachineRuntimeFixtureBase
     {
-        CmCamera m_VCam;
+        CinemachineCamera m_VCam;
         CinemachineRotationComposer m_RotationComposer;
         CinemachinePositionComposer m_PositionComposer;
         Transform m_Target;
@@ -22,7 +22,7 @@ namespace Tests.Runtime
             m_Target = CreateGameObject("Target Object").transform;
 
             // Source vcam
-            m_VCam = CreateGameObject("Source CM Vcam", typeof(CmCamera)).GetComponent<CmCamera>();
+            m_VCam = CreateGameObject("Source CM Vcam", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_VCam.Follow = m_Target;
             m_VCam.LookAt = m_Target;
             m_PositionComposer = m_VCam.gameObject.AddComponent<CinemachinePositionComposer>();

@@ -9,7 +9,7 @@ using System.Reflection;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// Helpers for drawing CmCamera inspectors.
+    /// Helpers for drawing CinemachineCamera inspectors.
     /// </summary>
     class CmCameraInspectorUtility
     {
@@ -129,7 +129,7 @@ namespace Cinemachine.Editor
         
         public void AddPipelineDropdowns(VisualElement ux)
         {
-            var cmCam = Target as CmCamera;
+            var cmCam = Target as CinemachineCamera;
             if (cmCam == null)
                 return;
 
@@ -161,7 +161,7 @@ namespace Cinemachine.Editor
                     var newType = PipelineStageMenu.s_StageData[stage].Types[GetTypeIndexFromSelection(evt.newValue, stage)];
                     for (int i = 0; i < targets.Length; i++)
                     {
-                        var t = targets[i] as CmCamera;
+                        var t = targets[i] as CinemachineCamera;
                         if (t == null)
                             continue;
                         var oldComponent = t.GetCinemachineComponent((CinemachineCore.Stage)stage);
@@ -219,7 +219,7 @@ namespace Cinemachine.Editor
 
         void RefreshPipelinDropdowns()
         {
-            var cmCam = Target as CmCamera;
+            var cmCam = Target as CinemachineCamera;
             if (cmCam == null)
                 return;
             for (int i = 0; i < m_PipelineItems.Count; ++i)
@@ -346,7 +346,7 @@ namespace Cinemachine.Editor
         /// </summary>
         public void AddGlobalControls(VisualElement ux)
         {
-            var helpBox = ux.AddChild(new HelpBox("CmCamera settings changes made during Play Mode will be "
+            var helpBox = ux.AddChild(new HelpBox("CinemachineCamera settings changes made during Play Mode will be "
                     + "propagated back to the scene when Play Mode is exited.", 
                 HelpBoxMessageType.Info));
             helpBox.SetVisible(SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying);
@@ -388,7 +388,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// This is only for aesthetics, sort order does not affect camera logic.
         /// Behaviours should be sorted like this:
-        /// CmCamera, Body, Aim, Noise, Finalize, Extensions, everything else.
+        /// CinemachineCamera, Body, Aim, Noise, Finalize, Extensions, everything else.
         /// </summary>
         public void SortComponents()
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// Structure for holding the procedural motion targets for a CmCamera.
+    /// Structure for holding the procedural motion targets for a CinemachineCamera.
     /// The main TrackingTarget is used by default for all object tracking.  Optionally, a second
     /// LookAt target can be provided to make the camera follow one object while
     /// pointing at another.

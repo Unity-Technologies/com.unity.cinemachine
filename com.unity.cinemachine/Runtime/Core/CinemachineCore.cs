@@ -15,8 +15,8 @@ namespace Cinemachine
     }
 
     /// <summary>A singleton that manages complete lists of CinemachineBrain and,
-    /// CmCamera, and the priority queue.  Provides
-    /// services to keeping track of whether CmCameras have
+    /// CinemachineCamera, and the priority queue.  Provides
+    /// services to keeping track of whether CinemachineCameras have
     /// been updated each frame.</summary>
     public sealed class CinemachineCore
     {
@@ -169,7 +169,7 @@ namespace Cinemachine
         int m_ActivationSequence;
         
         /// <summary>
-        /// List of all active CmCameras for all brains.
+        /// List of all active CinemachineCameras for all brains.
         /// This list is kept sorted by priority.
         /// </summary>
         public int VirtualCameraCount => m_ActiveCameras.Count;
@@ -189,7 +189,7 @@ namespace Cinemachine
             return m_ActiveCameras[index];
         }
 
-        /// <summary>Called when a CmCamera is enabled.</summary>
+        /// <summary>Called when a CinemachineCamera is enabled.</summary>
         internal void AddActiveCamera(CinemachineVirtualCameraBase vcam)
         {
             Assert.IsFalse(m_ActiveCameras.Contains(vcam));
@@ -198,14 +198,14 @@ namespace Cinemachine
             m_ActiveCamerasAreSorted = false;
         }
 
-        /// <summary>Called when a CmCamera is disabled.</summary>
+        /// <summary>Called when a CinemachineCamera is disabled.</summary>
         internal void RemoveActiveCamera(CinemachineVirtualCameraBase vcam)
         {
             if (m_ActiveCameras.Contains(vcam))
                 m_ActiveCameras.Remove(vcam);
         }
 
-        /// <summary>Called when a CmCamera is destroyed.</summary>
+        /// <summary>Called when a CinemachineCamera is destroyed.</summary>
         internal void CameraDestroyed(CinemachineVirtualCameraBase vcam)
         {
             if (m_ActiveCameras.Contains(vcam))
@@ -304,7 +304,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Update a single CmCamera if and only if it
+        /// Update a single CinemachineCamera if and only if it
         /// hasn't already been updated this frame.  Always update vcams via this method.
         /// Calling this more than once per frame for the same camera will have no effect.
         /// </summary>
@@ -494,8 +494,8 @@ namespace Cinemachine
 
         /// <summary>
         /// Try to find a CinemachineBrain to associate with a
-        /// CmCamera.  The first CinemachineBrain
-        /// in which this CmCamera is live will be used.
+        /// CinemachineCamera.  The first CinemachineBrain
+        /// in which this CinemachineCamera is live will be used.
         /// If none, then the first active CinemachineBrain with the correct
         /// layer filter will be used.
         /// Brains with OutputCamera == null will not be returned.

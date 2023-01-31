@@ -22,8 +22,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachinePathBase search radius fixed for not looped paths.
 - Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
 - Regression fix: POV and PanTilt handle ReferenceUp correctly.
+- Improved performance of CINEMACHINE_EXPERIMENTAL_DAMPING algorithm.
 - Bugfix: Extensions were not respecting execution order on domain reload.
-- Add SplineAutoDolly.ISplineAutoDolly.Reset() method.
+- Add SplineAutoDolly.ISplineAutoDolly.Reset() method and SplineAutoDolly.Enabled flag.
+- Bugfix: AxisState was not respecting timescale == 0
+- CmCamera is now CinemachineCamera.
+- Confiner2D and Confiner3D support smooth stop at bounds edge.
 
 
 ## [3.0.0-pre.3] - 2022-10-28

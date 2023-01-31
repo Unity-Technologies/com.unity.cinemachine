@@ -14,15 +14,14 @@ namespace Cinemachine.Examples
         {
             if (stage == CinemachineCore.Stage.Finalize)
             {
-                if (vcam.Follow != null &&
-                    vcam.Follow.TryGetComponent(out CinemachineSplineCart cart) &&
-                    cart.Spline != null)
+                state.ShotQuality = 0;
+                if (vcam.Follow != null 
+                    && vcam.Follow.TryGetComponent(out CinemachineSplineCart cart) 
+                    && cart.Spline != null && cart.Spline.Spline != null)
                 {
                     state.ShotQuality = cart.Spline.Spline.ConvertIndexUnit(
-                        cart.SplinePosition, cart.PositionUnits, PathIndexUnit.Distance);
+                        cart.SplinePosition, cart.PositionUnits, PathIndexUnit.Normalized);
                 }
-                else
-                    state.ShotQuality = 0;
             }
         }
     }
