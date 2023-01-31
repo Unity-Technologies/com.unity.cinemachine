@@ -506,13 +506,14 @@ namespace Cinemachine
             if (BoundingShape2D == null)
                 return false;
             
+            if (m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
+                return true; // there is a skeleton, that means some parts are collapsed -> oversized
+            
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
             foreach (var extra in allExtraStates)
             {
                 if (extra.BakedSolution != null)
                 {
-                    if (m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
-                        return true; // there is a skeleton, that means some parts are collapsed -> oversized
                     var solution = extra.BakedSolution.m_Solution;
                     if (solution.Count == 1 && solution[0].Count == 1)
                         return true; // shrank down to mid point -> oversized
