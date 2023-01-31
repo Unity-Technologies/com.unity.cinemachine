@@ -201,7 +201,8 @@ namespace Cinemachine
         {
             if (stage == CinemachineCore.Stage.Body)
             {
-                if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, state, out bool confinerStateChanged))
+                var aspectRatio = state.Lens.Aspect;
+                if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, aspectRatio, out bool confinerStateChanged))
                     return; // invalid path
 
                 var extra = GetExtraState<VcamExtraState>(vcam);
@@ -211,10 +212,11 @@ namespace Cinemachine
                 if (confinerStateChanged || extra.BakedSolution == null || !extra.BakedSolution.IsValid()) 
                 {
                     // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
-                    var cameraPosLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(camPos);
-                    var height = CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z) 
-                        * m_ShapeCache.DeltaWorldToBaked.lossyScale.x;
-                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(height);
+                    var deltaW = m_ShapeCache.DeltaWorldToBaked;
+                    m_ShapeCache.AspectRatio = aspectRatio;
+                    m_ShapeCache.FrustumHeight = 
+                        CalculateHalfFrustumHeight(state.Lens, deltaW.MultiplyPoint3x4(camPos).z) * deltaW.lossyScale.x;
+                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(m_ShapeCache.FrustumHeight);
                 }
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
                 var newPos = ConfinePoint(camPos, extra, fwd);
@@ -321,8 +323,8 @@ namespace Cinemachine
             public Matrix4x4 DeltaWorldToBaked; 
             public Matrix4x4 DeltaBakedToWorld;
 
-            public float m_FrustumHeight;
-            public float m_AspectRatio;
+            public float FrustumHeight;
+            public float AspectRatio;
             OversizeWindowSettings m_OversizeWindowSettings;
             internal float maxComputationTimePerFrameInSeconds;
 
@@ -334,8 +336,8 @@ namespace Cinemachine
             /// </summary>
             public void Invalidate()
             {
-                m_AspectRatio = 0;
-                m_FrustumHeight = 0;
+                AspectRatio = 0;
+                FrustumHeight = 0;
                 m_OversizeWindowSettings = new ();
                 DeltaBakedToWorld = DeltaWorldToBaked = Matrix4x4.identity;
 
@@ -347,8 +349,8 @@ namespace Cinemachine
             
             public bool IsLensValid(float aspectRatio, float frustumHeight)
             {
-                return Mathf.Abs(m_AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
-                    Mathf.Abs(m_FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
+                return Mathf.Abs(AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
+                    Mathf.Abs(FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
             }
 
             /// <summary>
@@ -361,7 +363,7 @@ namespace Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, 
-                CameraState cameraState, out bool confinerStateChanged)
+                float aspectRatio, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
                 
@@ -447,12 +449,7 @@ namespace Cinemachine
                         return false;
                 }
 
-                var aspectRatio = cameraState.Lens.Aspect;
                 ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
-                m_AspectRatio = aspectRatio;
-                var frustumHeight = CalculateHalfFrustumHeight(cameraState.Lens, 
-                    DeltaWorldToBaked.MultiplyPoint3x4(cameraState.GetCorrectedPosition()).z);
-                m_FrustumHeight = frustumHeight;
                 m_BoundingShape2D = boundingShape2D;
                 m_OversizeWindowSettings = oversize;
 
