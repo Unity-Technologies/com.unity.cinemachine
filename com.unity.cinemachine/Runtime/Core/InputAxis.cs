@@ -131,6 +131,7 @@ namespace Cinemachine
         
         /// <summary>Some usages require restricted functionality.  
         /// The possible restrictions are defined here.</summary>
+        [Flags]
         public enum RestrictionFlags 
         { 
             /// <summary>No restrictions</summary>
@@ -198,13 +199,16 @@ namespace Cinemachine
         };
         
         /// Internal state for recentering
-        const float k_Epsilon = UnityVectorExtensions.Epsilon;
-        float m_RecenteringVelocity;
-        bool m_ForceRecenter;
-        float m_LastValueChangeTime;
-        float m_LastValue;
-
-        static float CurrentTime => CinemachineCore.CurrentUnscaledTime;
+        struct RecenteringState
+        {
+            public const float k_Epsilon = UnityVectorExtensions.Epsilon;
+            public float m_RecenteringVelocity;
+            public bool m_ForceRecenter;
+            public float m_LastValueChangeTime;
+            public float m_LastValue;
+            public static float CurrentTime => CinemachineCore.CurrentUnscaledTime;
+        }
+        RecenteringState m_RecenteringState;
 
         /// <summary>
         /// Call this before calling DoRecentering.  Will track any vlue changes so that the recentering clock
@@ -215,10 +219,10 @@ namespace Cinemachine
         public bool TrackValueChange()
         {
             var v = ClampValue(Value);
-            if (v != m_LastValue)
+            if (v != m_RecenteringState.m_LastValue)
             {
-                m_LastValueChangeTime = CurrentTime;
-                m_LastValue = v;
+                m_RecenteringState.m_LastValueChangeTime = RecenteringState.CurrentTime;
+                m_RecenteringState.m_LastValue = v;
                 return true;
             }
             return false;
@@ -238,20 +242,22 @@ namespace Cinemachine
                 CancelRecentering();
                 return;
             }
-            if (m_ForceRecenter || (Recentering.Enabled && deltaTime < 0))
+            if (m_RecenteringState.m_ForceRecenter || (Recentering.Enabled && deltaTime < 0))
             {
                 Value = Center;
                 CancelRecentering();
             }
-            else if (m_ForceRecenter || (Recentering.Enabled && CurrentTime - m_LastValueChangeTime >= Recentering.Wait))
+            else if (m_RecenteringState.m_ForceRecenter 
+                || (Recentering.Enabled && RecenteringState.CurrentTime 
+                    - m_RecenteringState.m_LastValueChangeTime >= Recentering.Wait))
             {
                 var v = ClampValue(Value);
                 var c = Center;
                 var distance = Mathf.Abs(c - v);
-                if (distance < k_Epsilon || Recentering.Time < k_Epsilon)
+                if (distance < RecenteringState.k_Epsilon || Recentering.Time < RecenteringState.k_Epsilon)
                 {
                     v = c;
-                    m_RecenteringVelocity = 0;
+                    m_RecenteringState.m_RecenteringVelocity = 0;
                 }
                 else
                 {
@@ -262,28 +268,28 @@ namespace Cinemachine
 
                     // Damp our way there
                     v = Mathf.SmoothDamp(
-                        v, c, ref m_RecenteringVelocity,
+                        v, c, ref m_RecenteringState.m_RecenteringVelocity,
                         Recentering.Time * 0.5f, 9999, deltaTime);
                 }
-                Value = m_LastValue = ClampValue(v);
+                Value = m_RecenteringState.m_LastValue = ClampValue(v);
 
                 // Are we there yet?
-                if (Mathf.Abs(Value - c) < k_Epsilon)
-                    m_ForceRecenter = false;
+                if (Mathf.Abs(Value - c) < RecenteringState.k_Epsilon)
+                    m_RecenteringState.m_ForceRecenter = false;
             }
         }
 
         /// <summary>Trigger recentering immediately, regardless of whether recentering 
         /// is enabled or the wait time has elapsed.</summary>
-        public void RecenterNow() => m_ForceRecenter = true;
+        public void RecenterNow() => m_RecenteringState.m_ForceRecenter = true;
 
         /// <summary>Cancel any current recentering in progress, and reset the wait time</summary>
         public void CancelRecentering()
         {
-            m_LastValueChangeTime = CurrentTime;
-            m_LastValue = ClampValue(Value);
-            m_RecenteringVelocity = 0;
-            m_ForceRecenter = false;
+            m_RecenteringState.m_LastValueChangeTime = RecenteringState.CurrentTime;
+            m_RecenteringState.m_LastValue = ClampValue(Value);
+            m_RecenteringState.m_RecenteringVelocity = 0;
+            m_RecenteringState.m_ForceRecenter = false;
         }
     }
 

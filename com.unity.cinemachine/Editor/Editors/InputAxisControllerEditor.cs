@@ -76,8 +76,12 @@ namespace Cinemachine.Editor
                     if (axis.Name.Contains("Look"))
                     {
                         actionName = "Player/Look";
-                        inputName = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.X ? "Mouse X" 
-                            : (axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y ? "Mouse Y" : "");
+                        inputName = axis.Hint switch
+                        {
+                           IInputAxisSource.AxisDescriptor.Hints.X => "Mouse X",
+                           IInputAxisSource.AxisDescriptor.Hints.Y => "Mouse Y",
+                           _ => ""
+                        };
                         invertY = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y;
                         controller.Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f };
                     }
@@ -91,8 +95,12 @@ namespace Cinemachine.Editor
                     if (axis.Name.Contains("Move"))
                     {
                         actionName = "Player/Move";
-                        inputName = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.X ? "Horizontal" 
-                            : (axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y ? "Vertical" : "");
+                        inputName = axis.Hint switch
+                        {
+                           IInputAxisSource.AxisDescriptor.Hints.X => "Horizontal",
+                           IInputAxisSource.AxisDescriptor.Hints.Y => "Vertical",
+                           _ => ""
+                        };
                     }
                     if (axis.Name.Contains("Fire"))
                     {
@@ -125,23 +133,23 @@ namespace Cinemachine.Editor
     }
 
     [CustomPropertyDrawer(typeof(InputAxisController.Controller))]
-    sealed class InputAxisControllerItemPropertyDrawer : PropertyDrawer
+    class InputAxisControllerItemPropertyDrawer : PropertyDrawer
     {
-        InputAxisController.Controller m_def = new ();
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            InputAxisController.Controller def = new ();
+
             var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-            overlay.Add(new PropertyField(property.FindPropertyRelative(() => m_def.Enabled), "") 
+            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "") 
                 { style = {flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
 
             // Draw the input value on the same line as the foldout, for convenience
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            overlay.Add(new PropertyField(property.FindPropertyRelative(() => m_def.InputAction), "") 
+            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.InputAction), "") 
                 { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
-            overlay.Add(new PropertyField(property.FindPropertyRelative(() => m_def.LegacyInput), "") 
+            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.LegacyInput), "") 
                 { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight, marginLeft = 6}} );
 #endif
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip };
