@@ -1,6 +1,7 @@
 #if CINEMACHINE_PHYSICS_2D
 
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -33,13 +34,6 @@ namespace Cinemachine.Editor
 
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
-            var oversizedCameraHelp = ux.AddChild(new HelpBox(
-                "The camera window is too big for the confiner. Enable the Oversize Window option.",
-                HelpBoxMessageType.Info));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
-            
             TrackVolume(volumeProp);
             ux.TrackPropertyValue(volumeProp, TrackVolume);
             void TrackVolume(SerializedProperty p)
@@ -50,6 +44,35 @@ namespace Cinemachine.Editor
                 var cc = c as CompositeCollider2D;
                 polygonsHelp.SetVisible(cc != null && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
             }
+            
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
+            
+            var oversizedCameraHelp = ux.AddChild(new HelpBox(
+                "The camera window is too big for the confiner. Enable the Oversize Window option.",
+                HelpBoxMessageType.Info));
+
+            var owner = Target.VirtualCamera;
+            if (owner != null)
+            {
+                UpdateConfinerLensCache();
+                var lensProperty = new SerializedObject(owner).FindProperty("Lens");
+                oversizedCameraHelp.TrackPropertyValue(lensProperty, TrackLens);
+                void TrackLens(SerializedProperty lens) => UpdateConfinerLensCache();
+                void UpdateConfinerLensCache()
+                {
+                    var cache = Target.m_ShapeCache;
+                    var state = owner.State;
+
+                    var oldCameraPos = state.GetCorrectedPosition();
+                    var cameraPosLocal = cache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
+                    var currentFrustumHeight = CinemachineConfiner2D.CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
+                    if (!cache.IsLensValid(state.Lens.Aspect, currentFrustumHeight))
+                        Target.InvalidateLensCache();
+                }
+            }
+
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
             var bakeProgress = ux.AddChild(new ProgressBar { lowValue = 0, highValue = 100 });
             var bakeTimeout = ux.AddChild(new HelpBox(
@@ -57,39 +80,23 @@ namespace Cinemachine.Editor
                 + "\n\nTo fix this, reduce the number of points in the confining shape, "
                 + "or set the MaxWindowSize parameter to limit skeleton computation.",
                 HelpBoxMessageType.Warning));
-            
-            var confiner = Target; // so it gets captured in the lambdas
 
-            UpdateConfinerLensCache();
-            ux.schedule.Execute(UpdateConfinerLensCache).Every(10); // GML todo: is there a better way to do this?
-            void UpdateConfinerLensCache()
-            {
-                var cache = Target.m_ShapeCache;
-                var state = Target.VirtualCamera.State;
-                
-                var oldCameraPos = state.GetCorrectedPosition();
-                var cameraPosLocal = cache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-                var currentFrustumHeight = CinemachineConfiner2D.CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
-                if (!cache.IsLensValid(state.Lens.Aspect, currentFrustumHeight))
-                    Target.InvalidateLensCache();
-            }
-            
-            UpdateDynamicUIElements();
-            ux.schedule.Execute(UpdateDynamicUIElements).Every(250); // GML todo: is there a better way to do this?
-            void UpdateDynamicUIElements() 
+            UpdateBakeProgress();
+            ux.schedule.Execute(UpdateBakeProgress).Every(250); // GML todo: is there a better way to do this?
+            void UpdateBakeProgress() 
             {
                 oversizedCameraHelp.SetVisible(false);
-                if (confiner == null)
+                if (Target == null)
                     return; // target deleted
                 
-                if (!confiner.OversizeWindow.Enabled)
+                if (!Target.OversizeWindow.Enabled)
                 {
                     bakeTimeout.SetVisible(false);
                     bakeProgress.SetVisible(false);
-                    oversizedCameraHelp.SetVisible(confiner.IsCameraOversizedForTheConfiner());
+                    oversizedCameraHelp.SetVisible(Target.IsCameraOversizedForTheConfiner());
                     return;
                 }
-                var progress = confiner.BakeProgress();
+                var progress = Target.BakeProgress();
                 bool timedOut = Target.ConfinerOvenTimedOut();
                 bakeProgress.value = progress * 100;
                 bakeProgress.title = timedOut ? "Timed out" : progress == 0 ? "" : progress < 1f ? "Baking" : "Baked";
@@ -99,8 +106,8 @@ namespace Cinemachine.Editor
 
             ux.Add(new Button(() => 
             {
-                confiner.InvalidateBoundingShapeCache();
-                EditorUtility.SetDirty(confiner);
+                Target.InvalidateBoundingShapeCache();
+                EditorUtility.SetDirty(Target);
             })
             { 
                 text = "Invalidate Bounding Shape Cache",
