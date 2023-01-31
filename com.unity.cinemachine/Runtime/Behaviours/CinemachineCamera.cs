@@ -48,7 +48,7 @@ namespace Cinemachine
     /// 
     [DisallowMultipleComponent]
     [ExecuteAlways]
-    [AddComponentMenu("Cinemachine/CinemachineCamera")]
+    [AddComponentMenu("Cinemachine/Cinemachine Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCamera.html")]
     public sealed class CinemachineCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
     {

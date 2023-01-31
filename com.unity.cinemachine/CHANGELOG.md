@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: AxisState was not respecting timescale == 0
 - CmCamera is now CinemachineCamera.
 - ImputAxis refactor for recentering and momentary axis support.
+- Confiner2D and Confiner3D support smooth stop at bounds edge.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
