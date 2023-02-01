@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] 
 - Bugfix: AxisState was not respecting timescale == 0
+- Bugfix: Very occasional axis drift in SimpleFollow when viewing angle is +-90 degrees.
 
 
 ## [2.9.5] - 2023-01-16
