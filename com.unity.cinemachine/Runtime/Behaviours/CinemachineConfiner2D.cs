@@ -299,13 +299,11 @@ namespace Cinemachine
         /// <summary>
         /// Calculates half frustum height for orthographic or perspective camera.
         /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/>.
-        /// 
-        /// Internal for editor. 
         /// </summary>
         /// <param name="lens">Camera Lens for checking if Orthographic or Perspective</param>
         /// <param name="cameraPosLocalZ">camera's z pos in local space</param>
         /// <returns>Frustum height of the camera</returns>
-        internal static float CalculateHalfFrustumHeight(in LensSettings lens, in float cameraPosLocalZ)
+        public static float CalculateHalfFrustumHeight(in LensSettings lens, in float cameraPosLocalZ)
         {
             float frustumHeight;
             if (lens.Orthographic)
@@ -331,8 +329,8 @@ namespace Cinemachine
             public float FrustumHeight;
             public float AspectRatio;
         };
-        
-        ShapeCache m_ShapeCache; // internal for editor
+
+        ShapeCache m_ShapeCache;
 
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
