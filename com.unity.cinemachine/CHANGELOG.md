@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - ImputAxis refactor for recentering and momentary axis support.
 - Confiner2D and Confiner3D support smooth stop at bounds edge.
 - CinemachineIndependentImpulseListener renamed to CinemachineExternalImpulseListener.
+- Bugfix: Very occasional axis drift in SimpleFollow when viewing angle is +-90 degrees.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
