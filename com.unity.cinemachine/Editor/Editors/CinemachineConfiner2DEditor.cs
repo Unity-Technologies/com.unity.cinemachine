@@ -51,27 +51,7 @@ namespace Cinemachine.Editor
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
                HelpBoxMessageType.Info));
-
-            // var owner = Target.VirtualCamera;
-            // if (owner != null)
-            // {
-            //     UpdateConfinerLensCache();
-            //     var lensProperty = new SerializedObject(owner).FindProperty("Lens");
-            //     oversizedCameraHelp.TrackPropertyValue(lensProperty, TrackLens);
-            //     void TrackLens(SerializedProperty lens) => UpdateConfinerLensCache();
-            //     void UpdateConfinerLensCache()
-            //     {
-            //         var cache = Target.m_ShapeCache;
-            //         var state = owner.State;
-            //
-            //         var oldCameraPos = state.GetCorrectedPosition();
-            //         var cameraPosLocal = cache.DeltaWorldToBaked.MultiplyPoint3x4(oldCameraPos);
-            //         var currentFrustumHeight = CinemachineConfiner2D.CalculateHalfFrustumHeight(state.Lens, cameraPosLocal.z);
-            //         if (!cache.IsLensValid(state.Lens.Aspect, currentFrustumHeight))
-            //             Target.InvalidateLensCache();
-            //     }
-            // }
-
+            
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
             var bakeProgress = ux.AddChild(new ProgressBar { lowValue = 0, highValue = 100 });
@@ -93,7 +73,7 @@ namespace Cinemachine.Editor
                 {
                     bakeTimeout.SetVisible(false);
                     bakeProgress.SetVisible(false);
-                    oversizedCameraHelp.SetVisible(Target.IsCameraOversizedForTheConfiner());
+                    oversizedCameraHelp.SetVisible(Target.IsCameraTooBigForTheConfiner(Target.VirtualCamera));
                     return;
                 }
                 var progress = Target.BakeProgress();

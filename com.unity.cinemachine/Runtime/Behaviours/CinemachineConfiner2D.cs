@@ -155,18 +155,35 @@ namespace Cinemachine
             => GetExtraState<VcamExtraState>(VirtualCamera).PreviousCameraPosition += positionDelta;
             
         /// <summary>
-        /// Invalidates the lens cache, so a new one is computed next frame.
+        /// Invalidates the lens cache for the Cinemachine Camera that ownes this Confiner.
         /// Call this when when the Field of View or Orthographic Size changes.
         /// Calculating the lens cache is fast, but causes allocations.
         /// </summary>
         /// <remarks>
-        /// It is often more efficient to have more Cinemachine Cameras with different lens settings
+        /// - When the owner is a CinemachineCameraManagerBase then this will do nothing.
+        /// Call InvalidateLensCache for each child virtual camera of the manager instead.
+        /// - It is often more efficient to have more Cinemachine Cameras with different lens settings
         /// that have their own confiners and blend between them instead of changing
         /// one Cinemachine Camera's lens and calling this over and over.
         /// </remarks>
-        public void InvalidateLensCache()
+        public void InvalidateLensCache() => InvalidateLensCache(VirtualCamera);
+
+        /// <summary>
+        /// Invalidates the lens cache of the input vcam, so a new one is computed next frame.
+        /// Call this when when the Field of View or Orthographic Size changes.
+        /// Calculating the lens cache is fast, but causes allocations.
+        /// </summary>
+        /// <remarks>
+        /// - When the owner is a CinemachineCameraManagerBase then this will do nothing.
+        /// Call InvalidateLensCache for each child virtual camera of the manager instead.
+        /// - It is often more efficient to have more Cinemachine Cameras with different lens settings
+        /// that have their own confiners and blend between them instead of changing
+        /// one Cinemachine Camera's lens and calling this over and over.
+        /// </remarks>
+        /// <param name="vcam"></param>
+        public void InvalidateLensCache(CinemachineVirtualCameraBase vcam)
         {
-            var extra = GetExtraState<VcamExtraState>(VirtualCamera);
+            var extra = GetExtraState<VcamExtraState>(vcam);
             extra.BakedSolution = null;
             extra.AspectRatio = 0;
             extra.FrustumHeight = 0;
@@ -499,41 +516,65 @@ namespace Cinemachine
             }
             return originalPath != null;
         }
-        
-        // TODO: this is definitely wrong. We should not compare to all vcams just one
-        internal bool IsLensValid(float aspectRatio, float frustumHeight, CinemachineVirtualCameraBase vcam)
-        {
-            var allExtraStates = GetAllExtraStates<VcamExtraState>();
-            foreach (var extra in allExtraStates)
-            {
-                if (Mathf.Abs(extra.AspectRatio - aspectRatio) > UnityVectorExtensions.Epsilon ||
-                    Mathf.Abs(extra.FrustumHeight - frustumHeight) > UnityVectorExtensions.Epsilon)
-                    return false;
-            }
-            return true;
-        }
 
-        internal bool IsCameraOversizedForTheConfiner()
+        // Used by editor script to notify user that the confiner cannot fit the camera
+        internal bool IsCameraTooBigForTheConfiner(CinemachineVirtualCameraBase vcam)
         {
+            InvalidateLensCacheIfNeeded(vcam);
+            
             if (BoundingShape2D == null)
                 return false;
             
             if (m_ShapeCache.ConfinerOven != null && m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
                 return true; // there is a skeleton, that means some parts are collapsed -> oversized
             
-            var allExtraStates = GetAllExtraStates<VcamExtraState>();
-            foreach (var extra in allExtraStates)
+            if (vcam is CinemachineCameraManagerBase manager)
+            {
+                foreach (var childCamera in manager.ChildCameras)
+                    if (CheckForOversized(GetExtraState<VcamExtraState>(childCamera), m_ShapeCache))
+                        return true; // at least one child is oversized
+            }
+            else if (CheckForOversized(GetExtraState<VcamExtraState>(vcam), m_ShapeCache))
+                return true; // oversized
+            
+            return false;
+            
+            // local function
+            static bool CheckForOversized(VcamExtraState extra, ShapeCache shapeCache)
             {
                 if (extra.BakedSolution != null)
                 {
                     var solution = extra.BakedSolution.m_Solution;
                     if (solution.Count == 1 && solution[0].Count == 1)
                         return true; // shrank down to mid point -> oversized
-                    if (solution.Count != m_ShapeCache.OriginalPath.Count)
+                    if (solution.Count != shapeCache.OriginalPath.Count)
                         return true; // polygon count of the input and solution differs -> oversized
                 }
+                return false;
             }
-            return false;
+        }
+        
+        void InvalidateLensCacheIfNeeded(CinemachineVirtualCameraBase vcam)
+        {
+            if (vcam is CinemachineCameraManagerBase manager)
+            {
+                foreach (var childCamera in manager.ChildCameras)
+                    if (IsLensCacheInvalid(childCamera.State, GetExtraState<VcamExtraState>(childCamera), m_ShapeCache))
+                        InvalidateLensCache(childCamera);
+            }
+            else if (IsLensCacheInvalid(vcam.State, GetExtraState<VcamExtraState>(vcam), m_ShapeCache))
+                InvalidateLensCache(vcam);
+            
+            // local function
+            static bool IsLensCacheInvalid(CameraState state, VcamExtraState extra, ShapeCache shapeCache)
+            {
+                var lens = state.Lens;
+                var deltaW = shapeCache.DeltaWorldToBaked;
+                var frustum = 
+                    CalculateHalfFrustumHeight(lens, deltaW.MultiplyPoint3x4(state.GetCorrectedPosition()).z);
+                return Mathf.Abs(extra.AspectRatio - lens.Aspect) > UnityVectorExtensions.Epsilon ||
+                    Mathf.Abs(extra.FrustumHeight - frustum * deltaW.lossyScale.x) > UnityVectorExtensions.Epsilon;
+            }
         }
 
         internal float BakeProgress() => m_ShapeCache.ConfinerOven != null ? m_ShapeCache.ConfinerOven.bakeProgress : 0f;
