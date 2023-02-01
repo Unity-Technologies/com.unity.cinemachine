@@ -200,11 +200,7 @@ namespace Cinemachine
         /// It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and
         /// blend between them instead of changing one Confiner2D's input bounding shape and calling this over and over.
         /// </remarks>
-        public void InvalidateBoundingShapeCache()
-        {
-            InvalidateLensCache();
-            m_ShapeCache.Invalidate();
-        }
+        public void InvalidateBoundingShapeCache() => m_ShapeCache.Invalidate();
 
         [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
         public void InvalidateCache() => InvalidateBoundingShapeCache();
