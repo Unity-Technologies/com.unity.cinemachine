@@ -50,6 +50,18 @@ namespace Cinemachine.Editor
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
                HelpBoxMessageType.Info));
+
+            UpdateOversizedCameraHelpVisibility();
+            ux.schedule.Execute(UpdateOversizedCameraHelpVisibility).Every(100);
+            void UpdateOversizedCameraHelpVisibility() 
+            {
+                oversizedCameraHelp.SetVisible(false);
+                if (Target == null)
+                    return; // target deleted
+                
+                if (!Target.OversizeWindow.Enabled) 
+                    oversizedCameraHelp.SetVisible(Target.IsCameraTooBigForTheConfiner(Target.VirtualCamera));
+            }
             
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
@@ -64,7 +76,6 @@ namespace Cinemachine.Editor
             ux.schedule.Execute(UpdateBakeProgress).Every(250); // GML todo: is there a better way to do this?
             void UpdateBakeProgress() 
             {
-                oversizedCameraHelp.SetVisible(false);
                 if (Target == null)
                     return; // target deleted
                 
@@ -72,7 +83,6 @@ namespace Cinemachine.Editor
                 {
                     bakeTimeout.SetVisible(false);
                     bakeProgress.SetVisible(false);
-                    oversizedCameraHelp.SetVisible(Target.IsCameraTooBigForTheConfiner(Target.VirtualCamera));
                     return;
                 }
                 var progress = Target.BakeProgress();
