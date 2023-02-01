@@ -72,9 +72,9 @@ namespace Cinemachine.Editor
                 + "or set the MaxWindowSize parameter to limit skeleton computation.",
                 HelpBoxMessageType.Warning));
 
-            UpdateBakeProgress();
-            ux.schedule.Execute(UpdateBakeProgress).Every(250); // GML todo: is there a better way to do this?
-            void UpdateBakeProgress() 
+            UpdateBakingProgress();
+            ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
+            void UpdateBakingProgress() 
             {
                 if (Target == null)
                     return; // target deleted
