@@ -1,7 +1,6 @@
 #if CINEMACHINE_PHYSICS_2D
 
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.UIElements;
