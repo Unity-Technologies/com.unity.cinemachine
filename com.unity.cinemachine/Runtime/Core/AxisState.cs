@@ -297,6 +297,8 @@ namespace Cinemachine
             // Clamp our max speeds so we don't go crazy
             float maxSpeed = GetMaxSpeed();
             m_CurrentSpeed = Mathf.Clamp(m_CurrentSpeed, -maxSpeed, maxSpeed);
+            if (Mathf.Abs(m_CurrentSpeed) < Epsilon)
+                m_CurrentSpeed = 0;
 
             Value += m_CurrentSpeed * deltaTime;
             bool isOutOfRange = (Value > m_MaxValue) || (Value < m_MinValue);

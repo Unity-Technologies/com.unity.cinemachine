@@ -278,10 +278,10 @@ namespace Cinemachine
                         * targetOrientation).eulerAngles;
                     for (int i = 0; i < 3; ++i)
                     {
+                        if (relative[i] > 180)
+                            relative[i] -= 360;
                         if (Mathf.Abs(relative[i]) < 0.01f) // correct for precision drift
                             relative[i] = 0;
-                        else if (relative[i] > 180)
-                            relative[i] -= 360;
                     }
                     relative = VirtualCamera.DetachedFollowTargetDamp(relative, AngularDamping, deltaTime);
                     dampedOrientation = m_PreviousReferenceOrientation * Quaternion.Euler(relative);
