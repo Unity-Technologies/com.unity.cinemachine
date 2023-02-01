@@ -547,7 +547,7 @@ namespace Cinemachine
                     var solution = extra.BakedSolution.m_Solution;
                     if (solution.Count == 1 && solution[0].Count == 1)
                         return true; // shrank down to mid point -> oversized
-                    if (solution.Count != shapeCache.OriginalPath.Count)
+                    if (shapeCache.OriginalPath != null && solution.Count != shapeCache.OriginalPath.Count)
                         return true; // polygon count of the input and solution differs -> oversized
                 }
                 return false;
