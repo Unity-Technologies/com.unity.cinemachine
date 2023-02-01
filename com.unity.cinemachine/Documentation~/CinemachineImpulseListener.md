@@ -22,9 +22,11 @@ In the real world, some cameras are mounted less rigidly than others, and tend t
 
 >**TIP:** You can create your own Impulse Listener to interpret vibration signals any way you like.
 
+>**TIP:** To add impulse listening capabilities to GameObjects that are not CinemachineCameras, you can use the __CinemachineExternalImpulseListener__ behaviour.
+
 By default, an Impulse Listener reacts to every Impulse Source in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make a Listener respond to some Sources and ignore others.
 
-##Properties:
+## Properties:
 
 | Property:           | Function:                                                    |
 | ------------------- | ------------------------------------------------------------ |
