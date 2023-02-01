@@ -168,6 +168,8 @@ namespace Cinemachine
         {
             var extra = GetExtraState<VcamExtraState>(VirtualCamera);
             extra.BakedSolution = null;
+            extra.AspectRatio = 0;
+            extra.FrustumHeight = 0;
         }
 
         /// <summary>
@@ -181,8 +183,12 @@ namespace Cinemachine
         /// It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and
         /// blend between them instead of changing one Confiner2D's input bounding shape and calling this over and over.
         /// </remarks>
-        public void InvalidateBoundingShapeCache() => m_ShapeCache.Invalidate();
-        
+        public void InvalidateBoundingShapeCache()
+        {
+            InvalidateLensCache();
+            m_ShapeCache.Invalidate();
+        }
+
         [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
         public void InvalidateCache() => InvalidateBoundingShapeCache();
 
@@ -213,10 +219,10 @@ namespace Cinemachine
                 {
                     // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
                     var deltaW = m_ShapeCache.DeltaWorldToBaked;
-                    m_ShapeCache.AspectRatio = aspectRatio;
-                    m_ShapeCache.FrustumHeight = 
+                    extra.AspectRatio = aspectRatio;
+                    extra.FrustumHeight = 
                         CalculateHalfFrustumHeight(state.Lens, deltaW.MultiplyPoint3x4(camPos).z) * deltaW.lossyScale.x;
-                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(m_ShapeCache.FrustumHeight);
+                    extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(extra.FrustumHeight);
                 }
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
                 var newPos = ConfinePoint(camPos, extra, fwd);
@@ -303,18 +309,22 @@ namespace Cinemachine
 
         class VcamExtraState
         {
+            public ConfinerOven.BakedSolution BakedSolution;
+            
             public Vector3 PreviousDisplacement;
             public Vector3 DampedDisplacement;
             public Vector3 PreviousCameraPosition;
-            public ConfinerOven.BakedSolution BakedSolution;
+            
+            public float FrustumHeight;
+            public float AspectRatio;
         };
         
-        internal ShapeCache m_ShapeCache; // internal for editor
+        ShapeCache m_ShapeCache; // internal for editor
 
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
         /// </summary>
-        internal struct ShapeCache
+        struct ShapeCache
         {
             public ConfinerOven ConfinerOven;
             public List<List<Vector2>> OriginalPath;  // in baked space, not including offset
@@ -322,9 +332,7 @@ namespace Cinemachine
             // These account for offset and transform change since baking
             public Matrix4x4 DeltaWorldToBaked; 
             public Matrix4x4 DeltaBakedToWorld;
-
-            public float FrustumHeight;
-            public float AspectRatio;
+            
             OversizeWindowSettings m_OversizeWindowSettings;
             internal float maxComputationTimePerFrameInSeconds;
 
@@ -336,21 +344,12 @@ namespace Cinemachine
             /// </summary>
             public void Invalidate()
             {
-                AspectRatio = 0;
-                FrustumHeight = 0;
                 m_OversizeWindowSettings = new ();
                 DeltaBakedToWorld = DeltaWorldToBaked = Matrix4x4.identity;
 
                 m_BoundingShape2D = null;
                 OriginalPath = null;
-
                 ConfinerOven = null;
-            }
-            
-            public bool IsLensValid(float aspectRatio, float frustumHeight)
-            {
-                return Mathf.Abs(AspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon &&
-                    Mathf.Abs(FrustumHeight - frustumHeight) < UnityVectorExtensions.Epsilon;
             }
 
             /// <summary>
@@ -362,8 +361,8 @@ namespace Cinemachine
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
-            public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, 
-                float aspectRatio, out bool confinerStateChanged)
+            public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, float aspectRatio, 
+                out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
                 
@@ -500,13 +499,26 @@ namespace Cinemachine
             }
             return originalPath != null;
         }
+        
+        // TODO: this is definitely wrong. We should not compare to all vcams just one
+        internal bool IsLensValid(float aspectRatio, float frustumHeight, CinemachineVirtualCameraBase vcam)
+        {
+            var allExtraStates = GetAllExtraStates<VcamExtraState>();
+            foreach (var extra in allExtraStates)
+            {
+                if (Mathf.Abs(extra.AspectRatio - aspectRatio) > UnityVectorExtensions.Epsilon ||
+                    Mathf.Abs(extra.FrustumHeight - frustumHeight) > UnityVectorExtensions.Epsilon)
+                    return false;
+            }
+            return true;
+        }
 
         internal bool IsCameraOversizedForTheConfiner()
         {
             if (BoundingShape2D == null)
                 return false;
             
-            if (m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
+            if (m_ShapeCache.ConfinerOven != null && m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
                 return true; // there is a skeleton, that means some parts are collapsed -> oversized
             
             var allExtraStates = GetAllExtraStates<VcamExtraState>();
