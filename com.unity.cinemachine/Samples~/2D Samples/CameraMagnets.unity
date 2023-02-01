@@ -2197,14 +2197,17 @@ MonoBehaviour:
     of the confiner to fit the new camera projection mode. See the Toggle component
     on CameraModeToggle GameObject for the functions that get called when the On
     Value Changed event is fired.  \n\nNote: Confiner2D Extension has two functions
-    to recompute the internal cache state. The components inspector shows these as
-    two buttons. \n\nRemark: Cache recomputation can be costly; it is much more efficient
-    to blend between Cinemachine Cameras with different Confiner2D settings than
-    to re-calculate the cache over and over.\n\nThe Camera Magnets illustrate a dynamic
-    modification of the Target Group.  Toggling them on makes them attract the camera's
-    attention: the closer the player is to the magnet, the stronger the attraction. 
-    This is implemented by the MagnetGroupController behaviour on the CameraMagnets
-    object."
+    to recompute the internal cache state.\n- InvalidateLensCache: Invalidates Confiner2D's
+    CinemachineCamera specific lens cache. When Confiner2D Extension is attached
+    to a CinemachineCameraManagerBase, such as CinemachineMixingCamera, then you
+    need to pass the CinemachineCamera children of the manager camera to InvalidateLensCache.\n-
+    InvalidateBoundingShapeCache: Invalidates Confiner2D internal cache.\n\nRemark:
+    Cache recomputation can be costly; it is much more efficient to blend between
+    Cinemachine Cameras with different Confiner2D settings than to re-calculate the
+    cache over and over.\n\nThe Camera Magnets illustrate a dynamic modification
+    of the Target Group.  Toggling them on makes them attract the camera's attention:
+    the closer the player is to the magnet, the stronger the attraction.  This is
+    implemented by the MagnetGroupController behaviour on the CameraMagnets object."
 --- !u!4 &2125070645
 Transform:
   m_ObjectHideFlags: 0
