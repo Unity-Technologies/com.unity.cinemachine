@@ -1,9 +1,10 @@
-    using UnityEngine;
-    using UnityEditor;
-    using UnityEngine.Rendering;
-    using UnityEditor.Rendering;
-    using System.Collections.Generic;
+#if CINEMACHINE_HDRP || CINEMACHINE_URP
 
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.Rendering;
+using UnityEditor.Rendering;
+using System.Collections.Generic;
 
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
@@ -239,3 +240,4 @@ namespace Cinemachine.Editor
 #endif
     }
 }
+#endif

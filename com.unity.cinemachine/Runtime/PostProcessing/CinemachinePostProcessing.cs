@@ -1,41 +1,14 @@
-﻿using UnityEngine;
+﻿#if CINEMACHINE_POST_PROCESSING_V2
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
-#if CINEMACHINE_POST_PROCESSING_V2
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
-#endif
 
 namespace Cinemachine
 {
-#if !CINEMACHINE_POST_PROCESSING_V2
     /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
-    /// have the Post-Processing V2 stack package installed in order to use this behaviour.
-    ///
-    /// As a component on the Virtual Camera, it holds
-    /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
-    /// the Virtual camera is live.  It also has the optional functionality of animating
-    /// the Focus Distance and DepthOfField properties of the Camera State, and
-    /// applying them to the current Post-Processing profile, provided that profile has a
-    /// DepthOfField effect that is enabled.
-    /// </summary>
-    [SaveDuringPlay]
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachinePostProcessing : CinemachineExtension 
-    {
-        /// <summary>Apply PostProcessing effects</summary>
-        /// <param name="vcam">The virtual camera being processed</param>
-        /// <param name="stage">The current pipeline stage</param>
-        /// <param name="state">The current virtual camera state</param>
-        /// <param name="deltaTime">The current applicable deltaTime</param>
-        protected override void PostPipelineStageCallback(
-            CinemachineVirtualCameraBase vcam,
-            CinemachineCore.Stage stage, ref CameraState state, float deltaTime) {}
-    }
-#else
-    /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
+    /// This behaviour is a liaison between Cinemachine and the Post-Processing v2 module.  You must
     /// have the Post-Processing V2 stack package installed in order to use this behaviour.
     ///
     /// As a component on the Virtual Camera, it holds
@@ -382,5 +355,5 @@ namespace Cinemachine
             SceneManager.sceneUnloaded += (scene) => CleanupLookupTable();
         }
     }
-#endif
 }
+#endif
