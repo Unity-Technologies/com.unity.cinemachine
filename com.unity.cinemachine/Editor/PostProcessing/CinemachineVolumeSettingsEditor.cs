@@ -7,7 +7,7 @@
 
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
     using UnityEngine.Rendering.Universal;
 #endif
 
@@ -16,7 +16,7 @@ namespace Cinemachine.Editor
     [CustomEditor(typeof(CinemachineVolumeSettings))]
     class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
-#if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
+#if !(CINEMACHINE_HDRP || CINEMACHINE_URP)
         public override void OnInspectorGUI()
         {
             EditorGUILayout.HelpBox(
@@ -84,7 +84,7 @@ namespace Cinemachine.Editor
                 bool valid = false;
                 DepthOfField dof;
                 if (Target.Profile != null && Target.Profile.TryGet(out dof))
-#if CINEMACHINE_LWRP_7_3_1 && !CINEMACHINE_HDRP
+#if CINEMACHINE_URP && !CINEMACHINE_HDRP
                 {
                     valid = dof.active && dof.focusDistance.overrideState
                         && dof.mode.overrideState && dof.mode == DepthOfFieldMode.Bokeh;

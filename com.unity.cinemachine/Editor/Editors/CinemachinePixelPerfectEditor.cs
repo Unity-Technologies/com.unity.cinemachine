@@ -16,7 +16,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-#if CINEMACHINE_LWRP_7_3_1 || CINEMACHINE_PIXEL_PERFECT_2_0_3
+#if CINEMACHINE_URP || CINEMACHINE_PIXEL_PERFECT_2_0_3
             m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
             m_PipelineUtility.UpdateState();
 #else
