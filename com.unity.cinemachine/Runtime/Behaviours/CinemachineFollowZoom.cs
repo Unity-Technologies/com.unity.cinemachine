@@ -71,7 +71,7 @@ namespace Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             var extra = GetExtraState<VcamExtraState>(vcam);
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
+            if (deltaTime < 0 || !vcam.PreviousStateIsValid)
                 extra.m_PreviousFrameZoom = state.Lens.FieldOfView;
 
             // Set the zoom after the body has been positioned, but before the aim,
@@ -90,11 +90,11 @@ namespace Cinemachine
                     targetWidth = Mathf.Clamp(targetWidth, minW, maxW);
 
                     // Apply damping
-                    if (deltaTime >= 0 && Damping > 0 && VirtualCamera.PreviousStateIsValid)
+                    if (deltaTime >= 0 && Damping > 0 && vcam.PreviousStateIsValid)
                     {
                         var currentWidth = d * 2f * Mathf.Tan(extra.m_PreviousFrameZoom * Mathf.Deg2Rad / 2f);
                         var delta = targetWidth - currentWidth;
-                        delta = VirtualCamera.DetachedLookAtTargetDamp(delta, Damping, deltaTime);
+                        delta = vcam.DetachedLookAtTargetDamp(delta, Damping, deltaTime);
                         targetWidth = currentWidth + delta;
                     }
                     fov = 2f * Mathf.Atan(targetWidth / (2 * d)) * Mathf.Rad2Deg;

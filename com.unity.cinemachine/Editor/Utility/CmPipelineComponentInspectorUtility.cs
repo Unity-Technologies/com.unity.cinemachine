@@ -69,7 +69,7 @@ namespace Cinemachine.Editor
                 else
                 {
                     var x = targets[i] as CinemachineExtension;
-                    if (x != null && x.VirtualCamera == null)
+                    if (x != null && x.ComponentOwner == null)
                         Undo.AddComponent<CinemachineCamera>(x.gameObject).AddExtension(x);
                 }
             }
@@ -99,15 +99,15 @@ namespace Cinemachine.Editor
                 else
                 {
                     var x = targets[i] as CinemachineExtension;
-                    noCamera |= x.VirtualCamera == null;
+                    noCamera |= x.ComponentOwner == null;
                     switch (m_RequiredTargets)
                     {
-                        case RequiredTargets.Follow: noTarget |= noCamera || x.VirtualCamera.Follow == null; break;
-                        case RequiredTargets.LookAt: noTarget |= noCamera || x.VirtualCamera.LookAt == null; break;
-                        case RequiredTargets.FollowGroup: noTarget |= noCamera || x.VirtualCamera.FollowTargetAsGroup == null; break;
+                        case RequiredTargets.Follow: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
+                        case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
+                        case RequiredTargets.FollowGroup: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
                         default: break;
                     }
-                    noTarget = noCamera || x.VirtualCamera.Follow == null;
+                    noTarget = noCamera || x.ComponentOwner.Follow == null;
                 }
             }
             if (m_NoCameraHelp != null)
@@ -142,15 +142,15 @@ namespace Cinemachine.Editor
                 else
                 {
                     var x = targets[i] as CinemachineExtension;
-                    noCamera |= x.VirtualCamera == null;
+                    noCamera |= x.ComponentOwner == null;
                     switch (requiredTargets)
                     {
-                        case RequiredTargets.Follow: noTarget |= noCamera || x.VirtualCamera.Follow == null; break;
-                        case RequiredTargets.LookAt: noTarget |= noCamera || x.VirtualCamera.LookAt == null; break;
-                        case RequiredTargets.FollowGroup: noTarget |= noCamera || x.VirtualCamera.FollowTargetAsGroup == null; break;
+                        case RequiredTargets.Follow: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
+                        case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
+                        case RequiredTargets.FollowGroup: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
                         default: break;
                     }
-                    noTarget = noCamera || x.VirtualCamera.Follow == null;
+                    noTarget = noCamera || x.ComponentOwner.Follow == null;
                 }
             }
             if (noCamera)

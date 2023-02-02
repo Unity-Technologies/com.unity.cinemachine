@@ -228,16 +228,20 @@ namespace Cinemachine
             }
         };
 
+        List<VcamExtraState> m_extraStateCache;
+
         /// <summary>Inspector API for debugging collision resolution path</summary>
-        public List<List<Vector3>> DebugPaths
+        internal List<List<Vector3>> DebugPaths
         {
             get
             {
                 List<List<Vector3>> list = new List<List<Vector3>>();
-                List<VcamExtraState> extraStates = GetAllExtraStates<VcamExtraState>();
-                foreach (var v in extraStates)
-                    if (v.debugResolutionPath != null && v.debugResolutionPath.Count > 0)
-                        list.Add(v.debugResolutionPath);
+
+                m_extraStateCache ??= new();
+                GetAllExtraStates(m_extraStateCache);
+                foreach (var e in m_extraStateCache)
+                    if (e.debugResolutionPath != null && e.debugResolutionPath.Count > 0)
+                        list.Add(e.debugResolutionPath);
                 return list;
             }
         }
@@ -319,7 +323,7 @@ namespace Cinemachine
 
                     // Apply damping
                     float dampTime = m_DampingWhenOccluded;
-                    if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid && m_DampingWhenOccluded + m_Damping > Epsilon)
+                    if (deltaTime >= 0 && vcam.PreviousStateIsValid && m_DampingWhenOccluded + m_Damping > Epsilon)
                     {
                         // To ease the transition between damped and undamped regions, we damp the damp time
                         var dispSqrMag = displacement.sqrMagnitude;
@@ -345,7 +349,7 @@ namespace Cinemachine
                     cameraPos = state.GetCorrectedPosition();
 
                     // Adjust the damping bypass to account for the displacement
-                    if (state.HasLookAt() && VirtualCamera.PreviousStateIsValid)
+                    if (state.HasLookAt() && vcam.PreviousStateIsValid)
                     {
                         var dir0 = extra.previousCameraPosition - state.ReferenceLookAt;
                         var dir1 = cameraPos - state.ReferenceLookAt;
