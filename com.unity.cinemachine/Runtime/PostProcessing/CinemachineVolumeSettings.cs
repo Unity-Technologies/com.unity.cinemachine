@@ -100,7 +100,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Profile")]
         public VolumeProfile Profile;
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public VolumeProfile ProfileCopy;
 

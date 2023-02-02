@@ -87,7 +87,7 @@ namespace Cinemachine
         }
 #endif
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public float CurrentFocusDistance;
         }

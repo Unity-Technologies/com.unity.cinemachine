@@ -10,8 +10,18 @@ namespace Cinemachine
     /// </summary>
     public abstract class CinemachineExtension : MonoBehaviour
     {
+        /// <summary>
+        /// Extensions that need to save per-vcam state should inherit from this class and add
+        /// appropriate member variables.  Use GetExtraState() to access.
+        /// </summary>
+        protected class VcamExtraStateBase
+        {
+            /// <summary>The virtual camera being modified by the extension</summary>
+            public CinemachineVirtualCameraBase Vcam;
+        }
+
         CinemachineVirtualCameraBase m_VcamOwner;
-        Dictionary<ICinemachineCamera, System.Object> m_ExtraState;
+        Dictionary<CinemachineVirtualCameraBase, VcamExtraStateBase> m_ExtraState;
 
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
@@ -145,19 +155,19 @@ namespace Cinemachine
         /// /// <typeparam name="T">The type of the extra state class</typeparam>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <returns>The extra state, cast as type T</returns>
-        protected T GetExtraState<T>(ICinemachineCamera vcam) where T : class, new()
+        protected T GetExtraState<T>(CinemachineVirtualCameraBase vcam) where T : VcamExtraStateBase, new()
         {
             if (m_ExtraState == null)
-                m_ExtraState = new Dictionary<ICinemachineCamera, System.Object>();
+                m_ExtraState = new ();
             if (!m_ExtraState.TryGetValue(vcam, out var extra))
-                extra = m_ExtraState[vcam] = new T();
+                extra = m_ExtraState[vcam] = new T { Vcam = vcam};
             return extra as T;
         }
 
         /// <summary>Get all extra state info for all vcams.</summary>
         /// <typeparam name="T">The extra state type</typeparam>
         /// <param name="list">The list that will get populated with the extra states.</param>
-        protected void GetAllExtraStates<T>(List<T> list) where T : class, new()
+        protected void GetAllExtraStates<T>(List<T> list) where T : VcamExtraStateBase, new()
         {
             list.Clear();
             if (m_ExtraState != null)

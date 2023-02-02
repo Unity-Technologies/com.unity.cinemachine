@@ -177,29 +177,29 @@ namespace Cinemachine
 
         /// <summary>See whether an object is blocking the camera's view of the target</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
-        /// virtual camera that owns the collider, in the event that the camera has children</param>
+        /// virtual camera that owns the deoccluder, in the event that the camera has children</param>
         /// <returns>True if something is blocking the view</returns>
-        public bool IsTargetObscured(ICinemachineCamera vcam)
+        public bool IsTargetObscured(CinemachineVirtualCameraBase vcam)
         {
             return GetExtraState<VcamExtraState>(vcam).TargetObscured;
         }
 
         /// <summary>See whether the virtual camera has been moved nby the collider</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
-        /// virtual camera that owns the collider, in the event that the camera has children</param>
+        /// virtual camera that owns the deoccluder, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been displaced due to collision or
         /// target obstruction</returns>
-        public bool CameraWasDisplaced(ICinemachineCamera vcam)
+        public bool CameraWasDisplaced(CinemachineVirtualCameraBase vcam)
         {
             return GetCameraDisplacementDistance(vcam) > 0;
         }
 
         /// <summary>See how far the virtual camera wa moved nby the collider</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
-        /// virtual camera that owns the collider, in the event that the camera has children</param>
+        /// virtual camera that owns the deoccluder, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been displaced due to collision or
         /// target obstruction</returns>
-        public float GetCameraDisplacementDistance(ICinemachineCamera vcam)
+        public float GetCameraDisplacementDistance(CinemachineVirtualCameraBase vcam)
         {
             return GetExtraState<VcamExtraState>(vcam).PreviousDisplacement.magnitude;
         }
@@ -241,7 +241,7 @@ namespace Cinemachine
         /// <summary>
         /// Per-vcam extra state info
         /// </summary>
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 PreviousDisplacement;
             public bool TargetObscured;

@@ -107,7 +107,7 @@ namespace Cinemachine
             base.ConnectToVcam(connect);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 PreviousDisplacement;
             public float ConfinerDisplacement;

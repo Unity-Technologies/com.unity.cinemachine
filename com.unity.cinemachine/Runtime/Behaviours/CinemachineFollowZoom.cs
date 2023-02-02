@@ -50,7 +50,7 @@ namespace Cinemachine
             FovRange.x = Mathf.Clamp(FovRange.x, 1, FovRange.y);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public float m_PreviousFrameZoom = 0;
         }

@@ -159,7 +159,7 @@ namespace Cinemachine
             m_extraStateCache ??= new();
             GetAllExtraStates(m_extraStateCache);
             foreach (var extra in m_extraStateCache)
-                if (extra.vcam != null && extra.vcam.Follow == target)
+                if (extra.Vcam != null && extra.Vcam.Follow == target)
                     extra.PreviousCameraPosition += positionDelta;
         }
 
@@ -174,7 +174,7 @@ namespace Cinemachine
             GetAllExtraStates(m_extraStateCache);
             foreach (var extra in m_extraStateCache)
             {
-                if (extra.vcam != null)
+                if (extra.Vcam != null)
                 {
                     extra.BakedSolution = null;
                     extra.AspectRatio = 0;
@@ -219,7 +219,6 @@ namespace Cinemachine
                     return; // invalid path
 
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.vcam = vcam;
                 var camPos = state.GetCorrectedPosition();
 
                 // Make sure we have a solution for our current frustum size
@@ -313,9 +312,8 @@ namespace Cinemachine
             return Mathf.Abs(frustumHeight);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
-            public CinemachineVirtualCameraBase vcam;
             public ConfinerOven.BakedSolution BakedSolution;
             
             public Vector3 PreviousDisplacement;
@@ -498,7 +496,7 @@ namespace Cinemachine
             m_extraStateCache ??= new();
             GetAllExtraStates(m_extraStateCache);
             foreach (var e in m_extraStateCache)
-                if (e.vcam != null && e.BakedSolution != null)
+                if (e.Vcam != null && e.BakedSolution != null)
                     currentPath.AddRange(e.BakedSolution.GetBakedPath());
             return originalPath != null;
         }
@@ -522,7 +520,7 @@ namespace Cinemachine
             GetAllExtraStates(m_extraStateCache);
             foreach (var extra in m_extraStateCache)
             {
-                if (extra.vcam != null && extra.BakedSolution != null)
+                if (extra.Vcam != null && extra.BakedSolution != null)
                 {
                     var solution = extra.BakedSolution.m_Solution;
                     if (solution.Count == 1 && solution[0].Count == 1)
@@ -540,9 +538,9 @@ namespace Cinemachine
             GetAllExtraStates(m_extraStateCache);
             foreach (var extra in m_extraStateCache)
             {
-                if (extra.vcam != null)
+                if (extra.Vcam != null)
                 {
-                    var state = extra.vcam.State;
+                    var state = extra.Vcam.State;
                     var lens = state.Lens;
                     var deltaW = m_ShapeCache.DeltaWorldToBaked;
                     var frustum = CalculateHalfFrustumHeight(lens, deltaW.MultiplyPoint3x4(state.GetCorrectedPosition()).z);

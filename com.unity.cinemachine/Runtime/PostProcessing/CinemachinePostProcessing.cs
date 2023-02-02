@@ -107,7 +107,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Profile")]
         public PostProcessProfile Profile;
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public PostProcessProfile ProfileCopy;
 

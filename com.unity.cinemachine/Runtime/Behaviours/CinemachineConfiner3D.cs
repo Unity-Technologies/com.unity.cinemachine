@@ -49,9 +49,8 @@ namespace Cinemachine
             SlowingDistance = Mathf.Max(0, SlowingDistance);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
-            public CinemachineVirtualCameraBase vcam;
             public Vector3 PreviousDisplacement;
             public Vector3 PreviousCameraPosition;
         };
@@ -79,7 +78,7 @@ namespace Cinemachine
             m_extraStateCache ??= new();
             GetAllExtraStates(m_extraStateCache);
             foreach (var extra in m_extraStateCache)
-                if (extra.vcam != null && extra.vcam.Follow == target)
+                if (extra.Vcam != null && extra.Vcam.Follow == target)
                     extra.PreviousCameraPosition += positionDelta;
         }
         
@@ -97,7 +96,6 @@ namespace Cinemachine
             if (stage == CinemachineCore.Stage.Body && IsValid)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.vcam = vcam;
                 var camPos = state.GetCorrectedPosition();
 
                 // Snap the point inside the bounds

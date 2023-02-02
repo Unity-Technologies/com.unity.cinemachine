@@ -131,7 +131,7 @@ namespace Cinemachine
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the collider, in the event that the camera has children</param>
         /// <returns>True if something is blocking the view</returns>
-        public bool IsTargetObscured(ICinemachineCamera vcam)
+        public bool IsTargetObscured(CinemachineVirtualCameraBase vcam)
         {
             return GetExtraState<VcamExtraState>(vcam).targetObscured;
         }
@@ -141,7 +141,7 @@ namespace Cinemachine
         /// virtual camera that owns the collider, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been displaced due to collision or
         /// target obstruction</returns>
-        public bool CameraWasDisplaced(ICinemachineCamera vcam)
+        public bool CameraWasDisplaced(CinemachineVirtualCameraBase vcam)
         {
             return GetCameraDisplacementDistance(vcam) > 0;
         }
@@ -151,7 +151,7 @@ namespace Cinemachine
         /// virtual camera that owns the collider, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been displaced due to collision or
         /// target obstruction</returns>
-        public float GetCameraDisplacementDistance(ICinemachineCamera vcam)
+        public float GetCameraDisplacementDistance(CinemachineVirtualCameraBase vcam)
         {
             return GetExtraState<VcamExtraState>(vcam).previousDisplacement.magnitude;
         }
@@ -180,7 +180,7 @@ namespace Cinemachine
         /// <summary>
         /// Per-vcam extra state info
         /// </summary>
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 previousDisplacement;
             public Vector3 previousCameraOffset;
