@@ -575,7 +575,7 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            var vcam = VirtualCamera;
+            var vcam = ComponentOwner;
             for (int i = 0; i < Modifiers.Count; ++i)
                 Modifiers[i].Validate(vcam);
         }
@@ -590,22 +590,13 @@ namespace Cinemachine
         // GML todo: clean this up
         static void TryGetVcamComponent<T>(CinemachineVirtualCameraBase vcam, out T component)
         {
-    #pragma warning disable 618
-            var legacyVcam = vcam as CinemachineVirtualCamera;
-            if (legacyVcam != null)
-            {
-                if (!legacyVcam.GetComponentOwner().TryGetComponent(out component))
-                    component = default;
-                return;
-            }
-    #pragma warning restore 618
             if (vcam == null || !vcam.TryGetComponent(out component))
                 component = default;
         }
 
         void RefreshComponentCache()
         {
-            var vcam = VirtualCamera;
+            var vcam = ComponentOwner;
             TryGetVcamComponent(vcam, out m_ValueSource);
             for (int i = 0; i < Modifiers.Count; ++i)
                 Modifiers[i].RefreshCache(vcam);
@@ -622,7 +613,7 @@ namespace Cinemachine
         public override void PrePipelineMutateCameraStateCallback(
             CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
         {
-            if (m_ValueSource != null)
+            if (m_ValueSource != null && vcam == ComponentOwner)
             {
                 // Apply easing
                 if (s_EasingCurve == null)
@@ -656,7 +647,7 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (m_ValueSource != null && stage == CinemachineCore.Stage.Finalize)
+            if (m_ValueSource != null && stage == CinemachineCore.Stage.Finalize && vcam == ComponentOwner)
             {
                 for (int i = 0; i < Modifiers.Count; ++i)
                     Modifiers[i].AfterPipeline(vcam, ref state, deltaTime, m_CurrentValue);

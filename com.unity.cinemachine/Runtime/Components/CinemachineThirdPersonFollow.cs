@@ -224,9 +224,7 @@ namespace Cinemachine
         {
             base.OnTargetObjectWarped(target, positionDelta);
             if (target == FollowTarget)
-            {
                 m_PreviousFollowTargetPosition += positionDelta;
-            }
         }
         
         void PositionCamera(ref CameraState curState, float deltaTime)

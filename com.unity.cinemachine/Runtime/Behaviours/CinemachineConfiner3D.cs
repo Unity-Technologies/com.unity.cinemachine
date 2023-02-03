@@ -1,5 +1,6 @@
 #if CINEMACHINE_PHYSICS 
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine
@@ -48,11 +49,13 @@ namespace Cinemachine
             SlowingDistance = Mathf.Max(0, SlowingDistance);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 PreviousDisplacement;
             public Vector3 PreviousCameraPosition;
         };
+
+        List<VcamExtraState> m_extraStateCache;
 
         /// <summary>Check if the bounding volume is defined</summary>
         public bool IsValid => BoundingVolume != null && BoundingVolume.enabled && BoundingVolume.gameObject.activeInHierarchy;
@@ -66,10 +69,18 @@ namespace Cinemachine
         /// <summary>This is called to notify the extension that a target got warped,
         /// so that the extension can update its internal state to make the camera
         /// also warp seamlessly.  Base class implementation does nothing.</summary>
+        /// <param name="vcam">The camera to warp</param>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
-        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
-            => GetExtraState<VcamExtraState>(VirtualCamera).PreviousCameraPosition += positionDelta;
+        public override void OnTargetObjectWarped(
+            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta) 
+        {
+            m_extraStateCache ??= new();
+            GetAllExtraStates(m_extraStateCache);
+            foreach (var extra in m_extraStateCache)
+                if (extra.Vcam != null && extra.Vcam.Follow == target)
+                    extra.PreviousCameraPosition += positionDelta;
+        }
         
         /// <summary>
         /// Callback to do the camera confining
@@ -89,7 +100,7 @@ namespace Cinemachine
 
                 // Snap the point inside the bounds
                 var newPos = ConfinePoint(camPos);
-                if (SlowingDistance > Epsilon && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                if (SlowingDistance > Epsilon && deltaTime >= 0 && vcam.PreviousStateIsValid)
                 {
                     // Reduce speed if moving towards the edge and close enough to it
                     var prevPos = extra.PreviousCameraPosition;

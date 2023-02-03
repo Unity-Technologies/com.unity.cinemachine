@@ -37,7 +37,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineDeoccluder))]
         static void DrawColliderGizmos(CinemachineDeoccluder collider, GizmoType type)
         {
-            CinemachineVirtualCameraBase vcam = (collider != null) ? collider.VirtualCamera : null;
+            CinemachineVirtualCameraBase vcam = (collider != null) ? collider.ComponentOwner : null;
             if (vcam != null && collider.enabled)
             {
                 Color oldColor = Gizmos.color;

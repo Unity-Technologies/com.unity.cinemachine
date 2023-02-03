@@ -100,11 +100,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Profile")]
         public VolumeProfile Profile;
 
-        /// <summary>This is obsolete, please use m_FocusTracking</summary>
-        [HideInInspector, SerializeField, FormerlySerializedAs("m_FocusTracksTarget")]
-        bool m_LegacyFocusTracksTarget;
-
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public VolumeProfile ProfileCopy;
 
@@ -132,28 +128,18 @@ namespace Cinemachine
             }
         }
 
+        List<VcamExtraState> m_extraStateCache;
+
         /// <summary>True if the profile is enabled and nontrivial</summary>
         public bool IsValid => Profile != null && Profile.components.Count > 0;
 
         /// <summary>Called by the editor when the shared asset has been edited</summary>
-        public void InvalidateCachedProfile()
+        internal void InvalidateCachedProfile()
         {
-            var list = GetAllExtraStates<VcamExtraState>();
-            for (int i = 0; i < list.Count; ++i)
-                list[i].DestroyProfileCopy();
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-
-            // Map legacy m_FocusTracksTarget to focus mode
-            if (m_LegacyFocusTracksTarget)
-            {
-                FocusTracking = VirtualCamera.LookAt != null 
-                    ? FocusTrackingMode.LookAtTarget : FocusTrackingMode.Camera;
-            }
-            m_LegacyFocusTracksTarget = false;
+            m_extraStateCache ??= new();
+            GetAllExtraStates(m_extraStateCache);
+            foreach (var e in m_extraStateCache)
+                e.DestroyProfileCopy();
         }
 
         protected override void OnDestroy()
@@ -200,7 +186,7 @@ namespace Cinemachine
                                 switch (FocusTracking)
                                 {
                                     default: break;
-                                    case FocusTrackingMode.FollowTarget: focusTarget = VirtualCamera.Follow; break;
+                                    case FocusTrackingMode.FollowTarget: focusTarget = vcam.Follow; break;
                                     case FocusTrackingMode.CustomTarget: focusTarget = FocusTarget; break;
                                 }
                                 if (focusTarget != null)

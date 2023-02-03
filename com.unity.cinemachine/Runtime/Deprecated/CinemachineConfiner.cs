@@ -107,7 +107,7 @@ namespace Cinemachine
             base.ConnectToVcam(connect);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 PreviousDisplacement;
             public float ConfinerDisplacement;
@@ -157,7 +157,7 @@ namespace Cinemachine
                 else
                     displacement = ConfinePoint(state.GetCorrectedPosition());
 
-                if (m_Damping > 0 && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
+                if (m_Damping > 0 && deltaTime >= 0 && vcam.PreviousStateIsValid)
                 {
                     var delta = displacement - extra.PreviousDisplacement;
                     delta = Damper.Damp(delta, m_Damping, deltaTime);

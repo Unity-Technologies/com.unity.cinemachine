@@ -49,20 +49,8 @@ namespace Cinemachine.Editor
             
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
-               HelpBoxMessageType.Info));
+                HelpBoxMessageType.Info));
 
-            UpdateOversizedCameraHelpVisibility();
-            ux.schedule.Execute(UpdateOversizedCameraHelpVisibility).Every(100);
-            void UpdateOversizedCameraHelpVisibility() 
-            {
-                oversizedCameraHelp.SetVisible(false);
-                if (Target == null)
-                    return; // target deleted
-                
-                if (!Target.OversizeWindow.Enabled) 
-                    oversizedCameraHelp.SetVisible(Target.IsCameraTooBigForTheConfiner(Target.VirtualCamera));
-            }
-            
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
             var bakeProgress = ux.AddChild(new ProgressBar { lowValue = 0, highValue = 100 });
@@ -79,6 +67,7 @@ namespace Cinemachine.Editor
                 if (Target == null)
                     return; // target deleted
                 
+                oversizedCameraHelp.SetVisible(!Target.OversizeWindow.Enabled && Target.IsCameraLensOversized());
                 if (!Target.OversizeWindow.Enabled)
                 {
                     bakeTimeout.SetVisible(false);
