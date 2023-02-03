@@ -1,35 +1,21 @@
-﻿using UnityEngine;
+﻿#if (CINEMACHINE_HDRP || CINEMACHINE_URP)
+
+using UnityEngine;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 #if CINEMACHINE_HDRP
-    using System.Collections.Generic;
-    using UnityEngine.Rendering;
     using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_LWRP_7_3_1
-    using System.Collections.Generic;
-    using UnityEngine.Rendering;
+#elif CINEMACHINE_URP
     using UnityEngine.Rendering.Universal;
 #endif
 
 namespace Cinemachine
 {
-#if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
-    // Workaround for Unity scripting bug
     /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
-    ///
-    /// As a component on the Virtual Camera, it holds
-    /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
-    /// the Virtual camera is live.  It also has the optional functionality of animating
-    /// the Focus Distance and DepthOfField properties of the Camera State, and
-    /// applying them to the current Post-Processing profile, provided that profile has a
-    /// DepthOfField effect that is enabled.
-    /// </summary>
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachineVolumeSettings : MonoBehaviour {}
-#else
-    /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
+    /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module,
+    /// shipped with HDRP and URP.
     ///
     /// As a component on the Virtual Camera, it holds
     /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
@@ -232,16 +218,11 @@ namespace Cinemachine
                 hdCam.colorPyramidHistoryIsValid = false;
                 hdCam.Reset();
             }
-#elif CINEMACHINE_LDRP_7_3_1
+#elif CINEMACHINE_URP
             // Reset temporal effects
             var cam = brain.OutputCamera;
-            if (cam != null)
-            {
-                HDCamera hdCam = HDCamera.GetOrCreate(cam);
-                hdCam.volumetricHistoryIsValid = false;
-                hdCam.colorPyramidHistoryIsValid = false;
-                hdCam.Reset();
-            }
+            if (cam != null && cam.TryGetComponent<UniversalAdditionalCameraData>(out var data))
+                data.resetHistory = true;
 #endif
         }
 
@@ -316,7 +297,7 @@ namespace Cinemachine
                 // Update the volume's layer so it will be seen
 #if CINEMACHINE_HDRP
                 brain.gameObject.TryGetComponent<HDAdditionalCameraData>(out var data);
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
                 brain.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var data);
 #endif
                 if (data != null)
@@ -352,5 +333,5 @@ namespace Cinemachine
             CinemachineCore.CameraCutEvent.AddListener(OnCameraCut);
         }
     }
-#endif
 }
+#endif

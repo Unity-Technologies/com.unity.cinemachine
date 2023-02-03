@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Confiner2D and Confiner3D support smooth stop at bounds edge.
 - CinemachineIndependentImpulseListener renamed to CinemachineExternalImpulseListener.
 - Bugfix: Very occasional axis drift in SimpleFollow when viewing angle is +-90 degrees.
+- URP: add temporal effects reset on camera cut
 
 
 ## [3.0.0-pre.3] - 2022-10-28

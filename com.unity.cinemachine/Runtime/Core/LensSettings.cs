@@ -3,7 +3,7 @@ using System;
 
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
     using UnityEngine.Rendering.Universal;
 #endif
 
