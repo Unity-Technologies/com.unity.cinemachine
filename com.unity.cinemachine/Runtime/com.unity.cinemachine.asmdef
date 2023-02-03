@@ -41,6 +41,11 @@
             "define": "CINEMACHINE_HDRP_7_3_1"
         },
         {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "14.0.0",
+            "define": "CINEMACHINE_HDRP_14"
+        },
+        {
             "name": "com.unity.modules.physics2d",
             "expression": "1.0.0",
             "define": "CINEMACHINE_PHYSICS_2D"
@@ -58,7 +63,12 @@
         {
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.3.1",
-            "define": "CINEMACHINE_LWRP_7_3_1"
+            "define": "CINEMACHINE_URP"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "14.0.4",
+            "define": "CINEMACHINE_URP_14"
         },
         {
             "name": "com.unity.2d.pixel-perfect",
@@ -79,11 +89,6 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
-        },
-        {
-            "name": "com.unity.render-pipelines.high-definition",
-            "expression": "14.0.0",
-            "define": "CINEMACHINE_HDRP_14"
         }
     ],
     "noEngineReferences": false
