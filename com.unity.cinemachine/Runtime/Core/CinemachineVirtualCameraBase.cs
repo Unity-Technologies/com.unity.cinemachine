@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -323,7 +322,7 @@ namespace Cinemachine
                         e.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
                 }
             }
-            CinemachineVirtualCameraBase parent = ParentCamera as CinemachineVirtualCameraBase;
+            var parent = ParentCamera as CinemachineVirtualCameraBase;
             if (parent != null)
                 parent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
         }
@@ -356,7 +355,7 @@ namespace Cinemachine
                         e.PrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
                 }
             }
-            CinemachineVirtualCameraBase parent = ParentCamera as CinemachineVirtualCameraBase;
+            var parent = ParentCamera as CinemachineVirtualCameraBase;
             if (parent != null)
                 parent.InvokePrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
         }
@@ -731,14 +730,20 @@ namespace Cinemachine
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
-        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
+            => OnTargetObjectWarped(this, target, positionDelta);
+
+        void OnTargetObjectWarped(CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
         {
             // inform the extensions
             if (Extensions != null)
             {
                 for (int i = 0; i < Extensions.Count; ++i)
-                    Extensions[i].OnTargetObjectWarped(target, positionDelta);
+                    Extensions[i].OnTargetObjectWarped(vcam, target, positionDelta);
             }
+            var parent = ParentCamera as CinemachineVirtualCameraBase;
+            if (parent != null)
+                parent.OnTargetObjectWarped(vcam, target, positionDelta);
         }
 
         /// <summary>
@@ -746,14 +751,20 @@ namespace Cinemachine
         /// </summary>
         /// <param name="pos">Worldspace position to take</param>
         /// <param name="rot">Worldspace orientation to take</param>
-        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) 
+            => ForceCameraPosition(this, pos, rot);
+
+        void ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot)
         {
             // inform the extensions
             if (Extensions != null)
             {
                 for (int i = 0; i < Extensions.Count; ++i)
-                    Extensions[i].ForceCameraPosition(pos, rot);
+                    Extensions[i].ForceCameraPosition(vcam, pos, rot);
             }
+            var parent = ParentCamera as CinemachineVirtualCameraBase;
+            if (parent != null)
+                parent.ForceCameraPosition(vcam, pos, rot);
         }
 
         /// <summary>

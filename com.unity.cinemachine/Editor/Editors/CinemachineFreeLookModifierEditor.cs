@@ -47,8 +47,8 @@ namespace Cinemachine
                 {
                     Undo.RecordObject(Target, "add modifier");
                     var m = (CinemachineFreeLookModifier.Modifier)Activator.CreateInstance(type);
-                    m.RefreshCache(Target.VirtualCamera);
-                    m.Reset(Target.VirtualCamera);
+                    m.RefreshCache(Target.ComponentOwner);
+                    m.Reset(Target.ComponentOwner);
                     Target.Modifiers.Add(m);
                 }
             }
@@ -86,7 +86,7 @@ namespace Cinemachine
                 if (GUI.Button(r, m_ResetModifierLabel))
                 {
                     Undo.RecordObject(Target, "reset modifier");
-                    m.Reset(Target.VirtualCamera);
+                    m.Reset(Target.ComponentOwner);
                 }
                 r.x += r.width;
                 if (GUI.Button(r, m_DeleteModifierLabel))
