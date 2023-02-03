@@ -9,7 +9,7 @@
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
     using UnityEngine;
     using UnityEditor;
     using UnityEngine.Rendering;
@@ -20,7 +20,7 @@
 
 namespace Cinemachine.PostFX.Editor
 {
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+#if CINEMACHINE_HDRP || CINEMACHINE_URP
     [CustomEditor(typeof(CinemachineVolumeSettings))]
     public sealed class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
     {
@@ -83,7 +83,7 @@ namespace Cinemachine.PostFX.Editor
                 bool valid = false;
                 DepthOfField dof;
                 if (Target.m_Profile != null && Target.m_Profile.TryGet(out dof))
-#if CINEMACHINE_LWRP_7_3_1 && !CINEMACHINE_HDRP
+#if CINEMACHINE_URP && !CINEMACHINE_HDRP
                 {
                     valid = dof.active && dof.focusDistance.overrideState
                         && dof.mode.overrideState && dof.mode == DepthOfFieldMode.Bokeh;

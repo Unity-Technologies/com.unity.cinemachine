@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
     #else
         using UnityEngine.Experimental.Rendering.HDPipeline;
     #endif
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
     using System.Collections.Generic;
     using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
@@ -17,7 +17,7 @@ using UnityEngine.Serialization;
 
 namespace Cinemachine.PostFX
 {
-#if !(CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1)
+#if !(CINEMACHINE_HDRP || CINEMACHINE_URP)
     // Workaround for Unity scripting bug
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module.
@@ -230,16 +230,11 @@ namespace Cinemachine.PostFX
                 hdCam.colorPyramidHistoryIsValid = false;
                 hdCam.Reset();
             }
-#elif CINEMACHINE_LDRP_7_3_1
+#elif CINEMACHINE_URP_14
             // Reset temporal effects
             var cam = brain.OutputCamera;
-            if (cam != null)
-            {
-                HDCamera hdCam = HDCamera.GetOrCreate(cam);
-                hdCam.volumetricHistoryIsValid = false;
-                hdCam.colorPyramidHistoryIsValid = false;
-                hdCam.Reset();
-            }
+            if (cam != null && cam.TryGetComponent<UniversalAdditionalCameraData>(out var data))
+                data.resetHistory = true;
 #endif
         }
 
@@ -314,7 +309,7 @@ namespace Cinemachine.PostFX
                 // Update the volume's layer so it will be seen
 #if CINEMACHINE_HDRP
                 var data = brain.gameObject.GetComponent<HDAdditionalCameraData>();
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
                 var data = brain.gameObject.GetComponent<UniversalAdditionalCameraData>();
 #endif
                 if (data != null)
