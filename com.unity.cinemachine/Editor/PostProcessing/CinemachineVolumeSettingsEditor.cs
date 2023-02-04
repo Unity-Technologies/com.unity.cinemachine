@@ -5,43 +5,38 @@ using UnityEditor;
 using UnityEngine.Rendering;
 using UnityEditor.Rendering;
 using System.Collections.Generic;
+using System.IO;
 
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
 #elif CINEMACHINE_URP
-    using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering.Universal;
 #endif
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVolumeSettings))]
-    class CinemachineVolumeSettingsEditor : Cinemachine.Editor.BaseEditor<CinemachineVolumeSettings>
+    class CinemachineVolumeSettingsEditor : UnityEditor.Editor
     {
-#if !(CINEMACHINE_HDRP || CINEMACHINE_URP)
-        public override void OnInspectorGUI()
-        {
-            EditorGUILayout.HelpBox(
-                "This component is only valid within HDRP and URP projects.",
-                MessageType.Warning);
-        }
-#else
+        CinemachineVolumeSettings Target => target as CinemachineVolumeSettings;
+
         SerializedProperty m_Profile;
         SerializedProperty m_FocusTracking;
 
-        VolumeComponentListEditor m_ComponentList;
+        GUIContent m_NewLabel = new ("New",  "Create a new PostProcessing profile");
+        GUIContent m_CloneLabel = new ("Clone",  "Create a new PostProcessing profile "
+            + "and copy the content of the currently assigned profile");
 
-        GUIContent m_ProfileLabel;
-        GUIContent m_NewLabel;
-        GUIContent m_CloneLabel;
+        VolumeComponentListEditor m_ComponentList;
+        float m_ButtonWidth;
 
         void OnEnable()
         {
-            m_ProfileLabel = new GUIContent("Profile", "A reference to a profile asset");
             m_NewLabel = new GUIContent("New", "Create a new profile.");
             m_CloneLabel = new GUIContent("Clone", "Create a new profile and copy the content of the currently assigned profile.");
 
-            m_FocusTracking = FindProperty(x => x.FocusTracking);
-            m_Profile = FindProperty(x => x.Profile);
+            m_FocusTracking = serializedObject.FindProperty(() => Target.FocusTracking);
+            m_Profile = serializedObject.FindProperty(() => Target.Profile);
 
             RefreshVolumeComponentEditor(Target.Profile);
         }
@@ -52,34 +47,21 @@ namespace Cinemachine.Editor
                 m_ComponentList.Clear();
         }
 
-        void RefreshVolumeComponentEditor(VolumeProfile asset)
-        {
-            if (m_ComponentList == null)
-                m_ComponentList = new VolumeComponentListEditor(this);
-            m_ComponentList.Clear();
-            if (asset != null)
-                m_ComponentList.Init(asset, new SerializedObject(asset));
-        }
-
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            var mode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
-            if (mode != CinemachineVolumeSettings.FocusTrackingMode.CustomTarget)
-                excluded.Add(FieldPath(x => x.FocusTarget));
-            if (mode == CinemachineVolumeSettings.FocusTrackingMode.None)
-                excluded.Add(FieldPath(x => x.FocusOffset));
-            excluded.Add(FieldPath(x => x.Profile));
-        }
-
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
 
             CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.PropertyField(m_FocusTracking);
             var focusMode = (CinemachineVolumeSettings.FocusTrackingMode)m_FocusTracking.intValue;
+            if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.FocusOffset));
+            if (focusMode == CinemachineVolumeSettings.FocusTrackingMode.CustomTarget)
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.FocusTarget));
+
             if (focusMode != CinemachineVolumeSettings.FocusTrackingMode.None)
             {
                 bool valid = false;
@@ -108,8 +90,8 @@ namespace Cinemachine.Editor
                         MessageType.Warning);
 #endif
             }
-
-            DrawRemainingPropertiesInInspector();
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             EditorGUI.BeginChangeCheck();
             DrawProfileInspectorGUI();
@@ -122,68 +104,49 @@ namespace Cinemachine.Editor
 
         void DrawProfileInspectorGUI()
         {
-            EditorGUILayout.Space();
+            if (m_ButtonWidth == 0)
+                m_ButtonWidth = GUI.skin.button.CalcSize(m_CloneLabel).x;
 
             bool assetHasChanged = false;
-            bool showCopy = m_Profile.objectReferenceValue != null;
+            bool haveAsset = m_Profile.objectReferenceValue != null;
 
-            // The layout system sort of break alignement when mixing inspector fields with custom
-            // layouted fields, do the layout manually instead
-            int buttonWidth = showCopy ? 45 : 60;
-            float indentOffset = EditorGUI.indentLevel * 15f;
-            var lineRect = GUILayoutUtility.GetRect(1, EditorGUIUtility.singleLineHeight);
-            var labelRect = new Rect(lineRect.x, lineRect.y, EditorGUIUtility.labelWidth - indentOffset, lineRect.height);
-            var fieldRect = new Rect(labelRect.xMax, lineRect.y, lineRect.width - labelRect.width - buttonWidth * (showCopy ? 2 : 1), lineRect.height);
-            var buttonNewRect = new Rect(fieldRect.xMax, lineRect.y, buttonWidth, lineRect.height);
-            var buttonCopyRect = new Rect(buttonNewRect.xMax, lineRect.y, buttonWidth, lineRect.height);
-
-            EditorGUI.PrefixLabel(labelRect, m_ProfileLabel);
-
+            var rect = EditorGUILayout.GetControlRect();
+            rect.width -= m_ButtonWidth * (haveAsset ? 2 : 1);
             using (var scope = new EditorGUI.ChangeCheckScope())
             {
-                m_Profile.objectReferenceValue
-                    = (VolumeProfile)EditorGUI.ObjectField(
-                        fieldRect, m_Profile.objectReferenceValue, typeof(VolumeProfile), false);
+                EditorGUI.PropertyField(rect, m_Profile);
                 assetHasChanged = scope.changed;
             }
 
-            if (GUI.Button(buttonNewRect, m_NewLabel,
-                showCopy ? EditorStyles.miniButtonLeft : EditorStyles.miniButton))
+            rect.x += rect.width; rect.width = m_ButtonWidth;
+            if (GUI.Button(rect, m_NewLabel, EditorStyles.miniButton))
             {
-                // By default, try to put assets in a folder next to the currently active
-                // scene file. If the user isn't a scene, put them in root instead.
-                var targetName = Target.name;
-                var scene = Target.gameObject.scene;
-                var asset = CreateVolumeProfile(scene, targetName);
-                m_Profile.objectReferenceValue = asset;
-                assetHasChanged = true;
+                var path = AssetDatabase.GenerateUniqueAssetPath("Volume Profile");
+                path = EditorUtility.SaveFilePanelInProject(
+                    "Create Volume Profile", Path.GetFileName(path), "asset", 
+                    "This asset will contain the post processing settings");
+                if (path.Length > 0)
+                {
+                    m_Profile.objectReferenceValue = CreateVolumeProfile(path);
+                    serializedObject.ApplyModifiedProperties();
+                    assetHasChanged = true;
+                }
             }
 
-            if (showCopy && GUI.Button(buttonCopyRect, m_CloneLabel, EditorStyles.miniButtonRight))
+            rect.x += rect.width; rect.width = m_ButtonWidth;
+            if (haveAsset && GUI.Button(rect, m_CloneLabel, EditorStyles.miniButton))
             {
-                // Duplicate the currently assigned profile and save it as a new profile
-                var origin = (VolumeProfile)m_Profile.objectReferenceValue;
-                var path = AssetDatabase.GetAssetPath(origin);
-                path = AssetDatabase.GenerateUniqueAssetPath(path);
-
-                var asset = Instantiate(origin);
-                asset.components.Clear();
-                AssetDatabase.CreateAsset(asset, path);
-
-                foreach (var item in origin.components)
+                var origin = m_Profile.objectReferenceValue as VolumeProfile;
+                var path = AssetDatabase.GenerateUniqueAssetPath(AssetDatabase.GetAssetPath(origin));
+                path = EditorUtility.SaveFilePanelInProject(
+                    "Clone Volume Profile", Path.GetFileName(path), "asset", 
+                    "This asset will contain the post processing settings", Path.GetDirectoryName(path));
+                if (path.Length > 0)
                 {
-                    var itemCopy = Instantiate(item);
-                    itemCopy.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;
-                    itemCopy.name = item.name;
-                    asset.components.Add(itemCopy);
-                    AssetDatabase.AddObjectToAsset(itemCopy, asset);
+                    m_Profile.objectReferenceValue = CopyVolumeProfile(origin, path);
+                    serializedObject.ApplyModifiedProperties();
+                    assetHasChanged = true;
                 }
-
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-
-                m_Profile.objectReferenceValue = asset;
-                assetHasChanged = true;
             }
 
             if (m_Profile.objectReferenceValue == null)
@@ -192,9 +155,8 @@ namespace Cinemachine.Editor
                     m_ComponentList.Clear(); // Asset wasn't null before, do some cleanup
 
                 EditorGUILayout.HelpBox(
-                    "Assign an existing Volume Profile by choosing an asset, or create a new one by clicking the \"New\" button.\n"
-                    + "New assets are automatically put in a folder next to your scene file. If your scene hasn't "
-                    + "been saved yet they will be created at the root of the Assets folder.",
+                    "Assign an existing Volume Profile by choosing an asset, or create a "
+                    + "new one by clicking the \"New\" button.",
                     MessageType.Info);
             }
             else
@@ -207,37 +169,44 @@ namespace Cinemachine.Editor
             }
         }
 
-        // Copied from UnityEditor.Rendering.PostProcessing.ProfileFactory.CreateVolumeProfile() because it's internal
-        static VolumeProfile CreateVolumeProfile(UnityEngine.SceneManagement.Scene scene, string targetName)
+        void RefreshVolumeComponentEditor(VolumeProfile asset)
         {
-            string path;
+            if (m_ComponentList == null)
+                m_ComponentList = new VolumeComponentListEditor(this);
+            m_ComponentList.Clear();
+            if (asset != null)
+                m_ComponentList.Init(asset, new SerializedObject(asset));
+        }
 
-            if (string.IsNullOrEmpty(scene.path))
-            {
-                path = "Assets/";
-            }
-            else
-            {
-                var scenePath = System.IO.Path.GetDirectoryName(scene.path);
-                var extPath = scene.name + "_Profiles";
-                var profilePath = scenePath + "/" + extPath;
-
-                if (!AssetDatabase.IsValidFolder(profilePath))
-                    AssetDatabase.CreateFolder(scenePath, extPath);
-
-                path = profilePath + "/";
-            }
-
-            path += targetName + " Profile.asset";
+        static VolumeProfile CreateVolumeProfile(string path)
+        {
             path = AssetDatabase.GenerateUniqueAssetPath(path);
-
             var profile = ScriptableObject.CreateInstance<VolumeProfile>();
             AssetDatabase.CreateAsset(profile, path);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             return profile;
         }
-#endif
+
+        // Duplicate the currently assigned profile and save it as a new profile
+        static VolumeProfile CopyVolumeProfile(VolumeProfile origin, string path)
+        {
+            var asset = UnityEngine.Object.Instantiate(origin);
+            asset.components.Clear();
+            AssetDatabase.CreateAsset(asset, path);
+
+            foreach (var item in origin.components)
+            {
+                var itemCopy = Instantiate(item);
+                itemCopy.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;
+                itemCopy.name = item.name;
+                asset.components.Add(itemCopy);
+                AssetDatabase.AddObjectToAsset(itemCopy, asset);
+            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            return asset;
+        }
     }
 }
 #endif

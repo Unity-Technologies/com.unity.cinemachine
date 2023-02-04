@@ -53,8 +53,8 @@ namespace Cinemachine
         [Tooltip("If the profile has the appropriate overrides, will set the base focus "
             + "distance to be the distance from the selected target to the camera."
             + "The Focus Offset field will then modify that distance.")]
-         [FormerlySerializedAs("m_FocusTracking")]
-         public FocusTrackingMode FocusTracking;
+        [FormerlySerializedAs("m_FocusTracking")]
+        public FocusTrackingMode FocusTracking;
 
         /// <summary>The target to use if Focus Tracks Target is set to Custom Target</summary>
         [Tooltip("The target to use if Focus Tracks Target is set to Custom Target")]
