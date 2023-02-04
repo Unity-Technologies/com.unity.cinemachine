@@ -55,6 +55,7 @@ namespace Cinemachine.Editor
 
             EditorGUI.BeginChangeCheck();
 
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Weight));
             EditorGUILayout.PropertyField(m_FocusTracking);
             var focusMode = (CinemachinePostProcessing.FocusTrackingMode)m_FocusTracking.intValue;
             if (focusMode != CinemachinePostProcessing.FocusTrackingMode.None)

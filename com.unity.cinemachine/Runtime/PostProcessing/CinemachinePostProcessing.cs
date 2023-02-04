@@ -32,6 +32,12 @@ namespace Cinemachine
         /// </summary>
         public static float s_VolumePriority = 1000f;
 
+        /// <summary>
+        /// This is the weight that the PostProcessing profile will have when the camera is fully active.
+        /// It will blend to and from 0 along with the camera.
+        /// </summary>
+        public float Weight = 1;
+
         /// <summary>The reference object for focus tracking</summary>
         public enum FocusTrackingMode
         {
@@ -122,6 +128,20 @@ namespace Cinemachine
                 list[i].DestroyProfileCopy();
         }
 
+        void OnValidate()
+        {
+            Weight = Mathf.Max(0, Weight);
+        }
+
+        void Reset()
+        {
+            Weight = 1;
+            FocusTracking = FocusTrackingMode.None;
+            FocusTarget = null;
+            FocusOffset = 0;
+            Profile = null;
+        }
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -192,7 +212,7 @@ namespace Cinemachine
                     }
 
                     // Apply the post-processing
-                    state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item{ Custom = profile, Weight = 1 });
+                    state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item{ Custom = profile, Weight = Weight });
                 }
             }
         }
@@ -237,7 +257,7 @@ namespace Cinemachine
                     v.weight = b.Weight;
                     ++numPPblendables;
                 }
-#if true // set this to true to force first weight to 1
+#if false // set this to true to force first weight to 1
                 // If more than one volume, then set the frst one's weight to 1
                 if (numPPblendables > 1)
                     firstVolume.weight = 1;
