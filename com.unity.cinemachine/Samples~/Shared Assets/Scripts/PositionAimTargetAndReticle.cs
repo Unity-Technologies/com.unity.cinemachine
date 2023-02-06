@@ -47,6 +47,14 @@ namespace Cinemachine.Examples
                         if (AimTargetIndicator != null)
                             AimTargetIndicator.position = brain.OutputCamera.WorldToScreenPoint(transform.position);
                     }
+                    else
+                    {
+                        // Emulate unstable aim spread with a random cone 
+                        var randomXYRotation = 
+                            Quaternion.Euler(10f * Random.value, 10f * Random.value, 0);
+                        var randomForward = liveCam.transform.rotation * (randomXYRotation * Vector3.forward);
+                        transform.position = randomForward * 200f;
+                    }
                 }
             }
             if (ReticleCanvas != null)

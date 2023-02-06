@@ -2530,6 +2530,10 @@ MonoBehaviour:
     Camera: {fileID: 2076565716644322337}
     ActivateAfter: 0.25
     MinDuration: 0
+  - FullHash: -203094115
+    Camera: {fileID: 2076565716644322337}
+    ActivateAfter: 0.25
+    MinDuration: 0
   DefaultBlend:
     m_Style: 0
     m_Time: 0.5
