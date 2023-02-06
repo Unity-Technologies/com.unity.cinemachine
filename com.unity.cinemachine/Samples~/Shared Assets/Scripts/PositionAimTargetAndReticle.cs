@@ -49,7 +49,7 @@ namespace Cinemachine.Examples
                     }
                     else
                     {
-                        // Emulate unstable aim spread with a random cone 
+                        // Emulate unstable aim spread
                         var randomXYRotation = 
                             Quaternion.Euler(10f * Random.value, 10f * Random.value, 0);
                         var randomForward = liveCam.transform.rotation * (randomXYRotation * Vector3.forward);
