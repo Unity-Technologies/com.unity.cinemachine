@@ -20,7 +20,7 @@ namespace Cinemachine.Examples
             [Tooltip("Value of the toggle")]
             public bool ToggleValue;
 
-            [Tooltip("Set this to true to create a toggle button")]
+            [Tooltip("Event sent when button is clicked")]
             public UnityEvent OnClick = new UnityEvent();
 
             [Tooltip("Event sent when toggle button is clicked")]
