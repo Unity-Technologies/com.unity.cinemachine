@@ -17,7 +17,7 @@ namespace Cinemachine
     public class CinemachineFollowZoom : CinemachineExtension
     {
         /// <summary>The shot width to maintain, in world units, at target distance.
-        /// FOV will be adusted as far as possible to maintain this width at the
+        /// FOV will be adjusted as far as possible to maintain this width at the
         /// target distance from the camera.</summary>
         [Tooltip("The shot width to maintain, in world units, at target distance.")]
         [FormerlySerializedAs("m_Width")]
