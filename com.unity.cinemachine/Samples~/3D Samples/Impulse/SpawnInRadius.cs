@@ -5,8 +5,8 @@ namespace Cinemachine.Examples
     public class SpawnInRadius : MonoBehaviour
     {
         public GameObject Prefab;
-        public float Radius = 1000;
-        public float Amount = 10000;
+        public float Radius = 40;
+        public float Amount = 200;
         public bool DoIt;
 
         void Update()
