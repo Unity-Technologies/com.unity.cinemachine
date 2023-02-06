@@ -21,13 +21,13 @@ namespace Cinemachine.Examples
 
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the turning amount")]
-        public InputAxis MoveX = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveX = InputAxis.DefaultMomentary;
 
         [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward acceleration")]
-        public InputAxis MoveZ = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveZ = InputAxis.DefaultMomentary;
 
         [Tooltip("Braking.  Value is 0 to 1. Controls the braking force")]
-        public InputAxis Brake = new InputAxis { Range = new Vector2(0, 1) };
+        public InputAxis Brake = InputAxis.DefaultMomentary;
 
 
         /// Report the available input axes to the input axis controller.
@@ -36,9 +36,9 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveX, Name = "Move X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveZ, Name = "Move Z", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Brake, Name = "Brake",  AxisIndex = 2 });
+            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref Brake, Name = "Brake" });
         }
 
         void Update()

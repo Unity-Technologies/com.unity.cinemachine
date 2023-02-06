@@ -50,6 +50,7 @@ namespace Cinemachine
         /// </summary>
         [SerializeField, HideInInspector, NoSaveDuringPlay] internal List<CinemachineVirtualCameraBase> m_ChildCameras;
 
+        /// <summary>Reset the component to default values.</summary>
         protected virtual void Reset()
         {
             DefaultTarget = default;
@@ -193,7 +194,7 @@ namespace Cinemachine
         }
 
         /// <summary>Force a rebuild of the child camera cache.  
-        /// Call this if CmCamera children are added or removed dynamically</summary>
+        /// Call this if CinemachineCamera children are added or removed dynamically</summary>
         public void InvalidateCameraCache() 
         {
             m_ChildCameras = null;

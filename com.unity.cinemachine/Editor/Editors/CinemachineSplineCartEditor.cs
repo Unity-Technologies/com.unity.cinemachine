@@ -26,7 +26,8 @@ namespace Cinemachine.Editor
             ux.TrackPropertyValue(autoDollyProp, TrackAutoDolly);
             void TrackAutoDolly(SerializedProperty p) 
             {
-                targetField.SetVisible(p.FindPropertyRelative("Implementation").managedReferenceValue != null);
+                var autodolly = p.FindPropertyRelative("Method").managedReferenceValue as SplineAutoDolly.ISplineAutoDolly;
+                targetField.SetVisible(autodolly != null && autodolly.RequiresTrackingTarget);
             }
 
             return ux;

@@ -35,7 +35,7 @@ Transform:
   - {fileID: 4228984098192203911}
   - {fileID: 4228984098714010495}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &878341184440332479
 Rigidbody:
@@ -97,9 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a1d5f246db83d4e9db796e9e19282e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MotorStrength: 2000
-  BrakeStrength: 5000
-  MaxTurnAngle: 50
+  MotorStrength: 0
+  BrakeStrength: 0
+  MaxTurnAngle: 0
   FrontLeftWheelCollider: {fileID: 4228984097906734898}
   FrontRightWheelCollider: {fileID: 4228984099382061923}
   RearLeftWheelCollider: {fileID: 4228984098961037802}
@@ -113,19 +113,31 @@ MonoBehaviour:
     Center: 0
     Range: {x: -1, y: 1}
     Wrap: 0
-    Restrictions: 0
+    Recentering:
+      Enabled: 0
+      Wait: 0
+      Time: 0
+    Restrictions: 6
   MoveZ:
     Value: 0
     Center: 0
     Range: {x: -1, y: 1}
     Wrap: 0
-    Restrictions: 0
+    Recentering:
+      Enabled: 0
+      Wait: 0
+      Time: 0
+    Restrictions: 6
   Brake:
     Value: 0
     Center: 0
-    Range: {x: 0, y: 1}
+    Range: {x: -1, y: 1}
     Wrap: 0
-    Restrictions: 0
+    Recentering:
+      Enabled: 0
+      Wait: 0
+      Time: 0
+    Restrictions: 6
 --- !u!114 &878341184440332471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,49 +155,37 @@ MonoBehaviour:
   Controllers:
   - Name: Move X
     Owner: {fileID: 878341184440332478}
-    InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a,
-      type: 3}
-    Gain: 4
+    Enabled: 1
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Horizontal
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 2
-      DecelTime: 0
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0.5
-  - Name: Move Z
-    Owner: {fileID: 878341184440332478}
-    InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a,
-      type: 3}
-    Gain: 4
-    LegacyInput: Vertical
-    LegacyGain: 200
-    Control:
-      InputValue: 0
-      AccelTime: 1
-      DecelTime: 1
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0
-  - Name: Brake
-    Owner: {fileID: 878341184440332478}
-    InputAction: {fileID: -8322308610609176083, guid: ba1679fafe8a545948be71b9557ead1a,
-      type: 3}
-    Gain: 4
-    LegacyInput: Jump
-    LegacyGain: 200
+    LegacyGain: 1
     Control:
       InputValue: 0
       AccelTime: 0
       DecelTime: 0
-    Recentering:
-      Enabled: 1
-      Wait: 0
-      Time: 0
+  - Name: Move Z
+    Owner: {fileID: 878341184440332478}
+    Enabled: 1
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
+    LegacyInput: Vertical
+    LegacyGain: 1
+    Control:
+      InputValue: 0
+      AccelTime: 0
+      DecelTime: 0
+  - Name: Brake
+    Owner: {fileID: 878341184440332478}
+    Enabled: 1
+    InputAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
+    LegacyInput: Jump
+    LegacyGain: 1
+    Control:
+      InputValue: 0
+      AccelTime: 0
+      DecelTime: 0
 --- !u!1 &1570214454009041785
 GameObject:
   m_ObjectHideFlags: 0

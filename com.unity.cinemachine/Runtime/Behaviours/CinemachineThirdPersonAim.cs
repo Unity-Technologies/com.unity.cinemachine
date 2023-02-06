@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera that forces the LookAt
+    /// An add-on module for CinemachineCamera that forces the LookAt
     /// point to the center of the screen, based on the Follow target's orientation,
     /// cancelling noise and other corrections.
     /// This is useful for third-person style aim cameras that want a dead-accurate

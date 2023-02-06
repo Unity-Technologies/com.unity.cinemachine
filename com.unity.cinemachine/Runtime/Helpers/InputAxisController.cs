@@ -33,6 +33,12 @@ namespace Cinemachine
             /// <summary>Identifies this owner of the axis controlled by this controller</summary>
             [HideInInspector] public UnityEngine.Object Owner;
 
+            /// <summary>
+            /// When enabled, this controller will drive the input axis.
+            /// </summary>
+            [Tooltip("When enabled, this controller will drive the input axis")]
+            public bool Enabled = true;
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             /// <summary>Action for the Input package (if used).</summary>
             [Tooltip("Action for the Input package (if used).")]
@@ -67,10 +73,6 @@ namespace Cinemachine
             [HideFoldout]
             public InputAxisControl Control;
 
-            /// <summary>Controls automatic recentering of axis value.</summary>
-            [FoldoutWithEnabledButton]
-            public InputAxisRecenteringSettings Recentering;
-
             /// <summary>This object drives the axis value based on the control 
             /// and recentering settings</summary>
             internal InputAxisDriver Driver;
@@ -98,17 +100,15 @@ namespace Cinemachine
         /// <summary>
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisSource"/>
         /// </summary>
-        List<IInputAxisSource.AxisDescriptor> m_Axes = new List<IInputAxisSource.AxisDescriptor>();
-        List<IInputAxisSource> m_AxisOwners = new List<IInputAxisSource>();
-        List<IInputAxisResetSource> m_AxisResetters = new List<IInputAxisResetSource>();
+        List<IInputAxisSource.AxisDescriptor> m_Axes = new ();
+        List<IInputAxisSource> m_AxisOwners = new ();
+        List<IInputAxisResetSource> m_AxisResetters = new ();
 
         void OnValidate()
         {
             for (var i = 0; i < Controllers.Count; ++i)
-            {
-                Controllers[i].Control.Validate();
-                Controllers[i].Recentering.Validate();
-            }
+                if (Controllers[i] != null)
+                    Controllers[i].Control.Validate();
         }
 
         void Reset()
@@ -202,7 +202,7 @@ namespace Cinemachine
         void OnResetInput()
         {
             for (int i = 0; i < Controllers.Count; ++i)
-                Controllers[i].Driver.Reset(ref m_Axes[i].DrivenAxis(), Controllers[i].Recentering);
+                Controllers[i].Driver.Reset(ref m_Axes[i].DrivenAxis());
         }
 
         void Update()
@@ -215,6 +215,8 @@ namespace Cinemachine
             for (int i = 0; i < Controllers.Count; ++i)
             {
                 var c = Controllers[i];
+                if (!c.Enabled)
+                    continue;
 #if ENABLE_LEGACY_INPUT_MANAGER
                 float legacyInputValue = 0;
                 if (!string.IsNullOrEmpty(c.LegacyInput) && GetInputAxisValue != null)
@@ -223,8 +225,8 @@ namespace Cinemachine
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (c.InputAction != null && c.InputAction.action != null)
                 {
-                    var axis = i < m_Axes.Count ? m_Axes[i].AxisIndex : 0;
-                    var inputValue = ReadInputAction(c, axis) * c.Gain;
+                    var hint = i < m_Axes.Count ? m_Axes[i].Hint : 0;
+                    var inputValue = ReadInputAction(c, hint) * c.Gain;
 #if ENABLE_LEGACY_INPUT_MANAGER
                     if (legacyInputValue == 0 || inputValue != 0)
 #endif
@@ -234,21 +236,13 @@ namespace Cinemachine
                 c.Driver.ProcessInput(deltaTime, ref m_Axes[i].DrivenAxis(), ref c.Control);
                 gotInput |= Mathf.Abs(c.Control.InputValue) > 0.001f;
             }
-
-            // Do recentering
-            for (int i = 0; i < Controllers.Count; ++i)
-            {
-                // If we got any input, cancel all recentering
-                if (gotInput && Controllers[i].Recentering.Wait > 0.01f)
-                    Controllers[i].Driver.CancelRecentering();
-                Controllers[i].Driver.DoRecentering(deltaTime, ref m_Axes[i].DrivenAxis(), Controllers[i].Recentering);
-            }
         }
 
         Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisSource owner)
         {
             var c = new Controller 
             {
+                Enabled = true,
                 Name = m_Axes[axisIndex].Name,
                 Owner = owner as UnityEngine.Object,
             };
@@ -261,16 +255,6 @@ namespace Cinemachine
 
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
-
-        /// <summary>
-        /// Call this to trigger recentering immediately, regardless of whether recentering 
-        /// is enabled or the wait time has elapsed.
-        /// </summary>
-        public void RecenterNow()
-        {
-            for (var i = 0; i < Controllers.Count; ++i)
-                Controllers[i].Driver.RecenterNow();
-        }
 
         static float ReadLegacyInput(string axisName)
         {
@@ -290,7 +274,7 @@ namespace Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        float ReadInputAction(Controller c, int axis)
+        float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
         {
             ResolveActionForPlayer(c, PlayerIndex);
 
@@ -305,10 +289,10 @@ namespace Cinemachine
 
             if (c.m_CachedAction != null)
             {
-                switch (axis)
+                switch (hint)
                 {
-                    case 0: return c.m_CachedAction.ReadValue<Vector2>().x;
-                    case 1: return c.m_CachedAction.ReadValue<Vector2>().y;
+                    case IInputAxisSource.AxisDescriptor.Hints.X: return c.m_CachedAction.ReadValue<Vector2>().x;
+                    case IInputAxisSource.AxisDescriptor.Hints.Y: return c.m_CachedAction.ReadValue<Vector2>().y;
                     default: return c.m_CachedAction.ReadValue<float>();
                 }
             }

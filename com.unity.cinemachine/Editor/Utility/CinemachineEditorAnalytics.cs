@@ -96,7 +96,7 @@ namespace Cinemachine.Editor
             var vcamData = new VcamData(id, vcamBase);
             
             // VirtualCamera
-            var vcam = vcamBase as CmCamera;
+            var vcam = vcamBase as CinemachineCamera;
             if (vcam != null)
             {
                 vcamData.SetTransitionsAndLens(vcam.Transitions, vcam.Lens);

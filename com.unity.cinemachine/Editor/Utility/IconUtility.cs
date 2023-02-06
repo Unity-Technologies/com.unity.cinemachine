@@ -19,11 +19,11 @@ namespace Cinemachine.Editor
             return s_IconCache[path];
         }
 
-        /// <summary>Checks if CmCamera script has the correct icon or not.</summary>
+        /// <summary>Checks if CinemachineCamera script has the correct icon or not.</summary>
         /// <returns>True, when icons don't match. False, otherwise.</returns>
         public static bool DoIconsNeedToBeUpdated()
         {
-            var cmCameraPath = ScriptableObjectUtility.kPackageRoot + "/Runtime/Behaviours/CmCamera.cs";
+            var cmCameraPath = ScriptableObjectUtility.kPackageRoot + "/Runtime/Behaviours/CinemachineCamera.cs";
             var monoImporter = AssetImporter.GetAtPath(cmCameraPath) as MonoImporter;
             if (monoImporter == null)
                 return false;

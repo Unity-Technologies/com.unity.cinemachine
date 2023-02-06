@@ -180,6 +180,7 @@ namespace Cinemachine
             m_LegacyTargets = null;
         }
 
+        /// <summary>Pre-Serialization handler - this implementation does nothing</summary>
         void ISerializationCallbackReceiver.OnBeforeSerialize() {}
 
         /// <summary>Obsolete Targets</summary>

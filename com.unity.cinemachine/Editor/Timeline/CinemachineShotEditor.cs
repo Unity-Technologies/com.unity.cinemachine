@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
 
         public static CinemachineVirtualCameraBase CreatePassiveVcamFromSceneView()
         {
-            var vcam = CinemachineMenu.CreatePassiveCmCamera("CmCamera", null, false);
+            var vcam = CinemachineMenu.CreatePassiveCmCamera("CinemachineCamera", null, false);
             vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
 
 #if false 
@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
             return vcam;
         }
 
-        readonly GUIContent s_CmCameraLabel = new GUIContent("CmCamera", "The Cinemachine camera to use for this shot");
+        readonly GUIContent s_CmCameraLabel = new GUIContent("CinemachineCamera", "The Cinemachine camera to use for this shot");
         readonly GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
 
         /// <summary>Get the property names to exclude in the inspector.</summary>

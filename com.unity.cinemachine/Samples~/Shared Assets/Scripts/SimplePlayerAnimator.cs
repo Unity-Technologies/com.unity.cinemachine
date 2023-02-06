@@ -47,7 +47,7 @@ namespace Cinemachine.Examples
                 };
             }
         }
-
+        
         // We use LateUpdate so we normally don't have to worry about script execution order:
         // we can assume that the player has already been moved.
         void LateUpdate()
@@ -63,7 +63,7 @@ namespace Cinemachine.Examples
                 UpdateAnimation(vel);
             }
         }
-
+        
         // Set animation params for current velocity
         void UpdateAnimation(Vector3 vel)
         {

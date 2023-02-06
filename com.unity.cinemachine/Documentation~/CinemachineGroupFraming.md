@@ -1,8 +1,8 @@
 # Group Framing
 
-This CmCamera extension adds the ability to frame multiple targets when they are members of a CinemachineTargetGroup. It can be used to dynamically adjust the zoom or to move the camera closer to or farther from the targets, to keep them in the frame.
+This CinemachineCamera extension adds the ability to frame multiple targets when they are members of a CinemachineTargetGroup. It can be used to dynamically adjust the zoom or to move the camera closer to or farther from the targets, to keep them in the frame.
 
-For this to work, the CmCamera's Tracking Target must be a CinemachineTargetGroup, with at least one member, and having a nonzero size.
+For this to work, the CinemachineCamera's Tracking Target must be a CinemachineTargetGroup, with at least one member, and having a nonzero size.
 
 ## Properties
 

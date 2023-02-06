@@ -1,6 +1,6 @@
 # Cinemachine Impulse Sources
 
-An Impulse Source is a component that emits a vibration signal from a point in Scene space. Game events can cause an Impulse Source to emit a signal from the place where the event occurs. The event _triggers_ impulses, and the source _generates_ impulses. CmCameras with an Impulse Listener extension _react_ to impulses by shaking.
+An Impulse Source is a component that emits a vibration signal from a point in Scene space. Game events can cause an Impulse Source to emit a signal from the place where the event occurs. The event _triggers_ impulses, and the source _generates_ impulses. CinemachineCameras with an Impulse Listener extension _react_ to impulses by shaking.
 
 In the image below, the figure's feet are Impulse Sources. When they collide with the floor (A) they generate impulses. The camera is an Impulse Listener and reacts to the impulses by shaking (B), which shakes the resulting image in the game view (C). 
 

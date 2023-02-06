@@ -12,7 +12,7 @@ namespace Cinemachine.Editor
     class CinemachineStateDrivenCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineStateDrivenCamera>
     {
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        UnityEditorInternal.ReorderableList m_ChildList;
+        ChildListInspectorHelper m_ChildListHelper = new();
         UnityEditorInternal.ReorderableList m_InstructionList;
 
         string[] m_LayerNames;
@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
                         editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
                 }
             };
-            m_ChildList = null;
+            m_ChildListHelper.OnEnable();
             m_InstructionList = null;
         }
 
@@ -61,8 +61,6 @@ namespace Cinemachine.Editor
             BeginInspector();
             if (m_InstructionList == null)
                 SetupInstructionList();
-            if (m_ChildList == null)
-                SetupChildList();
 
             if (Target.AnimatedTarget == null)
                 EditorGUILayout.HelpBox("An Animated Target is required", MessageType.Warning);
@@ -105,12 +103,10 @@ namespace Cinemachine.Editor
 
             // vcam children
             EditorGUILayout.Separator();
-            m_ChildList.DoLayoutList();
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
+            if (m_ChildListHelper.OnInspectorGUI(FindProperty(x => x.m_ChildCameras)))
                 Target.ValidateInstructions();
-            }
+            if (EditorGUI.EndChangeCheck()) 
+                serializedObject.ApplyModifiedProperties();
 
             // Extensions
             DrawExtensionsWidgetInInspector();
@@ -384,74 +380,6 @@ namespace Cinemachine.Editor
                     },
                         null);
                     menu.ShowAsContext();
-                };
-        }
-
-        void SetupChildList()
-        {
-            var vSpace = 2f;
-            var hSpace = 3f;
-            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
-            var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
-
-            m_ChildList = new UnityEditorInternal.ReorderableList(serializedObject,
-                    serializedObject.FindProperty(() => Target.m_ChildCameras),
-                    true, true, true, true);
-
-            m_ChildList.drawHeaderCallback = (Rect rect) =>
-                {
-                    EditorGUI.LabelField(rect, "Virtual Camera Children");
-                    var priorityText = new GUIContent("Priority");
-                    var textDimensions = GUI.skin.label.CalcSize(priorityText);
-                    rect.x += rect.width - textDimensions.x;
-                    rect.width = textDimensions.x;
-                    EditorGUI.LabelField(rect, priorityText);
-                };
-            m_ChildList.drawElementCallback
-                = (Rect rect, int index, bool isActive, bool isFocused) =>
-                {
-                    rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
-                    rect.width -= floatFieldWidth + hBigSpace;
-                    SerializedProperty element = m_ChildList.serializedProperty.GetArrayElementAtIndex(index);
-                    GUI.enabled = false;
-                    EditorGUI.PropertyField(rect, element, GUIContent.none);
-                    GUI.enabled = true;
-
-                    float oldWidth = EditorGUIUtility.labelWidth;
-                    EditorGUIUtility.labelWidth = hBigSpace;
-                    var obj = new SerializedObject(element.objectReferenceValue);
-                    rect.x += rect.width + hSpace; rect.width = floatFieldWidth + hBigSpace;
-                    var priorityProp = obj.FindProperty(
-                        () => Target.PriorityAndChannel).FindPropertyRelative("Priority");
-                    EditorGUI.PropertyField(rect, priorityProp, new GUIContent(" ", priorityProp.tooltip));
-                    EditorGUIUtility.labelWidth = oldWidth;
-                    obj.ApplyModifiedProperties();
-                };
-            m_ChildList.onChangedCallback = (UnityEditorInternal.ReorderableList l) =>
-                {
-                    if (l.index < 0 || l.index >= l.serializedProperty.arraySize)
-                        return;
-                    Object o = l.serializedProperty.GetArrayElementAtIndex(
-                            l.index).objectReferenceValue;
-                    CinemachineVirtualCameraBase vcam = (o != null)
-                        ? (o as CinemachineVirtualCameraBase) : null;
-                    if (vcam != null)
-                        vcam.transform.SetSiblingIndex(l.index);
-                };
-            m_ChildList.onAddCallback = (UnityEditorInternal.ReorderableList l) =>
-                {
-                    var index = l.serializedProperty.arraySize;
-                    var vcam = CinemachineMenu.CreatePassiveCmCamera(parentObject: Target.gameObject);
-                    vcam.transform.SetSiblingIndex(index);
-                };
-            m_ChildList.onRemoveCallback = (UnityEditorInternal.ReorderableList l) =>
-                {
-                    Object o = l.serializedProperty.GetArrayElementAtIndex(
-                            l.index).objectReferenceValue;
-                    CinemachineVirtualCameraBase vcam = (o != null)
-                        ? (o as CinemachineVirtualCameraBase) : null;
-                    if (vcam != null)
-                        Undo.DestroyObjectImmediate(vcam.gameObject);
                 };
         }
     }

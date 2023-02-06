@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 namespace Cinemachine
 {
     /// <summary>
-    /// An extension for CmCamera which post-processes
+    /// An extension for CinemachineCamera which post-processes
     /// the final position of the camera.  It listens for CinemachineImpulse
     /// signals on the specified channels, and moves the camera in response to them.
     /// </summary>

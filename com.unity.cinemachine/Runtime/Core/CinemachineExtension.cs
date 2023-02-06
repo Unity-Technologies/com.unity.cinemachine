@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Cinemachine
 {
     /// <summary>
-    /// Base class for a CmCamera extension module.
+    /// Base class for a CinemachineCamera extension module.
     /// Hooks into the Cinemachine Pipeline.  Use this to add extra processing 
     /// to the vcam, modifying its generated state
     /// </summary>
@@ -42,8 +42,11 @@ namespace Cinemachine
         [UnityEditor.Callbacks.DidReloadScripts]
         static void OnScriptReload()
         {
-            var extensions = Resources.FindObjectsOfTypeAll(
-                typeof(CinemachineExtension)) as CinemachineExtension[];
+            var extensions = Resources.FindObjectsOfTypeAll<CinemachineExtension>();
+            // Sort by execution order
+            System.Array.Sort(extensions, (x, y) => 
+                UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(y)) 
+                    - UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(x)));
             foreach (var e in extensions)
                 e.ConnectToVcam(true);
         }

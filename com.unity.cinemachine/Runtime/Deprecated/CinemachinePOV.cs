@@ -95,6 +95,8 @@ namespace Cinemachine
             UpdateInputAxisProvider();
         }
         
+        /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
+        /// <returns>Returns true when input is required.</returns>
         bool AxisState.IRequiresInput.RequiresInput() => true;
 
         /// <summary>
@@ -145,13 +147,10 @@ namespace Cinemachine
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
             Transform parent = VirtualCamera.transform.parent;
-            var up = Vector3.up;
             if (parent != null)
-            {
                 rot = parent.rotation * rot;
-                up = parent.up;
-            }
-            rot = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
+            else
+                rot = Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp) * rot;
             curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
@@ -255,10 +254,24 @@ namespace Cinemachine
         internal void UpgradeToCm3(CinemachinePanTilt c)
         {
             c.ReferenceFrame = CinemachinePanTilt.ReferenceFrames.ParentObject;
+
             c.PanAxis.Range = new Vector2(m_HorizontalAxis.m_MinValue, m_HorizontalAxis.m_MaxValue);
             c.PanAxis.Center = 0;
+            c.PanAxis.Recentering = new () 
+            { 
+                Enabled = m_HorizontalRecentering.m_enabled, 
+                Time = m_HorizontalRecentering.m_RecenteringTime, 
+                Wait = m_HorizontalRecentering.m_WaitTime 
+            };
+
             c.TiltAxis.Range = new Vector2(m_VerticalAxis.m_MinValue, m_VerticalAxis.m_MaxValue);
             c.TiltAxis.Center = 0;
+            c.TiltAxis.Recentering = new () 
+            { 
+                Enabled = m_VerticalRecentering.m_enabled, 
+                Time = m_VerticalRecentering.m_RecenteringTime, 
+                Wait = m_VerticalRecentering.m_WaitTime 
+            };
         }
     }
 }

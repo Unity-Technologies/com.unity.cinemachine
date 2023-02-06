@@ -12,7 +12,7 @@ namespace Cinemachine
     ///
     /// This is intended to be attached to an empty Transform GameObject.
     /// Inherited classes can be either standalone virtual cameras such
-    /// as CmCamera, or meta-cameras such as
+    /// as CinemachineCamera, or meta-cameras such as
     /// CinemachineClearShot or CinemachineBlendListCamera.
     ///
     /// A CinemachineVirtualCameraBase exposes a OutputChannel property.  When the behaviour is
@@ -31,21 +31,21 @@ namespace Cinemachine
     public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera, ISerializationCallbackReceiver
     {
         /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
-        /// active simultaneously.  The most-recently-activated CmCamera will take control, unless there 
+        /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
         /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated 
-        /// highest-priority CmCamera will control the main camera. 
+        /// highest-priority CinemachineCamera will control the main camera. 
         /// 
         /// The default priority is 0.  Often it is sufficient to leave the default setting.  
-        /// In special cases where you want a CmCamera to have a higher or lower priority than 0, 
+        /// In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, 
         /// the value can be set here.
         /// </summary>
         [NoSaveDuringPlay]
         [Tooltip("Priority can be used to control which Cm Camera is live when multiple CM Cameras are "
-            + "active simultaneously.  The most-recently-activated CmCamera will take control, unless there "
+            + "active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there "
             + "is another Cm Camera active with a higher priority.  In general, the most-recently-activated "
-            + "highest-priority CmCamera will control the main camera. \n\n"
+            + "highest-priority CinemachineCamera will control the main camera. \n\n"
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
-            + "In special cases where you want a CmCamera to have a higher or lower priority than 0, "
+            + "In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
         [FoldoutWithEnabledButton(toggleText: "(using default)")]
         public OutputChannel PriorityAndChannel = OutputChannel.Default;
@@ -530,10 +530,10 @@ namespace Cinemachine
         [Serializable]
         public struct TransitionParams
         {
-            /// <summary>Hint for transitioning to and from this CmCamera.  Hints can be combined, although 
+            /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
             /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
             /// make an arbitrary choice.</summary>
-            [Tooltip("Hint for transitioning to and from this CmCamera.  Hints can be combined, although "
+            [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
                 + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
                 + "make an arbitrary choice.")]
             public BlendHint BlendHint;
@@ -547,8 +547,8 @@ namespace Cinemachine
             [Serializable]
             public struct TransitionEvents
             {
-                /// <summary>This event fires when the CmCamera goes Live</summary>
-                [Tooltip("This event fires when the CmCamera goes Live")]
+                /// <summary>This event fires when the CinemachineCamera goes Live</summary>
+                [Tooltip("This event fires when the CinemachineCamera goes Live")]
                 public CinemachineBrain.VcamActivatedEvent OnCameraLive;
             }
             /// <summary>
@@ -718,7 +718,7 @@ namespace Cinemachine
         /// it shares the highest priority in the queue with its peers.
         ///
         /// This happens automatically when a
-        /// new CmCamera is enabled: the most recent one goes to the top of the priority subqueue.
+        /// new CinemachineCamera is enabled: the most recent one goes to the top of the priority subqueue.
         /// Use this method to push a camera to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
         public void Prioritize()
@@ -801,7 +801,12 @@ namespace Cinemachine
         { 
             static OnDomainReload() 
             {
+#if UNITY_2023_1_OR_NEWER
+                var vcams = FindObjectsByType<CinemachineVirtualCameraBase>
+                    (FindObjectsInactive.Include, FindObjectsSortMode.None);
+#else
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
+#endif
                 foreach (var vcam in vcams)
                     vcam.InvalidateCachedTargets();
             }

@@ -58,14 +58,7 @@ namespace Cinemachine
             Ray ray, out RaycastHit hitInfo, float rayLength, int layerMask, in string ignoreTag)
         {
             if (ignoreTag.Length == 0)
-            {
-                if (Physics.Raycast(
-                    ray, out hitInfo, rayLength, layerMask,
-                    QueryTriggerInteraction.Ignore))
-                {
-                    return true;
-                }
-            }
+                return Physics.Raycast(ray, out hitInfo, rayLength, layerMask, QueryTriggerInteraction.Ignore);
             else
             {
                 int closestHit = -1;

@@ -42,6 +42,15 @@
         "com.unity.test-framework": "1.1.33"
       }
     },
+    "com.unity.cinemachine.hdrptests": {
+      "version": "file:../../../com.unity.cinemachine.hdrptests",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.splines": "2.0.0-pre.4",
+        "com.unity.test-framework": "1.1.33"
+      }
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,

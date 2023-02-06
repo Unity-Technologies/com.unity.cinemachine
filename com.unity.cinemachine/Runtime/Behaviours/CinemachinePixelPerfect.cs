@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-#if CINEMACHINE_LWRP_7_3_1 || CINEMACHINE_PIXEL_PERFECT_2_0_3
+#if CINEMACHINE_URP || CINEMACHINE_PIXEL_PERFECT_2_0_3
 
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera that tweaks the orthographic size
+    /// An add-on module for CinemachineCamera that tweaks the orthographic size
     /// of the camera. It detects the presence of the Pixel Perfect Camera component and use the
     /// settings from that Pixel Perfect Camera to correct the orthographic size so that pixel art
     /// sprites would appear pixel perfect when the camera becomes live.
@@ -35,7 +35,7 @@ namespace Cinemachine
             if (brain == null || !brain.IsLive(vcam))
                 return;
 
-#if CINEMACHINE_LWRP_7_3_1
+#if CINEMACHINE_URP
             UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
 #elif CINEMACHINE_PIXEL_PERFECT_2_0_3
             UnityEngine.U2D.PixelPerfectCamera pixelPerfectCamera;
@@ -61,7 +61,7 @@ namespace Cinemachine
 namespace Cinemachine
 {
     /// <summary>
-    /// An add-on module for CmCamera Camera that tweaks the orthographic size
+    /// An add-on module for CinemachineCamera Camera that tweaks the orthographic size
     /// of the camera. It detects the presence of the Pixel Perfect Camera component and use the
     /// settings from that Pixel Perfect Camera to correct the orthographic size so that pixel art
     /// sprites would appear pixel perfect when the camera becomes live.

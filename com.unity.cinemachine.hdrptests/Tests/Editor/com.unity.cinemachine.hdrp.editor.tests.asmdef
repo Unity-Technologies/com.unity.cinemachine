@@ -1,12 +1,14 @@
 {
-    "name": "com.unity.cinemachine.hdrpeditor.tests",
+    "name": "com.unity.cinemachine.hdrp.editor.tests",
+    
     "rootNamespace": "",
     "references": [
         "com.unity.cinemachine",
         "com.unity.cinemachine.editor",
         "com.unity.cinemachine.shared.tests",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "com.unity.cinemachine.hdrp.tests"
     ],
     "includePlatforms": [
         "Editor"

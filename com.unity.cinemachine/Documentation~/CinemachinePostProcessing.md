@@ -1,14 +1,14 @@
 # Post Processing Extension
 
-Use the Cinemachine Post Processing [extension](CinemachineVirtualCameraExtensions.md) to attach a Postprocessing V2 profile to a CmCamera.
+Use the Cinemachine Post Processing [extension](CinemachineVirtualCameraExtensions.md) to attach a Postprocessing V2 profile to a CinemachineCamera.
 
 **Note 1**: Unity recommends using Postprocessing V2 instead of Postprocessing V1.
 
 **Note 2**: With HDRP and URP 7 and up, The PostProcessing package is deprecated, and is implemented natively by HDRP and URP.  In that case, please see the __CinemachineVolumeSettings__ extension.
 
-The Cinemachine Post Processing extension holds a Post-Processing Profile asset to apply to a CmCamera when it is activated. If the camera is blending with another CmCamera, then the blend weight is applied to the Post Process effects also.
+The Cinemachine Post Processing extension holds a Post-Processing Profile asset to apply to a CinemachineCamera when it is activated. If the camera is blending with another CinemachineCamera, then the blend weight is applied to the Post Process effects also.
 
-Before attaching post processing profiles to CmCameras, you first need to set up your project to use post processing. 
+Before attaching post processing profiles to CinemachineCameras, you first need to set up your project to use post processing. 
 
 To set up a project to use Post Processing V2 with Cinemachine:
 
@@ -18,17 +18,17 @@ To set up a project to use Post Processing V2 with Cinemachine:
 
 3. [Add the component](https://docs.unity3d.com/Manual/UsingComponents.html) named __Post-Process Layer__.  This will enable Post Process profiles to affect the Camera.
 
-To add a Post Process profile to a CmCamera
+To add a Post Process profile to a CinemachineCamera
 
-4. Select your CmCamera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
+4. Select your CinemachineCamera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
 
-5. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachinePostProcessing__, then configre the Profile asset to have the effects you want when this CmCamera is live.
+5. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachinePostProcessing__, then configre the Profile asset to have the effects you want when this CinemachineCamera is live.
 
 ## Properties:
 
 | **Property:** || **Function:** |
 |:---||:---|
-| __Profile__ || The Post-Processing profile to activate when this CmCamera is live. |
+| __Profile__ || The Post-Processing profile to activate when this CinemachineCamera is live. |
 | __Focus Tracks Target__ || This is obsolete, please use __Focus Tracking__. |
 | __Focus Tracking__ || If the profile has the appropriate overrides, will set the base focus distance to be the distance from the selected target to the camera. The __Focus Offset__ field will then modify that distance. |
 || _None_ | No focus tracking. |
@@ -38,5 +38,6 @@ To add a Post Process profile to a CmCamera
 || _Camera_ | Focus offset is relative to the camera |
 | __Focus Target__ || The target to use if __Focus Tracks Target__ is set to _Custom Target_.|
 | __Focus Offset__ || Used when __Focus Tracking__ is not _None_.  Offsets the sharpest point away from the location of the focus target. |
+| __Weight__ || The weight of the dynamic volume that will be created, when the camera is fully blended in.  This will blend to and from 0 along with the camera.|
 
 

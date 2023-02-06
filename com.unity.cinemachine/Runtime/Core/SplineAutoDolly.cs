@@ -10,9 +10,13 @@ namespace Cinemachine
     [Serializable]
     public struct SplineAutoDolly
     {
+        /// <summary>If set, will enable AutoDolly on a spline</summary>
+        [Tooltip("If set, will enable the selected automatic dolly along the spline")]
+        public bool Enabled;
+        
         /// <summary>This is the object that actually implements the AutoDolly</summary>
         [SerializeReference]
-        public ISplineAutoDolly Implementation;
+        public ISplineAutoDolly Method;
 
         /// <summary>
         /// Interface for procedural spline dolly.
@@ -22,6 +26,12 @@ namespace Cinemachine
         {
             /// <summary>Called from OnValidate() to validate the settings.</summary>
             void Validate();
+
+            /// <summary>Call this to reset any state information contained in the implementation.</summary>
+            void Reset();
+
+            /// <summary>Returns true if this implementation requires a tracking target.</summary>
+            bool RequiresTrackingTarget { get; }
 
             /// <summary>
             /// Compute the desired position on the spline.
@@ -48,8 +58,25 @@ namespace Cinemachine
             [Tooltip("Speed of travel, in current position units per second.")]
             public float Speed;
 
+            /// <summary>Called from OnValidate() to validate the settings.</summary>
             void ISplineAutoDolly.Validate() {}
 
+            /// <summary>This implementation does nothing.</summary>
+            void ISplineAutoDolly.Reset() {}
+
+            /// <summary>Returns true if this implementation requires a tracking target.</summary>
+            bool ISplineAutoDolly.RequiresTrackingTarget => false;
+
+            /// <summary>
+            /// Compute the desired position on the spline.
+            /// </summary>
+            /// <param name="sender">The MonoBehaviour that is asking.</param>
+            /// <param name="target">The target object (may be null for algorithms that don't require it).</param>
+            /// <param name="spline">The spline on which the location must be found.</param>
+            /// <param name="currentPosition">The current position on the spline.</param>
+            /// <param name="positionUnits">The units in which spline positions are expressed.</param>
+            /// <param name="deltaTime">Current deltaTime.  If smaller than 0, then previous frame data should be ignored.</param>
+            /// <returns>The desired position on the spline, expressed in positionUnits.</returns>
             float ISplineAutoDolly.GetSplinePosition(
                 MonoBehaviour sender, Transform target, SplineContainer spline, 
                 float currentPosition, PathIndexUnit positionUnits, float deltaTime)
@@ -103,12 +130,29 @@ namespace Cinemachine
                 + "accurate results. In most cases, the default value (2) is sufficient.")]
             public int SearchIteration = 2;
 
+            /// <summary>Called from OnValidate() to validate the settings.</summary>
             void ISplineAutoDolly.Validate() 
             {
                 SearchResolution = Mathf.Max(SearchResolution, 1);
                 SearchIteration = Mathf.Max(SearchIteration, 1);
             }
 
+            /// <summary>This implementation does nothing.</summary>
+            void ISplineAutoDolly.Reset() {}
+
+            /// <summary>Returns true if this implementation requires a tracking target.</summary>
+            bool ISplineAutoDolly.RequiresTrackingTarget => true;
+
+            /// <summary>
+            /// Compute the desired position on the spline.
+            /// </summary>
+            /// <param name="sender">The MonoBehaviour that is asking.</param>
+            /// <param name="target">The target object (may be null for algorithms that don't require it).</param>
+            /// <param name="spline">The spline on which the location must be found.</param>
+            /// <param name="currentPosition">The current position on the spline.</param>
+            /// <param name="positionUnits">The units in which spline positions are expressed.</param>
+            /// <param name="deltaTime">Current deltaTime.  If smaller than 0, then previous frame data should be ignored.</param>
+            /// <returns>The desired position on the spline, expressed in positionUnits.</returns>
             float ISplineAutoDolly.GetSplinePosition(
                 MonoBehaviour sender, Transform target, SplineContainer spline, 
                 float currentPosition, PathIndexUnit positionUnits, float deltaTime)

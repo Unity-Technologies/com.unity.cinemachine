@@ -7,10 +7,10 @@ using System.Collections.Generic;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a deprecated component.  Use CmCamera instead.
+    /// This is a deprecated component.  Use CinemachineCamera instead.
     /// </summary>
     [Obsolete("This is deprecated. Use Create -> Cinemachine -> FreeLook camera, or " +
-        "create a CmCamera with appropriate components")]
+        "create a CinemachineCamera with appropriate components")]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
@@ -455,6 +455,8 @@ namespace Cinemachine
                 Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
         
+        /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
+        /// <returns>Returns true when input is required.</returns>
         bool AxisState.IRequiresInput.RequiresInput() => true;
 
         float GetYAxisClosestValue(Vector3 cameraPos, Vector3 up)

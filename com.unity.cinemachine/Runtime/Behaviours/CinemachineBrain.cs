@@ -11,7 +11,7 @@ using UnityEngine.Serialization;
 
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_LWRP_7_3_1
+#elif CINEMACHINE_URP
     using UnityEngine.Rendering.Universal;
 #endif
 
@@ -118,11 +118,11 @@ namespace Cinemachine
         [FormerlySerializedAs("m_WorldUpOverride")]
         public Transform WorldUpOverride;
 
-        /// <summary>The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. 
-        /// CmCameras that do not output to one of these channels will be ignored.  Use this in situations where multiple
+        /// <summary>The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to any of the channels selected. 
+        /// CinemachineCameras that do not output to one of these channels will be ignored.  Use this in situations where multiple
         /// CinemachineBrains are needed (for example, Split-screen).</summary>
-        [Tooltip("The CinemachineBrain will find the highest-priority CmCamera that outputs to any of the channels selected. "
-            + "CmCameras that do not output to one of these channels will be ignored.  Use this in situations "
+        [Tooltip("The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to any of the channels selected. "
+            + "CinemachineCameras that do not output to one of these channels will be ignored.  Use this in situations "
             + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
         [EnumMaskProperty]
         public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
@@ -608,8 +608,7 @@ namespace Cinemachine
             {
                 if (!vcam.IsValid)
                     return null;    // deleted!
-                var bs = vcam as BlendSourceVirtualCamera;
-                if (bs == null)
+                if (vcam is not BlendSourceVirtualCamera bs)
                     break;
                 vcam = bs.Blend.CamB;
             }
@@ -627,8 +626,7 @@ namespace Cinemachine
             // Ignore m_CurrentLiveCameras.CamB
             if (vcam == m_CurrentLiveCameras.CamA)
                 return true;
-            var b = m_CurrentLiveCameras.CamA as BlendSourceVirtualCamera;
-            if (b != null && b.Blend.Uses(vcam))
+            if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(vcam))
                 return true;
             ICinemachineCamera parent = vcam.ParentCamera;
             if (parent != null && parent.IsLiveChild(vcam, false))

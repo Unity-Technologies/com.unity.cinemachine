@@ -18,7 +18,7 @@ Storyboards can be muted at a global level - completely disabling them. To toggl
 |:---|:---|:---|
 | __Storyboard Global Mute__ || When enabled, all storyboards are globally muted. |
 | __Show Image__ || Toggle the visibility of the storyboard image. |
-| __Image__ || The image to display as an overlay over the output of the CmCamera. |
+| __Image__ || The image to display as an overlay over the output of the CinemachineCamera. |
 | __Aspect__ || How to handle differences between image aspect and screen aspect. |
 | | _Best Fit_ | Resize the image as large as possible on the screen without cropping. Preserve the vertical and horizontal proportions. |
 | | _Crop Image To Fit_ | Resize the image to fill the screen, cropping if necessary. Preserve the vertical and horizontal proportions. |
@@ -28,6 +28,6 @@ Storyboards can be muted at a global level - completely disabling them. To toggl
 | __Rotation__ || The screen-space rotation of the image. |
 | __Scale__ || The screen-space scaling of the image. |
 | __Sync Scale__ || Check to synchronize the scale of the x and y axes. |
-| __Mute Camera__ || Check to prevent the CmCamera from updating the position, rotation, or scale of the Unity camera. Use this feature to prevent Timeline from [blending](CinemachineBlending.md) the camera to an unintended position in the Scene. |
+| __Mute Camera__ || Check to prevent the CinemachineCamera from updating the position, rotation, or scale of the Unity camera. Use this feature to prevent Timeline from [blending](CinemachineBlending.md) the camera to an unintended position in the Scene. |
 | __Split View__ || Wipe the image on and off horizontally. |
 | __Waveform Monitor__ || Opens the Waveform monitor window.  This is very performance-intensive, use with care. |
