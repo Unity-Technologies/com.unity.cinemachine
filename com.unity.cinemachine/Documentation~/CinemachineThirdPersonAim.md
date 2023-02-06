@@ -16,4 +16,4 @@ Additionally, if _Aim Target Reticle_ is non-null, this extension will project a
 | __Aim Collision Filter__ | Objects on these layers will be detected. |
 | __Ignore Tag__ | Objects with this tag are ignored. It's a good idea to set this field to the target's tag.  |
 | __Aim Distance__ | How far to project the object detection ray.  |
-| __Aim Target Reticle__ | This 2D object will be positioned in the Game View over the raycast hit point, if any, or will remain in the center of the screen if no hit point is detected. May be null, in which case no on-screen indicator will appear.  |
+| __Noise Cancellation__ | When this is enabled, the aim target will be stabilized on the screen when handheld noise is present on the camera.  This will only work if the Pivot Offset in the Noise component is nonzero.  |
