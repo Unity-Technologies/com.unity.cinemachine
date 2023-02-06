@@ -1,41 +1,14 @@
-﻿using UnityEngine;
+﻿#if CINEMACHINE_POST_PROCESSING_V2
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
-#if CINEMACHINE_POST_PROCESSING_V2
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
-#endif
 
 namespace Cinemachine
 {
-#if !CINEMACHINE_POST_PROCESSING_V2
     /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
-    /// have the Post-Processing V2 stack package installed in order to use this behaviour.
-    ///
-    /// As a component on the Virtual Camera, it holds
-    /// a Post-Processing Profile asset that will be applied to the Unity camera whenever
-    /// the Virtual camera is live.  It also has the optional functionality of animating
-    /// the Focus Distance and DepthOfField properties of the Camera State, and
-    /// applying them to the current Post-Processing profile, provided that profile has a
-    /// DepthOfField effect that is enabled.
-    /// </summary>
-    [SaveDuringPlay]
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachinePostProcessing : CinemachineExtension 
-    {
-        /// <summary>Apply PostProcessing effects</summary>
-        /// <param name="vcam">The virtual camera being processed</param>
-        /// <param name="stage">The current pipeline stage</param>
-        /// <param name="state">The current virtual camera state</param>
-        /// <param name="deltaTime">The current applicable deltaTime</param>
-        protected override void PostPipelineStageCallback(
-            CinemachineVirtualCameraBase vcam,
-            CinemachineCore.Stage stage, ref CameraState state, float deltaTime) {}
-    }
-#else
-    /// <summary>
-    /// This behaviour is a liaison between Cinemachine with the Post-Processing v2 module.  You must
+    /// This behaviour is a liaison between Cinemachine and the Post-Processing v2 module.  You must
     /// have the Post-Processing V2 stack package installed in order to use this behaviour.
     ///
     /// As a component on the Virtual Camera, it holds
@@ -59,6 +32,12 @@ namespace Cinemachine
         /// </summary>
         public static float s_VolumePriority = 1000f;
 
+        /// <summary>
+        /// This is the weight that the PostProcessing profile will have when the camera is fully active.
+        /// It will blend to and from 0 along with the camera.
+        /// </summary>
+        public float Weight = 1;
+
         /// <summary>The reference object for focus tracking</summary>
         public enum FocusTrackingMode
         {
@@ -80,8 +59,8 @@ namespace Cinemachine
         [Tooltip("If the profile has the appropriate overrides, will set the base focus "
             + "distance to be the distance from the selected target to the camera."
             + "The Focus Offset field will then modify that distance.")]
-         [FormerlySerializedAs("m_FocusTracking")]
-         public FocusTrackingMode FocusTracking;
+        [FormerlySerializedAs("m_FocusTracking")]
+        public FocusTrackingMode FocusTracking;
 
         /// <summary>The target to use if Focus Tracks Target is set to Custom Target</summary>
         [Tooltip("The target to use if Focus Tracks Target is set to Custom Target")]
@@ -139,9 +118,21 @@ namespace Cinemachine
         /// <summary>True if the profile is enabled and nontrivial</summary>
         public bool IsValid => Profile != null && Profile.settings.Count > 0;
 
+        void OnValidate()
+        {
+            Weight = Mathf.Max(0, Weight);
+        }
 
-        /// <summary>Called by the editor when the shared asset has been edited</summary>
-        internal void InvalidateCachedProfile()
+        void Reset()
+        {
+            Weight = 1;
+            FocusTracking = FocusTrackingMode.None;
+            FocusTarget = null;
+            FocusOffset = 0;
+            Profile = null;
+        }
+
+        protected override void OnEnable()
         {
             m_extraStateCache ??= new();
             GetAllExtraStates(m_extraStateCache);
@@ -206,7 +197,7 @@ namespace Cinemachine
                     }
 
                     // Apply the post-processing
-                    state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item{ Custom = profile, Weight = 1 });
+                    state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item{ Custom = profile, Weight = Weight });
                 }
             }
         }
@@ -251,7 +242,7 @@ namespace Cinemachine
                     v.weight = b.Weight;
                     ++numPPblendables;
                 }
-#if true // set this to true to force first weight to 1
+#if false // set this to true to force first weight to 1
                 // If more than one volume, then set the frst one's weight to 1
                 if (numPPblendables > 1)
                     firstVolume.weight = 1;
@@ -369,5 +360,5 @@ namespace Cinemachine
             SceneManager.sceneUnloaded += (scene) => CleanupLookupTable();
         }
     }
-#endif
 }
+#endif
