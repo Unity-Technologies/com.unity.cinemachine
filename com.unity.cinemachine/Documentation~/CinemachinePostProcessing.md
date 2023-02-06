@@ -38,6 +38,6 @@ To add a Post Process profile to a CinemachineCamera
 || _Camera_ | Focus offset is relative to the camera |
 | __Focus Target__ || The target to use if __Focus Tracks Target__ is set to _Custom Target_.|
 | __Focus Offset__ || Used when __Focus Tracking__ is not _None_.  Offsets the sharpest point away from the location of the focus target. |
-| __Weight__ || The weight of the dynamic volume that will be created, when the camera is fully bklended in.  This will blend to and from 0 along with the camera.|
+| __Weight__ || The weight of the dynamic volume that will be created, when the camera is fully blended in.  This will blend to and from 0 along with the camera.|
 
 
