@@ -1397,7 +1397,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BulletPrefab: {fileID: 3056719325741855433, guid: 31d678dfd458ff84d95d644dd3730cca, type: 3}
-  MaxBulletsPerSec: 10
+  MaxBulletsPerSec: 3
   BulletSpeed: 100
   TimeInAir: 3
   PlayerRotationTime: 0.2
@@ -1409,7 +1409,7 @@ MonoBehaviour:
     Restrictions: 0
   AimTarget: {fileID: 2058541315}
   ImpulseSource: {fileID: 1525634695}
-  ImpulseForce: 0.1
+  ImpulseForce: 0.2
 --- !u!114 &1525634695
 MonoBehaviour:
   m_ObjectHideFlags: 0

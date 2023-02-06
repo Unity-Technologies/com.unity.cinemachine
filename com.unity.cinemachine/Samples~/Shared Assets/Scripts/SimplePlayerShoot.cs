@@ -63,7 +63,8 @@ namespace Cinemachine.Examples
                 var go = Instantiate(BulletPrefab, transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
                 if (go.TryGetComponent<SimpleBullet>(out var b))
                     b.Fire(fwd, BulletSpeed);
-                ImpulseSource.GenerateImpulseWithForce(ImpulseForce);
+                if (ImpulseSource != null)
+                    ImpulseSource.GenerateImpulseWithForce(ImpulseForce);
                 Destroy(go, TimeInAir);
             }
         }
