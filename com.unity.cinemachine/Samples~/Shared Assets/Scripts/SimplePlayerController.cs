@@ -29,16 +29,16 @@ namespace Cinemachine.Examples
 
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
-        public InputAxis MoveX = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveX = InputAxis.DefaultMomentary;
 
         [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward movement")]
-        public InputAxis MoveZ = new InputAxis { Range = new Vector2(-1, 1) };
+        public InputAxis MoveZ = InputAxis.DefaultMomentary;
 
         [Tooltip("Jump movement.  Value is 0 or 1. Controls the vertical movement")]
-        public InputAxis Jump = new InputAxis { Range = new Vector2(0, 1) };
+        public InputAxis Jump = InputAxis.DefaultMomentary;
 
-        [Tooltip("Sprint movement.  Value is 0 or 1. If true, then is sprinting")]
-        public InputAxis Sprint = new InputAxis { Range = new Vector2(0, 1) };
+        [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
+        public InputAxis Sprint = InputAxis.DefaultMomentary;
 
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
@@ -65,10 +65,10 @@ namespace Cinemachine.Examples
         /// want it to work everywhere.
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveX, Name = "Move X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref MoveZ, Name = "Move Z", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Jump, Name = "Jump", AxisIndex = 2 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref Sprint, Name = "Sprint", AxisIndex = 3 });
+            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
+            axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
         }
 
         void Start()

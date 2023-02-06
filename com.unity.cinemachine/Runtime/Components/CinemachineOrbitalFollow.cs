@@ -101,9 +101,9 @@ namespace Cinemachine
             RadialAxis = DefaultRadial;
         }
         
-        static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
-        static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f };
-        static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 1), Wrap = false, Center = 1 };
+        static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
+        static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f, Recentering = InputAxis.RecenteringSettings.Default };
+        static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 1), Wrap = false, Center = 1, Recentering = InputAxis.RecenteringSettings.Default };
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid => enabled && FollowTarget != null;
@@ -122,9 +122,9 @@ namespace Cinemachine
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", AxisIndex = 1 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale", AxisIndex = 2 });
+            axes.Add(new () { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale" });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
@@ -196,6 +196,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
+            m_ResetHandler?.Invoke(); // cancel recentering
             if (fromCam != null
                 && transitionParams.InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
@@ -214,9 +215,8 @@ namespace Cinemachine
         /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
-            base.ForceCameraPosition(pos, rot);
             m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
-            m_ResetHandler?.Invoke();
+            m_ResetHandler?.Invoke(); // cancel recentering
             if (FollowTarget != null)
             {
                 var dir = pos - FollowTargetPosition;
@@ -391,6 +391,11 @@ namespace Cinemachine
                     m_PreviousOffset, offset, curState.ReferenceUp);
             }
             m_PreviousOffset = offset;
+
+            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
+            HorizontalAxis.DoRecentering(deltaTime, gotInput);
+            VerticalAxis.DoRecentering(deltaTime, gotInput);
+            RadialAxis.DoRecentering(deltaTime, gotInput);
         }
 
         /// For the inspector

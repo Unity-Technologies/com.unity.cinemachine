@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -370,43 +370,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 838339822}
+    Enabled: 1
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 4
     LegacyInput: Mouse X
     LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 838339822}
+    Enabled: 1
+    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: -4
     LegacyInput: Mouse Y
     LegacyGain: -200
     Control:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 838339822}
+    Enabled: 1
+    InputAction: {fileID: 0}
+    Gain: 4
     LegacyInput: 
     LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0
       DecelTime: 0
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
 --- !u!114 &838339822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,18 +442,30 @@ MonoBehaviour:
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
   VerticalAxis:
     Value: 17.5
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
   RadialAxis:
     Value: 1
     Center: 1
     Range: {x: 1, y: 5}
     Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
 --- !u!1 &950181516
 GameObject:
@@ -653,14 +664,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: Controllers.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8425371796551895842, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3521509573382385251, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_Name
       value: Player
@@ -712,6 +715,14 @@ PrefabInstance:
     - target: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5995860984952935428, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: Controllers.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8425371796551895842, guid: 7f3bfd07f0528a94d8f6e1d503f7bb61, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

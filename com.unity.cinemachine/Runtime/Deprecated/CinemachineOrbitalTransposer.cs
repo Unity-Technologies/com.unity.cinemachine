@@ -605,6 +605,12 @@ namespace Cinemachine
             c.HorizontalAxis.Wrap = m_XAxis.m_Wrap;
             c.HorizontalAxis.Center = c.HorizontalAxis.ClampValue(0);
             c.HorizontalAxis.Value = c.HorizontalAxis.ClampValue(m_XAxis.Value);
+            c.HorizontalAxis.Recentering = new () 
+            { 
+                Enabled = m_RecenterToTargetHeading.m_enabled, 
+                Time = m_RecenterToTargetHeading.m_RecenteringTime, 
+                Wait = m_RecenterToTargetHeading.m_WaitTime 
+            };
 
             c.VerticalAxis.Center = c.VerticalAxis.Value = m_FollowOffset.y;
             c.VerticalAxis.Range = new Vector2(c.VerticalAxis.Center, c.VerticalAxis.Center);

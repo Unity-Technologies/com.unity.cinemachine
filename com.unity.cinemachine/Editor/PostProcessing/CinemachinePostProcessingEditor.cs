@@ -15,7 +15,7 @@ namespace Cinemachine.Editor
 #if !CINEMACHINE_POST_PROCESSING_V2
         public override void OnInspectorGUI()
         {
-    #if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+    #if CINEMACHINE_HDRP || CINEMACHINE_URP
             EditorGUILayout.HelpBox(
                 "This component is not valid for HDRP and URP projects.  Use the CinemachineVolumeSettings component instead.",
                 MessageType.Warning);
@@ -76,7 +76,7 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-#if CINEMACHINE_HDRP || CINEMACHINE_LWRP_7_3_1
+#if CINEMACHINE_HDRP || CINEMACHINE_URP
             EditorGUILayout.HelpBox(
                 "This component is not valid for HDRP and URP projects.  Use the CinemachineVolumeSettings component instead.",
                 MessageType.Warning);

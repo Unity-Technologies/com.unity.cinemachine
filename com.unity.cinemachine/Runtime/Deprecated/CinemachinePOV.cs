@@ -254,10 +254,24 @@ namespace Cinemachine
         internal void UpgradeToCm3(CinemachinePanTilt c)
         {
             c.ReferenceFrame = CinemachinePanTilt.ReferenceFrames.ParentObject;
+
             c.PanAxis.Range = new Vector2(m_HorizontalAxis.m_MinValue, m_HorizontalAxis.m_MaxValue);
             c.PanAxis.Center = 0;
+            c.PanAxis.Recentering = new () 
+            { 
+                Enabled = m_HorizontalRecentering.m_enabled, 
+                Time = m_HorizontalRecentering.m_RecenteringTime, 
+                Wait = m_HorizontalRecentering.m_WaitTime 
+            };
+
             c.TiltAxis.Range = new Vector2(m_VerticalAxis.m_MinValue, m_VerticalAxis.m_MaxValue);
             c.TiltAxis.Center = 0;
+            c.TiltAxis.Recentering = new () 
+            { 
+                Enabled = m_VerticalRecentering.m_enabled, 
+                Time = m_VerticalRecentering.m_RecenteringTime, 
+                Wait = m_VerticalRecentering.m_WaitTime 
+            };
         }
     }
 }
