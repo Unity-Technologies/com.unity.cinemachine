@@ -81,7 +81,7 @@ namespace Cinemachine
         public static float DeltaTime => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
 
         /// <summary>
-        /// If non-negative, cinemachine willuse this value whenever it wants current game time.
+        /// If non-negative, cinemachine will use this value whenever it wants current game time.
         /// Usage is for master timelines in manual update mode, for deterministic behaviour.
         /// </summary>
         public static float CurrentTimeOverride = -1;
@@ -413,7 +413,7 @@ namespace Cinemachine
         /// <summary>
         /// Is this virtual camera currently actively controlling any Camera?
         /// </summary>
-        /// <param name="vcam">The virtual camea in question</param>
+        /// <param name="vcam">The virtual camera in question</param>
         /// <returns>True if the vcam is currently driving a Brain</returns>
         public bool IsLive(ICinemachineCamera vcam)
         {
@@ -526,7 +526,7 @@ namespace Cinemachine
             return null;
         }
 
-        /// <summary>Call this to notify all virtual camewras that may be tracking a target
+        /// <summary>Call this to notify all virtual cameras that may be tracking a target
         /// that the target's position has suddenly warped to somewhere else, so that
         /// the virtual cameras can update their internal state to make the camera
         /// warp seamlessly along with the target.

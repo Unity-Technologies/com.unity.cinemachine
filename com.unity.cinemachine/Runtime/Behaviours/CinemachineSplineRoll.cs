@@ -33,7 +33,7 @@ namespace Cinemachine
         {
             get 
             { 
-                // In case behavour was reparented in the editor, we check every time
+                // In case behaviour was re-parented in the editor, we check every time
                 TryGetComponent(out SplineContainer container);
                 if (container != null)
                     return container;

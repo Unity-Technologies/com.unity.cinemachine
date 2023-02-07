@@ -37,6 +37,7 @@ namespace Cinemachine
                 /// <summary>Mapping should be the second dimension of a multi-dimensional action</summary>
                 Y
             };
+            
             /// <summary>Indicates what is the intended usage of the axis.</summary>
             public Hints Hint;
         }
@@ -54,7 +55,7 @@ namespace Cinemachine
     public interface IInputAxisResetSource
     {
         /// <summary>
-        /// Delegate to be called when input needs to be reset and recentering cancelled.
+        /// Delegate to be called when input needs to be reset and re-centering cancelled.
         /// </summary>
         public delegate void ResetHandler();
 
@@ -96,22 +97,22 @@ namespace Cinemachine
         [Tooltip("If set, then the axis will wrap around at the min/max values, forming a loop")]
         public bool Wrap;
 
-        /// <summary>Defines the settings for automatic recentering</summary>
+        /// <summary>Defines the settings for automatic re-centering</summary>
         [Serializable] 
         public struct RecenteringSettings
         {
-            /// <summary>If set, will enable automatic recentering of the axis</summary>
-            [Tooltip("If set, will enable automatic recentering of the axis")]
+            /// <summary>If set, will enable automatic re-centering of the axis</summary>
+            [Tooltip("If set, will enable automatic re-centering of the axis")]
             public bool Enabled;
 
             /// <summary>If no user input has been detected on the axis for this man
-            /// seconds, recentering will begin.</summary>
+            /// seconds, re-centering will begin.</summary>
             [Tooltip("If no user input has been detected on the axis for this many "
-                + "seconds, recentering will begin.")]
+                + "seconds, re-centering will begin.")]
             public float Wait;
 
-            /// <summary>How long it takes to reach center once recentering has started</summary>
-            [Tooltip("How long it takes to reach center once recentering has started.")]
+            /// <summary>How long it takes to reach center once re-centering has started</summary>
+            [Tooltip("How long it takes to reach center once re-centering has started.")]
             public float Time;
 
             /// <summary>Default value</summary>
@@ -125,7 +126,7 @@ namespace Cinemachine
             }
         }
         
-        /// <summary>Controls automatic recentering of axis</summary>
+        /// <summary>Controls automatic re-centering of axis</summary>
         [FoldoutWithEnabledButton]
         public RecenteringSettings Recentering;
         
@@ -138,13 +139,13 @@ namespace Cinemachine
             None = 0, 
             /// <summary>Range and center are not editable by the user</summary>
             RangeIsDriven = 1, 
-            /// <summary>Indicates that recentering this axis is not possible</summary>
+            /// <summary>Indicates that re-centering this axis is not possible</summary>
             NoRecentering = 2,
             /// <summary>Axis represents a momentary spring-back control</summary>
             Momentary = 4,
         };
 
-        /// <summary>Some usages require restricted functionality.  This is set here.</summary>
+        /// <summary>Some usages require restricted functionality. This is set here.</summary>
         [HideInInspector]
         public RestrictionFlags Restrictions;
 
@@ -198,7 +199,7 @@ namespace Cinemachine
             Restrictions = RestrictionFlags.NoRecentering | RestrictionFlags.Momentary
         };
         
-        /// Internal state for recentering
+        /// Internal state for re-centering
         struct RecenteringState
         {
             public const float k_Epsilon = UnityVectorExtensions.Epsilon;
@@ -211,10 +212,10 @@ namespace Cinemachine
         RecenteringState m_RecenteringState;
 
         /// <summary>
-        /// Call this before calling DoRecentering.  Will track any vlue changes so that the recentering clock
+        /// Call this before calling DoRecentering.  Will track any value changes so that the re-centering clock
         /// is updated properly.
         /// </summary>
-        /// <returns>True if value changed.  This value can be used to cancel recentering when multiple
+        /// <returns>True if value changed.  This value can be used to cancel re-centering when multiple
         /// input axes are coupled.</returns>
         public bool TrackValueChange()
         {
@@ -228,10 +229,10 @@ namespace Cinemachine
             return false;
         }
 
-        /// <summary>Call this to manage recentering axis value to axis center.
-        /// This assumes that TrackValueChange() has beed called already this frame.</summary>
-        /// <param name="deltaTime">Current deltaTime, or -1 for immediate recentering</param>
-        /// <param name="forceCancel">If true, cancel any recentering currently in progress and reset the timer.</param>
+        /// <summary>Call this to manage re-centering axis value to axis center.
+        /// This assumes that TrackValueChange() has been called already this frame.</summary>
+        /// <param name="deltaTime">Current deltaTime, or -1 for immediate re-centering</param>
+        /// <param name="forceCancel">If true, cancel any re-centering currently in progress and reset the timer.</param>
         public void DoRecentering(float deltaTime, bool forceCancel)
         {
             if ((Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
@@ -279,11 +280,11 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Trigger recentering immediately, regardless of whether recentering 
+        /// <summary>Trigger re-centering immediately, regardless of whether re-centering 
         /// is enabled or the wait time has elapsed.</summary>
         public void RecenterNow() => m_RecenteringState.m_ForceRecenter = true;
 
-        /// <summary>Cancel any current recentering in progress, and reset the wait time</summary>
+        /// <summary>Cancel any current re-centering in progress, and reset the wait time</summary>
         public void CancelRecentering()
         {
             m_RecenteringState.m_LastValueChangeTime = RecenteringState.CurrentTime;
@@ -326,7 +327,7 @@ namespace Cinemachine
     /// <summary>
     /// This object drives an input axis.  
     /// It reads raw input, applies it to the axis value, with acceleration and deceleration, 
-    /// and manages recentering.
+    /// and manages re-centering.
     /// </summary>
     [Serializable]
     public struct InputAxisDriver

@@ -269,8 +269,8 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Get the bounding sphere of a group memebr, with the weight taken into account.
-        /// As the member's weight goes to 0, the position lerps to the group average position.
+        /// Get the bounding sphere of a group member, with the weight taken into account.
+        /// As the member's weight goes to 0, the position interpolates to the group average position.
         /// Note that this result is only valid after DoUpdate has been called. If members
         /// are added or removed after that call or change their weights or active state, 
         /// this will not necessarily return correct information before the next update.

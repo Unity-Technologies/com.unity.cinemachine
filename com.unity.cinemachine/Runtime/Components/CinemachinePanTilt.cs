@@ -161,7 +161,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            m_ResetHandler?.Invoke(); // Cancel recentering
+            m_ResetHandler?.Invoke(); // Cancel re-centering
             if (fromCam != null && transitionParams.InheritPosition  
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
@@ -173,7 +173,7 @@ namespace Cinemachine
         
         void SetAxesForRotation(Quaternion targetRot)
         {
-            m_ResetHandler?.Invoke(); // cancel recentering
+            m_ResetHandler?.Invoke(); // cancel re-centering
 
             var up = VcamState.ReferenceUp;
             var fwd = GetReferenceFrame(up) * Vector3.forward;
