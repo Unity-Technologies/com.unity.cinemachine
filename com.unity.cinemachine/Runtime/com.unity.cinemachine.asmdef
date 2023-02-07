@@ -54,8 +54,8 @@
         },
         {
             "name": "com.unity.render-pipelines.universal",
-            "expression": "7.3.1",
-            "define": "CINEMACHINE_LWRP_7_3_1"
+            "expression": "14.0.4",
+            "define": "CINEMACHINE_URP"
         },
         {
             "name": "com.unity.2d.pixel-perfect",
