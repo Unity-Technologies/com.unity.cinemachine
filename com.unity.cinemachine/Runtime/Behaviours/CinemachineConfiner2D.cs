@@ -296,7 +296,7 @@ namespace Cinemachine
                 frustumHeight = state.Lens.OrthographicSize;
             else
             {
-                // distance between the collider plane and the camera
+                // distance between the collider's plane and the camera
                 float distance = cameraPosLocalZ;
                 frustumHeight = distance * Mathf.Tan(state.Lens.FieldOfView * 0.5f * Mathf.Deg2Rad);
             }
