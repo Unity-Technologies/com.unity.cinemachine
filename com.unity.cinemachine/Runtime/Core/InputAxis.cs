@@ -212,7 +212,7 @@ namespace Cinemachine
         RecenteringState m_RecenteringState;
 
         /// <summary>
-        /// Call this before calling DoRe-centering.  Will track any value changes so that the re-centering clock
+        /// Call this before calling DoRecentering.  Will track any value changes so that the re-centering clock
         /// is updated properly.
         /// </summary>
         /// <returns>True if value changed.  This value can be used to cancel re-centering when multiple
