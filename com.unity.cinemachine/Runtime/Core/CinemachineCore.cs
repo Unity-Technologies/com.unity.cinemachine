@@ -382,7 +382,7 @@ namespace Cinemachine
         {
             Fixed = UpdateTracker.UpdateClock.Fixed,
             Late = UpdateTracker.UpdateClock.Late,
-            Smart = 8, // meant to be sorted with the others
+            Smart = 8, // meant to be or'ed with the others
             SmartFixed = Smart | Fixed,
             SmartLate = Smart | Late
         }
