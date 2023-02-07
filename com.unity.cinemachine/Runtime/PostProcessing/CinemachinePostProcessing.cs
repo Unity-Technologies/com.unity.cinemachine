@@ -146,6 +146,14 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
+        /// <summary>Called by the editor when the shared asset has been edited</summary>
+        public void InvalidateCachedProfile()
+        {
+            GetAllExtraStates(m_extraStateCache);
+            for (int i = 0; i < m_extraStateCache.Count; ++i)
+                m_extraStateCache[i].DestroyProfileCopy();
+        }
+
         /// <summary>Apply PostProcessing effects</summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="stage">The current pipeline stage</param>

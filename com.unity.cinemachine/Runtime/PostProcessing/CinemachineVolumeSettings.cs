@@ -128,9 +128,9 @@ namespace Cinemachine
         /// <summary>Called by the editor when the shared asset has been edited</summary>
         public void InvalidateCachedProfile()
         {
-            var list = GetAllExtraStates<VcamExtraState>();
-            for (int i = 0; i < list.Count; ++i)
-                list[i].DestroyProfileCopy();
+            GetAllExtraStates(m_extraStateCache);
+            for (int i = 0; i < m_extraStateCache.Count; ++i)
+                m_extraStateCache[i].DestroyProfileCopy();
         }
 
         void OnValidate()
