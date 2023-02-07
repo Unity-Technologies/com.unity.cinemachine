@@ -286,8 +286,8 @@ namespace Cinemachine.Editor
             if (m_GuidesLabel == null)
                 m_GuidesLabel = new ("Game View Guides", CinemachineCorePrefs.s_ShowInGameGuidesLabel.tooltip);
 
-            SaveDuringPlay.SaveDuringPlay.Enabled = EditorGUILayout.Toggle(
-                CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+            SaveDuringPlay.Enabled = EditorGUILayout.Toggle(
+                CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.Enabled);
 
             int index = CinemachineCorePrefs.ShowInGameGuides.Value 
                 ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
@@ -299,7 +299,7 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
             }
 
-            if (Application.isPlaying && SaveDuringPlay.SaveDuringPlay.Enabled)
+            if (Application.isPlaying && SaveDuringPlay.Enabled)
                 EditorGUILayout.HelpBox(
                     "CinemachineCamera settings changes made during Play Mode will be "
                         + "propagated back to the scene when Play Mode is exited.",
