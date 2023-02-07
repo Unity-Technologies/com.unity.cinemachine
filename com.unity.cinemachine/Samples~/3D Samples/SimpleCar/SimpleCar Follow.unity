@@ -364,8 +364,8 @@ MonoBehaviour:
   m_ChildCameras:
   - {fileID: 1967210317}
   - {fileID: 51139489}
-  Weight0: 0.9993796
-  Weight1: 0.0006204128
+  Weight0: 0.999507
+  Weight1: 0.0004929675
   Weight2: 0
   Weight3: 0
   Weight4: 0
@@ -746,7 +746,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60.012577
+  field of view: 60.009995
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -771,8 +771,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1254209701}
-  m_LocalRotation: {x: -0.036037307, y: 0.91491145, z: -0.08385265, w: -0.3932011}
-  m_LocalPosition: {x: 4.868, y: 2.1499627, z: 14.077442}
+  m_LocalRotation: {x: -0.036042072, y: 0.91491044, z: -0.08386371, w: -0.39320064}
+  m_LocalPosition: {x: 4.8680654, y: 2.1499703, z: 14.077504}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -35,7 +35,7 @@ Transform:
   - {fileID: 4228984098192203911}
   - {fileID: 4228984098714010495}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &878341184440332479
 Rigidbody:
@@ -150,10 +150,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerIndex: -1
+  AutoEnableInputs: 1
   Controllers:
   - Name: Move X
     Owner: {fileID: 878341184440332478}
     Enabled: 1
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Horizontal
     LegacyGain: 1
     Control:
@@ -163,6 +167,8 @@ MonoBehaviour:
   - Name: Move Z
     Owner: {fileID: 878341184440332478}
     Enabled: 1
+    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    Gain: 1
     LegacyInput: Vertical
     LegacyGain: 1
     Control:
@@ -172,7 +178,9 @@ MonoBehaviour:
   - Name: Brake
     Owner: {fileID: 878341184440332478}
     Enabled: 1
-    LegacyInput: 
+    InputAction: {fileID: -8322308610609176083, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+    Gain: 1
+    LegacyInput: Jump
     LegacyGain: 1
     Control:
       InputValue: 0
