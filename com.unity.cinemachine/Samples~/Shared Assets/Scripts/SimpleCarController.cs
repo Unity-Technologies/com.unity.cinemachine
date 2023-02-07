@@ -5,9 +5,9 @@ namespace Cinemachine.Examples
 {
     public class SimpleCarController : MonoBehaviour, IInputAxisSource
     {
-        public float MotorStrength;
-        public float BrakeStrength;
-        public float MaxTurnAngle;
+        public float MotorStrength = 2000;
+        public float BrakeStrength = 5000;
+        public float MaxTurnAngle = 50;
 
         public WheelCollider FrontLeftWheelCollider;
         public WheelCollider FrontRightWheelCollider;
