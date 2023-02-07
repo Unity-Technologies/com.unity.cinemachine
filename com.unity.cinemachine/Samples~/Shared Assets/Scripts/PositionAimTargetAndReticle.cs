@@ -40,21 +40,12 @@ namespace Cinemachine.Examples
                     if (liveCam.TryGetComponent<CinemachineThirdPersonAim>(out var aim) && aim.enabled)
                     {
                         // Set the worldspace aim target position so that we can know what gets hit
-                        enableReticle = true;
+                        enableReticle = aim.NoiseCancellation;
                         transform.position = aim.AimTarget;
 
                         // Set the screen-space hit target indicator position
                         if (AimTargetIndicator != null)
                             AimTargetIndicator.position = brain.OutputCamera.WorldToScreenPoint(transform.position);
-                    }
-                    else
-                    {
-                        // Emulate unstable aim spread
-                        var randomXYRotation = Quaternion.Euler(10f * Random.value, 10f * Random.value, 0);
-                        Vector3 randomForward = liveCam.transform.localToWorldMatrix * 
-                            (randomXYRotation * Vector3.forward);
-                        transform.position = liveCam.transform.position + randomForward * 200f;
-                        
                     }
                 }
             }

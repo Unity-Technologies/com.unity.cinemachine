@@ -24,6 +24,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AimCollisionFilter)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.IgnoreTag)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AimDistance)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.NoiseCancellation)));
 
             m_PipelineUtility.UpdateState();
             return ux;
