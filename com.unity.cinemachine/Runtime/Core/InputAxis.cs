@@ -379,8 +379,8 @@ namespace Cinemachine
                 }
             }
         }
-        /// <summary>Reset axis to at-rest state</summary>
-        /// <param name="axis">The reference to the axis</param>
+        /// <summary>Reset an axis to at-rest state</summary>
+        /// <param name="axis">The axis to reset</param>
         public void Reset(ref InputAxis axis)
         {
             axis.Reset();
