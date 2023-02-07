@@ -126,9 +126,6 @@ namespace Cinemachine
         public bool IsValid => Profile != null && Profile.components.Count > 0;
 
         /// <summary>Called by the editor when the shared asset has been edited</summary>
-<<<<<<< HEAD
-        internal void InvalidateCachedProfile()
-=======
         public void InvalidateCachedProfile()
         {
             var list = GetAllExtraStates<VcamExtraState>();
@@ -151,7 +148,6 @@ namespace Cinemachine
         }
         
         protected override void OnEnable()
->>>>>>> main
         {
             m_extraStateCache ??= new();
             GetAllExtraStates(m_extraStateCache);
