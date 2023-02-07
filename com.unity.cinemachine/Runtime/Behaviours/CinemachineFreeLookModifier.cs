@@ -326,7 +326,7 @@ namespace Cinemachine
             [HideFoldout]
             public TopBottomRigs<ScreenComposerSettings> Composition;
 
-            /// <summary>Called from OnValidate to calidate this component</summary>
+            /// <summary>Called from OnValidate to validate this component</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public override void Validate(CinemachineVirtualCameraBase vcam)
             {

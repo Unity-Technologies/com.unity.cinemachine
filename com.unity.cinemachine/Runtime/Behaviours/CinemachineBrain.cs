@@ -32,7 +32,7 @@ namespace Cinemachine
         /// This id must be > 0.  If you pass -1, a new id will be created, and returned.
         /// Use that id for subsequent calls.  Don't forget to
         /// call ReleaseCameraOverride after all overriding is finished, to
-        /// free the OverideStack resources.</param>
+        /// free the OverrideStack resources.</param>
         /// <param name="camA">The camera to set, corresponding to weight=0.</param>
         /// <param name="camB">The camera to set, corresponding to weight=1.</param>
         /// <param name="weightB">The blend weight.  0=camA, 1=camB.</param>
