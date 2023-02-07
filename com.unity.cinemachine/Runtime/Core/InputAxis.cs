@@ -37,7 +37,8 @@ namespace Cinemachine
                 /// <summary>Mapping should be the second dimension of a multi-dimensional action</summary>
                 Y
             };
-            /// <summary>Indicates what is the intended usage of the axis.
+            
+            /// <summary>Indicates what is the intended usage of the axis.</summary>
             public Hints Hint;
         }
 
@@ -379,8 +380,8 @@ namespace Cinemachine
                 }
             }
         }
-
-        /// <summary>Reset axis to at-rest state</summary>
+        /// <summary>Reset an axis to at-rest state</summary>
+        /// <param name="axis">The axis to reset</param>
         public void Reset(ref InputAxis axis)
         {
             axis.Reset();
