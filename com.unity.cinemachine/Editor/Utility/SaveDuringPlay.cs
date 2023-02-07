@@ -203,9 +203,9 @@ namespace SaveDuringPlay
                     if (doneSomething)
                         obj = list;
                 }
-                else
+                else if (!typeof(UnityEngine.Object).IsAssignableFrom(obj.GetType()))
                 {
-                    // Check if it's a complex type
+                    // Check if it's a complex type (but don't follow UnityEngine.Object references)
                     FieldInfo[] fields = obj.GetType().GetFields(kBindingFlags);
                     if (fields.Length > 0)
                     {
