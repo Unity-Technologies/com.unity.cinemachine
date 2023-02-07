@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,9 +67,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -1063,19 +1060,19 @@ PrefabInstance:
       objectReference: {fileID: 1802572048}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.9823122
+      value: -0.98231214
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00000012665988
+      value: -0.00000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.18725069
+      value: -0.18725072
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00000005960465
+      value: -0.000000059604645
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
@@ -1416,13 +1413,13 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1525634695}
         m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, com.unity.cinemachine
-        m_MethodName: GenerateImpulse
-        m_Mode: 1
+        m_MethodName: GenerateImpulseWithForce
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.2
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -1650,7 +1647,7 @@ PrefabInstance:
       objectReference: {fileID: 1802572048}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.97614825
+      value: -0.9761483
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1658,11 +1655,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.2171049
+      value: -0.21710493
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000029802319
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
@@ -2277,15 +2274,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00000028684732
+      value: -0.00000002235174
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.066447966
+      value: -0.06644798
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000029802319
+      value: 0.000000029802319
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
@@ -2408,8 +2405,8 @@ GameObject:
   - component: {fileID: 2076565716644322341}
   - component: {fileID: 2076565716644322337}
   - component: {fileID: 2076565716644322346}
-  - component: {fileID: 2076565716644322342}
   - component: {fileID: 2076565716644322347}
+  - component: {fileID: 2076565716644322342}
   m_Layer: 0
   m_Name: RoadieRun Camera
   m_TagString: Untagged
