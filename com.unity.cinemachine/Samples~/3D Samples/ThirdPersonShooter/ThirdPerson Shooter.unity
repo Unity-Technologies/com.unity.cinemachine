@@ -1000,46 +1000,28 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: 'This scene shows a third person shooter game.  WASD to move, Spacebar
+  HelpText: "This scene shows a third person shooter game.  WASD to move, Spacebar
     to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse rotates
     the Player Aiming Core object, which controls the player direction and aim. 
     The camera is dirven by that: for this style of controller, there is no direct
-    independent control of the camera direction.
-
-
-    The camera is managed by a
-    StateDrivenCamera, which activates a special RoadieRun camera when the player
-    is sprinting.
-
-
-    Normally, the Third Person Aim Camera is active.  This camera
-    has handheld noise, but it does not affect aiming accuracy. Try aiming at objects
-    in the scene and observe that the aim point is steady, even while the camera
-    is moving slightly.
-
-
-    The crosshair indicates where the player is aiming. 
-    The red dot indicates the actual hit location if a ray would be fired from the
-    Player Aiming Core.  When the crosshair and the red dot do not align, this means
-    there is an object between the player and the aim point indicated by the crosshair.
-    The crosshair is pulled apart to indicate this.
-
-
-    When the player fires a
-    shot, the camera gets a slight recoil. This is achieved with a CinemachineImpulseSource
-    added to the Player Aiming Core, and it is triggered by a Fire event. The camera
-    reacts to the impulse because it has a CinemachineImpulseListener.
-
-
-    When
-    sprinting, the RoadieRun Camera is active.  This camera takes away the crosshair
-    from the player, shifts position, widens the Field of View, and adds a more intense
-    noise.
-
-
-    The enemies will target the player when the player moves close to
-    them. To visualize the trigger zone, you can enable the Mesh Renderers on the
-    enemies''  ProximityTrigger child objects.'
+    independent control of the camera direction.\n\nThe camera is managed by a StateDrivenCamera,
+    which activates a special RoadieRun camera when the player is sprinting.\n\nNormally,
+    the Third Person Aim Camera is active.  This camera has handheld noise, but it
+    does not affect aiming accuracy. Try aiming at objects in the scene and observe
+    that the aim point is steady, even while the camera is moving slightly.\n\nThe
+    crosshair indicates where the player is aiming.  The red dot indicates the actual
+    hit location if a ray would be fired from the Player Aiming Core.  When the crosshair
+    and the red dot do not align, this means there is an object between the player
+    and the aim point indicated by the crosshair. The crosshair is pulled apart to
+    indicate this.\n\nWhen the player fires a shot, the camera gets a slight recoil.
+    This is achieved with a CinemachineImpulseSource added to the Player Aiming Core,
+    and it is triggered by a Fire event. The camera reacts to the impulse because
+    it has a CinemachineImpulseListener.\n\nWhen sprinting, the RoadieRun Camera
+    is active.  This camera takes away the crosshair from the player, shifts position,
+    widens the Field of View, and adds a more intense noise. \n\nThe enemies will
+    target the player when the player moves close to them. To visualize the trigger
+    zone, you can enable the Mesh Renderers on the enemies'  ProximityTrigger child
+    objects."
 --- !u!4 &1040083249
 Transform:
   m_ObjectHideFlags: 0
