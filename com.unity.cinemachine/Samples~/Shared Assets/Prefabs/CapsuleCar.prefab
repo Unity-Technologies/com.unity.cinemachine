@@ -97,9 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a1d5f246db83d4e9db796e9e19282e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MotorStrength: 0
-  BrakeStrength: 0
-  MaxTurnAngle: 0
+  MotorStrength: 2000
+  BrakeStrength: 5000
+  MaxTurnAngle: 50
   FrontLeftWheelCollider: {fileID: 4228984097906734898}
   FrontRightWheelCollider: {fileID: 4228984099382061923}
   RearLeftWheelCollider: {fileID: 4228984098961037802}
@@ -178,7 +178,7 @@ MonoBehaviour:
   - Name: Brake
     Owner: {fileID: 878341184440332478}
     Enabled: 1
-    InputAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    InputAction: {fileID: -8322308610609176083, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
     Gain: 1
     LegacyInput: Jump
     LegacyGain: 1
