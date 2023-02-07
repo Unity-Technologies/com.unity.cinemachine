@@ -68,7 +68,7 @@ namespace Cinemachine
             m_ExtraState = null;
         }
 
-        /// <summary>Override this to offset the ReferenceLookAt.
+        /// <summary>Override this to do such things as offset the ReferenceLookAt.
         /// Base class implementation does nothing.</summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="curState">Input state that must be mutated</param>
