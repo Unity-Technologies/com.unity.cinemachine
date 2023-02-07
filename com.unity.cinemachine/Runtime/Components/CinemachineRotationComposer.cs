@@ -187,7 +187,7 @@ namespace Cinemachine
             {
                 if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
                     curState.RawOrientation = m_CameraOrientationPrevFrame;
-                return;
+                return; // navel-gazing, get outa here
             }
 
             // Expensive FOV calculations
