@@ -247,8 +247,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 176892992}
-  m_LocalRotation: {x: -0.000000008949646, y: -0.0000000134244695, z: -1.2014425e-16, w: 1}
-  m_LocalPosition: {x: 1.831727, y: 1.1588098, z: -2.8200002}
+  m_LocalRotation: {x: -0.000000004474823, y: -0.0000000134244695, z: -6.0072126e-17, w: 1}
+  m_LocalPosition: {x: 1.703536, y: 0.9815994, z: -2.8200002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1000,28 +1000,46 @@ MonoBehaviour:
   ButtonText: Help
   Position: {x: 0.9, y: 0.05}
   Displayed: 0
-  HelpText: "This scene shows a third person shooter game.\n\nWASD to move, Spacebar
-    to jump, Shift to sprint.  Mouse left click to fire projectiles. Mouse moves
-    the camera.\n\nThe cameras are controlled with a StateDrivenCamera.\nThere are
-    two states to which the StateDrivenCamera reacts Walking and Running.\n- When
-    walking, the Third Person Aim Camera is active.\n  This camera is designed specifically
-    for shooter type games, where the player's aim must not be compromised. Third
-    Person Aim Camera has a handheld noise added to it, but this does not change
-    where the player is aiming. Aim at objects on the scene and observe that the
-    aim point does not move, but the camera does.\n  The crosshair indicates where
-    the user is aiming.\n  The red dot indicates the actual hit location if a ray
-    would be fired from the center of the player (Player Aiming Core GameObject).\n 
-    When the crosshair and the red dot does not align, this means there is an object
-    between the player and the aim point indicated by the crosshair. The crosshair
-    is pulled apart to indicate this.\n  When in this mode and firing, the camera
-    gets a slight recoil like noise. This is achieved with an CinemachineImpulseSource
-    added to the Player Aiming Core gameobject, which is trigger on fire. The Third
-    Person Aim Camera reacts to the impulse, because it has an CinemachineImpulseListener.\n-
-    When sprinting, the RoadieRun Camera is active.\n  This camera takes away the
-    crosshair from the player, moves closer, widens the Field of View, and adds a
-    more intense noise.\n\n\nThe enemies will target the player when the player moves
-    close to them. To visualize the proximity, you can enable the Mesh Renderers
-    on ProximityTriggers."
+  HelpText: 'This scene shows a third person shooter game.  WASD to move, Spacebar
+    to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse rotates
+    the Player Aiming Core object, which controls the player direction and aim. 
+    The camera is dirven by that: for this style of controller, there is no direct
+    independent control of the camera direction.
+
+
+    The camera is managed by a
+    StateDrivenCamera, which activates a special RoadieRun camera when the player
+    is sprinting.
+
+
+    Normally, the Third Person Aim Camera is active.  This camera
+    has handheld noise, but it does not affect aiming accuracy. Try aiming at objects
+    in the scene and observe that the aim point is steady, even while the camera
+    is moving slightly.
+
+
+    The crosshair indicates where the player is aiming. 
+    The red dot indicates the actual hit location if a ray would be fired from the
+    Player Aiming Core.  When the crosshair and the red dot do not align, this means
+    there is an object between the player and the aim point indicated by the crosshair.
+    The crosshair is pulled apart to indicate this.
+
+
+    When the player fires a
+    shot, the camera gets a slight recoil. This is achieved with a CinemachineImpulseSource
+    added to the Player Aiming Core, and it is triggered by a Fire event. The camera
+    reacts to the impulse because it has a CinemachineImpulseListener.
+
+
+    When
+    sprinting, the RoadieRun Camera is active.  This camera takes away the crosshair
+    from the player, shifts position, widens the Field of View, and adds a more intense
+    noise.
+
+
+    The enemies will target the player when the player moves close to
+    them. To visualize the trigger zone, you can enable the Mesh Renderers on the
+    enemies''  ProximityTrigger child objects.'
 --- !u!4 &1040083249
 Transform:
   m_ObjectHideFlags: 0
@@ -2465,7 +2483,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2076565716644322336}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.8499999, y: 0.81069225, z: -3.1799998}
+  m_LocalPosition: {x: 1.559051, y: 0.77348024, z: -3.1799998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2502,7 +2520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: {x: 0.1, y: 0.5, z: 0.3}
-  ShoulderOffset: {x: 0.7, y: -0.3730576, z: 0}
+  ShoulderOffset: {x: 0.40905112, y: -0.41026962, z: 0}
   VerticalArmLength: 0.3
   CameraSide: 1
   CameraDistance: 3.8
@@ -2740,8 +2758,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8511452450538986274}
-  m_LocalRotation: {x: -0.000000008949646, y: -0.0000000134244695, z: -1.2014425e-16, w: 1}
-  m_LocalPosition: {x: 1.831727, y: 1.1588098, z: -2.8200002}
+  m_LocalRotation: {x: -0.000000004474823, y: -0.0000000134244695, z: -6.0072126e-17, w: 1}
+  m_LocalPosition: {x: 1.703536, y: 0.9815994, z: -2.8200002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2799,7 +2817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: {x: 0.1, y: 0.5, z: 0.3}
-  ShoulderOffset: {x: 0.6817271, y: -0.024940073, z: 0}
+  ShoulderOffset: {x: 0.553536, y: -0.20215046, z: 0}
   VerticalArmLength: 0.3
   CameraSide: 1
   CameraDistance: 3.44
