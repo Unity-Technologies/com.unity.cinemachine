@@ -104,7 +104,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Influence how blending is done, and how state
+        /// These hints can be or'ed together to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
         public BlendHintValue BlendHint;
