@@ -82,7 +82,7 @@ namespace Cinemachine
         /// <summary>Apply the target offsets to the target location.
         /// Also set the TrackedPoint property, taking lookahead into account.</summary>
         /// <param name="lookAt">The unoffset LookAt point</param>
-        /// <param name="up">Currest effective world up</param>
+        /// <param name="up">Current effective world up</param>
         /// <param name="deltaTime">Current effective deltaTime</param>
         /// <returns>The LookAt point with the offset applied</returns>
         Vector3 GetLookAtPointAndSetTrackedPoint(

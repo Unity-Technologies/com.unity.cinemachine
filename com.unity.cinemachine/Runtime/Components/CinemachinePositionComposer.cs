@@ -130,7 +130,7 @@ namespace Cinemachine
         /// Always returns the Body stage</summary>
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
-        /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
+        /// <summary>FramingTransposer algorithm taKes camera orientation as input, 
         /// so even though it is a Body component, it must apply after Aim</summary>
         public override bool BodyAppliesAfterAim => true;
 
@@ -155,8 +155,8 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
