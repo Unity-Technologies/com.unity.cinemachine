@@ -260,7 +260,7 @@ namespace Cinemachine
 #endif
             }
 
-            // Thanks to Sebastien LeTouze from Exiting Studio for the smoothing idea
+            // Thanks to Sebastien LeTouze from Exiin Studio for the smoothing idea
             float m_SmoothedDistance;
             float m_SmoothedTime;
             public float ApplyDistanceSmoothing(float distance, float smoothingTime)
