@@ -33,6 +33,10 @@ namespace Cinemachine
         [Tooltip("How far to project the object detection ray")]
         public float AimDistance;
 
+        /// <summary>If set, camera noise will be adjusted to stabilize target on screen.</summary>
+        [Tooltip("If set, camera noise will be adjusted to stabilize target on screen")]
+        public bool NoiseCancellation = true;
+
         /// <summary>World space position of where the player would hit if a projectile were to 
         /// be fired from the player origin.  This may be different
         /// from state.ReferenceLookAt due to camera offset from player origin.</summary>
@@ -48,6 +52,7 @@ namespace Cinemachine
             AimCollisionFilter = 1;
             IgnoreTag = string.Empty;
             AimDistance = 200.0f;
+            NoiseCancellation = true;
         }
         
         /// <summary>
@@ -66,35 +71,52 @@ namespace Cinemachine
             {
                 case CinemachineCore.Stage.Body:
                 {
-                    // Raycast to establish what we're actually aiming at
-                    var player = vcam.Follow;
-                    if (player != null)
+                    if (NoiseCancellation)
                     {
-                        state.ReferenceLookAt = ComputeLookAtPoint(state.GetCorrectedPosition(), player);
-                        AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
+                        // Raycast to establish what we're actually aiming at
+                        var player = vcam.Follow;
+                        if (player != null)
+                        {
+                            state.ReferenceLookAt = ComputeLookAtPoint(state.GetCorrectedPosition(), player, player.forward);
+                            AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
+                        }
                     }
                     break;
                 }
                 case CinemachineCore.Stage.Finalize:
                 {
-                    // Stabilize the LookAt point in the center of the screen
-                    var dir = state.ReferenceLookAt - state.GetFinalPosition();
-                    if (dir.sqrMagnitude > 0.01f)
+                    if (NoiseCancellation)
                     {
-                        state.RawOrientation = Quaternion.LookRotation(dir, state.ReferenceUp);
-                        state.OrientationCorrection = Quaternion.identity;
+                        // Stabilize the LookAt point in the center of the screen
+                        var dir = state.ReferenceLookAt - state.GetFinalPosition();
+                        if (dir.sqrMagnitude > 0.01f)
+                        {
+                            state.RawOrientation = Quaternion.LookRotation(dir, state.ReferenceUp);
+                            state.OrientationCorrection = Quaternion.identity;
+                        }
+                    }
+                    else
+                    {
+                        // Raycast to establish what we're actually aiming at.
+                        // In this case we do it without cancelling the noise.
+                        var player = vcam.Follow;
+                        if (player != null)
+                        {
+                            state.ReferenceLookAt = ComputeLookAtPoint(
+                                state.GetCorrectedPosition(), player, state.GetCorrectedOrientation() * Vector3.forward);
+                            AimTarget = ComputeAimTarget(state.ReferenceLookAt, player);
+                        }
                     }
                     break;
                 }
             }
         }
 
-        Vector3 ComputeLookAtPoint(Vector3 camPos, Transform player)
+        Vector3 ComputeLookAtPoint(Vector3 camPos, Transform player, Vector3 fwd)
         {
             // We don't want to hit targets behind the player
             var aimDistance = AimDistance;
             var playerOrientation = player.rotation;
-            var fwd = playerOrientation * Vector3.forward;
             var playerPosLocal = Quaternion.Inverse(playerOrientation) * (player.position - camPos);
             if (playerPosLocal.z > 0)
             {

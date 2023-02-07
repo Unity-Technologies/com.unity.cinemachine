@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Cinemachine.Examples
 {
@@ -15,6 +17,9 @@ namespace Cinemachine.Examples
         
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
         public Transform AimTarget;
+
+        [Tooltip("Event that's triggered when firing.")]
+        public UnityEvent FireEvent;
 
         float m_LastFireTime;
 
@@ -56,6 +61,7 @@ namespace Cinemachine.Examples
                 var go = Instantiate(BulletPrefab, transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
                 if (go.TryGetComponent<SimpleBullet>(out var b))
                     b.Fire(fwd, BulletSpeed);
+                FireEvent.Invoke();
                 Destroy(go, TimeInAir);
             }
         }
