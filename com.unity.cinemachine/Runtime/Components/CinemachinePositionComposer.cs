@@ -130,7 +130,7 @@ namespace Cinemachine
         /// Always returns the Body stage</summary>
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
-        /// <summary>FramingTransposer algorithm taKes camera orientation as input, 
+        /// <summary>FramingTransposer algorithm takes camera orientation as input, 
         /// so even though it is a Body component, it must apply after Aim</summary>
         public override bool BodyAppliesAfterAim => true;
 
