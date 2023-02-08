@@ -380,8 +380,8 @@ namespace Cinemachine.TargetTracking
         /// </summary>
         /// <param name="component">The component caller</param>
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         /// <param name="cameraOffsetLocalSpace">Camera offset from target in local space (relative to ReferenceOrientation)</param>
         public void ForceCameraPosition(
             CinemachineComponentBase component, 

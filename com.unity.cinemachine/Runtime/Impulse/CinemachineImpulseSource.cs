@@ -25,7 +25,7 @@ namespace Cinemachine
         public CinemachineImpulseDefinition ImpulseDefinition = new CinemachineImpulseDefinition();
 
         /// <summary>
-        /// The default direction and force of the Impulse Signal in the absense of any 
+        /// The default direction and force of the Impulse Signal in the absence of any 
         /// specified overrides.  Overrides can be specified by calling the appropriate 
         /// GenerateImpulse method in the API.
         /// </summary>

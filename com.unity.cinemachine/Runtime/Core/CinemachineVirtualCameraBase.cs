@@ -669,7 +669,7 @@ namespace Cinemachine
                 p.TryGetComponent(out m_ParentVcam);
         }
 
-        /// <summary>Returns this vcam's LookAt target, or if that is null, will retrun
+        /// <summary>Returns this vcam's LookAt target, or if that is null, will return
         /// the parent vcam's LookAt target.</summary>
         /// <param name="localLookAt">This vcam's LookAt value.</param>
         /// <returns>The same value, or the parent's if null and a parent exists.</returns>

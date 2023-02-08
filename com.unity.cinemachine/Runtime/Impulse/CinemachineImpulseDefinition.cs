@@ -308,7 +308,7 @@ namespace Cinemachine
         /// <param name="velocity">This direction is considered to be "down" for the purposes of the 
         /// event signal, and the magnitude of the signal will be scaled according to the 
         /// length of this vector</param>
-        /// <returns>The newly-created impulse event. This can be used to dynmically adjust the 
+        /// <returns>The newly-created impulse event. This can be used to dynamically adjust the 
         /// event settings while the event is active. Note that this event object may be recycled
         /// for future events, so the pointer should not be retained for too long.</returns>
         public CinemachineImpulseManager.ImpulseEvent CreateAndReturnEvent(

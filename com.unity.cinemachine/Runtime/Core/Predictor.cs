@@ -13,7 +13,7 @@ namespace Cinemachine.Utility
         Vector3 m_Pos;
         bool m_HavePos;
 
-        /// <summary>How much to smooth the predicted result.  Must be >= 0, roughly coresponds to smoothing time.</summary>
+        /// <summary>How much to smooth the predicted result.  Must be >= 0, roughly corresponds to smoothing time.</summary>
         public float Smoothing;
 
         /// <summary>Have any positions been logged for smoothing?</summary>
@@ -27,7 +27,7 @@ namespace Cinemachine.Utility
 
         /// <summary>
         /// Apply a delta to the target's position, which will be ignored for 
-        /// smoothing purposes.  Use this whent he target's position gets warped.
+        /// smoothing purposes.  Use this when the target's position gets warped.
         /// </summary>
         /// <param name="positionDelta">The position change of the target object</param>
         public void ApplyTransformDelta(Vector3 positionDelta) => m_Pos += positionDelta;
@@ -61,7 +61,7 @@ namespace Cinemachine.Utility
 
         /// <summary>Predict the target's position change over a given time from now</summary>
         /// <param name="lookaheadTime">How far ahead in time to predict</param>
-        /// <returns>The predicted position change (current velocity * lokahead time)</returns>
+        /// <returns>The predicted position change (current velocity * lookahead time)</returns>
         public Vector3 PredictPositionDelta(float lookaheadTime) => m_Velocity * lookaheadTime;
     }
 
@@ -75,7 +75,7 @@ namespace Cinemachine.Utility
         // Get the decay constant that would leave a given residual after a given time
         static float DecayConstant(float time, float residual) => Mathf.Log(1f / residual) / time;
 
-        // Exponential decay: decay a given quantity opver a period of time
+        // Exponential decay: decay a given quantity over a period of time
         static float DecayedRemainder(float initial, float decayConstant, float deltaTime) 
             => initial / Mathf.Exp(decayConstant * deltaTime);
 

@@ -10,7 +10,7 @@ namespace Cinemachine
     static class SplineContainerExtensions
     {
         /// <summary>Check spline container and child spline for null</summary>
-        /// <param name="spline">spline continer to check</param>
+        /// <param name="spline">spline container to check</param>
         /// <returns>true if container holds a non-null spline</returns>
         public static bool IsValid(this SplineContainer spline) => spline != null && spline.Spline != null;
 
@@ -99,7 +99,7 @@ namespace Cinemachine
         /// <param name="spline">The spline in question</param>
         /// <param name="unit">The spline position is expressed in these units</param>
         /// <param name="splineLength">The length of the spline, in distance units.  
-        /// Passed as parameter for efficienacy because length calculation is slow.
+        /// Passed as parameter for efficiency because length calculation is slow.
         /// If a negative value is passed, length will be calculated.</param>
         /// <returns></returns>
         public static float GetMaxPosition(
@@ -125,7 +125,7 @@ namespace Cinemachine
         /// <param name="t">Spline position to sanitize</param>
         /// <param name="unit">The spline position is expressed in these units</param>
         /// <param name="splineLength">The length of the spline, in distance units.  
-        /// Passed as parameter for efficienacy because length calculation is slow.
+        /// Passed as parameter for efficiency because length calculation is slow.
         /// If a negative value is passed, length will be calculated.</param>
         /// <returns></returns>
         public static float StandardizePosition(

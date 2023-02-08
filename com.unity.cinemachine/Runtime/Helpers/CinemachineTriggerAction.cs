@@ -78,7 +78,7 @@ namespace Cinemachine
                 PriorityBoost,
                 /// <summary>Activate the target GameObject</summary>
                 Activate,
-                /// <summary>Decativate target GameObject</summary>
+                /// <summary>Deactivate target GameObject</summary>
                 Deactivate,
                 /// <summary>Enable a component</summary>
                 Enable,
