@@ -998,8 +998,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ButtonText: Help
-  Position: {x: 0.9, y: 0.05}
-  Displayed: 0
+  Position: {x: 1.1, y: 0.05}
+  Displayed: 1
   HelpText: "This scene shows a third person shooter game.  Use WASD to move, Spacebar
     to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse rotates
     the Player Aiming Core object, which controls the player direction and aim. 
@@ -1022,6 +1022,21 @@ MonoBehaviour:
     target the player when the player moves close to them. To visualize the trigger
     zone, you can enable the Mesh Renderers on the enemies'  ProximityTrigger child
     objects."
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1802572052}
+        m_TargetAssemblyTypeName: Cinemachine.Examples.SimplePlayerController, Assembly-CSharp
+        m_MethodName: EnableLockCursor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &1040083249
 Transform:
   m_ObjectHideFlags: 0
@@ -2359,6 +2374,17 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 7887234737240387235, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
   m_PrefabInstance: {fileID: 1802572047}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1802572052 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8077383552022060413, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+  m_PrefabInstance: {fileID: 1802572047}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 297aaca66939f724fbbc8f0c485168bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1972898889
 PrefabInstance:
   m_ObjectHideFlags: 0

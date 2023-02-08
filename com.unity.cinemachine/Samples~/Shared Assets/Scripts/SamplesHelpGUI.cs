@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace Cinemachine.Examples
@@ -19,6 +20,9 @@ namespace Cinemachine.Examples
 
         [TextArea(minLines: 10, maxLines: 50)]
         public string HelpText;
+
+        [Tooltip("Event sent when the help window is dismissed")]
+        public UnityEvent OnHelpDismissed = new UnityEvent();
 
         Vector2 m_Size = Vector2.zero;
 
@@ -45,7 +49,10 @@ namespace Cinemachine.Examples
                     GUILayout.Label(HelpText);
                     GUILayout.EndVertical();
                     if (GUILayout.Button("Got it!"))
+                    {
                         Displayed = false;
+                        OnHelpDismissed.Invoke();
+                    }
                 }, title);
             }
             else

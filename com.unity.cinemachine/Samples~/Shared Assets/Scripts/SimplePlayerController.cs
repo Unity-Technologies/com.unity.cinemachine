@@ -59,6 +59,9 @@ namespace Cinemachine.Examples
         public bool IsJumping => m_IsJumping;
         public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
 
+        public void EnableLockCursor() => LockCursor = true;
+        public void DisableLockCursor() => LockCursor = false;
+
         /// Report the available input axes to the input axis controller.
         /// We use the Input Axis Controller because it works with both the Input package
         /// and the Legacy input system.  This is sample code and we
@@ -81,12 +84,12 @@ namespace Cinemachine.Examples
             m_CurrentVelocityY = 0;
             m_IsSprinting = false;
             m_IsJumping = false;
-            if (LockCursor)
-                Cursor.lockState = CursorLockMode.Locked;
         }
 
         void Update()
         {
+            Cursor.lockState = LockCursor ? CursorLockMode.Locked : CursorLockMode.None;
+
             PreUpdate?.Invoke();
 
             // Process Jump and gravity
