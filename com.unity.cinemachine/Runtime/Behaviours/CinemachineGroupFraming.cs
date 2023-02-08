@@ -123,7 +123,7 @@ namespace Cinemachine
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         internal Matrix4x4 GroupBoundsMatrix;
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 PosAdjustment;
             public Vector2 RotAdjustment;

@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
+            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.ComponentOwner);
             bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
             if (!ortho)
                 excluded.Add(FieldPath(x => x.m_ConfineScreenEdges));
@@ -85,7 +85,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner))]
         private static void DrawColliderGizmos(CinemachineConfiner confiner, GizmoType type)
         {
-            CinemachineVirtualCameraBase vcam = (confiner != null) ? confiner.VirtualCamera : null;
+            CinemachineVirtualCameraBase vcam = (confiner != null) ? confiner.ComponentOwner : null;
             if (vcam != null && confiner.IsValid)
             {
                 Matrix4x4 oldMatrix = Gizmos.matrix;

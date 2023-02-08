@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineConfiner3D))]
         private static void DrawColliderGizmos(CinemachineConfiner3D confiner, GizmoType type)
         {
-            CinemachineVirtualCameraBase vcam = (confiner != null) ? confiner.VirtualCamera : null;
+            CinemachineVirtualCameraBase vcam = (confiner != null) ? confiner.ComponentOwner : null;
             if (vcam != null && confiner.IsValid)
             {
                 var oldMatrix = Gizmos.matrix;

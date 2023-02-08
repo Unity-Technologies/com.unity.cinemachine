@@ -82,13 +82,13 @@ namespace Cinemachine.Editor
             ICinemachineTargetGroup group = null;
             for (int i = 0; group == null && i < targets.Length; ++i)
             {
-                var vcam = (targets[i] as CinemachineGroupFraming).VirtualCamera;
+                var vcam = (targets[i] as CinemachineGroupFraming).ComponentOwner;
                 if (vcam != null)
                     group = vcam.FollowTargetAsGroup;
             }
             m_GroupSizeIsZeroHelp.SetVisible(group != null && group.Sphere.radius < 0.01f);
 
-            bool ortho = Target.VirtualCamera != null && Target.VirtualCamera.State.Lens.Orthographic;
+            bool ortho = Target.ComponentOwner != null && Target.ComponentOwner.State.Lens.Orthographic;
             m_PerspectiveControls.SetVisible(!ortho);
             m_OrthoControls.SetVisible(ortho);
         }
@@ -101,7 +101,7 @@ namespace Cinemachine.Editor
             if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
-            var vcam = Target.VirtualCamera;
+            var vcam = Target.ComponentOwner;
             if (!brain.IsValidChannel(vcam))
                 return;
 
@@ -118,7 +118,7 @@ namespace Cinemachine.Editor
         static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.enabled && target.VirtualCamera != null && target.VirtualCamera.FollowTargetAsGroup != null)
+            if (target.enabled && target.ComponentOwner != null && target.ComponentOwner.FollowTargetAsGroup != null)
             {
                 var oldM = Gizmos.matrix;
                 var oldC = Gizmos.color;
@@ -126,7 +126,7 @@ namespace Cinemachine.Editor
                 Gizmos.matrix = target.GroupBoundsMatrix;
                 Bounds b = target.GroupBounds;
                 Gizmos.color = Color.yellow;
-                if (target.VirtualCamera.State.Lens.Orthographic)
+                if (target.ComponentOwner.State.Lens.Orthographic)
                     Gizmos.DrawWireCube(b.center, b.size);
                 else
                 {

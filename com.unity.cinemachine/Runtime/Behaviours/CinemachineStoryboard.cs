@@ -145,7 +145,7 @@ namespace Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             // Apply to this vcam only, not the children
-            if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
+            if (vcam != ComponentOwner || stage != CinemachineCore.Stage.Finalize)
                 return;
 
             UpdateRenderCanvas();
@@ -205,8 +205,8 @@ namespace Cinemachine
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
-            var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(VirtualCamera);
-            var channel = (uint)VirtualCamera.GetChannel();
+            var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(ComponentOwner);
+            var channel = (uint)ComponentOwner.GetChannel();
             if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
             var ci = LocateMyCanvas(brain, showIt);
@@ -368,10 +368,10 @@ namespace Cinemachine
             {
                 var b = state.GetCustomBlendable(i);
                 var src = b.Custom as CinemachineStoryboard;
-                if (src != null && src.VirtualCamera != null) // in case it was deleted
+                if (src != null && src.ComponentOwner != null) // in case it was deleted
                 {
                     bool showIt = true;
-                    var channel = (uint)src.VirtualCamera.GetChannel();
+                    var channel = (uint)src.ComponentOwner.GetChannel();
                     if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                         showIt = false;
                     var ci = src.LocateMyCanvas(brain, showIt);

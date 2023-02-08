@@ -13,7 +13,6 @@ namespace Cinemachine.Editor
     class CinemachineConfiner2DEditor : UnityEditor.Editor
     {
         CinemachineConfiner2D Target => target as CinemachineConfiner2D;
-
         CmPipelineComponentInspectorUtility m_PipelineUtility;
 
         void OnEnable() => m_PipelineUtility = new (this);
@@ -34,10 +33,6 @@ namespace Cinemachine.Editor
 
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
-
             TrackVolume(volumeProp);
             ux.TrackPropertyValue(volumeProp, TrackVolume);
             void TrackVolume(SerializedProperty p)
@@ -48,8 +43,16 @@ namespace Cinemachine.Editor
                 var cc = c as CompositeCollider2D;
                 polygonsHelp.SetVisible(cc != null && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
             }
+            
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
+            
+            var oversizedCameraHelp = ux.AddChild(new HelpBox(
+                "The camera window is too big for the confiner. Enable the Oversize Window option.",
+                HelpBoxMessageType.Info));
 
-            var confiner = Target; // so it gets captured in the lambdas
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
+
             var bakeProgress = ux.AddChild(new ProgressBar { lowValue = 0, highValue = 100 });
             var bakeTimeout = ux.AddChild(new HelpBox(
                 "Polygon skeleton computation timed out.  Confiner result might be incomplete."
@@ -59,17 +62,19 @@ namespace Cinemachine.Editor
 
             UpdateBakingProgress();
             ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
-            void UpdateBakingProgress()
+            void UpdateBakingProgress() 
             {
-                if (confiner == null)
+                if (Target == null)
                     return; // target deleted
-                if (!confiner.OversizeWindow.Enabled)
+                
+                oversizedCameraHelp.SetVisible(!Target.OversizeWindow.Enabled && Target.IsCameraLensOversized());
+                if (!Target.OversizeWindow.Enabled)
                 {
                     bakeTimeout.SetVisible(false);
                     bakeProgress.SetVisible(false);
                     return;
                 }
-                var progress = confiner.BakeProgress();
+                var progress = Target.BakeProgress();
                 bool timedOut = Target.ConfinerOvenTimedOut();
                 bakeProgress.value = progress * 100;
                 bakeProgress.title = timedOut ? "Timed out" : progress == 0 ? "" : progress < 1f ? "Baking" : "Baked";
@@ -79,25 +84,12 @@ namespace Cinemachine.Editor
 
             ux.Add(new Button(() => 
             {
-                confiner.InvalidateLensCache();
-                EditorUtility.SetDirty(confiner);
-            })
-            { 
-                text = "Invalidate Lens Cache",
-                tooltip = "Invalidates the lens cache, so a new one is computed next frame.  " 
-                    + "Call this when when the Field of View, Orthographic Size, or aspect ratio changes."
-            });
-
-            ux.Add(new Button(() => 
-            {
-                confiner.InvalidateBoundingShapeCache();
-                EditorUtility.SetDirty(confiner);
+                Target.InvalidateBoundingShapeCache();
+                EditorUtility.SetDirty(Target);
             })
             { 
                 text = "Invalidate Bounding Shape Cache",
-                tooltip = "Forces a re-computation of the whole confiner2D cache next frame.  This recomputes:\n" 
-                    + "- the bounding shape cache, and \n"
-                    + "- the lens cache.\n" 
+                tooltip = "Invalidates confiner2D cache, so a new one is computed next frame.\n" 
                     + "Call this when the input bounding shape changes " 
                     + "(non-uniform scale, rotation, or points are moved, added or deleted)."
             });
@@ -117,7 +109,6 @@ namespace Cinemachine.Editor
 
             var color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
             var colorDimmed = new Color(color.r, color.g, color.b, color.a / 2f);
-            
             var oldMatrix = Gizmos.matrix;
             Gizmos.matrix = pathLocalToWorld;
 

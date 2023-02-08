@@ -87,7 +87,7 @@ namespace Cinemachine
         }
 #endif
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public float CurrentFocusDistance;
         }
@@ -135,10 +135,10 @@ namespace Cinemachine
                         if (state.HasLookAt())
                             focusDistance =  (state.GetFinalPosition() - state.ReferenceLookAt).magnitude;
                         else 
-                            focusTarget = VirtualCamera.LookAt; // probably null, but doesn't hurt
+                            focusTarget = vcam.LookAt; // probably null, but doesn't hurt
                         break;
                     case FocusTrackingMode.FollowTarget: 
-                        focusTarget = VirtualCamera.Follow; 
+                        focusTarget = vcam.Follow; 
                         break;
                     case FocusTrackingMode.CustomTarget: 
                         focusTarget = CustomTarget; 
