@@ -134,10 +134,7 @@ namespace Cinemachine
 
         protected override void OnEnable()
         {
-            m_extraStateCache ??= new();
-            GetAllExtraStates(m_extraStateCache);
-            foreach (var e in m_extraStateCache)
-                e.DestroyProfileCopy();
+            InvalidateCachedProfile();
         }
 
         protected override void OnDestroy()
@@ -149,6 +146,7 @@ namespace Cinemachine
         /// <summary>Called by the editor when the shared asset has been edited</summary>
         public void InvalidateCachedProfile()
         {
+            m_extraStateCache ??= new();
             GetAllExtraStates(m_extraStateCache);
             for (int i = 0; i < m_extraStateCache.Count; ++i)
                 m_extraStateCache[i].DestroyProfileCopy();

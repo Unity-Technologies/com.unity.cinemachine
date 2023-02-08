@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BoundingShape2D: {fileID: 773640721}
   Damping: 0.5
-  SlowingDistance: 0
+  SlowingDistance: 5
   OversizeWindow:
     Enabled: 0
     MaxWindowSize: 0
@@ -1341,7 +1341,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -11.9244375, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -11.726618, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

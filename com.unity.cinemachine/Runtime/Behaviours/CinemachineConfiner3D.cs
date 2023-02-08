@@ -1,6 +1,5 @@
 #if CINEMACHINE_PHYSICS 
 
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine
@@ -55,8 +54,6 @@ namespace Cinemachine
             public Vector3 PreviousCameraPosition;
         };
 
-        List<VcamExtraState> m_extraStateCache;
-
         /// <summary>Check if the bounding volume is defined</summary>
         public bool IsValid => BoundingVolume != null && BoundingVolume.enabled && BoundingVolume.gameObject.activeInHierarchy;
 
@@ -75,11 +72,9 @@ namespace Cinemachine
         public override void OnTargetObjectWarped(
             CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta) 
         {
-            m_extraStateCache ??= new();
-            GetAllExtraStates(m_extraStateCache);
-            foreach (var extra in m_extraStateCache)
-                if (extra.Vcam != null && extra.Vcam.Follow == target)
-                    extra.PreviousCameraPosition += positionDelta;
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            if (extra.Vcam.Follow == target)
+                extra.PreviousCameraPosition += positionDelta;
         }
         
         /// <summary>

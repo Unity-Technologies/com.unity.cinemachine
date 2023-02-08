@@ -156,11 +156,9 @@ namespace Cinemachine
         public override void OnTargetObjectWarped(
             CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta) 
         {
-            m_ExtraStateCache ??= new();
-            GetAllExtraStates(m_ExtraStateCache);
-            foreach (var extra in m_ExtraStateCache)
-                if (extra.Vcam != null && extra.Vcam.Follow == target)
-                    extra.PreviousCameraPosition += positionDelta;
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            if (extra.Vcam.Follow == target)
+                extra.PreviousCameraPosition += positionDelta;
         }
 
         /// <summary>
