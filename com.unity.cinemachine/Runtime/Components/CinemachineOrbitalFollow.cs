@@ -196,7 +196,7 @@ namespace Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
             ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
         {
-            m_ResetHandler?.Invoke(); // cancel recentering
+            m_ResetHandler?.Invoke(); // cancel re-centering
             if (fromCam != null
                 && transitionParams.InheritPosition
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
@@ -216,7 +216,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
-            m_ResetHandler?.Invoke(); // cancel recentering
+            m_ResetHandler?.Invoke(); // cancel re-centering
             if (FollowTarget != null)
             {
                 var dir = pos - FollowTargetPosition;
