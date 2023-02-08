@@ -349,17 +349,17 @@ namespace Cinemachine.Editor
             var helpBox = ux.AddChild(new HelpBox("CinemachineCamera settings changes made during Play Mode will be "
                     + "propagated back to the scene when Play Mode is exited.", 
                 HelpBoxMessageType.Info));
-            helpBox.SetVisible(SaveDuringPlay.SaveDuringPlay.Enabled && Application.isPlaying);
+            helpBox.SetVisible(SaveDuringPlay.Enabled && Application.isPlaying);
 
             var toggle = ux.AddChild(new Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel.text) 
             { 
                 tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
-                value = SaveDuringPlay.SaveDuringPlay.Enabled
+                value = SaveDuringPlay.Enabled
             });
             toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
             toggle.RegisterValueChangedCallback((evt) => 
             {
-                SaveDuringPlay.SaveDuringPlay.Enabled = evt.newValue;
+                SaveDuringPlay.Enabled = evt.newValue;
                 helpBox.SetVisible(evt.newValue && Application.isPlaying);
             });
 

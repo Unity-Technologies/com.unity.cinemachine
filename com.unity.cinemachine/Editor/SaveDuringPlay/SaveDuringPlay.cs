@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Cinemachine.SaveDuringPlay
+namespace Cinemachine.Editor
 {
     /// <summary>A collection of tools for finding objects</summary>
     static class ObjectTreeUtil
@@ -179,13 +179,9 @@ namespace Cinemachine.SaveDuringPlay
                         var newLength = (int)length;
                         var currentLength = list.Count;
                         for (int i = 0; i < currentLength - newLength; ++i)
-                        {
                             list.RemoveAt(currentLength - i - 1); // make list shorter if needed
-                        }
                         for (int i = 0;  i < newLength - currentLength; ++i)
-                        {
                             list.Add(GetValue(type.GetGenericArguments()[0])); // make list longer if needed
-                        }
                         doneSomething = true;
                     }
 
@@ -203,9 +199,9 @@ namespace Cinemachine.SaveDuringPlay
                     if (doneSomething)
                         obj = list;
                 }
-                else
+                else if (!typeof(UnityEngine.Object).IsAssignableFrom(obj.GetType()))
                 {
-                    // Check if it's a complex type
+                    // Check if it's a complex type (but don't follow UnityEngine.Object references)
                     FieldInfo[] fields = obj.GetType().GetFields(kBindingFlags);
                     if (fields.Length > 0)
                     {
