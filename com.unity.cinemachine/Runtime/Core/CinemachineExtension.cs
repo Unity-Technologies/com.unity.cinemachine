@@ -80,7 +80,7 @@ namespace Cinemachine
             m_ExtraState = null;
         }
 
-        /// <summary>Override this to do such things as offset the RefereceLookAt.
+        /// <summary>Override this to do such things as offset the ReferenceLookAt.
         /// Base class implementation does nothing.</summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="curState">Input state that must be mutated</param>
@@ -126,12 +126,10 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="vcam">Virtual camera to reposition</param>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
-        public virtual void ForceCameraPosition(
-            CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot) {}
-        
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>

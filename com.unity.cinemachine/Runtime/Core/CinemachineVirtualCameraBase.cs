@@ -295,7 +295,7 @@ namespace Cinemachine
         /// <summary>
         /// Invokes the PostPipelineStageDelegate for this camera, and up the hierarchy for all
         /// parent cameras (if any).
-        /// Implementaion must be sure to call this after each pipeline stage, to allow
+        /// Implementation must be sure to call this after each pipeline stage, to allow
         /// other services to hook into the pipeline.
         /// See CinemachineCore.Stage.
         /// </summary>
@@ -330,7 +330,7 @@ namespace Cinemachine
         /// <summary>
         /// Invokes the PrePipelineMutateCameraStateCallback for this camera, 
         /// and up the hierarchy for all parent cameras (if any).
-        /// Implementaion must be sure to call this after each pipeline stage, to allow
+        /// Implementation must be sure to call this after each pipeline stage, to allow
         /// other services to hook into the pipeline.
         /// See CinemachineCore.Stage.
         /// </summary>
@@ -406,7 +406,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Gets a brief debug description of this virtual camera, for use when displayiong debug info</summary>
+        /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
         public virtual string Description => "";
 
         /// <summary>Get the Priority of the virtual camera.  This determines its placement
@@ -706,7 +706,7 @@ namespace Cinemachine
         /// it shares the highest priority in the queue with its peers.
         ///
         /// This happens automatically when a
-        /// new vcam is enabled: the most recent one goes to the top of the priority subqueue.
+        /// new vcam is enabled: the most recent one goes to the top of the priority sub-queue.
         /// Use this method to push a vcam to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
         [Obsolete("Please use Prioritize()")]
@@ -717,7 +717,7 @@ namespace Cinemachine
         /// it shares the highest priority in the queue with its peers.
         ///
         /// This happens automatically when a
-        /// new CinemachineCamera is enabled: the most recent one goes to the top of the priority subqueue.
+        /// new CinemachineCamera is enabled: the most recent one goes to the top of the priority sub-queue.
         /// Use this method to push a camera to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
         public void Prioritize()
@@ -749,22 +749,19 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
-        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) 
-            => ForceCameraPosition(this, pos, rot);
-
-        void ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot)
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             // inform the extensions
             if (Extensions != null)
             {
                 for (int i = 0; i < Extensions.Count; ++i)
-                    Extensions[i].ForceCameraPosition(vcam, pos, rot);
+                    Extensions[i].ForceCameraPosition(pos, rot);
             }
             var parent = ParentCamera as CinemachineVirtualCameraBase;
             if (parent != null)
-                parent.ForceCameraPosition(vcam, pos, rot);
+                parent.ForceCameraPosition(pos, rot);
         }
 
         /// <summary>
@@ -830,7 +827,7 @@ namespace Cinemachine
         public bool FollowTargetChanged { get; private set; }
 
         /// <summary>
-        /// This property is true if the LookAttarget was changed this frame.
+        /// This property is true if the LookAtTarget was changed this frame.
         /// </summary>
         public bool LookAtTargetChanged { get; private set; }
 

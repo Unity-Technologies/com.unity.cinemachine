@@ -497,7 +497,7 @@ namespace Cinemachine.Editor
         }
 
         ///===========================================================================
-        /// IMGUI IMPLEMENTAION (to be removed) 
+        /// IMGUI IMPLEMENTATION (to be removed) 
         ///===========================================================================
 
         static readonly GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");

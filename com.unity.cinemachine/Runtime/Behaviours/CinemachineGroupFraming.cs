@@ -79,7 +79,7 @@ namespace Cinemachine
         [MinMaxRangeSlider(1, 179)]
         public Vector2 FovRange = new Vector2(1, 100);
 
-        /// <summary>Allowable range for the camera to move.  0 is the undollied position.  
+        /// <summary>Allowable range for the camera to move. 0 is the undollied position.  
         /// Negative values move the camera closer to the target.</summary>
         [Tooltip("Allowable range for the camera to move.  0 is the undollied position.  "
             + "Negative values move the camera closer to the target.")]
