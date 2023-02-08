@@ -45,7 +45,7 @@ namespace Cinemachine
             + "interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit PositionUnits = PathIndexUnit.Normalized;
 
-        /// <summary>Where to put the camera relative to the spline postion.  X is perpendicular 
+        /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
         [Tooltip("Where to put the camera relative to the spline position.  X is perpendicular "
             + "to the spline, Y is up, and Z is parallel to the spline.")]
@@ -116,10 +116,10 @@ namespace Cinemachine
             + "move gradually towards the desired spline position")]
         public DampingSettings Damping;
         
-        /// <summary>Controls how automatic dollying occurs</summary>
+        /// <summary>Controls how automatic dolly occurs</summary>
         [NoSaveDuringPlay]
         [FoldoutWithEnabledButton]
-        [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
+        [Tooltip("Controls how automatic dolly occurs.  A tracking target may be necessary to use this feature.")]
         public SplineAutoDolly AutomaticDolly;
 
         // State info for damping

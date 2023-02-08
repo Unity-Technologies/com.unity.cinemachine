@@ -40,7 +40,7 @@ namespace Cinemachine.Examples
                     if (liveCam.TryGetComponent<CinemachineThirdPersonAim>(out var aim) && aim.enabled)
                     {
                         // Set the worldspace aim target position so that we can know what gets hit
-                        enableReticle = true;
+                        enableReticle = aim.NoiseCancellation;
                         transform.position = aim.AimTarget;
 
                         // Set the screen-space hit target indicator position

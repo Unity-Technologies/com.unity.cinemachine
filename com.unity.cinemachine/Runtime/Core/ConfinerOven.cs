@@ -366,7 +366,7 @@ namespace Cinemachine
                 m_OriginalPolygon.Add(path);
             }
             
-            // calculate mid point and use it as the most shrank down version at theoritical max
+            // calculate mid point and use it as the most shrank down version at theoretical max
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
             m_Cache.theoreticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
 

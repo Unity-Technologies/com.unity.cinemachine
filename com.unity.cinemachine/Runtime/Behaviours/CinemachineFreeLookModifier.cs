@@ -15,8 +15,8 @@ namespace Cinemachine
     public class CinemachineFreeLookModifier : CinemachineExtension
     {
         /// <summary>
-        /// Interface for CInemachineComponentBase-derived to expose a normalized value that 
-        /// can be consumed by CinemachineFreeLookModifier to drive the rig selecion.
+        /// Interface for CinemachineComponentBase-derived to expose a normalized value that 
+        /// can be consumed by CinemachineFreeLookModifier to drive the rig selection.
         /// </summary>
         public interface IModifierValueSource
         {
@@ -87,7 +87,7 @@ namespace Cinemachine
             /// <summary>Return true if cached vcam component is present or not required</summary>
             public virtual bool HasRequiredComponent => true;
 
-            /// <summary>Called from OnEnable and from the inspector.  Refresh any performace-sensitive stuff.</summary>
+            /// <summary>Called from OnEnable and from the inspector.  Refresh any performance-sensitive stuff.</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public virtual void RefreshCache(CinemachineVirtualCameraBase vcam) {}
             
@@ -153,7 +153,7 @@ namespace Cinemachine
             [HideFoldout]
             public TopBottomRigs<float> Tilt;
 
-            /// <summary>Called from OnValidate to calidate this component</summary>
+            /// <summary>Called from OnValidate to validate this component</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public override void Validate(CinemachineVirtualCameraBase vcam)
             {
@@ -207,7 +207,7 @@ namespace Cinemachine
             [LensSettingsHideModeOverrideProperty]
             public LensSettings Bottom;
         
-            /// <summary>Called from OnValidate to calidate this component</summary>
+            /// <summary>Called from OnValidate to validate this component</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public override void Validate(CinemachineVirtualCameraBase vcam) 
             {
@@ -247,7 +247,7 @@ namespace Cinemachine
         }
     
         /// <summary>
-        /// Builtin Freelook modifier for positional damping. Modifies positional damping at the start of the camera pipeline.
+        /// Builtin FreeLook modifier for positional damping. Modifies positional damping at the start of the camera pipeline.
         /// </summary>
         public class PositionDampingModifier : ComponentModifier<IModifiablePositionDamping>
         {
@@ -255,7 +255,7 @@ namespace Cinemachine
             [HideFoldout]
             public TopBottomRigs<Vector3> Damping;
 
-            /// <summary>Called from OnValidate to calidate this component</summary>
+            /// <summary>Called from OnValidate to validate this component</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public override void Validate(CinemachineVirtualCameraBase vcam)
             {
@@ -326,7 +326,7 @@ namespace Cinemachine
             [HideFoldout]
             public TopBottomRigs<ScreenComposerSettings> Composition;
 
-            /// <summary>Called from OnValidate to calidate this component</summary>
+            /// <summary>Called from OnValidate to validate this component</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public override void Validate(CinemachineVirtualCameraBase vcam)
             {

@@ -275,7 +275,7 @@ namespace Cinemachine
             var newPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(
                 extra.BakedSolution.ConfinePoint(posLocal));
 
-            // Don't move the point alog the fwd axis
+            // Don't move the point along the fwd axis
             return newPos - fwd * Vector3.Dot(fwd, newPos - pos);
         }
 
@@ -402,7 +402,7 @@ namespace Cinemachine
                     {
                         OriginalPath = new List<List<Vector2>>();
                         
-                        // Cache the current worldspace shape
+                        // Cache the current world-space shape
                         m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         for (var i = 0; i < polygonCollider2D.pathCount; ++i)
                         {
@@ -416,7 +416,7 @@ namespace Cinemachine
                         break;
                     case BoxCollider2D boxCollider2D:
                     {
-                        // Cache the current worldspace shape
+                        // Cache the current world-space shape
                         m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         var size = boxCollider2D.size;
                         var halfY = size.y / 2f;
@@ -436,7 +436,7 @@ namespace Cinemachine
                     {
                         OriginalPath = new List<List<Vector2>>();
 
-                        // Cache the current worldspace shape
+                        // Cache the current world-space shape
                         m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         var path = new Vector2[compositeCollider2D.pointCount];
                         for (var i = 0; i < compositeCollider2D.pathCount; ++i)
@@ -477,8 +477,9 @@ namespace Cinemachine
             void CalculateDeltaTransformationMatrix()
             {
                 // Account for current collider offset (in local space) and 
-                // incorporate the worldspace delta that the confiner has moved since baking
-                var m = Matrix4x4.Translate(-m_BoundingShape2D.offset) * m_BoundingShape2D.transform.worldToLocalMatrix;
+                // incorporate the world-space delta that the confiner has moved since baking
+                var m = Matrix4x4.Translate(-m_BoundingShape2D.offset) * 
+                        m_BoundingShape2D.transform.worldToLocalMatrix;
                 DeltaWorldToBaked = m_BakedToWorld * m;
                 DeltaBakedToWorld = DeltaWorldToBaked.inverse;
             }

@@ -14,7 +14,7 @@ namespace Cinemachine
         string Name { get; }
 
         /// <summary>
-        /// Gets a brief debug description of this virtual camera, for use when displayiong debug info
+        /// Gets a brief debug description of this virtual camera, for use when displaying debug info
         /// </summary>
         string Description { get; }
 

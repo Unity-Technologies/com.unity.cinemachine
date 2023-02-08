@@ -406,7 +406,7 @@ namespace Cinemachine
 
         int GetClipHash(int hash, List<AnimatorClipInfo> clips)
         {
-            // Find the strongest-weighted animation clip substate
+            // Find the strongest-weighted animation clip sub-state
             var bestClip = -1;
             for (var i = 0; i < clips.Count; ++i)
                 if (bestClip < 0 || clips[i].weight > clips[bestClip].weight)
