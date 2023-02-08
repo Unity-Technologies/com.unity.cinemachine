@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineExtension API changes to VirtualCamera, GetAllExtraStates, OnTargetObjectWarped, and ForceCameraPosition.
 - URP: add temporal effects reset on camera cut
 - Add Weight setting to CinemachinePostProcessing and CinemachineVolumeSettings
+- GroupFraming also works on LookAt target
 
 
 ## [3.0.0-pre.3] - 2022-10-28
