@@ -119,7 +119,7 @@ namespace Cinemachine
             /// <param name="impulsePos">The input impulse signal at this time</param>
             /// <param name="pos">output reaction position delta</param>
             /// <param name="rot">output reaction rotation delta</param>
-            /// <returns>True if thewre is a reaction effect, false otherwise</returns>
+            /// <returns>True if there is a reaction effect, false otherwise</returns>
             public bool GetReaction(
                 float deltaTime, Vector3 impulsePos, 
                 out Vector3 pos, out Quaternion rot)
@@ -149,7 +149,7 @@ namespace Cinemachine
                     m_CurrentTime += deltaTime * FrequencyGain;
 
                 // Adjust the envelope height and duration of the secondary noise, 
-                // acording to the strength of the incoming signal
+                // according to the strength of the incoming signal
                 m_CurrentAmount = Mathf.Max(m_CurrentAmount, Mathf.Sqrt(sqrMag));
                 m_CurrentDamping = Mathf.Max(m_CurrentDamping, Mathf.Max(1, Mathf.Sqrt(m_CurrentAmount)) * Duration);
 

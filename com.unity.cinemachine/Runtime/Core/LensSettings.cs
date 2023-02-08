@@ -60,7 +60,7 @@ namespace Cinemachine
         public float Dutch;
 
         /// <summary>
-        /// This enum controls how the Camera seetings are driven.  Some settings
+        /// This enum controls how the Camera settings are driven.  Some settings
         /// can be pulled from the main camera, or pushed to it, depending on these values.
         /// </summary>
         public enum OverrideModes
@@ -125,8 +125,8 @@ namespace Cinemachine
         { 
             get { return ModeOverride == OverrideModes.Physical 
                 || ModeOverride == OverrideModes.None && m_PhysicalFromCamera; } 
-
-            /// Obsolete: do not use
+            
+            [Obsolete("No longer supported")]
             set { m_PhysicalFromCamera = value; ModeOverride = value 
                 ? OverrideModes.Physical : OverrideModes.Perspective; } 
         }
@@ -228,7 +228,7 @@ namespace Cinemachine
             }
 
 #if UNITY_EDITOR
-            SourceCamera = camera; // hack because of missng Unity API to get horizontal or vertical fov mode
+            SourceCamera = camera; // hack because of missing Unity API to get horizontal or vertical fov mode
 #endif
         }
 
@@ -311,9 +311,9 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Lerp the lerpable values.  Nonlerpable values remain intact.
+        /// Lerp the interpolatable values. Values that can't be interpolated remain intact.
         /// </summary>
-        /// <param name="lensB">The lens containing the values to compine with this one</param>
+        /// <param name="lensB">The lens containing the values to combine with this one</param>
         /// <param name="t">The weight of LensB's values.</param>
         public void Lerp(in LensSettings lensB, float t)
         {
@@ -360,7 +360,7 @@ namespace Cinemachine
         /// Compare two lens settings objects for approximate equality
         /// </summary>
         /// <param name="a">First LensSettings</param>
-        /// <param name="b">Second Lens Settigs</param>
+        /// <param name="b">Second Lens Settings</param>
         /// <returns>True if the two lenses are approximately equal</returns>
         public static bool AreEqual(ref LensSettings a, ref LensSettings b)
         {

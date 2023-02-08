@@ -49,7 +49,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// ISplineAutoDolly implementation that moves the object at a constant speed aling the spline.
+        /// ISplineAutoDolly implementation that moves the object at a constant speed align the spline.
         /// </summary>
         [Serializable]
         public class FixedSpeed : ISplineAutoDolly

@@ -77,10 +77,10 @@ namespace Cinemachine
             HardLimits.Offset.y = Mathf.Clamp(HardLimits.Offset.y, -1f, 1f);
         }
 
-        /// <summary>Get the effictive dead zone size, taking enabled state into account</summary>
+        /// <summary>Get the effective dead zone size, taking enabled state into account</summary>
         public Vector2 EffectiveDeadZoneSize => DeadZone.Enabled ? DeadZone.Size : Vector2.zero;
 
-        /// <summary>Get the effictive hard limits size, taking enabled state into account</summary>
+        /// <summary>Get the effective hard limits size, taking enabled state into account</summary>
         public Vector2 EffectiveHardLimitSize => HardLimits.Enabled ? HardLimits.Size : new Vector2(3, 3);
 
         /// <summary>Get/set the screenspace rect for the dead zone region.  This also defines screen position</summary>

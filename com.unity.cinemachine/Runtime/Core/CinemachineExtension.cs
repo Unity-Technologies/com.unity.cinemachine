@@ -28,7 +28,7 @@ namespace Cinemachine
 
         /// <summary>Get the CinemachineVirtualCamera to which this extension is attached.
         /// This is distinct from the CinemachineCameras that the extension will modify,
-        /// as extensions owned by manager cameras will be applied to all the CinemachineCamewra children.</summary>
+        /// as extensions owned by manager cameras will be applied to all the CinemachineCamera children.</summary>
         public CinemachineVirtualCameraBase ComponentOwner
         {
             get

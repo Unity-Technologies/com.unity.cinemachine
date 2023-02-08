@@ -42,7 +42,7 @@ namespace Cinemachine.Utility
             Vector3 s = s1 - s0;
             float len2 = Vector3.SqrMagnitude(s);
             if (len2 < Epsilon)
-                return 0; // degenrate segment
+                return 0; // degenerate segment
             return Mathf.Clamp01(Vector3.Dot(p - s0, s) / len2);
         }
 
@@ -99,8 +99,8 @@ namespace Cinemachine.Utility
         ///     0 = no intersection, 
         ///     1 = lines intersect, 
         ///     2 = segments intersect, 
-        ///     3 = lines are colinear, segments do not touch, 
-        ///     4 = lines are colinear, segments touch (at one or at multiple points)
+        ///     3 = lines are collinear, segments do not touch, 
+        ///     4 = lines are collinear, segments touch (at one or at multiple points)
         /// </returns>
         public static int FindIntersection(
             in Vector2 p1, in Vector2 p2, in Vector2 q1, in Vector2 q2, 
@@ -116,7 +116,7 @@ namespace Cinemachine.Utility
                 intersection = Vector2.positiveInfinity;
                 if (Mathf.Abs(pq.Cross(p)) < 0.00001f)
                 {
-                    // The lines are colinear.  Do the segments touch?
+                    // The lines are collinear.  Do the segments touch?
                     var dotPQ = Vector2.Dot(q, p);
 
                     if (dotPQ > 0 && (p1 - q2).sqrMagnitude < 0.001f)
@@ -143,16 +143,16 @@ namespace Cinemachine.Utility
                         else if (dotPQ > 0 && (p2 - q1).sqrMagnitude < 0.001f)
                             intersection = p2; // p points at start of q
 
-                        return 4;   // colinear segments touch
+                        return 4;   // collinear segments touch
                     }
 
                     dot = Vector2.Dot(p1 - q1, q);
                     if (0 <= dot && dot <= Vector2.Dot(q, q))
-                        return 4;   // colinear segments overlap
+                        return 4;   // collinear segments overlap
 
-                    return 3;   // colinear segments don't touch
+                    return 3;   // collinear segments don't touch
                 }
-                return 0; // the lines are parallel and not colinear
+                return 0; // the lines are parallel and not collinear
             }
 
             var t = pq.Cross(q) / pXq;
@@ -272,7 +272,7 @@ namespace Cinemachine.Utility
         /// the up param</summary>
         /// <param name="vA">First direction</param>
         /// <param name="vB">Second direction</param>
-        /// <param name="t">Interpolation amoun t</param>
+        /// <param name="t">Interpolation amount</param>
         /// <param name="up">Defines the up direction</param>
         /// <returns>Interpolated vector</returns>
         public static Vector3 SlerpWithReferenceUp(
@@ -293,7 +293,7 @@ namespace Cinemachine.Utility
         }
     }
 
-    /// <summary>Extensions to the Quaternion class, usen in various places by Cinemachine</summary>
+    /// <summary>Extensions to the Quaternion class, used in various places by Cinemachine</summary>
     public static class UnityQuaternionExtensions
     {
         /// <summary>This is a slerp that mimics a camera operator's movement in that
@@ -332,7 +332,7 @@ namespace Cinemachine.Utility
         /// This formulation makes it easy to interpolate without introducing spurious roll.
         /// </summary>
         /// <param name="orient"></param>
-        /// <param name="lookAtDir">The worldspace target direction in which we want to look</param>
+        /// <param name="lookAtDir">The world-space target direction in which we want to look</param>
         /// <param name="worldUp">Which way is up.  Must have a length of 1.</param>
         /// <returns>Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
         /// about local right.</returns>
@@ -391,7 +391,7 @@ namespace Cinemachine.Utility
         }
     }
 
-    /// <summary>Ad-hoc xxtentions to the Rect structure, used by Cinemachine</summary>
+    /// <summary>Ad-hoc extensions to the Rect structure, used by Cinemachine</summary>
     public static class UnityRectExtensions
     {
         /// <summary>Inflate a rect</summary>
