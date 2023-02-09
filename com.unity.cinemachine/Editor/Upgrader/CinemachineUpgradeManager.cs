@@ -68,17 +68,22 @@ namespace Cinemachine.Editor
                 + "Upgrade scene?",
                 "Upgrade", "Cancel"))
             {
+                Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
                 var manager = new CinemachineUpgradeManager(false);
                 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradable = manager.GetUpgradables(
                     rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 var upgradedObjects = new HashSet<GameObject>();
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scene...", 0.5f);
                 manager.UpgradeNonPrefabs(upgradable, upgradedObjects, null);
                 UpgradeObjectReferences(rootObjects);
 
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1f);
                 foreach (var go in upgradedObjects)
                     manager.m_ObjectUpgrader.DeleteObsoleteComponents(go);
+                EditorUtility.ClearProgressBar();
             }
         }
 
@@ -114,11 +119,10 @@ namespace Cinemachine.Editor
                 manager.UpgradeReferencablePrefabInstances(conversionLinksPerScene);
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.5f);
                 manager.UpgradePrefabAssets(false);
-                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.7f);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scenes...", 0.7f);
                 manager.UpgradeRemaining(conversionLinksPerScene, timelineRenames);
-                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading scenes...", 0.9f);
-                manager.CleanupPrefabAssets();
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1);
+                manager.CleanupPrefabAssets();
                 EditorUtility.ClearProgressBar();
             }
         }
