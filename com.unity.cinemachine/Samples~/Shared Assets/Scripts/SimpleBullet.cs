@@ -9,7 +9,11 @@ namespace Cinemachine.Examples
         public float Speed = 500;
         public float Lifespan = 3;
 
+        [Tooltip("Stretch factor in the direction of motion while flying")]
+        public float Stretch = 4;
+
         float m_Speed;
+        float m_ScaleZ;
 
         void OnValidate()
         {
@@ -17,9 +21,15 @@ namespace Cinemachine.Examples
             Lifespan = Mathf.Max(0.2f, Lifespan);
         }
 
-        public void OnEnable()
+        void Awake()
+        {
+            m_ScaleZ = transform.localScale.z;
+        }
+
+        void OnEnable()
         {
             m_Speed = Speed;
+            SetStretch(Stretch);
             StartCoroutine(DeactivateAfter());
         }
 
@@ -34,11 +44,19 @@ namespace Cinemachine.Examples
                 {
                     t.position = hitInfo.point;
                     m_Speed = 0;
+                    SetStretch(1);
                 }
                 t.position += m_Speed * Time.deltaTime * t.forward;
             }
         }
-        
+
+        void SetStretch(float stretch)
+        {
+            var scale = transform.localScale;
+            scale.z = m_ScaleZ * stretch;
+            transform.localScale = scale;
+        }
+
         IEnumerator DeactivateAfter()
         {
             yield return new WaitForSeconds(Lifespan);
