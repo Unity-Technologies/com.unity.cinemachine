@@ -1025,17 +1025,29 @@ MonoBehaviour:
   OnHelpDismissed:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1802572052}
-        m_TargetAssemblyTypeName: Cinemachine.Examples.SimplePlayerController, Assembly-CSharp
-        m_MethodName: EnableLockCursor
-        m_Mode: 1
+      - m_Target: {fileID: 1802572053}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 1802572052}
+        m_TargetAssemblyTypeName: Cinemachine.Examples.SimplePlayerController, Assembly-CSharp
+        m_MethodName: EnableLockCursor
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!4 &1040083249
 Transform:
@@ -1423,9 +1435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BulletPrefab: {fileID: 3056719325741855433, guid: 31d678dfd458ff84d95d644dd3730cca, type: 3}
-  MaxBulletsPerSec: 10
-  BulletSpeed: 500
-  TimeInAir: 3
+  MaxBulletsPerSec: 6
   PlayerRotationTime: 0.2
   Fire:
     Value: 0
@@ -2013,6 +2023,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Controllers.Array.size
       value: 7
       objectReference: {fileID: 0}
@@ -2383,6 +2397,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 297aaca66939f724fbbc8f0c485168bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1802572053 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+  m_PrefabInstance: {fileID: 1802572047}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1972898889
