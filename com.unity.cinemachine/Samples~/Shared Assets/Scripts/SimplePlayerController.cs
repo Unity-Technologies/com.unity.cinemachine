@@ -59,8 +59,7 @@ namespace Cinemachine.Examples
         public bool IsJumping => m_IsJumping;
         public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
 
-        public void EnableLockCursor() => LockCursor = true;
-        public void DisableLockCursor() => LockCursor = false;
+        public void EnableLockCursor(bool enable) => LockCursor = enable;
 
         /// Report the available input axes to the input axis controller.
         /// We use the Input Axis Controller because it works with both the Input package
