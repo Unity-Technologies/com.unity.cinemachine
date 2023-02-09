@@ -45,6 +45,8 @@ Old components have been replaced by new components. These are not renames, they
 
 The old convention of using "m_FieldName" has been changed to follow Unity's latest naming conventions. Consequently, all of the "m_" prefixes have been removed from field names, everywhere. If your scripts don't compile because of this, the first remedy is to remove the "m_" from the field name that your script is referencing. Most of the time, that will be enough. Occasionally, some field names were changed more significantly. It should be fairly easy to find the appropriate replacements.
 
+The _SimpleFollowWithWorldUp_ binding mode has been renamed to _LazyFollow_.
+
 ### Cleaner Object Structure, No Hidden GameObjects
 
 Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the vcam, named "cm". This has been removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CinemachineCamera GameObject. You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.

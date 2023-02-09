@@ -22,7 +22,7 @@ namespace Cinemachine
             excluded.Add(FieldPath(x => x.m_Orbits));
             if (!Target.m_CommonLens)
                 excluded.Add(FieldPath(x => x.m_Lens));
-            if (Target.m_BindingMode == TargetTracking.BindingMode.SimpleFollowWithWorldUp)
+            if (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow)
             {
                 excluded.Add(FieldPath(x => x.m_Heading));
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
@@ -66,7 +66,7 @@ namespace Cinemachine
             }
             
             Target.m_XAxis.ValueRangeLocked
-                = (Target.m_BindingMode == TargetTracking.BindingMode.SimpleFollowWithWorldUp);
+                = (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow);
 
             // Ordinary properties
             BeginInspector();

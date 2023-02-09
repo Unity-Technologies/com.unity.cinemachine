@@ -179,7 +179,7 @@ namespace Cinemachine
                 pos = rot * new Vector3(0, 0, -Radius * RadialAxis.Value);
                 t = VerticalAxis.GetNormalizedValue() * 2 - 1;
             }
-            if (TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp)
+            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
                 pos.z = -Mathf.Abs(pos.z);
 
             return new Vector4(pos.x, pos.y, pos.z, t);
@@ -238,7 +238,7 @@ namespace Cinemachine
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             var localDir = Quaternion.Inverse(orient) * dir;
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.SimpleFollowWithWorldUp ? 0 : r.x);
+            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow ? 0 : r.x);
             HorizontalAxis.Value = HorizontalAxis.ClampValue(r.y);
             RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
         }
@@ -360,7 +360,7 @@ namespace Cinemachine
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (TrackerSettings.BindingMode != BindingMode.SimpleFollowWithWorldUp)
+            if (TrackerSettings.BindingMode != BindingMode.LazyFollow)
                 HorizontalAxis.Restrictions 
                     &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
             else

@@ -32,7 +32,7 @@ namespace Cinemachine.TargetTracking
         /// <summary>Camera will be bound to the Follow target using a world space offset.</summary>
         WorldSpace = 4,
         /// <summary>Offsets will be calculated relative to the target, using Camera-local axes</summary>
-        SimpleFollowWithWorldUp = 5
+        LazyFollow = 5
     }
 
     /// <summary>How to calculate the angular damping for the target orientation</summary>
@@ -141,7 +141,7 @@ namespace Cinemachine.TargetTracking
         /// <returns>The damping settings applicable for this binding mode</returns>
         internal static Vector3 GetEffectivePositionDamping(this TrackerSettings s)
         {
-            return s.BindingMode == BindingMode.SimpleFollowWithWorldUp 
+            return s.BindingMode == BindingMode.LazyFollow 
                 ? new Vector3(0, s.PositionDamping.y, s.PositionDamping.z) : s.PositionDamping;
         }
 
@@ -160,7 +160,7 @@ namespace Cinemachine.TargetTracking
                 case BindingMode.LockToTargetWithWorldUp:
                     return new Vector3(0, s.RotationDamping.y, 0);
                 case BindingMode.WorldSpace:
-                case BindingMode.SimpleFollowWithWorldUp:
+                case BindingMode.LazyFollow:
                     return Vector3.zero;
                 default:
                     return s.RotationDamping;
@@ -236,7 +236,7 @@ namespace Cinemachine.TargetTracking
                         return Quaternion.LookRotation(targetOrientation * Vector3.forward, worldUp);
                     case BindingMode.LockToTarget:
                         return targetOrientation;
-                    case BindingMode.SimpleFollowWithWorldUp:
+                    case BindingMode.LazyFollow:
                     {
                         Vector3 fwd = (component.FollowTargetPosition - component.VcamState.RawPosition).ProjectOntoPlane(worldUp);
                         if (fwd.AlmostZero())
@@ -390,7 +390,7 @@ namespace Cinemachine.TargetTracking
             Vector3 cameraOffsetLocalSpace)
         {
             // Infer target pos from camera
-            var targetRot = bindingMode == BindingMode.SimpleFollowWithWorldUp 
+            var targetRot = bindingMode == BindingMode.LazyFollow 
                 ? rot : GetReferenceOrientation(component, bindingMode, component.VirtualCamera.State.ReferenceUp);
             PreviousTargetPosition = pos - targetRot * cameraOffsetLocalSpace;
         }

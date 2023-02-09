@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
             {
                 var mode = (TargetTracking.BindingMode)modeProp.intValue;
                 bool hideRot = mode == TargetTracking.BindingMode.WorldSpace 
-                    || mode == TargetTracking.BindingMode.SimpleFollowWithWorldUp;
+                    || mode == TargetTracking.BindingMode.LazyFollow;
                 rotDampingContainer.SetVisible(!hideRot);
             }
 

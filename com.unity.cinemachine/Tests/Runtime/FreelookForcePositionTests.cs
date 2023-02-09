@@ -124,7 +124,7 @@ namespace Tests.Runtime
             const float step = 29f; // so tests are not too long
             foreach (BindingMode bindingMode in k_BindingModes)
             {
-                if (bindingMode == BindingMode.SimpleFollowWithWorldUp)
+                if (bindingMode == BindingMode.LazyFollow)
                     continue; // this mode has 0 horizontal axes, so we don't test it
                 
                 m_OrbitalFollow.TrackerSettings.BindingMode = bindingMode;
