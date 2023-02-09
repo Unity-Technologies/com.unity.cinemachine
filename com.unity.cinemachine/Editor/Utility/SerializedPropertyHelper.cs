@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Cinemachine.Editor
 {
     /// <summary>
-    /// Helpers for the editor relating to SerializedPropertys
+    /// Helpers for the editor relating to SerializedProperties
     /// </summary>
     static class SerializedPropertyHelper
     {
@@ -57,7 +57,7 @@ namespace Cinemachine.Editor
             return obj.FindPropertyRelative(PropertyName(exp));
         }
 
-        /// <summary>Get the value of a proprty, as an object</summary>
+        /// <summary>Get the value of a property, as an object</summary>
         /// <param name="property">The property to query</param>
         /// <returns>The object value of the property</returns>
         public static object GetPropertyValue(SerializedProperty property)

@@ -21,7 +21,7 @@ namespace Cinemachine.Editor
         /// Return the Serialized property for a field, and exclude it from being automatically 
         /// displayed in the inspector.  Call this when you need to provide a custom UX for a field.
         /// </summary>
-        /// <typeparam name="TValue">Magic experssion code</typeparam>
+        /// <typeparam name="TValue">Magic expression code</typeparam>
         /// <param name="expr">Call format is FindAndExcludeProperty(x => x.myField)</param>
         /// <returns>The serialized property for the field</returns>
         protected SerializedProperty FindAndExcludeProperty<TValue>(Expression<Func<T, TValue>> expr)
@@ -34,7 +34,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Return the Serialized property for a field.
         /// </summary>
-        /// <typeparam name="TValue">Magic experssion code</typeparam>
+        /// <typeparam name="TValue">Magic expression code</typeparam>
         /// <param name="expr">Call format is FindProperty(x => x.myField)</param>
         /// <returns>The serialized property for the field</returns>
         protected SerializedProperty FindProperty<TValue>(Expression<Func<T, TValue>> expr)
@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Magic code to get the string name of a field.  Will not build if the field name changes.
         /// </summary>
-        /// <typeparam name="TValue">Magic experssion code</typeparam>
+        /// <typeparam name="TValue">Magic expression code</typeparam>
         /// <param name="expr">Call format is FieldPath(x => x.myField)</param>
         /// <returns>The string name of the field</returns>
         protected string FieldPath<TValue>(Expression<Func<T, TValue>> expr)
@@ -74,7 +74,7 @@ namespace Cinemachine.Editor
             mExcluded.Add(propertyName);
         }
 
-        /// <summary>Check whenther a property is in the excluded list</summary>
+        /// <summary>Check whether a property is in the excluded list</summary>
         /// <param name="propertyName">The property to check</param>
         /// <returns>True if property is excluded from automatic inclusion in the inspector 
         /// when DrawRemainingPropertiesInInspector() is called</returns>

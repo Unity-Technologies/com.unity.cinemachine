@@ -30,7 +30,7 @@ namespace Cinemachine.Editor
         public enum RequiredTargets { None, Follow, LookAt, FollowGroup };
 
         /// <summary>
-        /// Add helpbox for CinemachineComponentBase or CinemachineExtension editors, 
+        /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
         /// prompting to solve a missing CinemachineCamera component or a missing tracking target
         /// </summary>
         public void AddMissingCmCameraHelpBox(

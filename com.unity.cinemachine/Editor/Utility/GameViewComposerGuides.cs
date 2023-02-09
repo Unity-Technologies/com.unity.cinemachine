@@ -113,7 +113,7 @@ namespace Cinemachine.Editor
         // Call this from inspector's OnEnable()
         public void OnEnable() => m_EventCatcher.OnEnable();
 
-        // Call this from inspector's OnDisble()
+        // Call this from inspector's OnDisable()
         public void OnDisable() => m_EventCatcher.OnDisable();
 
         Rect GetCameraRect(Camera outputCamera, LensSettings lens)

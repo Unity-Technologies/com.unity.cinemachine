@@ -31,7 +31,7 @@ namespace Cinemachine.Editor
             }
         }
 
-        /// <summary>Get the singleton instance of this object.  Creates asset if nonexistant</summary>
+        /// <summary>Get the singleton instance of this object.  Creates asset if nonexistent</summary>
         public static CinemachineLensPresets Instance
         {
             get
