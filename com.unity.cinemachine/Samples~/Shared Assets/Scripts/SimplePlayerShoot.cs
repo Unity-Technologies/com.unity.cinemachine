@@ -7,7 +7,7 @@ namespace Cinemachine.Examples
 {
     class SimplePlayerShoot : MonoBehaviour, IInputAxisSource
     {
-        public GameObject BulletPrefab;
+        public SimpleBullet BulletPrefab;
         public float MaxBulletsPerSec = 10;
         public float BulletSpeed = 500;
         public float TimeInAir = 3;
@@ -22,6 +22,8 @@ namespace Cinemachine.Examples
         public UnityEvent FireEvent;
 
         float m_LastFireTime;
+
+        readonly List<SimpleBullet> m_BulletPool = new List<SimpleBullet>();
 
         /// Report the available input axes to the input axis controller.
         /// We use the Input Axis Controller because it works with both the Input package
@@ -43,7 +45,7 @@ namespace Cinemachine.Examples
         void Update()
         {
             var now = Time.time;
-            bool fireNow = BulletPrefab != null 
+            bool fireNow = BulletPrefab is not null 
                 && now - m_LastFireTime > 1 / MaxBulletsPerSec
                 && Fire.Value > 0.1f;
 
@@ -56,13 +58,24 @@ namespace Cinemachine.Examples
                 m_LastFireTime = now;
 
                 var fwd = transform.forward;
-                if (AimTarget != null)
+                if (AimTarget is not null)
                     fwd = (AimTarget.position - transform.position).normalized;
-                var go = Instantiate(BulletPrefab, transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
-                if (go.TryGetComponent<SimpleBullet>(out var b))
-                    b.Fire(fwd, BulletSpeed);
+
+                SimpleBullet bullet = null;
+                for (var i = 0; i < m_BulletPool.Count; i++) // Look in the pool if one is available
+                {
+                    if (m_BulletPool[i].gameObject.activeInHierarchy) continue;
+                    bullet = m_BulletPool[i];
+                    m_BulletPool.Remove(bullet);
+                    break;
+                }
+                
+                bullet = bullet is null ? Instantiate(BulletPrefab.gameObject).GetComponent<SimpleBullet>() : bullet; // Instantiate a bullet if none are found in the pool
+                bullet.transform.position = transform.position + fwd;
+                bullet.transform.rotation = Quaternion.LookRotation(fwd, transform.up);
+                bullet.Fire(fwd, BulletSpeed, TimeInAir);
+                m_BulletPool.Add(bullet);
                 FireEvent.Invoke();
-                Destroy(go, TimeInAir);
             }
         }
     }

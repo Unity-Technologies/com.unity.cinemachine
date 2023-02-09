@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Cinemachine.Examples
@@ -9,10 +10,12 @@ namespace Cinemachine.Examples
         Vector3 m_Direction;
         float m_Speed;
 
-        public void Fire(Vector3 direction, float speed) 
+        public void Fire(Vector3 direction, float speed, float lifespan)
         {
             m_Direction = direction.normalized;
             m_Speed = speed;
+            gameObject.SetActive(true);
+            StartCoroutine(Lifespan(lifespan));
         }
 
         void Update()
@@ -26,6 +29,12 @@ namespace Cinemachine.Examples
                 m_Speed = 0;
             }
             t.position += m_Direction * m_Speed * Time.deltaTime;
+        }
+        
+        IEnumerator Lifespan(float time)
+        {
+            yield return new WaitForSeconds(time);
+            gameObject.SetActive(false);
         }
     }
 }
