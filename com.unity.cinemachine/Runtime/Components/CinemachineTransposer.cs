@@ -272,7 +272,7 @@ namespace Cinemachine
                     dampedOrientation = Quaternion.Slerp(
                         m_PreviousReferenceOrientation, targetOrientation, t);
                 }
-                else
+                else if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp)
                 {
                     var relative = (Quaternion.Inverse(m_PreviousReferenceOrientation)
                         * targetOrientation).eulerAngles;
