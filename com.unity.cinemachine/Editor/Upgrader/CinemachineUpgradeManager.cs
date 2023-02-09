@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -29,6 +30,7 @@ namespace Cinemachine.Editor
 
         // This gets set to help with more informative warning messages about objects
         string m_CurrentSceneOrPrefab;
+        const string k_ProgressBarTitle = "Upgrade Progress";
 
         /// <summary>
         /// GML Temporary helper method for testing.
@@ -67,17 +69,22 @@ namespace Cinemachine.Editor
                 + "Upgrade scene?",
                 "Upgrade", "Cancel"))
             {
+                Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
                 var manager = new CinemachineUpgradeManager(false);
                 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradable = manager.GetUpgradables(
                     rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 var upgradedObjects = new HashSet<GameObject>();
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scene...", 0.5f);
                 manager.UpgradeNonPrefabs(upgradable, upgradedObjects, null);
                 UpgradeObjectReferences(rootObjects);
 
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1f);
                 foreach (var go in upgradedObjects)
                     manager.m_ObjectUpgrader.DeleteObsoleteComponents(go);
+                EditorUtility.ClearProgressBar();
             }
         }
 
@@ -102,14 +109,21 @@ namespace Cinemachine.Editor
                 + "Upgrade project?",
                 "I made a backup, go ahead", "Cancel"))
             {
+                Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
                 var manager = new CinemachineUpgradeManager(true);
-
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.1f);
                 manager.UpgradePrefabAssets(true);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.3f);
                 manager.UpgradeReferencablePrefabInstances(conversionLinksPerScene);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.6f);
                 manager.UpgradePrefabAssets(false);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scenes...", 0.8f);
                 manager.UpgradeRemaining(conversionLinksPerScene, timelineRenames);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1);
                 manager.CleanupPrefabAssets();
+                EditorUtility.ClearProgressBar();
             }
         }
 

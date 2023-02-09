@@ -24,15 +24,15 @@ namespace Cinemachine.Examples
 
 #if UNITY_EDITOR
             // This code shows how to play nicely with the VirtualCamera's SaveDuringPlay functionality
-            SaveDuringPlay.SaveDuringPlay.OnHotSave -= RestoreOriginalOrthographicSize;
-            SaveDuringPlay.SaveDuringPlay.OnHotSave += RestoreOriginalOrthographicSize;
+            Editor.SaveDuringPlay.OnHotSave -= RestoreOriginalOrthographicSize;
+            Editor.SaveDuringPlay.OnHotSave += RestoreOriginalOrthographicSize;
 #endif
         }
 
 #if UNITY_EDITOR
         void OnDestroy()
         {
-            SaveDuringPlay.SaveDuringPlay.OnHotSave -= RestoreOriginalOrthographicSize;
+            Editor.SaveDuringPlay.OnHotSave -= RestoreOriginalOrthographicSize;
         }
         
         void RestoreOriginalOrthographicSize()
