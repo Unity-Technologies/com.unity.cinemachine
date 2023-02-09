@@ -118,7 +118,7 @@ namespace Cinemachine
             get
             {
                 Vector3 offset = m_FollowOffset;
-                if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode == BindingMode.LazyFollow)
                 {
                     offset.x = 0;
                     offset.z = -Mathf.Abs(offset.z);

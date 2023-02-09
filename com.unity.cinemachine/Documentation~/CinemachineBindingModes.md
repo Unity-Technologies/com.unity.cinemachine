@@ -77,11 +77,11 @@ The offset is interpreted in world space relative to the origin of the Follow ta
 
 </br></br>
 
-### Simple Follow With World Up
+### Lazy Follow
 
 
 
-Simple follow with world up interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to follow a target.
+Lazy follow interprets the offset and damping values in camera-local space. This mode emulates the action a human camera operator would take when instructed to follow a target.
 
 The camera attempts to move as little as possible to maintain the same distance from the target; the direction of the camera with respect to the target does not matter. Regardless of the orientation of the target, the camera tries to preserve the same distance and height from it.
 
