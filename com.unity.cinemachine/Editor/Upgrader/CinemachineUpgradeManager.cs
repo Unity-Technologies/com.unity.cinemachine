@@ -393,6 +393,8 @@ namespace Cinemachine.Editor
                 
                 foreach (var c in components)
                 {
+                    if (c == null)
+                        continue; // ignore
                     if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
                         continue; // is a backup copy
 

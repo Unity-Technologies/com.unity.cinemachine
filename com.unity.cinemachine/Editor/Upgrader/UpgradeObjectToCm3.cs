@@ -143,10 +143,7 @@ namespace Cinemachine.Editor
                 return c.UpgradeToCm3_GetTargetType();
 #endif
             var oldType = b.GetType();
-            if (ClassUpgradeMap.ContainsKey(oldType))
-                return ClassUpgradeMap[oldType];
-
-            return oldType;
+            return ClassUpgradeMap.ContainsKey(oldType) ? ClassUpgradeMap[oldType] : oldType;
         }
 
         /// <summary>
@@ -155,6 +152,9 @@ namespace Cinemachine.Editor
         /// </summary>
         public void ProcessAnimationClip(AnimationClip animationClip, Animator trackAnimator)
         {
+            if (animationClip == null || trackAnimator == null)
+                return;
+            
             var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
             foreach (var previousBinding in existingEditorBindings)
             {
