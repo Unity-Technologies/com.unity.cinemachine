@@ -62,7 +62,6 @@ namespace Cinemachine.Editor
             return false;
         }
         
-        const string k_SampleName = "Samples/Cinemachine/";
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
         List<string> m_PackageDependencies = new ();
