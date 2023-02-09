@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - URP: add temporal effects reset on camera cut.
 - Add Weight setting to CinemachinePostProcessing and CinemachineVolumeSettings.
 - GroupFraming also works on LookAt target.
-- The SimpleFollowWithWorldUp binding mode has been rnamed to LazyFollow.
+- The SimpleFollowWithWorldUp binding mode has been renamed to LazyFollow.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
