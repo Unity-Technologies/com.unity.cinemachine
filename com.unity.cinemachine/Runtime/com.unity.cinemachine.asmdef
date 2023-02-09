@@ -54,7 +54,7 @@
         },
         {
             "name": "com.unity.render-pipelines.universal",
-            "expression": "14.0.4",
+            "expression": "14.0.5",
             "define": "CINEMACHINE_URP"
         },
         {
