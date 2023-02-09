@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [3.0.0-pre.4] - 2022-02-09
+## [3.0.0-pre.4] - 2023-02-09
 - Progress bar added to Cinemachine Upgrader.
 - Bugfix: Physical lens settings were not being properly applied.
 - 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
