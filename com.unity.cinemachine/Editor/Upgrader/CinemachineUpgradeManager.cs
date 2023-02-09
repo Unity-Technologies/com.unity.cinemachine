@@ -30,6 +30,7 @@ namespace Cinemachine.Editor
 
         // This gets set to help with more informative warning messages about objects
         string m_CurrentSceneOrPrefab;
+        const string k_ProgressBarTitle = "Upgrade Progress";
 
         /// <summary>
         /// GML Temporary helper method for testing.
@@ -87,7 +88,6 @@ namespace Cinemachine.Editor
             }
         }
 
-        const string k_ProgressBarTitle = "Upgrade Progress";
         /// <summary>
         /// Upgrades all objects in all scenes and prefabs
         /// </summary>
@@ -113,13 +113,13 @@ namespace Cinemachine.Editor
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
                 var manager = new CinemachineUpgradeManager(true);
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
-                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.2f);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.1f);
                 manager.UpgradePrefabAssets(true);
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.3f);
                 manager.UpgradeReferencablePrefabInstances(conversionLinksPerScene);
-                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.5f);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.6f);
                 manager.UpgradePrefabAssets(false);
-                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scenes...", 0.7f);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scenes...", 0.8f);
                 manager.UpgradeRemaining(conversionLinksPerScene, timelineRenames);
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1);
                 manager.CleanupPrefabAssets();
