@@ -1035,36 +1035,30 @@ MonoBehaviour:
   AutoEnableInputs: 1
   Controllers:
   - Name: Look Orbit X
-    Owner: {fileID: 385349256}
+    Owner: {fileID: 0}
     Enabled: 1
     InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a,
       type: 3}
     Gain: 4
-    LegacyInput: Mouse X
-    LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
   - Name: Look Orbit Y
-    Owner: {fileID: 385349256}
+    Owner: {fileID: 0}
     Enabled: 1
     InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a,
       type: 3}
     Gain: -4
-    LegacyInput: Mouse Y
-    LegacyGain: -200
     Control:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
   - Name: Orbit Scale
-    Owner: {fileID: 385349256}
+    Owner: {fileID: 0}
     Enabled: 1
     InputAction: {fileID: 0}
     Gain: 4
-    LegacyInput: 
-    LegacyGain: 200
     Control:
       InputValue: 0
       AccelTime: 0
