@@ -2,7 +2,7 @@
     "name": "CinemachineInputActions",
     "maps": [
         {
-            "name": "Player",
+            "name": "Player1",
             "id": "df70fa95-8a34-4494-b137-73ab6b9c7d37",
             "actions": [
                 {
@@ -36,6 +36,24 @@
                     "name": "MiddleClick",
                     "type": "PassThrough",
                     "id": "27857b20-6329-4f2f-a46e-e2366d97ecfb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "ca0724ab-db58-470b-88d0-695059c1ea4c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "b95c0a4a-6914-4db5-9d9b-125c38254c44",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -273,11 +291,33 @@
                     "action": "MiddleClick",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "69fd5d77-3f63-4699-be6f-c6d8e73e1743",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "61f43e26-12eb-4f55-a3a3-dcb1d0a7364e",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
         {
-            "name": "MousePlayer",
+            "name": "Player2",
             "id": "9c8beed3-8140-4064-b8b7-cd047941beb2",
             "actions": [
                 {
