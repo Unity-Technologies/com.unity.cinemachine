@@ -24,8 +24,7 @@ namespace Cinemachine.Examples
         {
             if (Rigidbody == null)
                 return;
-        
-            var t = Mathf.Clamp01(Rigidbody.velocity.magnitude / MaxSpeed);
+            
             m_Mixer.Weight1 = Mathf.SmoothDamp(m_Mixer.Weight1, Mathf.Clamp01(Rigidbody.velocity.magnitude / MaxSpeed), ref m_WeightDamping, 0.1f);
             m_Mixer.Weight0 = 1 - m_Mixer.Weight1;
         }
