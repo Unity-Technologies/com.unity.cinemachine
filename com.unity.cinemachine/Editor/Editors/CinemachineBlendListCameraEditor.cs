@@ -8,15 +8,7 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineBlendListCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineBlendListCamera>
     {
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.Instructions));
-        }
-
-        ChildListInspectorHelper m_ChildListHelper = new();
+        ChildListInspectorHelper m_ChildListHelper = new ();
         UnityEditorInternal.ReorderableList m_InstructionList;
 
         string[] m_CameraCandidates;
@@ -36,28 +28,30 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
+
             if (m_InstructionList == null)
                 SetupInstructionList();
 
-            // Ordinary properties
-            DrawCameraStatusInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
-            DrawRemainingPropertiesInInspector();
+            DrawStandardInspectorTopSection();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ShowDebugText));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Loop));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             if (targets.Length == 1)
             {
                 // Instructions
                 UpdateCameraCandidates();
+
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.Separator();
                 m_InstructionList.DoLayoutList();
-
                 EditorGUILayout.Separator();
-                if (m_ChildListHelper.OnInspectorGUI(FindProperty(x => x.m_ChildCameras)))
+                if (m_ChildListHelper.OnInspectorGUI(serializedObject.FindProperty(() => Target.m_ChildCameras)))
                     Target.ValidateInstructions();
                 if (EditorGUI.EndChangeCheck()) 
                     serializedObject.ApplyModifiedProperties();

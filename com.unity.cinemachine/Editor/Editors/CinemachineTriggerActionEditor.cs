@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 using UnityEngine.Playables;
 
 namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineTriggerAction))]
-    class CinemachineTriggerActionEditor : BaseEditor<CinemachineTriggerAction>
+    class CinemachineTriggerActionEditor : UnityEditor.Editor
     {
+        CinemachineTriggerAction Target => target as CinemachineTriggerAction;
+
         CinemachineTriggerAction.ActionSettings m_Def = new(); // to access name strings
 
         static bool s_EnterExpanded;
@@ -22,8 +23,8 @@ namespace Cinemachine.Editor
 
         void OnEnable()
         {
-            m_RepeatProperties[0] = FindProperty(x => x.SkipFirst);
-            m_RepeatProperties[1] = FindProperty(x => x.Repeating);
+            m_RepeatProperties[0] = serializedObject.FindProperty(() => Target.SkipFirst);
+            m_RepeatProperties[1] = serializedObject.FindProperty(() => Target.Repeating);
             m_RepeatLabel = new GUIContent(
                 m_RepeatProperties[0].displayName, m_RepeatProperties[0].tooltip);
             m_RepeatSubLabels[0] = GUIContent.none;
@@ -31,27 +32,23 @@ namespace Cinemachine.Editor
                 m_RepeatProperties[1].displayName, m_RepeatProperties[1].tooltip);
         }
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.SkipFirst));
-            excluded.Add(FieldPath(x => x.Repeating));
-            excluded.Add(FieldPath(x => x.OnObjectEnter));
-            excluded.Add(FieldPath(x => x.OnObjectExit));
-        }
-
         public override void OnInspectorGUI()
         {
-            BeginInspector();
-            DrawRemainingPropertiesInInspector();
+            serializedObject.Update();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.LayerMask));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.WithTag));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.WithoutTag));
             InspectorUtility.MultiPropertyOnLine(
                 EditorGUILayout.GetControlRect(), m_RepeatLabel,
                 m_RepeatProperties, m_RepeatSubLabels);
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
+
             EditorGUILayout.Space();
-            s_EnterExpanded = DrawActionSettings(FindProperty(x => x.OnObjectEnter), s_EnterExpanded);
-            s_ExitExpanded = DrawActionSettings(FindProperty(x => x.OnObjectExit), s_ExitExpanded);
+            s_EnterExpanded = DrawActionSettings(serializedObject.FindProperty(() => Target.OnObjectEnter), s_EnterExpanded);
+            s_ExitExpanded = DrawActionSettings(serializedObject.FindProperty(() => Target.OnObjectExit), s_ExitExpanded);
         }
 
         bool DrawActionSettings(SerializedProperty property, bool expanded)

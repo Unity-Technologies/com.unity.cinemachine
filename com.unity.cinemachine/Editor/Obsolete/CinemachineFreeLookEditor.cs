@@ -6,14 +6,18 @@ using Cinemachine.Utility;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
+using System.Linq.Expressions;
+using System;
 
 namespace Cinemachine
 {
-    [System.Obsolete]
+    [Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
-    class CinemachineFreeLookEditor : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
+    class CinemachineFreeLookEditor : CinemachineLegacyVcamBaseEditor<CinemachineFreeLook>
     {
+        string FieldPath<TValue>(Expression<Func<CinemachineFreeLook, TValue>> expr) => ReflectionHelpers.GetFieldPath(expr);
+        
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -74,16 +78,16 @@ namespace Cinemachine
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
-            DrawPropertyInInspector(FindProperty(x => x.m_Lens));
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawNonExcludedTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.m_CommonLens));
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
             DrawRemainingPropertiesInInspector();
 
             // Orbits
             EditorGUI.BeginChangeCheck();
-            SerializedProperty orbits = FindProperty(x => x.m_Orbits);
+            SerializedProperty orbits = serializedObject.FindProperty(() => Target.m_Orbits);
             for (int i = 0; i < CinemachineFreeLook.RigNames.Length; ++i)
             {
                 Rect rect = EditorGUILayout.GetControlRect(true);

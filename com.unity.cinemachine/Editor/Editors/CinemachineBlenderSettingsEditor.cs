@@ -6,8 +6,10 @@ using System.Collections.Generic;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlenderSettings))]
-    class CinemachineBlenderSettingsEditor : BaseEditor<CinemachineBlenderSettings>
+    class CinemachineBlenderSettingsEditor : UnityEditor.Editor
     {
+        CinemachineBlenderSettings Target => target as CinemachineBlenderSettings;
+
         ReorderableList m_BlendList;
         const string k_NoneLabel = "(none)";
         string[] m_CameraCandidates;
@@ -22,21 +24,12 @@ namespace Cinemachine.Editor
         public GetAllVirtualCamerasDelegate GetAllVirtualCameras;
         public delegate void GetAllVirtualCamerasDelegate(List<CinemachineVirtualCameraBase> list);
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.CustomBlends));
-        }
-
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
+
             if (m_BlendList == null)
                 SetupBlendList();
-
-            DrawRemainingPropertiesInInspector();
 
             UpdateCameraCandidates();
             m_BlendList.DoLayoutList();

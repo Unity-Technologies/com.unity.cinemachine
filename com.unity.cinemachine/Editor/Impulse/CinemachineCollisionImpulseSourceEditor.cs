@@ -5,17 +5,19 @@ namespace Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineCollisionImpulseSource))]
-    class CinemachineCollisionImpulseSourceEditor : BaseEditor<CinemachineCollisionImpulseSource>
+    class CinemachineCollisionImpulseSourceEditor : UnityEditor.Editor
     {
+        CinemachineCollisionImpulseSource Target => target as CinemachineCollisionImpulseSource;
+
         float m_TestForce = 1;
-        GUIContent m_TestButton = new GUIContent(
+        GUIContent m_TestButton = new (
             "Invoke", "Play-mode only: Generate an impulse with the default velocity scaled by this amount");
-        GUIContent m_TestLabel = new GUIContent(
+        GUIContent m_TestLabel = new (
             "Test with Force", "Generate an impulse with the default velocity scaled by an amount");
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
 
             EditorGUILayout.Separator();
             Target.TryGetComponent<Collider>(out var collider);
@@ -26,7 +28,16 @@ namespace Cinemachine.Editor
                         + "collisions and generate Impulse events",
                     MessageType.Warning);
 
-            DrawRemainingPropertiesInInspector();
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ImpulseDefinition));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultVelocity));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.LayerMask));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.IgnoreTag));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.UseImpactDirection));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ScaleImpactWithMass));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ScaleImpactWithSpeed));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
             GUI.enabled = EditorApplication.isPlaying;
