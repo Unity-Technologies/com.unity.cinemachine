@@ -567,7 +567,7 @@ namespace Cinemachine
         /// <summary>
         /// Collection of modifiers that will be applied to the camera every frame.
         /// </summary>
-        [SerializeReference] [NoSaveDuringPlay] public List<Modifier> Modifiers = new List<Modifier>();
+        [SerializeReference] [NoSaveDuringPlay] public List<Modifier> Modifiers = new ();
 
         IModifierValueSource m_ValueSource;
         float m_CurrentValue;
@@ -577,7 +577,7 @@ namespace Cinemachine
         {
             var vcam = ComponentOwner;
             for (int i = 0; i < Modifiers.Count; ++i)
-                Modifiers[i].Validate(vcam);
+                Modifiers[i]?.Validate(vcam);
         }
 
         /// <summary>Called when component is enabled</summary>
@@ -599,7 +599,7 @@ namespace Cinemachine
             var vcam = ComponentOwner;
             TryGetVcamComponent(vcam, out m_ValueSource);
             for (int i = 0; i < Modifiers.Count; ++i)
-                Modifiers[i].RefreshCache(vcam);
+                Modifiers[i]?.RefreshCache(vcam);
         }
 
         // Needed by inspector
@@ -632,7 +632,7 @@ namespace Cinemachine
                 var sign = Mathf.Sign(v);
                 m_CurrentValue = sign * s_EasingCurve.Evaluate(sign * v);
                 for (int i = 0; i < Modifiers.Count; ++i)
-                    Modifiers[i].BeforePipeline(vcam, ref curState, deltaTime, m_CurrentValue);
+                    Modifiers[i]?.BeforePipeline(vcam, ref curState, deltaTime, m_CurrentValue);
             }
         }
             
@@ -650,7 +650,7 @@ namespace Cinemachine
             if (m_ValueSource != null && stage == CinemachineCore.Stage.Finalize && vcam == ComponentOwner)
             {
                 for (int i = 0; i < Modifiers.Count; ++i)
-                    Modifiers[i].AfterPipeline(vcam, ref state, deltaTime, m_CurrentValue);
+                    Modifiers[i]?.AfterPipeline(vcam, ref state, deltaTime, m_CurrentValue);
             }
         }
     }

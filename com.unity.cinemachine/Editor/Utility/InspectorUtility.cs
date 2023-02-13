@@ -345,6 +345,8 @@ namespace Cinemachine.Editor
 
         public static string GetAssignableBehaviourNames(Type inputType)
         {
+            if (inputType == null)
+                return "(none)";
             if (!s_AssignableTypes.ContainsKey(inputType))
             {
                 var allSources = ReflectionHelpers.GetTypesInAllDependentAssemblies(
