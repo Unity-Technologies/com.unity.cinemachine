@@ -8,8 +8,10 @@ using UnityEditor.Timeline;
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineShot))]
-    sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
+    class CinemachineShotEditor : UnityEditor.Editor
     {
+        CinemachineShot Target => target as CinemachineShot;
+
         [InitializeOnLoad]
         class SyncCacheEnabledSetting
         {
@@ -32,16 +34,8 @@ namespace Cinemachine.Editor
             return vcam;
         }
 
-        readonly GUIContent s_CmCameraLabel = new GUIContent("CinemachineCamera", "The Cinemachine camera to use for this shot");
-        readonly GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
-
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.VirtualCamera));
-        }
+        readonly GUIContent s_CmCameraLabel = new ("CinemachineCamera", "The Cinemachine camera to use for this shot");
+        readonly GUIContent m_ClearText = new ("Clear", "Clear the target position scrubbing cache");
 
         void OnDisable()
         {
@@ -55,8 +49,8 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
-            SerializedProperty vcamProperty = FindProperty(x => x.VirtualCamera);
+            serializedObject.Update();
+
             EditorGUI.indentLevel = 0; // otherwise subeditor layouts get screwed up
 
             CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value = EditorGUILayout.Toggle(
@@ -83,6 +77,7 @@ namespace Cinemachine.Editor
             GUI.enabled = true;
 
             EditorGUILayout.Space();
+            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
             CinemachineVirtualCameraBase vcam
                 = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
             if (vcam != null)
@@ -106,8 +101,11 @@ namespace Cinemachine.Editor
             }
 
             EditorGUI.BeginChangeCheck();
-            DrawRemainingPropertiesInInspector();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DisplayName));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
+            EditorGUI.BeginChangeCheck();
             if (vcam != null)
                 DrawSubeditors(vcam);
 

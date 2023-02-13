@@ -10,12 +10,6 @@ using System.Reflection;
 using UnityEngine.InputSystem;
 #endif
 
-#if CINEMACHINE_HDRP
-    using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_URP
-    using UnityEngine.Rendering.Universal;
-#endif
-
 namespace Cinemachine.Editor
 {
     /// <summary>
@@ -23,18 +17,15 @@ namespace Cinemachine.Editor
     /// Handles drawing the header and the basic properties.
     /// </summary>
     /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
-    class CinemachineVirtualCameraBaseEditor<T> : BaseEditor<T> where T : CinemachineVirtualCameraBase
-    {    
+    class CinemachineVirtualCameraBaseEditor<T> : UnityEditor.Editor where T : CinemachineVirtualCameraBase
+    {
+        protected T Target => target as T;
+
         static GUIContent s_AddExtensionLabel = new ("Add Extension", "Add a Cinemachine Extension behaviour");
 
         static Type[] sExtensionTypes;  // First entry is null
         static string[] sExtensionNames;
         bool IsPrefabBase { get; set; }
-
-        /// <summary>Obsolete, do not use.  Use the overload, which is more performant</summary>
-        /// <returns>List of property names to exclude</returns>
-        protected override List<string> GetExcludedPropertiesInInspector() 
-            { return base.GetExcludedPropertiesInInspector(); }
 
         /// <summary>Update state information on undo/redo</summary>
         void UpdateCameraState() 
@@ -84,12 +75,26 @@ namespace Cinemachine.Editor
             }
         }
 
+        protected virtual void DrawStandardInspectorTopSection()
+        {
+            DrawCameraStatusInInspector();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
+
+            DrawGlobalControlsInInspector();
+        }
+        
+/* GML DO NOT COMMIT
         /// <summary>Create the contents of the inspector panel.
         /// This implementation draws header and Extensions widget, and uses default algorithms 
         /// to draw the properties in the inspector</summary>
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
             UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
@@ -97,13 +102,9 @@ namespace Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
             DrawExtensionsWidgetInInspector();
         }
+*/
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        static GUIContent s_InputProviderAddLabel = new GUIContent("Add Input Provider", 
-            "Adds CinemachineInputProvider component to this vcam, "
-            + "if it does not have one, enabling the vcam to read input from Input Actions. "
-            + "By default, a simple mouse XY input action is added.");
-
         /// <summary>
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
         /// Does nothing if Input package not installed.
@@ -152,60 +153,25 @@ namespace Cinemachine.Editor
 #endif
 
         /// <summary>
-        /// Draw the LookAt and Follow targets in the inspector
-        /// </summary>
-        /// <param name="followTarget">Follow target SerializedProperty</param>
-        /// <param name="lookAtTarget">LookAt target SerializedProperty</param>
-        protected void DrawTargetsInInspector(
-            SerializedProperty followTarget, SerializedProperty lookAtTarget)
-        {
-            EditorGUI.BeginChangeCheck();
-            if (!IsPropertyExcluded(followTarget.name))
-            {
-                if (Target.ParentCamera == null || Target.ParentCamera.Follow == null)
-                    EditorGUILayout.PropertyField(followTarget);
-                else
-                    EditorGUILayout.PropertyField(followTarget,
-                        new GUIContent(followTarget.displayName + " Override"));
-                ExcludeProperty(followTarget.name);
-            }
-            if (!IsPropertyExcluded(lookAtTarget.name))
-            {
-                if (Target.ParentCamera == null || Target.ParentCamera.LookAt == null)
-                    EditorGUILayout.PropertyField(lookAtTarget);
-                else
-                    EditorGUILayout.PropertyField(lookAtTarget,
-                        new GUIContent(lookAtTarget.displayName + " Override"));
-                ExcludeProperty(lookAtTarget.name);
-            }
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-        }
-
-        /// <summary>
         /// Draw the Extensions dropdown in the inspector
         /// </summary>
         protected void DrawExtensionsWidgetInInspector()
         {
-            if (!IsPropertyExcluded("Extensions"))
-            {
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("Extensions", EditorStyles.boldLabel);
-                Rect rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                rect = EditorGUI.PrefixLabel(rect, s_AddExtensionLabel);
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Extensions", EditorStyles.boldLabel);
+            Rect rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
+            rect = EditorGUI.PrefixLabel(rect, s_AddExtensionLabel);
 
-                int selection = EditorGUI.Popup(rect, 0, sExtensionNames);
-                if (selection > 0)
+            int selection = EditorGUI.Popup(rect, 0, sExtensionNames);
+            if (selection > 0)
+            {
+                Type extType = sExtensionTypes[selection];
+                for (int i = 0; i < targets.Length; i++)
                 {
-                    Type extType = sExtensionTypes[selection];
-                    for (int i = 0; i < targets.Length; i++)
-                    {
-                        var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject;
-                        if (targetGO != null && targetGO.GetComponent(extType) == null)
-                            Undo.AddComponent(targetGO, extType);
-                    }
+                    var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject;
+                    if (targetGO != null && targetGO.GetComponent(extType) == null)
+                        Undo.AddComponent(targetGO, extType);
                 }
-                ExcludeProperty("Extensions");
             }
         }
 

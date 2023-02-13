@@ -5,16 +5,19 @@ namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBasicMultiChannelPerlin))]
     [CanEditMultipleObjects]
-    class CinemachineBasicMultiChannelPerlinEditor : BaseEditor<CinemachineBasicMultiChannelPerlin>
+    class CinemachineBasicMultiChannelPerlinEditor : UnityEditor.Editor
     {
-        private void OnEnable()
+        CinemachineBasicMultiChannelPerlin Target => target as CinemachineBasicMultiChannelPerlin;
+
+        void OnEnable()
         {
             NoiseSettingsPropertyDrawer.InvalidateProfileList();
         }
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
+
             CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
             bool needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)
@@ -23,9 +26,16 @@ namespace Cinemachine.Editor
                 EditorGUILayout.HelpBox(
                     "A Noise Profile is required.  You may choose from among the NoiseSettings assets defined in the project.",
                     MessageType.Warning);
-            DrawRemainingPropertiesInInspector();
 
-            Rect rect = EditorGUILayout.GetControlRect(true);
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.NoiseProfile));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.PivotOffset));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.AmplitudeGain));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.FrequencyGain));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
+
+            var rect = EditorGUILayout.GetControlRect(true);
             rect.width -= EditorGUIUtility.labelWidth; rect.x += EditorGUIUtility.labelWidth;
             if (GUI.Button(rect, "New random seed"))
             {

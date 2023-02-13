@@ -23,15 +23,6 @@ namespace Cinemachine.Editor
         string[] m_CameraCandidates;
         Dictionary<CinemachineVirtualCameraBase, int> m_CameraIndexLookup;
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.CustomBlends));
-            excluded.Add(FieldPath(x => x.Instructions));
-        }
-
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -58,26 +49,26 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
             if (m_InstructionList == null)
                 SetupInstructionList();
 
             if (Target.AnimatedTarget == null)
                 EditorGUILayout.HelpBox("An Animated Target is required", MessageType.Warning);
 
-            // Ordinary properties
-            DrawCameraStatusInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
-            DrawPropertyInInspector(FindProperty(x => x.AnimatedTarget));
+            DrawStandardInspectorTopSection();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             // Layer index
             EditorGUI.BeginChangeCheck();
             UpdateTargetStates();
             UpdateCameraCandidates();
-            SerializedProperty layerProp = FindAndExcludeProperty(x => x.LayerIndex);
+            var layerProp = serializedObject.FindProperty(() => Target.LayerIndex);
             int currentLayer = layerProp.intValue;
             int layerSelection = EditorGUILayout.Popup("Layer", currentLayer, m_LayerNames);
             if (currentLayer != layerSelection)
@@ -88,11 +79,14 @@ namespace Cinemachine.Editor
                 Target.ValidateInstructions();
             }
 
-            DrawRemainingPropertiesInInspector();
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             // Blends
             m_BlendsEditor.DrawEditorCombo(
-                FindProperty(x => x.CustomBlends),
+                serializedObject.FindProperty(() => Target.CustomBlends),
                 "Create New Blender Asset",
                 Target.gameObject.name + " Blends", "asset", string.Empty, false);
 
@@ -103,7 +97,7 @@ namespace Cinemachine.Editor
 
             // vcam children
             EditorGUILayout.Separator();
-            if (m_ChildListHelper.OnInspectorGUI(FindProperty(x => x.m_ChildCameras)))
+            if (m_ChildListHelper.OnInspectorGUI(serializedObject.FindProperty(() => Target.m_ChildCameras)))
                 Target.ValidateInstructions();
             if (EditorGUI.EndChangeCheck()) 
                 serializedObject.ApplyModifiedProperties();

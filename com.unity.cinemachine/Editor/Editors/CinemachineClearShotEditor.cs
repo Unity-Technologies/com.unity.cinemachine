@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
+            serializedObject.Update();
 
             m_EvaluatorState = GetEvaluatorState();
             switch (m_EvaluatorState)
@@ -80,22 +80,26 @@ namespace Cinemachine.Editor
 
             var children = Target.ChildCameras; // force the child cache to rebuild
 
-            DrawCameraStatusInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawGlobalControlsInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.DefaultTarget));
-            DrawRemainingPropertiesInInspector();
+            DrawStandardInspectorTopSection();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ActivateAfter));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.MinDuration));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.RandomizeChoice));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             // Blends
             m_BlendsEditor.DrawEditorCombo(
-                FindProperty(x => x.CustomBlends),
+                serializedObject.FindProperty(() => Target.CustomBlends),
                 "Create New Blender Asset",
                 Target.gameObject.name + " Blends", "asset", string.Empty, false);
 
             // vcam children
             EditorGUILayout.Separator();
-            m_ChildListHelper.OnInspectorGUI(FindProperty(x => x.m_ChildCameras));
+            m_ChildListHelper.OnInspectorGUI(serializedObject.FindProperty(() => Target.m_ChildCameras));
 
             // Extensions
             DrawExtensionsWidgetInInspector();

@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
-    class CinemachineVirtualCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
+    class CinemachineVirtualCameraEditor : CinemachineLegacyVcamBaseEditor<CinemachineVirtualCamera>
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
@@ -149,17 +149,17 @@ namespace Cinemachine.Editor
                 return;
             }
             BeginInspector();
-            DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.m_Lens));
+            DrawNonExcludedHeaderInInspector();
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawNonExcludedTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
             DrawRemainingPropertiesInInspector();
             m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
-            DrawExtensionsWidgetInInspector();
+            DrawNonExcludedExtensionsWidgetInInspector();
         }
 
-        void DrawHeaderInInspector()
+        void DrawNonExcludedHeaderInInspector()
         {
             if (!IsPropertyExcluded("Header"))
             {
@@ -168,6 +168,15 @@ namespace Cinemachine.Editor
                 DrawGlobalControlsInInspector();
                 DrawInputProviderButtonInInspector();
                 ExcludeProperty("Header");
+            }
+        }
+        
+        protected void DrawNonExcludedExtensionsWidgetInInspector()
+        {
+            if (!IsPropertyExcluded("Extensions"))
+            {
+                DrawExtensionsWidgetInInspector();
+                ExcludeProperty("Extensions");
             }
         }
         
@@ -294,18 +303,14 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineVirtualCamera))]
-        internal static void DrawVirtualCameraGizmos(CinemachineVirtualCamera vcam, GizmoType selectionType)
+        static void DrawVirtualCameraGizmos(CinemachineVirtualCamera vcam, GizmoType selectionType)
         {
             var pipeline = vcam.GetComponentPipeline();
             if (pipeline != null)
             {
                 foreach (var c in pipeline)
                 {
-                    if (c == null)
-                        continue;
-
-                    MethodInfo method;
-                    if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
+                    if (c != null && CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out var method))
                     {
                         if (method != null)
                             method.Invoke(null, new object[] {c, selectionType});
