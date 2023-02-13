@@ -164,7 +164,7 @@ namespace Cinemachine
                     var index = name.LastIndexOf("Modifier", StringComparison.OrdinalIgnoreCase);
                     if (index >= 0)
                         name = name.Remove(index);
-                    s_ModifierNames.Add(name);
+                    s_ModifierNames.Add(InspectorUtility.NicifyClassName(name));
                 }
             }
         }
