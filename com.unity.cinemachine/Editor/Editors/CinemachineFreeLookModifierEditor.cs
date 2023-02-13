@@ -55,9 +55,8 @@ namespace Cinemachine
                         }, 
                         (status) =>
                         {
-                            // Add selected item if not already present
-                            bool gotIt = false;
-                            for (int m = 0; !gotIt && m < Target.Modifiers.Count; ++m)
+                            // Enable item if not already present
+                            for (int m = 0; m < Target.Modifiers.Count; ++m)
                                 if (Target.Modifiers[m] != null && Target.Modifiers[m].GetType() == type)
                                     return DropdownMenuAction.Status.Disabled;
                             return DropdownMenuAction.Status.Normal;
