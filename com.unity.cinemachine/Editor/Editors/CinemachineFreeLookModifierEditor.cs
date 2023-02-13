@@ -24,10 +24,8 @@ namespace Cinemachine
                         typeof(CinemachineFreeLookModifier.IModifierValueSource)), 
                     HelpBoxMessageType.Warning));
 
-            var mainContainer = ux.AddChild(new VisualElement());
-
-            mainContainer.AddHeader("Modifiers");
-            var list = mainContainer.AddChild(new ListView()
+            ux.AddHeader("Modifiers");
+            var list = ux.AddChild(new ListView()
             {
                 reorderable = true,
                 showAddRemoveFooter = true,
@@ -39,6 +37,7 @@ namespace Cinemachine
             var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
             list.BindProperty(controllersProperty);
 
+            // Convert the add button to a popup selector
             var button = list.Q<Button>("unity-list-view__add-button");
             var manipulator = new ContextualMenuManipulator((evt) => 
             {
@@ -55,14 +54,14 @@ namespace Cinemachine
                             Target.Modifiers.Add(m);
                         }, 
                         (status) =>
-                    {
-                        // Add selected item if not already present
-                        bool gotIt = false;
-                        for (int m = 0; !gotIt && m < Target.Modifiers.Count; ++m)
-                            if (Target.Modifiers[m] != null && Target.Modifiers[m].GetType() == type)
-                                return DropdownMenuAction.Status.Disabled;
-                        return DropdownMenuAction.Status.Normal;
-                    });
+                        {
+                            // Add selected item if not already present
+                            bool gotIt = false;
+                            for (int m = 0; !gotIt && m < Target.Modifiers.Count; ++m)
+                                if (Target.Modifiers[m] != null && Target.Modifiers[m].GetType() == type)
+                                    return DropdownMenuAction.Status.Disabled;
+                            return DropdownMenuAction.Status.Normal;
+                        });
                 }
             });
             manipulator.activators.Clear();
@@ -72,14 +71,7 @@ namespace Cinemachine
 
             TrackSourceValidity();
             ux.schedule.Execute(TrackSourceValidity).Every(250); // GML todo: is there a better way to do this?
-            void TrackSourceValidity() 
-            {
-                if (Target == null)
-                    return; // target deleted
-                bool valid = Target.HasValueSource();
-                mainContainer.SetVisible(valid);
-                invalidSrcMsg.SetVisible(!valid);
-            }
+            void TrackSourceValidity() => invalidSrcMsg.SetVisible(Target != null && !Target.HasValueSource());
 
             return ux;
         }
