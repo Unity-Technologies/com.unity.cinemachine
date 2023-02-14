@@ -566,7 +566,9 @@ namespace Cinemachine
 
         /// <summary>
         /// Collection of modifiers that will be applied to the camera every frame.
+        /// These will modify settings as a function of the FreeLook's Vertical axis value.
         /// </summary>
+        [Tooltip("These will modify settings as a function of the FreeLook's Vertical axis value")]
         [SerializeReference] [NoSaveDuringPlay] public List<Modifier> Modifiers = new ();
 
         IModifierValueSource m_ValueSource;

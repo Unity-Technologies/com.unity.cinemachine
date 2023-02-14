@@ -24,7 +24,8 @@ namespace Cinemachine
                         typeof(CinemachineFreeLookModifier.IModifierValueSource)), 
                     HelpBoxMessageType.Warning));
 
-            //ux.AddHeader("Modifiers");
+            var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
+            ux.Add(new Label("Modifiers") { tooltip = controllersProperty.tooltip });
             var list = ux.AddChild(new ListView()
             {
                 reorderable = true,
@@ -34,7 +35,6 @@ namespace Cinemachine
                 showFoldoutHeader = false,
                 virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
             });
-            var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
             list.BindProperty(controllersProperty);
 
             // Convert the add button to a popup selector
