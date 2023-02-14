@@ -25,7 +25,7 @@ namespace Cinemachine
                     HelpBoxMessageType.Warning));
 
             var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
-            ux.Add(new Label("Modifiers") { tooltip = controllersProperty.tooltip });
+            ux.Add(new Label(controllersProperty.displayName) { tooltip = controllersProperty.tooltip });
             var list = ux.AddChild(new ListView()
             {
                 reorderable = true,
