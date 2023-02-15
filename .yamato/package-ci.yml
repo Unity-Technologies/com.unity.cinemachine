@@ -66,17 +66,10 @@ all_trigger:
     {% for test_project in all_testprojects %}
       {% for editor in test_project.editors %}
       - .yamato/project-test.yml#test_ubuntu_{{editor}}_{{test_project.name}}
-        {% endfor %}
-      {% endfor %}
-      { % for test_project in all_testprojects % }
-      { % for editor in test_project.editors % }
       - .yamato/project-test.yml#test_windows_{{editor}}_{{test_project.name}}
-        {% endfor %}
-      { % endfor % }
-      { % for editor in test_project.editors % }
       - .yamato/project-test.yml#test_macos_{{editor}}_{{test_project.name}}
-        {% endfor %}
-      { % endfor % }
+      {% endfor %}
+      {% endfor %}
       
       {% for test_name in all_configurations.nightly.test_names %}
       {% for test in all_tests %}
