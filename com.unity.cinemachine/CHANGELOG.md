@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - URP: add temporal effects reset on camera cut.
 - Add Weight setting to CinemachinePostProcessing and CinemachineVolumeSettings.
 - GroupFraming also works on LookAt target.
-- Split screen sample.
+- Several new Sample scenes were added.
 
 ### Changed
 
