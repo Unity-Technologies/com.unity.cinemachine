@@ -51,8 +51,7 @@ namespace Cinemachine
             public float Gain;
 
             /// <summary>The actual action, resolved for player</summary>
-            [HideInInspector]
-            public InputAction m_CachedAction;
+            internal InputAction m_CachedAction;
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
@@ -256,6 +255,23 @@ namespace Cinemachine
 
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
+        
+        /// <summary>
+        /// Definition of how we read input. Override this in your child classes to specify
+        /// the InputAction's type to read.
+        /// </summary>
+        /// <param name="action">The action being read.</param>
+        /// <param name="hint">The axis hint of the action.</param>
+        /// <returns>Returns the value of the input device.</returns>
+        protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
+        {
+            switch (hint)
+            {
+                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
+                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
+                default: return action.ReadValue<float>();
+            }
+        }
 
         static float ReadLegacyInput(string axisName)
         {
@@ -275,7 +291,7 @@ namespace Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        protected virtual float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
+        float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
         {
             ResolveActionForPlayer(c, PlayerIndex);
 
@@ -288,19 +304,10 @@ namespace Cinemachine
                     c.m_CachedAction.Disable();
             }
 
-            if (c.m_CachedAction != null)
-            {
-                switch (hint)
-                {
-                    case IInputAxisSource.AxisDescriptor.Hints.X: return c.m_CachedAction.ReadValue<Vector2>().x;
-                    case IInputAxisSource.AxisDescriptor.Hints.Y: return c.m_CachedAction.ReadValue<Vector2>().y;
-                    default: return c.m_CachedAction.ReadValue<float>();
-                }
-            }
-            return 0;
+            return c.m_CachedAction != null ? ReadInput(c.m_CachedAction, hint) : 0f;
         }
 
-        protected void ResolveActionForPlayer(Controller c, int playerIndex)
+        void ResolveActionForPlayer(Controller c, int playerIndex)
         {
             if (c.m_CachedAction != null && c.InputAction.action.id != c.m_CachedAction.id)
                 c.m_CachedAction = null;
