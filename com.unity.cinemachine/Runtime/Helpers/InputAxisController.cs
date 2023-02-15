@@ -51,7 +51,8 @@ namespace Cinemachine
             public float Gain;
 
             /// <summary>The actual action, resolved for player</summary>
-            internal InputAction m_CachedAction;
+            [HideInInspector]
+            public InputAction m_CachedAction;
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
@@ -274,7 +275,7 @@ namespace Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-        float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
+        protected virtual float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
         {
             ResolveActionForPlayer(c, PlayerIndex);
 
@@ -299,7 +300,7 @@ namespace Cinemachine
             return 0;
         }
 
-        void ResolveActionForPlayer(Controller c, int playerIndex)
+        protected void ResolveActionForPlayer(Controller c, int playerIndex)
         {
             if (c.m_CachedAction != null && c.InputAction.action.id != c.m_CachedAction.id)
                 c.m_CachedAction = null;
