@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
 
         void UpdateControllersStatus()
         {
-            if (Target != null && !Target.ConrollersAreValid())
+            if (Target != null && !Target.ControllersAreValid())
             {
                 Undo.RecordObject(Target, "SynchronizeControllers");
                 Target.SynchronizeControllers();

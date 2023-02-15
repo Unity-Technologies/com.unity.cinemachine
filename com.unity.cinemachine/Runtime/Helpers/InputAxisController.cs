@@ -128,7 +128,7 @@ namespace Cinemachine
 
 #if UNITY_EDITOR
         static List<IInputAxisSource> s_AxisTargetsCache = new List<IInputAxisSource>();
-        internal bool ConrollersAreValid()
+        internal bool ControllersAreValid()
         {
             s_AxisTargetsCache.Clear();
             GetComponentsInChildren(s_AxisTargetsCache);
