@@ -256,23 +256,6 @@ namespace Cinemachine
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
         
-        /// <summary>
-        /// Definition of how we read input. Override this in your child classes to specify
-        /// the InputAction's type to read.
-        /// </summary>
-        /// <param name="action">The action being read.</param>
-        /// <param name="hint">The axis hint of the action.</param>
-        /// <returns>Returns the value of the input device.</returns>
-        protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
-        {
-            switch (hint)
-            {
-                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
-                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
-                default: return action.ReadValue<float>();
-            }
-        }
-
         static float ReadLegacyInput(string axisName)
         {
             float value = 0;
@@ -291,6 +274,23 @@ namespace Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
+        /// <summary>
+        /// Definition of how we read input. Override this in your child classes to specify
+        /// the InputAction's type to read if it is different from Vector2.
+        /// </summary>
+        /// <param name="action">The action being read.</param>
+        /// <param name="hint">The axis hint of the action.</param>
+        /// <returns>Returns the value of the input device.</returns>
+        protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
+        {
+            switch (hint)
+            {
+                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
+                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
+                default: return action.ReadValue<float>();
+            }
+        }
+        
         float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
         {
             ResolveActionForPlayer(c, PlayerIndex);
