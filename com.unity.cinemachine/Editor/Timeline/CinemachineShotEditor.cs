@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
-using UnityEditor.Timeline;
 
 namespace Cinemachine.Editor
 {
@@ -36,33 +35,21 @@ namespace Cinemachine.Editor
             return vcam;
         }
 
-#if true // UITK VERSION - still not working
-        List<InspectorElement> m_Foldouts = new();
+#if CINEMACHINE_TIMELINE_1_8_2
+        List<Foldout> m_Foldouts = new();
         List<UnityEngine.Object> m_EmbeddedTargets = new();
         VisualElement m_ParentElement;
+        VisualElement m_CreateButton;
 
+        SerializedProperty m_vcamProperty;
         CinemachineVirtualCameraBase m_CachedReferenceObject;
         List<MonoBehaviour> m_ComponentsCache = new();
         static Dictionary<System.Type, bool> s_EditorExpanded = new();
 
         readonly GUIContent s_CmCameraLabel = new ("Cinemachine Camera", "The Cinemachine camera to use for this shot");
 
-        void OnEnable() 
-        {
-Debug.Log($"Frame {Time.frameCount}: CinemachineShotEditor.OnEnable");
-            Undo.undoRedoPerformed -= UpdateComponentEditors;
-            Undo.undoRedoPerformed += UpdateComponentEditors;
-        }
-
-        void OnDisable()
-        {
-Debug.Log($"Frame {Time.frameCount}: CinemachineShotEditor.OnDisable");
-            Undo.undoRedoPerformed -= UpdateComponentEditors;
-        }
-
         public override VisualElement CreateInspectorGUI()
         {
-Debug.Log($"Frame {Time.frameCount}: Creating Shot Inspector");
             m_ParentElement = new VisualElement();
 
             // Auto-create shots
@@ -103,7 +90,7 @@ Debug.Log($"Frame {Time.frameCount}: Creating Shot Inspector");
 
             // Camera Reference - we do it in IMGUI until the ExposedReference UITK bugs are fixed
             m_ParentElement.AddSpace();
-            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
+            m_vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
             row = m_ParentElement.AddChild(new InspectorUtility.LeftRightContainer());
             row.Left.AddChild(new Label(s_CmCameraLabel.text) 
             { 
@@ -113,14 +100,14 @@ Debug.Log($"Frame {Time.frameCount}: Creating Shot Inspector");
             row.Right.Add(new IMGUIContainer(() =>
             {
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(vcamProperty, GUIContent.none);
+                EditorGUILayout.PropertyField(m_vcamProperty, GUIContent.none);
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
-            }) { style = { flexGrow = 1 }} );
-            var newButton = row.Right.AddChild(new Button(() => 
+            }) { style = { flexGrow = 1, marginBottom = 2 }} );
+            m_CreateButton = row.Right.AddChild(new Button(() => 
             {
-                vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
-                vcamProperty.serializedObject.ApplyModifiedProperties();
+                m_vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
+                m_vcamProperty.serializedObject.ApplyModifiedProperties();
             })
             {
                 text = "Create",
@@ -128,29 +115,24 @@ Debug.Log($"Frame {Time.frameCount}: Creating Shot Inspector");
                 style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5 }
             });
 
-            OnVcamChanged(vcamProperty);
-            m_ParentElement.TrackPropertyValue(vcamProperty, OnVcamChanged);
-            void OnVcamChanged(SerializedProperty p)
-            {
-                newButton.SetVisible(p.exposedReferenceValue as CinemachineVirtualCameraBase == null);
-            }
-
             // Display name
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
 
-            UpdateComponentEditors();
+            // This timer is required because with the current implementation of ExposedReference 
+            // it is not possible to track property changes or monitor Undo.
+            // GML todo: remove when UITK ExposedReference bugs are fixed.
+            m_ParentElement.schedule.Execute(UpdateComponentEditors).Every(250); 
+
             return m_ParentElement;
         }
 
         void UpdateComponentEditors()
         {
-Debug.Log($"Frame {Time.frameCount}: UpdateComponentEditors");
             if (m_ParentElement == null || serializedObject == null)
                 return;
 
-Debug.Log($"Frame {Time.frameCount}: Real UpdateComponentEditors");
-            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera); 
-            var vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
+            m_CreateButton.SetVisible(m_vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
+            var vcam = m_vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
             UpdateEmbeddedTargets(vcam);
             if (m_CachedReferenceObject != vcam || m_Foldouts.Count != m_EmbeddedTargets.Count)
             {
@@ -160,41 +142,55 @@ Debug.Log($"Frame {Time.frameCount}: Real UpdateComponentEditors");
                 m_Foldouts.Clear();
 
                 // Add new foldouts
+                var borderColor = new Color(0.4f, 0.4f, 0.4f, 1);
                 foreach (var t in m_EmbeddedTargets)
                 {
                     var type = t.GetType();
                     if (!s_EditorExpanded.TryGetValue(type, out var expanded))
-                        expanded = false;
-                    var f = new Foldout { text = type.Name, value = expanded, style = { unityFontStyleAndWeight = FontStyle.Bold }};
+                        expanded = true;
+                    var f = new Foldout 
+                    { 
+                        text = type.Name, 
+                        value = expanded, 
+                        style = 
+                        { 
+                            unityFontStyleAndWeight = FontStyle.Bold, 
+                            marginTop = 4, 
+                            borderTopWidth = 1, 
+                            borderTopColor = borderColor
+                        }
+                    };
                     f.Add(new InspectorElement(t) { style = { paddingLeft = 0, unityFontStyleAndWeight = FontStyle.Normal }});
-                    f.RegisterValueChangedCallback((evt) =>
+                    f.RegisterValueChangedCallback((evt) => 
                     {
                         if (evt.target == f)
                             s_EditorExpanded[type] = evt.newValue;
                     });
-                    f.SetVisible((t.hideFlags & HideFlags.HideInInspector) != 0);
 
+                    m_Foldouts.Add(f);
                     m_ParentElement.Add(f);
                 }
                 m_CachedReferenceObject = vcam;
             }
         }
 
-        void UpdateEmbeddedTargets(CinemachineVirtualCameraBase obj)
+        void UpdateEmbeddedTargets(CinemachineVirtualCameraBase vcam)
         {
             m_ComponentsCache.Clear();
-            if (obj != null)
-                obj.GetComponents(m_ComponentsCache);
-            if (m_ComponentsCache.Count != m_EmbeddedTargets.Count)
-            {
+            if (vcam == null)
                 m_EmbeddedTargets.Clear();
-                m_EmbeddedTargets.Add(obj.transform);
-                for (int i = 0; i < m_ComponentsCache.Count; ++i)
-                    if (m_ComponentsCache[i] != obj)
+            else
+            {
+                vcam.GetComponents(m_ComponentsCache);
+                if (m_ComponentsCache.Count + 1 != m_EmbeddedTargets.Count)
+                {
+                    m_EmbeddedTargets.Clear();
+                    m_EmbeddedTargets.Add(vcam.transform);
+                    for (int i = 0; i < m_ComponentsCache.Count; ++i)
                         m_EmbeddedTargets.Add(m_ComponentsCache[i]);
+                }
             }
-        }
-    
+        }    
 
 #else // IMGUI VERSION
         readonly GUIContent s_CmCameraLabel = new ("CinemachineCamera", "The Cinemachine camera to use for this shot");
@@ -270,7 +266,7 @@ Debug.Log($"Frame {Time.frameCount}: Real UpdateComponentEditors");
             // this prevents flicker on post processing updates
             if (EditorGUI.EndChangeCheck())
             {
-                TimelineEditor.Refresh(RefreshReason.SceneNeedsUpdate);
+                UnityEditor.Timeline.TimelineEditor.Refresh(UnityEditor.Timeline.RefreshReason.SceneNeedsUpdate);
                 GUI.changed = false;
             }
         }
