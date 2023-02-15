@@ -213,7 +213,7 @@ namespace Cinemachine
             }
         }
 
-        public virtual void CreateDefaultControlForAxis(int axisIndex, Controller controller)
+        protected virtual void CreateDefaultControlForAxis(int axisIndex, Controller controller)
         { 
             SetControlDefaults?.Invoke(m_Axes[axisIndex], ref controller);
         }
