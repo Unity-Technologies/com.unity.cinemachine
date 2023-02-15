@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(InputAxisController))]
+    [CustomEditor(typeof(InputAxisController), true)]
     class InputAxisControllerEditor : UnityEditor.Editor
     {
         InputAxisController Target => target as InputAxisController;
@@ -57,7 +57,7 @@ namespace Cinemachine.Editor
 
             return ux;
         }
-
+        
         [InitializeOnLoad]
         class DefaultControlInitializer
         {

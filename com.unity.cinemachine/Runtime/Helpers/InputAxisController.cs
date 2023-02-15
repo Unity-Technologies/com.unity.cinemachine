@@ -171,7 +171,21 @@ namespace Cinemachine
                 {
                     int controllerIndex = GetControllerIndex(Controllers, t, m_Axes[i].Name);
                     if (controllerIndex < 0)
-                        newControllers.Add(CreateDefaultControlForAxis(i, t));
+                    {
+                        newControllers.Add(CreateDefaultController(i, t));
+                        
+                        Controller CreateDefaultController(int axisIndex, IInputAxisSource owner)
+                        {
+                            var c = new Controller 
+                            {
+                                Enabled = true,
+                                Name = m_Axes[axisIndex].Name,
+                                Owner = owner as UnityEngine.Object,
+                            };
+                            CreateDefaultControlForAxis(i, c);
+                            return c;
+                        }
+                    }
                     else
                     {
                         newControllers.Add(Controllers[controllerIndex]);
@@ -197,6 +211,11 @@ namespace Cinemachine
                         return i;
                 return -1;
             }
+        }
+
+        public virtual void CreateDefaultControlForAxis(int axisIndex, Controller controller)
+        { 
+            SetControlDefaults?.Invoke(m_Axes[axisIndex], ref controller);
         }
 
         void OnResetInput()
@@ -236,18 +255,6 @@ namespace Cinemachine
                 c.Driver.ProcessInput(deltaTime, ref m_Axes[i].DrivenAxis(), ref c.Control);
                 gotInput |= Mathf.Abs(c.Control.InputValue) > 0.001f;
             }
-        }
-
-        Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisSource owner)
-        {
-            var c = new Controller 
-            {
-                Enabled = true,
-                Name = m_Axes[axisIndex].Name,
-                Owner = owner as UnityEngine.Object,
-            };
-            SetControlDefaults?.Invoke(m_Axes[axisIndex], ref c);
-            return c;
         }
 
         /// <summary>Delegate for overriding the legacy input system with custom code</summary>
