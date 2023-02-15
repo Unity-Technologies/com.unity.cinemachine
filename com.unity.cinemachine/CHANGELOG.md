@@ -6,38 +6,52 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 
 ## [3.0.0-pre.4] - 2023-02-09
+
+### Added
+
 - Progress bar added to Cinemachine Upgrader.
-- Bugfix: Physical lens settings were not being properly applied.
-- 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
-- Bugfix: Lens blending was wrong.
 - CinemachineDeoccluder is a new class, not just a rename of CinemachineCollider.
 - CinemachineAutoFocus extension is now available for built-in and URP pipelines, with reduced functionality compared to HDRP.
 - Camera.focusDistance is driven by CM when the camera is in physical mode.
-- Bugfix: CinemachineDeoccluder Pull Forward strategy only pulls forward even with Camera Radius bigger than 0.
-- Path gizmo drawing was optimized.
 - Confiner2D provides API to adjust the confiner to the current window size when the lens or aspect changes.
-- Confiner2D does less gc alloc.
 - TargetGroup now ignores members whose gameObjects are inactive.
-- CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
 - Cinemachine Samples can import their package dependencies.
-- CinemachineSmoothPath is upgraded to Splines correctly now. 
 - CinemachinePathBase search radius fixed for not looped paths.
-- Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
-- Regression fix: POV and PanTilt handle ReferenceUp correctly.
-- Improved performance of CINEMACHINE_EXPERIMENTAL_DAMPING algorithm.
-- Bugfix: Extensions were not respecting execution order on domain reload.
 - Add SplineAutoDolly.ISplineAutoDolly.Reset() method and SplineAutoDolly.Enabled flag.
-- Bugfix: AxisState was not respecting timescale == 0.
-- CmCamera is now CinemachineCamera.
-- ImputAxis refactor for recentering and momentary axis support.
 - Confiner2D and Confiner3D support smooth stop at bounds edge.
-- CinemachineIndependentImpulseListener renamed to CinemachineExternalImpulseListener.
-- Bugfix: Very occasional axis drift in SimpleFollow when viewing angle is +-90 degrees.
-- CinemachineExtension API changes to VirtualCamera, GetAllExtraStates, OnTargetObjectWarped, and ForceCameraPosition.
 - URP: add temporal effects reset on camera cut.
 - Add Weight setting to CinemachinePostProcessing and CinemachineVolumeSettings.
 - GroupFraming also works on LookAt target.
+- Several new Sample scenes were added.
+
+### Changed
+
+- Improved performance of CINEMACHINE_EXPERIMENTAL_DAMPING algorithm.
+- Path gizmo drawing was optimized.
+- Confiner2D does less gc alloc.
+- CinemachineSmoothPath is upgraded to Splines correctly now.
+- InputAxis refactor for recentering and momentary axis support.
+- CinemachineIndependentImpulseListener renamed to CinemachineExternalImpulseListener.
+- CmCamera is now CinemachineCamera.
 - The SimpleFollowWithWorldUp binding mode has been renamed to LazyFollow.
+- CinemachineExtension API changes to VirtualCamera, GetAllExtraStates, OnTargetObjectWarped, and ForceCameraPosition.
+- Third person shooter sample use object pooling for the projectiles.
+
+### Deprecated
+
+- CinemachineConfiner is deprecated.  New behaviour CinemachineConfiner3D to handle 3D confining.  Use CinemachineConfiner2D for 2D confining.
+- 3rdPersonFollow and 3rdPersonAim are deprecated and replaced by ThirdPersonFollow and ThirdPersonAim respectively.
+
+### Fixed
+
+- Regression fix: POV and PanTilt handle ReferenceUp correctly.
+- Bugfix: Lens blending was wrong.
+- Bugfix: CinemachineDeoccluder Pull Forward strategy only pulls forward even with Camera Radius bigger than 0.
+- Bugfix: Extensions were not respecting execution order on domain reload.
+- Bugfix: AxisState was not respecting timescale == 0.
+- Bugfix: priority ordering was wrong when the difference between any priority values were smaller than integer min or bigger than integer max values.
+- Bugfix: Very occasional axis drift in SimpleFollow when viewing angle is +-90 degrees.
+- Bugfix: Physical lens settings were not being properly applied.
 
 
 ## [3.0.0-pre.3] - 2022-10-28
