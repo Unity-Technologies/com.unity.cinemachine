@@ -19,11 +19,7 @@ namespace Cinemachine.Editor
         }
         public delegate double TimelineGlobalToLocalTimeDelegate(double globalTime);
         public static TimelineGlobalToLocalTimeDelegate TimelineGlobalToLocalTime = DefaultTimeConversion;
-    #if CINEMACHINE_TIMELINE_1_8_2
         static double DefaultTimeConversion(double time) { return TimelineEditor.GetInspectedTimeFromMasterTime(time); }
-    #else
-        static double DefaultTimeConversion(double time) { return time; }
-    #endif
 
         public override ClipDrawOptions GetClipOptions(TimelineClip clip)
         {
