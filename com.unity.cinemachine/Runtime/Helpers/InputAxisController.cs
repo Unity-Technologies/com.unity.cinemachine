@@ -308,8 +308,8 @@ namespace Cinemachine
                         return action.ReadValue<Vector2>().y;
                 }
 
-            Debug.LogError("The valueType of InputAction provided to " + gameObject + "'s" + name +" is not handled " +
-                "by default. You need to create a class inheriting InputAxisController and you need to override the " +
+            Debug.LogError("The valueType of InputAction provided to " + name + " is not handled by default. " +
+                "You need to create a class inheriting InputAxisController and you need to override the " +
                 "ReadInput method to handle your case.");
             return 0f;
         }
