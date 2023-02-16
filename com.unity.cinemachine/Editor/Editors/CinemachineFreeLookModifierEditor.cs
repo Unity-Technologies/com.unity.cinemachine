@@ -24,7 +24,8 @@ namespace Cinemachine
                         typeof(CinemachineFreeLookModifier.IModifierValueSource)), 
                     HelpBoxMessageType.Warning));
 
-            ux.AddHeader("Modifiers");
+            var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
+            ux.Add(new Label(controllersProperty.displayName) { tooltip = controllersProperty.tooltip });
             var list = ux.AddChild(new ListView()
             {
                 reorderable = true,
@@ -34,7 +35,6 @@ namespace Cinemachine
                 showFoldoutHeader = false,
                 virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
             });
-            var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
             list.BindProperty(controllersProperty);
 
             // Convert the add button to a popup selector
@@ -80,11 +80,8 @@ namespace Cinemachine
         {
             public override VisualElement CreatePropertyGUI(SerializedProperty property)
             {
-                var m = property.managedReferenceValue as CinemachineFreeLookModifier.Modifier;
-                if (m == null)
+                if (property.managedReferenceValue is not CinemachineFreeLookModifier.Modifier m)
                     return new Label("invalid item");
-
-                var typeName = ModifierMenuItems.GetModifierName(m.GetType());
 
                 var warningText = "No applicable components found.  Must have one of: "
                     + InspectorUtility.GetAssignableBehaviourNames(m.CachedComponentType);
@@ -97,11 +94,11 @@ namespace Cinemachine
                     { 
                         backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
                         width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center,
-                        //paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                        alignSelf = Align.Center
                     }
                 });
 
+                var typeName = ModifierMenuItems.GetModifierName(m.GetType());
                 var foldout = new Foldout() { text = typeName, tooltip = property.tooltip };
                 foldout.BindProperty(property);
 

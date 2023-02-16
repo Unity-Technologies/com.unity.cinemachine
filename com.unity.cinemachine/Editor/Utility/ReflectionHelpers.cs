@@ -202,10 +202,21 @@ namespace Cinemachine.Utility
                 var elements = fields[1].Split('[');
                 if (elements.Length > 1)
                 {
+                    var index = Int32.Parse(elements[1].Trim(']'));
                     if (type.IsArray)
-                        obj = (obj as Array).GetValue(Int32.Parse(elements[1].Trim(']')));
+                    {
+                        var a = obj as Array;
+                        if (a == null || a.Length <= index)
+                            return null;
+                        obj = a.GetValue(index);
+                    }
                     else
-                        obj = (obj as IList)[Int32.Parse(elements[1].Trim(']'))];
+                    {
+                        var list = obj as IList;
+                        if (list != null || list.Count <= index)
+                            return null;
+                        obj = list[index];
+                    }
                     if (fields.Length <= 3)
                         return obj;
                 }
