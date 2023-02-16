@@ -67,6 +67,9 @@ namespace Cinemachine
         [Tooltip("Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras")]
         public TransitionParams Transitions;
 
+        CameraState m_State = CameraState.Default;
+        CinemachineComponentBase[] m_Pipeline;
+
         void Reset()
         {
             Target = default;
@@ -82,9 +85,6 @@ namespace Cinemachine
 
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
         public override CameraState State { get => m_State; }
-
-        /// <summary>The current camera state, which will applied to the Unity Camera</summary>
-        CameraState m_State = CameraState.Default;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
@@ -239,18 +239,17 @@ namespace Cinemachine
 
             // Apply the component pipeline
             UpdatePipelineCache();
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
-                stage <= CinemachineCore.Stage.Finalize; ++stage)
+            for (int i = 0; i < m_Pipeline.Length; ++i)
             {
-                var c = m_Pipeline[(int)stage];
+                var c = m_Pipeline[i];
                 if (c != null && c.IsValid)
                     c.PrePipelineMutateCameraState(ref state, deltaTime);
             }
             CinemachineComponentBase postAimBody = null;
-            for (CinemachineCore.Stage stage = CinemachineCore.Stage.Body;
-                stage <= CinemachineCore.Stage.Finalize; ++stage)
+            for (int i = 0; i < m_Pipeline.Length; ++i)
             {
-                var c = m_Pipeline[(int)stage];
+                var stage = (CinemachineCore.Stage)i;
+                var c = m_Pipeline[i];
                 if (c != null && c.IsValid)
                 {
                     if (stage == CinemachineCore.Stage.Body && c.BodyAppliesAfterAim)
@@ -287,13 +286,12 @@ namespace Cinemachine
         internal Type PeekPipelineCacheType(CinemachineCore.Stage stage) 
             => m_Pipeline[(int)stage] == null ? null : m_Pipeline[(int)stage].GetType();
 
-        CinemachineComponentBase[] m_Pipeline;
-
         void UpdatePipelineCache()
         {
-            if (m_Pipeline == null)
+            const int pipelineLength = (int)CinemachineCore.Stage.Finalize + 1;
+            if (m_Pipeline == null || m_Pipeline.Length != pipelineLength)
             {
-                m_Pipeline = new CinemachineComponentBase[Enum.GetValues(typeof(CinemachineCore.Stage)).Length];
+                m_Pipeline = new CinemachineComponentBase[pipelineLength];
                 var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
                 {
