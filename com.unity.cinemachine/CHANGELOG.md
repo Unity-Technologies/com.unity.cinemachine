@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 - InputAxisController is extendable now.
+- InputAxisController handles float and Vector2 automatically. Other input types need to be handled by a custom script inheriting InputAxisController.
 
 
 ## [3.0.0-pre.4] - 2023-02-09
