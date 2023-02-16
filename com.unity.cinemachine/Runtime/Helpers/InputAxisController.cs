@@ -290,12 +290,28 @@ namespace Cinemachine
         /// <returns>Returns the value of the input device.</returns>
         protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
         {
-            switch (hint)
-            {
-                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
-                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
-                default: return action.ReadValue<float>();
-            }
+            var activeControl = action.activeControl;
+            if (activeControl == null)
+                return 0f;
+            
+            var actionControlType = activeControl.valueType;
+            if (actionControlType == typeof(float))
+                return action.ReadValue<float>();
+            if (actionControlType == typeof(Vector2))
+                switch (hint)
+                {
+                    default:
+                    case IInputAxisSource.AxisDescriptor.Hints.Default:
+                    case IInputAxisSource.AxisDescriptor.Hints.X: 
+                        return action.ReadValue<Vector2>().x;
+                    case IInputAxisSource.AxisDescriptor.Hints.Y: 
+                        return action.ReadValue<Vector2>().y;
+                }
+
+            Debug.LogError("The valueType of InputAction provided to " + gameObject + "'s" + name +" is not handled " +
+                "by default. You need to create a class inheriting InputAxisController and you need to override the " +
+                "ReadInput method to handle your case.");
+            return 0f;
         }
         
         float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
