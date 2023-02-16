@@ -117,6 +117,7 @@ namespace Cinemachine.Editor
 
             // Display name
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
+            m_ParentElement.AddSpace();
 
             // This timer is required because with the current implementation of ExposedReference 
             // it is not possible to track property changes or monitor Undo.
@@ -142,30 +143,20 @@ namespace Cinemachine.Editor
                 m_Foldouts.Clear();
 
                 // Add new foldouts
-                var borderColor = new Color(0.4f, 0.4f, 0.4f, 1);
                 foreach (var t in m_EmbeddedTargets)
                 {
                     var type = t.GetType();
                     if (!s_EditorExpanded.TryGetValue(type, out var expanded))
-                        expanded = true;
-                    var f = new Foldout 
-                    { 
-                        text = type.Name, 
-                        value = expanded, 
-                        style = 
-                        { 
-                            unityFontStyleAndWeight = FontStyle.Bold, 
-                            marginTop = 4, 
-                            borderTopWidth = 1, 
-                            borderTopColor = borderColor
-                        }
-                    };
-                    f.Add(new InspectorElement(t) { style = { paddingLeft = 0, unityFontStyleAndWeight = FontStyle.Normal }});
+                        expanded = false;
+                    var f = new Foldout { text = type.Name, value = expanded, style = { marginTop = 4, marginLeft = 0 }};
+                    f.AddToClassList("clip-inspector-custom-properties__foldout"); // make it pretty
+                    f.Add(new InspectorElement(t) { style = { paddingLeft = 0, paddingRight = 0 }});
                     f.RegisterValueChangedCallback((evt) => 
                     {
                         if (evt.target == f)
                             s_EditorExpanded[type] = evt.newValue;
                     });
+                    f.contentContainer.style.marginLeft = 0; // kill the indent
 
                     m_Foldouts.Add(f);
                     m_ParentElement.Add(f);
