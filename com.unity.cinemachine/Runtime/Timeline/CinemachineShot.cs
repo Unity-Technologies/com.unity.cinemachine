@@ -11,10 +11,12 @@ namespace Cinemachine
     /// </summary>
     public sealed class CinemachineShot : PlayableAsset, IPropertyPreview
     {
-        /// <summary>The name to display on the track</summary>
+        /// <summary>The name to display on the track.  If empty, the CmCamera's name will be used.</summary>
+        [Tooltip("The name to display on the track.  If empty, the CmCamera's name will be used.")]
         public string DisplayName;
 
-        /// <summary>The virtual camera to activate</summary>
+        /// <summary>The Cinemachine camera to use for this shot</summary>
+        [Tooltip("The Cinemachine camera to use for this shot")]
         public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
 
         /// <summary>PlayableAsset implementation</summary>
