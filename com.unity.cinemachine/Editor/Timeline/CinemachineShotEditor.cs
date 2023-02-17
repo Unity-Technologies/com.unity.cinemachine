@@ -88,8 +88,14 @@ namespace Cinemachine.Editor
             m_Subeditors.Clear();
         }
 
+        void OnEnable()
+        {
+            InspectorUtility.UserDidSomething += UpdateComponentEditors;
+        }
+
         void OnDisable()
         {
+            InspectorUtility.UserDidSomething -= UpdateComponentEditors;
             DestroySubeditors();
         }
 
@@ -164,10 +170,9 @@ namespace Cinemachine.Editor
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
             m_ParentElement.AddSpace();
 
-            // This timer is required because with the current implementation of ExposedReference 
-            // it is not possible to track property changes or monitor Undo.
-            // GML todo: remove when UITK ExposedReference bugs are fixed.
-            m_ParentElement.schedule.Execute(UpdateComponentEditors).Every(250); 
+            // We perform an initial subeditor update with a delay call because it goes into an infinite
+            // loop if we do it immediately. Something to do with the UITK's throttling of Bind calls.
+            EditorApplication.delayCall += UpdateComponentEditors;
 
             return m_ParentElement;
         }

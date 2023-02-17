@@ -13,8 +13,25 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
+    [InitializeOnLoad]
     static class InspectorUtility
     {
+        /// <summary>
+        /// Callback that happens whenever something undoable happens, either with objects or with selection.
+        /// </summary>
+        public static EditorApplication.CallbackFunction UserDidSomething;
+
+        static InspectorUtility()
+        {
+            ObjectChangeEvents.changesPublished -= OnUserDidSomethingStream;
+            ObjectChangeEvents.changesPublished += OnUserDidSomethingStream;
+            Selection.selectionChanged -= OnUserDidSomething;
+            Selection.selectionChanged += OnUserDidSomething;
+
+            static void OnUserDidSomething() => UserDidSomething?.Invoke();
+            static void OnUserDidSomethingStream(ref ObjectChangeEventStream stream) => UserDidSomething?.Invoke();
+        }
+        
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
         /// cause the property's displayName to be used as a label.  For no label at all,
