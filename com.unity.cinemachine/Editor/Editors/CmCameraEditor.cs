@@ -9,7 +9,6 @@ namespace Cinemachine.Editor
     class CmCameraEditor : UnityEditor.Editor 
     {
         CinemachineCamera Target => target as CinemachineCamera;
-        CmCameraInspectorUtility m_CameraUtility = new CmCameraInspectorUtility();
 
         [MenuItem("CONTEXT/CinemachineCamera/Adopt Game View Camera Settings")]
         static void AdoptGameViewCameraSettings(MenuCommand command)
@@ -32,7 +31,6 @@ namespace Cinemachine.Editor
 
         void OnEnable()
         {
-            m_CameraUtility.OnEnable(targets);
             Undo.undoRedoPerformed += ResetTarget;
 
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
@@ -41,9 +39,8 @@ namespace Cinemachine.Editor
 
         void OnDisable()
         {
-            m_CameraUtility.OnDisable();
             Undo.undoRedoPerformed -= ResetTarget;
-            
+
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
         }
@@ -52,23 +49,23 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_CameraUtility.AddCameraStatus(ux);
+            this.AddCameraStatus(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
             ux.AddHeader("Global Settings");
-            m_CameraUtility.AddGlobalControls(ux);
+            this.AddGlobalControls(ux);
 
             ux.AddHeader("Procedural Motion");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
-            m_CameraUtility.AddPipelineDropdowns(ux);
+            this.AddPipelineDropdowns(ux);
 
             ux.AddSpace();
-            m_CameraUtility.AddExtensionsDropdown(ux);
+            this.AddExtensionsDropdown(ux);
 
-            ux.TrackAnyUserActivity(m_CameraUtility.SortComponents);
+            ux.TrackAnyUserActivity(() => CmCameraInspectorUtility.SortComponents(target as CinemachineVirtualCameraBase));
 
             return ux;
         }

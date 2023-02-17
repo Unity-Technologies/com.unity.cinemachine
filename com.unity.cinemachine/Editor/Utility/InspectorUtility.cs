@@ -421,6 +421,17 @@ namespace Cinemachine.Editor
                 callback();
             owner.RegisterCallback<DetachFromPanelEvent>((e) => UserDidSomething -= callback);
         }
+
+        /// <summary>
+        /// Convenience extension for EditorApplication.update callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void ContinuousUpdate(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            EditorApplication.update += callback;
+            owner.RegisterCallback<DetachFromPanelEvent>((e) => EditorApplication.update -= callback);
+        }
         
         /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
