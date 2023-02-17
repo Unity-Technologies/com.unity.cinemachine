@@ -412,11 +412,13 @@ namespace Cinemachine.Editor
         /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
         /// </summary>
         public static void TrackAnyUserActivity(
-            this VisualElement owner, EditorApplication.CallbackFunction callback, bool doInitialCallback = true)
+            this VisualElement owner, EditorApplication.CallbackFunction callback, bool delayInitialCallback = false)
         {
             UserDidSomething += callback;
-            if (doInitialCallback)
+            if (delayInitialCallback)
                 EditorApplication.delayCall += callback;
+            else
+                callback();
             owner.RegisterCallback<DetachFromPanelEvent>((e) => UserDidSomething -= callback);
         }
         

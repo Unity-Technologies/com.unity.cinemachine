@@ -33,7 +33,6 @@ namespace Cinemachine.Editor
         void OnEnable()
         {
             m_CameraUtility.OnEnable(targets);
-            EditorApplication.update += m_CameraUtility.SortComponents;
             Undo.undoRedoPerformed += ResetTarget;
 
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
@@ -42,7 +41,6 @@ namespace Cinemachine.Editor
 
         void OnDisable()
         {
-            EditorApplication.update -= m_CameraUtility.SortComponents;
             m_CameraUtility.OnDisable();
             Undo.undoRedoPerformed -= ResetTarget;
             
@@ -69,6 +67,8 @@ namespace Cinemachine.Editor
 
             ux.AddSpace();
             m_CameraUtility.AddExtensionsDropdown(ux);
+
+            ux.TrackAnyUserActivity(m_CameraUtility.SortComponents);
 
             return ux;
         }

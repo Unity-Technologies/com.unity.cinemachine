@@ -15,22 +15,10 @@ namespace Cinemachine.Editor
         CinemachineBrain Target => target as CinemachineBrain;
 
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        ObjectField m_LiveCamera;
-        TextField m_LiveBlend;
         bool m_EventsExpanded = false;
 
-        void OnEnable()
-        {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>();
-            EditorApplication.update += UpdateVisibility;
-        }
-
-        void OnDisable()
-        {
-            if (m_BlendsEditor != null)
-                m_BlendsEditor.OnDisable();
-            EditorApplication.update -= UpdateVisibility;
-        }
+        void OnEnable() => m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>();
+        void OnDisable() => m_BlendsEditor?.OnDisable();
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -40,14 +28,14 @@ namespace Cinemachine.Editor
             var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
             row.Left.Add(new Label("Live Camera")
                 { tooltip = "The Cm Camera that is currently active", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            m_LiveCamera = row.Right.AddChild(new ObjectField("") 
+            var liveCamera = row.Right.AddChild(new ObjectField("") 
                 { objectType = typeof(CinemachineVirtualCameraBase), style = { flexGrow = 1 }});
             row.SetEnabled(false);
 
             row = ux.AddChild(new InspectorUtility.LeftRightContainer());
             row.Left.Add(new Label("Live Blend")
                 { tooltip = "The state of currently active blend, if any", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            m_LiveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
+            var liveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
             row.SetEnabled(false);
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowDebugText)));
@@ -80,15 +68,15 @@ namespace Cinemachine.Editor
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
 
-            return ux;
-        }
+            ux.schedule.Execute(() =>
+            {
+                if (target == null || liveCamera == null)
+                    return;
+                liveCamera.value = Target.ActiveVirtualCamera as CinemachineVirtualCameraBase;
+                liveBlend.value = Target.ActiveBlend != null ? Target.ActiveBlend.Description : string.Empty;
+            }).Every(100);
 
-        void UpdateVisibility()
-        {
-            if (Target == null || m_LiveCamera == null)
-                return;
-            m_LiveCamera.value = Target.ActiveVirtualCamera as CinemachineVirtualCameraBase;
-            m_LiveBlend.value = Target.ActiveBlend != null ? Target.ActiveBlend.Description : string.Empty;
+            return ux;
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]
