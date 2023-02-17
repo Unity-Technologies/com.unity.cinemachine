@@ -165,10 +165,7 @@ namespace Cinemachine.Editor
                 foldout.Add(new PropertyField(modeOverrideProperty));
             }
 
-            // GML: This is rather evil.  Is there a better (event-driven) way?
-            DoUpdate();
-            ux.schedule.Execute(DoUpdate).Every(250);
-            void DoUpdate()
+            ux.TrackAnyUserActivity(() =>
             {
                 if (property.serializedObject.targetObject == null)
                     return; // target deleted
@@ -184,7 +181,7 @@ namespace Cinemachine.Editor
                     modeHelp.SetVisible(!brainHasModeOverride
                         && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 }
-            }
+            });
 
             return ux;
         }

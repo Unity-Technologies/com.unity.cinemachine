@@ -68,15 +68,13 @@ namespace Cinemachine
             button.AddManipulator(manipulator);
             button.clickable = null;
 
-            TrackSourceValidity();
-            ux.schedule.Execute(TrackSourceValidity).Every(250); // GML todo: is there a better way to do this?
-            void TrackSourceValidity() => invalidSrcMsg.SetVisible(Target != null && !Target.HasValueSource());
+            ux.TrackAnyUserActivity(() => invalidSrcMsg.SetVisible(Target != null && !Target.HasValueSource()));
 
             return ux;
         }
 
         [CustomPropertyDrawer(typeof(CinemachineFreeLookModifier.Modifier), true)]
-        class InputAxisControllerItemPropertyDrawer : PropertyDrawer
+        class FreeLookModifierItemPropertyDrawer : PropertyDrawer
         {
             public override VisualElement CreatePropertyGUI(SerializedProperty property)
             {
@@ -114,14 +112,12 @@ namespace Cinemachine
                     childProperty.NextVisible(false);
                 }
 
-                TrackSourceValidity();
-                foldout.schedule.Execute(TrackSourceValidity).Every(250); // GML todo: is there a better way to do this?
-                void TrackSourceValidity() 
+                foldout.TrackAnyUserActivity(() => 
                 {
                     var showWarning = m != null && !m.HasRequiredComponent;
                     noComponentsMsg.SetVisible(showWarning);
                     warningSymbol.SetVisible(showWarning);
-                };
+                });
 
                 return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null);
             }

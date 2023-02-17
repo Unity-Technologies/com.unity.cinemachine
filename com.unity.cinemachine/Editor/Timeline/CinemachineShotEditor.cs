@@ -88,16 +88,7 @@ namespace Cinemachine.Editor
             m_Subeditors.Clear();
         }
 
-        void OnEnable()
-        {
-            InspectorUtility.UserDidSomething += UpdateComponentEditors;
-        }
-
-        void OnDisable()
-        {
-            InspectorUtility.UserDidSomething -= UpdateComponentEditors;
-            DestroySubeditors();
-        }
+        void OnDisable() => DestroySubeditors();
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -170,9 +161,8 @@ namespace Cinemachine.Editor
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
             m_ParentElement.AddSpace();
 
-            // We perform an initial subeditor update with a delay call because it goes into an infinite
-            // loop if we do it immediately. Something to do with the UITK's throttling of Bind calls.
-            EditorApplication.delayCall += UpdateComponentEditors;
+            // Component editors
+            m_ParentElement.TrackAnyUserActivity(UpdateComponentEditors);
 
             return m_ParentElement;
         }
