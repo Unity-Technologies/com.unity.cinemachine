@@ -165,9 +165,9 @@ namespace Cinemachine.Editor
                 foldout.Add(new PropertyField(modeOverrideProperty));
             }
 
-            // GML: This is rather evil.  Is there a better (event-driven) way?
             DoUpdate();
-            ux.schedule.Execute(DoUpdate).Every(250);
+            InspectorUtility.UserDidSomething -= DoUpdate;
+            InspectorUtility.UserDidSomething += DoUpdate;
             void DoUpdate()
             {
                 if (property.serializedObject.targetObject == null)

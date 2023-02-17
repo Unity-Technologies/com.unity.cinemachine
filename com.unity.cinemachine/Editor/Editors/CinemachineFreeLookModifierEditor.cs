@@ -69,7 +69,8 @@ namespace Cinemachine
             button.clickable = null;
 
             TrackSourceValidity();
-            ux.schedule.Execute(TrackSourceValidity).Every(250); // GML todo: is there a better way to do this?
+            InspectorUtility.UserDidSomething -= TrackSourceValidity;
+            InspectorUtility.UserDidSomething += TrackSourceValidity;
             void TrackSourceValidity() => invalidSrcMsg.SetVisible(Target != null && !Target.HasValueSource());
 
             return ux;
@@ -115,7 +116,8 @@ namespace Cinemachine
                 }
 
                 TrackSourceValidity();
-                foldout.schedule.Execute(TrackSourceValidity).Every(250); // GML todo: is there a better way to do this?
+                InspectorUtility.UserDidSomething -= TrackSourceValidity;
+                InspectorUtility.UserDidSomething += TrackSourceValidity;
                 void TrackSourceValidity() 
                 {
                     var showWarning = m != null && !m.HasRequiredComponent;

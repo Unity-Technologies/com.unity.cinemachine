@@ -61,7 +61,8 @@ namespace Cinemachine.Editor
                 HelpBoxMessageType.Warning));
 
             UpdateBakingProgress();
-            ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
+            InspectorUtility.UserDidSomething -= UpdateBakingProgress;
+            InspectorUtility.UserDidSomething += UpdateBakingProgress;
             void UpdateBakingProgress() 
             {
                 if (Target == null)
