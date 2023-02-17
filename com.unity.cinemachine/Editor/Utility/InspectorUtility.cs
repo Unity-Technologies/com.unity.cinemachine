@@ -17,7 +17,8 @@ namespace Cinemachine.Editor
     static class InspectorUtility
     {
         /// <summary>
-        /// Callback that happens whenever something undoable happens, either with objects or with selection.
+        /// Callback that happens whenever something undoable happens, either with 
+        /// objects or with selection.  This is a good way to track user activity.
         /// </summary>
         public static EditorApplication.CallbackFunction UserDidSomething;
 
@@ -406,6 +407,19 @@ namespace Cinemachine.Editor
         // this is a hack to get around some vertical alignment issues in UITK
         public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
 
+        /// <summary>
+        /// Convenience extension for UserDidSomething callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void TrackAnyUserActivity(
+            this VisualElement owner, EditorApplication.CallbackFunction callback, bool doInitialCallback = true)
+        {
+            UserDidSomething += callback;
+            if (doInitialCallback)
+                EditorApplication.delayCall += callback;
+            owner.RegisterCallback<DetachFromPanelEvent>((e) => UserDidSomething -= callback);
+        }
+        
         /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>
