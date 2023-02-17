@@ -13,15 +13,11 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_HDRP
         const string k_ComputeShaderName = "CinemachineFocusDistanceCompute";
 #endif
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
-        void OnEnable() => m_PipelineUtility = new (this);
-        void OnDisable() => m_PipelineUtility.OnDisable();
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
 #if CINEMACHINE_HDRP
             ux.AddChild(new HelpBox(
                 "Note: focus control requires an active Volume containing a Depth Of Field override "
@@ -109,7 +105,6 @@ namespace Cinemachine.Editor
             });
 #endif
 
-            m_PipelineUtility.UpdateState();
             return ux;
         }
 

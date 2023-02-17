@@ -13,16 +13,12 @@ namespace Cinemachine.Editor
     class CinemachineConfiner2DEditor : UnityEditor.Editor
     {
         CinemachineConfiner2D Target => target as CinemachineConfiner2D;
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
-        void OnEnable() => m_PipelineUtility = new (this);
-        void OnDisable() => m_PipelineUtility.OnDisable();
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
 
             var boundsHelp = ux.AddChild(new HelpBox(
                 "Bounding Shape must be a PolygonCollider2D, BoxCollider2D, or CompositeCollider2D.", 
@@ -93,8 +89,6 @@ namespace Cinemachine.Editor
                     + "Call this when the input bounding shape changes " 
                     + "(non-uniform scale, rotation, or points are moved, added or deleted)."
             });
-
-            m_PipelineUtility.UpdateState();
 
             return ux;
         }

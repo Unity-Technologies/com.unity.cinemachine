@@ -10,17 +10,14 @@ namespace Cinemachine.Editor
     {
         CinemachinePanTilt Target => target as CinemachinePanTilt;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_NoControllerHelp;
 
         void OnEnable()
         {
-            m_PipelineUtility = new (this);
             EditorApplication.update += UpdateHelpBox;
         }
         void OnDisable()
         {
-            m_PipelineUtility.OnDisable();
             EditorApplication.update -= UpdateHelpBox;
         }
 
@@ -28,7 +25,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ReferenceFrame)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PanAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TiltAxis)));
@@ -55,7 +52,6 @@ namespace Cinemachine.Editor
                 }
             }));
 
-            m_PipelineUtility.UpdateState();
             UpdateHelpBox();
             return ux;
         }

@@ -11,12 +11,10 @@ namespace Cinemachine.Editor
     {
         CinemachineOrbitalFollow Target => target as CinemachineOrbitalFollow;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_NoControllerHelp;
 
         void OnEnable()
         {
-            m_PipelineUtility = new (this);
             EditorApplication.update += UpdateHelpBoxes;
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
@@ -24,7 +22,6 @@ namespace Cinemachine.Editor
         
         void OnDisable()
         {
-            m_PipelineUtility.OnDisable();
             EditorApplication.update -= UpdateHelpBoxes;
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
@@ -34,7 +31,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
 
@@ -78,7 +75,6 @@ namespace Cinemachine.Editor
                 m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
             }
 
-            m_PipelineUtility.UpdateState();
             UpdateHelpBoxes();
             return ux;
         }

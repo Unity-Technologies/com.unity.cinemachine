@@ -12,14 +12,12 @@ namespace Cinemachine.Editor
     {
         CinemachineGroupFraming Target => target as CinemachineGroupFraming;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
         VisualElement m_GroupSizeIsZeroHelp;
         VisualElement m_PerspectiveControls;
         VisualElement m_OrthoControls;
 
         void OnEnable() 
         {
-            m_PipelineUtility = new(this);
             EditorApplication.update += UpdateVisibility;
 
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
@@ -34,7 +32,6 @@ namespace Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
 
             EditorApplication.update -= UpdateVisibility;
-            m_PipelineUtility.OnDisable();
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -42,7 +39,7 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.FollowGroup);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.FollowGroup);
             m_GroupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingMode)));
@@ -69,7 +66,6 @@ namespace Cinemachine.Editor
                 dollyRange.SetVisible(haveDolly);
             });
             
-            m_PipelineUtility.UpdateState();
             UpdateVisibility();
             return ux;
         }
