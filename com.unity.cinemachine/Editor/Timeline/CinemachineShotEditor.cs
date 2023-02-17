@@ -23,7 +23,6 @@ namespace Cinemachine.Editor
         {
             var vcam = CinemachineMenu.CreatePassiveCmCamera("CinemachineCamera", null, false);
             vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
-
 #if false 
             // GML this is too bold.  What if timeline is a child of something moving?
             // also, SetActive(false) prevents the animator from being able to animate the object
@@ -36,17 +35,69 @@ namespace Cinemachine.Editor
         }
 
 #if CINEMACHINE_TIMELINE_1_8_2
-        List<Foldout> m_Foldouts = new();
-        List<UnityEngine.Object> m_EmbeddedTargets = new();
         VisualElement m_ParentElement;
         VisualElement m_CreateButton;
-
         SerializedProperty m_vcamProperty;
         CinemachineVirtualCameraBase m_CachedReferenceObject;
-        List<MonoBehaviour> m_ComponentsCache = new();
-        static Dictionary<System.Type, bool> s_EditorExpanded = new();
+        readonly List<MonoBehaviour> m_ComponentsCache = new ();
+        readonly List<Subeditor> m_Subeditors = new ();
 
-        readonly GUIContent s_CmCameraLabel = new ("Cinemachine Camera", "The Cinemachine camera to use for this shot");
+        class Subeditor
+        {
+            // Keep track of which component types are expanded
+            static Dictionary<System.Type, bool> s_EditorExpanded = new ();
+
+            UnityEditor.Editor m_Editor;
+            
+            public Object Target { get; private set; }
+            public Foldout Foldout { get; private set; }
+
+            public Subeditor(Object target)
+            {
+                Target = target;
+                CreateCachedEditor(target, null, ref m_Editor);
+
+                // Wrap editor in a foldout
+                var type = target.GetType();
+                s_EditorExpanded.TryGetValue(type, out var expanded);
+                Foldout = new Foldout { text = type.Name, value = expanded, style = { marginTop = 4, marginLeft = 0 }};
+                Foldout.AddToClassList("clip-inspector-custom-properties__foldout"); // make it pretty
+                Foldout.Add(new InspectorElement(m_Editor) { style = { paddingLeft = 0, paddingRight = 0 }});
+                Foldout.RegisterValueChangedCallback((evt) => 
+                {
+                    if (evt.target == Foldout)
+                        s_EditorExpanded[type] = evt.newValue;
+                });
+                Foldout.contentContainer.style.marginLeft = 0; // kill the indent
+            }
+
+            public void Dispose()
+            {
+                Foldout.parent?.Remove(Foldout);
+                DestroyImmediate(m_Editor);
+                Foldout = null;
+                m_Editor = null;
+                Target = null;
+            }
+        }
+
+        void DestroySubeditors()
+        {
+            foreach (var e in m_Subeditors)
+                e.Dispose();
+            m_Subeditors.Clear();
+        }
+
+        void OnEnable()
+        {
+            InspectorUtility.UserDidSomething += UpdateComponentEditors;
+        }
+
+        void OnDisable()
+        {
+            InspectorUtility.UserDidSomething -= UpdateComponentEditors;
+            DestroySubeditors();
+        }
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -92,9 +143,9 @@ namespace Cinemachine.Editor
             m_ParentElement.AddSpace();
             m_vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
             row = m_ParentElement.AddChild(new InspectorUtility.LeftRightContainer());
-            row.Left.AddChild(new Label(s_CmCameraLabel.text) 
+            row.Left.AddChild(new Label("Cinemachine Camera") 
             { 
-                tooltip = s_CmCameraLabel.tooltip, 
+                tooltip = "The Cinemachine camera to use for this shot", 
                 style = { alignSelf = Align.Center, flexGrow = 1 }
             });
             row.Right.Add(new IMGUIContainer(() =>
@@ -119,10 +170,9 @@ namespace Cinemachine.Editor
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
             m_ParentElement.AddSpace();
 
-            // This timer is required because with the current implementation of ExposedReference 
-            // it is not possible to track property changes or monitor Undo.
-            // GML todo: remove when UITK ExposedReference bugs are fixed.
-            m_ParentElement.schedule.Execute(UpdateComponentEditors).Every(250); 
+            // We perform an initial subeditor update with a delay call because it goes into an infinite
+            // loop if we do it immediately. Something to do with the UITK's throttling of Bind calls.
+            EditorApplication.delayCall += UpdateComponentEditors;
 
             return m_ParentElement;
         }
@@ -134,54 +184,29 @@ namespace Cinemachine.Editor
 
             m_CreateButton.SetVisible(m_vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
             var vcam = m_vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
-            UpdateEmbeddedTargets(vcam);
-            if (m_CachedReferenceObject != vcam || m_Foldouts.Count != m_EmbeddedTargets.Count)
+
+            m_ComponentsCache.Clear();
+            if (vcam != null)
+                vcam.GetComponents(m_ComponentsCache);
+
+            bool dirty = m_CachedReferenceObject != vcam || m_Subeditors.Count != m_ComponentsCache.Count + 1;
+            for (int i = 0; !dirty && i < m_ComponentsCache.Count; ++i)
+                dirty = m_Subeditors[i + 1].Target != m_ComponentsCache[i];
+            if (dirty)
             {
-                // Remove foldouts
-                foreach (var f in m_Foldouts)
-                    m_ParentElement.Remove(f);
-                m_Foldouts.Clear();
-
-                // Add new foldouts
-                foreach (var t in m_EmbeddedTargets)
-                {
-                    var type = t.GetType();
-                    if (!s_EditorExpanded.TryGetValue(type, out var expanded))
-                        expanded = false;
-                    var f = new Foldout { text = type.Name, value = expanded, style = { marginTop = 4, marginLeft = 0 }};
-                    f.AddToClassList("clip-inspector-custom-properties__foldout"); // make it pretty
-                    f.Add(new InspectorElement(t) { style = { paddingLeft = 0, paddingRight = 0 }});
-                    f.RegisterValueChangedCallback((evt) => 
-                    {
-                        if (evt.target == f)
-                            s_EditorExpanded[type] = evt.newValue;
-                    });
-                    f.contentContainer.style.marginLeft = 0; // kill the indent
-
-                    m_Foldouts.Add(f);
-                    m_ParentElement.Add(f);
-                }
+                DestroySubeditors();
                 m_CachedReferenceObject = vcam;
+                if (vcam != null)
+                {
+                    m_Subeditors.Add(new Subeditor(vcam.transform));
+                    for (int i = 0; i < m_ComponentsCache.Count; ++i)
+                        m_Subeditors.Add(new Subeditor(m_ComponentsCache[i]));
+                    foreach (var e in m_Subeditors)
+                        m_ParentElement.Add(e.Foldout);
+                }
             }
         }
 
-        void UpdateEmbeddedTargets(CinemachineVirtualCameraBase vcam)
-        {
-            m_ComponentsCache.Clear();
-            if (vcam == null)
-                m_EmbeddedTargets.Clear();
-            else
-            {
-                vcam.GetComponents(m_ComponentsCache);
-                if (m_ComponentsCache.Count + 1 != m_EmbeddedTargets.Count)
-                {
-                    m_EmbeddedTargets.Clear();
-                    m_EmbeddedTargets.Add(vcam.transform);
-                    for (int i = 0; i < m_ComponentsCache.Count; ++i)
-                        m_EmbeddedTargets.Add(m_ComponentsCache[i]);
-                }
-            }
-        }    
 
 #else // IMGUI VERSION
         readonly GUIContent s_CmCameraLabel = new ("CinemachineCamera", "The Cinemachine camera to use for this shot");
@@ -322,7 +347,7 @@ namespace Cinemachine.Editor
                 for (int i = 0; i < m_editors.Length; ++i)
                 {
                     if (m_editors[i] != null)
-                        UnityEngine.Object.DestroyImmediate(m_editors[i]);
+                        Object.DestroyImmediate(m_editors[i]);
                     m_editors[i] = null;
                 }
                 m_editors = null;
