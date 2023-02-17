@@ -42,11 +42,11 @@ namespace Cinemachine.Editor
         readonly List<MonoBehaviour> m_ComponentsCache = new ();
         readonly List<Subeditor> m_Subeditors = new ();
 
-        // Keep track of which component types are expanded
-        static Dictionary<System.Type, bool> s_EditorExpanded = new ();
-
         class Subeditor
         {
+            // Keep track of which component types are expanded
+            static Dictionary<System.Type, bool> s_EditorExpanded = new ();
+
             UnityEditor.Editor m_Editor;
             
             public Object Target { get; private set; }
