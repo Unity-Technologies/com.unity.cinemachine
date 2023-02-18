@@ -41,7 +41,7 @@ namespace Cinemachine.Editor
             { 
                 text = "Solo", 
                 style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
-                    marginLeft = 0, marginRight = 0, borderLeftWidth = 0, borderRightWidth = 0 } 
+                    marginLeft = 0, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
             });
             var updateMode = row.AddInput(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
             updateMode.SetEnabled(false);
@@ -71,25 +71,31 @@ namespace Cinemachine.Editor
                 }
             });
 
-            // Refresh camera state
-            ux.ContinuousUpdate(() =>
-            { 
-                if (target == null)
-                    return;
+            // Capture "normal" colors
+            ux.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            void OnGeometryChanged(GeometryChangedEvent e)
+            {
+                // Only once
+                ux.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 
-                bool isSolo = CinemachineBrain.SoloCamera == target;
-                var color = isSolo ? CinemachineBrain.GetSoloGUIColor() : GUI.color; // GML fixme: what is the right way to get default color?
-                if (statusText != null)
-                {
+                var normalColor = statusText.resolvedStyle.color;
+                var normalBkgColor = soloButton.resolvedStyle.backgroundColor;
+
+                // Refresh camera state
+                ux.ContinuousUpdate(() =>
+                { 
+                    if (target == null)
+                        return;
+
+                    bool isSolo = CinemachineBrain.SoloCamera == target;
+                    var color = isSolo ? Color.Lerp(normalColor, CinemachineBrain.GetSoloGUIColor(), 0.5f) : normalColor;
+
                     bool isLive = CinemachineCore.Instance.IsLive(target);
                     statusText.text = isLive ? "Status: Live"
                         : (target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled");
                     statusText.SetEnabled(isLive);
                     statusText.style.color = color;
-                }
 
-                if (updateMode != null)
-                {
                     if (!Application.isPlaying)
                         updateMode.SetVisible(false);
                     else
@@ -98,18 +104,19 @@ namespace Cinemachine.Editor
                         updateMode.text = mode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
                         updateMode.SetVisible(true);
                     }
-                }
 
-                if (soloButton != null)
                     soloButton.style.color = color;
+                    soloButton.style.backgroundColor = isSolo 
+                        ? Color.Lerp(normalBkgColor, CinemachineBrain.GetSoloGUIColor(), 0.2f) : normalBkgColor;
 
-                // Refresh the game view if solo and not playing
-                if (isSolo && !Application.isPlaying)
-                {
-                    target.InternalUpdateCameraState(Vector3.up, -1);
-                    InspectorUtility.RepaintGameView();
-                }
-            });
+                    // Refresh the game view if solo and not playing
+                    if (isSolo && !Application.isPlaying)
+                    {
+                        target.InternalUpdateCameraState(Vector3.up, -1);
+                        InspectorUtility.RepaintGameView();
+                    }
+                });
+            }
 
             // Kill solo when inspector shuts down
             ux.RegisterCallback<DetachFromPanelEvent>((e) => 
