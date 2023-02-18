@@ -126,6 +126,16 @@ namespace Cinemachine
             CreateControllers();
         }
 
+        void OnDisable()
+        {
+            foreach (var t in m_AxisResetters)
+                if ((t as UnityEngine.Object) != null)
+                    t.UnregisterResetHandler(OnResetInput);
+            m_Axes.Clear();
+            m_AxisOwners.Clear();
+            m_AxisResetters.Clear();
+        }
+
 #if UNITY_EDITOR
         static List<IInputAxisSource> s_AxisTargetsCache = new List<IInputAxisSource>();
         internal bool ConrollersAreValid()
@@ -141,14 +151,6 @@ namespace Cinemachine
         }
         internal void SynchronizeControllers() => CreateControllers();
 #endif
-
-        void OnDisable()
-        {
-            m_Axes.Clear();
-            foreach (var t in m_AxisResetters)
-                if ((t as UnityEngine.Object) != null)
-                    t.UnregisterResetHandler(OnResetInput);
-        }
 
         void CreateControllers()
         {
