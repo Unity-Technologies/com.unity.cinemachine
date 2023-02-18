@@ -443,7 +443,6 @@ namespace Cinemachine.Editor
             owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             void OnGeometryChanged(GeometryChangedEvent e)
             {
-                // Only once
                 owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
                 callback();
             }
