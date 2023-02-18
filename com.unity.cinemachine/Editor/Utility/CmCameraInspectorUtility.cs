@@ -72,12 +72,8 @@ namespace Cinemachine.Editor
             });
 
             // Capture "normal" colors
-            ux.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            void OnGeometryChanged(GeometryChangedEvent e)
+            ux.OnInitialGeometryChanged(() =>
             {
-                // Only once
-                ux.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-
                 var normalColor = statusText.resolvedStyle.color;
                 var normalBkgColor = soloButton.resolvedStyle.backgroundColor;
 
@@ -116,7 +112,7 @@ namespace Cinemachine.Editor
                         InspectorUtility.RepaintGameView();
                     }
                 });
-            }
+            });
 
             // Kill solo when inspector shuts down
             ux.RegisterCallback<DetachFromPanelEvent>((e) => 

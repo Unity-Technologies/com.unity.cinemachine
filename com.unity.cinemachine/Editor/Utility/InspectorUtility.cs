@@ -434,6 +434,22 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
+        /// Convenience extension to get a callback after initial geometry creation, making it easier to use lambdas.
+        /// Callback will only be called once.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void OnInitialGeometryChanged(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            void OnGeometryChanged(GeometryChangedEvent e)
+            {
+                // Only once
+                owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
+                callback();
+            }
+        }
+        
+        /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>
         /// <param name="ux">Container in which to put the header</param>
