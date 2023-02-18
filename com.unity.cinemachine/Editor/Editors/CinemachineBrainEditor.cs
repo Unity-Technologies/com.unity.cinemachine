@@ -68,13 +68,13 @@ namespace Cinemachine.Editor
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
 
-            ux.schedule.Execute(() =>
+            ux.ContinuousUpdate(() =>
             {
                 if (target == null || liveCamera == null)
                     return;
                 liveCamera.value = Target.ActiveVirtualCamera as CinemachineVirtualCameraBase;
                 liveBlend.value = Target.ActiveBlend != null ? Target.ActiveBlend.Description : string.Empty;
-            }).Every(100);
+            });
 
             return ux;
         }
