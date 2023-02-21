@@ -1,5 +1,5 @@
 {
-    "name": "com.unity.cinemachine.editor",
+    "name": "Unity.Cinemachine.Editor",
     "rootNamespace": "",
     "references": [
         "com.unity.cinemachine",
