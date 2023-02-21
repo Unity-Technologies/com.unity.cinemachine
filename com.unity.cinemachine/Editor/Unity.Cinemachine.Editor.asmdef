@@ -2,7 +2,6 @@
     "name": "Unity.Cinemachine.Editor",
     "rootNamespace": "",
     "references": [
-        "com.unity.cinemachine",
         "Unity.Timeline",
         "Unity.Timeline.Editor",
         "Unity.Postprocessing.Runtime",
@@ -17,7 +16,8 @@
         "Unity.Splines",
         "Unity.Splines.Editor",
         "Unity.InputSystem",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [
         "Editor"
