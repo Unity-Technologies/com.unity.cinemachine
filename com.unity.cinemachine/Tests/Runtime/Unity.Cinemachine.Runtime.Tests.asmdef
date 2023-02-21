@@ -2,14 +2,15 @@
     "name": "com.unity.cinemachine.runtime.tests",
     "rootNamespace": "",
     "references": [
-        "com.unity.cinemachine",
-        "com.unity.cinemachine.editor",
-        "com.unity.cinemachine.shared.tests",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.Splines",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Unity.Cinemachine",
+        "Unity.Cinemachine.Editor",
+        "Unity.Cinemachine.Shared.Tests"
     ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
