@@ -1,12 +1,12 @@
 {
-    "name": "com.unity.cinemachine.editor.tests",
+    "name": "Unity.Cinemachine.Editor.Tests",
     "rootNamespace": "",
     "references": [
-        "com.unity.cinemachine",
-        "com.unity.cinemachine.editor",
-        "com.unity.cinemachine.shared.tests",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "Unity.Cinemachine",
+        "Unity.Cinemachine.Editor",
+        "Unity.Cinemachine.Shared.Tests"
     ],
     "includePlatforms": [
         "Editor"
