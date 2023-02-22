@@ -1,5 +1,5 @@
 {
-    "name": "com.unity.cinemachine.runtime.tests",
+    "name": "Unity.Cinemachine.Runtime.Tests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
