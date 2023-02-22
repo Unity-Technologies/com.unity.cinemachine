@@ -1,21 +1,24 @@
+#if CINEMACHINE_UNITY_ANIMATION
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Animations;
 using Object = UnityEngine.Object;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
-#if CINEMACHINE_UNITY_ANIMATION
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
-    class CinemachineStateDrivenCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineStateDrivenCamera>
+    class CinemachineStateDrivenCameraEditor : UnityEditor.Editor
     {
+        CinemachineStateDrivenCamera Target => target as CinemachineStateDrivenCamera;
+
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        ChildListInspectorHelper m_ChildListHelper = new();
         UnityEditorInternal.ReorderableList m_InstructionList;
 
-        string[] m_LayerNames;
+        List<string> m_LayerNames = new();
         int[] m_TargetStates;
         string[] m_TargetStateNames;
         Dictionary<int, int> m_StateIndexLookup;
@@ -23,9 +26,8 @@ namespace Cinemachine.Editor
         string[] m_CameraCandidates;
         Dictionary<CinemachineVirtualCameraBase, int> m_CameraIndexLookup;
 
-        protected override void OnEnable()
+        void OnEnable()
         {
-            base.OnEnable();
             m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
             {
                 OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
@@ -36,74 +38,69 @@ namespace Cinemachine.Editor
                         editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
                 }
             };
-            m_ChildListHelper.OnEnable();
             m_InstructionList = null;
         }
 
-        protected override void OnDisable()
+        void OnDisable() => m_BlendsEditor.OnDisable();
+
+        public override VisualElement CreateInspectorGUI()
         {
-            base.OnDisable();
-            if (m_BlendsEditor != null)
-                m_BlendsEditor.OnDisable();
-        }
+            var ux = new VisualElement();
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            if (m_InstructionList == null)
-                SetupInstructionList();
+            var noTargetHelp = ux.AddChild(new HelpBox("An Animated Target is required.", HelpBoxMessageType.Warning));
 
-            if (Target.AnimatedTarget == null)
-                EditorGUILayout.HelpBox("An Animated Target is required", MessageType.Warning);
+            this.AddCameraStatus(ux);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
 
-            DrawStandardInspectorTopSection();
+            ux.AddHeader("Global Settings");
+            this.AddGlobalControls(ux);
 
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget));
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-
-            // Layer index
-            EditorGUI.BeginChangeCheck();
-            UpdateTargetStates();
-            UpdateCameraCandidates();
-            var layerProp = serializedObject.FindProperty(() => Target.LayerIndex);
-            int currentLayer = layerProp.intValue;
-            int layerSelection = EditorGUILayout.Popup("Layer", currentLayer, m_LayerNames);
-            if (currentLayer != layerSelection)
-                layerProp.intValue = layerSelection;
-            if (EditorGUI.EndChangeCheck())
-            {
-                serializedObject.ApplyModifiedProperties();
-                Target.ValidateInstructions();
-            }
-
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend));
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-
-            // Blends
-            m_BlendsEditor.DrawEditorCombo(
+            ux.AddHeader("State Driven Camera");
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
+            ux.Add(m_BlendsEditor.CreateInspectorGUI(
                 serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset",
-                Target.gameObject.name + " Blends", "asset", string.Empty, false);
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty));
 
-            // Instructions
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.Separator();
-            m_InstructionList.DoLayoutList();
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
 
-            // vcam children
-            EditorGUILayout.Separator();
-            if (m_ChildListHelper.OnInspectorGUI(serializedObject.FindProperty(() => Target.m_ChildCameras)))
-                Target.ValidateInstructions();
-            if (EditorGUI.EndChangeCheck()) 
+            var layerProp = serializedObject.FindProperty(() => Target.LayerIndex);
+            var layerSel = ux.AddChild(new PopupField<string>(layerProp.displayName) { tooltip = layerProp.tooltip });
+            layerSel.AddToClassList(InspectorUtility.kAlignFieldClass);
+            layerSel.RegisterValueChangedCallback((evt) => 
+            {
+                layerProp.intValue = Mathf.Max(0, m_LayerNames.FindIndex(v => v == evt.newValue));
                 serializedObject.ApplyModifiedProperties();
+            });
 
-            // Extensions
-            DrawExtensionsWidgetInInspector();
+            // GML todo: We use IMGUI for this while we wait for UUM-27687 and UUM-27688 to be fixed
+            ux.AddSpace();
+            ux.Add(new IMGUIContainer(() =>
+            {
+                serializedObject.Update();
+                if (m_InstructionList == null)
+                    SetupInstructionList();
+                EditorGUI.BeginChangeCheck();
+                m_InstructionList.DoLayoutList();
+                if (EditorGUI.EndChangeCheck())
+                    serializedObject.ApplyModifiedProperties();
+            }));
+
+            ux.AddSpace();
+            this.AddChildCameras(ux, null);
+            this.AddExtensionsDropdown(ux);
+
+            ux.TrackAnyUserActivity(() =>
+            {
+                UpdateTargetStates();
+                layerSel.choices = m_LayerNames;
+                layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);
+                UpdateCameraCandidates();
+                noTargetHelp.SetVisible(Target.AnimatedTarget == null);
+            });
+
+            return ux;
         }
 
         static AnimatorController GetControllerFromAnimator(Animator animator)
@@ -126,14 +123,11 @@ namespace Cinemachine.Editor
             m_TargetStateNames = collector.StateNames.ToArray();
             m_StateIndexLookup = collector.StateIndexLookup;
 
-            if (ac == null)
-                m_LayerNames = Array.Empty<string>();
-            else
-            {
-                m_LayerNames = new string[ac.layers.Length];
-                for (int i = 0; i < ac.layers.Length; ++i)
-                    m_LayerNames[i] = ac.layers[i].name;
-            }
+            m_LayerNames.Clear();
+            for (int i = 0; ac != null && i < ac.layers.Length; ++i)
+                m_LayerNames.Add(ac.layers[i].name);
+            if (m_LayerNames.Count == 0)
+                m_LayerNames.Add("(missing animated target)");
 
             // Create the parent map in the target
             List<CinemachineStateDrivenCamera.ParentHash> parents = new();
@@ -377,5 +371,5 @@ namespace Cinemachine.Editor
                 };
         }
     }
-#endif
 }
+#endif

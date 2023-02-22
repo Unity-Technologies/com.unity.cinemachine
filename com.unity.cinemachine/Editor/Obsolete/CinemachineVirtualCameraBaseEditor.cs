@@ -17,10 +17,9 @@ namespace Cinemachine.Editor
     /// Handles drawing the header and the basic properties.
     /// </summary>
     /// <typeparam name="T">The type of CinemachineVirtualCameraBase being edited</typeparam>
-    class CinemachineVirtualCameraBaseEditor<T> : UnityEditor.Editor where T : CinemachineVirtualCameraBase
+    [Obsolete]
+    class CinemachineVirtualCameraBaseEditor<T> : BaseEditor<T> where T : CinemachineVirtualCameraBase
     {
-        protected T Target => target as T;
-
         static GUIContent s_AddExtensionLabel = new ("Add Extension", "Add a Cinemachine Extension behaviour");
 
         static Type[] sExtensionTypes;  // First entry is null
@@ -93,7 +92,6 @@ namespace Cinemachine.Editor
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
         /// Does nothing if Input package not installed.
         /// </summary>
-#pragma warning disable 618 // using obsolete stuff
         protected void DrawInputProviderButtonInInspector()
         {
             bool needsButton = false;
@@ -127,7 +125,6 @@ namespace Cinemachine.Editor
                 });
             EditorGUILayout.Space();
         }
-#pragma warning restore 618
 #else
         /// <summary>
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
@@ -136,6 +133,37 @@ namespace Cinemachine.Editor
         protected void DrawInputProviderButtonInInspector() {}
 #endif
 
+        /// <summary>
+        /// Draw the LookAt and Follow targets in the inspector
+        /// </summary>
+        /// <param name="followTarget">Follow target SerializedProperty</param>
+        /// <param name="lookAtTarget">LookAt target SerializedProperty</param>
+        protected void DrawTargetsInInspector(
+            SerializedProperty followTarget, SerializedProperty lookAtTarget)
+        {
+            EditorGUI.BeginChangeCheck();
+            if (!IsPropertyExcluded(followTarget.name))
+            {
+                if (Target.ParentCamera == null || Target.ParentCamera.Follow == null)
+                    EditorGUILayout.PropertyField(followTarget);
+                else
+                    EditorGUILayout.PropertyField(followTarget,
+                        new GUIContent(followTarget.displayName + " Override"));
+                ExcludeProperty(followTarget.name);
+            }
+            if (!IsPropertyExcluded(lookAtTarget.name))
+            {
+                if (Target.ParentCamera == null || Target.ParentCamera.LookAt == null)
+                    EditorGUILayout.PropertyField(lookAtTarget);
+                else
+                    EditorGUILayout.PropertyField(lookAtTarget,
+                        new GUIContent(lookAtTarget.displayName + " Override"));
+                ExcludeProperty(lookAtTarget.name);
+            }
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
+        }
+        
         /// <summary>
         /// Draw the Extensions dropdown in the inspector
         /// </summary>

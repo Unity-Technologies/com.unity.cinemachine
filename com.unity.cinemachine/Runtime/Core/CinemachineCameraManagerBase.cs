@@ -36,11 +36,6 @@ namespace Cinemachine
         [FoldoutWithEnabledButton]
         public DefaultTargetSettings DefaultTarget;
 
-        /// <summary>When enabled, the current camera and blend will be indicated in the game window, for debugging</summary>
-        [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
-        [FormerlySerializedAs("m_ShowDebugText")]
-        public bool ShowDebugText;
-
         /// State for CreateActiveBlend().  Used in the case of backing out of a blend in progress.
         float m_BlendStartPosition;
 
@@ -54,7 +49,6 @@ namespace Cinemachine
         protected virtual void Reset()
         {
             DefaultTarget = default;
-            ShowDebugText = false;
             PriorityAndChannel = OutputChannel.Default;
             InvalidateCameraCache();
         }

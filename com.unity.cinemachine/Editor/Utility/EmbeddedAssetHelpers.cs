@@ -31,8 +31,7 @@ namespace Cinemachine.Editor
             DestroyEditor();
         }
 
-        GUIContent m_CreateButtonGUIContent 
-            = new GUIContent("Create Asset", "Create a new shared settings asset");
+        GUIContent m_CreateButtonGUIContent = new ("Create Asset", "Create a new shared settings asset");
 
         UnityEditor.Editor m_Editor = null;
         InspectorUtility.LeftRightContainer m_UnassignedUx;
@@ -177,6 +176,7 @@ namespace Cinemachine.Editor
         /// Call this to create the inspector GUI.  Will draw the asset reference field, and
         /// the embedded editor, or a Create Asset button, if no asset is set.
         /// </summary>
+        /// GML todo: refactor to eliminate need for member variable
         public VisualElement CreateInspectorGUI(
             SerializedProperty property,
             string title, string defaultName, string extension, string message)

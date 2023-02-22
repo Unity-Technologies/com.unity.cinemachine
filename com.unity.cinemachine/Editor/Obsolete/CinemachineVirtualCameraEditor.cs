@@ -11,7 +11,7 @@ namespace Cinemachine.Editor
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
     [CanEditMultipleObjects]
-    class CinemachineVirtualCameraEditor : CinemachineLegacyVcamBaseEditor<CinemachineVirtualCamera>
+    class CinemachineVirtualCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineVirtualCamera>
     {
         VcamStageEditorPipeline m_PipelineSet = new VcamStageEditorPipeline();
 
@@ -150,10 +150,10 @@ namespace Cinemachine.Editor
             }
             BeginInspector();
             DrawNonExcludedHeaderInInspector();
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
-            DrawNonExcludedTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
             DrawRemainingPropertiesInInspector();
             m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
             DrawNonExcludedExtensionsWidgetInInspector();

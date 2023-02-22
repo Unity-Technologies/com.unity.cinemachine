@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
         EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         bool m_EventsExpanded = false;
 
-        void OnEnable() => m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>();
+        void OnEnable() => m_BlendsEditor = new ();
         void OnDisable() => m_BlendsEditor?.OnDisable();
 
         public override VisualElement CreateInspectorGUI()

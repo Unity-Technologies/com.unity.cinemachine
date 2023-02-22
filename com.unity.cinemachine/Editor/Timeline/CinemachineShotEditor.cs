@@ -199,7 +199,7 @@ namespace Cinemachine.Editor
         }
 
 
-#else // IMGUI VERSION
+#else // IMGUI VERSION - used for older Timeline versions
         readonly GUIContent s_CmCameraLabel = new ("CinemachineCamera", "The Cinemachine camera to use for this shot");
         readonly GUIContent m_ClearText = new ("Clear", "Clear the target position scrubbing cache");
 

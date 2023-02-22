@@ -2,63 +2,73 @@ using UnityEditor;
 using UnityEngine;
 using Cinemachine.Utility;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineMixingCamera))]
-    class CinemachineMixingCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineMixingCamera>
+    class CinemachineMixingCameraEditor : UnityEditor.Editor
     {
+        CinemachineMixingCamera Target => target as CinemachineMixingCamera;
+
         static string WeightPropertyName(int i) => "Weight" + i;
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            serializedObject.Update();
-            DrawStandardInspectorTopSection();
+            var ux = new VisualElement();
 
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ShowDebugText));
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
+            this.AddCameraStatus(ux);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
 
-            float totalWeight = 0;
-            var children = Target.ChildCameras;
-            int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
-            for (int i = 0; i < numCameras; ++i)
-                if (children[i].isActiveAndEnabled)
-                    totalWeight += Target.GetWeight(i);
+            ux.AddHeader("Global Settings");
+            this.AddGlobalControls(ux);
 
-            if (numCameras == 0)
-                EditorGUILayout.HelpBox("There are no CinemachineCamera children", MessageType.Warning);
-            else 
+            ux.AddSpace();
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
+
+            ux.AddHeader("Child Camera Weights");
+            List<PropertyField> weights = new ();
+            for (int i = 0; i < CinemachineMixingCamera.MaxCameras; ++i)
+                weights.Add(ux.AddChild(new PropertyField(serializedObject.FindProperty(WeightPropertyName(i)))));
+
+            var noChildrenHelp = ux.AddChild(new HelpBox("There are no CinemachineCamera children", HelpBoxMessageType.Warning));
+            var noWeightHelp = ux.AddChild(new HelpBox("No input channels are active", HelpBoxMessageType.Warning));
+
+            var container = ux.AddChild(new VisualElement());
+            container.AddHeader("Mix Result");
+            container.Add(new IMGUIContainer(() =>
             {
-                EditorGUILayout.Separator();
-                EditorGUILayout.LabelField("Child Camera Weights", EditorStyles.boldLabel);
+                float totalWeight = 0;
+                var children = Target.ChildCameras;
+                int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
                 for (int i = 0; i < numCameras; ++i)
-                {
-                    SerializedProperty prop = serializedObject.FindProperty(WeightPropertyName(i));
-                    if (prop != null)
-                        EditorGUILayout.PropertyField(prop, new GUIContent(children[i].Name));
-                }
-                serializedObject.ApplyModifiedProperties();
-
-                if (totalWeight <= UnityVectorExtensions.Epsilon)
-                    EditorGUILayout.HelpBox("No input channels are active", MessageType.Warning);
-
-                if (children.Count > numCameras)
-                    EditorGUILayout.HelpBox(
-                        "There are " + children.Count 
-                        + " child cameras.  A maximum of " + numCameras + " is supported.", 
-                        MessageType.Warning);
-
-                // Camera proportion indicator
-                EditorGUILayout.Separator();
-                EditorGUILayout.LabelField("Mix Result", EditorStyles.boldLabel);
+                    if (children[i].isActiveAndEnabled)
+                        totalWeight += Target.GetWeight(i);
                 DrawProportionIndicator(children, numCameras, totalWeight);
-            }
+            }));
 
-            // Extensions
-            DrawExtensionsWidgetInInspector();
+            ux.AddSpace();
+            this.AddExtensionsDropdown(ux);
+
+            ux.TrackAnyUserActivity(() =>
+            {
+                var children = Target.ChildCameras;
+                int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
+                noChildrenHelp.SetVisible(numCameras == 0);
+                float totalWeight = 0;
+                for (int i = 0; totalWeight == 0 && i < numCameras; ++i)
+                    if (children[i].isActiveAndEnabled)
+                        totalWeight += Target.GetWeight(i);
+                noWeightHelp.SetVisible(numCameras > 0 && totalWeight == 0);
+                container.SetVisible(totalWeight > 0);
+
+                for (int i = 0; i < weights.Count; ++i)
+                    weights[i].SetVisible(i < numCameras);
+            });
+
+            return ux;
         }
 
         void DrawProportionIndicator(

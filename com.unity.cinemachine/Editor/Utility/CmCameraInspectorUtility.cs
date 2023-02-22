@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using System.Reflection;
+using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -33,7 +34,8 @@ namespace Cinemachine.Editor
             if (Selection.objects.Length > 1 || IsPrefab(editor.target))
                 return;
 
-            var navelGazeMessage = ux.AddChild(new HelpBox("The camera is trying to look at itself.", HelpBoxMessageType.Warning));
+            var navelGazeMessage = ux.AddChild(new HelpBox(
+                "The camera is trying to look at itself.", HelpBoxMessageType.Warning));
 
             var row = ux.AddChild(new InspectorUtility.LabeledContainer("Status"));
             var statusText = row.labelElement;
@@ -432,6 +434,145 @@ namespace Cinemachine.Editor
                 }
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Use this delegate to control the display of warning icons next to the child cameras
+        /// </summary>
+        public delegate string GetChildWarningMessageDelegate(object childObject);
+
+        /// <summary>If camera is a CinemachineCameraManagerBase, draw the Child camera list</summary>
+        public static void AddChildCameras(
+            this UnityEditor.Editor editor, VisualElement ux, 
+            GetChildWarningMessageDelegate getChildWarning)
+        {
+            var vcam = editor.target as CinemachineCameraManagerBase;
+            if (vcam == null)
+                return;
+
+            float FloatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+
+            var helpBox = ux.AddChild(new HelpBox(
+                "Child Cameras cannot be displayed when multiple objects are selected.", 
+                HelpBoxMessageType.Info));
+
+            var container = ux.AddChild(new VisualElement());
+            
+            var header = container.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, marginBottom = -2 } });
+            header.AddToClassList("unity-collection-view--with-border");
+            header.AddChild(new Label("Child Cameras") { style = { marginLeft = 3, flexGrow = 1, flexBasis = 10  }});
+            header.AddChild(new Label("Priority") 
+                { style = { marginRight = 4, flexGrow = 1, flexBasis = FloatFieldWidth, unityTextAlign = TextAnchor.MiddleRight }});
+
+            var list = container.AddChild(new ListView()
+            {
+                reorderable = false,
+                showAddRemoveFooter = true,
+                showBorder = true,
+                showBoundCollectionSize = false,
+                showFoldoutHeader = false,
+                style = { borderTopWidth = 0 },
+            });
+            list.itemsSource = vcam.ChildCameras;
+
+            list.makeItem = () => new VisualElement { style = { flexDirection = FlexDirection.Row }};
+            list.bindItem = (row, index) =>
+            {
+                // Remove children - items seem to get recycled
+                for (int i = row.childCount - 1; i >= 0; --i)
+                    row.RemoveAt(i);
+
+                var warningIcon = row.AddChild(new Label 
+                { 
+                    tooltip = "Item is null",
+                    style = 
+                    { 
+                        flexGrow = 0,
+                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                        alignSelf = Align.Center
+                    }
+                });
+                var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                row.AddChild(new ObjectField 
+                { 
+                    value = element,
+                    objectType = typeof(CinemachineVirtualCameraBase),
+                    style = { flexBasis = 20, flexGrow = 1 }
+                }).SetEnabled(false);
+                if (element == null)
+                    return;
+
+                var dragger = row.AddChild(new Label(" "));
+                dragger.AddToClassList("unity-base-field__label--with-dragger");
+
+                var so = new SerializedObject(element);
+                var prop = so.FindProperty("PriorityAndChannel");
+                var enabledProp = prop.FindPropertyRelative("Enabled");
+                var priorityProp = prop.FindPropertyRelative("Priority");
+                var priority = enabledProp.boolValue ? priorityProp.intValue : 0;
+                var priorityField = row.AddChild(new IntegerField
+                {
+                    value = enabledProp.boolValue ? priorityProp.intValue : 0,
+                    style = { flexBasis = FloatFieldWidth, flexGrow = 0, marginRight = 4 }
+                });
+                new FieldMouseDragger<int>(priorityField).SetDragZone(dragger);
+                priorityField.RegisterValueChangedCallback((evt) =>
+                {
+                    if (evt.newValue != 0)
+                        enabledProp.boolValue = true;
+                    priorityProp.intValue = evt.newValue;
+                    so.ApplyModifiedProperties();
+                });
+                priorityField.TrackPropertyValue(priorityProp, (p) => priorityField.value = p.intValue);
+                priorityField.TrackPropertyValue(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
+
+                warningIcon.TrackAnyUserActivity(() =>
+                {
+                    var warningText = getChildWarning == null ? string.Empty : getChildWarning(element);
+                    warningIcon.tooltip = warningText;
+                    warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
+                });
+            };
+
+            list.itemsAdded += (added) =>
+            {
+                var selected = list.selectedIndex;
+                var selectedCam = (selected >= 0 && selected < list.itemsSource.Count) 
+                    ? list.itemsSource[selected] as CinemachineVirtualCameraBase : null;
+                var name = selectedCam != null ? selectedCam.Name : "Child";
+                foreach (var index in added)
+                    CinemachineMenu.CreatePassiveCmCamera(name, vcam.gameObject);
+                Selection.activeObject = vcam;
+                vcam.InvalidateCameraCache();
+            };
+
+            list.itemsRemoved += (removed) =>
+            {
+                foreach (var index in removed)
+                {
+                    var child = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                    if (child != null)
+                        Undo.DestroyObjectImmediate(child.gameObject);
+                }
+                vcam.InvalidateCameraCache();
+            };
+
+            container.TrackAnyUserActivity(() =>
+            {
+                var isMultiSelect = editor.targets.Length > 1;
+                helpBox.SetVisible(isMultiSelect);
+                container.SetVisible(!isMultiSelect);
+
+                // Update child list
+                if (!isMultiSelect)
+                {
+                    var rebuild = list.itemsSource != vcam.ChildCameras || list.itemsSource.Count != vcam.ChildCameras.Count;
+                    list.itemsSource = vcam.ChildCameras;
+                    if (rebuild)
+                        list.Rebuild();
+                }
+            });
         }
     }
 }

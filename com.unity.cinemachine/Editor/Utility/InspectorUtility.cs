@@ -619,8 +619,8 @@ namespace Cinemachine.Editor
                 style.flexDirection = FlexDirection.Row;
                 if (label.Length != 0)
                     Label = AddChild(this, new Label(label) 
-                        { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
-                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
+                        { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 if (Label != null)
                     Label.AddPropertyDragger(property, Field);
             }
@@ -631,18 +631,14 @@ namespace Cinemachine.Editor
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
             {
-                label.RegisterCallback<GeometryChangedEvent>(AddDragger);
                 label.AddToClassList("unity-base-field__label--with-dragger");
-            }
-
-            void AddDragger(GeometryChangedEvent evt) 
-            {
-                label.UnregisterCallback<GeometryChangedEvent>(AddDragger);
-
-                if (p.propertyType == SerializedPropertyType.Float)
-                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                else if (p.propertyType == SerializedPropertyType.Integer)
-                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                label.OnInitialGeometryChanged(() =>
+                {
+                    if (p.propertyType == SerializedPropertyType.Float)
+                        new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                    else if (p.propertyType == SerializedPropertyType.Integer)
+                        new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                });
             }
         }
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System;
 
 namespace Cinemachine.Editor
 {
@@ -59,31 +60,40 @@ namespace Cinemachine.Editor
         {
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
-            var row = new InspectorUtility.LeftRightContainer();
-            row.Left.Add(new Label(property.displayName)
-                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
+            VisualElement ux = null;
+            VisualElement contents = null;
+            if (preferredLabel.Length == 0)
+                ux = contents = new VisualElement { style = { flexDirection = FlexDirection.Row } };
+            else
+            {
+                var row = new InspectorUtility.LeftRightContainer();
+                row.Left.Add(new Label(preferredLabel)
+                    { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
+                contents = row.Right;
+                ux = row;
+            }
 
             var styleProp = property.FindPropertyRelative(() => myClass.m_Style);
-            row.Right.Add(new PropertyField(styleProp, "")
+            contents.Add(new PropertyField(styleProp, "")
                 { style = { flexGrow = 1, flexBasis = floatFieldWidth }});
 
             var curveProp = property.FindPropertyRelative(() => myClass.m_CustomCurve);
-            var curveWidget = row.Right.AddChild(new PropertyField(curveProp, "")
+            var curveWidget = contents.AddChild(new PropertyField(curveProp, "")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth }});
 
             var timeProp = property.FindPropertyRelative(() => myClass.m_Time);
-            var timeWidget = row.Right.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
-                { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 5 }});
+            var timeWidget = contents.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
+                { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 4 }});
 
             OnStyleChanged(styleProp);
-            row.TrackPropertyValue(styleProp, OnStyleChanged);
+            contents.TrackPropertyValue(styleProp, OnStyleChanged);
             void OnStyleChanged(SerializedProperty p)
             {
                 curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Style.Custom);
                 timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Style.Cut);
             }
 
-            return row;
+            return ux;
         }
     }
 }
