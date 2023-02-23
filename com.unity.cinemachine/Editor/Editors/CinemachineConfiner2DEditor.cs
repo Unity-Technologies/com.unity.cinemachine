@@ -46,6 +46,7 @@ namespace Cinemachine.Editor
             var oversizedCameraHelp = ux.AddChild(new HelpBox(
                 "The camera window is too big for the confiner. Enable the Oversize Window option.",
                 HelpBoxMessageType.Info));
+            ux.TrackAnyUserActivity(() => oversizedCameraHelp.SetVisible(!Target.OversizeWindow.Enabled && Target.IsCameraLensOversized()));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OversizeWindow)));
 
@@ -55,7 +56,7 @@ namespace Cinemachine.Editor
                 + "\n\nTo fix this, reduce the number of points in the confining shape, "
                 + "or set the MaxWindowSize parameter to limit skeleton computation.",
                 HelpBoxMessageType.Warning));
-
+            
             UpdateBakingProgress();
             ux.schedule.Execute(UpdateBakingProgress).Every(250); // GML todo: is there a better way to do this?
             void UpdateBakingProgress() 
@@ -63,7 +64,6 @@ namespace Cinemachine.Editor
                 if (Target == null)
                     return; // target deleted
                 
-                oversizedCameraHelp.SetVisible(!Target.OversizeWindow.Enabled && Target.IsCameraLensOversized());
                 if (!Target.OversizeWindow.Enabled)
                 {
                     bakeTimeout.SetVisible(false);
