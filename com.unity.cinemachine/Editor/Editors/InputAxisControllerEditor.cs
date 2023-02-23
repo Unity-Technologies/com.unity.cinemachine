@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(InputAxisController))]
+    [CustomEditor(typeof(InputAxisController), true)]
     class InputAxisControllerEditor : UnityEditor.Editor
     {
         InputAxisController Target => target as InputAxisController;
@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
 
         void UpdateControllersStatus()
         {
-            if (Target != null && !Target.ConrollersAreValid())
+            if (Target != null && !Target.ControllersAreValid())
             {
                 Undo.RecordObject(Target, "SynchronizeControllers");
                 Target.SynchronizeControllers();
@@ -57,7 +57,7 @@ namespace Cinemachine.Editor
 
             return ux;
         }
-
+        
         [InitializeOnLoad]
         class DefaultControlInitializer
         {
