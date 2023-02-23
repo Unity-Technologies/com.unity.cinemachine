@@ -14,7 +14,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            CmPipelineComponentInspectorUtility.AddMissingCmCameraHelpBox(this, ux);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Offset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ApplyAfter)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PreserveComposition)));

@@ -53,7 +53,7 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            this.IMGUI_DrawMissingCmCameraHelpBox(CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
             DrawRemainingPropertiesInInspector();
         }
 

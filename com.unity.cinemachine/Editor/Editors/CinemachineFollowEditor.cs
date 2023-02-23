@@ -24,7 +24,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FollowOffset)));
 

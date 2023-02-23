@@ -50,7 +50,7 @@ namespace Cinemachine.Editor
                 MessageType.Warning);
 #endif
 
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
 
             EditorGUI.BeginChangeCheck();
 
