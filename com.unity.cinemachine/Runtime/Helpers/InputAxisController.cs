@@ -208,6 +208,12 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// Creates default controllers.
+        /// Override this if you if the cinemachine default axis controllers do not fit your axes.
+        /// </summary>
+        /// <param name="axisIndex">The index of the axis.</param>
+        /// <param name="controller">Controller to drive the axis.</param>
         protected virtual void CreateDefaultControlForAxis(int axisIndex, Controller controller)
         { 
             SetControlDefaults?.Invoke(m_Axes[axisIndex], ref controller);
