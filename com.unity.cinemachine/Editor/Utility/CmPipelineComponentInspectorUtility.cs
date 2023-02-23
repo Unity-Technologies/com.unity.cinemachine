@@ -173,7 +173,6 @@ namespace Cinemachine.Editor
                         case RequiredTargets.Follow: noTarget |= t.FollowTarget == null; break;
                         case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
                         case RequiredTargets.FollowGroup: noTarget |= t.FollowTargetAsGroup == null; break;
-                        default: break;
                     }
                 }
                 else
@@ -185,7 +184,6 @@ namespace Cinemachine.Editor
                         case RequiredTargets.Follow: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
                         case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
                         case RequiredTargets.FollowGroup: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
-                        default: break;
                     }
                     noTarget = noCamera || x.ComponentOwner.Follow == null;
                 }
@@ -205,7 +203,6 @@ namespace Cinemachine.Editor
                     case RequiredTargets.Follow: text = "A Tracking Target is required in the CinemachineCamera."; break;
                     case RequiredTargets.LookAt: text = "A LookAt Tracking Target is required in the CinemachineCamera."; break;
                     case RequiredTargets.FollowGroup: text = "Tracking Target in the CinemachineCamera must be a Target Group."; break;
-                    default: break;
                 }
                 if (text.Length > 0)
                     EditorGUILayout.HelpBox(text, UnityEditor.MessageType.Warning);
