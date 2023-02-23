@@ -24,13 +24,12 @@ namespace Cinemachine.Editor
                 "This component is intended to be used only with a CinemachineCamera.", HelpBoxMessageType.Warning,
                 "Add\nCinemachineCamera", () => AddCmCameraToTargets(targets)));
 
-            string text = string.Empty;
+            var text = string.Empty;
             switch (requiredTargets)
             {
                 case RequiredTargets.Follow: text = "A Tracking Target is required in the CinemachineCamera."; break;
                 case RequiredTargets.LookAt: text = "A LookAt Tracking Target is required in the CinemachineCamera."; break;
                 case RequiredTargets.FollowGroup: text = "Tracking Target in the CinemachineCamera must be a Target Group."; break;
-                default: break;
             }
             VisualElement noTargetHelp = null;
             if (text.Length > 0)
@@ -42,8 +41,8 @@ namespace Cinemachine.Editor
                 if (editor == null || editor.target == null)
                     return;  // target was deleted
 
-                bool noCamera = false;
-                bool noTarget = false;
+                var noCamera = false;
+                var noTarget = false;
                 for (int i = 0; i < targets.Length && !noCamera; ++i)
                 {
                     var t = targets[i] as CinemachineComponentBase;
@@ -55,7 +54,6 @@ namespace Cinemachine.Editor
                             case RequiredTargets.Follow: noTarget |= t.FollowTarget == null; break;
                             case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
                             case RequiredTargets.FollowGroup: noTarget |= t.FollowTargetAsGroup == null; break;
-                            default: break;
                         }
                     }
                     else
@@ -67,7 +65,6 @@ namespace Cinemachine.Editor
                             case RequiredTargets.Follow: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
                             case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
                             case RequiredTargets.FollowGroup: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
-                            default: break;
                         }
                         noTarget = noCamera || x.ComponentOwner.Follow == null;
                     }
