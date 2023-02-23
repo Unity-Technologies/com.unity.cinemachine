@@ -86,14 +86,13 @@ namespace Cinemachine.Editor
 
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new PropertyField(property) { style = { flexGrow = 1 }});
-            var button = new Button { style = 
+            var button = row.AddChild(new Button { style = 
             { 
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
                 width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
                 alignSelf = Align.Center,
                 paddingRight = 0, borderRightWidth = 0, marginRight = 0
-            }};
-            row.Add(button);
+            }});
 
             var manipulator = new ContextualMenuManipulator((evt) => 
             {

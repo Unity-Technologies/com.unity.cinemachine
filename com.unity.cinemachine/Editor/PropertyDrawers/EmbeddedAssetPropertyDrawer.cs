@@ -8,6 +8,8 @@ using System.Reflection;
 
 namespace Cinemachine.Editor
 {
+    // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AddAssetSelectorWithPresets
+
     [CustomPropertyDrawer(typeof(CinemachineEmbeddedAssetPropertyAttribute))]
     class EmbeddedAssetPropertyDrawer : PropertyDrawer
     {

@@ -83,6 +83,7 @@ namespace Cinemachine
     /// <summary>
     /// Used for custom drawing in the inspector.  Inspector will show a foldout with the asset contents
     /// </summary>
+    /// GML TODO: delete this attribute
     public sealed class CinemachineEmbeddedAssetPropertyAttribute : PropertyAttribute 
     {
         /// <summary>If true, inspector will display a warning if the embedded asset is null</summary>
