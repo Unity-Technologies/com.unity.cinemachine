@@ -15,9 +15,7 @@ namespace Cinemachine.Editor
     {
         CinemachineStateDrivenCamera Target => target as CinemachineStateDrivenCamera;
 
-        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         UnityEditorInternal.ReorderableList m_InstructionList;
-
         List<string> m_LayerNames = new();
         int[] m_TargetStates;
         string[] m_TargetStateNames;
@@ -26,22 +24,7 @@ namespace Cinemachine.Editor
         string[] m_CameraCandidates;
         Dictionary<CinemachineVirtualCameraBase, int> m_CameraIndexLookup;
 
-        void OnEnable()
-        {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
-            {
-                OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
-                OnCreateEditor = (UnityEditor.Editor ed) => 
-                {
-                    var editor = ed as CinemachineBlenderSettingsEditor;
-                    if (editor != null)
-                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
-                }
-            };
-            m_InstructionList = null;
-        }
-
-        void OnDisable() => m_BlendsEditor.OnDisable();
+        void OnEnable() => m_InstructionList = null;
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -59,9 +42,15 @@ namespace Cinemachine.Editor
             ux.AddHeader("State Driven Camera");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(m_BlendsEditor.CreateInspectorGUI(
-                serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty));
+            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
+                ux, serializedObject.FindProperty(() => Target.CustomBlends),
+                (ed) =>
+                {
+                    var editor = ed as CinemachineBlenderSettingsEditor;
+                    if (editor != null)
+                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
+                },
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
 

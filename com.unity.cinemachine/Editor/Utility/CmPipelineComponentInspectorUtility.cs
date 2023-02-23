@@ -158,7 +158,7 @@ namespace Cinemachine.Editor
             return s_TargetMarkerTex;
         }
 
-        /// IMGUI support - to be removed when IMGUI is gone
+        /// IMGUI support - GML todo: to be removed when IMGUI is gone
         public static void IMGUI_DrawMissingCmCameraHelpBox(
             UnityEditor.Editor editor, RequiredTargets requiredTargets = RequiredTargets.None)
         {

@@ -14,11 +14,7 @@ namespace Cinemachine.Editor
     {
         CinemachineBrain Target => target as CinemachineBrain;
 
-        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         bool m_EventsExpanded = false;
-
-        void OnEnable() => m_BlendsEditor = new ();
-        void OnDisable() => m_BlendsEditor?.OnDisable();
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -47,9 +43,9 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(m_BlendsEditor.CreateInspectorGUI(
-                serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty));
+            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
+                ux, serializedObject.FindProperty(() => Target.CustomBlends), null,
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
 
             var foldout = ux.AddChild(new Foldout 
             { 

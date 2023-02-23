@@ -10,25 +10,8 @@ namespace Cinemachine.Editor
     class CinemachineClearShotEditor : UnityEditor.Editor
     {
         CinemachineClearShot Target => target as CinemachineClearShot;
-
-        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
         EvaluatorState m_EvaluatorState;
 
-        void OnEnable()
-        {
-            m_BlendsEditor = new ()
-            {
-                OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
-                OnCreateEditor = (UnityEditor.Editor ed) =>
-                {
-                    var editor = ed as CinemachineBlenderSettingsEditor;
-                    if (editor != null)
-                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
-                }
-            };
-        }
-
-        void OnDisable() => m_BlendsEditor.OnDisable();
 
         static string GetAvailableQualityEvaluatorNames()
         {
@@ -58,9 +41,15 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.MinDuration)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.RandomizeChoice)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(m_BlendsEditor.CreateInspectorGUI(
-                serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty));
+            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
+                ux, serializedObject.FindProperty(() => Target.CustomBlends),
+                (ed) =>
+                {
+                    var editor = ed as CinemachineBlenderSettingsEditor;
+                    if (editor != null)
+                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
+                },
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
 
             ux.AddSpace();
             this.AddChildCameras(ux, GetChildWarningMessage);
