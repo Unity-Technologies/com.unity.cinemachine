@@ -172,19 +172,14 @@ namespace Cinemachine
                     int controllerIndex = GetControllerIndex(Controllers, t, m_Axes[i].Name);
                     if (controllerIndex < 0)
                     {
-                        newControllers.Add(CreateDefaultController(i, t));
-                        
-                        Controller CreateDefaultController(int axisIndex, IInputAxisSource owner)
+                        var c = new Controller 
                         {
-                            var c = new Controller 
-                            {
-                                Enabled = true,
-                                Name = m_Axes[axisIndex].Name,
-                                Owner = owner as UnityEngine.Object,
-                            };
-                            CreateDefaultControlForAxis(i, c);
-                            return c;
-                        }
+                            Enabled = true,
+                            Name = m_Axes[i].Name,
+                            Owner = t as UnityEngine.Object,
+                        };
+                        CreateDefaultControlForAxis(i, c);
+                        newControllers.Add(c);
                     }
                     else
                     {
