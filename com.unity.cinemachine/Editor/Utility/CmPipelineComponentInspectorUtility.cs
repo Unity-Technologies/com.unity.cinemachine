@@ -12,6 +12,12 @@ namespace Cinemachine.Editor
     {
         public enum RequiredTargets { None, Tracking, LookAt, Group };
 
+        const string s_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
+        const string s_NeedLookAt = "A LookAt Tracking Target is required in the CinemachineCamera.";
+        const string s_NeedGroup = "The Tracking Target in the CinemachineCamera must be a Target Group.";
+        const string s_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
+        const string s_AddCamera = "Add\nCinemachineCamera";
+
         /// <summary>
         /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
         /// prompting to solve a missing CinemachineCamera component or a missing tracking target
@@ -21,15 +27,15 @@ namespace Cinemachine.Editor
         {
             var targets = editor.targets;
             var noCameraHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
-                "This component is intended to be used only with a CinemachineCamera.", HelpBoxMessageType.Warning,
-                "Add\nCinemachineCamera", () => AddCmCameraToTargets(targets)));
+                s_NeedCamera, HelpBoxMessageType.Warning,
+                s_AddCamera, () => AddCmCameraToTargets(targets)));
 
             string text = string.Empty;
             switch (requiredTargets)
             {
-                case RequiredTargets.Tracking: text = "A Tracking Target is required in the CinemachineCamera."; break;
-                case RequiredTargets.LookAt: text = "A LookAt Tracking Target is required in the CinemachineCamera."; break;
-                case RequiredTargets.Group: text = "The Tracking Target in the CinemachineCamera must be a Target Group."; break;
+                case RequiredTargets.Tracking: text = s_NeedTarget; break;
+                case RequiredTargets.LookAt: text = s_NeedLookAt; break;
+                case RequiredTargets.Group: text = s_NeedGroup; break;
                 default: break;
             }
             VisualElement noTargetHelp = null;
@@ -194,8 +200,8 @@ namespace Cinemachine.Editor
             if (noCamera)
             {
                 InspectorUtility.HelpBoxWithButton(
-                    "This component is intended to be used only with a CinemachineCamera.", MessageType.Warning,
-                    new GUIContent("Add\nCinemachineCamera"), () => AddCmCameraToTargets(targets));
+                    s_NeedCamera, MessageType.Warning,
+                    new GUIContent(s_AddCamera), () => AddCmCameraToTargets(targets));
                 EditorGUILayout.Space();
             }
             else if (noTarget)
@@ -203,9 +209,9 @@ namespace Cinemachine.Editor
                 string text = string.Empty;
                 switch (requiredTargets)
                 {
-                    case RequiredTargets.Tracking: text = "A Tracking Target is required in the CinemachineCamera."; break;
-                    case RequiredTargets.LookAt: text = "A LookAt Tracking Target is required in the CinemachineCamera."; break;
-                    case RequiredTargets.Group: text = "The Tracking Target in the CinemachineCamera must be a Target Group."; break;
+                    case RequiredTargets.Tracking: text = s_NeedTarget; break;
+                    case RequiredTargets.LookAt: text = s_NeedLookAt; break;
+                    case RequiredTargets.Group: text = s_NeedGroup; break;
                     default: break;
                 }
                 if (text.Length > 0)
