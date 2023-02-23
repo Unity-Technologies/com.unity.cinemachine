@@ -8,7 +8,7 @@ namespace Cinemachine.Editor
     /// <summary>
     /// Helper for drawing embedded asset editors
     /// </summary>
-    static class EmbeddedAssetEditorUtility //<T> where T : ScriptableObject
+    static class EmbeddedAssetEditorUtility
     {
         /// <summary>
         /// Called after the asset editor is created, in case it needs to be customized
@@ -17,6 +17,7 @@ namespace Cinemachine.Editor
 
         static bool s_CustomBlendsExpanded;
 
+        // This is to enable lambda capture of read/write variables
         class EmbeddedEditorContext
         {
             public UnityEditor.Editor Editor = null;
@@ -91,6 +92,7 @@ namespace Cinemachine.Editor
 
             return ux;
 
+            // Local function
             void OnAssetChanged(SerializedProperty property, EmbeddedEditorContext context)
             {
                 property.serializedObject.ApplyModifiedProperties();
@@ -117,6 +119,7 @@ namespace Cinemachine.Editor
                     assignedUx.SetVisible(target != null);
             }
 
+            // Local function
             void DestroyEditor(EmbeddedEditorContext context)
             {
                 if (context.Editor != null)
