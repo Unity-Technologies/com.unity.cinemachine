@@ -26,7 +26,7 @@ namespace Cinemachine.Editor
             return t != null && t.gameObject.scene.name == null; // causes a small GC alloc
         }
 
-        /// <summary>Add the camera ststos controls and indicators in the inspector</summary>
+        /// <summary>Add the camera status controls and indicators in the inspector</summary>
         public static void AddCameraStatus(this UnityEditor.Editor editor, VisualElement ux)
         {
             // No status and Solo for prefabs or multi-select
@@ -48,7 +48,7 @@ namespace Cinemachine.Editor
             updateMode.style.display = DisplayStyle.None;
 
             var target = editor.target as CinemachineVirtualCameraBase; // capture for lambda
-            soloButton.RegisterCallback<ClickEvent>((evt) => 
+            soloButton.RegisterCallback<ClickEvent>(_ => 
             {
                 var isSolo = CinemachineBrain.SoloCamera != target;
                 CinemachineBrain.SoloCamera = isSolo ? target : null;
@@ -88,7 +88,7 @@ namespace Cinemachine.Editor
 
                     bool isLive = CinemachineCore.Instance.IsLive(target);
                     statusText.text = isLive ? "Status: Live"
-                        : (target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled");
+                        : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
                     statusText.SetEnabled(isLive);
                     statusText.style.color = color;
 
@@ -115,7 +115,7 @@ namespace Cinemachine.Editor
             });
 
             // Kill solo when inspector shuts down
-            ux.RegisterCallback<DetachFromPanelEvent>((e) => 
+            ux.RegisterCallback<DetachFromPanelEvent>(_ => 
             {
                 if (target != null && CinemachineBrain.SoloCamera == target)
                 {
@@ -155,12 +155,12 @@ namespace Cinemachine.Editor
                     style = { flexGrow = 1 }
                 };
                 dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
-                dropdown.RegisterValueChangedCallback((evt) => 
+                dropdown.RegisterValueChangedCallback(evt => 
                 {
                     var newType = PipelineStageMenu.s_StageData[stage].Types[GetTypeIndexFromSelection(evt.newValue, stage)];
-                    for (int i = 0; i < targets.Length; i++)
+                    for (int j = 0; j < targets.Length; j++)
                     {
-                        var t = targets[i] as CinemachineCamera;
+                        var t = targets[j] as CinemachineCamera;
                         if (t == null)
                             continue;
                         var oldComponent = t.GetCinemachineComponent((CinemachineCore.Stage)stage);
@@ -234,7 +234,7 @@ namespace Cinemachine.Editor
                 index = 0,
             };
             dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
-            dropdown.RegisterValueChangedCallback((evt) => 
+            dropdown.RegisterValueChangedCallback(evt => 
             {
                 Type extType = PipelineStageMenu.s_ExtentionTypes[GetTypeIndexFromSelection(evt.newValue)];
                 for (int i = 0; i < targets.Length; i++)
