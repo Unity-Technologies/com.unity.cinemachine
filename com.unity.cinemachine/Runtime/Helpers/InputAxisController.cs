@@ -95,14 +95,14 @@ namespace Cinemachine
 #endif
 
         /// <summary>This list is dynamically populated based on the discovered axes</summary>
-        public List<Controller> Controllers = new List<Controller>();
+        public List<Controller> Controllers = new ();
 
         /// <summary>
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisSource"/>
         /// </summary>
-        List<IInputAxisSource.AxisDescriptor> m_Axes = new ();
-        List<IInputAxisSource> m_AxisOwners = new ();
-        List<IInputAxisResetSource> m_AxisResetters = new ();
+        readonly List<IInputAxisSource.AxisDescriptor> m_Axes = new ();
+        readonly List<IInputAxisSource> m_AxisOwners = new ();
+        readonly List<IInputAxisResetSource> m_AxisResetters = new ();
 
         void OnValidate()
         {
@@ -178,7 +178,7 @@ namespace Cinemachine
                             Name = m_Axes[i].Name,
                             Owner = t as UnityEngine.Object,
                         };
-                        CreateDefaultControlForAxis(i, c);
+                        CreateDefaultControlForAxis(m_Axes[i], c);
                         newControllers.Add(c);
                     }
                     else
@@ -209,14 +209,15 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// Creates default controllers.
+        /// Creates default controllers for an axis.
         /// Override this if the default axis controllers do not fit your axes.
         /// </summary>
-        /// <param name="axisIndex">The index of the axis.</param>
+        /// <param name="axis">Description of the axis whose default controller needs to be set.</param>
         /// <param name="controller">Controller to drive the axis.</param>
-        protected virtual void CreateDefaultControlForAxis(int axisIndex, Controller controller)
+        protected virtual void CreateDefaultControlForAxis(
+            in IInputAxisSource.AxisDescriptor axis, Controller controller)
         { 
-            SetControlDefaults?.Invoke(m_Axes[axisIndex], ref controller);
+            SetControlDefaults?.Invoke(axis, ref controller);
         }
 
         void OnResetInput()
@@ -291,6 +292,15 @@ namespace Cinemachine
         /// <returns>Returns the value of the input device.</returns>
         protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
         {
+#if true
+            // GML Temporary fix until this issue is sorted out
+            switch (hint)
+            {
+                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
+                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
+                default: return action.ReadValue<float>();
+            }
+#else
             var activeControl = action.activeControl;
             if (activeControl == null)
                 return 0f;
@@ -307,6 +317,7 @@ namespace Cinemachine
                 "You need to create a class inheriting InputAxisController and you need to override the " +
                 "ReadInput method to handle your case.");
             return 0f;
+#endif
         }
         
         float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
