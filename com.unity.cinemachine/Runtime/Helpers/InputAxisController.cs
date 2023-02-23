@@ -278,7 +278,7 @@ namespace Cinemachine
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
         /// Definition of how we read input. Override this in your child classes to specify
-        /// the InputAction's type to read if it is different from Vector2.
+        /// the InputAction's type to read if it is different from float or Vector2.
         /// </summary>
         /// <param name="action">The action being read.</param>
         /// <param name="hint">The axis hint of the action.</param>
@@ -293,15 +293,9 @@ namespace Cinemachine
             if (actionControlType == typeof(float))
                 return action.ReadValue<float>();
             if (actionControlType == typeof(Vector2))
-                switch (hint)
-                {
-                    default:
-                    case IInputAxisSource.AxisDescriptor.Hints.Default:
-                    case IInputAxisSource.AxisDescriptor.Hints.X: 
-                        return action.ReadValue<Vector2>().x;
-                    case IInputAxisSource.AxisDescriptor.Hints.Y: 
-                        return action.ReadValue<Vector2>().y;
-                }
+                return hint == IInputAxisSource.AxisDescriptor.Hints.Y
+                    ? action.ReadValue<Vector2>().y
+                    : action.ReadValue<Vector2>().x;
 
             Debug.LogError("The valueType of InputAction provided to " + name + " is not handled by default. " +
                 "You need to create a class inheriting InputAxisController and you need to override the " +
