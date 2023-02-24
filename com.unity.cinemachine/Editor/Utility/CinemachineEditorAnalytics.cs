@@ -173,8 +173,7 @@ namespace Cinemachine.Editor
                 }
             }
             
-            public void SetTransitionsAndLens(
-                CinemachineVirtualCameraBase.TransitionParams transitions, LensSettings lens)
+            public void SetTransitionsAndLens(TransitionParams transitions, LensSettings lens)
             {
                 blend_hint = transitions.BlendHint.ToString();
                 inherit_position = transitions.InheritPosition;
