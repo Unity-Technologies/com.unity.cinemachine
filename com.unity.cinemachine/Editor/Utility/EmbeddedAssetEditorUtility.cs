@@ -33,7 +33,7 @@ namespace Cinemachine.Editor
         /// Call this to add the embedded inspector UX to an inspector.  
         /// Will draw the asset reference field, and the embedded editor, or a Create Asset button if no asset is set.
         /// </summary>
-        static public VisualElement AddEmbeddedAssetInspector<T>(
+        public static VisualElement AddEmbeddedAssetInspector<T>(
             this UnityEditor.Editor owner, VisualElement ux,
             SerializedProperty property, OnCreateEditorDelegate onCreateEditor, 
             string saveAssetTitle, string defaultName, string extension, string saveAssetMessage) where T : ScriptableObject
@@ -69,16 +69,15 @@ namespace Cinemachine.Editor
                     evt.StopPropagation();
                 }
             });
-            var embeddedInspectorParent = new VisualElement();
             var assignedUx = ux.AddChild(new InspectorUtility.FoldoutWithOverlay(
                 foldout, new PropertyField(property, ""), null) { style = { flexGrow = 1 }});
             foldout.Add(new PropertyField(property, "Asset"));
             foldout.AddSpace();
 
-            Color borderColor = Color.grey;
-            float borderWidth = 1;
-            float borderRadius = 5;
-            embeddedInspectorParent = foldout.AddChild(new VisualElement() { style = 
+            var borderColor = Color.grey;
+            const float borderWidth = 1f;
+            const float borderRadius = 5f;
+            var embeddedInspectorParent = foldout.AddChild(new VisualElement() { style = 
             { 
                 borderTopColor = borderColor, borderTopWidth = borderWidth, borderTopLeftRadius = borderRadius,
                 borderBottomColor = borderColor, borderBottomWidth = borderWidth, borderBottomLeftRadius = borderRadius,
@@ -98,25 +97,25 @@ namespace Cinemachine.Editor
             return ux;
 
             // Local function
-            void OnAssetChanged(SerializedProperty property, EmbeddedEditorContext context)
+            void OnAssetChanged(SerializedProperty sProp, EmbeddedEditorContext eContext)
             {
-                property.serializedObject.ApplyModifiedProperties();
+                sProp.serializedObject.ApplyModifiedProperties();
 
-                var target = property.objectReferenceValue;
-                if (context.Editor != null && context.Editor.target != target)
+                var target = sProp.objectReferenceValue;
+                if (eContext.Editor != null && eContext.Editor.target != target)
                 {
-                    context.Inspector?.RemoveFromHierarchy();
-                    DestroyEditor(context);
+                    eContext.Inspector?.RemoveFromHierarchy();
+                    DestroyEditor(eContext);
                 }
                 if (target != null)
                 {
-                    if (context.Editor == null)
+                    if (eContext.Editor == null)
                     {
-                        UnityEditor.Editor.CreateCachedEditor(target, null, ref context.Editor);
-                        onCreateEditor?.Invoke(context.Editor);
+                        UnityEditor.Editor.CreateCachedEditor(target, null, ref eContext.Editor);
+                        onCreateEditor?.Invoke(eContext.Editor);
                     }
                     if (embeddedInspectorParent != null)
-                        context.Inspector = embeddedInspectorParent.AddChild(new InspectorElement(context.Editor));
+                        eContext.Inspector = embeddedInspectorParent.AddChild(new InspectorElement(eContext.Editor));
                 }
                 if (unassignedUx != null)
                     unassignedUx.SetVisible(target == null);
@@ -125,12 +124,12 @@ namespace Cinemachine.Editor
             }
 
             // Local function
-            void DestroyEditor(EmbeddedEditorContext context)
+            void DestroyEditor(EmbeddedEditorContext eContext)
             {
-                if (context.Editor != null)
+                if (eContext.Editor != null)
                 {
-                    Object.DestroyImmediate(context.Editor);
-                    context.Editor = null;
+                    Object.DestroyImmediate(eContext.Editor);
+                    eContext.Editor = null;
                 }
             }
         }
@@ -138,7 +137,7 @@ namespace Cinemachine.Editor
         /// <summary>
         /// Add an asset selector widget with a presets popup.
         /// </summary>
-        static public void AddAssetSelectorWithPresets<T>(
+        public static void AddAssetSelectorWithPresets<T>(
             this UnityEditor.Editor owner, VisualElement ux, SerializedProperty property, 
             string presetsPath, string warningTextIfNull) where T : ScriptableObject
         {

@@ -75,7 +75,7 @@ namespace Cinemachine.Editor
                 if (target == null || noControllerHelp == null)
                     return;  // target was deleted
 
-                bool noHandler = false;
+                var noHandler = false;
                 for (int i = 0; i < targets.Length; ++i)
                     noHandler |= !(targets[i] as CinemachineOrbitalFollow).HasInputHandler;
                 noControllerHelp.SetVisible(noHandler);

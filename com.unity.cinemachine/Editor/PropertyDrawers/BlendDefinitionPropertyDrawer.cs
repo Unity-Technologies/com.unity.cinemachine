@@ -9,13 +9,13 @@ namespace Cinemachine.Editor
     [CustomPropertyDrawer(typeof(CinemachineBlendDefinition))]
     class BlendDefinitionPropertyDrawer : PropertyDrawer
     {
-        CinemachineBlendDefinition myClass = new CinemachineBlendDefinition(); // to access name strings
+        CinemachineBlendDefinition m_MyClass = new(); // to access name strings
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             float vSpace = 0;
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
-            SerializedProperty timeProp = property.FindPropertyRelative(() => myClass.m_Time);
+            SerializedProperty timeProp = property.FindPropertyRelative(() => m_MyClass.m_Time);
             GUIContent timeText = new GUIContent(" s", timeProp.tooltip);
             var textDimensions = GUI.skin.label.CalcSize(timeText);
 
@@ -24,7 +24,7 @@ namespace Cinemachine.Editor
             rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
             rect.width -= floatFieldWidth + textDimensions.x;
 
-            SerializedProperty styleProp = property.FindPropertyRelative(() => myClass.m_Style);
+            SerializedProperty styleProp = property.FindPropertyRelative(() => m_MyClass.m_Style);
             bool isCustom = styleProp.enumValueIndex == (int)CinemachineBlendDefinition.Style.Custom;
             var r = rect;
             if (isCustom)
@@ -32,7 +32,7 @@ namespace Cinemachine.Editor
             EditorGUI.PropertyField(r, styleProp, GUIContent.none);
             if (isCustom)
             {
-                SerializedProperty curveProp = property.FindPropertyRelative(() => myClass.m_CustomCurve);
+                SerializedProperty curveProp = property.FindPropertyRelative(() => m_MyClass.m_CustomCurve);
                 r.x += r.width;
                 r.width = 2 * rect.height;
                 EditorGUI.BeginChangeCheck();
@@ -58,10 +58,9 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
-            VisualElement ux = null;
-            VisualElement contents = null;
+            VisualElement ux, contents;
             if (preferredLabel.Length == 0)
                 ux = contents = new VisualElement { style = { flexDirection = FlexDirection.Row } };
             else
@@ -73,15 +72,15 @@ namespace Cinemachine.Editor
                 ux = row;
             }
 
-            var styleProp = property.FindPropertyRelative(() => myClass.m_Style);
+            var styleProp = property.FindPropertyRelative(() => m_MyClass.m_Style);
             contents.Add(new PropertyField(styleProp, "")
                 { style = { flexGrow = 1, flexBasis = floatFieldWidth }});
 
-            var curveProp = property.FindPropertyRelative(() => myClass.m_CustomCurve);
+            var curveProp = property.FindPropertyRelative(() => m_MyClass.m_CustomCurve);
             var curveWidget = contents.AddChild(new PropertyField(curveProp, "")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth }});
 
-            var timeProp = property.FindPropertyRelative(() => myClass.m_Time);
+            var timeProp = property.FindPropertyRelative(() => m_MyClass.m_Time);
             var timeWidget = contents.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 4 }});
 
