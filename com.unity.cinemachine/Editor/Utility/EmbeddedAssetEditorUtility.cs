@@ -28,7 +28,7 @@ namespace Cinemachine.Editor
         /// Call this to add the embedded inspector UX to an inspector.  
         /// Will draw the asset reference field, and the embedded editor, or a Create Asset button if no asset is set.
         /// </summary>
-        static public VisualElement AddEmbeddedAssetInspector<T>(
+        public static VisualElement AddEmbeddedAssetInspector<T>(
             this UnityEditor.Editor owner, VisualElement ux,
             SerializedProperty property, OnCreateEditorDelegate onCreateEditor, 
             string saveAssetTitle, string defaultName, string extension, string saveAssetMessage) where T : ScriptableObject
