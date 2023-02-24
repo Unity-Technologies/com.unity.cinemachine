@@ -450,7 +450,7 @@ namespace Cinemachine.Editor
             if (vcam == null)
                 return;
 
-            float FloatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
             var helpBox = ux.AddChild(new HelpBox(
                 "Child Cameras cannot be displayed when multiple objects are selected.", 
@@ -462,7 +462,7 @@ namespace Cinemachine.Editor
             header.AddToClassList("unity-collection-view--with-border");
             header.AddChild(new Label("Child Cameras") { style = { marginLeft = 3, flexGrow = 1, flexBasis = 10  }});
             header.AddChild(new Label("Priority") 
-                { style = { marginRight = 4, flexGrow = 1, flexBasis = FloatFieldWidth, unityTextAlign = TextAnchor.MiddleRight }});
+                { style = { marginRight = 4, flexGrow = 1, flexBasis = floatFieldWidth, unityTextAlign = TextAnchor.MiddleRight }});
 
             var list = container.AddChild(new ListView()
             {
@@ -510,11 +510,10 @@ namespace Cinemachine.Editor
                 var prop = so.FindProperty("PriorityAndChannel");
                 var enabledProp = prop.FindPropertyRelative("Enabled");
                 var priorityProp = prop.FindPropertyRelative("Priority");
-                var priority = enabledProp.boolValue ? priorityProp.intValue : 0;
                 var priorityField = row.AddChild(new IntegerField
                 {
                     value = enabledProp.boolValue ? priorityProp.intValue : 0,
-                    style = { flexBasis = FloatFieldWidth, flexGrow = 0, marginRight = 4 }
+                    style = { flexBasis = floatFieldWidth, flexGrow = 0, marginRight = 4 }
                 });
                 new FieldMouseDragger<int>(priorityField).SetDragZone(dragger);
                 priorityField.RegisterValueChangedCallback((evt) =>
