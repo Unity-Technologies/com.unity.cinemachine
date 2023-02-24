@@ -1,7 +1,12 @@
+using System;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
+using Object = UnityEngine.Object;
 
 namespace Cinemachine.Editor
 {
@@ -127,6 +132,188 @@ namespace Cinemachine.Editor
                     Object.DestroyImmediate(context.Editor);
                     context.Editor = null;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Add an asset selector widget with a presets popup.
+        /// </summary>
+        static public void AddAssetSelectorWithPresets<T>(
+            this UnityEditor.Editor owner, VisualElement ux, SerializedProperty property, 
+            string presetsPath, string warningTextIfNull) where T : ScriptableObject
+        {
+            var row = ux.AddChild(new InspectorUtility.LabeledContainer(property.displayName) { tooltip = property.tooltip });
+            var contents = row.Input;
+
+            Label warningIcon = null;
+            if (!string.IsNullOrEmpty(warningTextIfNull))
+            {
+                warningIcon = contents.AddChild(new Label 
+                { 
+                    tooltip = warningTextIfNull,
+                    style = 
+                    { 
+                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                        alignSelf = Align.Center
+                    }
+                });
+            }
+
+            var presetName = contents.AddChild(new TextField 
+            { 
+                isReadOnly = true,
+                tooltip = property.tooltip, 
+                style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1 }
+            });
+            presetName.SetEnabled(false);
+
+            var selector = contents.AddChild(new PropertyField(property, "") { style = { flexGrow = 1 }});
+            selector.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+
+            var button = contents.AddChild(new Button { style = 
+            { 
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
+                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }});
+
+            var defaultName = property.serializedObject.targetObject.name + " " + property.displayName;
+            var assetTypes = GetAssetTypes(typeof(T));
+            var presetAssets = GetPresets(assetTypes, presetsPath, out var presetNames);
+
+            var manipulator = new ContextualMenuManipulator((evt) => 
+            {
+                evt.menu.AppendAction("Clear", 
+                    (action) => 
+                    {
+                        property.objectReferenceValue = null;
+                        property.serializedObject.ApplyModifiedProperties();
+                    }, 
+                    (status) => 
+                    {
+                        var copyFrom = property.objectReferenceValue as ScriptableObject;
+                        return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
+                    }
+                );
+                int i = 0;
+                foreach (var a in presetAssets)
+                {
+                    evt.menu.AppendAction(presetNames[i++], 
+                        (action) => 
+                        {
+                            property.objectReferenceValue = a;
+                            property.serializedObject.ApplyModifiedProperties();
+                        }
+                    );
+                }
+                evt.menu.AppendAction("Clone", 
+                    (action) => 
+                    {
+                        var copyFrom = property.objectReferenceValue as ScriptableObject;
+                        if (copyFrom != null)
+                        {
+                            string title = "Create New " + copyFrom.GetType().Name + " asset";
+                            var asset = CreateAsset(copyFrom.GetType(), copyFrom, defaultName, title);
+                            if (asset != null)
+                            {
+                                property.objectReferenceValue = asset;
+                                property.serializedObject.ApplyModifiedProperties();
+                            }
+                        }
+                    }, 
+                    (status) => 
+                    {
+                        var copyFrom = property.objectReferenceValue as ScriptableObject;
+                        return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
+                    }
+                );
+                foreach (var t in assetTypes)
+                {
+                    evt.menu.AppendAction("New " + InspectorUtility.NicifyClassName(t), 
+                        (action) => 
+                        {
+                            var asset = CreateAsset(t, null, defaultName, "Create New " + t.Name + " asset");
+                            if (asset != null)
+                            {
+                                property.objectReferenceValue = asset;
+                                property.serializedObject.ApplyModifiedProperties();
+                            }
+                        }
+                    );  
+                }
+            });
+            manipulator.activators.Clear();
+            manipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+            button.AddManipulator(manipulator);
+
+            UpdateUX(property);
+            row.TrackPropertyValue(property, UpdateUX);
+            void UpdateUX(SerializedProperty p)
+            {
+                var target = p.objectReferenceValue as ScriptableObject;
+                warningIcon?.SetVisible(target == null);
+
+                // Is it a preset?
+                int presetIndex;
+                for (presetIndex = presetAssets.Count - 1; presetIndex >= 0; --presetIndex)
+                    if (target == presetAssets[presetIndex])
+                        break;
+
+                if (presetIndex >= 0)
+                    presetName.value = presetNames[presetIndex];
+                presetName.SetVisible(presetIndex >= 0);
+                selector.SetVisible(presetIndex < 0);
+            }
+
+            // Local function
+            static List<Type> GetAssetTypes(Type baseType)
+            {
+                // GML todo: optimize with TypeCache
+                return Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                    (Type t) => baseType.IsAssignableFrom(t) && !t.IsAbstract 
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToList();
+            }
+
+            // Local function
+            static List<ScriptableObject> GetPresets(
+                List<Type> assetTypes, string presetPath, out List<string> presetNames)
+            {
+                presetNames = new List<string>();
+                var presetAssets = new List<ScriptableObject>();
+
+                if (!string.IsNullOrEmpty(presetPath))
+                {
+                    foreach (var t in assetTypes)
+                        InspectorUtility.AddAssetsFromPackageSubDirectory(t, presetAssets, presetPath);
+                    foreach (var n in presetAssets)
+                        presetNames.Add("Presets/" + n.name);
+                }
+                return presetAssets;
+            }
+
+            // Local function
+            static ScriptableObject CreateAsset(
+                Type assetType, ScriptableObject copyFrom, string defaultName, string dialogTitle)
+            {
+                ScriptableObject asset = null;
+                string path = EditorUtility.SaveFilePanelInProject(
+                        dialogTitle, defaultName, "asset", string.Empty);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    if (copyFrom == null)
+                        asset = ScriptableObjectUtility.CreateAt(assetType, path);
+                    else
+                    {
+                        string fromPath = AssetDatabase.GetAssetPath(copyFrom);
+                        if (AssetDatabase.CopyAsset(fromPath, path))
+                            asset = AssetDatabase.LoadAssetAtPath(path, assetType) as ScriptableObject;
+                    }
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+                return asset;
             }
         }
     }

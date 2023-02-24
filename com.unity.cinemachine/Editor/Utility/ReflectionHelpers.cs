@@ -205,8 +205,7 @@ namespace Cinemachine.Utility
                     var index = Int32.Parse(elements[1].Trim(']'));
                     if (type.IsArray)
                     {
-                        var a = obj as Array;
-                        if (a == null || a.Length <= index)
+                        if (obj is not Array a || a.Length <= index)
                             return null;
                         obj = a.GetValue(index);
                     }
