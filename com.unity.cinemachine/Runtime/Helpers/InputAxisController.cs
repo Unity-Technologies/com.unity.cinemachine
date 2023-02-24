@@ -95,14 +95,14 @@ namespace Cinemachine
 #endif
 
         /// <summary>This list is dynamically populated based on the discovered axes</summary>
-        public List<Controller> Controllers = new List<Controller>();
+        public List<Controller> Controllers = new ();
 
         /// <summary>
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisSource"/>
         /// </summary>
-        List<IInputAxisSource.AxisDescriptor> m_Axes = new ();
-        List<IInputAxisSource> m_AxisOwners = new ();
-        List<IInputAxisResetSource> m_AxisResetters = new ();
+        readonly List<IInputAxisSource.AxisDescriptor> m_Axes = new ();
+        readonly List<IInputAxisSource> m_AxisOwners = new ();
+        readonly List<IInputAxisResetSource> m_AxisResetters = new ();
 
         void OnValidate()
         {
@@ -128,7 +128,7 @@ namespace Cinemachine
 
 #if UNITY_EDITOR
         static List<IInputAxisSource> s_AxisTargetsCache = new List<IInputAxisSource>();
-        internal bool ConrollersAreValid()
+        internal bool ControllersAreValid()
         {
             s_AxisTargetsCache.Clear();
             GetComponentsInChildren(s_AxisTargetsCache);
@@ -171,7 +171,16 @@ namespace Cinemachine
                 {
                     int controllerIndex = GetControllerIndex(Controllers, t, m_Axes[i].Name);
                     if (controllerIndex < 0)
-                        newControllers.Add(CreateDefaultControlForAxis(i, t));
+                    {
+                        var c = new Controller 
+                        {
+                            Enabled = true,
+                            Name = m_Axes[i].Name,
+                            Owner = t as UnityEngine.Object,
+                        };
+                        CreateDefaultControlForAxis(m_Axes[i], c);
+                        newControllers.Add(c);
+                    }
                     else
                     {
                         newControllers.Add(Controllers[controllerIndex]);
@@ -197,6 +206,18 @@ namespace Cinemachine
                         return i;
                 return -1;
             }
+        }
+
+        /// <summary>
+        /// Creates default controllers for an axis.
+        /// Override this if the default axis controllers do not fit your axes.
+        /// </summary>
+        /// <param name="axis">Description of the axis whose default controller needs to be set.</param>
+        /// <param name="controller">Controller to drive the axis.</param>
+        protected virtual void CreateDefaultControlForAxis(
+            in IInputAxisSource.AxisDescriptor axis, Controller controller)
+        { 
+            SetControlDefaults?.Invoke(axis, ref controller);
         }
 
         void OnResetInput()
@@ -238,24 +259,12 @@ namespace Cinemachine
             }
         }
 
-        Controller CreateDefaultControlForAxis(int axisIndex, IInputAxisSource owner)
-        {
-            var c = new Controller 
-            {
-                Enabled = true,
-                Name = m_Axes[axisIndex].Name,
-                Owner = owner as UnityEngine.Object,
-            };
-            SetControlDefaults?.Invoke(m_Axes[axisIndex], ref c);
-            return c;
-        }
-
         /// <summary>Delegate for overriding the legacy input system with custom code</summary>
         public delegate float GetInputAxisValueDelegate(string axisName);
 
         /// <summary>Implement this delegate to locally override the legacy input system call</summary>
         public GetInputAxisValueDelegate GetInputAxisValue = ReadLegacyInput;
-
+        
         static float ReadLegacyInput(string axisName)
         {
             float value = 0;
@@ -274,6 +283,43 @@ namespace Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
+        /// <summary>
+        /// Definition of how we read input. Override this in your child classes to specify
+        /// the InputAction's type to read if it is different from float or Vector2.
+        /// </summary>
+        /// <param name="action">The action being read.</param>
+        /// <param name="hint">The axis hint of the action.</param>
+        /// <returns>Returns the value of the input device.</returns>
+        protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
+        {
+#if true
+            // GML Temporary fix until this issue is sorted out
+            switch (hint)
+            {
+                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
+                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
+                default: return action.ReadValue<float>();
+            }
+#else
+            var activeControl = action.activeControl;
+            if (activeControl == null)
+                return 0f;
+            
+            var actionControlType = activeControl.valueType;
+            if (actionControlType == typeof(float))
+                return action.ReadValue<float>();
+            if (actionControlType == typeof(Vector2))
+                return hint == IInputAxisSource.AxisDescriptor.Hints.Y
+                    ? action.ReadValue<Vector2>().y
+                    : action.ReadValue<Vector2>().x;
+
+            Debug.LogError("The valueType of InputAction provided to " + name + " is not handled by default. " +
+                "You need to create a class inheriting InputAxisController and you need to override the " +
+                "ReadInput method to handle your case.");
+            return 0f;
+#endif
+        }
+        
         float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
         {
             ResolveActionForPlayer(c, PlayerIndex);
@@ -287,16 +333,7 @@ namespace Cinemachine
                     c.m_CachedAction.Disable();
             }
 
-            if (c.m_CachedAction != null)
-            {
-                switch (hint)
-                {
-                    case IInputAxisSource.AxisDescriptor.Hints.X: return c.m_CachedAction.ReadValue<Vector2>().x;
-                    case IInputAxisSource.AxisDescriptor.Hints.Y: return c.m_CachedAction.ReadValue<Vector2>().y;
-                    default: return c.m_CachedAction.ReadValue<float>();
-                }
-            }
-            return 0;
+            return c.m_CachedAction != null ? ReadInput(c.m_CachedAction, hint) : 0f;
         }
 
         void ResolveActionForPlayer(Controller c, int playerIndex)
