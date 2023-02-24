@@ -39,7 +39,7 @@ namespace Cinemachine
 
         /// <summary>Obstacles closer to the target than this will be ignored</summary>
         [Tooltip("Obstacles closer to the target than this will be ignored")]
-        public float MinimumDistanceFromTarget = 0.1f;
+        public float MinimumDistanceFromTarget = 0.2f;
 
         /// <summary>Settings for deoccluding the camera when obstacles are present</summary>
         [Serializable]
@@ -132,7 +132,7 @@ namespace Cinemachine
                 DistanceLimit = 0,
                 MinimumOcclusionTime = 0,
                 CameraRadius = 0.1f,
-                Strategy = ResolutionStrategy.PreserveCameraHeight,
+                Strategy = ResolutionStrategy.PullCameraForward,
                 MaximumEffort = 4,
                 SmoothingTime = 0,
                 Damping = 0.2f,
@@ -221,7 +221,7 @@ namespace Cinemachine
             CollideAgainst = 1;
             IgnoreTag = string.Empty;
             TransparentLayers = 0;
-            MinimumDistanceFromTarget = 0.1f;
+            MinimumDistanceFromTarget = 0.2f;
             AvoidObstacles = ObstacleAvoidance.Default;
             ShotQualityEvaluation = QualityEvaluation.Default;
         }
