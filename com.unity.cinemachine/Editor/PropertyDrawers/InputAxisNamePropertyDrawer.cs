@@ -49,6 +49,7 @@ namespace Cinemachine.Editor
             row.Add(new PropertyField(property, "") { style = { flexGrow = 1 }});
             var error = row.AddChild(new Label 
             { 
+                tooltip = "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes",
                 style = 
                 { 
                     flexGrow = 0,
