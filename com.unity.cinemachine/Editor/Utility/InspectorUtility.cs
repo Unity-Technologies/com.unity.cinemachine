@@ -419,7 +419,7 @@ namespace Cinemachine.Editor
                 EditorApplication.delayCall += callback;
             else
                 callback();
-            owner.RegisterCallback<DetachFromPanelEvent>((e) => UserDidSomething -= callback);
+            owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
         }
 
         /// <summary>
@@ -430,7 +430,7 @@ namespace Cinemachine.Editor
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
             EditorApplication.update += callback;
-            owner.RegisterCallback<DetachFromPanelEvent>((e) => EditorApplication.update -= callback);
+            owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
         }
         
         /// <summary>
@@ -441,7 +441,7 @@ namespace Cinemachine.Editor
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
             owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            void OnGeometryChanged(GeometryChangedEvent e)
+            void OnGeometryChanged(GeometryChangedEvent _)
             {
                 owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
                 callback();

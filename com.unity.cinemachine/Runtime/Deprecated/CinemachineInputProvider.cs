@@ -8,7 +8,7 @@ using UnityEngine.InputSystem.Users;
 namespace Cinemachine
 {
     /// <summary>
-    /// This is a deprecated component.  Use CinemachineSplineDolly instead.
+    /// This is a deprecated component.  Use InputAxisController instead.
     /// </summary>
     [Obsolete("CinemachineInputProvider has been deprecated. Use InputAxisController instead.")]
     [AddComponentMenu("")] // Don't display in add component menu

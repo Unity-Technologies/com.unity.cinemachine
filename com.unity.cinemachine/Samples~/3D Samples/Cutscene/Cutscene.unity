@@ -515,7 +515,7 @@ Light:
   m_ShadowAngle: 0
 --- !u!95 &261004531
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -532,7 +532,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &452003393
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,8 +739,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558704396}
-  m_LocalRotation: {x: 0.15086423, y: 0, z: 0, w: 0.98855454}
-  m_LocalPosition: {x: 0, y: 2.25, z: -4}
+  m_LocalRotation: {x: 0.028843066, y: 0.9191005, z: 0.06850965, w: -0.38694805}
+  m_LocalPosition: {x: 2.2477376, y: 0.52887934, z: 2.1963186}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1587,7 +1587,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1292214855
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1604,7 +1604,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &1334683673
 GameObject:
   m_ObjectHideFlags: 0
@@ -2129,7 +2129,7 @@ MonoBehaviour:
     m_SensorSize: {x: 1, y: 1}
     FocusDistance: 10
   Transitions:
-    BlendHint: 2
+    BlendHint: 0
     Events:
       OnCameraLive:
         m_PersistentCalls:
@@ -2269,6 +2269,7 @@ GameObject:
   - component: {fileID: 1721836168}
   - component: {fileID: 1721836167}
   - component: {fileID: 1721836173}
+  - component: {fileID: 1721836174}
   m_Layer: 0
   m_Name: FreeLook Camera
   m_TagString: Untagged
@@ -2293,6 +2294,7 @@ MonoBehaviour:
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1721836170}
+    Enabled: 1
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: 4
     LegacyInput: Mouse X
@@ -2301,12 +2303,9 @@ MonoBehaviour:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
   - Name: Look Orbit Y
     Owner: {fileID: 1721836170}
+    Enabled: 1
     InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     Gain: -4
     LegacyInput: Mouse Y
@@ -2315,12 +2314,9 @@ MonoBehaviour:
       InputValue: 0
       AccelTime: 0.2
       DecelTime: 0.2
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
   - Name: Orbit Scale
     Owner: {fileID: 1721836170}
+    Enabled: 1
     InputAction: {fileID: 0}
     Gain: 4
     LegacyInput: 
@@ -2329,10 +2325,6 @@ MonoBehaviour:
       InputValue: 0
       AccelTime: 0
       DecelTime: 0
-    Recentering:
-      Enabled: 0
-      Wait: 1
-      Time: 2
 --- !u!114 &1721836168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2414,18 +2406,30 @@ MonoBehaviour:
     Center: 0
     Range: {x: -180, y: 180}
     Wrap: 1
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 17.5
+    Value: 0
     Center: 17.5
     Range: {x: -10, y: 45}
     Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
   RadialAxis:
     Value: 1
     Center: 1
     Range: {x: 1, y: 1}
     Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
     Restrictions: 0
 --- !u!114 &1721836171
 MonoBehaviour:
@@ -2474,8 +2478,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721836166}
-  m_LocalRotation: {x: 0.15086423, y: 0, z: 0, w: 0.98855454}
-  m_LocalPosition: {x: 0, y: 2.25, z: -4}
+  m_LocalRotation: {x: -0.05325671, y: -0.00000002079702, z: -0.0000000011091548, w: 0.9985809}
+  m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2498,7 +2502,43 @@ MonoBehaviour:
   PivotOffset: {x: 0, y: 0, z: 0}
   AmplitudeGain: 1
   FrequencyGain: 0.6
-  mNoiseOffsets: {x: 0, y: 0, z: 0}
+  mNoiseOffsets: {x: 18.699768, y: -547.74475, z: -346.61926}
+--- !u!114 &1721836174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1721836166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe43d662878a7c43bcd44d43c9e2094, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 1
+  IgnoreTag: Player
+  TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  MinimumDistanceFromTarget: 0.2
+  AvoidObstacles:
+    Enabled: 1
+    DistanceLimit: 0
+    MinimumOcclusionTime: 0
+    CameraRadius: 0.1
+    Strategy: 0
+    MaximumEffort: 4
+    SmoothingTime: 0
+    Damping: 0.2
+    DampingWhenOccluded: 0
+  ShotQualityEvaluation:
+    Enabled: 0
+    OptimalDistance: 10
+    NearLimit: 5
+    FarLimit: 30
+    MaxQualityBoost: 0.2
 --- !u!1 &1766147865
 GameObject:
   m_ObjectHideFlags: 0
@@ -3001,7 +3041,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2015024882
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3018,7 +3058,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &2055637200
 GameObject:
   m_ObjectHideFlags: 0
@@ -3305,7 +3345,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2113365885
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3322,7 +3362,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &2127019721
 GameObject:
   m_ObjectHideFlags: 0
@@ -3362,6 +3402,9 @@ MonoBehaviour:
     and three static camera shots, which are blended by Cinemachine to create camera
     movement.  \r\n\r\nThe TreasureChestRig object contains all the assets, the camera
     shots, the timeline, and the trigger zone."
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &2127019723
 Transform:
   m_ObjectHideFlags: 0
