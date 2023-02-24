@@ -15,7 +15,6 @@ namespace Cinemachine.Editor
         CinemachineBrain Target => target as CinemachineBrain;
 
         bool m_EventsExpanded = false;
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();

@@ -30,8 +30,7 @@ namespace Cinemachine.Editor
         {
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
-
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.FollowGroup);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Group);
             var groupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingMode)));
