@@ -1,6 +1,7 @@
 #define USE_IMGUI_INSTRUCTION_LIST // We use IMGUI while we wait for UUM-27687 and UUM-27688 to be fixed
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -78,45 +79,43 @@ namespace Cinemachine.Editor
             // be needed when the other ListView items are fixed 
             EditorApplication.delayCall += () =>
             {
-            list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
-            list.bindItem = (row, index) =>
-            {
-                // Remove children - items seem to get recycled
-                for (int i = row.childCount - 1; i >= 0; --i)
-                    row.RemoveAt(i);
-                //row.parent.style.paddingLeft = row.parent.style.paddingRight = 0;
-
-                var def = new CinemachineBlendListCamera.Instruction();
-                var element = instructions.GetArrayElementAtIndex(index);
-                ((BindableElement)row).BindProperty(element);
-
-                var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
-                var vcamSel = row.AddChild(new PopupField<Object>());
-                vcamSel.BindProperty(vcamSelProp);
-                vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-    
-                vcamSel.TrackAnyUserActivity(() => 
+                list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
+                list.bindItem = (row, index) =>
                 {
-                    List<Object> choices = new ();
-                    var children = Target.ChildCameras;
-                    foreach (var c in children)
-                        choices.Add(c);
-                    vcamSel.choices = choices;
-                });
-    
-                var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
-                var hold = row.AddChild(new InspectorUtility.CompactPropertyField(element.FindPropertyRelative(() => def.Hold), " "));
-                hold.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
-                
-                FormatInstructionElement(vcamSel, blend, hold);
-            };
+                    // Remove children - items seem to get recycled
+                    for (int i = row.childCount - 1; i >= 0; --i)
+                        row.RemoveAt(i);
+                    //row.parent.style.paddingLeft = row.parent.style.paddingRight = 0;
+
+                    var def = new CinemachineBlendListCamera.Instruction();
+                    var element = instructions.GetArrayElementAtIndex(index);
+                    ((BindableElement)row).BindProperty(element);
+
+                    var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
+                    var vcamSel = row.AddChild(new PopupField<Object>());
+                    vcamSel.BindProperty(vcamSelProp);
+                    vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
+                    vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
+        
+                    vcamSel.TrackAnyUserActivity(() => 
+                    {
+                        vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList();
+                    });
+        
+                    var blend = row.AddChild(
+                        new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
+                    var hold = row.AddChild(
+                        new InspectorUtility.CompactPropertyField(element.FindPropertyRelative(() => def.Hold), " "));
+                    hold.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+                    
+                    FormatInstructionElement(vcamSel, blend, hold);
+                };
             }; // delayCall hack
 
             // Local function
             static void FormatInstructionElement(VisualElement e1, VisualElement e2, VisualElement e3)
             {
-                float floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
+                var floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
                 
                 e1.style.marginLeft = 3;
                 e1.style.flexBasis = floatFieldWidth; 
@@ -187,8 +186,8 @@ namespace Cinemachine.Editor
             // Needed for accessing field names as strings
             var def = new CinemachineBlendListCamera.Instruction();
 
-            var vSpace = 2f;
-            var hSpace = 3f;
+            const float vSpace = 2f;
+            const float hSpace = 3f;
             var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
             var hBigSpace = EditorGUIUtility.singleLineHeight * 2 / 3;
             m_InstructionList.drawHeaderCallback = (Rect rect) =>
@@ -205,7 +204,7 @@ namespace Cinemachine.Editor
                 EditorGUI.LabelField(rect, "Hold");
             };
 
-            m_InstructionList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            m_InstructionList.drawElementCallback = (Rect rect, int index, bool _, bool _) =>
             {
                 SerializedProperty instProp = m_InstructionList.serializedProperty.GetArrayElementAtIndex(index);
                 float sharedWidth = rect.width - floatFieldWidth - hSpace - hBigSpace;
