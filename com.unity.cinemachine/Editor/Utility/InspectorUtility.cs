@@ -641,7 +641,7 @@ namespace Cinemachine.Editor
                 || p.propertyType == SerializedPropertyType.Integer)
             {
                 label.AddToClassList("unity-base-field__label--with-dragger");
-                label.OnInitialGeometryChanged(() =>
+                label.OnInitialGeometry(() =>
                 {
                     if (p.propertyType == SerializedPropertyType.Float)
                         new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
