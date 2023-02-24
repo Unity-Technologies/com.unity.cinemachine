@@ -17,7 +17,8 @@ namespace Cinemachine.Editor
     static class InspectorUtility
     {
         /// <summary>
-        /// Callback that happens whenever something undoable happens, either with objects or with selection.
+        /// Callback that happens whenever something undoable happens, either with 
+        /// objects or with selection.  This is a good way to track user activity.
         /// </summary>
         public static EditorApplication.CallbackFunction UserDidSomething;
 
@@ -406,6 +407,47 @@ namespace Cinemachine.Editor
         // this is a hack to get around some vertical alignment issues in UITK
         public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
 
+        /// <summary>
+        /// Convenience extension for UserDidSomething callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void TrackAnyUserActivity(
+            this VisualElement owner, EditorApplication.CallbackFunction callback, bool delayInitialCallback = false)
+        {
+            UserDidSomething += callback;
+            if (delayInitialCallback)
+                EditorApplication.delayCall += callback;
+            else
+                callback();
+            owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
+        }
+
+        /// <summary>
+        /// Convenience extension for EditorApplication.update callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void ContinuousUpdate(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            EditorApplication.update += callback;
+            owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
+        }
+        
+        /// <summary>
+        /// Convenience extension to get a callback after initial geometry creation, making it easier to use lambdas.
+        /// Callback will only be called once.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void OnInitialGeometryChanged(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            void OnGeometryChanged(GeometryChangedEvent _)
+            {
+                owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
+                callback();
+            }
+        }
+        
         /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>

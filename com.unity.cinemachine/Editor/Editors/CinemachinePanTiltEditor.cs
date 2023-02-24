@@ -10,31 +10,17 @@ namespace Cinemachine.Editor
     {
         CinemachinePanTilt Target => target as CinemachinePanTilt;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-        VisualElement m_NoControllerHelp;
-
-        void OnEnable()
-        {
-            m_PipelineUtility = new (this);
-            EditorApplication.update += UpdateHelpBox;
-        }
-        void OnDisable()
-        {
-            m_PipelineUtility.OnDisable();
-            EditorApplication.update -= UpdateHelpBox;
-        }
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ReferenceFrame)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PanAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TiltAxis)));
 
             ux.AddSpace();
-            m_NoControllerHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
+            var noControllerHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
                 "PanTilt has no input axis controller behaviour.", HelpBoxMessageType.Info,
                 "Add Input Controller", () =>
             {
@@ -55,20 +41,18 @@ namespace Cinemachine.Editor
                 }
             }));
 
-            m_PipelineUtility.UpdateState();
-            UpdateHelpBox();
-            return ux;
-        }
+            ux.TrackAnyUserActivity(() =>
+            {
+                if (target == null || noControllerHelp == null)
+                    return;  // target was deleted
 
-        void UpdateHelpBox()
-        {
-            if (target == null || m_NoControllerHelp == null)
-                return;  // target was deleted
-            bool noHandler = false;
-            for (int i = 0; !noHandler && i < targets.Length; ++i)
-                noHandler |= !(targets[i] as CinemachinePanTilt).HasInputHandler;
-            if (m_NoControllerHelp != null)
-                m_NoControllerHelp.SetVisible(noHandler);
+                bool noHandler = false;
+                for (int i = 0; !noHandler && i < targets.Length; ++i)
+                    noHandler |= !(targets[i] as CinemachinePanTilt).HasInputHandler;
+                noControllerHelp?.SetVisible(noHandler);
+            });
+
+            return ux;
         }
     }
 }

@@ -10,17 +10,13 @@ namespace Cinemachine.Editor
     {
         CinemachineFollow Target => target as CinemachineFollow;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
         void OnEnable()
         {
-            m_PipelineUtility = new (this);
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         }
         
         void OnDisable()
         {
-            m_PipelineUtility.OnDisable();
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
@@ -28,11 +24,10 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FollowOffset)));
 
-            m_PipelineUtility.UpdateState();
             return ux;
         }
 

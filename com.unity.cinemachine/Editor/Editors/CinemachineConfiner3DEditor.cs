@@ -13,16 +13,11 @@ namespace Cinemachine.Editor
     {
         CinemachineConfiner3D Target => target as CinemachineConfiner3D;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
-        void OnEnable() => m_PipelineUtility = new (this);
-        void OnDisable() => m_PipelineUtility.OnDisable();
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
 
             var boundsHelp = ux.AddChild(new HelpBox(
                 "Bounding Volume must be a BoxCollider, SphereCollider, CapsuleCollider, or convex MeshCollider.", 
@@ -31,7 +26,6 @@ namespace Cinemachine.Editor
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingVolume);
             ux.Add(new PropertyField(volumeProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
-            m_PipelineUtility.UpdateState();
 
             TrackVolume(volumeProp);
             ux.TrackPropertyValue(volumeProp, TrackVolume);

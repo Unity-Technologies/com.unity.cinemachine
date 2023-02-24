@@ -172,6 +172,7 @@ namespace Cinemachine.Editor
             {
                 if (property.serializedObject.targetObject == null)
                     return; // target deleted
+
                 bool isPhysical = IsPhysical(property);
                 physical.SetVisible(isPhysical);
                 outerFovControl.Update(true);
@@ -184,7 +185,7 @@ namespace Cinemachine.Editor
                     modeHelp.SetVisible(!brainHasModeOverride
                         && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 }
-            }
+            };
 
             return ux;
         }

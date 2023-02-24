@@ -18,7 +18,7 @@ namespace Cinemachine.Editor
         {
             serializedObject.Update();
 
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
             bool needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)
                 needWarning = (targets[i] as CinemachineBasicMultiChannelPerlin).NoiseProfile == null;

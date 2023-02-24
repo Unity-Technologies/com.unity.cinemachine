@@ -486,15 +486,9 @@ namespace Cinemachine.Editor
         static SaveDuringPlay()
         {
             // Install our callbacks
-#if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += OnPlayStateChanged;
-#else
-            EditorApplication.update += OnEditorUpdate;
-            EditorApplication.playmodeStateChanged += OnPlayStateChanged;
-#endif
         }
 
-#if UNITY_2017_2_OR_NEWER
         static void OnPlayStateChanged(PlayModeStateChange pmsc)
         {
             if (Enabled)
@@ -511,35 +505,6 @@ namespace Cinemachine.Editor
                 }
             }
         }
-#else
-        static void OnPlayStateChanged()
-        {
-            // If exiting playmode, collect the state of all interesting objects
-            if (Enabled)
-            {
-                if (!EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying)
-                    SaveAllInterestingStates();
-            }
-        }
-
-        static float sWaitStartTime = 0;
-        static void OnEditorUpdate()
-        {
-            if (Enabled && sSavedStates != null && !Application.isPlaying)
-            {
-                // Wait a bit for things to settle before applying the saved state
-                const float WaitTime = 1f; // GML todo: is there a better way to do this?
-                float time = Time.realtimeSinceStartup;
-                if (sWaitStartTime == 0)
-                    sWaitStartTime = time;
-                else if (time - sWaitStartTime > WaitTime)
-                {
-                    RestoreAllInterestingStates();
-                    sWaitStartTime = 0;
-                }
-            }
-        }
-#endif
 
         /// <summary>
         /// If you need to get notified before state is collected for hotsave, this is the place

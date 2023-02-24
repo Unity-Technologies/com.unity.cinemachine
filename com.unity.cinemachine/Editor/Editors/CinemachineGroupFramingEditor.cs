@@ -12,16 +12,8 @@ namespace Cinemachine.Editor
     {
         CinemachineGroupFraming Target => target as CinemachineGroupFraming;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-        VisualElement m_GroupSizeIsZeroHelp;
-        VisualElement m_PerspectiveControls;
-        VisualElement m_OrthoControls;
-
         void OnEnable() 
         {
-            m_PipelineUtility = new(this);
-            EditorApplication.update += UpdateVisibility;
-
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -32,9 +24,6 @@ namespace Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-
-            EditorApplication.update -= UpdateVisibility;
-            m_PipelineUtility.OnDisable();
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -42,23 +31,23 @@ namespace Cinemachine.Editor
             var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.FollowGroup);
-            m_GroupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Group);
+            var groupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingMode)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingSize)));
             ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
 
-            m_PerspectiveControls = ux.AddChild(new VisualElement());
+            var perspectiveControls = ux.AddChild(new VisualElement());
 
             var sizeAdjustmentProperty = serializedTarget.FindProperty(() => Target.SizeAdjustment);
-            m_PerspectiveControls.Add(new PropertyField(sizeAdjustmentProperty));
-            m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.LateralAdjustment)));
-            var fovRange = m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
-            var dollyRange = m_PerspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
+            perspectiveControls.Add(new PropertyField(sizeAdjustmentProperty));
+            perspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.LateralAdjustment)));
+            var fovRange = perspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
+            var dollyRange = perspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
 
-            m_OrthoControls = ux.AddChild(new VisualElement());
-            m_OrthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));
+            var orthoControls = ux.AddChild(new VisualElement());
+            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));
 
             ux.TrackPropertyValue(sizeAdjustmentProperty, (prop) =>
             {
@@ -69,28 +58,26 @@ namespace Cinemachine.Editor
                 dollyRange.SetVisible(haveDolly);
             });
             
-            m_PipelineUtility.UpdateState();
-            UpdateVisibility();
-            return ux;
-        }
-
-        void UpdateVisibility()
-        {
-            if (target == null || m_GroupSizeIsZeroHelp == null)
-                return; 
-
-            ICinemachineTargetGroup group = null;
-            for (int i = 0; group == null && i < targets.Length; ++i)
+            ux.TrackAnyUserActivity(() =>
             {
-                var vcam = (targets[i] as CinemachineGroupFraming).ComponentOwner;
-                if (vcam != null)
-                    group = vcam.FollowTargetAsGroup;
-            }
-            m_GroupSizeIsZeroHelp.SetVisible(group != null && group.Sphere.radius < 0.01f);
+                if (target == null || groupSizeIsZeroHelp == null)
+                    return; 
 
-            bool ortho = Target.ComponentOwner != null && Target.ComponentOwner.State.Lens.Orthographic;
-            m_PerspectiveControls.SetVisible(!ortho);
-            m_OrthoControls.SetVisible(ortho);
+                ICinemachineTargetGroup group = null;
+                for (int i = 0; group == null && i < targets.Length; ++i)
+                {
+                    var vcam = (targets[i] as CinemachineGroupFraming).ComponentOwner;
+                    if (vcam != null)
+                        group = vcam.FollowTargetAsGroup;
+                }
+                groupSizeIsZeroHelp.SetVisible(group != null && group.Sphere.radius < 0.01f);
+
+                bool ortho = Target.ComponentOwner != null && Target.ComponentOwner.State.Lens.Orthographic;
+                perspectiveControls.SetVisible(!ortho);
+                orthoControls.SetVisible(ortho);
+            });
+
+            return ux;
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)

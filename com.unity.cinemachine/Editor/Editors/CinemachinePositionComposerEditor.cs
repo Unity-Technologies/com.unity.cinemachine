@@ -10,14 +10,12 @@ namespace Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachinePositionComposerEditor : UnityEditor.Editor
     {
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
         GameViewComposerGuides m_GameViewGuides = new();
 
         CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
         protected virtual void OnEnable()
         {
-            m_PipelineUtility = new (this);
             m_GameViewGuides.GetComposition = () => Target.Composition;
             m_GameViewGuides.SetComposition = (s) => Target.Composition = s;
             m_GameViewGuides.Target = () => serializedObject;
@@ -34,7 +32,6 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
-            m_PipelineUtility.OnDisable();
             m_GameViewGuides.OnDisable();
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -48,7 +45,7 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
@@ -57,7 +54,6 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
 
-            m_PipelineUtility.UpdateState();
             return ux;
         }
 

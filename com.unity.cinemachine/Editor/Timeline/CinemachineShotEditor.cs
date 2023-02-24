@@ -37,7 +37,6 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_TIMELINE_1_8_2
         VisualElement m_ParentElement;
         VisualElement m_CreateButton;
-        SerializedProperty m_vcamProperty;
         CinemachineVirtualCameraBase m_CachedReferenceObject;
         readonly List<MonoBehaviour> m_ComponentsCache = new ();
         readonly List<Subeditor> m_Subeditors = new ();
@@ -88,16 +87,7 @@ namespace Cinemachine.Editor
             m_Subeditors.Clear();
         }
 
-        void OnEnable()
-        {
-            InspectorUtility.UserDidSomething += UpdateComponentEditors;
-        }
-
-        void OnDisable()
-        {
-            InspectorUtility.UserDidSomething -= UpdateComponentEditors;
-            DestroySubeditors();
-        }
+        void OnDisable() => DestroySubeditors();
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -141,7 +131,7 @@ namespace Cinemachine.Editor
 
             // Camera Reference - we do it in IMGUI until the ExposedReference UITK bugs are fixed
             m_ParentElement.AddSpace();
-            m_vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
+            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
             row = m_ParentElement.AddChild(new InspectorUtility.LeftRightContainer());
             row.Left.AddChild(new Label("Cinemachine Camera") 
             { 
@@ -151,14 +141,14 @@ namespace Cinemachine.Editor
             row.Right.Add(new IMGUIContainer(() =>
             {
                 EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(m_vcamProperty, GUIContent.none);
+                EditorGUILayout.PropertyField(vcamProperty, GUIContent.none);
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
             }) { style = { flexGrow = 1, marginBottom = 2 }} );
             m_CreateButton = row.Right.AddChild(new Button(() => 
             {
-                m_vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
-                m_vcamProperty.serializedObject.ApplyModifiedProperties();
+                vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
+                vcamProperty.serializedObject.ApplyModifiedProperties();
             })
             {
                 text = "Create",
@@ -170,9 +160,9 @@ namespace Cinemachine.Editor
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
             m_ParentElement.AddSpace();
 
-            // We perform an initial subeditor update with a delay call because it goes into an infinite
-            // loop if we do it immediately. Something to do with the UITK's throttling of Bind calls.
-            EditorApplication.delayCall += UpdateComponentEditors;
+            // Component editors.  We delay the initial update because otherwise we get
+            // infinite loops (something to do with UITK throttling Bind calls)
+            m_ParentElement.TrackAnyUserActivity(UpdateComponentEditors, true);
 
             return m_ParentElement;
         }
@@ -182,8 +172,9 @@ namespace Cinemachine.Editor
             if (m_ParentElement == null || serializedObject == null)
                 return;
 
-            m_CreateButton.SetVisible(m_vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
-            var vcam = m_vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
+            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
+            m_CreateButton.SetVisible(vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
+            var vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
 
             m_ComponentsCache.Clear();
             if (vcam != null)

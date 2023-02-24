@@ -295,14 +295,11 @@ namespace Cinemachine
                 var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
                 {
-                    if (components[i].enabled)
-                    {
 #if UNITY_EDITOR
-                        if (m_Pipeline[(int)components[i].Stage] != null)
-                            Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
+                    if (m_Pipeline[(int)components[i].Stage] != null)
+                        Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
 #endif
-                        m_Pipeline[(int)components[i].Stage] = components[i];
-                    }
+                    m_Pipeline[(int)components[i].Stage] = components[i];
                 }
             }
         }

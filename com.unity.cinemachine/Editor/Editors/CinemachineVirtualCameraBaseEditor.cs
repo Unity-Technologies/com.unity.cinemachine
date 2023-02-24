@@ -88,22 +88,6 @@ namespace Cinemachine.Editor
             DrawGlobalControlsInInspector();
         }
         
-/* GML DO NOT COMMIT
-        /// <summary>Create the contents of the inspector panel.
-        /// This implementation draws header and Extensions widget, and uses default algorithms 
-        /// to draw the properties in the inspector</summary>
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
-            DrawCameraStatusInInspector();
-            DrawGlobalControlsInInspector();
-            DrawInputProviderButtonInInspector();
-            DrawRemainingPropertiesInInspector();
-            DrawExtensionsWidgetInInspector();
-        }
-*/
-
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
         /// Draw a message prompting the user to add a CinemachineInputProvider.  
