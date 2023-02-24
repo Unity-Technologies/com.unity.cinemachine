@@ -14,10 +14,8 @@ namespace Cinemachine
     [Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
-    class CinemachineFreeLookEditor : CinemachineLegacyVcamBaseEditor<CinemachineFreeLook>
+    class CinemachineFreeLookEditor : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
     {
-        string FieldPath<TValue>(Expression<Func<CinemachineFreeLook, TValue>> expr) => ReflectionHelpers.GetFieldPath(expr);
-        
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -78,11 +76,11 @@ namespace Cinemachine
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
-            DrawNonExcludedTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.m_CommonLens));
-            DrawNonExcludedPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_CommonLens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
             DrawRemainingPropertiesInInspector();
 
             // Orbits

@@ -13,7 +13,6 @@ namespace Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
             this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Offset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ApplyAfter)));

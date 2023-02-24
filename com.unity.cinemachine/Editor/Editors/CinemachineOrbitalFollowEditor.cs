@@ -26,7 +26,6 @@ namespace Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
@@ -76,7 +75,7 @@ namespace Cinemachine.Editor
                 if (target == null || noControllerHelp == null)
                     return;  // target was deleted
 
-                bool noHandler = false;
+                var noHandler = false;
                 for (int i = 0; i < targets.Length; ++i)
                     noHandler |= !(targets[i] as CinemachineOrbitalFollow).HasInputHandler;
                 noControllerHelp.SetVisible(noHandler);

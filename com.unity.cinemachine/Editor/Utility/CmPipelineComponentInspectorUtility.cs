@@ -46,7 +46,7 @@ namespace Cinemachine.Editor
             {
                 if (editor == null || editor.target == null)
                     return;  // target was deleted
-
+                
                 var noCamera = false;
                 var noTarget = false;
                 for (int i = 0; i < targets.Length && !noCamera; ++i)

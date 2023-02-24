@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -31,21 +32,26 @@ namespace Cinemachine
             [Tooltip("The virtual camera to activate when this instruction becomes active")]
             [FormerlySerializedAs("m_VirtualCamera")]
             public CinemachineVirtualCameraBase Camera;
-            /// <summary>How long to wait (in seconds) before activating the next virtual camera in the list (if any)</summary>
-            [Tooltip("How long to wait (in seconds) before activating the next virtual camera in the list (if any)")]
-            [FormerlySerializedAs("m_Hold")]
-            public float Hold;
+
             /// <summary>How to blend to the next virtual camera in the list (if any)</summary>
             [Tooltip("How to blend to the next virtual camera in the list (if any)")]
             [FormerlySerializedAs("m_Blend")]
             public CinemachineBlendDefinition Blend;
+
+            /// <summary>How long to wait (in seconds) before activating the next virtual camera in the list (if any)</summary>
+            [Tooltip("How long to wait (in seconds) before activating the next virtual camera in the list (if any)")]
+            [FormerlySerializedAs("m_Hold")]
+            public float Hold;
+
+            /// <summary>Clamp the the settings to sensible valuse.</summary>
+            public void Validate() => Hold = Mathf.Max(Hold, 0);
         };
 
         /// <summary>The set of instructions associating virtual cameras with states.
         /// The set of instructions for enabling child cameras</summary>
         [Tooltip("The set of instructions for enabling child cameras.")]
         [FormerlySerializedAs("m_Instructions")]
-        public Instruction[] Instructions;
+        public List<Instruction> Instructions = new ();
 
         [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
         [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
@@ -64,7 +70,20 @@ namespace Cinemachine
             Loop = false;
             Instructions = null;
         }
-        
+
+        private void OnValidate()
+        {
+            if (Instructions != null)
+            {
+                for (int i = 0; i < Instructions.Count; ++i)
+                {
+                    var e = Instructions[i];
+                    e.Validate();
+                    Instructions[i] = e;
+                }
+            }
+        }
+
         protected internal override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
             base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
@@ -131,7 +150,7 @@ namespace Cinemachine
             AdvanceCurrentInstruction(deltaTime);
 
             CinemachineVirtualCameraBase best = null;
-            if (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Length)
+            if (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Count)
                 best = Instructions[m_CurrentInstruction].Camera;
 
             if (best != null)
@@ -195,14 +214,15 @@ namespace Cinemachine
         /// // GML todo: make this private, part of UpdateCameraCache()
         internal void ValidateInstructions()
         {
-            if (Instructions == null)
-                Instructions = Array.Empty<Instruction>();
-            for (var i = 0; i < Instructions.Length; ++i)
+            Instructions ??= new ();
+            for (var i = 0; i < Instructions.Count; ++i)
             {
                 if (Instructions[i].Camera != null
                     && Instructions[i].Camera.transform.parent != transform)
                 {
-                    Instructions[i].Camera = null;
+                    var e = Instructions[i];
+                    e.Camera = null;
+                    Instructions[i] = e;
                 }
             }
         }
@@ -210,7 +230,7 @@ namespace Cinemachine
         void AdvanceCurrentInstruction(float deltaTime)
         {
             if (ChildCameras == null || ChildCameras.Count == 0 
-                || m_ActivationTime < 0 || Instructions.Length == 0)
+                || m_ActivationTime < 0 || Instructions.Count == 0)
             {
                 m_ActivationTime = -1;
                 m_CurrentInstruction = -1;
@@ -224,20 +244,20 @@ namespace Cinemachine
                 m_ActivationTime = now;
                 m_CurrentInstruction = 0;
             }
-            if (m_CurrentInstruction > Instructions.Length - 1)
+            if (m_CurrentInstruction > Instructions.Count - 1)
             {
                 m_ActivationTime = now;
-                m_CurrentInstruction = Instructions.Length - 1;
+                m_CurrentInstruction = Instructions.Count - 1;
             }
 
             var holdTime = Instructions[m_CurrentInstruction].Hold 
                 + Instructions[m_CurrentInstruction].Blend.BlendTime;
-            var minHold = m_CurrentInstruction < Instructions.Length - 1 || Loop ? 0 : float.MaxValue;
+            var minHold = m_CurrentInstruction < Instructions.Count - 1 || Loop ? 0 : float.MaxValue;
             if (now - m_ActivationTime > Mathf.Max(minHold, holdTime))
             {
                 m_ActivationTime = now;
                 ++m_CurrentInstruction;
-                if (Loop && m_CurrentInstruction == Instructions.Length)
+                if (Loop && m_CurrentInstruction == Instructions.Count)
                     m_CurrentInstruction = 0;
             }
         }
