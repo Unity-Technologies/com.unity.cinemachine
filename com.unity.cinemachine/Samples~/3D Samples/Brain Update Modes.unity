@@ -154,7 +154,7 @@ Transform:
   - {fileID: 1675424139}
   - {fileID: 326221290}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &326221289
 GameObject:
@@ -278,6 +278,95 @@ MonoBehaviour:
       OnCameraLive:
         m_PersistentCalls:
           m_Calls: []
+--- !u!1 &569987857
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 569987858}
+  - component: {fileID: 569987859}
+  m_Layer: 0
+  m_Name: Sequencer Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &569987858
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569987857}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1839922278}
+  - {fileID: 1607092317}
+  m_Father: {fileID: 1313270463}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &569987859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569987857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53258ad9ad6e71e48bb8643c9522112e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PriorityAndChannel:
+    Enabled: 1
+    Channel: 8
+    Priority: 0
+  StandbyUpdate: 2
+  m_StreamingVersion: 20221011
+  m_LegacyPriority: 10
+  DefaultTarget:
+    Enabled: 0
+    Target:
+      TrackingTarget: {fileID: 0}
+      LookAtTarget: {fileID: 0}
+      CustomLookAtTarget: 0
+  ShowDebugText: 0
+  m_ChildCameras:
+  - {fileID: 1839922281}
+  - {fileID: 1607092320}
+  Loop: 1
+  Instructions:
+  - Camera: {fileID: 1839922281}
+    Hold: 3
+    Blend:
+      m_Style: 1
+      m_Time: 1
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  - Camera: {fileID: 1607092320}
+    Hold: 3
+    Blend:
+      m_Style: 1
+      m_Time: 1
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+  m_LegacyLookAt: {fileID: 0}
+  m_LegacyFollow: {fileID: 0}
 --- !u!1 &628253629
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,7 +378,6 @@ GameObject:
   - component: {fileID: 628253631}
   - component: {fileID: 628253630}
   - component: {fileID: 628253632}
-  - component: {fileID: 628253633}
   m_Layer: 0
   m_Name: GUI
   m_TagString: Untagged
@@ -314,19 +402,22 @@ MonoBehaviour:
   Displayed: 1
   HelpText: "This scene shows the importance of choosing the correct Brain Update
     Mode, and of animating all targeted objects the same way.\r\n\r\nBoth cars are
-    driven by Rigidbodies, but unless both use Rigidbody Interpolation the same way,
-    they cannot both be smooth on the screen at the same time, because they are updated
-    on different clocks.  Use the on-screen toggles to change the cars' interpolation
-    settings, and see the result.  Rigidbodies normally apply their animation on
-    the FixedUpdate clock.  With Interpolation enabled, the animation is applied
-    on the Update clock.\r\n\r\nThe three panels on the screen are three independent
-    CM worlds, each with its own CM Brain.  All worlds are running  cameras looking
-    at the same two cars.  Depending on the update mode in the world's CM Brain,
-    the cars may or may not be smooth on-screen.  \r\n\r\nSmartUpdate dynamically
+    driven by Rigidbodies, but unless both use Rigidbody Interpolation in the same
+    way, they cannot both be smooth on the screen at the same time, because they
+    are updated on different clocks.  Use the on-screen toggles to change the cars'
+    interpolation settings, and see the result.  Rigidbodies normally apply their
+    animation on the FixedUpdate clock.  With Interpolation enabled, the animation
+    is applied on the Update clock.\r\n\r\nThe three panels on the screen are three
+    independent CM worlds, each with its own CM Brain.  All worlds are running  cameras
+    looking at the same two cars.  Depending on the update mode in the world's CM
+    Brain, the cars may or may not be smooth on-screen.  \r\n\r\nSmartUpdate dynamically
     adjusts its update clock to match how the current target is being animated. 
     When the Interpolation settings on the cars are different from each other, you
-    can use the camera switcher buttons to see how the Brain adapts to the current
+    can see in the bottom panel how the camera dynamically adapts to the current
     target's update mode."
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &628253631
 Transform:
   m_ObjectHideFlags: 0
@@ -360,22 +451,6 @@ MonoBehaviour:
     Rb: {fileID: 1570214456050329276}
   - Text: ' Enable Red Car Interpolation'
     Rb: {fileID: 1245728188}
---- !u!114 &628253633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628253629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 212491a1730d03b4b843e7aed2eab0df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Position: {x: 0.05, y: 0.15}
-  Cameras:
-  - {fileID: 1607092320}
-  - {fileID: 1839922281}
 --- !u!1 &896363043 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
@@ -534,7 +609,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.333333
+    y: 0.66666
     width: 1
     height: 0.33333
   near clip plane: 0.3
@@ -564,8 +639,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1254209701}
-  m_LocalRotation: {x: 0.050126117, y: -0.7053279, z: 0.050126113, w: 0.70532787}
-  m_LocalPosition: {x: 13.788193, y: 3.5552993, z: 3.499117}
+  m_LocalRotation: {x: 0.06350215, y: -0.70424956, z: 0.06350214, w: 0.7042496}
+  m_LocalPosition: {x: 10.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -635,8 +710,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300810983}
-  m_LocalRotation: {x: 0.05012611, y: -0.7053279, z: 0.050126106, w: 0.70532787}
-  m_LocalPosition: {x: 13.788193, y: 3.5552993, z: 3.499117}
+  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -709,7 +784,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.66666
+    y: 0
     width: 1
     height: 0.33333
   near clip plane: 0.3
@@ -761,10 +836,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1300810984}
-  - {fileID: 1607092317}
-  - {fileID: 1839922278}
+  - {fileID: 569987858}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1380885699
 PrefabInstance:
@@ -853,12 +927,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1607092316}
-  m_LocalRotation: {x: 0.05012611, y: -0.7053279, z: 0.050126106, w: 0.70532787}
-  m_LocalPosition: {x: 13.788193, y: 3.5552993, z: 3.499117}
+  m_LocalRotation: {x: 0.06350215, y: -0.70424956, z: 0.06350214, w: 0.7042496}
+  m_LocalPosition: {x: 10.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1313270463}
+  m_Father: {fileID: 569987858}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1607092318
@@ -902,7 +976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 14, y: 2, z: 0}
+  FollowOffset: {x: 11, y: 2, z: 0}
   TrackerSettings:
     BindingMode: 4
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -1048,7 +1122,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0
+    y: 0.33333
     width: 1
     height: 0.33333
   near clip plane: 0.3
@@ -1102,7 +1176,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1313270463}
+  m_Father: {fileID: 569987858}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1839922279
@@ -1224,7 +1298,7 @@ Transform:
   - {fileID: 1254209704}
   - {fileID: 1967210318}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1967210314
 GameObject:
@@ -1286,7 +1360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 14, y: 2, z: 0}
+  FollowOffset: {x: 11, y: 2, z: 0}
   TrackerSettings:
     BindingMode: 4
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -1340,8 +1414,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1967210314}
-  m_LocalRotation: {x: 0.050126117, y: -0.7053279, z: 0.050126113, w: 0.70532787}
-  m_LocalPosition: {x: 13.788193, y: 3.5552993, z: 3.499117}
+  m_LocalRotation: {x: 0.06350215, y: -0.70424956, z: 0.06350214, w: 0.7042496}
+  m_LocalPosition: {x: 10.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
