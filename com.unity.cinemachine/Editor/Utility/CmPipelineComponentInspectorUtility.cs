@@ -12,11 +12,11 @@ namespace Cinemachine.Editor
     {
         public enum RequiredTargets { None, Tracking, LookAt, Group };
 
-        const string s_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
-        const string s_NeedLookAt = "A LookAt Tracking Target is required in the CinemachineCamera.";
-        const string s_NeedGroup = "The Tracking Target in the CinemachineCamera must be a Target Group.";
-        const string s_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
-        const string s_AddCamera = "Add\nCinemachineCamera";
+        const string k_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
+        const string k_NeedLookAt = "A LookAt Tracking Target is required in the CinemachineCamera.";
+        const string k_NeedGroup = "The Tracking Target in the CinemachineCamera must be a Target Group.";
+        const string k_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
+        const string k_AddCamera = "Add\nCinemachineCamera";
 
         /// <summary>
         /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
@@ -27,16 +27,15 @@ namespace Cinemachine.Editor
         {
             var targets = editor.targets;
             var noCameraHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
-                s_NeedCamera, HelpBoxMessageType.Warning,
-                s_AddCamera, () => AddCmCameraToTargets(targets)));
+                k_NeedCamera, HelpBoxMessageType.Warning,
+                k_AddCamera, () => AddCmCameraToTargets(targets)));
 
-            string text = string.Empty;
+            var text = string.Empty;
             switch (requiredTargets)
             {
-                case RequiredTargets.Tracking: text = s_NeedTarget; break;
-                case RequiredTargets.LookAt: text = s_NeedLookAt; break;
-                case RequiredTargets.Group: text = s_NeedGroup; break;
-                default: break;
+                case RequiredTargets.Tracking: text = k_NeedTarget; break;
+                case RequiredTargets.LookAt: text = k_NeedLookAt; break;
+                case RequiredTargets.Group: text = k_NeedGroup; break;
             }
             VisualElement noTargetHelp = null;
             if (text.Length > 0)
@@ -48,8 +47,8 @@ namespace Cinemachine.Editor
                 if (editor == null || editor.target == null)
                     return;  // target was deleted
 
-                bool noCamera = false;
-                bool noTarget = false;
+                var noCamera = false;
+                var noTarget = false;
                 for (int i = 0; i < targets.Length && !noCamera; ++i)
                 {
                     var t = targets[i] as CinemachineComponentBase;
@@ -61,7 +60,6 @@ namespace Cinemachine.Editor
                             case RequiredTargets.Tracking: noTarget |= t.FollowTarget == null; break;
                             case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
                             case RequiredTargets.Group: noTarget |= t.FollowTargetAsGroup == null; break;
-                            default: break;
                         }
                     }
                     else
@@ -73,7 +71,6 @@ namespace Cinemachine.Editor
                             case RequiredTargets.Tracking: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
                             case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
                             case RequiredTargets.Group: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
-                            default: break;
                         }
                     }
                 }
@@ -143,8 +140,8 @@ namespace Cinemachine.Editor
                 // Oh gawd there has to be a nicer way to do this
                 const int size = 128;
                 const float th = 1f;
+                const float radius = size / 2 - th;
                 var pix = new Color32[size * size];
-                float radius = size / 2 - th;
                 var center = new Vector2(size-1, size-1) / 2;
                 for (int y = 0; y < size; ++y)
                 {
@@ -181,7 +178,6 @@ namespace Cinemachine.Editor
                         case RequiredTargets.Tracking: noTarget |= t.FollowTarget == null; break;
                         case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
                         case RequiredTargets.Group: noTarget |= t.FollowTargetAsGroup == null; break;
-                        default: break;
                     }
                 }
                 else
@@ -193,26 +189,24 @@ namespace Cinemachine.Editor
                         case RequiredTargets.Tracking: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
                         case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
                         case RequiredTargets.Group: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
-                        default: break;
                     }
                 }
             }
             if (noCamera)
             {
                 InspectorUtility.HelpBoxWithButton(
-                    s_NeedCamera, MessageType.Warning,
-                    new GUIContent(s_AddCamera), () => AddCmCameraToTargets(targets));
+                    k_NeedCamera, MessageType.Warning,
+                    new GUIContent(k_AddCamera), () => AddCmCameraToTargets(targets));
                 EditorGUILayout.Space();
             }
             else if (noTarget)
             {
-                string text = string.Empty;
+                var text = string.Empty;
                 switch (requiredTargets)
                 {
-                    case RequiredTargets.Tracking: text = s_NeedTarget; break;
-                    case RequiredTargets.LookAt: text = s_NeedLookAt; break;
-                    case RequiredTargets.Group: text = s_NeedGroup; break;
-                    default: break;
+                    case RequiredTargets.Tracking: text = k_NeedTarget; break;
+                    case RequiredTargets.LookAt: text = k_NeedLookAt; break;
+                    case RequiredTargets.Group: text = k_NeedGroup; break;
                 }
                 if (text.Length > 0)
                     EditorGUILayout.HelpBox(text, MessageType.Warning);
