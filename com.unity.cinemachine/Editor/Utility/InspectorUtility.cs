@@ -412,13 +412,10 @@ namespace Cinemachine.Editor
         /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
         /// </summary>
         public static void TrackAnyUserActivity(
-            this VisualElement owner, EditorApplication.CallbackFunction callback, bool delayInitialCallback = false)
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
             UserDidSomething += callback;
-            if (delayInitialCallback)
-                EditorApplication.delayCall += callback;
-            else
-                callback();
+            owner.OnInitialGeometry(callback); 
             owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
         }
 
@@ -429,6 +426,7 @@ namespace Cinemachine.Editor
         public static void ContinuousUpdate(
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
+            owner.OnInitialGeometry(callback); 
             EditorApplication.update += callback;
             owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
         }
@@ -437,7 +435,7 @@ namespace Cinemachine.Editor
         /// Convenience extension to get a callback after initial geometry creation, making it easier to use lambdas.
         /// Callback will only be called once.  Works in inspectors and PropertyDrawers.
         /// </summary>
-        public static void OnInitialGeometryChanged(
+        public static void OnInitialGeometry(
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
             owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
@@ -446,6 +444,17 @@ namespace Cinemachine.Editor
                 owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
                 callback();
             }
+        }
+        
+        /// <summary>
+        /// Convenience extension to track a property value change plus an initial callback at creation time.  
+        /// This simplifies logic for the caller, allowing use of lambda callback.
+        /// </summary>
+        public static void TrackPropertyWithInitialCallback(
+            this VisualElement owner, SerializedProperty property, Action<SerializedProperty> callback)
+        {
+            owner.OnInitialGeometry(() => callback(property));
+            owner.TrackPropertyValue(property, callback);
         }
         
         /// <summary>

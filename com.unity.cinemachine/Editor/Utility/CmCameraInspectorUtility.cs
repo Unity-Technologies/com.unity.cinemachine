@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
             });
 
             // Capture "normal" colors
-            ux.OnInitialGeometryChanged(() =>
+            ux.OnInitialGeometry(() =>
             {
                 var normalColor = statusText.resolvedStyle.color;
                 var normalBkgColor = soloButton.resolvedStyle.backgroundColor;

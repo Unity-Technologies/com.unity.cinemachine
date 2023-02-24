@@ -160,9 +160,8 @@ namespace Cinemachine.Editor
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
             m_ParentElement.AddSpace();
 
-            // Component editors.  We delay the initial update because otherwise we get
-            // infinite loops (something to do with UITK throttling Bind calls)
-            m_ParentElement.TrackAnyUserActivity(UpdateComponentEditors, true);
+            // Component editors
+            m_ParentElement.TrackAnyUserActivity(UpdateComponentEditors);
 
             return m_ParentElement;
         }
