@@ -190,7 +190,7 @@ namespace Cinemachine
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public virtual bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams) => false;
+            ref TransitionParams transitionParams) => false;
 
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera

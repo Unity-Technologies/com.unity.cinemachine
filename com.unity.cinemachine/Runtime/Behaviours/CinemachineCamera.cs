@@ -219,7 +219,7 @@ namespace Cinemachine
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
+            m_State.BlendHint = (CameraState.BlendHintValue)Transitions.BlendHint;
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -262,8 +262,6 @@ namespace Cinemachine
                 InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
                 if (stage == CinemachineCore.Stage.Aim)
                 {
-                    if (c == null)
-                        state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget; // no aim
                     // If we have saved a Body for after Aim, do it now
                     if (postAimBody != null)
                     {

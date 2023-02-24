@@ -51,6 +51,7 @@ However, the real magic comes when you add Procedural Components to bring the ca
 | | _Cylindrical Position_ | During a blend, camera will take a cylindrical path around the Tracking target (vertical co-ordinate is linearly interpolated). |
 | | _Screen Space Aim When Targets Differ_ | During a blend, Tracking target position will interpolate in screen space instead of world space. |
 | | _Inherit Position_ | When this CinemachineCamera goes live, force the initial position to be the same as the current position of the Unity Camera, if possible. |
+| | _IgnoreTarget_ | Don't consider the Tracking Target when blending rotations, just to a spherical interpolation. |
 | __Position Control__ || Shortcut for setting the procedural positioning behavior of the CinemachineCamera.  |
 | __Rotation Control__ || Shortcut for setting the procedural rotation behavior of the CinemachineCamera.  |
 | __Noise__ || Shortcut for setting the procedural noise behavior of the CinemachineCamera.  |

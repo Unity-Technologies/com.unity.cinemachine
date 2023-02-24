@@ -78,14 +78,14 @@ namespace Cinemachine
                 if (m_LegacyTransitions.m_BlendHint != 0)
                 {
                     if (m_LegacyTransitions.m_BlendHint == 3)
-                        Transitions.BlendHint = BlendHint.ScreenSpaceAimWhenTargetsDiffer;
+                        Transitions.BlendHint = TransitionParams.BlendHints.ScreenSpaceAimWhenTargetsDiffer;
                     else
-                        Transitions.BlendHint = (BlendHint)m_LegacyTransitions.m_BlendHint;
+                        Transitions.BlendHint = (TransitionParams.BlendHints)m_LegacyTransitions.m_BlendHint;
                     m_LegacyTransitions.m_BlendHint = 0;
                 }
                 if (m_LegacyTransitions.m_InheritPosition)
                 {
-                    Transitions.BlendHint |= BlendHint.InheritPosition;
+                    Transitions.BlendHint |= TransitionParams.BlendHints.InheritPosition;
                     m_LegacyTransitions.m_InheritPosition = false;
                 }
                 if (m_LegacyTransitions.m_OnCameraLive != null)
@@ -162,7 +162,7 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
+            m_State.BlendHint = (CameraState.BlendHintValue)Transitions.BlendHint;
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -496,7 +496,6 @@ namespace Cinemachine
             // Then components
             if (m_ComponentPipeline == null)
             {
-                state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                 for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
             }
@@ -526,8 +525,6 @@ namespace Cinemachine
 
                     if (stage == CinemachineCore.Stage.Aim)
                     {
-                        if (c == null)
-                            state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                         // If we have saved a Body for after Aim, do it now
                         if (postAimBody != null)
                         {
