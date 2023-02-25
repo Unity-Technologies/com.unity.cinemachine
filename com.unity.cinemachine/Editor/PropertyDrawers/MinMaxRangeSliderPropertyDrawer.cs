@@ -70,7 +70,7 @@ namespace Cinemachine.Editor
                 property.serializedObject.ApplyModifiedProperties();
             });
 
-            var row = new InspectorUtility.LeftRightContainer { style = { flexGrow = 1 }};
+            var row = new InspectorUtility.LeftRightRow { style = { flexGrow = 1 }};
             row.Left.Add(new Label { text = property.displayName, tooltip = property.tooltip, style = { alignSelf = Align.Center }});
             row.Right.Add(minField);
             row.Right.Add(slider);

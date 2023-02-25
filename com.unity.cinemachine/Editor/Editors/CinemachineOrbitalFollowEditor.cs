@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
             var m_Orbits = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Orbits)));
 
             ux.AddSpace();
-            var noControllerHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
+            var noControllerHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 "Orbital Follow has no input axis controller behaviour.", HelpBoxMessageType.Info,
                 "Add Input Controller", () =>
             {

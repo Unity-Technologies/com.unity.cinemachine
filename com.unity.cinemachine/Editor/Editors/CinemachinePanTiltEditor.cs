@@ -20,7 +20,7 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TiltAxis)));
 
             ux.AddSpace();
-            var noControllerHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
+            var noControllerHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 "PanTilt has no input axis controller behaviour.", HelpBoxMessageType.Info,
                 "Add Input Controller", () =>
             {

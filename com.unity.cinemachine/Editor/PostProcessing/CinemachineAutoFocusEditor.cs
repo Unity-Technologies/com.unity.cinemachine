@@ -45,7 +45,7 @@ namespace Cinemachine.Editor
             var shaderDisplay = ux.AddChild(new PropertyField(computeShaderProp));
             shaderDisplay.SetEnabled(false);
 
-            var importHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
+            var importHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 $"The {k_ComputeShaderName} shader needs to be imported into "
                     + "the project. It will be imported by default into the Assets root.  "
                     + "After importing, you can move it elsewhere but don't rename it.",

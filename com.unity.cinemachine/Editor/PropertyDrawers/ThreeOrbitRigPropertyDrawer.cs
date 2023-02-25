@@ -1,7 +1,5 @@
-using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace Cinemachine.Editor
 {
@@ -12,7 +10,7 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var row = new InspectorUtility.LeftRightContainer();
+            var row = new InspectorUtility.LeftRightRow();
             row.Left.Add(new Label(property.displayName) { tooltip = property.tooltip });
             row.Right.AddChild(new InspectorUtility.CompactPropertyField(
                 property.FindPropertyRelative(() => def.Height)) { style = { flexGrow = 1 }});
