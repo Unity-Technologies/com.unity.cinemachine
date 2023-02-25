@@ -608,10 +608,8 @@ namespace Cinemachine.Editor
 
                 // Outdent the label
                 if (overlayLabel != null)
-                {
-                    closedContainer.Right.RegisterCallback<GeometryChangedEvent>(
-                        (evt) => closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
-                }
+                    closedContainer.Right.OnInitialGeometry(() =>
+                        closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
 
                 // Swap the open and closed foldouts when the foldout is opened or closed
                 foldout.SetVisible(foldout.value);
