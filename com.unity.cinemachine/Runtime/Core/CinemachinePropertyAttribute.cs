@@ -69,11 +69,6 @@ namespace Cinemachine
     /// </summary>
     public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute { }
 
-    /// <summary>
-    /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
-    /// </summary>
-    public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
-
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
     
