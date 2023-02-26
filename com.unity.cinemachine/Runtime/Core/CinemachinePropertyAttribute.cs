@@ -77,9 +77,6 @@ namespace Cinemachine
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
     
-    /// <summary>Property should be treated as enum flags.</summary>
-    public sealed class EnumMaskPropertyAttribute : PropertyAttribute {}
-    
     /// <summary>
     /// Used for custom drawing in the inspector.  Inspector will show a foldout with the asset contents
     /// </summary>
@@ -91,10 +88,7 @@ namespace Cinemachine
 
         /// <summary>Standard constructor</summary>
         /// <param name="warnIfNull">If true, inspector will display a warning if the embedded asset is null</param>
-        public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false)
-        {
-            WarnIfNull = warnIfNull;
-        }
+        public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false) { WarnIfNull = warnIfNull; }
     }
     
     /// <summary>
