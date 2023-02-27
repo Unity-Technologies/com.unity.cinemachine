@@ -142,7 +142,7 @@ namespace Cinemachine.Editor
             blendListCamera.Instructions = new ()
             {
                 new () { Camera = childVcam1, Hold = 1 },
-                new () { Camera = childVcam2, Blend = new () { m_Style = CinemachineBlendDefinition.Style.EaseInOut, m_Time = 2f }}
+                new () { Camera = childVcam2, Blend = new () { Style = CinemachineBlendDefinition.Styles.EaseInOut, Time = 2f }}
             };
         }
 

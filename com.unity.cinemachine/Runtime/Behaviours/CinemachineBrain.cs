@@ -193,7 +193,7 @@ namespace Cinemachine
             + "blend between two Virtual Cameras")]
         [FormerlySerializedAs("m_DefaultBlend")]
         public CinemachineBlendDefinition DefaultBlend
-            = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+            = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 2f);
 
         /// <summary>
         /// This is the asset which contains custom settings for specific blends.
@@ -268,7 +268,7 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            DefaultBlend.m_Time = Mathf.Max(0, DefaultBlend.m_Time);
+            DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
         }
 
         void Reset()
@@ -281,7 +281,7 @@ namespace Cinemachine
             UpdateMethod = UpdateMethods.SmartUpdate;
             BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
             LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
-            DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+            DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 2f);
             CustomBlends = null;
             CameraCutEvent = new BrainEvent();
             CameraActivatedEvent = new VcamActivatedEvent();

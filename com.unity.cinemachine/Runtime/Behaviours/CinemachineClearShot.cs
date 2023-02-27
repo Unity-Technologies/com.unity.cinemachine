@@ -48,7 +48,7 @@ namespace Cinemachine
         /// <summary>The blend which is used if you don't explicitly define a blend between two Virtual Cameras</summary>
         [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Cameras")]
         [FormerlySerializedAs("m_DefaultBlend")]
-        public CinemachineBlendDefinition DefaultBlend = new(CinemachineBlendDefinition.Style.Cut, 0);
+        public CinemachineBlendDefinition DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0);
 
         /// <summary>This is the asset which contains custom settings for specific blends</summary>
         [HideInInspector]
@@ -75,7 +75,7 @@ namespace Cinemachine
             ActivateAfter = 0;
             MinDuration = 0;
             RandomizeChoice = false;
-            DefaultBlend = new (CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
+            DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 0.5f);
             CustomBlends = null;
         }
 
