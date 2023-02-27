@@ -294,7 +294,7 @@ namespace Cinemachine
         /// <returns>Returns the value of the input device.</returns>
         protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
         {
-#if true
+#if false
             // GML Temporary fix until this issue is sorted out
             switch (hint)
             {
