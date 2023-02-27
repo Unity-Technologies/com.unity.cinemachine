@@ -126,20 +126,20 @@ namespace Cinemachine.Editor
             targetGroup.AddMember(targetObject == null ? null : targetObject.transform, 1, 0.5f);
         }
         
-        [MenuItem(m_CinemachineGameObjectRootMenu + "Blend List Camera", false, m_GameObjectMenuPriority)]
+        [MenuItem(m_CinemachineGameObjectRootMenu + "Sequencer Camera", false, m_GameObjectMenuPriority)]
         static void CreateBlendListCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Blend List Camera");
-            var blendListCamera = CreateCinemachineObject<CinemachineBlendListCamera>(
-                "Blend List Camera", command.context as GameObject, true);
+            var sequencer = CreateCinemachineObject<CinemachineSequencerCamera>(
+                "Sequencer Camera", command.context as GameObject, true);
 
             // We give the camera a couple of children as an example of setup
-            var childVcam1 = CreatePassiveCmCamera(parentObject: blendListCamera.gameObject);
-            var childVcam2 = CreatePassiveCmCamera(parentObject: blendListCamera.gameObject);
+            var childVcam1 = CreatePassiveCmCamera(parentObject: sequencer.gameObject);
+            var childVcam2 = CreatePassiveCmCamera(parentObject: sequencer.gameObject);
             childVcam2.Lens.FieldOfView = 10;
 
             // Set up initial instruction set
-            blendListCamera.Instructions = new ()
+            sequencer.Instructions = new ()
             {
                 new () { Camera = childVcam1, Hold = 1 },
                 new () { Camera = childVcam2, Blend = new () { m_Style = CinemachineBlendDefinition.Style.EaseInOut, m_Time = 2f }}

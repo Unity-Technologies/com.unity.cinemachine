@@ -2,7 +2,7 @@
 
 Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CinemachineCameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
 
-**Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera.md) instead of Timeline.
+**Tip**: For simple shot sequences, use a [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md) instead of Timeline.
 
 Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CinemachineCamera with the highest Priority setting.
 

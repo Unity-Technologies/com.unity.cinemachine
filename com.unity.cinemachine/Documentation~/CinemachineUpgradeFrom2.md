@@ -40,6 +40,7 @@ Old components have been replaced by new components. These are not renames, they
 ### Renamed Components
 
 - Cinemachine3rdPersonAim has been renamed to [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md).
+- CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
 
 ### Renamed Fields 
 

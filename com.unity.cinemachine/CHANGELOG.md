@@ -5,11 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- InputAxisController handles float and Vector2 automatically. Other input types need to be handled by a custom script inheriting InputAxisController.
 
 ### Added
 
-- IgnoreTarget blend hint will blend rotations without considering the tracking target.
+- New IgnoreTarget blend hint will blend rotations without considering the tracking target.
+
+### Changed
+- CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
 
 
 ## [3.0.0-pre.4] - 2023-02-09

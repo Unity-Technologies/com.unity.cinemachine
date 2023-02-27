@@ -6,7 +6,7 @@ Cinemachine includes these manager cameras:
 
 * [Mixing Camera](CinemachineMixingCamera.md): Uses the weighted average of up to eight child CinemachineCameras.
 
-* [Blend List Camera](CinemachineBlendListCamera.md): Executes a sequence of blends or cuts of its child CinemachineCameras.
+* [Sequencer Camera](CinemachineSequencerCamera.md): Executes a sequence of blends or cuts of its child CinemachineCameras.
 
 * [Clear Shot Camera](CinemachineClearShot.md): Picks the child CinemachineCamera with the best view of the target.
 
