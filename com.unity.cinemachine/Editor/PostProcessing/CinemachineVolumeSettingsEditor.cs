@@ -51,7 +51,7 @@ namespace Cinemachine.Editor
         {
             serializedObject.Update();
 
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
 
             EditorGUI.BeginChangeCheck();
 

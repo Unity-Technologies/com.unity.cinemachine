@@ -33,7 +33,6 @@ namespace Cinemachine.Editor
         const string k_ProgressBarTitle = "Upgrade Progress";
 
         /// <summary>
-        /// GML Temporary helper method for testing.
         /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
         /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
@@ -54,8 +53,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// GML Temporary helper method for testing.
-        /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
+        /// Upgrades all the gameObjects in the current scene.  
         /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
         /// </summary>
@@ -692,7 +690,7 @@ namespace Cinemachine.Editor
         // Hack: ignore nested rigs of a freeLook (GML todo: how to remove this?)
         static bool IsHiddenFreeLookRig(Component c)
         {
-            return !(c is CinemachineFreeLook) && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
+            return c is not CinemachineFreeLook && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
         }
         
         class SceneManager

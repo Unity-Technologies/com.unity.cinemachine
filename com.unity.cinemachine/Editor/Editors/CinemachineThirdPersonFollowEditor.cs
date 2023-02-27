@@ -10,25 +10,21 @@ namespace Cinemachine.Editor
     class CinemachineThirdPersonFollowEditor : UnityEditor.Editor
     {
         CinemachineThirdPersonFollow Target => target as CinemachineThirdPersonFollow;
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
         
         protected virtual void OnEnable()
         {
-            m_PipelineUtility = new CmPipelineComponentInspectorUtility(this);
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         }
 
         protected virtual void OnDisable()
         {
-            m_PipelineUtility.OnDisable();
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
         
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Follow);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShoulderOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalArmLength)));
@@ -37,8 +33,6 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_PHYSICS
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AvoidObstacles)));
 #endif
-
-            m_PipelineUtility.UpdateState();
             return ux;
         }
         

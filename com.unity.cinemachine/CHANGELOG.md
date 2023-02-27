@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed 
 
-- InputAxisController handles float and Vector2 automatically. Other input types need to be handled by a custom script inheriting InputAxisController.
 - Renamed .asmdef files to follow the convention Unity.[PackageName]
+
+### Added
+
+- IgnoreTarget blend hint will blend rotations without considering the tracking target.
+
 
 ## [3.0.0-pre.4] - 2023-02-09
 

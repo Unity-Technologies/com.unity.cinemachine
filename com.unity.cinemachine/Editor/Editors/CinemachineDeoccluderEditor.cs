@@ -14,23 +14,18 @@ namespace Cinemachine.Editor
     {
         CinemachineDeoccluder Target => target as CinemachineDeoccluder;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
-        void OnEnable() => m_PipelineUtility = new (this);
-        void OnDisable() => m_PipelineUtility.OnDisable();
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CollideAgainst)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.IgnoreTag)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TransparentLayers)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.MinimumDistanceFromTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AvoidObstacles)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShotQualityEvaluation)));
-            m_PipelineUtility.UpdateState();
+
             return ux;
         }
 

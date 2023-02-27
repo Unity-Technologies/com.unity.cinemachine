@@ -423,34 +423,6 @@ namespace Cinemachine
         /// Returns Channels.Default otherwise.</returns>
         public OutputChannel.Channels GetChannel() => PriorityAndChannel.GetChannel();
 
-        /// <summary>Hint for transitioning to and from this virtual camera</summary>
-        [Flags]
-        public enum BlendHint
-        {
-            /// <summary>Spherical blend about Tracking target position</summary>
-            SphericalPosition = 1,
-            /// <summary>Cylindrical blend about Tracking target position (vertical co-ordinate is linearly interpolated)</summary>
-            CylindricalPosition = 2,
-            /// <summary>Screen-space blend between LookAt targets instead of world space lerp of target position</summary>
-            ScreenSpaceAimWhenTargetsDiffer = 4,
-            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
-            /// as the current position of the Unity Camera</summary>
-            InheritPosition = 8
-        }
-
-        /// <summary>Applies a position blend hint to a camera state</summary>
-        /// <param name="state">The state to apply the hint to</param>
-        /// <param name="hint">The hint to apply</param>
-        protected void ApplyPositionBlendMethod(ref CameraState state, BlendHint hint)
-        {
-            if ((hint & BlendHint.SphericalPosition) != 0)
-                state.BlendHint |= CameraState.BlendHintValue.SphericalPositionBlend;
-            if ((hint & BlendHint.CylindricalPosition) != 0)
-                state.BlendHint |= CameraState.BlendHintValue.CylindricalPositionBlend;
-            if ((hint & BlendHint.ScreenSpaceAimWhenTargetsDiffer) != 0)
-                state.BlendHint |= CameraState.BlendHintValue.RadialAimBlend;
-        }
-
         /// <summary>The GameObject owner of the Virtual Camera behaviour.</summary>
         public GameObject VirtualCameraGameObject
         {
@@ -523,39 +495,6 @@ namespace Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
-
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from
-        /// other virtual cameras </summary>
-        [Serializable]
-        public struct TransitionParams
-        {
-            /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
-            /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
-            /// make an arbitrary choice.</summary>
-            [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
-                + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
-                + "make an arbitrary choice.")]
-            public BlendHint BlendHint;
-
-            /// <summary>Shortcut to read InheritPosition flag in BlendHint</summary>
-            public bool InheritPosition => (BlendHint & BlendHint.InheritPosition) != 0;
-
-            /// <summary>
-            /// These events fire when a transition occurs
-            /// </summary>
-            [Serializable]
-            public struct TransitionEvents
-            {
-                /// <summary>This event fires when the CinemachineCamera goes Live</summary>
-                [Tooltip("This event fires when the CinemachineCamera goes Live")]
-                public CinemachineBrain.VcamActivatedEvent OnCameraLive;
-            }
-            /// <summary>
-            /// These events fire when a transition occurs
-            /// </summary>
-            [Tooltip("These events fire when a transition occurs")]
-            public TransitionEvents Events;
-        }
 
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>

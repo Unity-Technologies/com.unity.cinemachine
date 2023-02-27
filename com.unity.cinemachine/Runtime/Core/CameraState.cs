@@ -85,22 +85,23 @@ namespace Cinemachine
         {
             /// <summary>Normal state blending</summary>
             Nothing = 0,
+            /// <summary>Spherical blend about the LookAt target (if any)</summary>
+            SphericalPositionBlend = TransitionParams.BlendHints.SphericalPosition,
+            /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
+            CylindricalPositionBlend = TransitionParams.BlendHints.CylindricalPosition,
+            /// <summary>Radial blend when the LookAt target changes(if any)</summary>
+            ScreenSpaceAimWhenTargetsDiffer = TransitionParams.BlendHints.ScreenSpaceAimWhenTargetsDiffer,
+            /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
+            IgnoreLookAtTarget = TransitionParams.BlendHints.IgnoreTarget,
+
             /// <summary>This state does not affect the camera position</summary>
-            NoPosition = 1,
+            NoPosition = 32,
             /// <summary>This state does not affect the camera rotation</summary>
-            NoOrientation = 2,
+            NoOrientation = 64,
             /// <summary>Combination of NoPosition and NoOrientation</summary>
             NoTransform = NoPosition | NoOrientation,
-            /// <summary>Spherical blend about the LookAt target (if any)</summary>
-            SphericalPositionBlend = 4,
-            /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
-            CylindricalPositionBlend = 8,
-            /// <summary>Radial blend when the LookAt target changes(if any)</summary>
-            RadialAimBlend = 16,
-            /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
-            IgnoreLookAtTarget = 32,
             /// <summary>This state does not affect the lens</summary>
-            NoLens = 64,
+            NoLens = 128,
         }
 
         /// <summary>
@@ -270,8 +271,7 @@ namespace Cinemachine
                     adjustedT = Mathf.Abs((lens.FieldOfView - fovA) / (fovB - fovA));
                 }
                 // Linear interpolation of lookAt target point
-                state.ReferenceLookAt = Vector3.Lerp(
-                        stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
+                state.ReferenceLookAt = Vector3.Lerp(stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
             }
             
             // Raw position
@@ -285,7 +285,7 @@ namespace Cinemachine
 
             // Interpolate the LookAt in Screen Space if requested
             if (state.HasLookAt() 
-                && ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.RadialAimBlend) != 0)
+                && ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.ScreenSpaceAimWhenTargetsDiffer) != 0)
             {
                 state.ReferenceLookAt = state.RawPosition + Vector3.Slerp(
                         stateA.ReferenceLookAt - state.RawPosition, 
@@ -297,7 +297,7 @@ namespace Cinemachine
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
             {
                 Vector3 dirTarget = Vector3.zero;
-                if (state.HasLookAt())//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.RadialAimBlend) == 0)
+                if (state.HasLookAt())//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.ScreenSpaceAimWhenTargetsDiffer) == 0)
                 {
                     // If orientations are different, use LookAt to blend them
                     float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);

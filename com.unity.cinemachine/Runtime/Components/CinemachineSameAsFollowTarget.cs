@@ -26,17 +26,17 @@ namespace Cinemachine
         Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
 
         /// <summary>True if component is enabled and has a Follow target defined</summary>
-        public override bool IsValid { get { return enabled && FollowTarget != null; } }
+        public override bool IsValid { get => enabled && FollowTarget != null; }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Aim; } }
+        public override CinemachineCore.Stage Stage { get => CinemachineCore.Stage.Aim; }
 
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() { return Damping; }
+        public override float GetMaxDampTime() => Damping;
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>

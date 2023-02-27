@@ -10,16 +10,11 @@ namespace Cinemachine.Editor
     {
         CinemachineRecomposer Target => target as CinemachineRecomposer;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
-        void OnEnable() => m_PipelineUtility = new (this);
-        void OnDisable() => m_PipelineUtility.OnDisable();
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ApplyAfter)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Tilt)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Pan)));
@@ -28,7 +23,6 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FollowAttachment)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LookAtAttachment)));
 
-            m_PipelineUtility.UpdateState();
             return ux;
         }
     }

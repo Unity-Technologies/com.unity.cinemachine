@@ -159,7 +159,7 @@ namespace Cinemachine
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+            ref TransitionParams transitionParams)
         {
             m_ResetHandler?.Invoke(); // Cancel re-centering
             if (fromCam != null && transitionParams.InheritPosition  

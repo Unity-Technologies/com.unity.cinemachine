@@ -61,7 +61,7 @@ namespace Cinemachine
         }
 
         /// <summary>True if the component is valid, i.e. it has a noise definition and is enabled.</summary>
-        public override bool IsValid { get { return enabled && NoiseProfile != null; } }
+        public override bool IsValid { get => enabled && NoiseProfile != null; }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Noise stage</summary>

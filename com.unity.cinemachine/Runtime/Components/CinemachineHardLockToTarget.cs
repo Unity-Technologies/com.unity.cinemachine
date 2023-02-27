@@ -24,17 +24,17 @@ namespace Cinemachine
         Vector3 m_PreviousTargetPosition;
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
-        public override bool IsValid { get { return enabled && FollowTarget != null; } }
+        public override bool IsValid { get => enabled && FollowTarget != null; }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Aim stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage { get => CinemachineCore.Stage.Body; }
 
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() { return Damping; }
+        public override float GetMaxDampTime() => Damping;
 
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>

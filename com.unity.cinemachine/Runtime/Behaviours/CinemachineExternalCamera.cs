@@ -27,7 +27,7 @@ namespace Cinemachine
         [Tooltip("Hint for transitioning to and from this virtual camera")]
         [FormerlySerializedAs("m_PositionBlending")]
         [FormerlySerializedAs("m_BlendHint")]
-        public BlendHint TransitionHint = 0;
+        public TransitionParams.BlendHints TransitionHint = 0;
 
         Camera m_Camera;
         CameraState m_State = CameraState.Default;
@@ -74,7 +74,7 @@ namespace Cinemachine
                     m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(
                         dir, State.RawOrientation * Vector3.forward);
             }
-            ApplyPositionBlendMethod(ref m_State, TransitionHint);
+            m_State.BlendHint = (CameraState.BlendHintValue)TransitionHint;
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }

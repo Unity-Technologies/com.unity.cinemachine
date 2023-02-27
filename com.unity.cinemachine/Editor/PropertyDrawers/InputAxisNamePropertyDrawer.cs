@@ -42,13 +42,14 @@ namespace Cinemachine.Editor
                 EditorGUIUtility.labelWidth = oldLabelWidth;
             }
         }
-#if false  // GML incomplete code.  This is not working yet in UITK - stay in IMGUI for now
+
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new PropertyField(property, "") { style = { flexGrow = 1 }});
-            var error = new Label 
+            var error = row.AddChild(new Label 
             { 
+                tooltip = "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes",
                 style = 
                 { 
                     flexGrow = 0,
@@ -57,11 +58,21 @@ namespace Cinemachine.Editor
                     alignSelf = Align.Center,
                     paddingRight = 0, borderRightWidth = 0, marginRight = 0
                 }
-            };
-            row.Add(error);
+            });
+
+            row.TrackPropertyWithInitialCallback(property, (p) =>
+            {
+                // Is the axis name valid?
+                var nameError = string.Empty;
+                var nameValue = property.stringValue;
+                if (nameValue.Length > 0)
+                    try { CinemachineCore.GetInputAxis(nameValue); }
+                    catch (ArgumentException e) { nameError = e.Message; }
+                error.SetVisible(!string.IsNullOrEmpty(nameError));
+            });
+
             return row;
         }
-#endif
     }
 }
 #endif

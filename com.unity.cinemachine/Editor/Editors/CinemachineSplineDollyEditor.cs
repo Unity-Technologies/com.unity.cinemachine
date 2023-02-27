@@ -10,16 +10,11 @@ namespace Cinemachine.Editor
     {
         CinemachineSplineDolly Target => target as CinemachineSplineDolly;
 
-        CmPipelineComponentInspectorUtility m_PipelineUtility;
-
-        void OnEnable() => m_PipelineUtility = new (this);
-        void OnDisable() => m_PipelineUtility.OnDisable();
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
-            m_PipelineUtility.AddMissingCmCameraHelpBox(ux);
+            this.AddMissingCmCameraHelpBox(ux);
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
 
             var splineProp = serializedObject.FindProperty(() => Target.Spline);
@@ -44,7 +39,7 @@ namespace Cinemachine.Editor
                     noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
                 noSplineHelp.SetVisible(noSpline);
             }
-            m_PipelineUtility.UpdateState();
+
             return ux;
         }
     }

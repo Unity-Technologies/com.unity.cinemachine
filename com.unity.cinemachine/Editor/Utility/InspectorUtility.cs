@@ -17,7 +17,8 @@ namespace Cinemachine.Editor
     static class InspectorUtility
     {
         /// <summary>
-        /// Callback that happens whenever something undoable happens, either with objects or with selection.
+        /// Callback that happens whenever something undoable happens, either with 
+        /// objects or with selection.  This is a good way to track user activity.
         /// </summary>
         public static EditorApplication.CallbackFunction UserDidSomething;
 
@@ -407,6 +408,56 @@ namespace Cinemachine.Editor
         public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
 
         /// <summary>
+        /// Convenience extension for UserDidSomething callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void TrackAnyUserActivity(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            UserDidSomething += callback;
+            owner.OnInitialGeometry(callback); 
+            owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
+        }
+
+        /// <summary>
+        /// Convenience extension for EditorApplication.update callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void ContinuousUpdate(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.OnInitialGeometry(callback); 
+            EditorApplication.update += callback;
+            owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
+        }
+        
+        /// <summary>
+        /// Convenience extension to get a callback after initial geometry creation, making it easier to use lambdas.
+        /// Callback will only be called once.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void OnInitialGeometry(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            void OnGeometryChanged(GeometryChangedEvent _)
+            {
+                owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
+                callback();
+            }
+        }
+        
+        /// <summary>
+        /// Convenience extension to track a property value change plus an initial callback at creation time.  
+        /// This simplifies logic for the caller, allowing use of lambda callback.
+        /// </summary>
+        public static void TrackPropertyWithInitialCallback(
+            this VisualElement owner, SerializedProperty property, Action<SerializedProperty> callback)
+        {
+            owner.OnInitialGeometry(() => callback(property));
+            owner.TrackPropertyValue(property, callback);
+        }
+        
+        /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>
         /// <param name="ux">Container in which to put the header</param>
@@ -577,8 +628,8 @@ namespace Cinemachine.Editor
                 style.flexDirection = FlexDirection.Row;
                 if (label.Length != 0)
                     Label = AddChild(this, new Label(label) 
-                        { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
-                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
+                        { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 if (Label != null)
                     Label.AddPropertyDragger(property, Field);
             }
@@ -589,18 +640,14 @@ namespace Cinemachine.Editor
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
             {
-                label.RegisterCallback<GeometryChangedEvent>(AddDragger);
                 label.AddToClassList("unity-base-field__label--with-dragger");
-            }
-
-            void AddDragger(GeometryChangedEvent evt) 
-            {
-                label.UnregisterCallback<GeometryChangedEvent>(AddDragger);
-
-                if (p.propertyType == SerializedPropertyType.Float)
-                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                else if (p.propertyType == SerializedPropertyType.Integer)
-                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                label.OnInitialGeometry(() =>
+                {
+                    if (p.propertyType == SerializedPropertyType.Float)
+                        new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                    else if (p.propertyType == SerializedPropertyType.Integer)
+                        new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                });
             }
         }
 

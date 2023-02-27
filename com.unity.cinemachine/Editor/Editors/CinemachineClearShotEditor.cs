@@ -1,39 +1,16 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineClearShot))]
     [CanEditMultipleObjects]
-    class CinemachineClearShotEditor : CinemachineVirtualCameraBaseEditor<CinemachineClearShot>
+    class CinemachineClearShotEditor : UnityEditor.Editor
     {
-        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        ChildListInspectorHelper m_ChildListHelper = new();
+        CinemachineClearShot Target => target as CinemachineClearShot;
         EvaluatorState m_EvaluatorState;
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>
-            {
-                OnChanged = (CinemachineBlenderSettings b) => InspectorUtility.RepaintGameView(),
-                OnCreateEditor = (UnityEditor.Editor ed) =>
-                {
-                    var editor = ed as CinemachineBlenderSettingsEditor;
-                    if (editor != null)
-                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
-                }
-            };
-            m_ChildListHelper.OnEnable();
-            m_ChildListHelper.GetChildWarningMessage = GetChildWarningMessage;
-        }
-
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            if (m_BlendsEditor != null)
-                m_BlendsEditor.OnDisable();
-        }
 
 
         static string GetAvailableQualityEvaluatorNames()
@@ -46,63 +23,72 @@ namespace Cinemachine.Editor
             return "Available Shot Quality Evaluators are: " + names;
         }
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            serializedObject.Update();
+            var ux = new VisualElement();
 
-            m_EvaluatorState = GetEvaluatorState();
-            switch (m_EvaluatorState)
+            var helpBox = ux.AddChild(new HelpBox());
+            this.AddCameraStatus(ux);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
+
+            ux.AddHeader("Global Settings");
+            this.AddGlobalControls(ux);
+
+            ux.AddHeader("Clear Shot");
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ActivateAfter)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.MinDuration)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.RandomizeChoice)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
+            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
+                ux, serializedObject.FindProperty(() => Target.CustomBlends),
+                (ed) =>
+                {
+                    var editor = ed as CinemachineBlenderSettingsEditor;
+                    if (editor != null)
+                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
+                },
+                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
+
+            ux.AddSpace();
+            this.AddChildCameras(ux, GetChildWarningMessage);
+            this.AddExtensionsDropdown(ux);
+
+            ux.TrackAnyUserActivity(() =>
             {
-                case EvaluatorState.EvaluatorOnParent:
-                case EvaluatorState.EvaluatorOnAllChildren:
-                    break;
-                case EvaluatorState.NoEvaluator:
-                    EditorGUILayout.HelpBox(
-                        "ClearShot requires a Shot Quality Evaluator extension to rank the shots.  "
+                m_EvaluatorState = GetEvaluatorState();
+                switch (m_EvaluatorState)
+                {
+                    case EvaluatorState.EvaluatorOnParent:
+                    case EvaluatorState.EvaluatorOnAllChildren:
+                        helpBox.SetVisible(false);
+                        break;
+                    case EvaluatorState.NoEvaluator:
+                        helpBox.text = "ClearShot requires a Shot Quality Evaluator extension to rank the shots.  "
                             + "Either add one to the ClearShot itself, or to each of the child cameras.  "
-                            + GetAvailableQualityEvaluatorNames(),
-                        MessageType.Warning);
-                    break;
-                case EvaluatorState.EvaluatorOnSomeChildren:
-                    EditorGUILayout.HelpBox(
-                        "Some child cameras do not have a Shot Quality Evaluator extension.  ClearShot requires a "
-                            + "Shot Quality Evaluator on all the child cameras, or alternatively on the ClearShot iself.  "
-                            + GetAvailableQualityEvaluatorNames(),
-                        MessageType.Warning);
-                    break;
-                case EvaluatorState.EvaluatorOnChildrenAndParent:
-                    EditorGUILayout.HelpBox(
-                        "There is a Shot Quality Evaluator extension on the ClearShot camera, and also on some "
-                            + "of its child cameras.  You can't have both.  " + GetAvailableQualityEvaluatorNames(),
-                        MessageType.Error);
-                    break;
-            }
-
-            var children = Target.ChildCameras; // force the child cache to rebuild
-
-            DrawStandardInspectorTopSection();
-
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.ActivateAfter));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.MinDuration));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.RandomizeChoice));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend));
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-
-            // Blends
-            m_BlendsEditor.DrawEditorCombo(
-                serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset",
-                Target.gameObject.name + " Blends", "asset", string.Empty, false);
-
-            // vcam children
-            EditorGUILayout.Separator();
-            m_ChildListHelper.OnInspectorGUI(serializedObject.FindProperty(() => Target.m_ChildCameras));
-
-            // Extensions
-            DrawExtensionsWidgetInInspector();
+                            + GetAvailableQualityEvaluatorNames();
+                        helpBox.messageType = HelpBoxMessageType.Warning;
+                        helpBox.SetVisible(true);
+                        break;
+                    case EvaluatorState.EvaluatorOnSomeChildren:
+                        helpBox.text = "Some child cameras do not have a Shot Quality Evaluator extension.  "
+                            + "ClearShot requires a Shot Quality Evaluator on all the child cameras, or "
+                            + "alternatively on the ClearShot iself.  "
+                            + GetAvailableQualityEvaluatorNames();
+                        helpBox.messageType = HelpBoxMessageType.Warning;
+                        helpBox.SetVisible(true);
+                        break;
+                    case EvaluatorState.EvaluatorOnChildrenAndParent:
+                        helpBox.text = "There is a Shot Quality Evaluator extension on the ClearShot camera, "
+                            + "and also on some of its child cameras.  You can't have both.  " 
+                            + GetAvailableQualityEvaluatorNames();
+                        helpBox.messageType = HelpBoxMessageType.Error;
+                        helpBox.SetVisible(true);
+                        break;
+                }
+            });
+            return ux;
         }
 
         enum EvaluatorState

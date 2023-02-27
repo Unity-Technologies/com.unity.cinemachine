@@ -36,7 +36,7 @@ namespace Cinemachine.Editor
             if (now - m_LastSplitScreenEventTime > k_FastWaveformUpdateInterval * 5)
                 WaveformWindow.SetDefaultUpdateInterval();
 
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
 
             CinemachineCorePrefs.StoryboardGlobalMute.Value = EditorGUILayout.Toggle(
                 CinemachineCorePrefs.s_StoryboardGlobalMuteLabel, CinemachineCorePrefs.StoryboardGlobalMute.Value);
