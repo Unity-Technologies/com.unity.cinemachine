@@ -294,32 +294,23 @@ namespace Cinemachine
         /// <returns>Returns the value of the input device.</returns>
         protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
         {
-#if false
-            // GML Temporary fix until this issue is sorted out
-            switch (hint)
-            {
-                case IInputAxisSource.AxisDescriptor.Hints.X: return action.ReadValue<Vector2>().x;
-                case IInputAxisSource.AxisDescriptor.Hints.Y: return action.ReadValue<Vector2>().y;
-                default: return action.ReadValue<float>();
-            }
-#else
             var activeControl = action.activeControl;
             if (activeControl == null)
                 return 0f;
             
             var actionControlType = activeControl.valueType;
-            if (actionControlType == typeof(float))
-                return action.ReadValue<float>();
-            if (actionControlType == typeof(Vector2))
+            if (actionControlType == typeof(Vector2) || action.expectedControlType == "Vector2")
                 return hint == IInputAxisSource.AxisDescriptor.Hints.Y
                     ? action.ReadValue<Vector2>().y
                     : action.ReadValue<Vector2>().x;
+            if (actionControlType == typeof(float))
+                return action.ReadValue<float>();
+            
 
             Debug.LogError("The valueType of InputAction provided to " + name + " is not handled by default. " +
                 "You need to create a class inheriting InputAxisController and you need to override the " +
                 "ReadInput method to handle your case.");
             return 0f;
-#endif
         }
         
         float ReadInputAction(Controller c, IInputAxisSource.AxisDescriptor.Hints hint)
