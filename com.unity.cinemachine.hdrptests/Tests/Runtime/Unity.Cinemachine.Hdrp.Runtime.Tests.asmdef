@@ -1,15 +1,15 @@
 {
-    "name": "com.unity.cinemachine.hdrp.runtime.tests",
+    "name": "Unity.Cinemachine.Hdrp.Runtime.Tests",
     "rootNamespace": "",
     "references": [
-        "com.unity.cinemachine",
-        "com.unity.cinemachine.editor",
-        "com.unity.cinemachine.shared.tests",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.Splines",
         "Unity.Mathematics",
-        "com.unity.cinemachine.hdrp.tests"
+        "Unity.Cinemachine",
+        "Unity.Cinemachine.Editor",
+        "Unity.Cinemachine.Shared.Tests",
+        "Unity.Cinemachine.Hdrp.Tests"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

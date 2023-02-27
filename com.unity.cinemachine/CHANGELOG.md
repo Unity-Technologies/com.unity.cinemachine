@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- InputAxisController handles float and Vector2 automatically. Other input types need to be handled by a custom script inheriting InputAxisController.
+
+### Changed 
+
+- Renamed .asmdef files to follow the convention Unity.[PackageName]
 
 ### Added
 
