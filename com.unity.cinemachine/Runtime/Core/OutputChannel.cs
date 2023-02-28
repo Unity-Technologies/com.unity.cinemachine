@@ -11,6 +11,7 @@ namespace Cinemachine
     {
         /// <summary>The CinemachineCamera will drive all CinemachineBrains that include one or more of its 
         /// channels within its channel mask.</summary>
+        [Flags]
         public enum Channels
         {
             /// <summary>Default Cinemachine channel.</summary>

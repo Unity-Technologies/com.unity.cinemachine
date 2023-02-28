@@ -1,5 +1,5 @@
 {
-    "name": "com.unity.cinemachine",
+    "name": "Unity.Cinemachine",
     "rootNamespace": "",
     "references": [
         "Unity.Timeline",

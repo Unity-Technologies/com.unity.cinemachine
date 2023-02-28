@@ -1,6 +1,7 @@
 using Cinemachine.Utility;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -144,7 +145,7 @@ namespace Cinemachine
     public struct CinemachineBlendDefinition
     {
         /// <summary>Supported predefined shapes for the blend curve.</summary>
-        public enum Style
+        public enum Styles
         {
             /// <summary>Zero-length blend</summary>
             Cut,
@@ -166,67 +167,70 @@ namespace Cinemachine
 
         /// <summary>The shape of the blend curve.</summary>
         [Tooltip("Shape of the blend curve")]
-        public Style m_Style;
+        [FormerlySerializedAs("m_Style")]
+        public Styles Style;
 
         /// <summary>The duration (in seconds) of the blend, if not a cut.  
         /// If style is a cut, then this value is ignored.</summary>
         [Tooltip("Duration of the blend, in seconds")]
-        public float m_Time;
+        [FormerlySerializedAs("m_Time")]
+        public float Time;
 
         /// <summary>
         /// Get the duration of the blend, in seconds.  Will return 0 if blend style is a cut.
         /// </summary>
-        public float BlendTime { get { return m_Style == Style.Cut ? 0 : m_Time; } }
+        public float BlendTime => Style == Styles.Cut ? 0 : Time; 
 
         /// <summary>Constructor</summary>
         /// <param name="style">The shape of the blend curve.</param>
         /// <param name="time">The duration (in seconds) of the blend</param>
-        public CinemachineBlendDefinition(Style style, float time)
+        public CinemachineBlendDefinition(Styles style, float time)
         {
-            m_Style = style;
-            m_Time = time;
-            m_CustomCurve = null;
+            Style = style;
+            Time = time;
+            CustomCurve = null;
         }
 
         /// <summary>
         /// A user-defined AnimationCurve, used only if style is Custom.
         /// Curve MUST be normalized, i.e. time range [0...1], value range [0...1].
         /// </summary>
-        public AnimationCurve m_CustomCurve;
+        [FormerlySerializedAs("m_CustomCurve")]
+        public AnimationCurve CustomCurve;
 
-        static AnimationCurve[] sStandardCurves;
+        static AnimationCurve[] s_StandardCurves;
         void CreateStandardCurves()
         {
-            sStandardCurves = new AnimationCurve[(int)Style.Custom];
+            s_StandardCurves = new AnimationCurve[(int)Styles.Custom];
 
-            sStandardCurves[(int)Style.Cut] = null;
-            sStandardCurves[(int)Style.EaseInOut] = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
+            s_StandardCurves[(int)Styles.Cut] = null;
+            s_StandardCurves[(int)Styles.EaseInOut] = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
 
-            sStandardCurves[(int)Style.EaseIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            Keyframe[] keys = sStandardCurves[(int)Style.EaseIn].keys;
+            s_StandardCurves[(int)Styles.EaseIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            Keyframe[] keys = s_StandardCurves[(int)Styles.EaseIn].keys;
             keys[0].outTangent = 1.4f;
             keys[1].inTangent = 0;
-            sStandardCurves[(int)Style.EaseIn].keys = keys;
+            s_StandardCurves[(int)Styles.EaseIn].keys = keys;
 
-            sStandardCurves[(int)Style.EaseOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            keys = sStandardCurves[(int)Style.EaseOut].keys;
+            s_StandardCurves[(int)Styles.EaseOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = s_StandardCurves[(int)Styles.EaseOut].keys;
             keys[0].outTangent = 0;
             keys[1].inTangent = 1.4f;
-            sStandardCurves[(int)Style.EaseOut].keys = keys;
+            s_StandardCurves[(int)Styles.EaseOut].keys = keys;
 
-            sStandardCurves[(int)Style.HardIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            keys = sStandardCurves[(int)Style.HardIn].keys;
+            s_StandardCurves[(int)Styles.HardIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = s_StandardCurves[(int)Styles.HardIn].keys;
             keys[0].outTangent = 0;
             keys[1].inTangent = 3f;
-            sStandardCurves[(int)Style.HardIn].keys = keys;
+            s_StandardCurves[(int)Styles.HardIn].keys = keys;
 
-            sStandardCurves[(int)Style.HardOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            keys = sStandardCurves[(int)Style.HardOut].keys;
+            s_StandardCurves[(int)Styles.HardOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = s_StandardCurves[(int)Styles.HardOut].keys;
             keys[0].outTangent = 3f;
             keys[1].inTangent = 0;
-            sStandardCurves[(int)Style.HardOut].keys = keys;
+            s_StandardCurves[(int)Styles.HardOut].keys = keys;
 
-            sStandardCurves[(int)Style.Linear] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            s_StandardCurves[(int)Styles.Linear] = AnimationCurve.Linear(0f, 0f, 1, 1f);
         }
 
         /// <summary>
@@ -238,15 +242,14 @@ namespace Cinemachine
         {
             get
             {
-                if (m_Style == Style.Custom)
+                if (Style == Styles.Custom)
                 {
-                    if (m_CustomCurve == null)
-                        m_CustomCurve = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
-                    return m_CustomCurve;
+                    CustomCurve ??= AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
+                    return CustomCurve;
                 }
-                if (sStandardCurves == null)
+                if (s_StandardCurves == null)
                     CreateStandardCurves();
-                return sStandardCurves[(int)m_Style];
+                return s_StandardCurves[(int)Style];
             }
         }
     }
@@ -261,13 +264,13 @@ namespace Cinemachine
         public void SetState(CameraState state) { State = state; }
 
         public string Name { get; private set; }
-        public string Description { get { return ""; }}
+        public string Description => string.Empty;
         public Transform LookAt { get; set; }
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
-        public bool IsValid { get { return true; } }
-        public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
+        public bool IsValid => true;
+        public ICinemachineCamera ParentCamera => null;
+        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
@@ -284,16 +287,16 @@ namespace Cinemachine
         public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
 
-        public string Name { get { return "Mid-blend"; }}
-        public string Description { get { return Blend == null ? "(null)" : Blend.Description; }}
+        public string Name => "Mid-blend";
+        public string Description => Blend == null ? "(null)" : Blend.Description;
         public Transform LookAt { get; set; }
         public Transform Follow { get; set; }
         public CameraState State { get; private set; }
-        public bool IsValid { get { return Blend != null && Blend.IsValid; } }
-        public ICinemachineCamera ParentCamera { get { return null; } }
+        public bool IsValid => Blend != null && Blend.IsValid; 
+        public ICinemachineCamera ParentCamera => null;
         public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
-            { return Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB); }
-        public CameraState CalculateNewState(float deltaTime) { return State; }
+            => Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB);
+        public CameraState CalculateNewState(float deltaTime) => State;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (Blend != null)

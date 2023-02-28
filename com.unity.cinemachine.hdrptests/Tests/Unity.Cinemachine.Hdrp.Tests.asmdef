@@ -1,15 +1,13 @@
 {
-    "name": "com.unity.cinemachine.runtime.tests",
+    "name": "Unity.Cinemachine.Hdrp.Tests",
     "rootNamespace": "",
     "references": [
-        "com.unity.cinemachine",
-        "com.unity.cinemachine.editor",
-        "com.unity.cinemachine.shared.tests",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Unity.Splines",
-        "Unity.Mathematics"
+        "Unity.Cinemachine",
+        "Unity.Cinemachine.Editor"
     ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
@@ -35,16 +33,6 @@
             "name": "com.unity.modules.animation",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_ANIMATION"
-        },
-        {
-            "name": "com.unity.splines",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_UNITY_SPLINES"
-        },
-        {
-            "name": "com.unity.cinemachine",
-            "expression": "3.0.0-pre.1",
-            "define": "CINEMACHINE_V3_OR_HIGHER"
         }
     ],
     "noEngineReferences": false

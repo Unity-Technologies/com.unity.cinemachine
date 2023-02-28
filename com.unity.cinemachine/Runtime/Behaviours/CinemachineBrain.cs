@@ -124,7 +124,6 @@ namespace Cinemachine
         [Tooltip("The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to any of the channels selected. "
             + "CinemachineCameras that do not output to one of these channels will be ignored.  Use this in situations "
             + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
-        [EnumMaskProperty]
         public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
 
         /// <summary>This enum defines the options available for the update method.</summary>
@@ -193,7 +192,7 @@ namespace Cinemachine
             + "blend between two Virtual Cameras")]
         [FormerlySerializedAs("m_DefaultBlend")]
         public CinemachineBlendDefinition DefaultBlend
-            = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+            = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 2f);
 
         /// <summary>
         /// This is the asset which contains custom settings for specific blends.
@@ -268,7 +267,7 @@ namespace Cinemachine
 
         void OnValidate()
         {
-            DefaultBlend.m_Time = Mathf.Max(0, DefaultBlend.m_Time);
+            DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
         }
 
         void Reset()
@@ -281,7 +280,7 @@ namespace Cinemachine
             UpdateMethod = UpdateMethods.SmartUpdate;
             BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
             LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
-            DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 2f);
+            DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 2f);
             CustomBlends = null;
             CameraCutEvent = new BrainEvent();
             CameraActivatedEvent = new VcamActivatedEvent();

@@ -144,9 +144,9 @@ namespace Cinemachine.Editor
                     SerializedProperty blendProp = l.serializedProperty.GetArrayElementAtIndex(
                             index).FindPropertyRelative(() => def.Blend);
 
-                    blendProp.FindPropertyRelative(() => def2.m_Style).enumValueIndex
-                        = (int)CinemachineBlendDefinition.Style.EaseInOut;
-                    blendProp.FindPropertyRelative(() => def2.m_Time).floatValue = 2f;
+                    blendProp.FindPropertyRelative(() => def2.Style).enumValueIndex
+                        = (int)CinemachineBlendDefinition.Styles.EaseInOut;
+                    blendProp.FindPropertyRelative(() => def2.Time).floatValue = 2f;
                 };
         }
     }

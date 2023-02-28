@@ -9,13 +9,14 @@ namespace Cinemachine.Editor
     [CustomPropertyDrawer(typeof(CinemachineBlendDefinition))]
     class BlendDefinitionPropertyDrawer : PropertyDrawer
     {
-        CinemachineBlendDefinition m_MyClass = new(); // to access name strings
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
+            CinemachineBlendDefinition def = new(); // to access name strings
+
             float vSpace = 0;
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
-            SerializedProperty timeProp = property.FindPropertyRelative(() => m_MyClass.m_Time);
+            SerializedProperty timeProp = property.FindPropertyRelative(() => def.Time);
             GUIContent timeText = new GUIContent(" s", timeProp.tooltip);
             var textDimensions = GUI.skin.label.CalcSize(timeText);
 
@@ -24,15 +25,15 @@ namespace Cinemachine.Editor
             rect.y += vSpace; rect.height = EditorGUIUtility.singleLineHeight;
             rect.width -= floatFieldWidth + textDimensions.x;
 
-            SerializedProperty styleProp = property.FindPropertyRelative(() => m_MyClass.m_Style);
-            bool isCustom = styleProp.enumValueIndex == (int)CinemachineBlendDefinition.Style.Custom;
+            SerializedProperty styleProp = property.FindPropertyRelative(() => def.Style);
+            bool isCustom = styleProp.enumValueIndex == (int)CinemachineBlendDefinition.Styles.Custom;
             var r = rect;
             if (isCustom)
                 r.width -= 2 * r.height;
             EditorGUI.PropertyField(r, styleProp, GUIContent.none);
             if (isCustom)
             {
-                SerializedProperty curveProp = property.FindPropertyRelative(() => m_MyClass.m_CustomCurve);
+                SerializedProperty curveProp = property.FindPropertyRelative(() => def.CustomCurve);
                 r.x += r.width;
                 r.width = 2 * rect.height;
                 EditorGUI.BeginChangeCheck();
@@ -43,7 +44,7 @@ namespace Cinemachine.Editor
                     curveProp.serializedObject.ApplyModifiedProperties();
                 }
             }
-            if (styleProp.intValue != (int)CinemachineBlendDefinition.Style.Cut)
+            if (styleProp.intValue != (int)CinemachineBlendDefinition.Styles.Cut)
             {
                 float oldWidth = EditorGUIUtility.labelWidth;
                 EditorGUIUtility.labelWidth = textDimensions.x;
@@ -58,6 +59,7 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            CinemachineBlendDefinition def = new(); // to access name strings
             var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
 
             VisualElement ux, contents;
@@ -72,15 +74,15 @@ namespace Cinemachine.Editor
                 ux = row;
             }
 
-            var styleProp = property.FindPropertyRelative(() => m_MyClass.m_Style);
+            var styleProp = property.FindPropertyRelative(() => def.Style);
             contents.Add(new PropertyField(styleProp, "")
                 { style = { flexGrow = 1, flexBasis = floatFieldWidth }});
 
-            var curveProp = property.FindPropertyRelative(() => m_MyClass.m_CustomCurve);
+            var curveProp = property.FindPropertyRelative(() => def.CustomCurve);
             var curveWidget = contents.AddChild(new PropertyField(curveProp, "")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth }});
 
-            var timeProp = property.FindPropertyRelative(() => m_MyClass.m_Time);
+            var timeProp = property.FindPropertyRelative(() => def.Time);
             var timeWidget = contents.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 4 }});
 
@@ -88,8 +90,8 @@ namespace Cinemachine.Editor
             contents.TrackPropertyValue(styleProp, OnStyleChanged);
             void OnStyleChanged(SerializedProperty p)
             {
-                curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Style.Custom);
-                timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Style.Cut);
+                curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Styles.Custom);
+                timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Styles.Cut);
             }
 
             return ux;

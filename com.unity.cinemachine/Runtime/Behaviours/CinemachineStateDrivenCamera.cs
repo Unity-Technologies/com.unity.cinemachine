@@ -76,7 +76,7 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
         [FormerlySerializedAs("m_DefaultBlend")]
-        public CinemachineBlendDefinition DefaultBlend = new (CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
+        public CinemachineBlendDefinition DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 0.5f);
 
         /// <summary>
         /// This is the asset which contains custom settings for specific child blends.
@@ -120,7 +120,7 @@ namespace Cinemachine
             AnimatedTarget = null;
             LayerIndex = 0;
             Instructions = null;
-            DefaultBlend = new (CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
+            DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 0.5f);
             CustomBlends = null;
         }
 
