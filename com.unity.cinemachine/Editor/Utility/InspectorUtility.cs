@@ -685,6 +685,7 @@ namespace Cinemachine.Editor
                 var children = field.Children().GetEnumerator();
                 if (children.MoveNext())
                     children.Current.style.marginLeft = 0;
+                children.Dispose();
             });
             return row;
         }

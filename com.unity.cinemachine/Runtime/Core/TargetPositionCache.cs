@@ -206,6 +206,7 @@ namespace Cinemachine
             var iter = m_Cache.GetEnumerator();
             while (iter.MoveNext())
                 iter.Current.Value.CreateCurves();
+            iter.Dispose();
         }
 
         const float kWraparoundSlush = 0.1f;
