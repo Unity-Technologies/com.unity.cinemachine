@@ -519,6 +519,23 @@ namespace Cinemachine.Editor
             }
         }
         
+        /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">YThe tooltip text</param>
+        public static Label WarningIcon(string tooltip)
+        {
+            return new Label 
+            { 
+                tooltip = tooltip,
+                style = 
+                { 
+                    flexGrow = 0,
+                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                    width = SingleLineHeight, height = SingleLineHeight,
+                    alignSelf = Align.Center
+                }
+            };
+        }
+
         /// <summary>
         /// This is a hack to get proper layout within th inspector.
         /// There seems to be no sanctioned way to get the current inspector label width.
@@ -529,9 +546,13 @@ namespace Cinemachine.Editor
             public Label Label => labelElement;
             public VisualElement Contents { get; }
 
-            public LabeledRow(string label, string tooltip = "") : this (label, tooltip, new VisualElement()) 
+            public LabeledRow(string label, string tooltip = "") 
+                : this (label, tooltip, new VisualElement()) 
             {
+                style.flexDirection = FlexDirection.Row;
+                style.flexGrow = 1;
                 Contents.style.flexDirection = FlexDirection.Row;
+                Contents.style.flexGrow = 1;
             }
 
             public LabeledRow(string label, string tooltip, VisualElement contents) : base(label, contents)
@@ -672,11 +693,11 @@ namespace Cinemachine.Editor
         }
 
         public static LabeledRow PropertyRow(
-            SerializedProperty property, out VisualElement propertyField)
+            SerializedProperty property, out VisualElement propertyField, string label = null)
         {
-            var row = new LabeledRow(property.displayName, property.tooltip);
+            var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
-                { style = { flexGrow = 1, flexBasis = SingleLineHeight }});
+                { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
             AddPropertyDragger(row.Label, property, propertyField);
 
             // Kill any left margin that gets inserted into the property field

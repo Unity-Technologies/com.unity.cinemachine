@@ -42,15 +42,14 @@ namespace Cinemachine.Editor
             ux.AddHeader("State Driven Camera");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
-                ux, serializedObject.FindProperty(() => Target.CustomBlends),
+            ux.Add(EmbeddedAssetEditorUtility.EmbeddedAssetInspector<CinemachineBlenderSettings>(
+                serializedObject.FindProperty(() => Target.CustomBlends),
                 (ed) =>
                 {
                     var editor = ed as CinemachineBlenderSettingsEditor;
                     if (editor != null)
                         editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
-                },
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
+                }));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
 

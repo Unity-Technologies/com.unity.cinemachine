@@ -30,35 +30,17 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Call this to add the embedded inspector UX to an inspector.  
-        /// Will draw the asset reference field, and the embedded editor, or a Create Asset button if no asset is set.
+        /// Call this to create an embedded inspector.  
+        /// Will draw the asset reference field, and the embedded editor, or a Create 
+        /// Asset button if no asset is set.
         /// </summary>
-        public static VisualElement AddEmbeddedAssetInspector<T>(
-            this UnityEditor.Editor owner, VisualElement ux,
-            SerializedProperty property, OnCreateEditorDelegate onCreateEditor, 
-            string saveAssetTitle, string defaultName, string extension, string saveAssetMessage) where T : ScriptableObject
+        public static VisualElement EmbeddedAssetInspector<T>(
+            SerializedProperty property, OnCreateEditorDelegate onCreateEditor) where T : ScriptableObject
         {
+            var ux = new VisualElement();
+
             // Asset field with create button
-            var unassignedUx = ux.AddChild(new InspectorUtility.LeftRightRow());
-            unassignedUx.Left.Add(new Label(property.displayName) 
-                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0 }});
-            unassignedUx.Right.Add(new PropertyField(property, "") 
-                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0, marginRight = 5 }});
-            unassignedUx.Right.Add(new Button(() =>
-            {
-                string newAssetPath = EditorUtility.SaveFilePanelInProject(
-                    saveAssetTitle, defaultName, extension, saveAssetMessage);
-                if (!string.IsNullOrEmpty(newAssetPath))
-                {
-                    T asset = ScriptableObjectUtility.CreateAt<T>(newAssetPath);
-                    property.objectReferenceValue = asset;
-                    property.serializedObject.ApplyModifiedProperties();
-                }
-            })
-            {
-                text = "Create Asset",
-                tooltip = "Create a new shared settings asset"
-            });
+            var unassignedUx = ux.AddChild(AssetSelectorWithPresets<T>(property, null, null, null));
 
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip, value = s_CustomBlendsExpanded };
             foldout.RegisterValueChangedCallback((evt) => 
@@ -70,8 +52,8 @@ namespace Cinemachine.Editor
                 }
             });
             var assignedUx = ux.AddChild(new InspectorUtility.FoldoutWithOverlay(
-                foldout, new PropertyField(property, ""), null) { style = { flexGrow = 1 }});
-            foldout.Add(new PropertyField(property, "Asset"));
+                foldout, AssetSelectorWithPresets<T>(property, "", null, null), null) { style = { flexGrow = 1 }});
+            foldout.Add(AssetSelectorWithPresets<T>(property, "Asset", null, null));
             foldout.AddSpace();
 
             var borderColor = Color.grey;
@@ -135,28 +117,19 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Add an asset selector widget with a presets popup.
+        /// Create an asset selector widget with a presets popup.
         /// </summary>
-        public static void AddAssetSelectorWithPresets<T>(
-            this UnityEditor.Editor owner, VisualElement ux, SerializedProperty property, 
-            string presetsPath, string warningTextIfNull) where T : ScriptableObject
+        public static VisualElement AssetSelectorWithPresets<T>(
+            SerializedProperty property, string label, string presetsPath, string warningTextIfNull) where T : ScriptableObject
         {
-            var row = ux.AddChild(new InspectorUtility.LabeledRow(property.displayName) { tooltip = property.tooltip });
+            var row = InspectorUtility.PropertyRow(property, out var selector, label);
             var contents = row.Contents;
 
             Label warningIcon = null;
             if (!string.IsNullOrEmpty(warningTextIfNull))
             {
-                warningIcon = contents.AddChild(new Label 
-                { 
-                    tooltip = warningTextIfNull,
-                    style = 
-                    { 
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                warningIcon = InspectorUtility.WarningIcon(warningTextIfNull);
+                contents.Insert(0, warningIcon);
             }
 
             var presetName = contents.AddChild(new TextField 
@@ -166,9 +139,6 @@ namespace Cinemachine.Editor
                 style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1 }
             });
             presetName.SetEnabled(false);
-
-            var selector = contents.AddChild(new PropertyField(property, "") { style = { flexGrow = 1 }});
-            selector.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
 
             var button = contents.AddChild(new Button { style = 
             { 
@@ -247,9 +217,7 @@ namespace Cinemachine.Editor
             manipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
             button.AddManipulator(manipulator);
 
-            UpdateUX(property);
-            row.TrackPropertyValue(property, UpdateUX);
-            void UpdateUX(SerializedProperty p)
+            row.TrackPropertyWithInitialCallback(property, (p) =>
             {
                 var target = p.objectReferenceValue as ScriptableObject;
                 warningIcon?.SetVisible(target == null);
@@ -264,7 +232,9 @@ namespace Cinemachine.Editor
                     presetName.value = presetNames[presetIndex];
                 presetName.SetVisible(presetIndex >= 0);
                 selector.SetVisible(presetIndex < 0);
-            }
+            });
+
+            return row;
 
             // Local function
             static List<Type> GetAssetTypes(Type baseType)
