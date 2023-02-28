@@ -24,7 +24,7 @@
         * [Blending between CinemachineCameras](CinemachineBlending.md)
         * [Managing and grouping CinemachineCameras](CinemachineManagerCameras.md)
             * [Cinemachine Mixing Camera](CinemachineMixingCamera.md)
-            * [Cinemachine Blend List Camera](CinemachineBlendListCamera.md)
+            * [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md)
             * [Cinemachine Clear Shot](CinemachineClearShot.md)
             * [Cinemachine State-Driven camera](CinemachineStateDrivenCamera.md)
         * [CinemachineCamera extensions](CinemachineVirtualCameraExtensions.md)

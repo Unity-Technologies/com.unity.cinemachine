@@ -12,7 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- IgnoreTarget blend hint will blend rotations without considering the tracking target.
+- New IgnoreTarget blend hint will blend rotations without considering the tracking target.
+
+### Changed
+- CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
 
 
 ## [3.0.0-pre.4] - 2023-02-09

@@ -1,10 +1,10 @@
-# Cinemachine Blend List Camera
+# Cinemachine Sequencer Camera
 
-The __Cinemachine Blend List Camera__ component executes a sequence of blends or cuts among its child CinemachineCameras.
+The __Cinemachine Sequencer Camera__ component executes a sequence of blends or cuts among its child CinemachineCameras.
 
-When the Blend List camera is activated, it executes its list of instructions, activating the first child CinemachineCamera in the list, holding for a designated time, then cutting or blending to the next child, and so on. The Blend List camera holds the last CinemachineCamera until Cinemachine Brain or Timeline deactivates the Blend List camera.
+When the Sequencer camera is activated, it executes its list of instructions, activating the first child CinemachineCamera in the list, holding for a designated time, then cutting or blending to the next child, and so on. The Sequencer camera holds the last CinemachineCamera until Cinemachine Brain or Timeline deactivates the Sequencer camera.  If the Loop flag is enabled, the Sequencer will go back to the first camera in the list and continue the sequence.
 
-**Tip**: Use a Blend List Camera instead of  [Timeline](CinemachineTimeline.md) for simpler, automatic sequences.
+**Tip**: Use a Sequencer Camera instead of [Timeline](CinemachineTimeline.md) for simpler, automatic sequences.
 
 ## Properties:
 
@@ -20,4 +20,4 @@ When the Blend List camera is activated, it executes its list of instructions, a
 | __Default Target__ || If enabled, this target will be used as fallback if child CinemachineCameras don't specify a Tracking Target of their own |
 | __Show Debug Text__ || If enabled, current state information will be displayed in the Game View |
 | __Loop__ || When enabled, the child CinemachineCameras will cycle indefintely instead of stopping on the last CinemachineCamera in the list. |
-| __Instructions__ || The set of instructions for enabling child cameras. |
+| __Instructions__ || The set of instructions specifying the child cameras in the sequence. |

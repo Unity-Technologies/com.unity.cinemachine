@@ -10,14 +10,14 @@ namespace Cinemachine
     /// of child Virtual Cameras.  When the camera goes live, these child vcams
     /// are enabled, one after another, holding each camera for a designated time.
     /// Blends between cameras are specified.
-    /// The last camera is held indefinitely.
+    /// The last camera is held indefinitely, unless the Loop flag is enabled.
     /// </summary>
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
-    [AddComponentMenu("Cinemachine/Cinemachine Blend List Camera")]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineBlendListCamera.html")]
-    public class CinemachineBlendListCamera : CinemachineCameraManagerBase
+    [AddComponentMenu("Cinemachine/Cinemachine Sequencer Camera")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineSequencerCamera.html")]
+    public class CinemachineSequencerCamera : CinemachineCameraManagerBase
     {
         /// <summary>When enabled, the child vcams will cycle indefinitely instead of just stopping at the last one</summary>
         [Tooltip("When enabled, the child vcams will cycle indefinitely instead of just stopping at the last one")]
