@@ -26,7 +26,7 @@ namespace Cinemachine.Editor
             this UnityEditor.Editor editor, VisualElement ux, RequiredTargets requiredTargets = RequiredTargets.None)
         {
             var targets = editor.targets;
-            var noCameraHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
+            var noCameraHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 k_NeedCamera, HelpBoxMessageType.Warning,
                 k_AddCamera, () => AddCmCameraToTargets(targets)));
 

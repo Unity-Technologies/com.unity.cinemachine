@@ -67,7 +67,7 @@ namespace Cinemachine.Editor
                 ux = contents = new VisualElement { style = { flexDirection = FlexDirection.Row } };
             else
             {
-                var row = new InspectorUtility.LeftRightContainer();
+                var row = new InspectorUtility.LeftRightRow();
                 row.Left.Add(new Label(preferredLabel)
                     { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
                 contents = row.Right;

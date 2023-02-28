@@ -77,7 +77,7 @@ namespace Cinemachine
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule() => m_UpdateStatus.Clear();
         
-        static List<Transform> sToDelete = new();
+        static List<Transform> s_ToDelete = new();
         static void UpdateTargets(UpdateClock currentClock)
         {
             // Update the registry for all known targets
@@ -87,13 +87,14 @@ namespace Cinemachine
             {
                 var current = iter.Current;
                 if (current.Key == null)
-                    sToDelete.Add(current.Key); // target was deleted
+                    s_ToDelete.Add(current.Key); // target was deleted
                 else
                     current.Value.OnUpdate(now, currentClock, current.Key.localToWorldMatrix);
             }
-            for (int i = sToDelete.Count-1; i >= 0; --i)
-                m_UpdateStatus.Remove(sToDelete[i]);
-            sToDelete.Clear();
+            for (int i = s_ToDelete.Count-1; i >= 0; --i)
+                m_UpdateStatus.Remove(s_ToDelete[i]);
+            s_ToDelete.Clear();
+            iter.Dispose();
         }
 
         public static UpdateClock GetPreferredUpdate(Transform target)

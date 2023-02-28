@@ -103,7 +103,7 @@ namespace Cinemachine.Editor
             toggle.RegisterValueChangedCallback((evt) => CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value = evt.newValue);
 
             // Cached scrubbing
-            var row = m_ParentElement.AddChild(new InspectorUtility.LeftRightContainer());
+            var row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.AddChild(new Label(CinemachineTimelinePrefs.s_ScrubbingCacheLabel.text) 
             { 
                 tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip, 
@@ -132,7 +132,7 @@ namespace Cinemachine.Editor
             // Camera Reference - we do it in IMGUI until the ExposedReference UITK bugs are fixed
             m_ParentElement.AddSpace();
             var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
-            row = m_ParentElement.AddChild(new InspectorUtility.LeftRightContainer());
+            row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.AddChild(new Label("Cinemachine Camera") 
             { 
                 tooltip = "The Cinemachine camera to use for this shot", 

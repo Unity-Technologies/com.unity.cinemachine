@@ -39,7 +39,7 @@ namespace Cinemachine.Editor
             string saveAssetTitle, string defaultName, string extension, string saveAssetMessage) where T : ScriptableObject
         {
             // Asset field with create button
-            var unassignedUx = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            var unassignedUx = ux.AddChild(new InspectorUtility.LeftRightRow());
             unassignedUx.Left.Add(new Label(property.displayName) 
                 { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 0 }});
             unassignedUx.Right.Add(new PropertyField(property, "") 
@@ -141,8 +141,8 @@ namespace Cinemachine.Editor
             this UnityEditor.Editor owner, VisualElement ux, SerializedProperty property, 
             string presetsPath, string warningTextIfNull) where T : ScriptableObject
         {
-            var row = ux.AddChild(new InspectorUtility.LabeledContainer(property.displayName) { tooltip = property.tooltip });
-            var contents = row.Input;
+            var row = ux.AddChild(new InspectorUtility.LabeledRow(property.displayName) { tooltip = property.tooltip });
+            var contents = row.Contents;
 
             Label warningIcon = null;
             if (!string.IsNullOrEmpty(warningTextIfNull))

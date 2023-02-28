@@ -52,7 +52,7 @@ namespace Cinemachine.Editor
             var xProp = property.FindPropertyRelative("x");
             var yProp = property.FindPropertyRelative("y");
 
-            var ux = new InspectorUtility.LeftRightContainer();
+            var ux = new InspectorUtility.LeftRightRow();
             var label = new Label(property.displayName) 
                 { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }};
             var minField = new PropertyField(xProp, "") { style = { flexBasis = 0, flexGrow = 1}};

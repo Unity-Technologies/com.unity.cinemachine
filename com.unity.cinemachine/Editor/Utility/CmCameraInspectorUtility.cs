@@ -37,15 +37,15 @@ namespace Cinemachine.Editor
             var navelGazeMessage = ux.AddChild(new HelpBox(
                     "The camera is trying to look at itself.", HelpBoxMessageType.Warning));
 
-            var row = ux.AddChild(new InspectorUtility.LabeledContainer("Status"));
-            var statusText = row.labelElement;
-            var soloButton = row.AddInput(new Button() 
+            var row = ux.AddChild(new InspectorUtility.LabeledRow("Status"));
+            var statusText = row.Label;
+            var soloButton = row.Contents.AddChild(new Button() 
             { 
                 text = "Solo", 
                 style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
                     marginLeft = 0, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
             });
-            var updateMode = row.AddInput(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
+            var updateMode = row.Contents.AddChild(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
             updateMode.SetEnabled(false);
             updateMode.style.display = DisplayStyle.None;
 
@@ -144,7 +144,7 @@ namespace Cinemachine.Editor
                 if (PipelineStageMenu.s_StageData[i].Types.Count < 2)
                     continue;
 
-                var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
+                var row = ux.AddChild(new InspectorUtility.LeftRightRow());
                 int currentSelection = PipelineStageMenu.GetSelectedComponent(
                     i, target.GetCinemachineComponent((CinemachineCore.Stage)i));
                 var stage = i; // capture for lambda

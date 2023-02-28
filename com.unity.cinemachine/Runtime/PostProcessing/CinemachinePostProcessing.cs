@@ -302,12 +302,12 @@ namespace Cinemachine
             return sVolumes;
         }
 
-        static Dictionary<CinemachineBrain, PostProcessLayer> mBrainToLayer
+        static Dictionary<CinemachineBrain, PostProcessLayer> s_BrainToLayer
             = new Dictionary<CinemachineBrain, PostProcessLayer>();
 
         static PostProcessLayer GetPPLayer(CinemachineBrain brain)
         {
-            bool found = mBrainToLayer.TryGetValue(brain, out PostProcessLayer layer);
+            bool found = s_BrainToLayer.TryGetValue(brain, out PostProcessLayer layer);
             if (layer != null)
                 return layer;   // layer is valid and in our lookup
 
@@ -317,7 +317,7 @@ namespace Cinemachine
             {
                 // layer is a deleted object
                 brain.CameraCutEvent.RemoveListener(OnCameraCut);
-                mBrainToLayer.Remove(brain);
+                s_BrainToLayer.Remove(brain);
                 layer = null;
                 found = false;
             }
@@ -327,21 +327,22 @@ namespace Cinemachine
             if (layer != null)
             {
                 brain.CameraCutEvent.AddListener(OnCameraCut); // valid layer
-                mBrainToLayer[brain] = layer;
+                s_BrainToLayer[brain] = layer;
             }
             return layer;
         }
 
         static void CleanupLookupTable()
         {
-            var iter = mBrainToLayer.GetEnumerator();
+            var iter = s_BrainToLayer.GetEnumerator();
             while (iter.MoveNext())
             {
                 var brain = iter.Current.Key;
                 if (brain != null)
                     brain.CameraCutEvent.RemoveListener(OnCameraCut);
             }
-            mBrainToLayer.Clear();
+            s_BrainToLayer.Clear();
+            iter.Dispose();
         }
 
 #if UNITY_EDITOR
