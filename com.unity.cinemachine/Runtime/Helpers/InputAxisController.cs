@@ -294,22 +294,29 @@ namespace Cinemachine
         /// <returns>Returns the value of the input device.</returns>
         protected virtual float ReadInput(InputAction action, IInputAxisSource.AxisDescriptor.Hints hint)
         {
-            var activeControl = action.activeControl;
-            if (activeControl == null)
-                return 0f;
-            
-            var actionControlType = activeControl.valueType;
-            if (actionControlType == typeof(Vector2) || action.expectedControlType == "Vector2")
-                return hint == IInputAxisSource.AxisDescriptor.Hints.Y
-                    ? action.ReadValue<Vector2>().y
-                    : action.ReadValue<Vector2>().x;
-            if (actionControlType == typeof(float))
-                return action.ReadValue<float>();
-            
-
-            Debug.LogError("The valueType of InputAction provided to " + name + " is not handled by default. " +
-                "You need to create a class inheriting InputAxisController and you need to override the " +
-                "ReadInput method to handle your case.");
+            var control = action.activeControl;
+            if (control != null)
+            {
+                try 
+                {
+                    // If we can read as a Vector2, do so
+                    if (control.valueType == typeof(Vector2) || action.expectedControlType == "Vector2")
+                    {
+                        var value = action.ReadValue<Vector2>();
+                        return hint == IInputAxisSource.AxisDescriptor.Hints.Y ? value.y : value.x;
+                    }
+                    // Default: assume type is float
+                    return action.ReadValue<float>(); 
+                }
+                catch (InvalidOperationException)
+                {
+                    Debug.LogError("An action in the " + name + " object is mapped to a "
+                        + control.valueType.Name + " control.  The default inmplementation of "
+                        + "InputAxisController.ReadInput can only handle float or Vector2 types. "
+                        + "To handle other types you can create a class inheriting "
+                        + "InputAxisController with the ReadInput method overridden.");
+                }
+            }
             return 0f;
         }
         
