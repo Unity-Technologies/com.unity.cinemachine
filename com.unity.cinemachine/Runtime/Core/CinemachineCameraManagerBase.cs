@@ -252,7 +252,7 @@ namespace Cinemachine
                     // How far have we blended?  That is what we must undo
                     var progress = blendStartPosition 
                         + (1 - blendStartPosition) * activeBlend.TimeInBlend / activeBlend.Duration;
-                    blendDef.m_Time *= progress;
+                    blendDef.Time *= progress;
                     m_BlendStartPosition = 1 - progress;
                 }
 
