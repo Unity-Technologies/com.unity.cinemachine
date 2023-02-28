@@ -2,9 +2,11 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System;
 
 namespace Cinemachine.Editor
 {
+    [Obsolete]
     [CustomPropertyDrawer(typeof(VcamTargetPropertyAttribute))]
     class VcamTargetPropertyDrawer : PropertyDrawer
     {

@@ -124,7 +124,6 @@ namespace Cinemachine
         [Tooltip("The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to any of the channels selected. "
             + "CinemachineCameras that do not output to one of these channels will be ignored.  Use this in situations "
             + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
-        [EnumMaskProperty]
         public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
 
         /// <summary>This enum defines the options available for the update method.</summary>
