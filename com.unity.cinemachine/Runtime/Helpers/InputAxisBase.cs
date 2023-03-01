@@ -36,7 +36,7 @@ namespace Cinemachine
             m_InputAxisData.Disable(OnResetInput);
         }
         
-        void OnResetInput()
+        protected void OnResetInput()
         {
             m_InputAxisData.OnResetInput();
         }
