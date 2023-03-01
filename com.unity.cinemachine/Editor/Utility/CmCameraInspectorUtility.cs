@@ -34,8 +34,16 @@ namespace Cinemachine.Editor
             if (Selection.objects.Length > 1 || IsPrefab(editor.target))
                 return;
             
+            var cameraParentingMessage = ux.AddChild(new HelpBox(
+                $"Setup error: {editor.target.GetType().Name} should not be a child "
+                + "of CinemachineCamera or CinemachineBrain.\n\n"
+                + "<b>Best practice is to have CinemachineCamera, CinemachineBrain, and camera targets as "
+                + "separate objects, not parented to each other.</b>", 
+                HelpBoxMessageType.Error));
+
             var navelGazeMessage = ux.AddChild(new HelpBox(
-                    "The camera is trying to look at itself.", HelpBoxMessageType.Warning));
+                "The camera is trying to look at itself.", 
+                HelpBoxMessageType.Warning));
 
             var row = ux.AddChild(new InspectorUtility.LabeledRow("Status"));
             var statusText = row.Label;
@@ -63,14 +71,16 @@ namespace Cinemachine.Editor
                     return;
 
                 // Is the camera navel-gazing?
-                if (navelGazeMessage != null)
-                {
-                    CameraState state = target.State;
-                    bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
-                        (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
-                        target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
-                    navelGazeMessage.SetVisible(isNavelGazing);
-                }
+                CameraState state = target.State;
+                bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
+                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
+                    target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
+                navelGazeMessage.SetVisible(isNavelGazing);
+
+                // Is the camera parenting incorrect?
+                cameraParentingMessage.SetVisible(
+                    target.GetComponentInParent<CinemachineBrain>() != null 
+                    || (target.ParentCamera != null && target.ParentCamera is not CinemachineCameraManagerBase));
             });
 
             // Capture "normal" colors
