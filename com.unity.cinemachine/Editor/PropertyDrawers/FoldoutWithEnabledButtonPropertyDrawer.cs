@@ -60,9 +60,8 @@ namespace Cinemachine.Editor
             }
 
             // toggle.text is to the right side of the checkbox
-            UpdateToggleText(enabledProp);
-            foldout.TrackPropertyValue(enabledProp, UpdateToggleText);
-            void UpdateToggleText(SerializedProperty p) => foldoutToggle.text = p.boolValue ? null : a.ToggleDisabledText;
+            foldout.TrackPropertyWithInitialCallback(enabledProp, (p) => 
+                foldoutToggle.text = p.boolValue ? null : a.ToggleDisabledText);
 
             return foldout;
         }
