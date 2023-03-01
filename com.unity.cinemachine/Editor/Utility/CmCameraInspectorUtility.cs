@@ -181,19 +181,21 @@ namespace Cinemachine.Editor
                 if (PipelineStageMenu.s_StageData[i].Types.Count < 2)
                     continue;
 
+                var stage = i; // capture for lambda
                 var row = ux.AddChild(new InspectorUtility.LeftRightRow());
+                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
+                    { style = { flexGrow = 1, alignSelf = Align.Center }});
+                var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
+                warningIcon.SetVisible(false);
+
                 int currentSelection = PipelineStageMenu.GetSelectedComponent(
                     i, target.GetCinemachineComponent((CinemachineCore.Stage)i));
-                var stage = i; // capture for lambda
-                var dropdown = new DropdownField
+                var dropdown = row.Right.AddChild(new DropdownField
                 {
-                    name = PipelineStageMenu.s_StageData[stage].Name + " selector",
-                    label = "",
                     choices = PipelineStageMenu.s_StageData[stage].Choices,
                     index = currentSelection,
                     style = { flexGrow = 1 }
-                };
-                dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+                });
                 dropdown.RegisterValueChangedCallback(evt => 
                 {
                     var newType = PipelineStageMenu.s_StageData[stage].Types[GetTypeIndexFromSelection(evt.newValue, stage)];
@@ -222,11 +224,6 @@ namespace Cinemachine.Editor
                         return 0;
                     }
                 });
-                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
-                    { style = { flexGrow = 1, alignSelf = Align.Center }});
-                var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
-                warningIcon.SetVisible(false);
-                row.Right.Add(dropdown);
 
                 pipelineItems.Add(new PipelineStageItem
                 {
@@ -240,6 +237,7 @@ namespace Cinemachine.Editor
             {
                 if (target == null)
                     return; // deleted
+                target.InvalidatePipelineCache();
                 for (int i = 0; i < pipelineItems.Count; ++i)
                 {
                     var item = pipelineItems[i];
