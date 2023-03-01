@@ -520,7 +520,7 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
-        /// <param name="tooltip">YThe tooltip text</param>
+        /// <param name="tooltip">The tooltip text</param>
         public static Label MiniHelpIcon(string tooltip, HelpBoxMessageType iconType = HelpBoxMessageType.Warning)
         {
             string icon = iconType switch
@@ -540,6 +540,27 @@ namespace Cinemachine.Editor
                     alignSelf = Align.Center
                 }
             };
+        }
+
+        /// <summary>A small popup context menu, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="contextMenu">The context menu to show when the button is pressed</param>
+        public static Button MiniPopupButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
+        {
+            var button = new Button { tooltip = tooltip, style = 
+            {
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
+                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }};
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
+            return button;
         }
 
         /// <summary>

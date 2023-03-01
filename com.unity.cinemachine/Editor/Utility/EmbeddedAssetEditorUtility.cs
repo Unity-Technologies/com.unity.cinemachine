@@ -140,19 +140,11 @@ namespace Cinemachine.Editor
             });
             presetName.SetEnabled(false);
 
-            var button = contents.AddChild(new Button { style = 
-            { 
-                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                alignSelf = Align.Center,
-                paddingRight = 0, borderRightWidth = 0, marginRight = 0
-            }});
-
             var defaultName = property.serializedObject.targetObject.name + " " + property.displayName;
             var assetTypes = GetAssetTypes(typeof(T));
             var presetAssets = GetPresets(assetTypes, presetsPath, out var presetNames);
 
-            var manipulator = new ContextualMenuManipulator((evt) => 
+            contents.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
             {
                 evt.menu.AppendAction("Clear", 
                     (action) => 
@@ -212,10 +204,7 @@ namespace Cinemachine.Editor
                         }
                     );  
                 }
-            });
-            manipulator.activators.Clear();
-            manipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
-            button.AddManipulator(manipulator);
+            })));
 
             row.TrackPropertyWithInitialCallback(property, (p) =>
             {

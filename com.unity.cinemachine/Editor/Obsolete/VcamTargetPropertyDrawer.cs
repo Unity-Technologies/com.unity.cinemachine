@@ -45,16 +45,7 @@ namespace Cinemachine.Editor
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new PropertyField(property) { style = { flexGrow = 1 }});
-            var button = new Button { style = 
-            { 
-                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                alignSelf = Align.Center,
-                paddingRight = 0, borderRightWidth = 0, marginRight = 0
-            }};
-            row.Add(button);
-
-            var manipulator = new ContextualMenuManipulator((evt) => 
+            row.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
             {
                 evt.menu.AppendAction("Convert to TargetGroup", 
                     (action) => 
@@ -75,10 +66,7 @@ namespace Cinemachine.Editor
                         return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
                 );                
-            });
-            manipulator.activators.Clear();
-            manipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
-            button.AddManipulator(manipulator);
+            })));
             return row;
         }
     }
