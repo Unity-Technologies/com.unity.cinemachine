@@ -351,12 +351,12 @@ namespace Cinemachine.Editor
             if (provider != null)
             {
                 provider.enabled = false;
-                iac.AutoEnableInputs = provider.AutoEnableInputs;
+                iac.InputAxisData.AutoEnableInputs = provider.AutoEnableInputs;
             }
 #endif
-            for (var i = 0; i < iac.Controllers.Count; ++i)
+            for (var i = 0; i < iac.InputAxisData.Controllers.Count; ++i)
             {
-                var c = iac.Controllers[i];
+                var c = iac.InputAxisData.Controllers[i];
                 if (c.Name == name)
                 {
 #if ENABLE_LEGACY_INPUT_MANAGER
