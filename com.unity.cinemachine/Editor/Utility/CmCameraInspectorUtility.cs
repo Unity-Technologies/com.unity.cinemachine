@@ -187,17 +187,7 @@ namespace Cinemachine.Editor
                 });
                 row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
                     { style = { flexGrow = 1, alignSelf = Align.Center }});
-                var warningIcon = row.Left.AddChild(new Label 
-                { 
-                    tooltip = "Component is disabled or has a problem",
-                    style = 
-                    { 
-                        flexGrow = 0,
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
                 warningIcon.SetVisible(false);
                 row.Right.Add(dropdown);
 
@@ -482,17 +472,7 @@ namespace Cinemachine.Editor
                 for (int i = row.childCount - 1; i >= 0; --i)
                     row.RemoveAt(i);
 
-                var warningIcon = row.AddChild(new Label 
-                { 
-                    tooltip = "Item is null",
-                    style = 
-                    { 
-                        flexGrow = 0,
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
                 var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
                 row.AddChild(new ObjectField 
                 { 
