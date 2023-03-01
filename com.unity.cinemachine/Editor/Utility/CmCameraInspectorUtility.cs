@@ -142,7 +142,11 @@ namespace Cinemachine.Editor
                 text = "Transition Settings", 
                 tooltip = "Settings to control how this camera interacts with other cameras" 
             });
-            foldout.RegisterValueChangedCallback((evt) => s_TransitionsExpanded = evt.newValue);
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                if (evt.target == foldout)
+                    s_TransitionsExpanded = evt.newValue;
+            });
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.PriorityAndChannel)));
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
             if (otherProperties != null)
