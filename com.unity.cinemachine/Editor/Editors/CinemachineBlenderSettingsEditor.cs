@@ -160,7 +160,6 @@ namespace Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            var vcam = Target;
             var header = ux.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, marginBottom = -2 } });
             FormatElement(
                 header.AddChild(new Label("From")), 

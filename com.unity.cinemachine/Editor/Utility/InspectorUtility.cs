@@ -521,6 +521,7 @@ namespace Cinemachine.Editor
         
         /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
         /// <param name="tooltip">The tooltip text</param>
+        /// <param name="iconType">The little picture: error, warning, or info</param>
         public static Label MiniHelpIcon(string tooltip, HelpBoxMessageType iconType = HelpBoxMessageType.Warning)
         {
             string icon = iconType switch
@@ -719,6 +720,9 @@ namespace Cinemachine.Editor
             }
         }
 
+        /// <summary>
+        /// A row containing a property field.  Suitable for adding widgets nest to the property field.
+        /// </summary>
         public static LabeledRow PropertyRow(
             SerializedProperty property, out VisualElement propertyField, string label = null)
         {
