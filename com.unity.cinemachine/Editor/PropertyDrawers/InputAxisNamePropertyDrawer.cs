@@ -45,9 +45,8 @@ namespace Cinemachine.Editor
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            row.Add(new PropertyField(property, "") { style = { flexGrow = 1 }});
-            var error = row.AddChild(new Label 
+            var row = InspectorUtility.PropertyRow(property, out _, preferredLabel);
+            var error = row.Contents.AddChild(new Label 
             { 
                 tooltip = "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes",
                 style = 
