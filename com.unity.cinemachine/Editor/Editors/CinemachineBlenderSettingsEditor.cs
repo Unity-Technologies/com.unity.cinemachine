@@ -238,7 +238,7 @@ namespace Cinemachine.Editor
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
                 if (availableCameras.FindIndex(x => x == p.stringValue) < 0)
-                    row.AddChild(InspectorUtility.WarningIcon("No available camera has this name"));
+                    row.AddChild(InspectorUtility.MiniHelpIcon("No available camera has this name"));
                 var popup = row.AddChild(new PopupField<string>()
                     { style = { marginLeft = 0, marginRight = 3, flexGrow = 1 }});
                 popup.BindProperty(p);

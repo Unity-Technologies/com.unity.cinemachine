@@ -521,15 +521,21 @@ namespace Cinemachine.Editor
         
         /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
         /// <param name="tooltip">YThe tooltip text</param>
-        public static Label WarningIcon(string tooltip)
+        public static Label MiniHelpIcon(string tooltip, HelpBoxMessageType iconType = HelpBoxMessageType.Warning)
         {
+            string icon = iconType switch
+            {
+                HelpBoxMessageType.Warning => "console.warnicon.sml",
+                HelpBoxMessageType.Error => "console.erroricon.sml",
+                _ => "console.infoicon.sml",
+            };
             return new Label 
             { 
                 tooltip = tooltip,
                 style = 
                 { 
                     flexGrow = 0,
-                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent(icon).image,
                     width = SingleLineHeight, height = SingleLineHeight,
                     alignSelf = Align.Center
                 }

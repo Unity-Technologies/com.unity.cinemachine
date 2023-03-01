@@ -46,18 +46,9 @@ namespace Cinemachine.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var row = InspectorUtility.PropertyRow(property, out _, preferredLabel);
-            var error = row.Contents.AddChild(new Label 
-            { 
-                tooltip = "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes",
-                style = 
-                { 
-                    flexGrow = 0,
-                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.erroricon.sml").image,
-                    width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                    alignSelf = Align.Center,
-                    paddingRight = 0, borderRightWidth = 0, marginRight = 0
-                }
-            });
+            var error = row.Contents.AddChild(InspectorUtility.MiniHelpIcon(
+                "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes", 
+                HelpBoxMessageType.Error));
 
             row.TrackPropertyWithInitialCallback(property, (p) =>
             {

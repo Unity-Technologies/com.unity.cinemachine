@@ -85,7 +85,7 @@ namespace Cinemachine
                     + InspectorUtility.GetAssignableBehaviourNames(m.CachedComponentType);
 
                 var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                var warningSymbol = overlay.AddChild(InspectorUtility.WarningIcon(warningText));
+                var warningSymbol = overlay.AddChild(InspectorUtility.MiniHelpIcon(warningText));
 
                 var typeName = ModifierMenuItems.GetModifierName(m.GetType());
                 var foldout = new Foldout() { text = typeName, tooltip = property.tooltip };

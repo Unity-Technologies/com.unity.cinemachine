@@ -128,7 +128,7 @@ namespace Cinemachine.Editor
             Label warningIcon = null;
             if (!string.IsNullOrEmpty(warningTextIfNull))
             {
-                warningIcon = InspectorUtility.WarningIcon(warningTextIfNull);
+                warningIcon = InspectorUtility.MiniHelpIcon(warningTextIfNull);
                 contents.Insert(0, warningIcon);
             }
 
