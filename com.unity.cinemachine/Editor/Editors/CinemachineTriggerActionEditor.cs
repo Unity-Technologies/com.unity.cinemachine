@@ -49,7 +49,7 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_TIMELINE
             var timelineRow = foldout.AddChild(InspectorUtility.PropertyRow(property.FindPropertyRelative(() => def.StartTime), out _));
             timelineRow.Contents.AddChild(new Label { text = " s", tooltip = "Seconds", style = { alignSelf = Align.Center }});
-            timelineRow.Contents.AddChild(new InspectorUtility.CompactPropertyField(
+            timelineRow.Contents.AddChild(new PropertyField(
                 property.FindPropertyRelative(() => def.Mode), "") { style = { flexGrow = 1 }});
 #endif
             var helpMessage = foldout.AddChild(new HelpBox("Help text", HelpBoxMessageType.Warning));
