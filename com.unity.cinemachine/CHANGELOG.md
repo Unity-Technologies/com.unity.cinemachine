@@ -6,16 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Changed 
-
-- Renamed .asmdef files to follow the convention Unity.[PackageName]
-
 ### Added
 
 - New IgnoreTarget blend hint will blend rotations without considering the tracking target.
 
 ### Changed
 - CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
+- Renamed .asmdef files to follow the convention: Unity.[PackageName].
+- Several settings moved to Transition Settings section of inspector.
 
 
 ## [3.0.0-pre.4] - 2023-02-09

@@ -137,6 +137,33 @@ namespace Cinemachine.Editor
             });
         }
 
+        static bool s_TransitionsExpanded = false;
+
+        public static void AddTransitionsSection(
+            this UnityEditor.Editor editor, VisualElement ux, 
+            List<SerializedProperty> otherProperties = null)
+        {
+            var serializedObject = editor.serializedObject;
+            var target = editor.target as CinemachineVirtualCameraBase;
+
+            var foldout = ux.AddChild(new Foldout 
+            { 
+                value = s_TransitionsExpanded,
+                text = "Transition Settings", 
+                tooltip = "Settings to control how this camera interacts with other cameras" 
+            });
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                if (evt.target == foldout)
+                    s_TransitionsExpanded = evt.newValue;
+            });
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.PriorityAndChannel)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
+            if (otherProperties != null)
+                foreach (var p in otherProperties)
+                    foldout.Add(new PropertyField(p));
+        }
+
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>
         public static void AddPipelineDropdowns(this UnityEditor.Editor editor, VisualElement ux)
         {

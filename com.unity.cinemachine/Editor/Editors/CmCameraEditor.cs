@@ -50,9 +50,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
+            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.Transitions) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
             ux.AddHeader("Global Settings");
