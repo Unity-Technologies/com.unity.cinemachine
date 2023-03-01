@@ -20,8 +20,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
+            this.AddTransitionsSection(ux);
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
@@ -92,11 +91,7 @@ namespace Cinemachine.Editor
                 vcamSel.BindProperty(vcamSelProp);
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-        
-                vcamSel.TrackAnyUserActivity(() => 
-                {
-                    vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList();
-                });
+                vcamSel.TrackAnyUserActivity(() => vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList());
         
                 var blend = row.AddChild(
                     new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));

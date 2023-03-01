@@ -42,9 +42,8 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
-                ux, serializedObject.FindProperty(() => Target.CustomBlends), null,
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
+            ux.Add(EmbeddedAssetEditorUtility.EmbeddedAssetInspector<CinemachineBlenderSettings>(
+                serializedObject.FindProperty(() => Target.CustomBlends), null));
 
             var foldout = ux.AddChild(new Foldout 
             { 

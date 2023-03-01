@@ -55,6 +55,10 @@ namespace Cinemachine
         [Tooltip("Enable this to expose the Priority and Output Channel fields")]
         public bool Enabled;
 
+        /// <summary>Priority to use, if Enabled is true</summary>
+        [Tooltip("Priority to use.  0 is default.  Camera with highest priority is prioritized.")]
+        public int Priority;
+
         /// <summary>
         /// This controls which CinemachineBrain will be driven by this camera.  It is needed when there are
         /// multiple CinemachineBrains in the scene (for example, when implementing split-screen).
@@ -62,10 +66,6 @@ namespace Cinemachine
         [Tooltip("This controls which CinemachineBrain will be driven by this camera.  It is needed when there are "
             + "multiple CinemachineBrains in the scene (for example, when implementing split-screen).")]
         public Channels Channel;
-
-        /// <summary>Priority to use, if Enabled is true</summary>
-        [Tooltip("Priority to use.  0 is default.  Camera with highest priority is prioritized.")]
-        public int Priority;
 
         /// <summary>Create a default value for this item</summary>
         public static OutputChannel Default => new() { Channel = Channels.Default };

@@ -34,8 +34,16 @@ namespace Cinemachine.Editor
             if (Selection.objects.Length > 1 || IsPrefab(editor.target))
                 return;
             
+            var cameraParentingMessage = ux.AddChild(new HelpBox(
+                $"Setup error: {editor.target.GetType().Name} should not be a child "
+                + "of CinemachineCamera or CinemachineBrain.\n\n"
+                + "<b>Best practice is to have CinemachineCamera, CinemachineBrain, and camera targets as "
+                + "separate objects, not parented to each other.</b>", 
+                HelpBoxMessageType.Error));
+
             var navelGazeMessage = ux.AddChild(new HelpBox(
-                    "The camera is trying to look at itself.", HelpBoxMessageType.Warning));
+                "The camera is trying to look at itself.", 
+                HelpBoxMessageType.Warning));
 
             var row = ux.AddChild(new InspectorUtility.LabeledRow("Status"));
             var statusText = row.Label;
@@ -63,14 +71,16 @@ namespace Cinemachine.Editor
                     return;
 
                 // Is the camera navel-gazing?
-                if (navelGazeMessage != null)
-                {
-                    CameraState state = target.State;
-                    bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
-                        (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
-                        target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
-                    navelGazeMessage.SetVisible(isNavelGazing);
-                }
+                CameraState state = target.State;
+                bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
+                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
+                    target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
+                navelGazeMessage.SetVisible(isNavelGazing);
+
+                // Is the camera parenting incorrect?
+                cameraParentingMessage.SetVisible(
+                    target.GetComponentInParent<CinemachineBrain>() != null 
+                    || (target.ParentCamera != null && target.ParentCamera is not CinemachineCameraManagerBase));
             });
 
             // Capture "normal" colors
@@ -127,6 +137,33 @@ namespace Cinemachine.Editor
             });
         }
 
+        static bool s_TransitionsExpanded = false;
+
+        public static void AddTransitionsSection(
+            this UnityEditor.Editor editor, VisualElement ux, 
+            List<SerializedProperty> otherProperties = null)
+        {
+            var serializedObject = editor.serializedObject;
+            var target = editor.target as CinemachineVirtualCameraBase;
+
+            var foldout = ux.AddChild(new Foldout 
+            { 
+                value = s_TransitionsExpanded,
+                text = "Transition Settings", 
+                tooltip = "Settings to control how this camera interacts with other cameras" 
+            });
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                if (evt.target == foldout)
+                    s_TransitionsExpanded = evt.newValue;
+            });
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.PriorityAndChannel)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
+            if (otherProperties != null)
+                foreach (var p in otherProperties)
+                    foldout.Add(new PropertyField(p));
+        }
+
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>
         public static void AddPipelineDropdowns(this UnityEditor.Editor editor, VisualElement ux)
         {
@@ -148,17 +185,7 @@ namespace Cinemachine.Editor
                 var row = ux.AddChild(new InspectorUtility.LeftRightRow());
                 row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
                     { style = { flexGrow = 1, alignSelf = Align.Center }});
-                var warningIcon = row.Left.AddChild(new Label 
-                { 
-                    tooltip = "Component is disabled or has a problem",
-                    style = 
-                    { 
-                        flexGrow = 0,
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
                 warningIcon.SetVisible(false);
 
                 int currentSelection = PipelineStageMenu.GetSelectedComponent(
@@ -480,17 +507,7 @@ namespace Cinemachine.Editor
                 for (int i = row.childCount - 1; i >= 0; --i)
                     row.RemoveAt(i);
 
-                var warningIcon = row.AddChild(new Label 
-                { 
-                    tooltip = "Item is null",
-                    style = 
-                    { 
-                        flexGrow = 0,
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
                 var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
                 row.AddChild(new ObjectField 
                 { 
