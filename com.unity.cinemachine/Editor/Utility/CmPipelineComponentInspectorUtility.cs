@@ -81,15 +81,13 @@ namespace Cinemachine.Editor
         {
             for (int i = 0; i < targets.Length; ++i)
             {
-                var t = targets[i] as CinemachineComponentBase;
-                if (t != null)
+                if (targets[i] is CinemachineComponentBase c)
                 {
-                    if (t.VirtualCamera == null)
-                        Undo.AddComponent<CinemachineCamera>(t.gameObject);
+                    if (c.VirtualCamera == null)
+                        Undo.AddComponent<CinemachineCamera>(c.gameObject);
                 }
-                else
+                else if (targets[i] is CinemachineExtension x)
                 {
-                    var x = targets[i] as CinemachineExtension;
                     if (x != null && x.ComponentOwner == null)
                         Undo.AddComponent<CinemachineCamera>(x.gameObject).AddExtension(x);
                 }
