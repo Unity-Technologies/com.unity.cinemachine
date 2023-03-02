@@ -99,8 +99,8 @@ namespace Cinemachine.Editor
                 if (obj is T)
                     return true;
                 var go = obj as GameObject;
-                if (go == null && obj is Component)
-                    go = (obj as Component).gameObject;
+                if (go == null && obj is Component c)
+                    go = c.gameObject;
                 if (go != null)
                     return go.TryGetComponent<T>(out _);
                 return false;

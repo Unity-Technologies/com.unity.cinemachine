@@ -62,9 +62,8 @@ namespace Cinemachine.Editor
                             case RequiredTargets.Group: noTarget |= t.FollowTargetAsGroup == null; break;
                         }
                     }
-                    else if (targets[i] is CinemachineExtension)
+                    else if (targets[i] is CinemachineExtension x)
                     {
-                        var x = targets[i] as CinemachineExtension;
                         noCamera |= x.ComponentOwner == null;
                         switch (requiredTargets)
                         {
