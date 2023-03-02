@@ -51,15 +51,14 @@ namespace Cinemachine.Editor
                 var noTarget = false;
                 for (int i = 0; i < targets.Length && !noCamera; ++i)
                 {
-                    var t = targets[i] as CinemachineComponentBase;
-                    if (t != null)
+                    if (targets[i] is CinemachineComponentBase c)
                     {
-                        noCamera |= t.VirtualCamera == null || t.VirtualCamera is CinemachineCameraManagerBase;
+                        noCamera |= c.VirtualCamera == null || c.VirtualCamera is CinemachineCameraManagerBase;
                         switch (requiredTargets)
                         {
-                            case RequiredTargets.Tracking: noTarget |= t.FollowTarget == null; break;
-                            case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
-                            case RequiredTargets.Group: noTarget |= t.FollowTargetAsGroup == null; break;
+                            case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
+                            case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
+                            case RequiredTargets.Group: noTarget |= c.FollowTargetAsGroup == null; break;
                         }
                     }
                     else if (targets[i] is CinemachineExtension x)
