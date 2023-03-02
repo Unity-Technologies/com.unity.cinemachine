@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cinemachine
@@ -11,15 +13,15 @@ namespace Cinemachine
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Input Axis Controller")]
     [HelpURL(Documentation.BaseURL + "manual/InputAxisController.html")]
-    public class InputAxisController : InputAxisBase
+    public class InputAxisController : InputAxisBase<Controller>
     {
-
         void Update()
         {
             if (!Application.isPlaying)
                 return;
-
+            
             m_InputAxisData.Update();
+
         }
 
         /// <summary>Delegate for overriding the legacy input system with custom code</summary>
