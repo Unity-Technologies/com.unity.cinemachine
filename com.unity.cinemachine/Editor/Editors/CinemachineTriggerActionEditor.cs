@@ -52,7 +52,8 @@ namespace Cinemachine.Editor
             timelineRow.Contents.AddChild(new PropertyField(
                 property.FindPropertyRelative(() => def.Mode), "") { style = { flexGrow = 1 }});
 #endif
-            var helpMessage = foldout.AddChild(new HelpBox("Help text", HelpBoxMessageType.Warning));
+            var row = foldout.AddChild(new InspectorUtility.LeftRightRow());
+            var helpMessage = row.Right.AddChild(new HelpBox("Help text", HelpBoxMessageType.Warning));
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => def.Event)) { style = { marginTop = 5 }});
 
             foldout.TrackAnyUserActivity(() =>
