@@ -357,7 +357,7 @@ namespace Cinemachine.Editor
             for (var i = 0; i < iac.InputAxisData.Controllers.Count; ++i)
             {
                 var c = iac.InputAxisData.Controllers[i];
-                if (c.Name == name)
+                if (c.name == name)
                 {
 #if ENABLE_LEGACY_INPUT_MANAGER
                     c.LegacyInput = axis.m_InputAxisName;
@@ -366,12 +366,12 @@ namespace Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (provider != null)
                         c.InputAction = provider.XYAxis;
-                    c.Gain = axis.m_MaxSpeed;
+                    c.gain = axis.m_MaxSpeed;
                     if (axis.m_SpeedMode == AxisState.SpeedMode.MaxSpeed)
-                        c.Gain /= 100; // very approx
+                        c.gain /= 100; // very approx
 #endif
-                    c.Control.AccelTime = axis.m_AccelTime;
-                    c.Control.DecelTime = axis.m_DecelTime;
+                    c.control.AccelTime = axis.m_AccelTime;
+                    c.control.DecelTime = axis.m_DecelTime;
                     break;
                 }
             }
