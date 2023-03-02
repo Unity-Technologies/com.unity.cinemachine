@@ -137,9 +137,8 @@ namespace Cinemachine.Editor
             { 
                 isReadOnly = true,
                 tooltip = property.tooltip, 
-                style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1 }
+                style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1, marginLeft = 0 }
             });
-            presetName.SetEnabled(false);
 
             var defaultName = property.serializedObject.targetObject.name + " " + property.displayName;
             var assetTypes = GetAssetTypes(typeof(T));
