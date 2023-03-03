@@ -37,6 +37,7 @@ namespace Unity.Cinemachine.Editor
             var container = ux.AddChild(new VisualElement());
 #if USE_IMGUI_INSTRUCTION_LIST
             // GML todo: We use IMGUI for this while we wait for UUM-27687 and UUM-27688 to be fixed
+            UpdateCameraCandidates();
             container.Add(new IMGUIContainer(() =>
             {
                 serializedObject.Update();
