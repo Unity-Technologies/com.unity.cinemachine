@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
 - Renamed .asmdef files to follow the convention: Unity.[PackageName].
+- Renamed namespace from Cinemachine to Unity.Cinemachine.
 - Several settings moved to Transition Settings section of inspector.
 
 
