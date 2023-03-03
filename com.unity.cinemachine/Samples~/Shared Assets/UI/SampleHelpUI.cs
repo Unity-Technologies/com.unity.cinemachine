@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -30,14 +31,16 @@ public class SampleHelpUI : MonoBehaviour
         m_HelpToggle.RegisterValueChangedCallback(HelpToggleChanged);
         m_CloseButton.RegisterCallback<ClickEvent>(CloseHelpBox);
         
-        m_HelpToggle.value = IsVisible;
+        m_HelpToggle.value = m_HelpBox.visible = IsVisible;
     }
-    
+
     void OnDisable()
     {
         m_CloseButton.UnregisterCallback<ClickEvent>(CloseHelpBox);
         m_HelpToggle.UnregisterValueChangedCallback(HelpToggleChanged);
     }
+    
+    void OnValidate() => m_HelpToggle.value = m_HelpBox.visible = IsVisible;
 
     void HelpToggleChanged(ChangeEvent<bool> evt) => m_HelpBox.visible = IsVisible = evt.newValue;
 
