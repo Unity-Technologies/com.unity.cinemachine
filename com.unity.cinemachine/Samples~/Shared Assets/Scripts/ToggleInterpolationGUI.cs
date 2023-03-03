@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     /// <summary>
     /// Displays buttons in the game view to toggle interpplation state of rigidbodies

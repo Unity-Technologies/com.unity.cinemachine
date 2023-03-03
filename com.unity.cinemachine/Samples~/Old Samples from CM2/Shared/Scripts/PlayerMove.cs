@@ -1,8 +1,8 @@
 ﻿using System;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     public class PlayerMove : MonoBehaviour
     {

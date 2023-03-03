@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     /// <summary>
     /// An example add-on module for Cinemachine Virtual Camera for controlling

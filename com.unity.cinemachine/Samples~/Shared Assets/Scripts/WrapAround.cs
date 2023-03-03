@@ -1,7 +1,7 @@
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     /// <summary>
     /// Implements continuous motion by wrapping the position around a range.

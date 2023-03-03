@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     [RequireComponent(typeof(CinemachineMixingCamera))]
     public class MixCamerasBasedOnSpeed : MonoBehaviour

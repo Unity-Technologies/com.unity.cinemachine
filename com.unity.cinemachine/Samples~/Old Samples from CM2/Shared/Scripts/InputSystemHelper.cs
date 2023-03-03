@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     public static class InputSystemHelper
     {

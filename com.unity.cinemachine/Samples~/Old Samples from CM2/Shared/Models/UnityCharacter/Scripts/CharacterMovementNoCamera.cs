@@ -1,4 +1,4 @@
-﻿using Cinemachine.Examples;
+﻿using Unity.Cinemachine.Examples;
 using UnityEngine;
 
 // WASD to move, Space to sprint

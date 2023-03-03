@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Examples
 {
     [RequireComponent(typeof(CinemachineSplineCart))]
     public class RunnerController : MonoBehaviour
