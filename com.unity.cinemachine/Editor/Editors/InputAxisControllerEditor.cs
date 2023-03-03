@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Cinemachine.Editor
 {
-    [CustomEditor(typeof(InputAxisController), true)]
+   /*[CustomEditor(typeof(InputAxisController), true)]
     class InputAxisControllerEditor : UnityEditor.Editor
     {
         InputAxisController Target => target as InputAxisController;
@@ -32,8 +32,9 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
+            var playerIndex = new PropertyField(serializedObject.FindProperty(() => Target.m_InputAxisData.PlayerIndex));
+            ux.Add(playerIndex);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_InputAxisData.AutoEnableInputs)));
 #endif
             ux.AddHeader("Driven Axes");
             var list = ux.AddChild(new ListView()
@@ -45,7 +46,7 @@ namespace Cinemachine.Editor
                 showFoldoutHeader = false,
                 virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
             });
-            var controllersProperty = serializedObject.FindProperty(() => Target.Controllers);
+            var controllersProperty = serializedObject.FindProperty(() => Target.m_InputAxisData.Controllers);
             list.BindProperty(controllersProperty);
 
             var istIsEmptyMessage = ux.AddChild(new HelpBox("No applicable components found.  Must have one of: "
@@ -63,8 +64,8 @@ namespace Cinemachine.Editor
         {
             static DefaultControlInitializer()
             {
-                InputAxisController.SetControlDefaults 
-                    = (in IInputAxisSource.AxisDescriptor axis, ref InputAxisController.Controller controller) => 
+                InputAxisBuilder.SetControlDefaults 
+                    = (in IInputAxisSource.AxisDescriptor axis, ref Controller controller) => 
                 {
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var actionName = "";
@@ -132,12 +133,12 @@ namespace Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(InputAxisController.Controller))]
+    [CustomPropertyDrawer(typeof(Controller))]
     class InputAxisControllerItemPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            InputAxisController.Controller def = new ();
+            Controller def = new ();
 
             var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
             overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "") 
@@ -165,5 +166,5 @@ namespace Cinemachine.Editor
             }
             return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null);
         }
-    }
+    }*/
 }

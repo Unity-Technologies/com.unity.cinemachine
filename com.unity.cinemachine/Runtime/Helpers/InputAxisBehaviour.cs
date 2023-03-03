@@ -17,6 +17,7 @@ namespace Cinemachine
         void OnValidate()
         {
             m_InputAxisData.Validate();
+            m_InputAxisData.CreateControllers(gameObject, OnResetInput);
         }
 
         void Reset()
