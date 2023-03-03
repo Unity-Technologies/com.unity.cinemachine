@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,9 +67,6 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
-    m_FinalGather: 0
-    m_FinalGatherFiltering: 1
-    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -278,9 +275,9 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    m_Style: 1
-    m_Time: 2
-    m_CustomCurve:
+    Style: 1
+    Time: 2
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
@@ -446,8 +443,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PriorityAndChannel:
     Enabled: 0
-    Channel: 1
     Priority: 0
+    Channel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20221011
   m_LegacyPriority: 10
@@ -968,102 +965,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
   m_PrefabInstance: {fileID: 899464898}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1040083247
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1040083249}
-  - component: {fileID: 1040083248}
-  m_Layer: 0
-  m_Name: Help
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1040083248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1040083247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 1.1, y: 0.05}
-  Displayed: 1
-  HelpText: "This scene shows a third person shooter game.  Use WASD to move, Spacebar
-    to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse rotates
-    the Player Aiming Core object, which controls the player direction and aim. 
-    The camera is dirven by that: for this style of controller, there is no direct
-    independent control of the camera direction.\n\nThe camera is managed by a StateDrivenCamera,
-    which activates a special RoadieRun camera when the player is sprinting.\n\nNormally,
-    the Third Person Aim Camera is active.  This camera has handheld noise, but it
-    does not affect aiming accuracy. Try aiming at objects in the scene and observe
-    that the aim point is steady, even while the camera is moving slightly.\n\nThe
-    crosshair indicates where the player is aiming.  The red dot indicates the actual
-    hit location if a ray would be fired from the Player Aiming Core.  When the crosshair
-    and the red dot do not align, this means there is an object between the player
-    and the aim point indicated by the crosshair. The crosshair is pulled apart to
-    indicate this.\n\nWhen the player fires a shot, the camera gets a slight recoil.
-    This is achieved with a CinemachineImpulseSource added to the Player Aiming Core,
-    and it is triggered by a Fire event. The camera reacts to the impulse because
-    it has a CinemachineImpulseListener.\n\nWhen sprinting, the RoadieRun Camera
-    is active.  This camera takes away the crosshair from the player, shifts position,
-    widens the Field of View, and adds a more intense noise. \n\nThe enemies will
-    target the player when the player moves close to them. To visualize the trigger
-    zone, you can enable the Mesh Renderers on the enemies'  ProximityTrigger child
-    objects."
-  OnHelpDismissed:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1802572053}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1802572052}
-        m_TargetAssemblyTypeName: Cinemachine.Examples.SimplePlayerController, Assembly-CSharp
-        m_MethodName: EnableLockCursor
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
---- !u!4 &1040083249
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1040083247}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1100132515
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1090,19 +991,19 @@ PrefabInstance:
       objectReference: {fileID: 1802572048}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.9823122
+      value: -0.98231214
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00000012665988
+      value: -0.00000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.18725069
+      value: -0.18725072
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00000005960465
+      value: -0.000000059604645
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
@@ -1687,7 +1588,7 @@ PrefabInstance:
       objectReference: {fileID: 1802572048}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.97614825
+      value: -0.9761483
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1695,11 +1596,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.2171049
+      value: -0.21710493
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000029802319
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
@@ -2388,28 +2289,93 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 7887234737240387235, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
   m_PrefabInstance: {fileID: 1802572047}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1802572052 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8077383552022060413, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
-  m_PrefabInstance: {fileID: 1802572047}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 297aaca66939f724fbbc8f0c485168bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1802572053 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
-  m_PrefabInstance: {fileID: 1802572047}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+--- !u!1001 &1828115819
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: HelpText
+      value: "This scene shows a third person shooter game.  Use WASD to move, Spacebar
+        to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse
+        rotates the Player Aiming Core object, which controls the player direction
+        and aim.  The camera is dirven by that: for this style of controller, there
+        is no direct independent control of the camera direction.\n\nThe camera is
+        managed by a StateDrivenCamera, which activates a special RoadieRun camera
+        when the player is sprinting.\n\nNormally, the Third Person Aim Camera is
+        active.  This camera has handheld noise, but it does not affect aiming accuracy.
+        Try aiming at objects in the scene and observe that the aim point is steady,
+        even while the camera is moving slightly.\n\nThe crosshair indicates where
+        the player is aiming.  The red dot indicates the actual hit location if a
+        ray would be fired from the Player Aiming Core.  When the crosshair and the
+        red dot do not align, this means there is an object between the player and
+        the aim point indicated by the crosshair. The crosshair is pulled apart to
+        indicate this.\n\nWhen the player fires a shot, the camera gets a slight
+        recoil. This is achieved with a CinemachineImpulseSource added to the Player
+        Aiming Core, and it is triggered by a Fire event. The camera reacts to the
+        impulse because it has a CinemachineImpulseListener.\n\nWhen sprinting, the
+        RoadieRun Camera is active.  This camera takes away the crosshair from the
+        player, shifts position, widens the Field of View, and adds a more intense
+        noise. \n\nThe enemies will target the player when the player moves close
+        to them. To visualize the trigger zone, you can enable the Mesh Renderers
+        on the enemies'  ProximityTrigger child objects."
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_Name
+      value: HelpUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1001 &1972898889
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2440,15 +2406,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00000028684732
+      value: -0.00000002235174
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.066447966
+      value: -0.06644798
       objectReference: {fileID: 0}
     - target: {fileID: 358930478127896550, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.000000029802319
+      value: 0.000000029802319
       objectReference: {fileID: 0}
     - target: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
       propertyPath: m_RootOrder
@@ -2594,8 +2560,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PriorityAndChannel:
     Enabled: 0
-    Channel: 1
     Priority: 10
+    Channel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20221011
   m_LegacyPriority: 10
@@ -2710,8 +2676,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PriorityAndChannel:
     Enabled: 0
-    Channel: 1
     Priority: -18
+    Channel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20221011
   m_LegacyPriority: 10
@@ -2721,7 +2687,6 @@ MonoBehaviour:
       TrackingTarget: {fileID: 0}
       LookAtTarget: {fileID: 0}
       CustomLookAtTarget: 0
-  ShowDebugText: 0
   m_ChildCameras:
   - {fileID: 334051334}
   - {fileID: 2076565716644322337}
@@ -2741,9 +2706,9 @@ MonoBehaviour:
     ActivateAfter: 0
     MinDuration: 0
   DefaultBlend:
-    m_Style: 1
-    m_Time: 0.5
-    m_CustomCurve:
+    Style: 1
+    Time: 0.5
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
