@@ -81,7 +81,7 @@ namespace Unity.Cinemachine
             /// <summary>Type of the cached component (null if no cached component).  If this modifier targets
             /// specific components, this value indicates the type of that component.
             /// The modifier should cache the component, for performance.  </summary>
-            /// <see cref="ComponentModifier{T}"/> for a base class for implementing this.
+            /// <see cref="ComponentModifier"/> for a base class for implementing this.
             public virtual Type CachedComponentType => null;
 
             /// <summary>Return true if cached vcam component is present or not required</summary>

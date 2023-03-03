@@ -682,9 +682,8 @@ namespace Unity.Cinemachine
                 return 0;
 
             // If we are close to parallel to the plane, we have to take special action
-            var angle = Mathf.Abs((int)(UnityVectorExtensions.Angle(startPlane.normal, ray.direction) - 90));
-            if (angle < k_AngleThreshold)
-                distance = Mathf.Lerp(0, distance, angle / k_AngleThreshold);
+            var angle = Mathf.Abs(UnityVectorExtensions.Angle(startPlane.normal, ray.direction) - 90);
+            distance = Mathf.Lerp(0, distance, angle / k_AngleThreshold);
             return distance;
         }
 
