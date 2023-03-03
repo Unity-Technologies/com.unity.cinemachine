@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// Add-on for SimplePlayerController that controls animation for the Cameron character.

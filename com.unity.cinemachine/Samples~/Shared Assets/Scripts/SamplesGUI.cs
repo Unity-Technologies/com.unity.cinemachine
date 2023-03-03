@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {   
     [SaveDuringPlay]
     public class SamplesGUI : MonoBehaviour

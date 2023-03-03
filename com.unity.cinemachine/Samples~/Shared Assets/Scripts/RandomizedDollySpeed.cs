@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class RandomizedDollySpeed : SplineAutoDolly.ISplineAutoDolly
     {

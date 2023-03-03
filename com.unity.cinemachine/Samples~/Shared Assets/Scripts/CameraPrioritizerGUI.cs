@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// Displayes a simple GUI in the game view for selecting the current camera.

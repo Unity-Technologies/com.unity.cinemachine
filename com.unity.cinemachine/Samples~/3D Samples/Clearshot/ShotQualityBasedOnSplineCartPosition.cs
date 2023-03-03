@@ -1,6 +1,6 @@
 using UnityEngine.Splines;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// Calculates shot quality based on how far the Follow target has advanced 

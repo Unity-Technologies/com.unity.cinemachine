@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
 
 public class ScriptingExample : MonoBehaviour
@@ -13,7 +13,7 @@ public class ScriptingExample : MonoBehaviour
         // Create a Cinemachine brain on the main camera
         var brain = GameObject.Find("Main Camera").AddComponent<CinemachineBrain>();
         brain.ShowDebugText = true;
-        brain.DefaultBlend.m_Time = 1;
+        brain.DefaultBlend.Time = 1;
 
         // Create a virtual camera that looks at object "Cube", and set some settings
         vcam = new GameObject("VirtualCamera").AddComponent<CinemachineVirtualCamera>();

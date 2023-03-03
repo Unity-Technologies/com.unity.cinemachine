@@ -1,7 +1,7 @@
 using Unity.Cinemachine.Utility;
 using UnityEngine;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// Add-on for ThirdPersonController that keeps the player upright on the sphere surface

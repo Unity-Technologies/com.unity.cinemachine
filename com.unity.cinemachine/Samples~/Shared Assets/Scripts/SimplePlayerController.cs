@@ -3,7 +3,7 @@ using UnityEngine;
 using Unity.Cinemachine.Utility;
 using System;
 
-namespace Unity.Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class SimplePlayerController : MonoBehaviour, IInputAxisSource
     {
