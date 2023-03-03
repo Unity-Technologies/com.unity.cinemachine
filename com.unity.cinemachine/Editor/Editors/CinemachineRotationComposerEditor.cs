@@ -47,8 +47,8 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
             ux.AddHeader("Target Tracking");
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
 
             return ux;
