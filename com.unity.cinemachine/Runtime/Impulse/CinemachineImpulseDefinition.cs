@@ -1,9 +1,9 @@
-using Cinemachine.Utility;
 using System;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Definition of an impulse signal that gets propagated to listeners.

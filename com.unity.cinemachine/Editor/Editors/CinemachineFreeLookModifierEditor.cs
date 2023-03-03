@@ -1,13 +1,13 @@
 ﻿using UnityEditor;
-using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System;
 using System.Reflection;
+using Unity.Cinemachine.Editor;
+using Unity.Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLookModifier))]
     class CinemachineFreeLookModifierEditor : UnityEditor.Editor

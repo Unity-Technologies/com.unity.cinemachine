@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Tests.Editor

@@ -3,14 +3,14 @@
 
 using System;
 using System.Linq;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
 
 using Object = UnityEngine.Object;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     partial class UpgradeObjectToCm3
     {

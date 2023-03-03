@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Cinemachine;
+using Unity.Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -30,7 +30,7 @@ namespace Tests
             m_CmCamera = CreateGameObject("CinemachineCamera", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_CmCamera.Priority = 100;
             
-            s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
+            s_AllCinemachineComponents = Unity.Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
                 typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
                 && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                 && t.GetCustomAttribute<ObsoleteAttribute>() == null);

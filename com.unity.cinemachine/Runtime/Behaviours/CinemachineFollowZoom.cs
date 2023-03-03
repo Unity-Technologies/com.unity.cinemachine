@@ -1,8 +1,8 @@
 using UnityEngine;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cm Camera that adjusts

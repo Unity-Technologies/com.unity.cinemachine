@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Static class that manages Cinemachine Tools. It knows which tool is active,

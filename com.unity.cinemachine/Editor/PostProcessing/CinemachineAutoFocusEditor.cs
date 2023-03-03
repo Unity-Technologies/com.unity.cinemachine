@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineAutoFocus))]
     class CinemachineAutoFocusEditor : UnityEditor.Editor

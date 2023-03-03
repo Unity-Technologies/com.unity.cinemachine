@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cinemachine Camera that post-processes the final position 

@@ -58,7 +58,7 @@ namespace Cinemachine
 #else
 
 // We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera Camera that tweaks the orthographic size

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineTrackedDolly))]

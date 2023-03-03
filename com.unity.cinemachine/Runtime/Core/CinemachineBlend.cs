@@ -1,9 +1,9 @@
-using Cinemachine.Utility;
 using System;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Describes a blend between 2 CinemachineCameras, and holds the current state of the blend.

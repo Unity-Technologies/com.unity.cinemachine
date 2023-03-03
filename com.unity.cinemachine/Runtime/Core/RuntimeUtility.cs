@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>An ad-hoc collection of helpers, used by Cinemachine
     /// or its editor tools in various places</summary>

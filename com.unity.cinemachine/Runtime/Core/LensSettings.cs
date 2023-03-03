@@ -7,7 +7,7 @@ using System;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Describes the FOV and clip planes for a camera.  This generally mirrors the Unity Camera's

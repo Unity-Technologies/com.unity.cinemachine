@@ -2,11 +2,11 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditorInternal;
-using Cinemachine.Utility;
 using System.Linq;
 using System;
+using Unity.Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachinePath))]

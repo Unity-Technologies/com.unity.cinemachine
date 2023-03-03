@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An abstract representation of a mutator acting on a CinemachineCamera

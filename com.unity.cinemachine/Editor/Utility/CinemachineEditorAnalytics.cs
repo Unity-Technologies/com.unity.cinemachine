@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [InitializeOnLoad]
     static class CinemachineEditorAnalytics

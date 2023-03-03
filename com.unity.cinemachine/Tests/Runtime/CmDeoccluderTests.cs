@@ -4,8 +4,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Cinemachine;
-using Cinemachine.Utility;
+using Unity.Cinemachine;
+using Unity.Cinemachine.Utility;
 
 namespace Tests.Runtime
 {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Property applied to legacy input axis name specification.  Used for custom drawing in the inspector.

@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 
 #if CINEMACHINE_HDRP
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour will drive the Camera focusDistance property. It can be used to hold focus onto 

@@ -1,10 +1,10 @@
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
+using Unity.Cinemachine.Utility;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Interface representing something that can be used as a vcam target.  

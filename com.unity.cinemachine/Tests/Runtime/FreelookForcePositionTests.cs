@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using Cinemachine;
-using Cinemachine.TargetTracking;
+using Unity.Cinemachine;
+using Unity.Cinemachine.TargetTracking;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

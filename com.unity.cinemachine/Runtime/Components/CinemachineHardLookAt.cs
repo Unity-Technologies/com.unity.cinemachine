@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the Aim section of the component pipeline.

@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     class WaveformWindow : EditorWindow
     {

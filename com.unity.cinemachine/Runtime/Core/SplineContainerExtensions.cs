@@ -1,8 +1,8 @@
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A collection of helpers for UnityEngine Spline.

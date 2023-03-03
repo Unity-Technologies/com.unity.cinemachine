@@ -1,11 +1,11 @@
 #if CINEMACHINE_PHYSICS
 using UnityEngine;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
+using Unity.Cinemachine.Utility;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineDeoccluder instead.
@@ -615,7 +615,7 @@ namespace Cinemachine
                 return 0;
 
             // If we are close to parallel to the plane, we have to take special action
-            float angle = Mathf.Abs(UnityVectorExtensions.Angle(startPlane.normal, ray.direction) - 90);
+            float angle = Mathf.Abs((int)(UnityVectorExtensions.Angle(startPlane.normal, ray.direction) - 90));
             if (angle < k_AngleThreshold)
                 distance = Mathf.Lerp(0, distance, angle / k_AngleThreshold);
             return distance;

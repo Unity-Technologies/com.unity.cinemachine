@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the Aim section of the component pipeline.

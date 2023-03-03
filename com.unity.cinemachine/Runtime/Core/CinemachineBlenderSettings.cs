@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Asset that defines the rules for blending between Virtual Cameras.

@@ -5,7 +5,7 @@ using UnityEditor.Splines;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
     sealed class SplineRollTool : EditorTool, IDrawSelectedHandles

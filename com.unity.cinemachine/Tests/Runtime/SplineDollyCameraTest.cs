@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.Splines;
 using Unity.Mathematics;
-using Cinemachine;
+using Unity.Cinemachine;
 
 namespace Tests.Runtime
 {

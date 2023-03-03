@@ -3,14 +3,14 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cinemachine.Utility;
 using System.Reflection;
+using Unity.Cinemachine.Utility;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;
 #endif
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Base class for virtual camera editors.

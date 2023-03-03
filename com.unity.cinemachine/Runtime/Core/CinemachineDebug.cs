@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cinemachine.Utility
+namespace Unity.Cinemachine.Utility
 {
     /// <summary>Manages onscreen positions for Cinemachine debugging output</summary>
     class CinemachineDebug

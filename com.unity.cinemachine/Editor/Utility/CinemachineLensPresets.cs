@@ -3,7 +3,7 @@ using System;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// User-definable named presets for lenses.  This is a Singleton asset, available in editor only

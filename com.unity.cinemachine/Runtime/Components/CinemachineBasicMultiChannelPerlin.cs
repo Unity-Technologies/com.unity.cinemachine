@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// As a part of the Cinemachine Pipeline implementing the Noise stage, this

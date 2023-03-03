@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineGroupFraming))]
     [CanEditMultipleObjects]

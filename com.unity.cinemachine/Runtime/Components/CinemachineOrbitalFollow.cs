@@ -1,10 +1,10 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
-using Cinemachine.TargetTracking;
+using Unity.Cinemachine.TargetTracking;
+using Unity.Cinemachine.Utility;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the the Body section of the component pipeline.
@@ -23,7 +23,7 @@ namespace Cinemachine
         , CinemachineFreeLookModifier.IModifiableDistance
     {
         /// <summary>Settings to control damping for target tracking.</summary>
-        public TrackerSettings TrackerSettings = TrackerSettings.Default;
+        public TrackerSettings TrackerSettings = this.TrackerSettings.Default;
 
         /// <summary>How to construct the surface on which the camera will travel</summary>
         public enum OrbitStyles
@@ -92,7 +92,7 @@ namespace Cinemachine
 
         void Reset()
         {
-            TrackerSettings = TrackerSettings.Default;
+            TrackerSettings = this.TrackerSettings.Default;
             OrbitStyle = OrbitStyles.Sphere;
             Radius = 10;
             Orbits = Cinemachine3OrbitRig.Settings.Default;

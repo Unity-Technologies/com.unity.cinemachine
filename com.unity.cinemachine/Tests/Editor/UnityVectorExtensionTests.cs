@@ -1,6 +1,6 @@
 using UnityEngine;
 using NUnit.Framework;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine.TestTools.Utils;
 
 namespace Tests.Editor

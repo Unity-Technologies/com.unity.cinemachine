@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Base class for a Monobehaviour that represents a Virtual Camera within the Unity scene.

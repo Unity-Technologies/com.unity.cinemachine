@@ -120,7 +120,7 @@ namespace Cinemachine
 #else
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is an add-on to override the legacy input system and read input using the

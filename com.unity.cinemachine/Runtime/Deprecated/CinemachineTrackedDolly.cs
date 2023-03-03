@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineSplineDolly instead.

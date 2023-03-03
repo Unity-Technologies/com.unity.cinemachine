@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine.TestTools;
 
-using Cinemachine;
+using Unity.Cinemachine;
 
 namespace Tests.Runtime
 {

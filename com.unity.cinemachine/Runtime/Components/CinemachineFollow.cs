@@ -1,7 +1,7 @@
 using UnityEngine;
-using Cinemachine.TargetTracking;
+using Unity.Cinemachine.TargetTracking;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the Body section of the component pipeline.
@@ -23,7 +23,7 @@ namespace Cinemachine
         public Vector3 FollowOffset = Vector3.back * 10f;
 
         /// <summary>Settings to control damping for target tracking.</summary>
-        public TrackerSettings TrackerSettings = TrackerSettings.Default;
+        public TrackerSettings TrackerSettings = this.TrackerSettings.Default;
 
         Tracker m_TargetTracker;
 
@@ -37,7 +37,7 @@ namespace Cinemachine
         private void Reset()
         {
             FollowOffset = Vector3.back * 10f;
-            TrackerSettings = TrackerSettings.Default;
+            TrackerSettings = this.TrackerSettings.Default;
         }
 
         /// <summary>Get the target offset, with sanitization</summary>

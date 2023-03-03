@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using System.Reflection;
+using Unity.Cinemachine.Utility;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helpers for drawing CinemachineCamera inspectors.

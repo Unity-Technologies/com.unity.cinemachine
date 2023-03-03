@@ -2,11 +2,11 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
+using Unity.Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]

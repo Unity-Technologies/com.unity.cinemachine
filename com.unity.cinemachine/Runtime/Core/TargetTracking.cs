@@ -1,8 +1,8 @@
 using System;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine.TargetTracking
+namespace Unity.Cinemachine.TargetTracking
 {
     /// <summary>
     /// The coordinate space to use when interpreting the offset from the target

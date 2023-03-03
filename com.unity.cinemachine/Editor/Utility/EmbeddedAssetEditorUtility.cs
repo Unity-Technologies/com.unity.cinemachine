@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Linq;
 using Object = UnityEngine.Object;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helper for drawing embedded asset editors

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Cinemachine;
+using Unity.Cinemachine;
 
 namespace Tests.Runtime
 {

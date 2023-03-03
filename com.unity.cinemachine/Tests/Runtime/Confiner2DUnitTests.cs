@@ -1,7 +1,7 @@
 #if CINEMACHINE_PHYSICS_2D
 using System.Collections;
-using Cinemachine;
-using Cinemachine.Utility;
+using Unity.Cinemachine;
+using Unity.Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

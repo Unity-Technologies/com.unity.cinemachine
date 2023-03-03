@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is intended to be attached to an empty GameObject,

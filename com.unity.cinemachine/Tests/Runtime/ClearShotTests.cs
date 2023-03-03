@@ -2,7 +2,7 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine.TestTools;
 
 namespace Tests.Runtime
