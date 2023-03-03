@@ -446,7 +446,7 @@ namespace Unity.Cinemachine
 }
 #else
 // We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
-namespace Cinemachine
+namespace Unty.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that places an image in screen space

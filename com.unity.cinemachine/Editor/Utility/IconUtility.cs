@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Uity.Cinemachine.Editor
 {
     /// <summary>
     /// Useful class for setting script icons in one go, instead of setting them by hand one by one
