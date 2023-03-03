@@ -182,7 +182,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Make the complicated FOV widget which works in 3 modes, with preset popups, 
+        /// Make the complicated FOV widget which works in 4 modes, with preset popups, 
         /// and optional weird small label display
         /// </summary>
         class FovPropertyControl : InspectorUtility.LabeledRow
@@ -287,7 +287,7 @@ namespace Cinemachine.Editor
                         var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
                         var value = Camera.FieldOfViewToFocalLength(fovProp.floatValue, SensorSize(m_LensProperty).y);
                         m_Control.SetValueWithoutNotify(value);
-                        UpdatePresetDisplay(true);
+                        SyncPresetDisplay(m_Control.value, true);
                         break;
                     }
                     case Modes.VFOV:
@@ -302,7 +302,7 @@ namespace Cinemachine.Editor
                             value = Camera.VerticalToHorizontalFieldOfView(value, sensorSize.x / sensorSize.y);
                         }
                         m_Control.SetValueWithoutNotify(value);
-                        UpdatePresetDisplay(false);
+                        SyncPresetDisplay(m_Control.value, false);
                         break;
                     }
                 }
@@ -373,15 +373,15 @@ namespace Cinemachine.Editor
 
             void OnPresetValueChanged(ChangeEvent<string> evt)
             {
-                var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
-                if (GetLensMode() == Modes.Physical)
+                // Edit the presets assets if desired
+                if (evt.newValue == kEditPresetsLabel)
+                    Selection.activeObject = CinemachineLensPresets.Instance;
+                else 
                 {
-                    // Edit the presets assets if desired
-                    if (evt.newValue == kEditPresetsLabel)
-                        Selection.activeObject = CinemachineLensPresets.Instance;
-                    else 
+                    // Apply the preset
+                    var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                    if (GetLensMode() == Modes.Physical)
                     {
-                        // Apply the preset
                         var index = CinemachineLensPresets.Instance.GetPhysicalPresetIndex(evt.newValue);
                         if (index >= 0)
                         {
@@ -398,18 +398,11 @@ namespace Cinemachine.Editor
                             m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism).floatValue = v.Anamorphism;
                             m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.LensShift).vector2Value = v.LensShift;
 #endif
-                            fovProp.serializedObject.ApplyModifiedProperties();
+                            m_LensProperty.serializedObject.ApplyModifiedProperties();
                         }
                     }
-                }
-                else
-                {
-                    // Edit the presets assets if desired
-                    if (evt.newValue == kEditPresetsLabel)
-                        Selection.activeObject = CinemachineLensPresets.Instance;
                     else
                     {
-                        // Apply the preset
                         var index = CinemachineLensPresets.Instance.GetPresetIndex(evt.newValue);
                         if (index >= 0)
                         {
@@ -420,7 +413,7 @@ namespace Cinemachine.Editor
                 }
             }
 
-            void UpdatePresetDisplay(bool physical)
+            void SyncPresetDisplay(float lensValue, bool physical)
             {
                 var value = string.Empty;
                 var presets = CinemachineLensPresets.InstanceIfExists;
@@ -428,13 +421,13 @@ namespace Cinemachine.Editor
                 {
                     if (physical)
                     {
-                        var index = presets.GetMatchingPhysicalPreset(m_Control.value);
+                        var index = presets.GetMatchingPhysicalPreset(lensValue);
                         if (index >= 0)
                             value = CinemachineLensPresets.Instance.m_PhysicalPresets[index].m_Name;
                     }
                     else
                     {
-                        var index = presets.GetMatchingPreset(m_Control.value);
+                        var index = presets.GetMatchingPreset(lensValue);
                         if (index >= 0)
                             value = CinemachineLensPresets.Instance.m_Presets[index].m_Name;
                     }
