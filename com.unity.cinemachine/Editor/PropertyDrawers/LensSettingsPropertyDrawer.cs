@@ -22,7 +22,7 @@ namespace Cinemachine.Editor
     [CustomPropertyDrawer(typeof(LensSettings))]
     class LensSettingsPropertyDrawer : PropertyDrawer
     {
-        static LensSettings m_LensSettingsDef = new LensSettings(); // to access name strings
+        static LensSettings m_LensSettingsDef = new (); // to access name strings
 
         static bool IsOrtho(SerializedProperty property) => AccessProperty<bool>(
             typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "Orthographic");
@@ -40,7 +40,7 @@ namespace Cinemachine.Editor
         static T AccessProperty<T>(Type type, object obj, string memberName)
         {
             if (string.IsNullOrEmpty(memberName) || (type == null))
-                return default(T);
+                return default;
 
             System.Reflection.BindingFlags bindingFlags 
                 = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
@@ -53,35 +53,33 @@ namespace Cinemachine.Editor
             if ((pi != null) && (pi.PropertyType == typeof(T)))
                 return (T)pi.GetValue(obj, null);
             else
-                return default(T);
+                return default;
         }
 
         static bool s_PhysicalExapnded;
 
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
-        static string m_EditPresetsLabel = "Edit Presets...";
+        const string kEditPresetsLabel = "Edit Presets...";
 
         protected bool HideModeOverride { get; set; }
 
         void InitPresetOptions()
         {
-            if (m_PresetOptions == null)
-                m_PresetOptions = new List<string>();
+            m_PresetOptions ??= new List<string>();
             m_PresetOptions.Clear();
-            m_PresetOptions.Add("");
             var presets = CinemachineLensPresets.InstanceIfExists;
             for (int i = 0; presets != null && i < presets.m_Presets.Length; ++i)
                 m_PresetOptions.Add(presets.m_Presets[i].m_Name);
-            m_PresetOptions.Add(m_EditPresetsLabel);
+            m_PresetOptions.Add("");
+            m_PresetOptions.Add(kEditPresetsLabel);
 
-            if (m_PhysicalPresetOptions == null)
-                m_PhysicalPresetOptions = new List<string>();
+            m_PhysicalPresetOptions ??= new List<string>();
             m_PhysicalPresetOptions.Clear();
-            m_PhysicalPresetOptions.Add("");
             for (int i = 0; presets != null && i < presets.m_PhysicalPresets.Length; ++i)
                 m_PhysicalPresetOptions.Add(presets.m_PhysicalPresets[i].m_Name);
-            m_PhysicalPresetOptions.Add(m_EditPresetsLabel);
+            m_PhysicalPresetOptions.Add("");
+            m_PhysicalPresetOptions.Add(kEditPresetsLabel);
         }
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -92,14 +90,7 @@ namespace Cinemachine.Editor
 
             // When foldout is closed, we display the FOV on the same line, for convenience
             var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
-            foldout.RegisterValueChangedCallback((evt) => 
-            {
-                if (evt.target == foldout)
-                {
-                    property.isExpanded = evt.newValue;
-                    property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
-                }
-            });
+            foldout.BindProperty(property);
 
             var outerFovControl = new FovPropertyControl(property, true) { style = { flexGrow = 1 }};
             ux.Add(new InspectorUtility.FoldoutWithOverlay(
@@ -175,8 +166,8 @@ namespace Cinemachine.Editor
 
                 bool isPhysical = IsPhysical(property);
                 physical.SetVisible(isPhysical);
-                outerFovControl.Update(true);
-                innerFovControl.Update(false);
+                outerFovControl.TimedUpdate();
+                innerFovControl.TimedUpdate();
 
                 if (!HideModeOverride)
                 {
@@ -194,167 +185,199 @@ namespace Cinemachine.Editor
         /// Make the complicated FOV widget which works in 3 modes, with preset popups, 
         /// and optional weird small label display
         /// </summary>
-        class FovPropertyControl : VisualElement
+        class FovPropertyControl : InspectorUtility.LabeledRow
         {
-            public VisualElement OrthoControl;
-            public VisualElement FovControl;
-            public VisualElement FocalLengthControl;
-            public Label ShortLabel;
+            public readonly Label ShortLabel;
+            readonly SerializedProperty m_LensProperty;
+            readonly FloatField m_Control;
+            readonly PopupField<string> m_Presets;
 
-            SerializedProperty m_Property;
-            FieldMouseDragger<float> m_DraggerOrtho;
-            FieldMouseDragger<float> m_DraggerFov;
-            FieldMouseDragger<float> m_DraggerFocal;
-
-            public FovPropertyControl(SerializedProperty property, bool hideLabel) 
+            enum Modes { Ortho, Physical, VFOV, HFOV };
+            Modes GetLensMode()
             {
-                m_Property = property;
-                ShortLabel = new Label("(fov)") { style = { alignSelf = Align.Center, opacity = 0.5f }};
-                ShortLabel.AddToClassList("unity-base-field__label--with-dragger");
-
-                var orthoProp = property.FindPropertyRelative(() => m_LensSettingsDef.OrthographicSize);
-                OrthoControl = new PropertyField(orthoProp, hideLabel ? "" : orthoProp.displayName)
-                    { tooltip = orthoProp.tooltip, style = {flexGrow = 1}};
-                Add(OrthoControl);
-
-                FovControl = CreateFovControl(property, hideLabel);
-                Add(FovControl);
-
-                FocalLengthControl = CreateFocalLengthControl(property, hideLabel);
-                Add(FocalLengthControl);
+                if (IsOrtho(m_LensProperty)) 
+                    return Modes.Ortho;
+                if (IsPhysical(m_LensProperty))
+                    return Modes.Physical;
+                return UseHorizontalFOV(m_LensProperty) ? Modes.HFOV : Modes.VFOV;
             }
 
-            VisualElement CreateFovControl(SerializedProperty property, bool hideLabel)
+            public FovPropertyControl(SerializedProperty property, bool hideLabel) : base(hideLabel ? "" : "(fov)")
             {
-                var fovControl = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                var fovProperty = property.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
-                var fovField = new FloatField 
-                { 
-                    label = hideLabel ? "" : fovProperty.displayName, 
-                    tooltip = fovProperty.tooltip, 
-                    style = { flexGrow = 2, flexBasis = 0 },
-                    value = GetDisplayFOV(fovProperty.floatValue)
-                };
-                fovField.AddToClassList(InspectorUtility.kAlignFieldClass);
+                style.flexDirection = FlexDirection.Row;
+                m_LensProperty = property;
+                m_Control = Contents.AddChild(new FloatField("") { style = {flexBasis = 20, flexGrow = 2, marginLeft = 0}});
+                m_Control.RegisterValueChangedCallback(OnControlValueChanged);
+                Label.SetVisible(!hideLabel);
+                Label.AddToClassList("unity-base-field__label--with-dragger");
+                new FieldMouseDragger<float>(m_Control).SetDragZone(Label);
 
-                fovField.RegisterValueChangedCallback((evt) =>
+                m_Presets = Contents.AddChild(new PopupField<string>
+                    { tooltip = "Custom Lens Presets", style = {flexBasis = 20, flexGrow = 1}});
+                m_Presets.RegisterValueChangedCallback(OnPresetValueChanged);
+
+                ShortLabel = new Label("X") { style = { alignSelf = Align.Center, opacity = 0.5f }};
+                ShortLabel.AddToClassList("unity-base-field__label--with-dragger");
+                new FieldMouseDragger<float>(m_Control).SetDragZone(ShortLabel);
+
+                this.TrackPropertyWithInitialCallback(property, OnLensPropertyChanged);
+            }
+
+            void OnControlValueChanged(ChangeEvent<float> evt)
+            {
+                var mode = GetLensMode();
+                switch (mode)
                 {
-                    var newValue = Mathf.Clamp(evt.newValue, 1, 179);
-                    fovField.SetValueWithoutNotify(newValue);
-
-                    // Convert from display units
-                    if (UseHorizontalFOV(property))
+                    case Modes.Ortho:
                     {
-                        var sensorSize = SensorSize(property);
-                        float aspect = sensorSize.x / sensorSize.y;
-                        newValue = Camera.HorizontalToVerticalFieldOfView(newValue, aspect);
+                        var orthoProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.OrthographicSize);
+                        orthoProp.floatValue = evt.newValue;
+                        orthoProp.serializedObject.ApplyModifiedProperties();
+                        break;
                     }
-                    // Push to property
-                    if (!Mathf.Approximately(fovProperty.floatValue, newValue))
+                    case Modes.Physical:
                     {
-                        fovProperty.floatValue = newValue;
-                        fovProperty.serializedObject.ApplyModifiedProperties();
-                    }
-                });
+                        // Convert and clamp
+                        var sensorHeight = SensorSize(m_LensProperty).y;
+                        var vfov = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, evt.newValue), sensorHeight);
+                        vfov = Mathf.Clamp(vfov, 1, 179);
+                        m_Control.SetValueWithoutNotify(Camera.FieldOfViewToFocalLength(vfov, sensorHeight));
 
-                // Presets menu
-                var initialIndex = GetMatchingPreset(fovProperty);
-                var fovPresets = new PopupField<string>(
-                    m_PresetOptions, initialIndex < 0 ? "" : CinemachineLensPresets.InstanceIfExists.m_Presets[initialIndex].m_Name) 
-                    { 
-                        tooltip = "Custom Lens Presets", style = 
-                        { 
-                            height = InspectorUtility.SingleLineHeight,
-                            alignSelf = Align.Center, flexGrow = 1, flexBasis = 0, minWidth = 0,
-                            marginLeft = 5, paddingRight = 0, borderRightWidth = 0, marginRight = 0
-                        }
-                    };
-                fovPresets.RegisterValueChangedCallback((evt) => 
-                {
-                    // Edit the presets assets if desired
-                    if (evt.newValue == m_EditPresetsLabel)
-                        Selection.activeObject = CinemachineLensPresets.Instance;
-                    else
+                        // Push to property
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                        fovProp.floatValue = vfov;
+                        fovProp.serializedObject.ApplyModifiedProperties();
+                        break;
+                    }
+                    case Modes.VFOV:
+                    case Modes.HFOV:
                     {
-                        // Apply the preset
-                        var index = CinemachineLensPresets.Instance.GetPresetIndex(evt.newValue);
-                        if (index >= 0)
+                        var newValue = Mathf.Clamp(evt.newValue, 1, 179);
+                        m_Control.SetValueWithoutNotify(newValue);
+
+                        // Convert from display units
+                        if (mode == Modes.HFOV)
                         {
-                            fovProperty.floatValue = CinemachineLensPresets.Instance.m_Presets[index].m_FieldOfView;
-                            fovProperty.serializedObject.ApplyModifiedProperties();
+                            var sensorSize = SensorSize(m_LensProperty);
+                            newValue = Camera.HorizontalToVerticalFieldOfView(newValue, sensorSize.x / sensorSize.y);
                         }
+                        // Push to property
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                        fovProp.floatValue = newValue;
+                        fovProp.serializedObject.ApplyModifiedProperties();
+                        break;
                     }
-                });
-
-                // Convert to display units, and track the presets
-                fovField.TrackPropertyValue(fovProperty, (prop) => 
-                {
-                    // Select the matching preset, if any
-                    int index = GetMatchingPreset(fovProperty);
-                    fovPresets.SetValueWithoutNotify(
-                        index >= 0 ? CinemachineLensPresets.Instance.m_Presets[index].m_Name : "");
-
-                    // Convert to display FOV units
-                    fovField.SetValueWithoutNotify(GetDisplayFOV(prop.floatValue));
-                });
-
-                fovControl.Add(fovField);
-                fovControl.Add(fovPresets);
-                return fovControl;
-
-                int GetMatchingPreset(SerializedProperty p)
-                {
-                    var presets = CinemachineLensPresets.InstanceIfExists;
-                    return (presets == null) ? -1 : presets.GetMatchingPreset(p.floatValue);
                 }
             }
 
-            VisualElement CreateFocalLengthControl(SerializedProperty property, bool hideLabel)
+            void OnLensPropertyChanged(SerializedProperty p)
             {
-                FocalLengthControl = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                var focalProperty = property.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
-                var focalField = new FloatField 
-                { 
-                    label = hideLabel ? "" : focalProperty.displayName, 
-                    tooltip = focalProperty.tooltip, 
-                    style = { flexGrow = 2, flexBasis = 0 },
-                    value = GetDisplayFocalLength(focalProperty.floatValue)
-                };
-                focalField.AddToClassList(InspectorUtility.kAlignFieldClass);
-                focalField.RegisterValueChangedCallback((evt) =>
+                var mode = GetLensMode();
+                switch (mode)
                 {
-                    // Convert and clamp
-                    var sensorHeight = SensorSize(property).y;
-                    var vfov = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, evt.newValue), sensorHeight);
-                    if (vfov < 1 || vfov > 179)
+                    case Modes.Ortho:
                     {
-                        vfov = Mathf.Clamp(vfov, 1, 179);
-                        focalField.SetValueWithoutNotify(Camera.FieldOfViewToFocalLength(vfov, sensorHeight));
+                        var orthoProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.OrthographicSize);
+                        m_Control.SetValueWithoutNotify(orthoProp.floatValue);
+                        break;
                     }
-                    // Push to property
-                    if (!Mathf.Approximately(focalProperty.floatValue, vfov))
+                    case Modes.Physical:
                     {
-                        focalProperty.floatValue = vfov;
-                        focalProperty.serializedObject.ApplyModifiedProperties();
+                        // Convert to display FolcalLength units
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                        var value = Camera.FieldOfViewToFocalLength(fovProp.floatValue, SensorSize(m_LensProperty).y);
+                        m_Control.SetValueWithoutNotify(value);
+                        UpdatePresetDisplay(true);
+                        break;
                     }
-                });
-
-                // Presets menu
-                var initialIndex = GetMatchingPhysicalPreset(focalProperty);
-                var focalPresets = new PopupField<string>(m_PhysicalPresetOptions, 
-                    initialIndex < 0 ? "" : CinemachineLensPresets.InstanceIfExists.m_PhysicalPresets[initialIndex].m_Name) 
-                    { 
-                        tooltip = "Custom Lens Presets", style = 
-                        { 
-                            height = InspectorUtility.SingleLineHeight,
-                            alignSelf = Align.Center, flexGrow = 1, flexBasis = 0, minWidth = 0,
-                            marginLeft = 5, paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                    case Modes.VFOV:
+                    case Modes.HFOV:
+                    {
+                        // Convert to display FOV units
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                        var value = fovProp.floatValue;
+                        if (mode == Modes.HFOV)
+                        {
+                            var sensorSize = SensorSize(m_LensProperty);
+                            value = Camera.VerticalToHorizontalFieldOfView(value, sensorSize.x / sensorSize.y);
                         }
-                    };
-                focalPresets.RegisterValueChangedCallback((evt) => 
+                        m_Control.SetValueWithoutNotify(value);
+                        UpdatePresetDisplay(false);
+                        break;
+                    }
+                }
+                TimedUpdate();
+            }
+
+            public void TimedUpdate()
+            {
+                switch (GetLensMode())
+                {
+                    case Modes.Ortho:
+                    {
+                        var text = "O";
+                        if (ShortLabel.text != text)
+                        {
+                            var orthoProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.OrthographicSize);
+                            ShortLabel.text = text;
+                            Label.text = orthoProp.displayName;
+                            Label.tooltip = m_Control.tooltip = ShortLabel.tooltip = orthoProp.tooltip;
+                            m_Presets.SetVisible(false);
+                        }
+                        break;
+                    }
+                    case Modes.Physical:
+                    {
+                        var text = "F";
+                        if (ShortLabel.text != text)
+                        {
+                            var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                            ShortLabel.text = text;
+                            Label.text = ShortLabel.tooltip = "Focal Length";
+                            Label.tooltip = m_Control.tooltip = fovProp.tooltip;
+                            m_Presets.choices = m_PhysicalPresetOptions;
+                            m_Presets.SetVisible(true);
+                        }
+                        break;
+                    }
+                    case Modes.HFOV:
+                    {
+                        var text = "H";
+                        if (ShortLabel.text != text)
+                        {
+                            var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                            ShortLabel.text = text;
+                            Label.text = ShortLabel.tooltip = "Horizontal FOV";
+                            Label.tooltip = m_Control.tooltip = fovProp.tooltip;
+                            m_Presets.choices = m_PresetOptions;
+                            m_Presets.SetVisible(true);
+                        }
+                        break;
+                    }
+                    case Modes.VFOV:
+                    {
+                        var text = "V";
+                        if (ShortLabel.text != text)
+                        {
+                            var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                            ShortLabel.text = text;
+                            Label.text = ShortLabel.tooltip = "Vertical FOV";
+                            Label.tooltip = m_Control.tooltip = fovProp.tooltip;
+                            m_Presets.choices = m_PresetOptions;
+                            m_Presets.SetVisible(true);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            void OnPresetValueChanged(ChangeEvent<string> evt)
+            {
+                var fovProp = m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.FieldOfView);
+                if (GetLensMode() == Modes.Physical)
                 {
                     // Edit the presets assets if desired
-                    if (evt.newValue == m_EditPresetsLabel)
+                    if (evt.newValue == kEditPresetsLabel)
                         Selection.activeObject = CinemachineLensPresets.Instance;
                     else 
                     {
@@ -363,137 +386,60 @@ namespace Cinemachine.Editor
                         if (index >= 0)
                         {
                             var v = CinemachineLensPresets.Instance.m_PhysicalPresets[index];
-                            focalProperty.floatValue = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, v.m_FocalLength), SensorSize(property).y);
+                            fovProp.floatValue = Camera.FocalLengthToFieldOfView(
+                                Mathf.Max(0.01f, v.m_FocalLength), SensorSize(m_LensProperty).y);
 #if CINEMACHINE_HDRP
-                            property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue = v.Aperture;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue = v.Iso;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue = v.ShutterSpeed;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount).intValue = v.BladeCount;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.Curvature).vector2Value = v.Curvature;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping).floatValue = v.BarrelClipping;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism).floatValue = v.Anamorphism;
-                            property.FindPropertyRelative(() => m_LensSettingsDef.LensShift).vector2Value = v.LensShift;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue = v.Aperture;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue = v.Iso;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue = v.ShutterSpeed;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.BladeCount).intValue = v.BladeCount;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.Curvature).vector2Value = v.Curvature;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping).floatValue = v.BarrelClipping;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism).floatValue = v.Anamorphism;
+                            m_LensProperty.FindPropertyRelative(() => m_LensSettingsDef.LensShift).vector2Value = v.LensShift;
 #endif
-                            focalProperty.serializedObject.ApplyModifiedProperties();
+                            fovProp.serializedObject.ApplyModifiedProperties();
                         }
-                    }
-                });
-
-                // Convert to display units, and track the presets
-                focalField.TrackPropertyValue(focalProperty, (prop) => 
-                {
-                    // Select the matching preset, if any
-                    int index = GetMatchingPhysicalPreset(prop);
-                    focalPresets.SetValueWithoutNotify(
-                        index >= 0 ? CinemachineLensPresets.Instance.m_PhysicalPresets[index].m_Name : "");
-
-                    // Convert to display FOV units
-                    focalField.SetValueWithoutNotify(GetDisplayFocalLength(prop.floatValue));
-                });
-                
-                int GetMatchingPhysicalPreset(SerializedProperty p)
-                {
-                    var presets = CinemachineLensPresets.InstanceIfExists;
-                    if (presets == null)
-                        return -1;
-#if CINEMACHINE_HDRP
-                    var focalLength = Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(property).y);
-                    var aperture = property.FindPropertyRelative(() => m_LensSettingsDef.Aperture).floatValue;
-                    var iso = property.FindPropertyRelative(() => m_LensSettingsDef.Iso).intValue;
-                    var shutterSpeed = property.FindPropertyRelative(() => m_LensSettingsDef.ShutterSpeed).floatValue;
-                    var bladeCount = property.FindPropertyRelative(() => m_LensSettingsDef.BladeCount).intValue;
-                    var curvature = property.FindPropertyRelative(() => m_LensSettingsDef.Curvature).vector2Value;
-                    var barrelClipping = property.FindPropertyRelative(() => m_LensSettingsDef.BarrelClipping).floatValue;
-                    var anamprphism = property.FindPropertyRelative(() => m_LensSettingsDef.Anamorphism).floatValue;
-                    var lensShift = property.FindPropertyRelative(() => m_LensSettingsDef.LensShift).vector2Value;
-
-                    return presets.GetMatchingPhysicalPreset(
-                        focalLength, iso, shutterSpeed, aperture, bladeCount,
-                        curvature, barrelClipping, anamprphism, lensShift);
-#else
-                    return presets.GetMatchingPhysicalPreset(
-                        Camera.FieldOfViewToFocalLength(p.floatValue, SensorSize(p).y));
-#endif
-                }
-                
-                FocalLengthControl.Add(focalField);
-                FocalLengthControl.Add(focalPresets);
-                return FocalLengthControl;
-            }
-
-            // Convert to display FOV units
-            float GetDisplayFOV(float vfov)
-            {
-                if (UseHorizontalFOV(m_Property))
-                {
-                    var sensorSize = SensorSize(m_Property);
-                    float aspect = sensorSize.x / sensorSize.y;
-                    vfov = Camera.VerticalToHorizontalFieldOfView(vfov, aspect);
-                }
-                return vfov;
-            }
-
-            // Convert to display FOV units
-            float GetDisplayFocalLength(float vfov) => Camera.FieldOfViewToFocalLength(vfov, SensorSize(m_Property).y);
-
-            public void Update(bool shortLabel)
-            {
-                if (IsOrtho(m_Property))
-                {
-                    OrthoControl.SetVisible(true);
-                    FovControl.SetVisible(false);
-                    FocalLengthControl.SetVisible(false);
-                    if (shortLabel && ShortLabel.text != "Ortho" && OrthoControl.Q<FloatField>() != null)
-                    {
-                        ShortLabel.text = "Ortho";
-                        m_DraggerOrtho ??= new (OrthoControl.Q<FloatField>());
-                        m_DraggerOrtho.SetDragZone(ShortLabel);
-                        m_DraggerFov?.SetDragZone(null);
-                        m_DraggerFocal?.SetDragZone(null);
-                    }
-                }
-                else if (IsPhysical(m_Property))
-                {
-                    OrthoControl.SetVisible(false);
-                    FovControl.SetVisible(false);
-                    FocalLengthControl.SetVisible(true);
-                    var text = "Focal Length";
-                    if (!shortLabel)
-                    {
-                        var e = FocalLengthControl.Q<Label>();
-                        if (e != null)
-                            e.text = text;
-                    }
-                    else if (ShortLabel.text != text && FocalLengthControl.Q<FloatField>() != null)
-                    {
-                        ShortLabel.text = text;
-                        m_DraggerOrtho?.SetDragZone(null);
-                        m_DraggerFov?.SetDragZone(null);
-                        m_DraggerFocal ??= new (FocalLengthControl.Q<FloatField>());
-                        m_DraggerFocal.SetDragZone(ShortLabel);
                     }
                 }
                 else
                 {
-                    OrthoControl.SetVisible(false);
-                    FovControl.SetVisible(true);
-                    FocalLengthControl.SetVisible(false);
-                    var text = UseHorizontalFOV(m_Property) ? "Horiz. FOV" : "Vertical FOV";
-                    if (!shortLabel)
+                    // Edit the presets assets if desired
+                    if (evt.newValue == kEditPresetsLabel)
+                        Selection.activeObject = CinemachineLensPresets.Instance;
+                    else
                     {
-                        var e = FovControl.Q<Label>();
-                        if (e != null)
-                            e.text = text;
-                    }
-                    else if (ShortLabel.text != text && FovControl.Q<FloatField>() != null)
-                    {
-                        ShortLabel.text = text;
-                        m_DraggerOrtho?.SetDragZone(null);
-                        m_DraggerFov ??= new (FovControl.Q<FloatField>());
-                        m_DraggerFov.SetDragZone(ShortLabel);
-                        m_DraggerFocal?.SetDragZone(null);
+                        // Apply the preset
+                        var index = CinemachineLensPresets.Instance.GetPresetIndex(evt.newValue);
+                        if (index >= 0)
+                        {
+                            fovProp.floatValue = CinemachineLensPresets.Instance.m_Presets[index].m_FieldOfView;
+                            fovProp.serializedObject.ApplyModifiedProperties();
+                        }
                     }
                 }
+            }
+
+            void UpdatePresetDisplay(bool physical)
+            {
+                var value = string.Empty;
+                var presets = CinemachineLensPresets.InstanceIfExists;
+                if (presets != null)
+                {
+                    if (physical)
+                    {
+                        var index = presets.GetMatchingPhysicalPreset(m_Control.value);
+                        if (index >= 0)
+                            value = CinemachineLensPresets.Instance.m_PhysicalPresets[index].m_Name;
+                    }
+                    else
+                    {
+                        var index = presets.GetMatchingPreset(m_Control.value);
+                        if (index >= 0)
+                            value = CinemachineLensPresets.Instance.m_Presets[index].m_Name;
+                    }
+                }
+                m_Presets.SetValueWithoutNotify(value);
             }
         }
 
