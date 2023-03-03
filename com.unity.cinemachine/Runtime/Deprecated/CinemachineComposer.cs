@@ -536,7 +536,7 @@ namespace Cinemachine
         // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineRotationComposer c)
         {
-            c.TrackedObjectOffset = m_TrackedObjectOffset;
+            c.TargetOffset = m_TrackedObjectOffset;
             c.Lookahead = new LookaheadSettings
             {
                 Enabled = m_LookaheadTime > 0,

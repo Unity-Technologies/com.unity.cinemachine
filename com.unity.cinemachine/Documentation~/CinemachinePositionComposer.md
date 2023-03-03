@@ -10,7 +10,7 @@ This algorithm first moves the camera along the camera Z axis until the __Tracki
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
-| __Tracked Object Offset__ || Position in target-local coordinates of the point of interest on the target to be tracked.  0, 0, 0 would be the target's origin. |
+| __Target Offset__ || Position in target-local coordinates of the point of interest on the target to be tracked.  0, 0, 0 would be the target's origin. |
 | __Lookahead Time__ || Adjusts the offset of the Cinemachine Camera from the Tracking target based on the motion of the target. Cinemachine estimates the point where the target will be this many seconds into the future. This feature is sensitive to noisy animation and can amplify the noise, resulting in undesirable camera jitter. If the camera jitters unacceptably when the target is in motion, turn down this property, or animate the target more smoothly. |
 | __Lookahead Smoothing__ || The smoothness of the lookahead algorithm. Larger values smooth out jittery predictions and increase prediction lag. |
 | __Lookahead Ignore Y__ || If enabled, ignore movement along the Y axis for lookahead calculations. |
