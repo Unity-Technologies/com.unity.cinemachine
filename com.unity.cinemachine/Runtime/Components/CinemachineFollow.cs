@@ -23,7 +23,7 @@ namespace Unity.Cinemachine
         public Vector3 FollowOffset = Vector3.back * 10f;
 
         /// <summary>Settings to control damping for target tracking.</summary>
-        public TrackerSettings TrackerSettings = this.TrackerSettings.Default;
+        public TrackerSettings TrackerSettings = TrackerSettings.Default;
 
         Tracker m_TargetTracker;
 
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine
         private void Reset()
         {
             FollowOffset = Vector3.back * 10f;
-            TrackerSettings = this.TrackerSettings.Default;
+            TrackerSettings = TrackerSettings.Default;
         }
 
         /// <summary>Get the target offset, with sanitization</summary>
