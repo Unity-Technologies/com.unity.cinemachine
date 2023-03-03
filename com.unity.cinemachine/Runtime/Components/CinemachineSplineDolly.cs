@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using Unity.Cinemachine.Utility;
 using UnityEngine.Splines;
 
 namespace Unity.Cinemachine

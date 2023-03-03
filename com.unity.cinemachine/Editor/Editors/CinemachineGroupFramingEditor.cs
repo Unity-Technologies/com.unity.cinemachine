@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine.Editor
 {

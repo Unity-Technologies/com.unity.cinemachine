@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Unity.Cinemachine.Utility;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;

@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine
 {

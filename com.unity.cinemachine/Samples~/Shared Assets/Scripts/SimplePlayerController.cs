@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Cinemachine.Utility;
 using System;
 
 namespace Unity.Cinemachine.Samples

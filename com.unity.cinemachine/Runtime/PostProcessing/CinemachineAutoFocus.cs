@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
-using Unity.Cinemachine.Utility;
 
 #if CINEMACHINE_HDRP
 using UnityEngine.Rendering.HighDefinition;

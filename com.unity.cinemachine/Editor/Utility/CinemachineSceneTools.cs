@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;

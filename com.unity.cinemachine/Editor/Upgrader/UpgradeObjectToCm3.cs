@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using Unity.Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;

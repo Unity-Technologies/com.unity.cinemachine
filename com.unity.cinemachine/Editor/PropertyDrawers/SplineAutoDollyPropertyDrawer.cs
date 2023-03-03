@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Reflection;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine.Editor
 {

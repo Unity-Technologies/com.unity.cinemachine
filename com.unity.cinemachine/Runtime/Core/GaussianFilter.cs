@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Unity.Cinemachine.Utility
+namespace Unity.Cinemachine
 {
     internal abstract class GaussianWindow1d<T>
     {

@@ -1,5 +1,4 @@
 using System;
-using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 

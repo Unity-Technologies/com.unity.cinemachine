@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Unity.Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 

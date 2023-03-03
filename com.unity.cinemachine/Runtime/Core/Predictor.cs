@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.Cinemachine.Utility
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a utility to implement position predicting.

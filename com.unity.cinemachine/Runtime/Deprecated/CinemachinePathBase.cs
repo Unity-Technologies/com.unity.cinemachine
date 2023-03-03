@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine
 {

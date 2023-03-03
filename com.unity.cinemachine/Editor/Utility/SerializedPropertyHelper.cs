@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using Unity.Cinemachine.Utility;
 using UnityEditor;
 
 namespace Unity.Cinemachine.Editor

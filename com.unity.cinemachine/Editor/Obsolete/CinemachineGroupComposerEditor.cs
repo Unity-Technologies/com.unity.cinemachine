@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine.Editor
 {

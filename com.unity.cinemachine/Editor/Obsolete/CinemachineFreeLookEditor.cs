@@ -7,7 +7,6 @@ using Vector3 = UnityEngine.Vector3;
 using System.Linq.Expressions;
 using System;
 using Unity.Cinemachine.Editor;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine
 {

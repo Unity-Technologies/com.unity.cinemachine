@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Unity.Cinemachine.TargetTracking;
-using Unity.Cinemachine.Utility;
 
 namespace Unity.Cinemachine
 {

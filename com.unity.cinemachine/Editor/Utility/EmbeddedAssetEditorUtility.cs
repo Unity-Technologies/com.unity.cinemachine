@@ -229,7 +229,7 @@ namespace Unity.Cinemachine.Editor
             static List<Type> GetAssetTypes(Type baseType)
             {
                 // GML todo: optimize with TypeCache
-                return Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                return ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => baseType.IsAssignableFrom(t) && !t.IsAbstract 
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToList();
             }

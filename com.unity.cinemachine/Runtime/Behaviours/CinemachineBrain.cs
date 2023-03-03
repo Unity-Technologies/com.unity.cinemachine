@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;

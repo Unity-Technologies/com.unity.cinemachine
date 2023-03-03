@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Unity.Cinemachine;
-using Unity.Cinemachine.Utility;
 
 namespace Tests.Runtime
 {

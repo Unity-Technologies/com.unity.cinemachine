@@ -24,7 +24,7 @@ namespace Unity.Cinemachine
         Dictionary<CinemachineVirtualCameraBase, VcamExtraStateBase> m_ExtraState;
 
         /// <summary>Useful constant for very small floats</summary>
-        protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
+        protected const float Epsilon = UnityVectorExtensions.Epsilon;
 
         /// <summary>Get the CinemachineVirtualCamera to which this extension is attached.
         /// This is distinct from the CinemachineCameras that the extension will modify,

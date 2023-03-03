@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System;
 using System.Reflection;
 using Unity.Cinemachine.Editor;
-using Unity.Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 

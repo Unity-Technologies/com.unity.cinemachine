@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -10,7 +9,7 @@ namespace Unity.Cinemachine
     public abstract class CinemachineComponentBase : MonoBehaviour
     {
         /// <summary>Useful constant for very small floats</summary>
-        protected const float Epsilon = Utility.UnityVectorExtensions.Epsilon;
+        protected const float Epsilon = UnityVectorExtensions.Epsilon;
 
         /// <summary>Get the associated CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase VirtualCamera

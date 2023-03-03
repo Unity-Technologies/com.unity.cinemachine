@@ -1,6 +1,5 @@
 using System.Collections;
 using Unity.Cinemachine;
-using Unity.Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools.Utils;

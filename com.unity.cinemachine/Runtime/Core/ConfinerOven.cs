@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Unity.Cinemachine.Utility;
 using UnityEngine;
 
 namespace Unity.Cinemachine
