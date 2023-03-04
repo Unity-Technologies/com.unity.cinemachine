@@ -99,35 +99,14 @@ namespace Cinemachine.Editor
             [FormerlySerializedAs("m_Name")]
             public string Name;
 
-            /// <summary>
-            /// This is the camera focal length in mm
-            /// </summary>
+            /// <summary>This is the camera focal length in mm</summary>
             [Tooltip("This is the camera focal length in mm")]
             [FormerlySerializedAs("m_FocalLength")]
             public float FocalLength;
 
-            /// <summary>For physical cameras only: how the image is fitted to the sensor 
-            /// if the aspect ratios differ</summary>
-            public Camera.GateFitMode GateFit;
-
-            /// <summary>The actual size of the image sensor (in mm).</summary>
-            [SensorSizeProperty] 
-            public Vector2 SensorSize;
-        
-            /// <summary>Position of the gate relative to the film back</summary>
-            public Vector2 LensShift;
-
-            public int Iso;
-            public float ShutterSpeed;
-            [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
-            public float Aperture;
-            [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
-            public int BladeCount;
-            public Vector2 Curvature;
-            [RangeSlider(0, 1)]
-            public float BarrelClipping;
-            [RangeSlider(-1, 1)]
-            public float Anamorphism;
+            /// <summary>Physical lens settings</summary>
+            [Tooltip("Physical lens settings")]
+            public LensSettings.PhysicalSettings PhysicalProperties;
         }
 
         /// <summary>The array containing Preset definitions, for physical cameras</summary>
@@ -159,19 +138,19 @@ namespace Cinemachine.Editor
         {
             return PhysicalPresets.FindIndex(x => 
                 Mathf.Approximately(x.FocalLength, p.FocalLength)
-                && x.GateFit == p.GateFit
-                && Mathf.Approximately(x.LensShift.x, p.LensShift.x)
-                && Mathf.Approximately(x.LensShift.y, p.LensShift.y)
-                && Mathf.Approximately(x.SensorSize.x, p.SensorSize.x)
-                && Mathf.Approximately(x.SensorSize.y, p.SensorSize.y)
-                && x.Iso == p.Iso
-                && Mathf.Approximately(x.ShutterSpeed, p.ShutterSpeed)
-                && Mathf.Approximately(x.Aperture, p.Aperture)
-                &&x.BladeCount == p.BladeCount
-                && Mathf.Approximately(x.Curvature.x, p.Curvature.x)
-                && Mathf.Approximately(x.Curvature.y, p.Curvature.y)
-                && Mathf.Approximately(x.BarrelClipping, p.BarrelClipping)
-                && Mathf.Approximately(x.Anamorphism, p.Anamorphism)
+                && x.PhysicalProperties.GateFit == p.PhysicalProperties.GateFit
+                && Mathf.Approximately(x.PhysicalProperties.LensShift.x, p.PhysicalProperties.LensShift.x)
+                && Mathf.Approximately(x.PhysicalProperties.LensShift.y, p.PhysicalProperties.LensShift.y)
+                && Mathf.Approximately(x.PhysicalProperties.SensorSize.x, p.PhysicalProperties.SensorSize.x)
+                && Mathf.Approximately(x.PhysicalProperties.SensorSize.y, p.PhysicalProperties.SensorSize.y)
+                && x.PhysicalProperties.Iso == p.PhysicalProperties.Iso
+                && Mathf.Approximately(x.PhysicalProperties.ShutterSpeed, p.PhysicalProperties.ShutterSpeed)
+                && Mathf.Approximately(x.PhysicalProperties.Aperture, p.PhysicalProperties.Aperture)
+                &&x.PhysicalProperties.BladeCount == p.PhysicalProperties.BladeCount
+                && Mathf.Approximately(x.PhysicalProperties.Curvature.x, p.PhysicalProperties.Curvature.x)
+                && Mathf.Approximately(x.PhysicalProperties.Curvature.y, p.PhysicalProperties.Curvature.y)
+                && Mathf.Approximately(x.PhysicalProperties.BarrelClipping, p.PhysicalProperties.BarrelClipping)
+                && Mathf.Approximately(x.PhysicalProperties.Anamorphism, p.PhysicalProperties.Anamorphism)
                 );
         }
     }
