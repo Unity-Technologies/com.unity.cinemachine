@@ -40,11 +40,10 @@ namespace Cinemachine
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
-        [FormerlySerializedAs("m_LensAttributes")]
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
             + "mirrors the Unity Camera's lens settings, and will be used to drive the "
             + "Unity camera when the vcam is active.")]
-        public LensSettings m_Lens = LensSettings.Default;
+        public LensSettings Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
@@ -70,6 +69,10 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
+        [FormerlySerializedAs("m_LensAttributes")]
+        [FormerlySerializedAs("m_Lens")]
+        LegacyLensSettings m_LegacyLens;
+
         internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
             base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
@@ -94,6 +97,8 @@ namespace Cinemachine
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
+            if (streamedVersion < 20230301)
+                Lens = m_LegacyLens.ToLensSettings();
         }
         // ===============================================================
         
@@ -178,7 +183,7 @@ namespace Cinemachine
         override protected void OnEnable()
         {
             base.OnEnable();
-            m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
+            m_State = PullStateFromVirtualCamera(Vector3.up, ref Lens);
             InvalidateComponentPipeline();
         }
 
@@ -195,17 +200,10 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
-        internal override void OnBeforeSerialize()
-        {
-            if (!m_Lens.IsPhysicalCamera) 
-                m_Lens.SensorSize = Vector2.one;
-        }
-
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected void OnValidate()
         {
-            m_Lens.Validate();
+            Lens.Validate();
         }
 
         void OnTransformChildrenChanged()
@@ -469,7 +467,7 @@ namespace Cinemachine
             LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref Lens);
 
             Transform lookAtTarget = LookAt;
             if (lookAtTarget != mCachedLookAtTarget)

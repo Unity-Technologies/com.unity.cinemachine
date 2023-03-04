@@ -23,7 +23,7 @@ namespace Cinemachine
             base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_Orbits));
             if (!Target.m_CommonLens)
-                excluded.Add(FieldPath(x => x.m_Lens));
+                excluded.Add(FieldPath(x => x.Lens));
             if (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow)
             {
                 excluded.Add(FieldPath(x => x.m_Heading));
@@ -80,7 +80,7 @@ namespace Cinemachine
             DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_CommonLens));
-            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Lens));
             DrawRemainingPropertiesInInspector();
 
             // Orbits
@@ -135,13 +135,13 @@ namespace Cinemachine
             if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, 
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Lens), 
-                    freelook.m_Lens, IsHorizontalFOVUsed());
+                    new SerializedObject(freelook).FindProperty(() => freelook.Lens), 
+                    freelook.Lens, IsHorizontalFOVUsed());
             }
             else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, 
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Lens));
+                    new SerializedObject(freelook).FindProperty(() => freelook.Lens));
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {

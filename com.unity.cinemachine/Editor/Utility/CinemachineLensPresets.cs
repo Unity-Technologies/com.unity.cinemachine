@@ -117,7 +117,6 @@ namespace Cinemachine.Editor
             /// <summary>Position of the gate relative to the film back</summary>
             public Vector2 LensShift;
 
-#if CINEMACHINE_HDRP
             public int Iso;
             public float ShutterSpeed;
             [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
@@ -129,7 +128,6 @@ namespace Cinemachine.Editor
             public float BarrelClipping;
             [RangeSlider(-1, 1)]
             public float Anamorphism;
-#endif
         }
 
         /// <summary>The array containing Preset definitions, for physical cameras</summary>
@@ -166,7 +164,6 @@ namespace Cinemachine.Editor
                 && Mathf.Approximately(x.LensShift.y, p.LensShift.y)
                 && Mathf.Approximately(x.SensorSize.x, p.SensorSize.x)
                 && Mathf.Approximately(x.SensorSize.y, p.SensorSize.y)
-#if CINEMACHINE_HDRP
                 && x.Iso == p.Iso
                 && Mathf.Approximately(x.ShutterSpeed, p.ShutterSpeed)
                 && Mathf.Approximately(x.Aperture, p.Aperture)
@@ -175,7 +172,6 @@ namespace Cinemachine.Editor
                 && Mathf.Approximately(x.Curvature.y, p.Curvature.y)
                 && Mathf.Approximately(x.BarrelClipping, p.BarrelClipping)
                 && Mathf.Approximately(x.Anamorphism, p.Anamorphism)
-#endif                
                 );
         }
     }

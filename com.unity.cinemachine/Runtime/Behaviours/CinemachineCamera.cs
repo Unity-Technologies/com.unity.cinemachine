@@ -312,12 +312,5 @@ namespace Cinemachine
             var i = (int)stage;
             return i >= 0 && i < m_Pipeline.Length ? m_Pipeline[i] : null;
         }
-
-        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
-        internal override void OnBeforeSerialize()
-        {
-            if (!Lens.IsPhysicalCamera) 
-                Lens.SensorSize = Vector2.one;
-        }
     }
 }

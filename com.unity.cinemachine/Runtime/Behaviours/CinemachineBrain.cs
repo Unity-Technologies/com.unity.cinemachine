@@ -1049,20 +1049,19 @@ namespace Cinemachine
 
                     if (isPhysical)
                     {
-                        cam.sensorSize = state.Lens.SensorSize;
-                        cam.gateFit = state.Lens.GateFit;
-                        cam.focalLength = Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.SensorSize.y);
-                        cam.lensShift = state.Lens.LensShift;
-                        cam.focusDistance = state.Lens.FocusDistance;
-#if CINEMACHINE_HDRP
-                        cam.iso = state.Lens.Iso;
-                        cam.shutterSpeed = state.Lens.ShutterSpeed;
-                        cam.aperture = state.Lens.Aperture;
-                        cam.bladeCount = state.Lens.BladeCount;
-                        cam.curvature = state.Lens.Curvature;
-                        cam.barrelClipping = state.Lens.BarrelClipping;
-                        cam.anamorphism = state.Lens.Anamorphism;
-#endif
+                        cam.sensorSize = state.Lens.PhysicalProperties.SensorSize;
+                        cam.gateFit = state.Lens.PhysicalProperties.GateFit;
+                        cam.focalLength = Camera.FieldOfViewToFocalLength(
+                            state.Lens.FieldOfView, state.Lens.PhysicalProperties.SensorSize.y);
+                        cam.lensShift = state.Lens.PhysicalProperties.LensShift;
+                        cam.focusDistance = state.Lens.PhysicalProperties.FocusDistance;
+                        cam.iso = state.Lens.PhysicalProperties.Iso;
+                        cam.shutterSpeed = state.Lens.PhysicalProperties.ShutterSpeed;
+                        cam.aperture = state.Lens.PhysicalProperties.Aperture;
+                        cam.bladeCount = state.Lens.PhysicalProperties.BladeCount;
+                        cam.curvature = state.Lens.PhysicalProperties.Curvature;
+                        cam.barrelClipping = state.Lens.PhysicalProperties.BarrelClipping;
+                        cam.anamorphism = state.Lens.PhysicalProperties.Anamorphism;
                     }
                 }
             }

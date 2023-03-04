@@ -161,7 +161,7 @@ namespace Cinemachine
                     focusDistance = extra.CurrentFocusDistance + Damper.Damp(
                         focusDistance - extra.CurrentFocusDistance, Damping, deltaTime);
                 extra.CurrentFocusDistance = focusDistance;
-                state.Lens.FocusDistance = focusDistance;
+                state.Lens.PhysicalProperties.FocusDistance = focusDistance;
             }
         }
 

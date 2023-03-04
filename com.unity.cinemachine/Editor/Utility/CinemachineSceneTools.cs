@@ -179,7 +179,7 @@ namespace Cinemachine.Editor
                 if (lens.IsPhysicalCamera)
                 {
                     DrawLabel(labelPos, "Focal Length (" + 
-                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.SensorSize.y).ToString("F1") + ")");
+                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.PhysicalProperties.SensorSize.y).ToString("F1") + ")");
                 }
                 else if (orthographic)
                 {
