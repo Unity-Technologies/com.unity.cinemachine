@@ -144,7 +144,7 @@ namespace Cinemachine
         public Camera.GateFitMode GateFit;
 
         // internal for inspector only
-        [SerializeField] internal Vector2 m_SensorSize;
+        [SerializeField, SensorSizeProperty] internal Vector2 m_SensorSize;
 
         /// <summary>Distance from the camera lens at which focus is sharpest.</summary>
         public float FocusDistance;

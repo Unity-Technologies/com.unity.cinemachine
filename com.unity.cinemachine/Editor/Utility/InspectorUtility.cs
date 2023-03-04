@@ -724,7 +724,7 @@ namespace Cinemachine.Editor
         /// A row containing a property field.  Suitable for adding widgets nest to the property field.
         /// </summary>
         public static LabeledRow PropertyRow(
-            SerializedProperty property, out VisualElement propertyField, string label = null)
+            SerializedProperty property, out PropertyField propertyField, string label = null)
         {
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
