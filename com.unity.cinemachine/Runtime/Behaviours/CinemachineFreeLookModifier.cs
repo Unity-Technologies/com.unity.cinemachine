@@ -219,8 +219,15 @@ namespace Cinemachine
             /// <param name="vcam">the virtual camera owner</param>
             public override void Reset(CinemachineVirtualCameraBase vcam) 
             {
-                Top = Bottom = vcam == null ? LensSettings.Default : vcam.State.Lens;
-                Top.ModeOverride = Bottom.ModeOverride = LensSettings.OverrideModes.None;
+                if (vcam == null)
+                    Top = Bottom = LensSettings.Default;
+                else 
+                {
+                    var state = vcam.State;
+                    Top = Bottom = state.Lens;
+                    Top.CopyCameraMode(ref state.Lens);
+                    Bottom.CopyCameraMode(ref state.Lens);
+                }
             }
 
             /// <summary>

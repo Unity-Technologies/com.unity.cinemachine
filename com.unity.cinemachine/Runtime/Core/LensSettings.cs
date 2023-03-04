@@ -98,7 +98,7 @@ namespace Cinemachine
         /// For nonphysical cameras, this is the screen aspect pulled from the camera, if any.
         /// </summary>
         public float Aspect => IsPhysicalCamera 
-            ? PhysicalProperties.SensorSize.y / PhysicalProperties.SensorSize.x : m_AspectFromCamera;
+            ? PhysicalProperties.SensorSize.x / PhysicalProperties.SensorSize.y : m_AspectFromCamera;
 
         /// <summary>
         /// This property will be true if the camera mode is set, either directly or 

@@ -24,8 +24,8 @@ namespace Cinemachine.Editor
         static bool IsPhysical(SerializedProperty property) => AccessProperty<bool>(
             typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "IsPhysicalCamera");
 
-        static Vector2 SensorSize(SerializedProperty property) => AccessProperty<Vector2>(
-            typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "SensorSize");
+        static float Aspect(SerializedProperty property) => AccessProperty<float>(
+            typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "Aspect");
 
         static bool UseHorizontalFOV(SerializedProperty property) => 
             InspectorUtility.GetUseHorizontalFOV(AccessProperty<Camera>(
@@ -170,6 +170,7 @@ namespace Cinemachine.Editor
         {
             public readonly Label ShortLabel;
             readonly SerializedProperty m_LensProperty;
+            readonly SerializedProperty m_SensorSizeProperty;
             readonly FloatField m_Control;
             readonly PopupField<string> m_Presets;
 
@@ -186,7 +187,11 @@ namespace Cinemachine.Editor
             public FovPropertyControl(SerializedProperty property, bool hideLabel) : base(hideLabel ? "" : "(fov)")
             {
                 style.flexDirection = FlexDirection.Row;
+
                 m_LensProperty = property;
+                var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
+                m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize);
+
                 m_Control = Contents.AddChild(new FloatField("") { style = {flexBasis = 20, flexGrow = 2, marginLeft = 0}});
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
@@ -219,7 +224,7 @@ namespace Cinemachine.Editor
                     case Modes.Physical:
                     {
                         // Convert and clamp
-                        var sensorHeight = SensorSize(m_LensProperty).y;
+                        var sensorHeight = m_SensorSizeProperty.vector2Value.y;
                         var vfov = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, evt.newValue), sensorHeight);
                         vfov = Mathf.Clamp(vfov, 1, 179);
                         m_Control.SetValueWithoutNotify(Camera.FieldOfViewToFocalLength(vfov, sensorHeight));
@@ -238,10 +243,8 @@ namespace Cinemachine.Editor
 
                         // Convert from display units
                         if (mode == Modes.HFOV)
-                        {
-                            var sensorSize = SensorSize(m_LensProperty);
-                            newValue = Camera.HorizontalToVerticalFieldOfView(newValue, sensorSize.x / sensorSize.y);
-                        }
+                            newValue = Camera.HorizontalToVerticalFieldOfView(newValue, Aspect(m_LensProperty));
+
                         // Push to property
                         var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
                         fovProp.floatValue = newValue;
@@ -266,7 +269,7 @@ namespace Cinemachine.Editor
                     {
                         // Convert to display FolcalLength units
                         var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
-                        var v = Camera.FieldOfViewToFocalLength(fovProp.floatValue, SensorSize(m_LensProperty).y);
+                        var v = Camera.FieldOfViewToFocalLength(fovProp.floatValue, m_SensorSizeProperty.vector2Value.y);
                         m_Control.SetValueWithoutNotify(v);
                         SyncPhysicalPreset();
                         break;
@@ -278,10 +281,7 @@ namespace Cinemachine.Editor
                         var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
                         var v = fovProp.floatValue;
                         if (mode == Modes.HFOV)
-                        {
-                            var sensorSize = SensorSize(m_LensProperty);
-                            v = Camera.VerticalToHorizontalFieldOfView(v, sensorSize.x / sensorSize.y);
-                        }
+                            v = Camera.VerticalToHorizontalFieldOfView(v, Aspect(m_LensProperty));
                         m_Control.SetValueWithoutNotify(v);
 
                         // Sync the presets
@@ -372,7 +372,7 @@ namespace Cinemachine.Editor
                         {
                             var v = CinemachineLensPresets.Instance.PhysicalPresets[index];
                             fovProp.floatValue = Camera.FocalLengthToFieldOfView(
-                                Mathf.Max(0.01f, v.FocalLength), SensorSize(m_LensProperty).y);
+                                Mathf.Max(0.01f, v.FocalLength), m_SensorSizeProperty.vector2Value.y);
                             var physicalProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
                             physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue = (int)v.PhysicalProperties.GateFit;
                             physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize).vector2Value = v.PhysicalProperties.SensorSize;
@@ -452,7 +452,7 @@ namespace Cinemachine.Editor
         {
             public bool IsOrtho;
             public bool IsPhysical;
-            public Vector2 SensorSize;
+            public float Aspect;
             public bool UseHorizontalFOV;
 
             public GUIContent[] m_PresetOptions;
@@ -484,7 +484,7 @@ namespace Cinemachine.Editor
             m_Snapshot.UseHorizontalFOV = UseHorizontalFOV(property);
             m_Snapshot.IsOrtho = IsOrtho(property);
             m_Snapshot.IsPhysical = IsPhysical(property);
-            m_Snapshot.SensorSize = SensorSize(property);
+            m_Snapshot.Aspect = Aspect(property);
         }
 
         GUIContent GetFOVLabel()
@@ -504,7 +504,7 @@ namespace Cinemachine.Editor
             else
             {
                 var FOVProperty = property.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
-                float aspect = m_Snapshot.SensorSize.x / m_Snapshot.SensorSize.y;
+                float aspect = m_Snapshot.Aspect;
 
                 float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 3;
                 rect.width -= dropdownWidth + hSpace;
@@ -546,24 +546,26 @@ namespace Cinemachine.Editor
             float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 4;
             rect.width -= dropdownWidth + hSpace;
 
-            float f = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, m_Snapshot.SensorSize.y);
+            var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
+            var sensorSizeProp = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize);
+
+            float f = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, sensorSizeProp.vector2Value.y);
             EditorGUI.BeginProperty(rect, label, FOVProperty);
             f = EditorGUI.FloatField(rect, label, f);
-            f = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, f), m_Snapshot.SensorSize.y);
+            f = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, f), sensorSizeProp.vector2Value.y);
             if (!Mathf.Approximately(FOVProperty.floatValue, f))
                 FOVProperty.floatValue = Mathf.Clamp(f, 1, 179);
             EditorGUI.EndProperty();
 
             rect.x += rect.width + hSpace; rect.width = dropdownWidth;
 
-            var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
             int preset = -1;
             CinemachineLensPresets presets = CinemachineLensPresets.InstanceIfExists;
             if (presets != null)
             {
                 CinemachineLensPresets.PhysicalPreset p = new ()
                 {
-                    FocalLength = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, m_Snapshot.SensorSize.y),
+                    FocalLength = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, sensorSizeProp.vector2Value.y),
                     PhysicalProperties = new ()
                     {
                         GateFit = (Camera.GateFitMode)physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue,
@@ -590,7 +592,7 @@ namespace Cinemachine.Editor
             else if (selection >= 0 && selection < m_Snapshot.m_PhysicalPresetOptions.Length-1)
             {
                 var v = presets.PhysicalPresets[selection];
-                FOVProperty.floatValue = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, v.FocalLength), m_Snapshot.SensorSize.y);
+                FOVProperty.floatValue = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, v.FocalLength), sensorSizeProp.vector2Value.y);
                 physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue = (int)v.PhysicalProperties.GateFit;
                 physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize).vector2Value = v.PhysicalProperties.SensorSize;
                 physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift).vector2Value = v.PhysicalProperties.LensShift;
