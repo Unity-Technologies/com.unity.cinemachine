@@ -27,9 +27,8 @@ namespace Cinemachine.Editor
         static float Aspect(SerializedProperty property) => AccessProperty<float>(
             typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "Aspect");
 
-        static bool UseHorizontalFOV(SerializedProperty property) => 
-            InspectorUtility.GetUseHorizontalFOV(AccessProperty<Camera>(
-                typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "SourceCamera"));
+        static bool UseHorizontalFOV(SerializedProperty property) => AccessProperty<bool>(
+            typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "UseHorizontalFOV");
 
         static T AccessProperty<T>(Type type, object obj, string memberName)
         {
@@ -54,6 +53,7 @@ namespace Cinemachine.Editor
         static List<string> m_PhysicalPresetOptions;
         const string k_AddPresetsLabel = "New Preset with these Settings...";
         const string k_EditPresetsLabel = "Edit Presets...";
+        float m_PreviousAspect;
 
         protected bool HideModeOverride { get; set; }
 
@@ -127,10 +127,16 @@ namespace Cinemachine.Editor
                 if (property.serializedObject.targetObject == null)
                     return; // target deleted
 
+                // UseHorizontalFOV will force an update of lens state values pulled from camera
+                var isHorizontal = UseHorizontalFOV(property);
+                var aspect = Aspect(property);
+                bool aspectChanged = isHorizontal && m_PreviousAspect != aspect;
+                m_PreviousAspect = aspect;
+
                 bool isPhysical = IsPhysical(property);
                 physical.SetVisible(isPhysical);
-                outerFovControl.TimedUpdate();
-                innerFovControl.TimedUpdate();
+                outerFovControl.TimedUpdate(aspectChanged);
+                innerFovControl.TimedUpdate(aspectChanged);
 
                 if (!HideModeOverride)
                 {
@@ -282,10 +288,10 @@ namespace Cinemachine.Editor
                         break;
                     }
                 }
-                TimedUpdate();
+                TimedUpdate(false);
             }
 
-            public void TimedUpdate()
+            public void TimedUpdate(bool aspectChanged)
             {
                 switch (GetLensMode())
                 {
@@ -328,6 +334,9 @@ namespace Cinemachine.Editor
                             m_Presets.choices = m_PresetOptions;
                             m_Presets.SetVisible(true);
                         }
+                        // No event-driven way to detect this.  Our display depends on aspect
+                        if (aspectChanged)
+                            OnLensPropertyChanged(m_LensProperty);
                         break;
                     }
                     case Modes.VFOV:

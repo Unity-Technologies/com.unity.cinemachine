@@ -85,29 +85,6 @@ namespace Cinemachine
             + "component through this setting will remain after the Virtual Camera deactivation.")]
         public OverrideModes ModeOverride;
 
-        /// <summary>
-        /// This is set every frame by the virtual camera, based on the value found in the
-        /// currently associated Unity camera.
-        /// Do not set this property.  Instead, use the ModeOverride field to set orthographic mode.
-        /// </summary>
-        public bool Orthographic => ModeOverride == OverrideModes.Orthographic 
-            || (ModeOverride == OverrideModes.None && m_OrthoFromCamera);
-
-        /// <summary>
-        /// For physical cameras, this is the Sensor aspect.  
-        /// For nonphysical cameras, this is the screen aspect pulled from the camera, if any.
-        /// </summary>
-        public float Aspect => IsPhysicalCamera 
-            ? PhysicalProperties.SensorSize.x / PhysicalProperties.SensorSize.y : m_AspectFromCamera;
-
-        /// <summary>
-        /// This property will be true if the camera mode is set, either directly or 
-        /// indirectly, to Physical Camera
-        /// Do not set this property.  Instead, use the ModeOverride field to set physical mode.
-        /// </summary>
-        public bool IsPhysicalCamera => ModeOverride == OverrideModes.Physical 
-                || (ModeOverride == OverrideModes.None && m_PhysicalFromCamera);
-
         /// <summary>These are settings that are used only if IsPhysicalCamera is true.</summary>
         [Serializable]
         [Tooltip("These are settings that are used only if IsPhysicalCamera is true")]
@@ -177,9 +154,44 @@ namespace Cinemachine
         bool m_PhysicalFromCamera;
         float m_AspectFromCamera;
 
+        /// <summary>
+        /// This is set every frame by the virtual camera, based on the value found in the
+        /// currently associated Unity camera.
+        /// Do not set this property.  Instead, use the ModeOverride field to set orthographic mode.
+        /// </summary>
+        public bool Orthographic => ModeOverride == OverrideModes.Orthographic 
+            || (ModeOverride == OverrideModes.None && m_OrthoFromCamera);
+
+        /// <summary>
+        /// This property will be true if the camera mode is set, either directly or 
+        /// indirectly, to Physical Camera
+        /// Do not set this property.  Instead, use the ModeOverride field to set physical mode.
+        /// </summary>
+        public bool IsPhysicalCamera => ModeOverride == OverrideModes.Physical 
+            || (ModeOverride == OverrideModes.None && m_PhysicalFromCamera);
+                
+        /// <summary>
+        /// For physical cameras, this is the Sensor aspect.  
+        /// For nonphysical cameras, this is the screen aspect pulled from the camera, if any.
+        /// </summary>
+        public float Aspect => IsPhysicalCamera 
+            ? PhysicalProperties.SensorSize.x / PhysicalProperties.SensorSize.y : m_AspectFromCamera;
+
 #if UNITY_EDITOR
         // Needed for knowing how to display FOV (horizontal or veritcal)
-        internal Camera SourceCamera { get; private set; }
+        // This should really be a global Unity setting, but for now there is no better way than this!
+        Camera m_SourceCamera;
+        internal bool UseHorizontalFOV
+        {
+            get
+            {
+                if (m_SourceCamera == null)
+                    return false;
+                PullInheritedPropertiesFromCamera(m_SourceCamera);
+                var p = new UnityEditor.SerializedObject(m_SourceCamera).FindProperty("m_FOVAxisMode");
+                return p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal;
+            }
+        }
 #endif
 
         /// <summary>Default Lens Settings</summary>
@@ -190,6 +202,7 @@ namespace Cinemachine
             NearClipPlane = 0.1f,
             FarClipPlane = 5000f,
             Dutch = 0,
+            ModeOverride = OverrideModes.None,
 
             PhysicalProperties = new ()
             {
@@ -262,7 +275,7 @@ namespace Cinemachine
             m_AspectFromCamera = camera.aspect;
 
 #if UNITY_EDITOR
-            SourceCamera = camera; // hack because of missing Unity API to get horizontal or vertical fov mode
+            m_SourceCamera = camera; // hack because of missing Unity API to get horizontal or vertical fov mode
 #endif
         }
 
