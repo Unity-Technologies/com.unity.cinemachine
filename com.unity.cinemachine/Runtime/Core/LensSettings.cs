@@ -154,6 +154,23 @@ namespace Cinemachine
         bool m_PhysicalFromCamera;
         float m_AspectFromCamera;
 
+#if UNITY_EDITOR
+        // Needed for knowing how to display FOV (horizontal or veritcal)
+        // This should really be a global Unity setting, but for now there is no better way than this!
+        Camera m_SourceCamera;
+        internal bool UseHorizontalFOV
+        {
+            get
+            {
+                if (m_SourceCamera == null)
+                    return false;
+                PullInheritedPropertiesFromCamera(m_SourceCamera);
+                var p = new UnityEditor.SerializedObject(m_SourceCamera).FindProperty("m_FOVAxisMode");
+                return p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal;
+            }
+        }
+#endif
+
         /// <summary>
         /// This is set every frame by the virtual camera, based on the value found in the
         /// currently associated Unity camera.
@@ -176,23 +193,6 @@ namespace Cinemachine
         /// </summary>
         public float Aspect => IsPhysicalCamera 
             ? PhysicalProperties.SensorSize.x / PhysicalProperties.SensorSize.y : m_AspectFromCamera;
-
-#if UNITY_EDITOR
-        // Needed for knowing how to display FOV (horizontal or veritcal)
-        // This should really be a global Unity setting, but for now there is no better way than this!
-        Camera m_SourceCamera;
-        internal bool UseHorizontalFOV
-        {
-            get
-            {
-                if (m_SourceCamera == null)
-                    return false;
-                PullInheritedPropertiesFromCamera(m_SourceCamera);
-                var p = new UnityEditor.SerializedObject(m_SourceCamera).FindProperty("m_FOVAxisMode");
-                return p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal;
-            }
-        }
-#endif
 
         /// <summary>Default Lens Settings</summary>
         public static LensSettings Default => new ()
