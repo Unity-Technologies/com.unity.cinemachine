@@ -16,7 +16,7 @@ namespace Cinemachine.Editor
     [CustomPropertyDrawer(typeof(LensSettings))]
     class LensSettingsPropertyDrawer : PropertyDrawer
     {
-        static LensSettings s_LensSettingsDef = new (); // to access name strings
+        static LensSettings s_Def = new (); // to access name strings
 
         static bool IsOrtho(SerializedProperty property) => AccessProperty<bool>(
             typeof(LensSettings), SerializedPropertyHelper.GetPropertyValue(property), "Orthographic");
@@ -50,10 +50,9 @@ namespace Cinemachine.Editor
                 return default;
         }
 
-        static bool s_PhysicalExapnded;
-
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
+        const string k_AddPresetsLabel = "New Preset with these Settings...";
         const string k_EditPresetsLabel = "Edit Presets...";
 
         protected bool HideModeOverride { get; set; }
@@ -66,6 +65,7 @@ namespace Cinemachine.Editor
             for (int i = 0; presets != null && i < presets.Presets.Count; ++i)
                 m_PresetOptions.Add(presets.Presets[i].Name);
             m_PresetOptions.Add("");
+            m_PresetOptions.Add(k_AddPresetsLabel);
             m_PresetOptions.Add(k_EditPresetsLabel);
 
             m_PhysicalPresetOptions ??= new List<string>();
@@ -73,6 +73,7 @@ namespace Cinemachine.Editor
             for (int i = 0; presets != null && i < presets.PhysicalPresets.Count; ++i)
                 m_PhysicalPresetOptions.Add(presets.PhysicalPresets[i].Name);
             m_PhysicalPresetOptions.Add("");
+            m_PhysicalPresetOptions.Add(k_AddPresetsLabel);
             m_PhysicalPresetOptions.Add(k_EditPresetsLabel);
         }
 
@@ -93,7 +94,7 @@ namespace Cinemachine.Editor
             // Populate the foldout
             var innerFovControl = foldout.AddChild(new FovPropertyControl(property, false) { style = { flexGrow = 1 }});
 
-            var nearClip = property.FindPropertyRelative(() => s_LensSettingsDef.NearClipPlane);
+            var nearClip = property.FindPropertyRelative(() => s_Def.NearClipPlane);
             foldout.AddChild(new PropertyField(nearClip)).RegisterValueChangeCallback((evt) =>
             {
                 if (!IsOrtho(property) && nearClip.floatValue < 0.01f)
@@ -102,35 +103,16 @@ namespace Cinemachine.Editor
                     property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
                 }
             });
-            foldout.Add(new PropertyField(property.FindPropertyRelative(() => s_LensSettingsDef.FarClipPlane)));
-            foldout.Add(new PropertyField(property.FindPropertyRelative(() => s_LensSettingsDef.Dutch)));
+            foldout.Add(new PropertyField(property.FindPropertyRelative(() => s_Def.FarClipPlane)));
+            foldout.Add(new PropertyField(property.FindPropertyRelative(() => s_Def.Dutch)));
 
-            var physical = foldout.AddChild(new Foldout() { text = "Physical Properties", value = s_PhysicalExapnded });
-            physical.RegisterValueChangedCallback((evt) => 
-            {
-                if (evt.target == physical)
-                    s_PhysicalExapnded = evt.newValue;
-            });
-
-            var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.FocusDistance)));
-
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Iso)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.ShutterSpeed)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Aperture)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BladeCount)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Curvature)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BarrelClipping)));
-            physical.Add(new PropertyField(physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Anamorphism)));
+            var physical = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => s_Def.PhysicalProperties)));
 
             SerializedProperty modeOverrideProperty = null;
             VisualElement modeHelp = null;
             if (!HideModeOverride)
             {
-                modeOverrideProperty = property.FindPropertyRelative(() => s_LensSettingsDef.ModeOverride);
+                modeOverrideProperty = property.FindPropertyRelative(() => s_Def.ModeOverride);
                 modeHelp = foldout.AddChild(
                     new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
                         HelpBoxMessageType.Warning));
@@ -158,6 +140,8 @@ namespace Cinemachine.Editor
                         && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 }
             };
+
+            ux.TrackAnyUserActivity(() => InitPresetOptions());
 
             return ux;
         }
@@ -189,8 +173,8 @@ namespace Cinemachine.Editor
                 style.flexDirection = FlexDirection.Row;
 
                 m_LensProperty = property;
-                var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
-                m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize);
+                var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
+                m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
 
                 m_Control = Contents.AddChild(new FloatField("") { style = {flexBasis = 20, flexGrow = 2, marginLeft = 0}});
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
@@ -216,7 +200,7 @@ namespace Cinemachine.Editor
                 {
                     case Modes.Ortho:
                     {
-                        var orthoProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.OrthographicSize);
+                        var orthoProp = m_LensProperty.FindPropertyRelative(() => s_Def.OrthographicSize);
                         orthoProp.floatValue = evt.newValue;
                         orthoProp.serializedObject.ApplyModifiedProperties();
                         break;
@@ -224,13 +208,12 @@ namespace Cinemachine.Editor
                     case Modes.Physical:
                     {
                         // Convert and clamp
-                        var sensorHeight = m_SensorSizeProperty.vector2Value.y;
-                        var vfov = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, evt.newValue), sensorHeight);
+                        var vfov = FocalLengthToFov(evt.newValue);
                         vfov = Mathf.Clamp(vfov, 1, 179);
-                        m_Control.SetValueWithoutNotify(Camera.FieldOfViewToFocalLength(vfov, sensorHeight));
+                        m_Control.SetValueWithoutNotify(FovToFocalLength(vfov));
 
                         // Push to property
-                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                         fovProp.floatValue = vfov;
                         fovProp.serializedObject.ApplyModifiedProperties();
                         break;
@@ -246,7 +229,7 @@ namespace Cinemachine.Editor
                             newValue = Camera.HorizontalToVerticalFieldOfView(newValue, Aspect(m_LensProperty));
 
                         // Push to property
-                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                         fovProp.floatValue = newValue;
                         fovProp.serializedObject.ApplyModifiedProperties();
                         break;
@@ -261,24 +244,32 @@ namespace Cinemachine.Editor
                 {
                     case Modes.Ortho:
                     {
-                        var orthoProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.OrthographicSize);
+                        var orthoProp = m_LensProperty.FindPropertyRelative(() => s_Def.OrthographicSize);
                         m_Control.SetValueWithoutNotify(orthoProp.floatValue);
                         break;
                     }
                     case Modes.Physical:
                     {
                         // Convert to display FolcalLength units
-                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
-                        var v = Camera.FieldOfViewToFocalLength(fovProp.floatValue, m_SensorSizeProperty.vector2Value.y);
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
+                        var v = FovToFocalLength(fovProp.floatValue);
                         m_Control.SetValueWithoutNotify(v);
-                        SyncPhysicalPreset();
+
+                        // Sync the presets
+                        var presets = CinemachineLensPresets.InstanceIfExists;
+                        var index = presets == null ? -1 : presets.GetMatchingPhysicalPreset(new ()
+                        {
+                            FocalLength = v,
+                            PhysicalProperties = ReadPhysicalSettings()
+                        });
+                        m_Presets.SetValueWithoutNotify(index < 0 ? string.Empty : presets.PhysicalPresets[index].Name);
                         break;
                     }
                     case Modes.VFOV:
                     case Modes.HFOV:
                     {
                         // Convert to display FOV units
-                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                         var v = fovProp.floatValue;
                         if (mode == Modes.HFOV)
                             v = Camera.VerticalToHorizontalFieldOfView(v, Aspect(m_LensProperty));
@@ -286,7 +277,7 @@ namespace Cinemachine.Editor
 
                         // Sync the presets
                         var presets = CinemachineLensPresets.InstanceIfExists;
-                        var index = presets == null ? -1 : presets.GetMatchingPreset(m_Control.value);
+                        var index = presets == null ? -1 : presets.GetMatchingPreset(v);
                         m_Presets.SetValueWithoutNotify(index < 0 ? string.Empty : presets.Presets[index].Name);
                         break;
                     }
@@ -303,7 +294,7 @@ namespace Cinemachine.Editor
                         var text = "O";
                         if (ShortLabel.text != text)
                         {
-                            var orthoProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.OrthographicSize);
+                            var orthoProp = m_LensProperty.FindPropertyRelative(() => s_Def.OrthographicSize);
                             ShortLabel.text = text;
                             Label.text = orthoProp.displayName;
                             Label.tooltip = m_Control.tooltip = ShortLabel.tooltip = orthoProp.tooltip;
@@ -316,7 +307,7 @@ namespace Cinemachine.Editor
                         var text = "F";
                         if (ShortLabel.text != text)
                         {
-                            var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                            var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                             ShortLabel.text = text;
                             Label.text = ShortLabel.tooltip = "Focal Length";
                             Label.tooltip = m_Control.tooltip = fovProp.tooltip;
@@ -330,7 +321,7 @@ namespace Cinemachine.Editor
                         var text = "H";
                         if (ShortLabel.text != text)
                         {
-                            var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                            var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                             ShortLabel.text = text;
                             Label.text = ShortLabel.tooltip = "Horizontal FOV";
                             Label.tooltip = m_Control.tooltip = fovProp.tooltip;
@@ -344,7 +335,7 @@ namespace Cinemachine.Editor
                         var text = "V";
                         if (ShortLabel.text != text)
                         {
-                            var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                            var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                             ShortLabel.text = text;
                             Label.text = ShortLabel.tooltip = "Vertical FOV";
                             Label.tooltip = m_Control.tooltip = fovProp.tooltip;
@@ -356,34 +347,60 @@ namespace Cinemachine.Editor
                 }
             }
 
+            float FocalLengthToFov(float focal) => Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, focal), m_SensorSizeProperty.vector2Value.y);
+            float FovToFocalLength(float vfov) => Camera.FieldOfViewToFocalLength(vfov, m_SensorSizeProperty.vector2Value.y);
+
             void OnPresetValueChanged(ChangeEvent<string> evt)
             {
+                bool isPhysical = GetLensMode() == Modes.Physical;
+                var presets = CinemachineLensPresets.Instance;
+                if (presets == null)
+                {
+                    m_Presets.SetValueWithoutNotify(string.Empty);
+                    return;  // user cancelled
+                }
+
                 // Edit the presets assets if desired
                 if (evt.newValue == k_EditPresetsLabel)
-                    Selection.activeObject = CinemachineLensPresets.Instance;
+                {
+                    Selection.activeObject = presets;
+                    m_Presets.SetValueWithoutNotify(string.Empty);
+                }
+                else if (evt.newValue == k_AddPresetsLabel)
+                {
+                    Selection.activeObject = presets;
+                    Undo.RecordObject(presets, "add preset");
+                    if (isPhysical)
+                    {
+                        presets.PhysicalPresets.Add(new ()
+                        {
+                            Name = $"Preset {presets.PhysicalPresets.Count + 1}",
+                            FocalLength = m_Control.value,
+                            PhysicalProperties = ReadPhysicalSettings()
+                        });
+                    }
+                    else
+                    {
+                        presets.Presets.Add(new ()
+                        {
+                            Name = $"Preset {presets.Presets.Count + 1}",
+                            FieldOfView = m_Control.value,
+                        });
+                    }
+                    m_Presets.SetValueWithoutNotify(string.Empty);
+                }
                 else 
                 {
                     // Apply the preset
-                    var fovProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
-                    if (GetLensMode() == Modes.Physical)
+                    var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
+                    if (isPhysical)
                     {
                         var index = CinemachineLensPresets.Instance.GetPhysicalPresetIndex(evt.newValue);
                         if (index >= 0)
                         {
                             var v = CinemachineLensPresets.Instance.PhysicalPresets[index];
-                            fovProp.floatValue = Camera.FocalLengthToFieldOfView(
-                                Mathf.Max(0.01f, v.FocalLength), m_SensorSizeProperty.vector2Value.y);
-                            var physicalProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue = (int)v.PhysicalProperties.GateFit;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize).vector2Value = v.PhysicalProperties.SensorSize;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift).vector2Value = v.PhysicalProperties.LensShift;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Iso).intValue = v.PhysicalProperties.Iso;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.ShutterSpeed).floatValue = v.PhysicalProperties.ShutterSpeed;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Aperture).floatValue = v.PhysicalProperties.Aperture;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BladeCount).intValue = v.PhysicalProperties.BladeCount;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Curvature).vector2Value = v.PhysicalProperties.Curvature;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BarrelClipping).floatValue = v.PhysicalProperties.BarrelClipping;
-                            physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Anamorphism).floatValue = v.PhysicalProperties.Anamorphism;
+                            fovProp.floatValue = FocalLengthToFov(v.FocalLength);
+                            WritePhysicalSettings(v.PhysicalProperties);
                             m_LensProperty.serializedObject.ApplyModifiedProperties();
                         }
                     }
@@ -392,42 +409,47 @@ namespace Cinemachine.Editor
                         var index = CinemachineLensPresets.Instance.GetPresetIndex(evt.newValue);
                         if (index >= 0)
                         {
-                            fovProp.floatValue = CinemachineLensPresets.Instance.Presets[index].FieldOfView;
+                            var v = CinemachineLensPresets.Instance.Presets[index].FieldOfView;
+                            if (GetLensMode() == Modes.HFOV)
+                                v = Camera.HorizontalToVerticalFieldOfView(v, Aspect(m_LensProperty));
+                            fovProp.floatValue = v;
                             fovProp.serializedObject.ApplyModifiedProperties();
                         }
                     }
                 }
             }
 
-            void SyncPhysicalPreset()
+            LensSettings.PhysicalSettings ReadPhysicalSettings()
             {
-                var v = string.Empty;
-                var presets = CinemachineLensPresets.InstanceIfExists;
-                if (presets != null)
+                var p = m_LensProperty.FindPropertyRelative(() => s_Def.PhysicalProperties);
+                return new ()
                 {
-                    var physicalProp = m_LensProperty.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
-                    CinemachineLensPresets.PhysicalPreset p = new ()
-                    {
-                        FocalLength = m_Control.value,
-                        PhysicalProperties = new ()
-                        {
-                            GateFit = (Camera.GateFitMode)physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue,
-                            SensorSize = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize).vector2Value,
-                            LensShift = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift).vector2Value,
-                            Iso = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Iso).intValue,
-                            ShutterSpeed = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.ShutterSpeed).floatValue,
-                            Aperture = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Aperture).floatValue,
-                            BladeCount = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BladeCount).intValue,
-                            Curvature = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Curvature).vector2Value,
-                            BarrelClipping = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BarrelClipping).floatValue,
-                            Anamorphism =physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Anamorphism).floatValue
-                        }
-                    };
-                    var index = presets.GetMatchingPhysicalPreset(p);
-                    if (index >= 0)
-                        v = CinemachineLensPresets.Instance.PhysicalPresets[index].Name;
-                }
-                m_Presets.SetValueWithoutNotify(v);
+                    GateFit = (Camera.GateFitMode)p.FindPropertyRelative(() => s_Def.PhysicalProperties.GateFit).intValue,
+                    SensorSize = p.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize).vector2Value,
+                    LensShift = p.FindPropertyRelative(() => s_Def.PhysicalProperties.LensShift).vector2Value,
+                    Iso = p.FindPropertyRelative(() => s_Def.PhysicalProperties.Iso).intValue,
+                    ShutterSpeed = p.FindPropertyRelative(() => s_Def.PhysicalProperties.ShutterSpeed).floatValue,
+                    Aperture = p.FindPropertyRelative(() => s_Def.PhysicalProperties.Aperture).floatValue,
+                    BladeCount = p.FindPropertyRelative(() => s_Def.PhysicalProperties.BladeCount).intValue,
+                    Curvature = p.FindPropertyRelative(() => s_Def.PhysicalProperties.Curvature).vector2Value,
+                    BarrelClipping = p.FindPropertyRelative(() => s_Def.PhysicalProperties.BarrelClipping).floatValue,
+                    Anamorphism =p.FindPropertyRelative(() => s_Def.PhysicalProperties.Anamorphism).floatValue
+                };
+            }
+
+            void WritePhysicalSettings(in LensSettings.PhysicalSettings s)
+            {
+                var p = m_LensProperty.FindPropertyRelative(() => s_Def.PhysicalProperties);
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.GateFit).intValue = (int)s.GateFit;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize).vector2Value = s.SensorSize;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.LensShift).vector2Value = s.LensShift;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.Iso).intValue = s.Iso;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.ShutterSpeed).floatValue = s.ShutterSpeed;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.Aperture).floatValue = s.Aperture;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.BladeCount).intValue = s.BladeCount;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.Curvature).vector2Value = s.Curvature;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.BarrelClipping).floatValue = s.BarrelClipping;
+                p.FindPropertyRelative(() => s_Def.PhysicalProperties.Anamorphism).floatValue = s.Anamorphism;
             }
         }
 
@@ -498,12 +520,12 @@ namespace Cinemachine.Editor
         {
             if (m_Snapshot.IsOrtho)
                 EditorGUI.PropertyField(
-                    rect, property.FindPropertyRelative(() => s_LensSettingsDef.OrthographicSize), label);
+                    rect, property.FindPropertyRelative(() => s_Def.OrthographicSize), label);
             else if (m_Snapshot.IsPhysical)
                 DrawFocalLengthControl(rect, property, label);
             else
             {
-                var FOVProperty = property.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+                var FOVProperty = property.FindPropertyRelative(() => s_Def.FieldOfView);
                 float aspect = m_Snapshot.Aspect;
 
                 float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 3;
@@ -542,12 +564,12 @@ namespace Cinemachine.Editor
         void DrawFocalLengthControl(Rect rect, SerializedProperty property, GUIContent label)
         {
             const float hSpace = 2;
-            var FOVProperty = property.FindPropertyRelative(() => s_LensSettingsDef.FieldOfView);
+            var FOVProperty = property.FindPropertyRelative(() => s_Def.FieldOfView);
             float dropdownWidth = (rect.width - EditorGUIUtility.labelWidth) / 4;
             rect.width -= dropdownWidth + hSpace;
 
-            var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
-            var sensorSizeProp = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize);
+            var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
+            var sensorSizeProp = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
 
             float f = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, sensorSizeProp.vector2Value.y);
             EditorGUI.BeginProperty(rect, label, FOVProperty);
@@ -568,16 +590,16 @@ namespace Cinemachine.Editor
                     FocalLength = Camera.FieldOfViewToFocalLength(FOVProperty.floatValue, sensorSizeProp.vector2Value.y),
                     PhysicalProperties = new ()
                     {
-                        GateFit = (Camera.GateFitMode)physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue,
-                        SensorSize = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize).vector2Value,
-                        LensShift = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift).vector2Value,
-                        Iso = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Iso).intValue,
-                        ShutterSpeed = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.ShutterSpeed).floatValue,
-                        Aperture = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Aperture).floatValue,
-                        BladeCount = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BladeCount).intValue,
-                        Curvature = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Curvature).vector2Value,
-                        BarrelClipping = physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BarrelClipping).floatValue,
-                        Anamorphism =physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Anamorphism).floatValue
+                        GateFit = (Camera.GateFitMode)physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.GateFit).intValue,
+                        SensorSize = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize).vector2Value,
+                        LensShift = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.LensShift).vector2Value,
+                        Iso = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Iso).intValue,
+                        ShutterSpeed = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.ShutterSpeed).floatValue,
+                        Aperture = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Aperture).floatValue,
+                        BladeCount = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.BladeCount).intValue,
+                        Curvature = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Curvature).vector2Value,
+                        BarrelClipping = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.BarrelClipping).floatValue,
+                        Anamorphism =physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Anamorphism).floatValue
                     }
                 };
                 preset = presets.GetMatchingPhysicalPreset(p);
@@ -593,16 +615,16 @@ namespace Cinemachine.Editor
             {
                 var v = presets.PhysicalPresets[selection];
                 FOVProperty.floatValue = Camera.FocalLengthToFieldOfView(Mathf.Max(0.01f, v.FocalLength), sensorSizeProp.vector2Value.y);
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit).intValue = (int)v.PhysicalProperties.GateFit;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize).vector2Value = v.PhysicalProperties.SensorSize;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift).vector2Value = v.PhysicalProperties.LensShift;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Iso).intValue = v.PhysicalProperties.Iso;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.ShutterSpeed).floatValue = v.PhysicalProperties.ShutterSpeed;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Aperture).floatValue = v.PhysicalProperties.Aperture;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BladeCount).intValue = v.PhysicalProperties.BladeCount;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Curvature).vector2Value = v.PhysicalProperties.Curvature;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BarrelClipping).floatValue = v.PhysicalProperties.BarrelClipping;
-                physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Anamorphism).floatValue = v.PhysicalProperties.Anamorphism;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.GateFit).intValue = (int)v.PhysicalProperties.GateFit;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize).vector2Value = v.PhysicalProperties.SensorSize;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.LensShift).vector2Value = v.PhysicalProperties.LensShift;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Iso).intValue = v.PhysicalProperties.Iso;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.ShutterSpeed).floatValue = v.PhysicalProperties.ShutterSpeed;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Aperture).floatValue = v.PhysicalProperties.Aperture;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.BladeCount).intValue = v.PhysicalProperties.BladeCount;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Curvature).vector2Value = v.PhysicalProperties.Curvature;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.BarrelClipping).floatValue = v.PhysicalProperties.BarrelClipping;
+                physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Anamorphism).floatValue = v.PhysicalProperties.Anamorphism;
                 property.serializedObject.ApplyModifiedProperties();
             }
         }
@@ -640,7 +662,7 @@ namespace Cinemachine.Editor
                 DrawFOVControl(rect, property, fovLabel);
 
                 rect.y += rect.height + vSpace;
-                var nearClip = property.FindPropertyRelative(() => s_LensSettingsDef.NearClipPlane);
+                var nearClip = property.FindPropertyRelative(() => s_Def.NearClipPlane);
                 EditorGUI.PropertyField(rect, nearClip);
                 if (!m_Snapshot.IsOrtho && nearClip.floatValue < 0.01f)
                 {
@@ -648,44 +670,43 @@ namespace Cinemachine.Editor
                     property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
                 }
                 rect.y += rect.height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => s_LensSettingsDef.FarClipPlane));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => s_Def.FarClipPlane));
 
                 rect.y += rect.height + vSpace;
-                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => s_LensSettingsDef.Dutch));
+                EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => s_Def.Dutch));
 
                 if (m_Snapshot.IsPhysical)
                 {
-                    var physicalProp = property.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties);
+                    var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
                     rect.y += rect.height + vSpace;
-                    s_PhysicalExapnded = EditorGUI.Foldout(rect, s_PhysicalExapnded, PhysicalPropertiesLabel, true);
-
-                    if (s_PhysicalExapnded)
+                    physicalProp.isExpanded = EditorGUI.Foldout(rect, physicalProp.isExpanded, physicalProp.displayName, true);
+                    if (physicalProp.isExpanded)
                     {
                         ++EditorGUI.indentLevel;
 
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.GateFit));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.GateFit));
 
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.SensorSize));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize));
 
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.LensShift));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.LensShift));
 
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Iso));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Iso));
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.ShutterSpeed));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.ShutterSpeed));
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Aperture));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Aperture));
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BladeCount));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.BladeCount));
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Curvature));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Curvature));
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.BarrelClipping));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.BarrelClipping));
                         rect.y += rect.height + vSpace;
-                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_LensSettingsDef.PhysicalProperties.Anamorphism));
+                        EditorGUI.PropertyField(rect, physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.Anamorphism));
 
                         --EditorGUI.indentLevel;
                     }
@@ -702,7 +723,7 @@ namespace Cinemachine.Editor
                         EditorGUI.HelpBox(r, AdvancedHelpboxMessage, MessageType.Info);
 
                         rect.y += r.height + vSpace;
-                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => s_LensSettingsDef.ModeOverride));
+                        EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => s_Def.ModeOverride));
                         --EditorGUI.indentLevel;
                     }
                 }
@@ -723,10 +744,9 @@ namespace Cinemachine.Editor
             if (m_Snapshot.IsPhysical)
             {
                 numLines += 1;
-                if (s_PhysicalExapnded)
-                {
+                var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
+                if (physicalProp.isExpanded)
                     numLines += 10;
-                }
             }
             if (!HideModeOverride)
             {
