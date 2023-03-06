@@ -29,8 +29,8 @@ namespace Tests.Runtime
             m_Source = CreateGameObject("A", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
             m_Target = CreateGameObject("B", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
 #endif
-            m_Source.Priority = 10;
-            m_Target.Priority = 15;
+            m_Source.Priority.Value = 10;
+            m_Target.Priority.Value = 15;
             m_Source.enabled = true;
             m_Target.enabled = false;
             m_Source.transform.position = Vector3.zero;

@@ -962,7 +962,8 @@ namespace Cinemachine
         /// <summary>Returns true if camera is on a channel that is handles by this Brain.</summary>
         /// <param name="vcam">The camera to check</param>
         /// <returns></returns>
-        public bool IsValidChannel(CinemachineVirtualCameraBase vcam) => vcam != null && ((uint)vcam.GetChannel() & (uint)ChannelMask) != 0;
+        public bool IsValidChannel(CinemachineVirtualCameraBase vcam) 
+            => vcam != null && ((uint)vcam.OutputChannel.Value & (uint)ChannelMask) != 0;
 
         /// <summary>
         /// Get the highest-priority Enabled ICinemachineCamera

@@ -80,7 +80,8 @@ namespace Cinemachine.Editor
 
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Priority));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.OutputChannel));
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 

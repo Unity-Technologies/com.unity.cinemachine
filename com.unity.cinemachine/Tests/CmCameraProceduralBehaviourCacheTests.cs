@@ -28,7 +28,7 @@ namespace Tests
             base.SetUp();
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_CmCamera = CreateGameObject("CinemachineCamera", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
-            m_CmCamera.Priority = 100;
+            m_CmCamera.Priority.Value = 100;
             
             s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
                 typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 

@@ -17,7 +17,7 @@ namespace Cinemachine.Editor
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             var a = (FoldoutWithEnabledButtonAttribute)attribute;
-            InspectorUtility.EnabledFoldout(rect, property, a.EnabledPropertyName, a.ToggleDisabledText);
+            InspectorUtility.EnabledFoldout(rect, property, a.EnabledPropertyName);
         }
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
@@ -58,12 +58,61 @@ namespace Cinemachine.Editor
                     foldout.Add(new PropertyField(childProperty));
                 childProperty.NextVisible(false);
             }
-
-            // toggle.text is to the right side of the checkbox
-            foldout.TrackPropertyWithInitialCallback(enabledProp, (p) => 
-                foldoutToggle.text = p.boolValue ? null : a.ToggleDisabledText);
-
             return foldout;
+        }
+    }
+
+
+    [CustomPropertyDrawer(typeof(EnabledPropertyAttribute))]
+    class EnabledPropertyPropertyDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
+        {
+            var a = (EnabledPropertyAttribute)attribute;
+            InspectorUtility.EnabledFoldoutSingleLine(rect, property, a.EnabledPropertyName, a.ToggleDisabledText);
+        }
+
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var a = (EnabledPropertyAttribute)attribute;
+            var enabledProp = property.FindPropertyRelative(a.EnabledPropertyName);
+            if (enabledProp == null)
+                return new PropertyField(property);
+
+            var row = InspectorUtility.PropertyRow(enabledProp, out var enabledField, property.displayName);
+            enabledField.style.flexBasis = InspectorUtility.SingleLineHeight;
+            enabledField.style.flexGrow = 0;
+            enabledField.style.alignSelf = Align.Center;
+            enabledField.style.marginTop = 2;
+            Label disabledText = null;
+            if (!string.IsNullOrEmpty(a.ToggleDisabledText))
+                disabledText = row.Contents.AddChild(new Label(a.ToggleDisabledText)
+                    { style = { flexGrow = 0, flexBasis = 0, marginLeft = 3, alignSelf = Align.Center, opacity = 0.5f }});
+
+            // Draw the first property in the struct
+            VisualElement childField = null;
+            var childProperty = property.Copy();
+            var endProperty = childProperty.GetEndProperty();
+            childProperty.NextVisible(true);
+            while (childField == null && !SerializedProperty.EqualContents(childProperty, endProperty))
+            {
+                if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                {
+                    childField = row.Contents.AddChild(
+                        new InspectorUtility.CompactPropertyField(childProperty, "") 
+                        { style = { flexGrow = 1, marginTop = 0, marginBottom = 0 }});
+                    row.Label.AddPropertyDragger(childProperty, childField);
+                }
+                childProperty.NextVisible(false);
+            }
+
+            row.TrackPropertyWithInitialCallback(enabledProp, (p) => 
+            {
+                childField?.SetVisible(p.boolValue);
+                disabledText?.SetVisible(!p.boolValue);
+            });
+
+            return row;
         }
     }
 }

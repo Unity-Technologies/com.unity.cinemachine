@@ -150,7 +150,8 @@ namespace Cinemachine.Editor
             }
             BeginInspector();
             DrawNonExcludedHeaderInInspector();
-            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Priority));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.OutputChannel));
             DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));

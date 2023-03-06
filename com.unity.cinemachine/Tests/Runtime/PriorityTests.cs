@@ -39,7 +39,7 @@ namespace Tests.Runtime
             for (var i = 0; i < priorities.Length; ++i)
             {
                 cmCameras.Add(CreateGameObject("CM Vcam " + i, typeof(CinemachineCamera)).GetComponent<CinemachineCamera>());
-                cmCameras[i].Priority = priorities[i];
+                cmCameras[i].Priority.Value = priorities[i];
             }
             yield return null;
 
