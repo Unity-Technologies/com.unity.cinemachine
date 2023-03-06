@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Samples
         void Awake()
         {
             m_VirtualCamera = GetComponent<CinemachineVirtualCamera>();
-            m_OriginalOrthoSize = m_VirtualCamera.m_Lens.OrthographicSize;
+            m_OriginalOrthoSize = m_VirtualCamera.Lens.OrthographicSize;
 
 #if UNITY_EDITOR
             // This code shows how to play nicely with the VirtualCamera's SaveDuringPlay functionality
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine.Samples
         
         void RestoreOriginalOrthographicSize()
         {
-            m_VirtualCamera.m_Lens.OrthographicSize = m_OriginalOrthoSize;
+            m_VirtualCamera.Lens.OrthographicSize = m_OriginalOrthoSize;
         }
 #endif
 
@@ -49,8 +49,8 @@ namespace Unity.Cinemachine.Samples
         void Update()
         {
 #if ENABLE_LEGACY_INPUT_MANAGER
-            float zoom = m_VirtualCamera.m_Lens.OrthographicSize + Input.mouseScrollDelta.y * ZoomMultiplier;
-            m_VirtualCamera.m_Lens.OrthographicSize = Mathf.Clamp(zoom, MinZoom, MaxZoom);
+            float zoom = m_VirtualCamera.Lens.OrthographicSize + Input.mouseScrollDelta.y * ZoomMultiplier;
+            m_VirtualCamera.Lens.OrthographicSize = Mathf.Clamp(zoom, MinZoom, MaxZoom);
 #else
             InputSystemHelper.EnableBackendsWarningMessage();
 #endif

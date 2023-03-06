@@ -75,8 +75,11 @@ namespace Unity.Cinemachine
     /// Property applied to LensSetting properties.  
     /// Will cause the property drawer to hide the ModeOverride setting.
     /// </summary>
-    public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute { }
+    public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute {}
 
+    /// <summary>Property to display a SensorSize field</summary>
+    public sealed class SensorSizePropertyAttribute : PropertyAttribute {}
+    
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
     

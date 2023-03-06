@@ -170,7 +170,7 @@ namespace Unity.Cinemachine.Editor
             // Shift the guides along with the lens
             if (lens.IsPhysicalCamera)
                 cameraRect.position += new Vector2(
-                    -screenWidth * lens.LensShift.x, screenHeight * lens.LensShift.y);
+                    -screenWidth * lens.PhysicalProperties.LensShift.x, screenHeight * lens.PhysicalProperties.LensShift.y);
 
             return cameraRect;
         }

@@ -80,7 +80,7 @@ namespace Unity.Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.FovToolHandle(cmCam, 
                     new SerializedObject(cmCam).FindProperty(() => cmCam.Lens), 
-                    cmCam.Lens, InspectorUtility.GetUseHorizontalFOV(Target.Lens.SourceCamera));
+                    cmCam.Lens, cmCam.Lens.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {

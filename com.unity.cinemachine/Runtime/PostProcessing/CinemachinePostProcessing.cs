@@ -197,7 +197,7 @@ namespace Unity.Cinemachine
                                 if (focusTarget != null)
                                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
-                            CalculatedFocusDistance = state.Lens.FocusDistance 
+                            CalculatedFocusDistance = state.Lens.PhysicalProperties.FocusDistance 
                                 = dof.focusDistance.value = Mathf.Max(0.01f, focusDistance);
                         }
                     }

@@ -425,16 +425,6 @@ namespace Unity.Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
-        public static bool GetUseHorizontalFOV(Camera camera)
-        {
-            if (camera == null)
-                return false;
-
-            // This should really be a global setting, but for now there is no better way than this!
-            var p = new SerializedObject(camera).FindProperty("m_FOVAxisMode");
-            return (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
-        }
-
         ///==============================================================================================
         ///==============================================================================================
         /// UI Elements utilities
@@ -765,7 +755,7 @@ namespace Unity.Cinemachine.Editor
         /// A row containing a property field.  Suitable for adding widgets nest to the property field.
         /// </summary>
         public static LabeledRow PropertyRow(
-            SerializedProperty property, out VisualElement propertyField, string label = null)
+            SerializedProperty property, out PropertyField propertyField, string label = null)
         {
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
