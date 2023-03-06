@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Unity.Cinemachine;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-namespace Tests.HDRP
+namespace Unity.Cinemachine.Tests.HDRP
 {
      /// <summary>Base class that handles creation and deletion of GameObjects.</summary>
     public class CinemachineHDRPFixtureBase
