@@ -313,7 +313,7 @@ namespace Cinemachine.Editor
         }
 
         public static bool EnabledFoldout(
-            Rect rect, SerializedProperty property, string enabledPropertyName, string disabledToggleLabel,
+            Rect rect, SerializedProperty property, string enabledPropertyName,
             GUIContent label = null)
         {
             var enabledProp = property.FindPropertyRelative(enabledPropertyName);
@@ -325,19 +325,9 @@ namespace Cinemachine.Editor
                 return property.isExpanded;
             }
             rect.height = EditorGUIUtility.singleLineHeight;
-            if (label == null)
-                label = new GUIContent(property.displayName, enabledProp.tooltip);
+            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
             EditorGUI.PropertyField(rect, enabledProp, label);
-            if (!enabledProp.boolValue)
-            {
-                if (!string.IsNullOrEmpty(disabledToggleLabel))
-                {
-                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
-                    var r = rect; r.x += w; r.width -= w;
-                    EditorGUI.LabelField(r, disabledToggleLabel);
-                }
-            }
-            else
+            if (enabledProp.boolValue)
             {
                 ++EditorGUI.indentLevel;
                 var childProperty = property.Copy();
@@ -354,6 +344,58 @@ namespace Cinemachine.Editor
                     childProperty.NextVisible(false);
                 }
                 --EditorGUI.indentLevel;
+            }
+            return enabledProp.boolValue;
+        }
+
+        public static bool EnabledFoldoutSingleLine(
+            Rect rect, SerializedProperty property,
+            string enabledPropertyName, string disabledToggleLabel,
+            GUIContent label = null)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
+            if (enabledProp == null)
+            {
+                EditorGUI.PropertyField(rect, property, true);
+                rect.x += EditorGUIUtility.labelWidth;
+                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
+                return property.isExpanded;
+            }
+            rect.height = EditorGUIUtility.singleLineHeight;
+            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
+            EditorGUI.PropertyField(rect, enabledProp, label);
+            if (!enabledProp.boolValue)
+            {
+                if (!string.IsNullOrEmpty(disabledToggleLabel))
+                {
+                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
+                    var r = rect; r.x += w; r.width -= w;
+                    var oldColor = GUI.color;
+                    GUI.color = new (oldColor.r, oldColor.g, oldColor.g, 0.5f);
+                    EditorGUI.LabelField(r, disabledToggleLabel);
+                    GUI.color = oldColor;
+                }
+            }
+            else
+            {
+                rect.width -= EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+                rect.x += EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+
+                var childProperty = property.Copy();
+                var endProperty = childProperty.GetEndProperty();
+                childProperty.NextVisible(true);
+                while (!SerializedProperty.EqualContents(childProperty, endProperty))
+                {
+                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                    {
+                        var oldWidth = EditorGUIUtility.labelWidth;
+                        EditorGUIUtility.labelWidth = 6; // for dragging
+                        EditorGUI.PropertyField(rect, childProperty, new GUIContent(" "));
+                        EditorGUIUtility.labelWidth = oldWidth;
+                        break; // Draw only the first property
+                    }
+                    childProperty.NextVisible(false);
+                }
             }
             return enabledProp.boolValue;
         }
@@ -716,7 +758,7 @@ namespace Cinemachine.Editor
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 if (Label != null)
-                    Label.AddPropertyDragger(property, Field);
+                    AddPropertyDragger(Label, property, Field);
             }
         }
 

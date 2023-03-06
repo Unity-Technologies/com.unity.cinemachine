@@ -46,7 +46,7 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        [FoldoutWithEnabledButton(toggleText: " (using default)")]
+        [EnabledProperty(toggleText: "(using default)")]
         public PrioritySettings Priority = new ();
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Cinemachine
         [NoSaveDuringPlay]
         [Tooltip("The output channel behaves like Unity layers.  Use it to filter the output of CinemachineCameras "
             + "to different CinemachineBrains, for instance in a multi-screen environemnt.")]
-        [FoldoutWithEnabledButton(toggleText: " (using default)")]
+        [EnabledProperty(toggleText: "(using default)")]
         public OutputChannel OutputChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
