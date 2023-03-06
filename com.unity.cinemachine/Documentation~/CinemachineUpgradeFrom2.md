@@ -29,7 +29,7 @@ One thing to note: the new `CinemachineCamera` class that replaces `CinemachineV
 Namespaces have changed to be more consistent with Unity standards.
 - `Cinemachine` is now `Unity.Cinemachine`
 - `Cinemachine.Editor` is now `Unity.Cinemachine.Editor`
-- `Cinrmachine.Utility` has been folded into `Unity.Cinemachine`.
+- `Cinemachine.Utility` has been folded into `Unity.Cinemachine`.
 
 ### New Components with Clearer Names
 
