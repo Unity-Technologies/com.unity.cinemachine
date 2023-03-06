@@ -1,12 +1,5 @@
 using UnityEngine;
 using System;
-using UnityEngine.Serialization;
-
-#if CINEMACHINE_HDRP
-    using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_URP
-    using UnityEngine.Rendering.Universal;
-#endif
 
 namespace Cinemachine
 {
@@ -18,11 +11,13 @@ namespace Cinemachine
     public struct LensSettings
     {
         /// <summary>
-        /// This is the camera view in degrees. For cinematic people, a 50mm lens
-        /// on a super-35mm sensor would equal a 19.6 degree FOV
+        /// This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the
+        /// associated camera has its FOV axis setting set to Horizontal, in which case display will 
+        /// be in horizontal degress.  Internally, it is always vertical degrees.  
+        /// For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV.
         /// </summary>
         [RangeSlider(1f, 179f)]
-        [Tooltip("This is the camera view in degrees. Display will be in vertical degress, unless the "
+        [Tooltip("This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the "
             + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
             + "be in horizontal degress.  Internally, it is always vertical degrees.  "
             + "For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
@@ -164,7 +159,6 @@ namespace Cinemachine
             {
                 if (m_SourceCamera == null)
                     return false;
-                PullInheritedPropertiesFromCamera(m_SourceCamera);
                 var p = new UnityEditor.SerializedObject(m_SourceCamera).FindProperty("m_FOVAxisMode");
                 return p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal;
             }
@@ -273,7 +267,6 @@ namespace Cinemachine
                 m_PhysicalFromCamera = camera.usePhysicalProperties;
             }
             m_AspectFromCamera = camera.aspect;
-
 #if UNITY_EDITOR
             m_SourceCamera = camera; // hack because of missing Unity API to get horizontal or vertical fov mode
 #endif

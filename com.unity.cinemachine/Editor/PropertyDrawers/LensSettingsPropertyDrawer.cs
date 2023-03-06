@@ -116,7 +116,8 @@ namespace Cinemachine.Editor
                 modeHelp = foldout.AddChild(
                     new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
                         HelpBoxMessageType.Warning));
-                foldout.Add(new PropertyField(modeOverrideProperty));
+                foldout.AddChild(new PropertyField(modeOverrideProperty)).TrackPropertyValue(
+                    modeOverrideProperty, (p) => InspectorUtility.RepaintGameView());
             }
 
             // GML: This is rather evil.  Is there a better (event-driven) way?
@@ -127,7 +128,7 @@ namespace Cinemachine.Editor
                 if (property.serializedObject.targetObject == null)
                     return; // target deleted
 
-                // UseHorizontalFOV will force an update of lens state values pulled from camera
+                // We need to track the aspect ratio because HFOV display is dependent on it
                 var isHorizontal = UseHorizontalFOV(property);
                 var aspect = Aspect(property);
                 bool aspectChanged = isHorizontal && m_PreviousAspect != aspect;
@@ -146,7 +147,7 @@ namespace Cinemachine.Editor
                         && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 }
             };
-
+            // In case presets asset gets deleted or modified externally
             ux.TrackAnyUserActivity(() => InitPresetOptions());
 
             return ux;
@@ -283,7 +284,7 @@ namespace Cinemachine.Editor
 
                         // Sync the presets
                         var presets = CinemachineLensPresets.InstanceIfExists;
-                        var index = presets == null ? -1 : presets.GetMatchingPreset(v);
+                        var index = presets == null ? -1 : presets.GetMatchingPreset(fovProp.floatValue);
                         m_Presets.SetValueWithoutNotify(index < 0 ? string.Empty : presets.Presets[index].Name);
                         break;
                     }
@@ -381,6 +382,7 @@ namespace Cinemachine.Editor
                     Undo.RecordObject(presets, "add preset");
                     if (isPhysical)
                     {
+                        // Physical presets
                         presets.PhysicalPresets.Add(new ()
                         {
                             Name = $"Preset {presets.PhysicalPresets.Count + 1}",
@@ -390,10 +392,12 @@ namespace Cinemachine.Editor
                     }
                     else
                     {
+                        // Nonphysical presets
+                        var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                         presets.Presets.Add(new ()
                         {
                             Name = $"Preset {presets.Presets.Count + 1}",
-                            FieldOfView = m_Control.value,
+                            VerticalFOV = fovProp.floatValue,
                         });
                     }
                     m_Presets.SetValueWithoutNotify(string.Empty);
@@ -404,27 +408,23 @@ namespace Cinemachine.Editor
                     var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
                     if (isPhysical)
                     {
+                        // Physical presets
                         var index = CinemachineLensPresets.Instance.GetPhysicalPresetIndex(evt.newValue);
                         if (index >= 0)
                         {
                             var v = CinemachineLensPresets.Instance.PhysicalPresets[index];
                             fovProp.floatValue = FocalLengthToFov(v.FocalLength);
                             WritePhysicalSettings(v.PhysicalProperties);
-                            m_LensProperty.serializedObject.ApplyModifiedProperties();
                         }
                     }
                     else
                     {
+                        // Nonphysical presets
                         var index = CinemachineLensPresets.Instance.GetPresetIndex(evt.newValue);
                         if (index >= 0)
-                        {
-                            var v = CinemachineLensPresets.Instance.Presets[index].FieldOfView;
-                            if (GetLensMode() == Modes.HFOV)
-                                v = Camera.HorizontalToVerticalFieldOfView(v, Aspect(m_LensProperty));
-                            fovProp.floatValue = v;
-                            fovProp.serializedObject.ApplyModifiedProperties();
-                        }
+                            fovProp.floatValue = CinemachineLensPresets.Instance.Presets[index].VerticalFOV;
                     }
+                    m_LensProperty.serializedObject.ApplyModifiedProperties();
                 }
             }
 
@@ -462,19 +462,19 @@ namespace Cinemachine.Editor
             }
         }
 
+#if true
         ///===========================================================================
         /// IMGUI IMPLEMENTATION (to be removed) 
         ///===========================================================================
 
-        static readonly GUIContent EditPresetsLabel = new GUIContent("Edit Presets...");
-        static readonly GUIContent HFOVLabel = new GUIContent("Horizontal FOV", "Horizontal Field of View");
-        static readonly GUIContent VFOVLabel = new GUIContent("Vertical FOV", "Vertical Field of View");
-        static readonly GUIContent FocalLengthLabel = new GUIContent("Focal Length", "The length of the lens (in mm)");
-        static readonly GUIContent OrthoSizeLabel = new GUIContent("Ortho Size", "When using an orthographic camera, "
+        static readonly GUIContent EditPresetsLabel = new ("Edit Presets...");
+        static readonly GUIContent HFOVLabel = new ("Horizontal FOV", "Horizontal Field of View");
+        static readonly GUIContent VFOVLabel = new ("Vertical FOV", "Vertical Field of View");
+        static readonly GUIContent FocalLengthLabel = new ("Focal Length", "The length of the lens (in mm)");
+        static readonly GUIContent OrthoSizeLabel = new ("Ortho Size", "When using an orthographic camera, "
             + "this defines the half-height, in world coordinates, of the camera view.");
-        static readonly GUIContent s_EmptyContent = new GUIContent(" ");
-        static readonly GUIContent PhysicalPropertiesLabel = new GUIContent("Physical Properties", "Physical properties of the lens");
-        static readonly GUIContent AdvancedLabel = new GUIContent("Advanced");
+        static readonly GUIContent s_EmptyContent = new (" ");
+        static readonly GUIContent AdvancedLabel = new ("Advanced");
         static readonly string AdvancedHelpboxMessage = "Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect";
 
         static bool s_AdvancedLensExpanded;
@@ -563,7 +563,7 @@ namespace Cinemachine.Editor
                     Selection.activeObject = presets = CinemachineLensPresets.Instance;
                 else if (selection >= 0 && selection < m_Snapshot.m_PresetOptions.Length-1)
                 {
-                    var vfov = presets.Presets[selection].FieldOfView;
+                    var vfov = presets.Presets[selection].VerticalFOV;
                     FOVProperty.floatValue = vfov;
                     property.serializedObject.ApplyModifiedProperties();
                 }
@@ -766,5 +766,6 @@ namespace Cinemachine.Editor
             }
             return lineHeight + numLines * (lineHeight + vSpace);
         }
+#endif
     }
 }

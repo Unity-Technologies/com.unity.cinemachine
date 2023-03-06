@@ -48,11 +48,11 @@ namespace Cinemachine.Editor
                         // Create some sample presets
                         s_Instance.Presets = new()
                         {
-                            new () { Name = "21mm", FieldOfView = 60f },
-                            new () { Name = "35mm", FieldOfView = 38f },
-                            new () { Name = "58mm", FieldOfView = 23f },
-                            new () { Name = "80mm", FieldOfView = 17f },
-                            new () { Name = "125mm", FieldOfView = 10f }
+                            new () { Name = "21mm", VerticalFOV = 60f },
+                            new () { Name = "35mm", VerticalFOV = 38f },
+                            new () { Name = "58mm", VerticalFOV = 23f },
+                            new () { Name = "80mm", VerticalFOV = 17f },
+                            new () { Name = "125mm", VerticalFOV = 10f }
                         };
                         AssetDatabase.CreateAsset(s_Instance, newAssetPath);
                         AssetDatabase.SaveAssets();
@@ -67,9 +67,7 @@ namespace Cinemachine.Editor
         [Serializable]
         public struct Preset
         {
-            /// <summary>
-            /// Name of the preset
-            /// </summary>
+            /// <summary>The name of the preset</summary>
             [Tooltip("Lens Name")]
             [FormerlySerializedAs("m_Name")]
             public string Name;
@@ -82,8 +80,9 @@ namespace Cinemachine.Editor
             [Tooltip("This is the camera view in vertical degrees. For cinematic people, "
                 + " a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
             [FormerlySerializedAs("m_FieldOfView")]
-            public float FieldOfView;
+            public float VerticalFOV;
         }
+
         /// <summary>The array containing Preset definitions for nonphysical cameras</summary>
         [Tooltip("The array containing Preset definitions, for nonphysical cameras")]
         public List<Preset> Presets = new();
@@ -92,9 +91,7 @@ namespace Cinemachine.Editor
         [Serializable]
         public struct PhysicalPreset
         {
-            /// <summary>
-            /// Name of the preset
-            /// </summary>
+            /// <summary>The name of the preset</summary>
             [Tooltip("Lens Name")]
             [FormerlySerializedAs("m_Name")]
             public string Name;
@@ -117,7 +114,7 @@ namespace Cinemachine.Editor
         /// <param name="verticalFOV">Vertical field of view</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
         public int GetMatchingPreset(float verticalFOV) 
-            => Presets.FindIndex(x => Mathf.Approximately(x.FieldOfView, verticalFOV));
+            => Presets.FindIndex(x => Mathf.Approximately(x.VerticalFOV, verticalFOV));
 
         /// <summary>Get the index of the first preset that matches the preset name</summary>
         /// <param name="presetName">Name of the preset</param>
@@ -132,7 +129,7 @@ namespace Cinemachine.Editor
             => PhysicalPresets.FindIndex(x => x.Name == presetName);
 
         /// <summary>Get the index of the physical preset that matches the template</summary>
-        /// <param name="p">Template nolding the preset tsettings.  Name is ignored.</param>
+        /// <param name="p">Template holding the preset tsettings.  Name is ignored.</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
         public int GetMatchingPhysicalPreset(PhysicalPreset p)
         {
