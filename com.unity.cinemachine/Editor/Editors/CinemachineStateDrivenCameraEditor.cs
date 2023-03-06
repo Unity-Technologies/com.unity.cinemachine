@@ -61,7 +61,18 @@ namespace Cinemachine.Editor
                 serializedObject.ApplyModifiedProperties();
             });
 
+            ux.TrackAnyUserActivity(() =>
+            {
+                UpdateTargetStates();
+                layerSel.choices = m_LayerNames;
+                layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);
+                UpdateCameraCandidates();
+                noTargetHelp.SetVisible(Target.AnimatedTarget == null);
+            });
+            
             // GML todo: We use IMGUI for this while we wait for UUM-27687 and UUM-27688 to be fixed
+            UpdateTargetStates();
+            UpdateCameraCandidates();
             ux.AddSpace();
             ux.Add(new IMGUIContainer(() =>
             {
