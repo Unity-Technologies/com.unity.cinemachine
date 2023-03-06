@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
-using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Unity.Cinemachine.Tests.Editor

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Cinemachine;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;

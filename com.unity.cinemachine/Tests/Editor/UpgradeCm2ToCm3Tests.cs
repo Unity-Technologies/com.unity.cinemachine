@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Unity.Cinemachine;
 using Unity.Cinemachine.Editor;
 using NUnit.Framework;
 using UnityEditor;
