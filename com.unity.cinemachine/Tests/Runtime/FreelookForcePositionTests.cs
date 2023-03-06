@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class FreelookForcePositionTests : CinemachineRuntimeFixtureBase

@@ -1,11 +1,10 @@
 #if CINEMACHINE_PHYSICS_2D
 using System.Collections;
-using Unity.Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase

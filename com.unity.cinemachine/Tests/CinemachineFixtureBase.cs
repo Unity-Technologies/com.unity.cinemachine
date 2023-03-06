@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-namespace Tests
+namespace Unity.Cinemachine.Tests
 {
     /// <summary>Base class that handles creation and deletion of GameObjects.</summary>
     public class CinemachineFixtureBase

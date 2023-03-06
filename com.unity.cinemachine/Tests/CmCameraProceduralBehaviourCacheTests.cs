@@ -8,7 +8,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase

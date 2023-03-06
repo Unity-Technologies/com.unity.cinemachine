@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Unity.Cinemachine;
 using UnityEngine.TestTools.Utils;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class UnityVectorExtensionTests

@@ -1,11 +1,10 @@
 #if CINEMACHINE_PHYSICS
 using System.Collections;
-using Unity.Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class RuntimeUtilityTests : CinemachineRuntimeFixtureBase

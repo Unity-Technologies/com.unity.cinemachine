@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 using Unity.Cinemachine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineRuntimeFixtureBase

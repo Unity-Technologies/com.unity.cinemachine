@@ -2,10 +2,9 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using Unity.Cinemachine;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class ClearShotTests : CinemachineRuntimeFixtureBase

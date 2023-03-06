@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase
