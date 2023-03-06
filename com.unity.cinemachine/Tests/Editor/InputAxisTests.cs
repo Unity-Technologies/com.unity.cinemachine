@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using NUnit.Framework;
-using Cinemachine;
 using UnityEngine;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {    
     [TestFixture]
     public class InputAxisTests

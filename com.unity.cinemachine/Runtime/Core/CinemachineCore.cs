@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     internal static class Documentation 
     {

@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace Cinemachine.Utility
+namespace Unity.Cinemachine
 {
     /// <summary>An ad-hoc collection of helpers for reflection, used by Cinemachine
     /// or its editor tools in various places</summary>

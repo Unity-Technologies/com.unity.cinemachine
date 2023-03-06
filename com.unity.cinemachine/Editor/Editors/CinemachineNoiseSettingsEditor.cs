@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditorInternal;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(NoiseSettings))]
     class NoiseSettingsEditor : UnityEditor.Editor

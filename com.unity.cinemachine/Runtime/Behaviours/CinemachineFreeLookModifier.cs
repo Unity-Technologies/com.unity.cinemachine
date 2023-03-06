@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is an add-on for CinemachineCameras containing the OrbitalFollow component.

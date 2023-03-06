@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     internal sealed class CinemachineMixer : PlayableBehaviour
     {

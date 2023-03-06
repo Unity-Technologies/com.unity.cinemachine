@@ -1,8 +1,8 @@
 using NUnit.Framework;
-using Cinemachine.Editor;
+using Unity.Cinemachine.Editor;
 using System.IO;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class ScriptableObjectUtilityTests

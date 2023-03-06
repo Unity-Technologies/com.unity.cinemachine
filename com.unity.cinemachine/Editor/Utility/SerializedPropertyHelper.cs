@@ -1,9 +1,8 @@
 using System;
 using System.Linq.Expressions;
-using Cinemachine.Utility;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helpers for the editor relating to SerializedProperties

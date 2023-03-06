@@ -1,8 +1,7 @@
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a Cinemachine Component in the Body section of the component pipeline.

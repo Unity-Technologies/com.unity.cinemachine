@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 using UnityEngine.Playables;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A multi-purpose script which causes an action to occur when

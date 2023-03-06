@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [InitializeOnLoad]
     static class CinemachineStoryboardMute

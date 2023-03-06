@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
     class CinemachineStateDrivenCameraEditor : UnityEditor.Editor

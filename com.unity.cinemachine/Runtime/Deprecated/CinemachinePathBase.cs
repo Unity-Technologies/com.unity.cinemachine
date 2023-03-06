@@ -1,8 +1,7 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use SplineContainer instead.

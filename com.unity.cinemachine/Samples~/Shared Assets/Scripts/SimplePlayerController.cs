@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Cinemachine.Utility;
 using System;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class SimplePlayerController : MonoBehaviour, IInputAxisSource
     {

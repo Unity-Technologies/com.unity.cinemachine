@@ -1,6 +1,5 @@
 //#define RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
 
-using Cinemachine.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ using UnityEngine.Serialization;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This interface is specifically for Timeline.  Do not use it.

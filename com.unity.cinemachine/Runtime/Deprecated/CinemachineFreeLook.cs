@@ -1,10 +1,9 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineCamera instead.

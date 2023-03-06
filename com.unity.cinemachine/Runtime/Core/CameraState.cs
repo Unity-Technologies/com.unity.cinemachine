@@ -1,8 +1,7 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// The output of the Cinemachine engine for a specific virtual camera.  The information

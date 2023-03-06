@@ -1,9 +1,7 @@
 using System.Collections;
-using Cinemachine;
 using NUnit.Framework;
-using UnityEngine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     /// <summary>
     /// A class that handles creation and deletion of GameObjects, and gets set up for Time Invariant RunTime testing.

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.Splines;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     static class CinemachineMenu
     {

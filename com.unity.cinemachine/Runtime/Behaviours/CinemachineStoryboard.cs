@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that places an image in screen space
@@ -446,7 +446,7 @@ namespace Cinemachine
 }
 #else
 // We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that places an image in screen space

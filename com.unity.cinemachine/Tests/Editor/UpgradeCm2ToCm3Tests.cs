@@ -2,15 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Cinemachine;
-using Cinemachine.Editor;
-using Cinemachine.Utility;
+using Unity.Cinemachine.Editor;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class UpgradeCm2ToCm3Tests : CinemachineFixtureBase

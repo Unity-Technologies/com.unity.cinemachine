@@ -1,9 +1,8 @@
 ﻿using System;
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An extension for CinemachineCamera which post-processes

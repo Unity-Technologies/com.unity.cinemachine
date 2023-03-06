@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 using System.Linq.Expressions;
 using System;
+using Unity.Cinemachine.Editor;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]

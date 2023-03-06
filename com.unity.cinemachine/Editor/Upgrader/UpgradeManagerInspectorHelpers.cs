@@ -3,7 +3,7 @@ using UnityEditor;
 using System;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     static class UpgradeManagerInspectorHelpers
     {

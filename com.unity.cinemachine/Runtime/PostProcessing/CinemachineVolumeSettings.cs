@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module,

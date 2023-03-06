@@ -2,7 +2,7 @@
 using UnityEditor.Timeline;
 using UnityEngine.Timeline;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomTimelineEditor(typeof(CinemachineTrack))]
     class CinemachineTrackEditor : TrackEditor

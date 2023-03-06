@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Splines;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     partial class UpgradeObjectToCm3
     {

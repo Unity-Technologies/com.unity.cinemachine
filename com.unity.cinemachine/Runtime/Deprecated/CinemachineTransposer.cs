@@ -1,8 +1,8 @@
 using UnityEngine;
-using Cinemachine.TargetTracking;
 using System;
+using Unity.Cinemachine.TargetTracking;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineOrbitalFollow instead.

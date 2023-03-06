@@ -2,10 +2,9 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineConfiner2D or CinemachineConfiner3D instead.

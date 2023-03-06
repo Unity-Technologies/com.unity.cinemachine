@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Utility;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Use an instance of this class to draw screen composer guides in the game view.

@@ -1,7 +1,7 @@
 ﻿#if CINEMACHINE_PHYSICS
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that forces the LookAt

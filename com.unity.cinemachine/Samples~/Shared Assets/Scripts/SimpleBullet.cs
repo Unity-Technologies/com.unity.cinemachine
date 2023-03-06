@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class SimpleBullet : MonoBehaviour
     {

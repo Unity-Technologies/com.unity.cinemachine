@@ -2,7 +2,7 @@
 
 using UnityEngine.Playables;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     internal sealed class CinemachineShotPlayable : PlayableBehaviour
     {

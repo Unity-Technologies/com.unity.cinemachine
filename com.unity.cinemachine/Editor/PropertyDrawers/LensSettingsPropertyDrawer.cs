@@ -11,7 +11,7 @@ using UnityEditor.UIElements;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(LensSettingsHideModeOverridePropertyAttribute))]
     class LensSettingsHideModeOverridePropertyDrawer : LensSettingsPropertyDrawer
