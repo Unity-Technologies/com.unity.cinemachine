@@ -43,10 +43,12 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.LookAt);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackedObjectOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
+            ux.AddHeader("Composition");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
+            ux.AddHeader("Target Tracking");
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
 
             return ux;
@@ -89,7 +91,7 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
                     Target.VirtualCamera, 
-                    new SerializedObject(Target).FindProperty(() => Target.TrackedObjectOffset),
+                    new SerializedObject(Target).FindProperty(() => Target.TargetOffset),
                     CinemachineCore.Stage.Aim);
             }
         }
