@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Linq;
 using Object = UnityEngine.Object;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helper for drawing embedded asset editors
@@ -229,7 +229,7 @@ namespace Cinemachine.Editor
             static List<Type> GetAssetTypes(Type baseType)
             {
                 // GML todo: optimize with TypeCache
-                return Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                return ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => baseType.IsAssignableFrom(t) && !t.IsAbstract 
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToList();
             }

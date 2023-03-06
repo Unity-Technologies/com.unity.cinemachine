@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(NoiseSettings))]
     class NoiseSettingsPropertyDrawer : PropertyDrawer

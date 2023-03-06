@@ -1,10 +1,9 @@
 ﻿using UnityEditor;
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System.Linq.Expressions;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// A convenience base class for making inspector editors.

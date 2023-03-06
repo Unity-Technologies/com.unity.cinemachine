@@ -1,10 +1,9 @@
 ﻿using System.Collections;
-using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools.Utils;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class DampingTests

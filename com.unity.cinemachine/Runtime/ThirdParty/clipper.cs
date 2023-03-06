@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
 
   // PRE-COMPILER CONDITIONAL ...

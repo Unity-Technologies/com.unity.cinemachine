@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is an asset that defines a noise profile.  A noise profile is the 

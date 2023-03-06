@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 using System.Linq.Expressions;
 using System;
+using Unity.Cinemachine.Editor;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
@@ -76,7 +75,8 @@ namespace Cinemachine
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
-            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Priority));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.OutputChannel));
             DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_CommonLens));

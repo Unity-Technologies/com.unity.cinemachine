@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class SpawnInRadius : MonoBehaviour
     {

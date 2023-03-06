@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineComposer))]

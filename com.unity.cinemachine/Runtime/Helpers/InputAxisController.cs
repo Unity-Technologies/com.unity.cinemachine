@@ -8,7 +8,7 @@ using UnityEngine.InputSystem.Users;
 using System.Linq;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a behaviour that is used to drive behaviours with IInputAxisSource interface, 

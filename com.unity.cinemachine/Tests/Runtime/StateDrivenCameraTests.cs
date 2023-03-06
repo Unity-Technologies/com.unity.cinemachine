@@ -8,9 +8,9 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine.TestTools;
 
-using Cinemachine;
+using Unity.Cinemachine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineRuntimeFixtureBase

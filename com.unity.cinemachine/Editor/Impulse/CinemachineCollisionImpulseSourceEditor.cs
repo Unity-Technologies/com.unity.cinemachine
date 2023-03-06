@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineCollisionImpulseSource))]

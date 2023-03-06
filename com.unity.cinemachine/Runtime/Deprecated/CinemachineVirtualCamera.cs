@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineCamera instead.
@@ -215,7 +215,8 @@ namespace Cinemachine
         {
             DestroyPipeline();
             UpdateComponentPipeline();
-            PriorityAndChannel = OutputChannel.Default;
+            Priority = new ();
+            OutputChannel = OutputChannel.Default;
         }
 
         /// <summary>

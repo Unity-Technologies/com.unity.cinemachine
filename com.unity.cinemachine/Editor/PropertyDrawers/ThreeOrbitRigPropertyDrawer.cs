@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(Cinemachine3OrbitRig.Orbit))]
     class ThreeOrbitRigPropertyDrawer : PropertyDrawer

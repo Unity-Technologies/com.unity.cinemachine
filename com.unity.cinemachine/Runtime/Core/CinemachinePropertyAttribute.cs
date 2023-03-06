@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Property applied to legacy input axis name specification.  Used for custom drawing in the inspector.
@@ -15,22 +15,30 @@ namespace Cinemachine
     /// <summary>
     /// Draw a foldout with an Enabled toggle that shadows a field inside the foldout
     /// </summary>
-    public sealed class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
+    public class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
     { 
         /// <summary>The name of the field controlling the enabled state</summary>
         public string EnabledPropertyName; 
 
+        /// <summary>Constructor</summary>
+        /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
+        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled") 
+            => EnabledPropertyName = enabledProperty; 
+    }
+
+    /// <summary>
+    /// Draw a FoldoutWithEnabledButtonAttribute on a single line
+    /// </summary>
+    public sealed class EnabledPropertyAttribute : FoldoutWithEnabledButtonAttribute 
+    { 
         /// <summary>Text to display to the right of the toggle button when disabled</summary>
         public string ToggleDisabledText;
 
         /// <summary>Constructor</summary>
         /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
         /// <param name="toggleText">Text to display to the right of the toggle button</param>
-        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled", string toggleText = "") 
-        { 
-            EnabledPropertyName = enabledProperty; 
-            ToggleDisabledText = toggleText;
-        }
+        public EnabledPropertyAttribute(string enabledProperty = "Enabled", string toggleText = "") 
+            : base(enabledProperty) => ToggleDisabledText = toggleText;
     }
 
     /// <summary>

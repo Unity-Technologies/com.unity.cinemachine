@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class ActivateOnKeypress : MonoBehaviour
     {
@@ -25,13 +25,13 @@ namespace Cinemachine.Examples
                 {
                     if (!boosted)
                     {
-                        vcam.Priority += PriorityBoostAmount;
+                        vcam.Priority.Value += PriorityBoostAmount;
                         boosted = true;
                     }
                 }
                 else if (boosted)
                 {
-                    vcam.Priority -= PriorityBoostAmount;
+                    vcam.Priority.Value -= PriorityBoostAmount;
                     boosted = false;
                 }
             }

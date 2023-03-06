@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Cinemachine ClearShot is a "manager camera" that owns and manages a set of
@@ -233,10 +233,10 @@ namespace Cinemachine
                     // Choose the first in the list that is better than the current
                     if (best == null
                         || vcam.State.ShotQuality > best.State.ShotQuality
-                        || (vcam.State.ShotQuality == best.State.ShotQuality && vcam.Priority > best.Priority)
+                        || (vcam.State.ShotQuality == best.State.ShotQuality && vcam.Priority.Value > best.Priority.Value)
                         || (RandomizeChoice && m_RandomizeNow && vcam != m_LiveChild
                             && vcam.State.ShotQuality == best.State.ShotQuality
-                            && vcam.Priority == best.Priority))
+                            && vcam.Priority.Value == best.Priority.Value))
                     {
                         best = vcam;
                     }

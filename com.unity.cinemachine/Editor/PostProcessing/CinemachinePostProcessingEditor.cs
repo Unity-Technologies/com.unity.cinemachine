@@ -5,7 +5,7 @@ using System.IO;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePostProcessing))]
     class CinemachinePostProcessingEditor : UnityEditor.Editor

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// This is a generic Tool class for Cinemachine tools.

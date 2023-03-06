@@ -1,9 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helpers for drawing CmComponentBase or CmExtension inspectors.

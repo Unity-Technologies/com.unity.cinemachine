@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
 
 public class ScriptingExample : MonoBehaviour
@@ -13,12 +13,12 @@ public class ScriptingExample : MonoBehaviour
         // Create a Cinemachine brain on the main camera
         var brain = GameObject.Find("Main Camera").AddComponent<CinemachineBrain>();
         brain.ShowDebugText = true;
-        brain.DefaultBlend.m_Time = 1;
+        brain.DefaultBlend.Time = 1;
 
         // Create a virtual camera that looks at object "Cube", and set some settings
         vcam = new GameObject("VirtualCamera").AddComponent<CinemachineVirtualCamera>();
         vcam.m_LookAt = GameObject.Find("Cube").transform;
-        vcam.m_Priority = 10;
+        vcam.Priority.Value = 10;
         vcam.gameObject.transform.position = new Vector3(0, 1, 0);
 
         // Install a composer.  You can install whatever CinemachineComponents you need,
@@ -31,7 +31,7 @@ public class ScriptingExample : MonoBehaviour
         freelook = new GameObject("FreeLook").AddComponent<CinemachineFreeLook>();
         freelook.m_LookAt = GameObject.Find("Cylinder/Sphere").transform;
         freelook.m_Follow = GameObject.Find("Cylinder").transform;
-        freelook.m_Priority = 11;
+        freelook.Priority.Value = 11;
 
         // You can access the individual rigs in the freeLook if you want.
         // FreeLook rigs come with Composers pre-installed.

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     public class SimpleCarController : MonoBehaviour, IInputAxisSource
     {

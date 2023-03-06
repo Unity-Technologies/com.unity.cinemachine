@@ -1,9 +1,8 @@
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
 using UnityEngine.Splines;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A Cinemachine Camera Body component that constrains camera motion to a Spline.

@@ -1,7 +1,6 @@
-﻿using Cinemachine.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cinemachine Camera that adjusts the framing if the tracking

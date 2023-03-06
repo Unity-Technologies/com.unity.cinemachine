@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is intended to be attached to an empty GameObject,
@@ -73,8 +73,9 @@ namespace Cinemachine
 
         void Reset()
         {
+            Priority = new();
+            OutputChannel = OutputChannel.Default;
             Target = default;
-            PriorityAndChannel = OutputChannel.Default;
             Lens = LensSettings.Default;
         }
 

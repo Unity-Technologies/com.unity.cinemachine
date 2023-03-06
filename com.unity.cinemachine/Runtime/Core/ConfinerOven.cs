@@ -2,10 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     using IntPoint = Point64;
     using IntRect = Rect64;

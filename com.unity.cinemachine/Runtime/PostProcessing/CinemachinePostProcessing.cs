@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is a liaison between Cinemachine and the Post-Processing v2 module.  You must

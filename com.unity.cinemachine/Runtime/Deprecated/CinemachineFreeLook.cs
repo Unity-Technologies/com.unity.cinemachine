@@ -1,10 +1,9 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineCamera instead.
@@ -251,7 +250,8 @@ namespace Cinemachine
         {
             DestroyRigs();
             UpdateRigCache();
-            PriorityAndChannel = OutputChannel.Default;
+            Priority = new ();
+            OutputChannel = OutputChannel.Default;
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
@@ -712,8 +712,8 @@ namespace Cinemachine
                     if (rig == null)
                         continue;
                     rig.m_ExcludedPropertiesInInspector = m_CommonLens
-                        ? new string[] { "m_Script", "Header", "Extensions", "PriorityAndChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
-                        : new string[] { "m_Script", "Header", "Extensions", "PriorityAndChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
+                        ? new string[] { "m_Script", "Header", "Extensions", "Priority", "OutputChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
+                        : new string[] { "m_Script", "Header", "Extensions", "Priority", "OutputChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
                     rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
                 }
 

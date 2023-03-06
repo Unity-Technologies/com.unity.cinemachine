@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use InputAxisController instead.
@@ -120,7 +120,7 @@ namespace Cinemachine
 #else
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is an add-on to override the legacy input system and read input using the

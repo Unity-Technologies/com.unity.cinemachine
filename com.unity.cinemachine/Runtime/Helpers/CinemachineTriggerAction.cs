@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 using UnityEngine.Playables;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A multi-purpose script which causes an action to occur when
@@ -167,7 +167,7 @@ namespace Cinemachine
                             {
                                 if (targetGameObject.TryGetComponent<CinemachineVirtualCameraBase>(out var vcam))
                                 {
-                                    vcam.Priority += BoostAmount;
+                                    vcam.Priority.Value += BoostAmount;
                                     vcam.Prioritize();
                                 }
                                 break;

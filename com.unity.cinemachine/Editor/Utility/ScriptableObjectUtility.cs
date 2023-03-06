@@ -3,7 +3,7 @@ using UnityEditor;
 using System.IO;
 using System;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// This is a collection of utilities surrounding ScriptableObjects

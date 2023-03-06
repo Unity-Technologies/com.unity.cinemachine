@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [InitializeOnLoad]
     class SampleDependencyImporter : IPackageManagerExtension

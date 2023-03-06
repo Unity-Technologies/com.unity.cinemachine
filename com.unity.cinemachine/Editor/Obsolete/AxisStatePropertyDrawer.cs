@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomPropertyDrawer(typeof(AxisState))]

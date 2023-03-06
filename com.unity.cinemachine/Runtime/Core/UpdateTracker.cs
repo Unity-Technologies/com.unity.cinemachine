@@ -3,7 +3,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Attempt to track on what clock transforms get updated

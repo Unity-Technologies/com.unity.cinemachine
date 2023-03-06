@@ -4,10 +4,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Cinemachine;
-using Cinemachine.Utility;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class CmDeoccluderTests : CinemachineRuntimeTimeInvariantFixtureBase
@@ -22,7 +20,7 @@ namespace Tests.Runtime
             base.SetUp();
             
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineDeoccluder)).GetComponent<CinemachineCamera>();
-            m_Vcam.Priority = 100;
+            m_Vcam.Priority.Value = 100;
             m_Vcam.Follow = CreateGameObject("Follow Object").transform;
             var positionComposer = m_Vcam.gameObject.AddComponent<CinemachinePositionComposer>();
             positionComposer.CameraDistance = 5f;
