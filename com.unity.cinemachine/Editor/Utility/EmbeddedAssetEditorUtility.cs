@@ -40,7 +40,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             // Asset field with create button
-            var unassignedUx = ux.AddChild(AssetSelectorWithPresets<T>(property, null, null, null));
+            var unassignedUx = ux.AddChild(AssetSelectorWithPresets<T>(property));
 
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip, value = s_CustomBlendsExpanded };
             foldout.RegisterValueChangedCallback((evt) => 
@@ -52,8 +52,8 @@ namespace Cinemachine.Editor
                 }
             });
             var assignedUx = ux.AddChild(new InspectorUtility.FoldoutWithOverlay(
-                foldout, AssetSelectorWithPresets<T>(property, "", null, null), null) { style = { flexGrow = 1 }});
-            foldout.Add(AssetSelectorWithPresets<T>(property, "Asset", null, null));
+                foldout, AssetSelectorWithPresets<T>(property, ""), null) { style = { flexGrow = 1 }});
+            foldout.Add(AssetSelectorWithPresets<T>(property, "Asset"));
             foldout.AddSpace();
 
             var borderColor = Color.grey;
@@ -120,7 +120,8 @@ namespace Cinemachine.Editor
         /// Create an asset selector widget with a presets popup.
         /// </summary>
         public static VisualElement AssetSelectorWithPresets<T>(
-            SerializedProperty property, string label, string presetsPath, string warningTextIfNull) where T : ScriptableObject
+            SerializedProperty property, string label = null, 
+            string presetsPath = null, string warningTextIfNull = null) where T : ScriptableObject
         {
             var row = InspectorUtility.PropertyRow(property, out var selector, label);
             var contents = row.Contents;
@@ -136,9 +137,8 @@ namespace Cinemachine.Editor
             { 
                 isReadOnly = true,
                 tooltip = property.tooltip, 
-                style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1 }
+                style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1, marginLeft = 0 }
             });
-            presetName.SetEnabled(false);
 
             var defaultName = property.serializedObject.targetObject.name + " " + property.displayName;
             var assetTypes = GetAssetTypes(typeof(T));
