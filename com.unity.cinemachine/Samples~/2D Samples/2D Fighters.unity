@@ -529,7 +529,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -560,12 +560,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
-    Enabled: 1
-    Channel: 1
-    Priority: 10
+  Priority:
+    Enabled: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1093510073}
@@ -578,10 +580,18 @@ MonoBehaviour:
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 0
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -690,16 +700,16 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1242842187797626887
+      rid: 6015593199795437568
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: 1242842187797626887
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 6015593199795437568
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
-        Speed: 9
+        Speed: 8
 --- !u!1 &1093510071
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,16 +888,16 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1242842187797626884
+      rid: 6015593199795437569
   TrackingTarget: {fileID: 1166162573}
   SplinePosition: 59.99
   references:
     version: 2
     RefIds:
-    - rid: 1242842187797626884
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 6015593199795437569
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
-        Speed: 5
+        Speed: 8
 --- !u!1 &1383110408
 GameObject:
   m_ObjectHideFlags: 0
@@ -927,6 +937,9 @@ MonoBehaviour:
     a GroupFraming extension.\n\nWhen a player falls off the lower platform, the
     target group loses sight of them gradually.\n\nFor more details, see the ReduceGroupWeightWhenBelowFloor
     script on the TargetGroup.\n"
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1383110410
 Transform:
   m_ObjectHideFlags: 0
@@ -1254,16 +1267,16 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1242842187797626885
+      rid: 6015593199795437570
   TrackingTarget: {fileID: 0}
   SplinePosition: 40
   references:
     version: 2
     RefIds:
-    - rid: 1242842187797626885
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 6015593199795437570
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
-        Speed: 6
+        Speed: 8
 --- !u!1 &1609023126
 GameObject:
   m_ObjectHideFlags: 0
@@ -1700,16 +1713,16 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1242842187797626886
+      rid: 6015593199795437571
   TrackingTarget: {fileID: 0}
   SplinePosition: 10
   references:
     version: 2
     RefIds:
-    - rid: 1242842187797626886
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: com.unity.cinemachine}
+    - rid: 6015593199795437571
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
-        Speed: 7
+        Speed: 8
 --- !u!1 &1942116116
 GameObject:
   m_ObjectHideFlags: 0
@@ -2004,9 +2017,9 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    m_Style: 1
-    m_Time: 1
-    m_CustomCurve:
+    Style: 1
+    Time: 1
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
@@ -2070,7 +2083,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 17.818977
+  orthographic size: 21.359022
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
