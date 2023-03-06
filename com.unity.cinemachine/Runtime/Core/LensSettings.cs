@@ -150,7 +150,7 @@ namespace Cinemachine
         float m_AspectFromCamera;
 
 #if UNITY_EDITOR
-        // Needed for knowing how to display FOV (horizontal or veritcal)
+        // Needed for knowing how to display FOV (horizontal or vertical)
         // This should really be a global Unity setting, but for now there is no better way than this!
         Camera m_SourceCamera;
         internal bool UseHorizontalFOV

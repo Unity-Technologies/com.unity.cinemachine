@@ -149,7 +149,7 @@ namespace Cinemachine.Editor
                 }
             };
             // In case presets asset gets deleted or modified externally
-            ux.TrackAnyUserActivity(() => InitPresetOptions());
+            ux.TrackAnyUserActivity(InitPresetOptions);
 
             return ux;
         }
