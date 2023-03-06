@@ -155,7 +155,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// Make the complicated FOV widget which works in 4 modes, with preset popups, 
+        /// Make the complicated FOV widget which works in 4 modes, with preset popups 
         /// and optional weird small label display
         /// </summary>
         class FovPropertyControl : InspectorUtility.LabeledRow
@@ -415,7 +415,7 @@ namespace Cinemachine.Editor
                             Undo.RecordObject(presets, "add preset");
                             presets.Presets.Add(new ()
                             {
-                                Name = $"Preset {presets.Presets.Count + 1}",
+                                Name = $"{fovProp.floatValue} preset {presets.Presets.Count + 1}",
                                 VerticalFOV = fovProp.floatValue,
                             });
                         }

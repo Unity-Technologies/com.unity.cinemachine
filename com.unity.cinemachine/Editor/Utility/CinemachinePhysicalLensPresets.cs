@@ -113,8 +113,7 @@ namespace Cinemachine.Editor
                 && Mathf.Approximately(x.PhysicalProperties.Curvature.x, p.PhysicalProperties.Curvature.x)
                 && Mathf.Approximately(x.PhysicalProperties.Curvature.y, p.PhysicalProperties.Curvature.y)
                 && Mathf.Approximately(x.PhysicalProperties.BarrelClipping, p.PhysicalProperties.BarrelClipping)
-                && Mathf.Approximately(x.PhysicalProperties.Anamorphism, p.PhysicalProperties.Anamorphism)
-                );
+                && Mathf.Approximately(x.PhysicalProperties.Anamorphism, p.PhysicalProperties.Anamorphism));
         }
     }
 }
