@@ -1,5 +1,6 @@
 using Cinemachine.Utility;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -37,7 +38,8 @@ namespace Cinemachine
             + "The camera will attempt to frame the point which is the target's position plus "
             + "this offset.  Use it to correct for cases when the target's origin is not the "
             + "point of interest for the camera.")]
-        public Vector3 TrackedObjectOffset;
+        [FormerlySerializedAs("TrackedObjectOffset")]
+        public Vector3 TargetOffset;
 
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
@@ -86,7 +88,7 @@ namespace Cinemachine
 
         void Reset()
         {
-            TrackedObjectOffset = Vector3.zero;
+            TargetOffset = Vector3.zero;
             Lookahead = new LookaheadSettings();
             Damping = Vector3.one;
             CameraDistance = 10;
@@ -224,7 +226,7 @@ namespace Cinemachine
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
             var lens = curState.Lens;
-            var followTargetPosition = FollowTargetPosition + (FollowTargetRotation * TrackedObjectOffset);
+            var followTargetPosition = FollowTargetPosition + (FollowTargetRotation * TargetOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
             if (!previousStateIsValid || VirtualCamera.FollowTargetChanged)
                 m_Predictor.Reset();
