@@ -135,7 +135,7 @@ namespace Cinemachine
             /// <summary>Stretches the sensor to simulate an anamorphic look.  Positive values distort 
             /// the camera vertically, negative values distore the camera horizontally</summary>
             [Tooltip("Stretches the sensor to simulate an anamorphic look.  Positive values distort the "
-                + "camera vertically, negative values distore the camera horizontally")]
+                + "camera vertically, negative values distort the camera horizontally")]
             [RangeSlider(-1, 1)]
             public float Anamorphism;
         }
