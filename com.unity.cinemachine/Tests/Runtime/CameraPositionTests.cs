@@ -18,7 +18,7 @@ namespace Tests.Runtime
             base.SetUp();
             
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
-            m_Vcam.Priority = 100;
+            m_Vcam.Priority.Value = 100;
             m_FollowObject = CreateGameObject("Follow Object");
         }
 

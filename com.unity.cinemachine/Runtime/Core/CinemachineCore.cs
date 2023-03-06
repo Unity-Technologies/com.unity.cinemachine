@@ -183,7 +183,9 @@ namespace Cinemachine
             if (!m_ActiveCamerasAreSorted && m_ActiveCameras.Count > 1)
             {
                 m_ActiveCameras.Sort((x, y) => 
-                    x.Priority == y.Priority ? y.ActivationId.CompareTo(x.ActivationId) : y.Priority.CompareTo(x.Priority));
+                    x.Priority.Value == y.Priority.Value 
+                        ? y.ActivationId.CompareTo(x.ActivationId) 
+                        : y.Priority.Value.CompareTo(x.Priority.Value));
                 m_ActiveCamerasAreSorted = true;
             }
             return m_ActiveCameras[index];
@@ -276,7 +278,7 @@ namespace Cinemachine
                         || IsLive(vcam))
                     {
                         // Skip this vcam if it's not on the channel mask
-                        if (((uint)vcam.GetChannel() & channelMask) != 0)
+                        if (((uint)vcam.OutputChannel.Value & channelMask) != 0)
                             UpdateVirtualCamera(vcam, worldUp, deltaTime);
                     }
                     else if (currentRoundRobin == null
@@ -515,7 +517,7 @@ namespace Cinemachine
                     if (b != null && b.OutputCamera != null && b.IsLive(vcam))
                         return b;
                 }
-                var channel = (uint)vcam.GetChannel();
+                var channel = (uint)vcam.OutputChannel.Value;
                 for (int i = 0; i < numBrains; ++i)
                 {
                     var b = GetActiveBrain(i);

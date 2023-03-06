@@ -157,7 +157,8 @@ namespace Cinemachine.Editor
                 if (evt.target == foldout)
                     s_TransitionsExpanded = evt.newValue;
             });
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.PriorityAndChannel)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
             if (otherProperties != null)
                 foreach (var p in otherProperties)
@@ -522,9 +523,9 @@ namespace Cinemachine.Editor
                 dragger.AddToClassList("unity-base-field__label--with-dragger");
 
                 var so = new SerializedObject(element);
-                var prop = so.FindProperty("PriorityAndChannel");
+                var prop = so.FindProperty("Priority");
                 var enabledProp = prop.FindPropertyRelative("Enabled");
-                var priorityProp = prop.FindPropertyRelative("Priority");
+                var priorityProp = prop.FindPropertyRelative("m_Value");
                 var priorityField = row.AddChild(new IntegerField
                 {
                     value = enabledProp.boolValue ? priorityProp.intValue : 0,

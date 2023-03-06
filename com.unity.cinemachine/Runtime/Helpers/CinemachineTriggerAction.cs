@@ -167,7 +167,7 @@ namespace Cinemachine
                             {
                                 if (targetGameObject.TryGetComponent<CinemachineVirtualCameraBase>(out var vcam))
                                 {
-                                    vcam.Priority += BoostAmount;
+                                    vcam.Priority.Value += BoostAmount;
                                     vcam.Prioritize();
                                 }
                                 break;

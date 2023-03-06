@@ -73,8 +73,9 @@ namespace Cinemachine
 
         void Reset()
         {
+            Priority = new();
+            OutputChannel = OutputChannel.Default;
             Target = default;
-            PriorityAndChannel = OutputChannel.Default;
             Lens = LensSettings.Default;
         }
 

@@ -48,8 +48,9 @@ namespace Cinemachine
         /// <summary>Reset the component to default values.</summary>
         protected virtual void Reset()
         {
+            Priority = new();
+            OutputChannel = OutputChannel.Default;
             DefaultTarget = default;
-            PriorityAndChannel = OutputChannel.Default;
             InvalidateCameraCache();
         }
         
