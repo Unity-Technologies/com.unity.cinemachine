@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>Used to read in CM2 LensSettings</summary>
     [Serializable]
