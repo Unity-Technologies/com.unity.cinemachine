@@ -22,7 +22,7 @@ namespace Cinemachine.Editor
                 HelpBoxMessageType.Warning));
 
             var profileProp = serializedObject.FindProperty(() => Target.NoiseProfile);
-            var profile = ux.AddChild(new PropertyField(profileProp));
+            ux.Add(new PropertyField(profileProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PivotOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AmplitudeGain)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FrequencyGain)));
