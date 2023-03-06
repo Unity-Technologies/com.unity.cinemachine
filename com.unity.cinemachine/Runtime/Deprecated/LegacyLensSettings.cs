@@ -18,8 +18,6 @@ namespace Cinemachine
         public Vector2 m_SensorSize;
         public Vector2 LensShift;
         public float FocusDistance;
-
-#if CINEMACHINE_HDRP
         public int Iso;
         public float ShutterSpeed;
         public float Aperture;
@@ -27,10 +25,10 @@ namespace Cinemachine
         public Vector2 Curvature;
         public float BarrelClipping;
         public float Anamorphism;
-#endif
+
         public LensSettings ToLensSettings()
         {
-            return new LensSettings
+            var lens = new LensSettings
             {
                 FieldOfView = FieldOfView,
                 OrthographicSize = OrthographicSize,
@@ -38,23 +36,22 @@ namespace Cinemachine
                 FarClipPlane = FarClipPlane,
                 Dutch = Dutch,
                 ModeOverride = ModeOverride,
-                PhysicalProperties = new ()
-                {
-                    GateFit = GateFit,
-                    SensorSize = m_SensorSize,
-                    LensShift = LensShift,
-                    FocusDistance = FocusDistance,
-#if CINEMACHINE_HDRP
-                    Iso = Iso,
-                    ShutterSpeed = ShutterSpeed,
-                    Aperture = Aperture,
-                    BladeCount = BladeCount,
-                    Curvature = Curvature,
-                    BarrelClipping = BarrelClipping,
-                    Anamorphism = Anamorphism
-#endif
-                }
+                PhysicalProperties = LensSettings.Default.PhysicalProperties
             };
+            lens.PhysicalProperties.GateFit = GateFit;
+            lens.PhysicalProperties.SensorSize = m_SensorSize;
+            lens.PhysicalProperties.LensShift = LensShift;
+#if CINEMACHINE_HDRP
+            lens.PhysicalProperties.FocusDistance = FocusDistance;
+            lens.PhysicalProperties.Iso = Iso;
+            lens.PhysicalProperties.ShutterSpeed = ShutterSpeed;
+            lens.PhysicalProperties.Aperture = Aperture;
+            lens.PhysicalProperties.BladeCount = BladeCount;
+            lens.PhysicalProperties.Curvature = Curvature;
+            lens.PhysicalProperties.BarrelClipping = BarrelClipping;
+            lens.PhysicalProperties.Anamorphism = Anamorphism;
+#endif
+            return lens;
         }
     }
 }
