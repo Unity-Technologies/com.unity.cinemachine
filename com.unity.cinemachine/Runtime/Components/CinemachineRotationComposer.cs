@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
@@ -24,7 +25,8 @@ namespace Unity.Cinemachine
         /// when the desired area is not in the tracked object's center</summary>
         [Tooltip("Target offset from the target object's center in target-local space. Use this to "
             + "fine-tune the tracking target position when the desired area is not the tracked object's center.")]
-        public Vector3 TrackedObjectOffset;
+        [FormerlySerializedAs("TrackedObjectOffset")]
+        public Vector3 TargetOffset;
 
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
@@ -54,7 +56,7 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            TrackedObjectOffset = Vector3.zero;
+            TargetOffset = Vector3.zero;
             Lookahead = new LookaheadSettings();
             Damping = new Vector2(0.5f, 0.5f);
             Composition = ScreenComposerSettings.Default;
@@ -89,7 +91,7 @@ namespace Unity.Cinemachine
         {
             var pos = lookAt;
             if (LookAtTarget != null)
-                pos += LookAtTargetRotation * TrackedObjectOffset;
+                pos += LookAtTargetRotation * TargetOffset;
 
             if (!Lookahead.Enabled || Lookahead.Time < Epsilon)
                 TrackedPoint = pos;
