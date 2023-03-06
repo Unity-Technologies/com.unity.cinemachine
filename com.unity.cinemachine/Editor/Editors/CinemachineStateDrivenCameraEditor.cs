@@ -78,16 +78,20 @@ namespace Cinemachine.Editor
             this.AddChildCameras(ux, null);
             this.AddExtensionsDropdown(ux);
 
-            ux.TrackAnyUserActivity(() =>
+            UpdateStatesAndCache();
+            ux.TrackAnyUserActivity(UpdateStatesAndCache);
+
+            return ux;
+            
+            // local function
+            void UpdateStatesAndCache()
             {
                 UpdateTargetStates();
                 layerSel.choices = m_LayerNames;
                 layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);
                 UpdateCameraCandidates();
                 noTargetHelp.SetVisible(Target.AnimatedTarget == null);
-            });
-
-            return ux;
+            }
         }
 
         static AnimatorController GetControllerFromAnimator(Animator animator)
