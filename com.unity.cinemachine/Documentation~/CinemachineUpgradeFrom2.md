@@ -7,17 +7,27 @@ While it is possible to upgrade an existing project from CM 2.X, you should thin
 ## Upgrading your Project Step by Step
 Here are the steps to take when upgrading an existing project from CM 2.X:
 1. Back up your project. Don't skip this step.
-1. Get your custom scripts to compile by updating the broken CM field names. For the most part, this just means removing the `m_` prefix. At this point your project should run as before, using the obsolete classes.  **Exception**: If you are using layers to filter cameras into separate split-screen brains, that filtering will stop working until after you have upgraded to CinemachineCameras and switched the filtering over to Channels.
+1. Upgrade your project to CM3.  If you have custom scripts that use the Cinemachine API, they will likely break.  Get them compiling again by doing the following:
+   1. Update the `using Cinemachine` declarations.  The namespaces have been changed to `Unity.Cinemachine`.
+   1. Update the broken CM field names. For the most part, this just means removing the m_ prefix. At this point your project should run as before, using the obsolete classes.
 1. The new `CinemachineCamera` class that replaces `CinemachineVirtualCamera` and `CinemachineFreeLook` inherits from `CinemachineVirtualCameraBase`.  Where possible, replace your script references to use this base class rather than the derived type. If you do this, existing object references will be preserved when the data is upgraded, since the old and new classes all inherit from this same base class.
 1. Upgrade the project data by running the Cinemachine Upgrader. You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLook inspector.
 1. Because CM component types have changed, you will have to manually go through your scripts and update any specific references to be to the new type. The console log is your friend: "obsolete" warnings will point you to the places that need attention.
 1. After the data upgrade, object references might be broken. You will need to check and repair them if necessary.
+1. If you are using layers to filter cameras into separate split-screen brains, that filtering will stop working until after you have upgraded to CinemachineCameras and switched the filtering over to Channels.
+
 
 ## What has Changed in the API
 
-Some components were replaced by new components, others were renamed. Field names have changed. For most of these issues, you will see errors or deprecation warnings in the console, which will point you to the areas in your code that need attention. 
+Some components were replaced by new components, others were renamed. Field names have changed. Namespaces have changed.  For most of these issues, you will see errors or deprecation warnings in the console, which will point you to the areas in your code that need attention. 
 
 One thing to note: the new `CinemachineCamera` class that replaces `CinemachineVirtualCamera` and `CinemachineFreeLook` inherits from `CinemachineVirtualCameraBase`.  If you can replace your script references to use this base class wherever possible, then existing object references will be preserved when the data is upgraded, since the old classes are also inherited from this same base class.
+
+### New Namespaces
+Namespaces have changed to be more consistent with Unity standards.
+- `Cinemachine` is now `Unity.Cinemachine`
+- `Cinemachine.Editor` is now `Unity.Cinemachine.Editor`
+- `Cinrmachine.Utility` has been folded into `Unity.Cinemachine`.
 
 ### New Components with Clearer Names
 
