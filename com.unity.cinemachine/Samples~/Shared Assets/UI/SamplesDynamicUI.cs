@@ -19,33 +19,28 @@ public class SamplesDynamicUI : MonoBehaviour
         public bool ToggleValue;
 
         [Tooltip("Event sent when button is clicked")]
-        public UnityEvent OnClick = new UnityEvent();
+        public UnityEvent OnClick = new();
 
         [Tooltip("Event sent when toggle button is clicked")]
-        public UnityEvent<bool> OnValueChanged = new UnityEvent<bool>();
+        public UnityEvent<bool> OnValueChanged = new();
     }
     
     [Tooltip("The buttons to be displayed")]
     public List<Item> Buttons = new ();
 
-    Vector2 m_ButtonSize;
-    List<Toggle> m_Toggles;
-    List<EventCallback<ChangeEvent<bool>>> m_OnValueChangedCallbacks;
-
+    VisualElement m_TogglesAndButtons;
+    List<KeyValuePair<Toggle, EventCallback<ChangeEvent<bool>>>> m_OnValueChangedCallbacks;
+    List<KeyValuePair<Button, Action>> m_OnClickCallbacks;
     void OnEnable()
     {
         var uiDocument = GetComponent<UIDocument>();
-        var togglesAndButtons = uiDocument.rootVisualElement.Q("TogglesAndButtons");
-        m_Toggles = new List<Toggle>();
-        m_OnValueChangedCallbacks = new List<EventCallback<ChangeEvent<bool>>>();
         
-        // var uiDocument = GetComponent<UIDocument>();
-        //
-        // m_DynamicUI = uiDocument.rootVisualElement.Q("DynamicUI");
+        m_TogglesAndButtons = uiDocument.rootVisualElement.Q("TogglesAndButtons");
+        m_OnValueChangedCallbacks = new ();
+        m_OnClickCallbacks = new();
+        
         foreach (var item in Buttons)
         {
-            
-
             if (item.IsToggle)
             {
                 var toggle = new Toggle
@@ -53,49 +48,44 @@ public class SamplesDynamicUI : MonoBehaviour
                     label = item.Name,
                     value = item.ToggleValue
                 };
-
-                void Callback(ChangeEvent<bool> _) => item.OnValueChanged.Invoke(item.ToggleValue);
-                m_OnValueChangedCallbacks.Add(Callback);
                 toggle.RegisterValueChangedCallback(Callback);
-                togglesAndButtons.Add(toggle);
-                m_Toggles.Add(toggle);
+                m_TogglesAndButtons.Add(toggle);
+                m_OnValueChangedCallbacks.Add(new(toggle, Callback));
+                
+                // local function
+                void Callback(ChangeEvent<bool> e) => item.OnValueChanged.Invoke(e.newValue);
             }
             else
             {
-                var button = new Button();
-                button.text = item.Name;
-                button.clickable.clicked += item.OnClick.Invoke;
+                var button = new Button
+                {
+                    text = item.Name
+                };
+                button.clickable.clicked += Callback;
+                
+                m_OnClickCallbacks.Add(new (button, Callback));
+                
+                // local function
+                void Callback() => item.OnClick.Invoke();
             }
         }
     }
 
     void OnDisable()
     {
-        
-        // var uiDocument = GetComponent<UIDocument>();
-        //
-        // m_DynamicUI = uiDocument.rootVisualElement.Q("DynamicUI");
-        foreach (var item in Buttons)
+        foreach (var callback in m_OnValueChangedCallbacks)
         {
-            
-
-            if (item.IsToggle)
-            {
-                var toggle = new Toggle();
-                toggle.label = item.Name;
-                toggle.value = item.ToggleValue;
-
-                void Callback(ChangeEvent<bool> _) => item.OnValueChanged.Invoke(item.ToggleValue);
-                m_OnValueChangedCallbacks.Add(Callback);
-                toggle.RegisterValueChangedCallback(Callback);
-            }
-            else
-            {
-                var button = new Button();
-                button.text = item.Name;
-                button.clickable.clicked += item.OnClick.Invoke;
-            }
+            callback.Key.UnregisterValueChangedCallback(callback.Value);
+            m_TogglesAndButtons.Remove(callback.Key);
         }
+
         m_OnValueChangedCallbacks.Clear();
+        foreach (var callback in m_OnClickCallbacks)
+        {
+            callback.Key.clickable.clicked -= callback.Value;
+            m_TogglesAndButtons.Remove(callback.Key);
+        }
+
+        m_OnClickCallbacks.Clear();
     }
 }
