@@ -36,6 +36,7 @@ public class SamplesDynamicUI : MonoBehaviour
         var uiDocument = GetComponent<UIDocument>();
         
         m_TogglesAndButtons = uiDocument.rootVisualElement.Q("TogglesAndButtons");
+        m_TogglesAndButtons.visible = Buttons.Count > 0;
         m_OnValueChangedCallbacks = new ();
         m_OnClickCallbacks = new();
         foreach (var item in Buttons)
@@ -47,6 +48,11 @@ public class SamplesDynamicUI : MonoBehaviour
                     label = item.Name,
                     value = item.ToggleValue,
                     focusable = false,
+                    style =
+                    {
+                        flexDirection = new StyleEnum<FlexDirection>(FlexDirection.RowReverse),
+                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
+                    }
                 };
                 toggle.RegisterValueChangedCallback(Callback);
                 m_TogglesAndButtons.Add(toggle);
