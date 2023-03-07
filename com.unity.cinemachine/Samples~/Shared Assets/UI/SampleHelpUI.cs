@@ -40,7 +40,11 @@ public class SampleHelpUI : MonoBehaviour
         m_HelpToggle.UnregisterValueChangedCallback(HelpToggleChanged);
     }
     
-    void OnValidate() => m_HelpToggle.value = m_HelpBox.visible = IsVisible;
+    void OnValidate()
+    {
+        if (m_HelpToggle != null && m_HelpBox != null)
+            m_HelpToggle.value = m_HelpBox.visible = IsVisible;
+    }
 
     void HelpToggleChanged(ChangeEvent<bool> evt) => m_HelpBox.visible = IsVisible = evt.newValue;
 
