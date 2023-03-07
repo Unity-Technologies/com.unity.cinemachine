@@ -38,7 +38,6 @@ public class SamplesDynamicUI : MonoBehaviour
         m_TogglesAndButtons = uiDocument.rootVisualElement.Q("TogglesAndButtons");
         m_OnValueChangedCallbacks = new ();
         m_OnClickCallbacks = new();
-        
         foreach (var item in Buttons)
         {
             if (item.IsToggle)
@@ -46,7 +45,8 @@ public class SamplesDynamicUI : MonoBehaviour
                 var toggle = new Toggle
                 {
                     label = item.Name,
-                    value = item.ToggleValue
+                    value = item.ToggleValue,
+                    focusable = false,
                 };
                 toggle.RegisterValueChangedCallback(Callback);
                 m_TogglesAndButtons.Add(toggle);
