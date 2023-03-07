@@ -28,19 +28,15 @@ public class SamplesDynamicUI : MonoBehaviour
     [Tooltip("The buttons to be displayed")]
     public List<Item> Buttons = new ();
 
-    VisualElement m_TogglesAndButtons;
-    List<KeyValuePair<Toggle, EventCallback<ChangeEvent<bool>>>> m_OnValueChangedCallbacks;
-    List<KeyValuePair<Button, Action>> m_OnClickCallbacks;
+    VisualElement m_DynamicBox;
+    List<VisualElement> m_DynamicELements;
     void OnEnable()
     {
         var uiDocument = GetComponent<UIDocument>();
         
-        m_TogglesAndButtons = uiDocument.rootVisualElement.Q("TogglesAndButtons");
-        m_TogglesAndButtons.visible = Buttons.Count > 0;
-        m_OnValueChangedCallbacks = new ();
-        m_OnClickCallbacks = new();
+        m_DynamicBox = uiDocument.rootVisualElement.Q("TogglesAndButtons");
+        m_DynamicELements = new List<VisualElement>(Buttons.Count);
         foreach (var item in Buttons)
-        {
             if (item.IsToggle)
             {
                 var toggle = new Toggle
@@ -51,15 +47,13 @@ public class SamplesDynamicUI : MonoBehaviour
                     style =
                     {
                         flexDirection = new StyleEnum<FlexDirection>(FlexDirection.RowReverse),
-                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
+                        alignSelf = new StyleEnum<Align>(Align.FlexStart),
+                        unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold),
                     }
                 };
-                toggle.RegisterValueChangedCallback(Callback);
-                m_TogglesAndButtons.Add(toggle);
-                m_OnValueChangedCallbacks.Add(new(toggle, Callback));
-                
-                // local function
-                void Callback(ChangeEvent<bool> e) => item.OnValueChanged.Invoke(e.newValue);
+                toggle.RegisterValueChangedCallback(e => item.OnValueChanged.Invoke(e.newValue));
+                m_DynamicBox.Add(toggle);
+                m_DynamicELements.Add(toggle);
             }
             else
             {
@@ -67,31 +61,17 @@ public class SamplesDynamicUI : MonoBehaviour
                 {
                     text = item.Name
                 };
-                button.clickable.clicked += Callback;
-                
-                m_OnClickCallbacks.Add(new (button, Callback));
-                
-                // local function
-                void Callback() => item.OnClick.Invoke();
+                button.clickable.clicked += item.OnClick.Invoke;
+                m_DynamicELements.Add(button);
             }
-        }
+
+        m_DynamicBox.visible = Buttons.Count > 0;
     }
 
     void OnDisable()
     {
-        foreach (var callback in m_OnValueChangedCallbacks)
-        {
-            callback.Key.UnregisterValueChangedCallback(callback.Value);
-            m_TogglesAndButtons.Remove(callback.Key);
-        }
-
-        m_OnValueChangedCallbacks.Clear();
-        foreach (var callback in m_OnClickCallbacks)
-        {
-            callback.Key.clickable.clicked -= callback.Value;
-            m_TogglesAndButtons.Remove(callback.Key);
-        }
-
-        m_OnClickCallbacks.Clear();
+        foreach (var element in m_DynamicELements) 
+            m_DynamicBox.Remove(element);
+        m_DynamicELements.Clear();
     }
 }
