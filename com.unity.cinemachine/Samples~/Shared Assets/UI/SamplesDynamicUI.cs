@@ -28,6 +28,7 @@ public class SamplesDynamicUI : MonoBehaviour
     [Tooltip("The buttons to be displayed")]
     public List<Item> Buttons = new ();
 
+    Color m_UnityLightGray = new Color(196, 196, 196, 255);
     VisualElement m_DynamicBox;
     List<VisualElement> m_DynamicELements;
     void OnEnable()
@@ -59,9 +60,17 @@ public class SamplesDynamicUI : MonoBehaviour
             {
                 var button = new Button
                 {
-                    text = item.Name
+                    text = item.Name,
+                    focusable = false,
+                    style =
+                    {
+                        backgroundColor = new StyleColor(m_UnityLightGray),
+                        alignSelf = new StyleEnum<Align>(Align.FlexStart),
+                        unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold),
+                    }
                 };
                 button.clickable.clicked += item.OnClick.Invoke;
+                m_DynamicBox.Add(button);
                 m_DynamicELements.Add(button);
             }
 

@@ -1238,14 +1238,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1592541032}
+      addedObject: {fileID: 1592541033}
   m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1 &1592541031 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
   m_PrefabInstance: {fileID: 1592541030}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1592541032
+--- !u!114 &1592541033
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1254,10 +1254,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1592541031}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0579a4ea516e104d9026d0d304a87c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7950c6f52d74a4772bb69c03fe19a19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 0.01, y: 0.04}
   Buttons:
   - Name: Orthographic
     IsToggle: 1
@@ -1281,7 +1280,7 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
         - m_Target: {fileID: 129940157}
-          m_TargetAssemblyTypeName: Cinemachine.CinemachineConfiner2D, com.unity.cinemachine
+          m_TargetAssemblyTypeName: Cinemachine.CinemachineConfiner2D, Unity.Cinemachine
           m_MethodName: InvalidateLensCache
           m_Mode: 1
           m_Arguments:
@@ -1363,7 +1362,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.4890585, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -8.482746, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

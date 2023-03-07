@@ -199,14 +199,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 231377858}
+      addedObject: {fileID: 231377859}
   m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1 &231377857 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
   m_PrefabInstance: {fileID: 231377856}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &231377858
+--- !u!114 &231377859
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -215,10 +215,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 231377857}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0579a4ea516e104d9026d0d304a87c2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7950c6f52d74a4772bb69c03fe19a19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Position: {x: 0.01, y: 0.04}
   Buttons:
   - Name: Invoke Impulse
     IsToggle: 0
@@ -227,7 +226,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 285243874}
-          m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, com.unity.cinemachine
+          m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Unity.Cinemachine
           m_MethodName: GenerateImpulse
           m_Mode: 1
           m_Arguments:
@@ -534,7 +533,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833963181}
-  m_LocalRotation: {x: 0.17066729, y: -0.009235626, z: 0.0015997613, w: 0.98528415}
+  m_LocalRotation: {x: 0.1706673, y: -0.0092446115, z: 0.0016013174, w: 0.9852841}
   m_LocalPosition: {x: 0, y: 9.8, z: -14.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -685,7 +684,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1622520784}
-  m_LocalRotation: {x: 0.17066729, y: -0.009235626, z: 0.0015997613, w: 0.98528415}
+  m_LocalRotation: {x: 0.1706673, y: -0.0092446115, z: 0.0016013174, w: 0.9852841}
   m_LocalPosition: {x: 0, y: 9.8, z: -14.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
