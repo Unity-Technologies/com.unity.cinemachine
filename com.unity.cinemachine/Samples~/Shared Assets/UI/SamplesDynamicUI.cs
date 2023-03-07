@@ -6,6 +6,10 @@ using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Samples
 {
+    /// <summary>
+    /// Runtime UI script that can create toggles and buttons.
+    /// </summary>
+    [RequireComponent(typeof(UIDocument))]
     public class SamplesDynamicUI : MonoBehaviour
     {
         [Serializable]
@@ -30,16 +34,16 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("The buttons to be displayed")]
         public List<Item> Buttons = new();
 
-        Color m_UnityLightGray = new Color(196, 196, 196, 255);
-        VisualElement m_DynamicBox;
-        List<VisualElement> m_DynamicELements;
+        Color m_UnityLightGray = new(196, 196, 196, 255);
+        VisualElement m_Root;
+        List<VisualElement> m_DynamicElements;
 
         void OnEnable()
         {
             var uiDocument = GetComponent<UIDocument>();
 
-            m_DynamicBox = uiDocument.rootVisualElement.Q("TogglesAndButtons");
-            m_DynamicELements = new List<VisualElement>(Buttons.Count);
+            m_Root = uiDocument.rootVisualElement.Q("TogglesAndButtons");
+            m_DynamicElements = new List<VisualElement>(Buttons.Count);
             foreach (var item in Buttons)
                 if (item.IsToggle)
                 {
@@ -56,8 +60,8 @@ namespace Unity.Cinemachine.Samples
                         }
                     };
                     toggle.RegisterValueChangedCallback(e => item.OnValueChanged.Invoke(e.newValue));
-                    m_DynamicBox.Add(toggle);
-                    m_DynamicELements.Add(toggle);
+                    m_Root.Add(toggle);
+                    m_DynamicElements.Add(toggle);
                 }
                 else
                 {
@@ -73,18 +77,18 @@ namespace Unity.Cinemachine.Samples
                         }
                     };
                     button.clickable.clicked += item.OnClick.Invoke;
-                    m_DynamicBox.Add(button);
-                    m_DynamicELements.Add(button);
+                    m_Root.Add(button);
+                    m_DynamicElements.Add(button);
                 }
 
-            m_DynamicBox.visible = Buttons.Count > 0;
+            m_Root.visible = Buttons.Count > 0;
         }
 
         void OnDisable()
         {
-            foreach (var element in m_DynamicELements)
-                m_DynamicBox.Remove(element);
-            m_DynamicELements.Clear();
+            foreach (var element in m_DynamicElements)
+                m_Root.Remove(element);
+            m_DynamicElements.Clear();
         }
     }
 }

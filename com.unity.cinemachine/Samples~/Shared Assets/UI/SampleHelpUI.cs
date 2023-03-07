@@ -7,6 +7,7 @@ namespace Unity.Cinemachine.Samples
     /// <summary>
     /// Displays a button in the game view that will bring up a window with scrollable text.
     /// </summary>
+    [RequireComponent(typeof(UIDocument))]
     public class SampleHelpUI : MonoBehaviour
     {
         public bool IsVisible;
