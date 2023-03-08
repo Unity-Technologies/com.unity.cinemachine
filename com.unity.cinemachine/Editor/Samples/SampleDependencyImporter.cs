@@ -46,7 +46,7 @@ namespace Unity.Cinemachine.Editor
                     m_UpgradedMaterials = new List<string>();
                     SamplePostprocessor.AssetImported += ProcessAssets;
                 }
-        }
+            }
             else if (!cmPackageInfo)
             {
                 m_PackageInfo = null;
