@@ -7,7 +7,6 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEditor.Rendering;
-using UnityEditor.Rendering.Universal;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
@@ -182,17 +181,30 @@ namespace Unity.Cinemachine.Editor
 
         void ConvertMaterial(string assetPath)
         {
-#if CINEMACHINE_URP
             if (m_SampleConfiguration != null)
             {
                 if (assetPath.EndsWith(".mat") && !assetPath.EndsWith("FadeOut.mat") && !m_UpgradedMaterials.Contains(assetPath))
                 {
+#if CINEMACHINE_URP
                     var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
-                    MaterialUpgrader.Upgrade(material, new StandardUpgrader(material.shader.name), MaterialUpgrader.UpgradeFlags.None);
+                    MaterialUpgrader.Upgrade(material, 
+                        new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+                        MaterialUpgrader.UpgradeFlags.None);
                     m_UpgradedMaterials.Add(assetPath);
-                }
-            }
 #endif
+#if CINEMACHINE_HDRP
+                    var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
+                    // MaterialUpgrader.Upgrade(material,  MaterialUpgrader.UpgradeFlags.None);
+                    // need to access internals in UnityEditor.Rendering.HighDefinition
+                    MaterialUpgrader.Upgrade(material, 
+                        new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
+                        MaterialUpgrader.UpgradeFlags.None);
+                    m_UpgradedMaterials.Add(assetPath);
+#endif
+                }
+
+            }
+            
         }
         
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
