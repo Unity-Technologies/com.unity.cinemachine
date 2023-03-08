@@ -2,24 +2,24 @@
   "exempts": {
     "PVP-20-1": {
       "errors": [
-        "Missing Doc on System.String Cinemachine.Editor.CinemachineTool::GetIconPath()",
-        "Missing Doc on System.Void Cinemachine.CinemachineBlendListCamera::Reset()",
-        "Missing Doc on System.Void Cinemachine.CinemachineClearShot::Reset()",
-        "Missing Doc on System.Void Cinemachine.CinemachineMixingCamera::Reset()",
-        "Missing Doc on Cinemachine.CinemachineStoryboard",
-        "Missing Doc on System.Void Cinemachine.CinemachineTargetGroup::ISerializationCallbackReceiver.OnBeforeSerialize()",
-        "Missing Doc on System.Void Cinemachine.CinemachineSplineDolly::OnEnable()",
-        "Missing Doc on System.Void Cinemachine.CinemachineCameraManagerBase::Reset()",
-        "Invalid XML on: System.Single Cinemachine.SplineAutoDolly.ISplineAutoDolly::GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single). XML comment has badly formed XML -- \u0027An identifier was expected.\u0027",
-        "Missing Doc on System.Void Cinemachine.SplineAutoDolly.FixedSpeed::Cinemachine.SplineAutoDolly.ISplineAutoDolly.Validate()",
-        "Missing Doc on System.Single Cinemachine.SplineAutoDolly.FixedSpeed::Cinemachine.SplineAutoDolly.ISplineAutoDolly.GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single)",
-        "Missing Doc on System.Void Cinemachine.SplineAutoDolly.NearestPointToTarget::Cinemachine.SplineAutoDolly.ISplineAutoDolly.Validate()",
-        "Missing Doc on System.Single Cinemachine.SplineAutoDolly.NearestPointToTarget::Cinemachine.SplineAutoDolly.ISplineAutoDolly.GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single)",
-        "Missing Doc on System.Boolean Cinemachine.AxisState.IRequiresInput::RequiresInput()",
-        "Missing Doc on System.Boolean Cinemachine.CinemachineFreeLook::Cinemachine.AxisState.IRequiresInput.RequiresInput()",
-        "Missing Doc on System.Boolean Cinemachine.CinemachineOrbitalTransposer::Cinemachine.AxisState.IRequiresInput.RequiresInput()",
-        "Missing Doc on System.Boolean Cinemachine.CinemachinePOV::Cinemachine.AxisState.IRequiresInput.RequiresInput()",
-        "Missing \u003Creturns\u003E on non-void method System.Boolean Cinemachine.CinemachineVirtualCamera::Cinemachine.AxisState.IRequiresInput.RequiresInput()"
+        "Missing Doc on System.String Unity.Cinemachine.Editor.CinemachineTool::GetIconPath()",
+        "Missing Doc on System.Void Unity.Cinemachine.CinemachineBlendListCamera::Reset()",
+        "Missing Doc on System.Void Unity.Cinemachine.CinemachineClearShot::Reset()",
+        "Missing Doc on System.Void Unity.Cinemachine.CinemachineMixingCamera::Reset()",
+        "Missing Doc on Unity.Cinemachine.CinemachineStoryboard",
+        "Missing Doc on System.Void Unity.Cinemachine.CinemachineTargetGroup::ISerializationCallbackReceiver.OnBeforeSerialize()",
+        "Missing Doc on System.Void Unity.Cinemachine.CinemachineSplineDolly::OnEnable()",
+        "Missing Doc on System.Void Unity.Cinemachine.CinemachineCameraManagerBase::Reset()",
+        "Invalid XML on: System.Single Unity.Cinemachine.SplineAutoDolly.ISplineAutoDolly::GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single). XML comment has badly formed XML -- \u0027An identifier was expected.\u0027",
+        "Missing Doc on System.Void Unity.Cinemachine.SplineAutoDolly.FixedSpeed::Unity.Unity.Cinemachine.SplineAutoDolly.ISplineAutoDolly.Validate()",
+        "Missing Doc on System.Single Unity.Cinemachine.SplineAutoDolly.FixedSpeed::Unity.Cinemachine.SplineAutoDolly.ISplineAutoDolly.GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single)",
+        "Missing Doc on System.Void Unity.Cinemachine.SplineAutoDolly.NearestPointToTarget::Unity.Cinemachine.SplineAutoDolly.ISplineAutoDolly.Validate()",
+        "Missing Doc on System.Single Unity.Cinemachine.SplineAutoDolly.NearestPointToTarget::Unity.Cinemachine.SplineAutoDolly.ISplineAutoDolly.GetSplinePosition(MonoBehaviour, Transform, SplineContainer, System.Single, PathIndexUnit, System.Single)",
+        "Missing Doc on System.Boolean Unity.Cinemachine.AxisState.IRequiresInput::RequiresInput()",
+        "Missing Doc on System.Boolean Unity.Cinemachine.CinemachineFreeLook::Unity.Cinemachine.AxisState.IRequiresInput.RequiresInput()",
+        "Missing Doc on System.Boolean Unity.Cinemachine.CinemachineOrbitalTransposer::Unity.Cinemachine.AxisState.IRequiresInput.RequiresInput()",
+        "Missing Doc on System.Boolean Unity.Cinemachine.CinemachinePOV::Unity.Cinemachine.AxisState.IRequiresInput.RequiresInput()",
+        "Missing \u003Creturns\u003E on non-void method System.Boolean Unity.Cinemachine.CinemachineVirtualCamera::Unity.Cinemachine.AxisState.IRequiresInput.RequiresInput()"
       ]
     }
   },

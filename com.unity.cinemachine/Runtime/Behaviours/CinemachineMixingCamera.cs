@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// CinemachineMixingCamera is a "manager camera" that takes on the state of

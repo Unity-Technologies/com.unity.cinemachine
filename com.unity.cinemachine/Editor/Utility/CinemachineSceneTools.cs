@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Static class that manages Cinemachine Tools. It knows which tool is active,
@@ -179,7 +178,7 @@ namespace Cinemachine.Editor
                 if (lens.IsPhysicalCamera)
                 {
                     DrawLabel(labelPos, "Focal Length (" + 
-                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.SensorSize.y).ToString("F1") + ")");
+                        Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.PhysicalProperties.SensorSize.y).ToString("F1") + ")");
                 }
                 else if (orthographic)
                 {

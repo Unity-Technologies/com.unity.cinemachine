@@ -13,7 +13,7 @@ using System.IO;
 using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineVolumeSettings))]
     class CinemachineVolumeSettingsEditor : UnityEditor.Editor

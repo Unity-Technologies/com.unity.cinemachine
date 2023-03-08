@@ -1,9 +1,8 @@
 using System;
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachinePositionComposer instead.
@@ -691,7 +690,7 @@ namespace Cinemachine
         // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachinePositionComposer c)
         {
-            c.TrackedObjectOffset = m_TrackedObjectOffset;
+            c.TargetOffset = m_TrackedObjectOffset;
             c.Lookahead = new LookaheadSettings
             {
                 Enabled = m_LookaheadTime > 0,

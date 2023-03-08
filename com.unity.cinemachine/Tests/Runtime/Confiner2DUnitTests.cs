@@ -1,12 +1,10 @@
 #if CINEMACHINE_PHYSICS_2D
 using System.Collections;
-using Cinemachine;
-using Cinemachine.Utility;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class Confiner2DUnitTests : CinemachineRuntimeFixtureBase
@@ -22,7 +20,7 @@ namespace Tests.Runtime
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineConfiner2D));
             m_Vcam = vcamHolder.GetComponent<CinemachineCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
-            m_Vcam.Priority = 100;
+            m_Vcam.Priority.Value = 100;
             m_Cam.orthographic = true;
             m_Vcam.AddExtension(m_Confiner2D);
 

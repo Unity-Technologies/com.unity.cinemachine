@@ -3,9 +3,8 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     class VcamStageEditor
     {

@@ -2,10 +2,9 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using Cinemachine;
 using UnityEngine.TestTools;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class ClearShotTests : CinemachineRuntimeFixtureBase
@@ -37,14 +36,14 @@ namespace Tests.Runtime
             vcam1Holder.transform.position = new Vector3(0, 0, 8); 
             m_Vcam1 = vcam1Holder.GetComponent<CinemachineCamera>();
             m_Vcam1.gameObject.AddComponent<CinemachineHardLookAt>();
-            m_Vcam1.Priority = 20;
+            m_Vcam1.Priority.Value = 20;
             
             // a completely locked vcam2
             var vcam2Holder = CreateGameObject("CM Vcam2", typeof(CinemachineCamera));
             vcam2Holder.transform.SetParent(clearShotHolder.transform);
             vcam2Holder.transform.position = new Vector3(0, 0, -2);
             m_Vcam2 = vcam2Holder.GetComponent<CinemachineCamera>();
-            m_Vcam2.Priority = 10;
+            m_Vcam2.Priority.Value = 10;
 
             // a "wall" composed of a single quad that partially obscures vcam1, but not vcam2
             var wall = CreatePrimitive(PrimitiveType.Quad);

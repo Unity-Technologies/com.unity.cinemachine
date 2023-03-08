@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary> Collection of parameters that influence how a virtual camera transitions from
     /// other virtual cameras </summary>

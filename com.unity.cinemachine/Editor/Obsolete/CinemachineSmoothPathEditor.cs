@@ -3,9 +3,8 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEditorInternal;
-using Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineSmoothPath))]

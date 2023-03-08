@@ -1,9 +1,8 @@
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Components that hold InputAxisValue structs must implement this interface to be discoverable.

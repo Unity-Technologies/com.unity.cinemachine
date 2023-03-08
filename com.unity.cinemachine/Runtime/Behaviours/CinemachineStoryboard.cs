@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that places an image in screen space
@@ -206,7 +206,7 @@ namespace Cinemachine
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
             var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(ComponentOwner);
-            var channel = (uint)ComponentOwner.GetChannel();
+            var channel = (uint)ComponentOwner.OutputChannel.Value;
             if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
             var ci = LocateMyCanvas(brain, showIt);
@@ -371,7 +371,7 @@ namespace Cinemachine
                 if (src != null && src.ComponentOwner != null) // in case it was deleted
                 {
                     bool showIt = true;
-                    var channel = (uint)src.ComponentOwner.GetChannel();
+                    var channel = (uint)src.ComponentOwner.OutputChannel.Value;
                     if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                         showIt = false;
                     var ci = src.LocateMyCanvas(brain, showIt);
@@ -446,7 +446,7 @@ namespace Cinemachine
 }
 #else
 // We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that places an image in screen space

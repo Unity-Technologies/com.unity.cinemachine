@@ -52,17 +52,17 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1242842187797626883
+      rid: 6015593199795437572
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: 1242842187797626883
-      type: {class: RandomizedDollySpeed, ns: Cinemachine.Examples, asm: Assembly-CSharp}
+    - rid: 6015593199795437572
+      type: {class: RandomizedDollySpeed, ns: Unity.Cinemachine.Samples, asm: Assembly-CSharp}
       data:
-        MinSpeed: 7
-        MaxSpeed: 11
+        MinSpeed: 2
+        MaxSpeed: 10
         Acceleration: 1
 --- !u!114 &7394770885881608384
 MonoBehaviour:

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     class SimplePlayerShoot : MonoBehaviour, IInputAxisSource
     {

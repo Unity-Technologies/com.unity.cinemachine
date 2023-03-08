@@ -6,9 +6,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.Splines;
 using Unity.Mathematics;
-using Cinemachine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class SplineDollyCameraTest : CinemachineRuntimeFixtureBase

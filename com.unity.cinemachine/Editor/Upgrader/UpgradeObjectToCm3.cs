@@ -3,14 +3,13 @@
 
 using System;
 using System.Linq;
-using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
 
 using Object = UnityEngine.Object;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     partial class UpgradeObjectToCm3
     {
@@ -311,7 +310,7 @@ namespace Cinemachine.Editor
             cmCamera.Follow = vcam.m_Follow;
             cmCamera.LookAt = vcam.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = vcam.m_Follow != vcam.m_LookAt;
-            cmCamera.Lens = vcam.m_Lens;
+            cmCamera.Lens = vcam.Lens;
             cmCamera.Transitions = vcam.Transitions;
                 
             // Transfer the component pipeline
@@ -502,17 +501,17 @@ namespace Cinemachine.Editor
             CinemachineCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
             if (freelook.m_CommonLens)
-                cmCamera.Lens = freelook.m_Lens;
+                cmCamera.Lens = freelook.Lens;
             else
             {
-                cmCamera.Lens = freelook.GetRig(1).m_Lens;
-                if (!LensSettings.AreEqual(ref freelook.GetRig(1).m_Lens, ref freelook.GetRig(0).m_Lens)
-                    || !LensSettings.AreEqual(ref freelook.GetRig(1).m_Lens, ref freelook.GetRig(2).m_Lens))
+                cmCamera.Lens = freelook.GetRig(1).Lens;
+                if (!LensSettings.AreEqual(ref freelook.GetRig(1).Lens, ref freelook.GetRig(0).Lens)
+                    || !LensSettings.AreEqual(ref freelook.GetRig(1).Lens, ref freelook.GetRig(2).Lens))
                 {
                     freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.LensModifier
                     {
-                        Top = freelook.GetRig(0).m_Lens,
-                        Bottom = freelook.GetRig(2).m_Lens
+                        Top = freelook.GetRig(0).Lens,
+                        Bottom = freelook.GetRig(2).Lens
                     });
                 }
             }

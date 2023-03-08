@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine.Utility
+namespace Unity.Cinemachine
 {
     /// <summary>Extensions to the Vector3 class, used by Cinemachine</summary>
     public static class UnityVectorExtensions

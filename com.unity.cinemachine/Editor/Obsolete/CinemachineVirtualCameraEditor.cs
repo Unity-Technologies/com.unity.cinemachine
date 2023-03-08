@@ -2,11 +2,10 @@
 using UnityEditor;
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
@@ -22,7 +21,7 @@ namespace Cinemachine.Editor
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
             if (brain != null)
             {
-                vcam.m_Lens = brain.CurrentCameraState.Lens;
+                vcam.Lens = brain.CurrentCameraState.Lens;
                 vcam.transform.position = brain.transform.position;
                 vcam.transform.rotation = brain.transform.rotation;
             }
@@ -32,7 +31,7 @@ namespace Cinemachine.Editor
         static void AdoptSceneViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
-            vcam.m_Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
         }
         
         /// <summary>Get the property names to exclude in the inspector.  
@@ -126,13 +125,13 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(vcam, 
-                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
-                    vcam.m_Lens, IsHorizontalFOVUsed());
+                    new SerializedObject(vcam).FindProperty(() => vcam.Lens), 
+                    vcam.Lens, IsHorizontalFOVUsed());
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(vcam, 
-                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens));
+                    new SerializedObject(vcam).FindProperty(() => vcam.Lens));
             }
             Handles.color = originalColor;
         }
@@ -150,10 +149,11 @@ namespace Cinemachine.Editor
             }
             BeginInspector();
             DrawNonExcludedHeaderInInspector();
-            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Priority));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.OutputChannel));
             DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
             DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
-            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_Lens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Lens));
             DrawRemainingPropertiesInInspector();
             m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
             DrawNonExcludedExtensionsWidgetInInspector();

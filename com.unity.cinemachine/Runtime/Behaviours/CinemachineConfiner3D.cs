@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that post-processes

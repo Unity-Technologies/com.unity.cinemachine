@@ -1,4 +1,4 @@
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An abstract representation of a component that evaluates shot quality.

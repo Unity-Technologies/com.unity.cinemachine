@@ -635,7 +635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -666,12 +666,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
-    Enabled: 1
-    Priority: 10
-    Channel: 1
+  Priority:
+    Enabled: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1093510073}
@@ -684,10 +686,18 @@ MonoBehaviour:
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 0
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -796,16 +806,16 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1777431093188493315
+      rid: 6015593199795437568
   TrackingTarget: {fileID: 0}
   SplinePosition: 0
   references:
     version: 2
     RefIds:
-    - rid: 1777431093188493315
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Unity.Cinemachine}
+    - rid: 6015593199795437568
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
-        Speed: 5
+        Speed: 8
 --- !u!1 &1093510071
 GameObject:
   m_ObjectHideFlags: 0
@@ -984,16 +994,73 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1777431093188493312
+      rid: 6015593199795437569
   TrackingTarget: {fileID: 1166162573}
   SplinePosition: 59.99
   references:
     version: 2
     RefIds:
-    - rid: 1777431093188493312
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Unity.Cinemachine}
+    - rid: 6015593199795437569
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
         Speed: 8
+--- !u!1 &1383110408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1383110410}
+  - component: {fileID: 1383110409}
+  m_Layer: 0
+  m_Name: Help
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1383110409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383110408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  Displayed: 0
+  HelpText: "This scene demonstrates a simulated 4 player fighting game, showing
+    how TargetGroup weights can be manipulated dynamically. \n\nThe players are moved
+    on a predefined path (Spline) using CinemachineSplineCart. The players are framed
+    when above the lower platform using a TargetGroup and a PositionComposer with
+    a GroupFraming extension.\n\nWhen a player falls off the lower platform, the
+    target group loses sight of them gradually.\n\nFor more details, see the ReduceGroupWeightWhenBelowFloor
+    script on the TargetGroup.\n"
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &1383110410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383110408}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.527199, y: -0.140625, z: -7.5859556}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1411043721
 GameObject:
   m_ObjectHideFlags: 0
@@ -1306,14 +1373,14 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1777431093188493313
+      rid: 6015593199795437570
   TrackingTarget: {fileID: 0}
   SplinePosition: 40
   references:
     version: 2
     RefIds:
-    - rid: 1777431093188493313
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Unity.Cinemachine}
+    - rid: 6015593199795437570
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
         Speed: 8
 --- !u!1 &1609023126
@@ -1752,14 +1819,14 @@ MonoBehaviour:
   AutomaticDolly:
     Enabled: 1
     Method:
-      rid: 1777431093188493314
+      rid: 6015593199795437571
   TrackingTarget: {fileID: 0}
   SplinePosition: 10
   references:
     version: 2
     RefIds:
-    - rid: 1777431093188493314
-      type: {class: SplineAutoDolly/FixedSpeed, ns: Cinemachine, asm: Unity.Cinemachine}
+    - rid: 6015593199795437571
+      type: {class: SplineAutoDolly/FixedSpeed, ns: Unity.Cinemachine, asm: Unity.Cinemachine}
       data:
         Speed: 8
 --- !u!1 &1942116116
@@ -2123,7 +2190,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 10.622577
+  orthographic size: 21.359022
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

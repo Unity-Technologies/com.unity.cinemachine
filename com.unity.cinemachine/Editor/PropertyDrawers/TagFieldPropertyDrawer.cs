@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(TagFieldAttribute))]
     class TagFieldPropertyDrawer : PropertyDrawer
@@ -43,7 +43,7 @@ namespace Cinemachine.Editor
             });
 
             var tagField = row.Contents.AddChild(new TagField("", property.stringValue) 
-                { tooltip = property.tooltip, style = { flexGrow = 1, marginTop = 0, marginBottom = 0 }});
+                { tooltip = property.tooltip, style = { flexGrow = 1, marginTop = 0, marginBottom = 0, marginLeft = 5 }});
             tagField.RegisterValueChangedCallback((evt) =>
             {
                 property.stringValue = evt.newValue;

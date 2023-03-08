@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
 #if CINEMACHINE_UNITY_ANIMATION
     /// <summary>
@@ -356,8 +356,7 @@ namespace Cinemachine
                         // from the active action?
                         if ((now - m_PendingActivationTime) > m_PendingInstruction.ActivateAfter
                             && ((now - m_ActivationTime) > m_ActiveInstruction.MinDuration
-                                || m_PendingInstruction.Camera.Priority
-                                > m_ActiveInstruction.Camera.Priority))
+                                || m_PendingInstruction.Camera.Priority.Value > m_ActiveInstruction.Camera.Priority.Value))
                         {
                             // Yes, activate it now
                             m_ActiveInstruction = m_PendingInstruction;
@@ -387,8 +386,8 @@ namespace Cinemachine
             {
                 if (newInstr.ActivateAfter > 0
                     || ((now - m_ActivationTime) < m_ActiveInstruction.MinDuration
-                        && newInstr.Camera.Priority
-                        <= m_ActiveInstruction.Camera.Priority))
+                        && newInstr.Camera.Priority.Value
+                        <= m_ActiveInstruction.Camera.Priority.Value))
                 {
                     // Too early - make it pending
                     m_PendingInstruction = newInstr;

@@ -1,8 +1,7 @@
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// Add-on for SimplePlayerController that controls the player's Aiming Core.

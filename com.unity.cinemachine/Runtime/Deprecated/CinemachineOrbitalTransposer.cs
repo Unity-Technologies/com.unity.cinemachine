@@ -1,10 +1,9 @@
 using System;
 using UnityEngine;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
-using Cinemachine.TargetTracking;
+using Unity.Cinemachine.TargetTracking;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>Tracks an object's velocity with a filter to determine a reasonably
     /// steady direction for the object's current trajectory.</summary>

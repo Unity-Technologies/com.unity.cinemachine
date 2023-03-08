@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a very simple behaviour that constrains its transform to a Spline.  

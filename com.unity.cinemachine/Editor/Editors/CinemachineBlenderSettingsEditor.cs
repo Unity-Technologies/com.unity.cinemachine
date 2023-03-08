@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBlenderSettings))]
     class CinemachineBlenderSettingsEditor : UnityEditor.Editor
@@ -208,13 +208,13 @@ namespace Cinemachine.Editor
 
                     var def = new CinemachineBlenderSettings.CustomBlend();
                     var element = elements.GetArrayElementAtIndex(index);
-                    ((BindableElement)row).BindProperty(element);
 
                     var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
                     var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
                     var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
-                    
                     FormatElement(from, to, blend);
+
+                    ((BindableElement)row).BindProperty(element); // must be done at the end
                 };
             });
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Invoke play-mode-save for a class.  This class's fields will be scanned

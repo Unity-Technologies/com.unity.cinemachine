@@ -2,7 +2,7 @@
 using System;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     ///  This class contains setting for the Impulse system.  Specifically, it holds

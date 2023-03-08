@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>Interface for raw signal provider</summary>
     public interface ISignalSource6D

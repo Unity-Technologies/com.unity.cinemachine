@@ -1,8 +1,7 @@
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     
 #if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)

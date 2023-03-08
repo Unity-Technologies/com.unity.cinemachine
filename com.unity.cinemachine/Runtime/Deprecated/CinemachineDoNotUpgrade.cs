@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Empty tag for the CM3 project upgrader.  Object with this behaviour will not be upgraded.

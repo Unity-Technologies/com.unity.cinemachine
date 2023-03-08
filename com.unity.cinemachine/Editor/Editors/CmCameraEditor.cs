@@ -2,7 +2,7 @@
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
@@ -80,7 +80,7 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.FovToolHandle(cmCam, 
                     new SerializedObject(cmCam).FindProperty(() => cmCam.Lens), 
-                    cmCam.Lens, InspectorUtility.GetUseHorizontalFOV(Target.Lens.SourceCamera));
+                    cmCam.Lens, cmCam.Lens.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {

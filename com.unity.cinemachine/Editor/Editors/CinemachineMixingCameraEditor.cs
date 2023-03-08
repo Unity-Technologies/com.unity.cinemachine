@@ -1,11 +1,10 @@
 using UnityEditor;
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineMixingCamera))]
     class CinemachineMixingCameraEditor : UnityEditor.Editor
