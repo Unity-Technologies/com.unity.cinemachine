@@ -45,14 +45,14 @@ namespace Unity.Cinemachine.Editor
                 {
                     m_UpgradedMaterials = new List<string>();
                     SamplePostprocessor.AssetImported += LoadAssetDependencies;
-                    SamplePostprocessor.AssetImported += ConvertMaterial;
+                    SamplePostprocessor.AssetImported += ConvertMaterials;
                 }
         }
             else if (!cmPackageInfo)
             {
                 m_PackageInfo = null;
                 SamplePostprocessor.AssetImported -= LoadAssetDependencies;
-                SamplePostprocessor.AssetImported -= ConvertMaterial;
+                SamplePostprocessor.AssetImported -= ConvertMaterials;
             }
         }
 
@@ -179,7 +179,7 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        void ConvertMaterial(string assetPath)
+        void ConvertMaterials(string assetPath)
         {
             if (m_SampleConfiguration != null)
             {
@@ -192,7 +192,7 @@ namespace Unity.Cinemachine.Editor
                         MaterialUpgrader.UpgradeFlags.None);
                     m_UpgradedMaterials.Add(assetPath);
 #endif
-#if CINEMACHINE_HDRP
+#if false // CINEMACHINE_HDRP
                     var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
                     // MaterialUpgrader.Upgrade(material,  MaterialUpgrader.UpgradeFlags.None);
                     // need to access internals in UnityEditor.Rendering.HighDefinition
