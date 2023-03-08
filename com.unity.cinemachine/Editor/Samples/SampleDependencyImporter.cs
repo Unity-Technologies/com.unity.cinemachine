@@ -44,15 +44,13 @@ namespace Unity.Cinemachine.Editor
                 if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration))
                 {
                     m_UpgradedMaterials = new List<string>();
-                    SamplePostprocessor.AssetImported += LoadAssetDependencies;
-                    SamplePostprocessor.AssetImported += ConvertMaterials;
+                    SamplePostprocessor.AssetImported += ProcessAssets;
                 }
         }
             else if (!cmPackageInfo)
             {
                 m_PackageInfo = null;
-                SamplePostprocessor.AssetImported -= LoadAssetDependencies;
-                SamplePostprocessor.AssetImported -= ConvertMaterials;
+                SamplePostprocessor.AssetImported -= ProcessAssets;
             }
         }
 
@@ -68,6 +66,12 @@ namespace Unity.Cinemachine.Editor
             }
             configuration = null;
             return false;
+        }
+
+        void ProcessAssets(string assetPath)
+        {
+            LoadAssetDependencies(assetPath);
+            ConvertMaterials(assetPath);
         }
         
         AddRequest m_PackageAddRequest;
