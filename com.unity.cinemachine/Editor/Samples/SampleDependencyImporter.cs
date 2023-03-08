@@ -6,6 +6,8 @@ using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
+using UnityEditor.Rendering;
+using UnityEditor.Rendering.Universal;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
@@ -24,6 +26,8 @@ namespace Unity.Cinemachine.Editor
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
 
+        List<string> m_UpgradedMaterials;
+
         public void OnPackageAddedOrUpdated(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
         public void OnPackageRemoved(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
 
@@ -38,13 +42,18 @@ namespace Unity.Cinemachine.Editor
             {
                 m_PackageInfo = packageInfo;
                 m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
-                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration)) 
+                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration))
+                {
+                    m_UpgradedMaterials = new List<string>();
                     SamplePostprocessor.AssetImported += LoadAssetDependencies;
-            }
+                    SamplePostprocessor.AssetImported += ConvertMaterial;
+                }
+        }
             else if (!cmPackageInfo)
             {
                 m_PackageInfo = null;
                 SamplePostprocessor.AssetImported -= LoadAssetDependencies;
+                SamplePostprocessor.AssetImported -= ConvertMaterial;
             }
         }
 
@@ -169,6 +178,21 @@ namespace Unity.Cinemachine.Editor
                     "Import samples and their dependencies", 
                     "Import samples without their dependencies");
             }
+        }
+
+        void ConvertMaterial(string assetPath)
+        {
+#if CINEMACHINE_URP
+            if (m_SampleConfiguration != null)
+            {
+                if (assetPath.EndsWith(".mat") && !assetPath.EndsWith("FadeOut.mat") && !m_UpgradedMaterials.Contains(assetPath))
+                {
+                    var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
+                    MaterialUpgrader.Upgrade(material, new StandardUpgrader(material.shader.name), MaterialUpgrader.UpgradeFlags.None);
+                    m_UpgradedMaterials.Add(assetPath);
+                }
+            }
+#endif
         }
         
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
