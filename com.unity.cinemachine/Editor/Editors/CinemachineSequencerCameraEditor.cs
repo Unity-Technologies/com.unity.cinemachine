@@ -7,7 +7,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSequencerCamera))]
     [CanEditMultipleObjects]
@@ -20,8 +20,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
+            this.AddTransitionsSection(ux);
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
@@ -38,6 +37,7 @@ namespace Cinemachine.Editor
             var container = ux.AddChild(new VisualElement());
 #if USE_IMGUI_INSTRUCTION_LIST
             // GML todo: We use IMGUI for this while we wait for UUM-27687 and UUM-27688 to be fixed
+            UpdateCameraCandidates();
             container.Add(new IMGUIContainer(() =>
             {
                 serializedObject.Update();
@@ -92,11 +92,7 @@ namespace Cinemachine.Editor
                 vcamSel.BindProperty(vcamSelProp);
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-        
-                vcamSel.TrackAnyUserActivity(() => 
-                {
-                    vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList();
-                });
+                vcamSel.TrackAnyUserActivity(() => vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList());
         
                 var blend = row.AddChild(
                     new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));

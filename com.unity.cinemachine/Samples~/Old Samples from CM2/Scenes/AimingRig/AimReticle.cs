@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// Reticle control for when the aiming is inaccurate. Inaccuracy is shown by pulling apart the aim reticle.

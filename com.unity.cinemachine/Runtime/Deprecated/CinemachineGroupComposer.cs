@@ -1,7 +1,6 @@
 using UnityEngine;
-using Cinemachine.Utility;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineRotationComposer and CinemachineGroupFraming instead.

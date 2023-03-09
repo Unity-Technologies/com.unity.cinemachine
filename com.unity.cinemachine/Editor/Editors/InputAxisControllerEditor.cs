@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Linq;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
    /*[CustomEditor(typeof(InputAxisController), true)]
     class InputAxisControllerEditor : UnityEditor.Editor

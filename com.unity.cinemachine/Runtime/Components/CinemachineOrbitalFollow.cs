@@ -1,10 +1,9 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using System;
-using Cinemachine.TargetTracking;
+using Unity.Cinemachine.TargetTracking;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the the Body section of the component pipeline.

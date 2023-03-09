@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineImpulseDefinition))]
     class CinemachineImpulseDefinitionPropertyDrawer : PropertyDrawer

@@ -1,12 +1,11 @@
 using UnityEngine;
 using UnityEditor;
 using System;
-using Cinemachine.Utility;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AddAssetSelectorWithPresets
 
@@ -16,17 +15,10 @@ namespace Cinemachine.Editor
         const float vSpace = 2;
         const float kIndentAmount = 15;
         const float kBoxMargin = 3;
-        float HelpBoxHeight { get { return EditorGUIUtility.singleLineHeight * 2.5f; } }
-        bool mExpanded = false;
+        float HelpBoxHeight => EditorGUIUtility.singleLineHeight * 2.5f;
+        bool m_Expanded = false;
 
-        bool WarnIfNull
-        {
-            get
-            {
-                var attr = attribute as CinemachineEmbeddedAssetPropertyAttribute;
-                return attr == null ? false : attr.WarnIfNull;
-            }
-        }
+        bool WarnIfNull => attribute is CinemachineEmbeddedAssetPropertyAttribute attr && attr.WarnIfNull;
 
         float HeaderHeight { get { return EditorGUIUtility.singleLineHeight * 1.5f; } }
         float DrawHeader(Rect rect, string text)
@@ -59,7 +51,7 @@ namespace Cinemachine.Editor
             bool hasCustomEditor = AssetHasCustomEditor(property);
             float height = base.GetPropertyHeight(property, label);
             height += + 2 * (kBoxMargin + vSpace);
-            if (mExpanded && !hasCustomEditor)
+            if (m_Expanded && !hasCustomEditor)
             {
                 height += HelpBoxHeight + kBoxMargin;
                 ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
@@ -101,8 +93,8 @@ namespace Cinemachine.Editor
             ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
             if (asset != null && !hasCustomEditor)
             {
-                mExpanded = EditorGUI.Foldout(rect, mExpanded, GUIContent.none, true);
-                if (mExpanded)
+                m_Expanded = EditorGUI.Foldout(rect, m_Expanded, GUIContent.none, true);
+                if (m_Expanded)
                 {
                     rect.y += rect.height + kBoxMargin + vSpace;
                     rect.x += kIndentAmount + kBoxMargin;

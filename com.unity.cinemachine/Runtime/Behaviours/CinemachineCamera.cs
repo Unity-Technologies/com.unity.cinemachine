@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is intended to be attached to an empty GameObject,
@@ -65,6 +65,7 @@ namespace Cinemachine
 
         /// <summary>Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras.</summary>
         [Tooltip("Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras")]
+        [HideFoldout]
         public TransitionParams Transitions;
 
         CameraState m_State = CameraState.Default;
@@ -72,8 +73,9 @@ namespace Cinemachine
 
         void Reset()
         {
+            Priority = new();
+            OutputChannel = OutputChannel.Default;
             Target = default;
-            PriorityAndChannel = OutputChannel.Default;
             Lens = LensSettings.Default;
         }
 
@@ -310,13 +312,6 @@ namespace Cinemachine
             UpdatePipelineCache();
             var i = (int)stage;
             return i >= 0 && i < m_Pipeline.Length ? m_Pipeline[i] : null;
-        }
-
-        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
-        internal override void OnBeforeSerialize()
-        {
-            if (!Lens.IsPhysicalCamera) 
-                Lens.SensorSize = Vector2.one;
         }
     }
 }

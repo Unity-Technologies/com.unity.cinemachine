@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Utility;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Use an instance of this class to draw screen composer guides in the game view.
@@ -171,7 +170,7 @@ namespace Cinemachine.Editor
             // Shift the guides along with the lens
             if (lens.IsPhysicalCamera)
                 cameraRect.position += new Vector2(
-                    -screenWidth * lens.LensShift.x, screenHeight * lens.LensShift.y);
+                    -screenWidth * lens.PhysicalProperties.LensShift.x, screenHeight * lens.PhysicalProperties.LensShift.y);
 
             return cameraRect;
         }

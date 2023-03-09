@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
 
   using Path64 = List<Point64>;

@@ -1,10 +1,9 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineCamera instead.
@@ -39,11 +38,10 @@ namespace Cinemachine
         /// <summary>Specifies the lens properties of this Virtual Camera.
         /// This generally mirrors the Unity Camera's lens settings, and will be used to drive
         /// the Unity camera when the vcam is active</summary>
-        [FormerlySerializedAs("m_LensAttributes")]
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
             + "mirrors the Unity Camera's lens settings, and will be used to drive the "
             + "Unity camera when the vcam is active")]
-        public LensSettings m_Lens = LensSettings.Default;
+        public LensSettings Lens = LensSettings.Default;
 
         /// <summary> Collection of parameters that influence how this virtual camera transitions from
         /// other virtual cameras </summary>
@@ -129,6 +127,10 @@ namespace Cinemachine
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
+        [FormerlySerializedAs("m_LensAttributes")]
+        [FormerlySerializedAs("m_Lens")]
+        LegacyLensSettings m_LegacyLens;
+
         internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
             base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
@@ -162,6 +164,8 @@ namespace Cinemachine
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
+            if (streamedVersion < 20230301)
+                Lens = m_LegacyLens.ToLensSettings();
         }
         
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
@@ -171,7 +175,7 @@ namespace Cinemachine
             m_XAxis.Validate();
             m_RecenterToTargetHeading.Validate();
             m_YAxisRecentering.Validate();
-            m_Lens.Validate();
+            Lens.Validate();
 
             InvalidateRigCache();
             
@@ -180,13 +184,6 @@ namespace Cinemachine
                 if (m_Rigs[i] != null)
                     CinemachineVirtualCamera.SetFlagsForHiddenChild(m_Rigs[i].gameObject);
 #endif
-        }
-
-        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
-        internal override void OnBeforeSerialize()
-        {
-            if (!m_Lens.IsPhysicalCamera) 
-                m_Lens.SensorSize = Vector2.one;
         }
 
         /// <summary>Get a child rig</summary>
@@ -253,7 +250,8 @@ namespace Cinemachine
         {
             DestroyRigs();
             UpdateRigCache();
-            PriorityAndChannel = OutputChannel.Default;
+            Priority = new ();
+            OutputChannel = OutputChannel.Default;
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
@@ -714,8 +712,8 @@ namespace Cinemachine
                     if (rig == null)
                         continue;
                     rig.m_ExcludedPropertiesInInspector = m_CommonLens
-                        ? new string[] { "m_Script", "Header", "Extensions", "PriorityAndChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
-                        : new string[] { "m_Script", "Header", "Extensions", "PriorityAndChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
+                        ? new string[] { "m_Script", "Header", "Extensions", "Priority", "OutputChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate", "m_Lens" }
+                        : new string[] { "m_Script", "Header", "Extensions", "Priority", "OutputChannel", "m_Transitions", "m_Follow", "m_StandbyUpdate" };
                     rig.m_LockStageInInspector = new CinemachineCore.Stage[] { CinemachineCore.Stage.Body };
                 }
 
@@ -794,7 +792,7 @@ namespace Cinemachine
             for (int i = 0; i < m_Rigs.Length; ++i)
             {
                 if (m_CommonLens)
-                    m_Rigs[i].m_Lens = m_Lens;
+                    m_Rigs[i].Lens = Lens;
 
                 // If we just deserialized from a legacy version,
                 // pull the orbits and targets from the rigs
@@ -839,7 +837,7 @@ namespace Cinemachine
 
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref Lens);
             m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs

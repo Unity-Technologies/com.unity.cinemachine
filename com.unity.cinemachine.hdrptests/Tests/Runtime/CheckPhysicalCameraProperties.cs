@@ -1,10 +1,9 @@
 using System.Collections;
-using Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.HDRP.Runtime
+namespace Unity.Cinemachine.Tests.HDRP
 {
     [TestFixture]
     public class CheckPhysicalCameraProperties : CinemachineHDRPFixtureBase

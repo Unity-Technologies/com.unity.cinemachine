@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineExternalCamera))]
     [CanEditMultipleObjects]
@@ -15,9 +15,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TransitionHint)));
+            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.TransitionHint) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LookAtTarget)));
 
             return ux;

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.

@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomTimelineEditor(typeof(CinemachineShot))]
     class CinemachineShotClipEditor : ClipEditor

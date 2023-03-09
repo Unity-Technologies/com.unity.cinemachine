@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     class CinemachineSettings : AssetPostprocessor
     {

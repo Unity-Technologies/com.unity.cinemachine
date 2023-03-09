@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a virtual camera "manager" that owns and manages a collection
@@ -48,8 +47,9 @@ namespace Cinemachine
         /// <summary>Reset the component to default values.</summary>
         protected virtual void Reset()
         {
+            Priority = new();
+            OutputChannel = OutputChannel.Default;
             DefaultTarget = default;
-            PriorityAndChannel = OutputChannel.Default;
             InvalidateCameraCache();
         }
         

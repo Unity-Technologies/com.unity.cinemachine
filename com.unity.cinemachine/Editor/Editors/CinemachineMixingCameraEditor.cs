@@ -1,11 +1,10 @@
 using UnityEditor;
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineMixingCamera))]
     class CinemachineMixingCameraEditor : UnityEditor.Editor
@@ -19,8 +18,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
+            this.AddTransitionsSection(ux);
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);

@@ -6,16 +6,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Changed 
-
-- Renamed .asmdef files to follow the convention Unity.[PackageName]
-
 ### Added
 
 - New IgnoreTarget blend hint will blend rotations without considering the tracking target.
 
 ### Changed
+- All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
+- "Cinemachine.Utility" namespace folded into to "Unity.Cinemachine".
 - CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
+- Renamed .asmdef files to follow the convention: Unity.[PackageName].
+- Several settings moved to Transition Settings section of inspector.
+- TrackedObjectOffset renamed to TargetOffset.
+- Improved layout of PositionComposer and RotationComposer inspectors.
+- LensSettings was refactored to improve handling of SensorSize and other physical properties.
+- Full physical camera support for builtin pipeline.
+- LensPresets and PhysicalLensPresets are now separate assets.
 
 
 ## [3.0.0-pre.4] - 2023-02-09

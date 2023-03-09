@@ -1,13 +1,12 @@
 ﻿using UnityEditor;
-using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System;
 using System.Reflection;
+using Unity.Cinemachine.Editor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     [CustomEditor(typeof(CinemachineFreeLookModifier))]
     class CinemachineFreeLookModifierEditor : UnityEditor.Editor
@@ -85,16 +84,7 @@ namespace Cinemachine
                     + InspectorUtility.GetAssignableBehaviourNames(m.CachedComponentType);
 
                 var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                var warningSymbol = overlay.AddChild(new Label 
-                { 
-                    tooltip = warningText,
-                    style = 
-                    { 
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                var warningSymbol = overlay.AddChild(InspectorUtility.MiniHelpIcon(warningText));
 
                 var typeName = ModifierMenuItems.GetModifierName(m.GetType());
                 var foldout = new Foldout() { text = typeName, tooltip = property.tooltip };

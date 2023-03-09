@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An abstract representation of a virtual camera which lives within the Unity scene

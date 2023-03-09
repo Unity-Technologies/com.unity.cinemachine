@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This structure holds settings for procedural lookahead.

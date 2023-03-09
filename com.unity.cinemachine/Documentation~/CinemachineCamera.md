@@ -41,6 +41,17 @@ However, the real magic comes when you add Procedural Components to bring the ca
 | | _Near Clip Plane_ | The closest point relative to the camera where drawing occurs. You can also use [Scene Handles](handles.md) to modify this property.|
 | | _Far Clip Plane_ | The furthest point relative to the camera where drawing occurs. You can also use [Scene Handles](handles.md) to modify this property.|
 | | _Dutch_ | The Dutch angle. Tilts the Unity camera on the z-axis, in degrees. This property is unique to the CinemachineCamera; there is no counterpart property in the Unity camera. |
+| | _GateFit_ | Physical cameras only: How the image is fitted to the sensor if the aspect ratios differ |
+| | _SensorSize_ | Physical cameras only: This is the actual size of the image sensor (in mm) |
+| | _LensShift_ | Physical cameras only: Position of the gate relative to the film back |
+| | _FocusDistance_ | Physical cameras only: Distance from the camera lens at which focus is sharpest.  The Depth of Field Volume override uses this value if you set FocusDistanceMode to Camera.  Otherwise, this value is ignored. |
+| | _Iso_ | Physical cameras only: The sensor sensitivity (ISO) |
+| | _ShutterSpeed_ | Physical cameras only: The exposure time, in seconds |
+| | _Aperture_ | Physical cameras only: The aperture number, in f-stop |
+| | _BladeCount_ | Physical cameras only: The number of diaphragm blades |
+| | _Curvature_ | Physical cameras only: Maps an aperture range to blade curvature |
+| | _BarrelClipping_ | Physical cameras only: The strength of the \"cat-eye\" effect on bokeh (optical vignetting) |
+| | _Anamorphism_ | Physical cameras only: Stretches the sensor to simulate an anamorphic look.  Positive values distort the camera vertically, negative values distort the camera horizontally |
 |  __Mode Override__ || Allows you to select a different camera mode to apply to the [Unity camera](https://docs.unity3d.com/Manual/class-Camera.html) component when Cinemachine activates this CinemachineCamera. <br />__Important:__ For this override to take effect, you must enable the Lens Mode Override option in the CinemachineBrain inspector, and specify a default lens mode there. |
 | | _None_ | Leaves the __Projection__ and __Physical Camera__ properties unchanged in the Camera. |
 | | _Orthographic_ | Sets the __Projection__ property to __Orthographic__. |

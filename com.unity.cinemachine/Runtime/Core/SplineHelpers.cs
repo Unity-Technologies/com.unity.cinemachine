@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.Utility
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A collection of utilities relating to Bezier splines

@@ -2,7 +2,7 @@
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
@@ -50,9 +50,7 @@ namespace Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Transitions)));
+            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.Transitions) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
             ux.AddHeader("Global Settings");
@@ -82,7 +80,7 @@ namespace Cinemachine.Editor
             {
                 CinemachineSceneToolHelpers.FovToolHandle(cmCam, 
                     new SerializedObject(cmCam).FindProperty(() => cmCam.Lens), 
-                    cmCam.Lens, InspectorUtility.GetUseHorizontalFOV(Target.Lens.SourceCamera));
+                    cmCam.Lens, cmCam.Lens.UseHorizontalFOV);
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {

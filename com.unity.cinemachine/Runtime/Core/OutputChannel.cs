@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Structure for holding the output channel ID and priority of a camera.
@@ -61,33 +61,19 @@ namespace Cinemachine
         /// </summary>
         [Tooltip("This controls which CinemachineBrain will be driven by this camera.  It is needed when there are "
             + "multiple CinemachineBrains in the scene (for example, when implementing split-screen).")]
-        public Channels Channel;
-
-        /// <summary>Priority to use, if Enabled is true</summary>
-        [Tooltip("Priority to use.  0 is default.  Camera with highest priority is prioritized.")]
-        public int Priority;
-
-        /// <summary>Create a default value for this item</summary>
-        public static OutputChannel Default => new() { Channel = Channels.Default };
+        [SerializeField] Channels m_Value;
 
         /// <summary>
-        /// Set a custom priority value, and set Enabled to true.
+        /// This controls which CinemachineBrain will be driven by this camera.  It is needed when there are
+        /// multiple CinemachineBrains in the scene (for example, when implementing split-screen).
         /// </summary>
-        /// <param name="priority">The priority value to set</param>
-        public void SetPriority(int priority)
+        public Channels Value
         {
-            Priority = priority;
-            Enabled = true;
+            get => Enabled ? m_Value : Channels.Default;
+            set { m_Value = value; Enabled = true; }
         }
 
-        
-        /// <summary>Get the effective priority.  Returns 0 if not Enabled.</summary>
-        /// <returns>Gets the priority value, when priority is Enabled. 0 otherwise.</returns>
-        public int GetPriority() => Enabled ? Priority : 0;
-        
-        /// <summary>Get the effective output channel mask.</summary>
-        /// <returns>Returns the effective output channel mask, when Custom Priority is enabled.
-        /// Returns Channels.Default otherwise.</returns>
-        public Channels GetChannel() => Enabled ? Channel : Channels.Default;
+        /// <summary>Create a default value for this item</summary>
+        public static OutputChannel Default => new() { m_Value = Channels.Default };
     }
 }

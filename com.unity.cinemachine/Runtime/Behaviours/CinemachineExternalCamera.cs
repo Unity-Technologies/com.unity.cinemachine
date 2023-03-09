@@ -1,8 +1,7 @@
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This component will expose a non-cinemachine camera to the cinemachine system,

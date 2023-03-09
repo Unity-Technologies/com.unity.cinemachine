@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using Cinemachine.Utility;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Third-person follower, with complex pivoting: horizontal about the origin, 

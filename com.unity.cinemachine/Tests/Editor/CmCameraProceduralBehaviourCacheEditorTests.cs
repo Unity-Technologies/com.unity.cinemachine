@@ -2,7 +2,7 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class CmCameraProceduralBehaviourCacheEditorTests : CmCameraProceduralBehaviourCacheTests

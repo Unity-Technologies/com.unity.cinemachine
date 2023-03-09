@@ -1,14 +1,13 @@
-#if UNITY_EDITOR // Cinemachine.Utility.ReflectionHelpers
+#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Cinemachine;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase
@@ -28,9 +27,9 @@ namespace Tests
             base.SetUp();
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_CmCamera = CreateGameObject("CinemachineCamera", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
-            m_CmCamera.Priority = 100;
+            m_CmCamera.Priority.Value = 100;
             
-            s_AllCinemachineComponents = Cinemachine.Utility.ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
+            s_AllCinemachineComponents = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
                 typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
                 && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                 && t.GetCustomAttribute<ObsoleteAttribute>() == null);

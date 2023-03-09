@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineFramingTransposer))]

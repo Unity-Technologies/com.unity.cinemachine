@@ -3,14 +3,13 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cinemachine.Utility;
 using System.Reflection;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;
 #endif
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Base class for virtual camera editors.
@@ -80,7 +79,8 @@ namespace Cinemachine.Editor
 
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Priority));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.OutputChannel));
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 

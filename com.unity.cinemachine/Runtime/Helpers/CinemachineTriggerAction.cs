@@ -1,20 +1,16 @@
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Playables;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+#if CINEMACHINE_TIMELINE
+using UnityEngine.Playables;
+#endif
+
+namespace Unity.Cinemachine
 {
-#if !(CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D)
-    /// <summary>
-    /// A multi-purpose script which causes an action to occur when
-    /// a trigger collider is entered and exited.  This is only available when physics is present.
-    /// </summary>
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachineTriggerAction : MonoBehaviour {}
-#else
     /// <summary>
     /// A multi-purpose script which causes an action to occur when
     /// a trigger collider is entered and exited.
@@ -56,12 +52,12 @@ namespace Cinemachine
         /// <summary>What action to take when an eligible object enters the collider or trigger zone</summary>
         [Tooltip("What action to take when an eligible object enters the collider or trigger zone")]
         [FormerlySerializedAs("m_OnObjectEnter")]
-        public ActionSettings OnObjectEnter = new(ActionSettings.ActionModes.Custom);
+        public ActionSettings OnObjectEnter = new(ActionSettings.ActionModes.EventOnly);
 
         /// <summary>What action to take when an eligible object exits the collider or trigger zone</summary>
         [Tooltip("What action to take when an eligible object exits the collider or trigger zone")]
         [FormerlySerializedAs("m_OnObjectExit")]
-        public ActionSettings OnObjectExit = new(ActionSettings.ActionModes.Custom);
+        public ActionSettings OnObjectExit = new(ActionSettings.ActionModes.EventOnly);
 
         HashSet<GameObject> m_ActiveTriggerObjects = new();
         
@@ -73,7 +69,7 @@ namespace Cinemachine
             public enum ActionModes
             {
                 /// <summary>Use the event only</summary>
-                Custom,
+                EventOnly,
                 /// <summary>Boost priority of virtual camera target</summary>
                 PriorityBoost,
                 /// <summary>Activate the target GameObject</summary>
@@ -165,13 +161,13 @@ namespace Cinemachine
 
                     switch (Action)
                     {
-                        case ActionModes.Custom:
+                        case ActionModes.EventOnly:
                             break;
                         case ActionModes.PriorityBoost:
                             {
                                 if (targetGameObject.TryGetComponent<CinemachineVirtualCameraBase>(out var vcam))
                                 {
-                                    vcam.Priority += BoostAmount;
+                                    vcam.Priority.Value += BoostAmount;
                                     vcam.Prioritize();
                                 }
                                 break;
@@ -303,5 +299,5 @@ namespace Cinemachine
 #endif
         void OnEnable() {} // For the Enabled checkbox
     }
-#endif
 }
+#endif

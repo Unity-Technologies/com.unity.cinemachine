@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is a liaison between Cinemachine with the Post-Processing v3 module,
@@ -205,7 +205,7 @@ namespace Cinemachine
                             }
                             CalculatedFocusDistance = focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
-                            state.Lens.FocusDistance = focusDistance;
+                            state.Lens.PhysicalProperties.FocusDistance = focusDistance;
                             profile.isDirty = true;
                         }
                     }

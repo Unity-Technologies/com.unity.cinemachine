@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     internal class TargetPositionCache
     {

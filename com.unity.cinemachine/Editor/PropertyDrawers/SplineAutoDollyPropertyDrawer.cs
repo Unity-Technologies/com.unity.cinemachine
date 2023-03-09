@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Reflection;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(SplineAutoDolly.ISplineAutoDolly), true)]
     class SplineAutoDollyPropertyDrawer : PropertyDrawer

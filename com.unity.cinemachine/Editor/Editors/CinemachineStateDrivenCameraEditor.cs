@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
     class CinemachineStateDrivenCameraEditor : UnityEditor.Editor
@@ -33,8 +33,7 @@ namespace Cinemachine.Editor
             var noTargetHelp = ux.AddChild(new HelpBox("An Animated Target is required.", HelpBoxMessageType.Warning));
 
             this.AddCameraStatus(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.StandbyUpdate)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PriorityAndChannel)));
+            this.AddTransitionsSection(ux);
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
@@ -42,15 +41,14 @@ namespace Cinemachine.Editor
             ux.AddHeader("State Driven Camera");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            this.AddEmbeddedAssetInspector<CinemachineBlenderSettings>(
-                ux, serializedObject.FindProperty(() => Target.CustomBlends),
+            ux.Add(EmbeddedAssetEditorUtility.EmbeddedAssetInspector<CinemachineBlenderSettings>(
+                serializedObject.FindProperty(() => Target.CustomBlends),
                 (ed) =>
                 {
                     var editor = ed as CinemachineBlenderSettingsEditor;
                     if (editor != null)
                         editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
-                },
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty);
+                }));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
 
@@ -63,7 +61,18 @@ namespace Cinemachine.Editor
                 serializedObject.ApplyModifiedProperties();
             });
 
+            ux.TrackAnyUserActivity(() =>
+            {
+                UpdateTargetStates();
+                layerSel.choices = m_LayerNames;
+                layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);
+                UpdateCameraCandidates();
+                noTargetHelp.SetVisible(Target.AnimatedTarget == null);
+            });
+            
             // GML todo: We use IMGUI for this while we wait for UUM-27687 and UUM-27688 to be fixed
+            UpdateTargetStates();
+            UpdateCameraCandidates();
             ux.AddSpace();
             ux.Add(new IMGUIContainer(() =>
             {
@@ -79,15 +88,6 @@ namespace Cinemachine.Editor
             ux.AddSpace();
             this.AddChildCameras(ux, null);
             this.AddExtensionsDropdown(ux);
-
-            ux.TrackAnyUserActivity(() =>
-            {
-                UpdateTargetStates();
-                layerSel.choices = m_LayerNames;
-                layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);
-                UpdateCameraCandidates();
-                noTargetHelp.SetVisible(Target.AnimatedTarget == null);
-            });
 
             return ux;
         }

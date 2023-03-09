@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Cinemachine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class PriorityTests : CinemachineRuntimeFixtureBase
@@ -39,7 +38,7 @@ namespace Tests.Runtime
             for (var i = 0; i < priorities.Length; ++i)
             {
                 cmCameras.Add(CreateGameObject("CM Vcam " + i, typeof(CinemachineCamera)).GetComponent<CinemachineCamera>());
-                cmCameras[i].Priority = priorities[i];
+                cmCameras[i].Priority.Value = priorities[i];
             }
             yield return null;
 

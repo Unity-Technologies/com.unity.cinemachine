@@ -4,11 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
@@ -313,7 +312,7 @@ namespace Cinemachine.Editor
         }
 
         public static bool EnabledFoldout(
-            Rect rect, SerializedProperty property, string enabledPropertyName, string disabledToggleLabel,
+            Rect rect, SerializedProperty property, string enabledPropertyName,
             GUIContent label = null)
         {
             var enabledProp = property.FindPropertyRelative(enabledPropertyName);
@@ -325,19 +324,9 @@ namespace Cinemachine.Editor
                 return property.isExpanded;
             }
             rect.height = EditorGUIUtility.singleLineHeight;
-            if (label == null)
-                label = new GUIContent(property.displayName, enabledProp.tooltip);
+            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
             EditorGUI.PropertyField(rect, enabledProp, label);
-            if (!enabledProp.boolValue)
-            {
-                if (!string.IsNullOrEmpty(disabledToggleLabel))
-                {
-                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
-                    var r = rect; r.x += w; r.width -= w;
-                    EditorGUI.LabelField(r, disabledToggleLabel);
-                }
-            }
-            else
+            if (enabledProp.boolValue)
             {
                 ++EditorGUI.indentLevel;
                 var childProperty = property.Copy();
@@ -354,6 +343,58 @@ namespace Cinemachine.Editor
                     childProperty.NextVisible(false);
                 }
                 --EditorGUI.indentLevel;
+            }
+            return enabledProp.boolValue;
+        }
+
+        public static bool EnabledFoldoutSingleLine(
+            Rect rect, SerializedProperty property,
+            string enabledPropertyName, string disabledToggleLabel,
+            GUIContent label = null)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
+            if (enabledProp == null)
+            {
+                EditorGUI.PropertyField(rect, property, true);
+                rect.x += EditorGUIUtility.labelWidth;
+                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
+                return property.isExpanded;
+            }
+            rect.height = EditorGUIUtility.singleLineHeight;
+            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
+            EditorGUI.PropertyField(rect, enabledProp, label);
+            if (!enabledProp.boolValue)
+            {
+                if (!string.IsNullOrEmpty(disabledToggleLabel))
+                {
+                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
+                    var r = rect; r.x += w; r.width -= w;
+                    var oldColor = GUI.color;
+                    GUI.color = new (oldColor.r, oldColor.g, oldColor.g, 0.5f);
+                    EditorGUI.LabelField(r, disabledToggleLabel);
+                    GUI.color = oldColor;
+                }
+            }
+            else
+            {
+                rect.width -= EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+                rect.x += EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+
+                var childProperty = property.Copy();
+                var endProperty = childProperty.GetEndProperty();
+                childProperty.NextVisible(true);
+                while (!SerializedProperty.EqualContents(childProperty, endProperty))
+                {
+                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                    {
+                        var oldWidth = EditorGUIUtility.labelWidth;
+                        EditorGUIUtility.labelWidth = 6; // for dragging
+                        EditorGUI.PropertyField(rect, childProperty, new GUIContent(" "));
+                        EditorGUIUtility.labelWidth = oldWidth;
+                        break; // Draw only the first property
+                    }
+                    childProperty.NextVisible(false);
+                }
             }
             return enabledProp.boolValue;
         }
@@ -382,16 +423,6 @@ namespace Cinemachine.Editor
                 s_AssignableTypes[inputType] = s;
             }
             return s_AssignableTypes[inputType];
-        }
-
-        public static bool GetUseHorizontalFOV(Camera camera)
-        {
-            if (camera == null)
-                return false;
-
-            // This should really be a global setting, but for now there is no better way than this!
-            var p = new SerializedObject(camera).FindProperty("m_FOVAxisMode");
-            return (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
         }
 
         ///==============================================================================================
@@ -519,6 +550,51 @@ namespace Cinemachine.Editor
             }
         }
         
+        /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="iconType">The little picture: error, warning, or info</param>
+        public static Label MiniHelpIcon(string tooltip, HelpBoxMessageType iconType = HelpBoxMessageType.Warning)
+        {
+            string icon = iconType switch
+            {
+                HelpBoxMessageType.Warning => "console.warnicon.sml",
+                HelpBoxMessageType.Error => "console.erroricon.sml",
+                _ => "console.infoicon.sml",
+            };
+            return new Label 
+            { 
+                tooltip = tooltip,
+                style = 
+                { 
+                    flexGrow = 0,
+                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent(icon).image,
+                    width = SingleLineHeight, height = SingleLineHeight,
+                    alignSelf = Align.Center
+                }
+            };
+        }
+
+        /// <summary>A small popup context menu, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="contextMenu">The context menu to show when the button is pressed</param>
+        public static Button MiniPopupButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
+        {
+            var button = new Button { tooltip = tooltip, style = 
+            {
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
+                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }};
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
+            return button;
+        }
+
         /// <summary>
         /// This is a hack to get proper layout within th inspector.
         /// There seems to be no sanctioned way to get the current inspector label width.
@@ -529,9 +605,13 @@ namespace Cinemachine.Editor
             public Label Label => labelElement;
             public VisualElement Contents { get; }
 
-            public LabeledRow(string label, string tooltip = "") : this (label, tooltip, new VisualElement()) 
+            public LabeledRow(string label, string tooltip = "") 
+                : this (label, tooltip, new VisualElement()) 
             {
+                style.flexDirection = FlexDirection.Row;
+                style.flexGrow = 1;
                 Contents.style.flexDirection = FlexDirection.Row;
+                Contents.style.flexGrow = 1;
             }
 
             public LabeledRow(string label, string tooltip, VisualElement contents) : base(label, contents)
@@ -667,16 +747,19 @@ namespace Cinemachine.Editor
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 if (Label != null)
-                    Label.AddPropertyDragger(property, Field);
+                    AddPropertyDragger(Label, property, Field);
             }
         }
 
+        /// <summary>
+        /// A row containing a property field.  Suitable for adding widgets nest to the property field.
+        /// </summary>
         public static LabeledRow PropertyRow(
-            SerializedProperty property, out VisualElement propertyField)
+            SerializedProperty property, out PropertyField propertyField, string label = null)
         {
-            var row = new LabeledRow(property.displayName, property.tooltip);
+            var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
-                { style = { flexGrow = 1, flexBasis = SingleLineHeight }});
+                { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
             AddPropertyDragger(row.Label, property, propertyField);
 
             // Kill any left margin that gets inserted into the property field

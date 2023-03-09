@@ -2,12 +2,11 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using System.Reflection;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helpers for drawing CinemachineCamera inspectors.
@@ -34,8 +33,16 @@ namespace Cinemachine.Editor
             if (Selection.objects.Length > 1 || IsPrefab(editor.target))
                 return;
             
+            var cameraParentingMessage = ux.AddChild(new HelpBox(
+                $"Setup error: {editor.target.GetType().Name} should not be a child "
+                + "of CinemachineCamera or CinemachineBrain.\n\n"
+                + "<b>Best practice is to have CinemachineCamera, CinemachineBrain, and camera targets as "
+                + "separate objects, not parented to each other.</b>", 
+                HelpBoxMessageType.Error));
+
             var navelGazeMessage = ux.AddChild(new HelpBox(
-                    "The camera is trying to look at itself.", HelpBoxMessageType.Warning));
+                "The camera is trying to look at itself.", 
+                HelpBoxMessageType.Warning));
 
             var row = ux.AddChild(new InspectorUtility.LabeledRow("Status"));
             var statusText = row.Label;
@@ -63,14 +70,16 @@ namespace Cinemachine.Editor
                     return;
 
                 // Is the camera navel-gazing?
-                if (navelGazeMessage != null)
-                {
-                    CameraState state = target.State;
-                    bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
-                        (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
-                        target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
-                    navelGazeMessage.SetVisible(isNavelGazing);
-                }
+                CameraState state = target.State;
+                bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
+                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
+                    target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
+                navelGazeMessage.SetVisible(isNavelGazing);
+
+                // Is the camera parenting incorrect?
+                cameraParentingMessage.SetVisible(
+                    target.GetComponentInParent<CinemachineBrain>() != null 
+                    || (target.ParentCamera != null && target.ParentCamera is not CinemachineCameraManagerBase));
             });
 
             // Capture "normal" colors
@@ -127,6 +136,34 @@ namespace Cinemachine.Editor
             });
         }
 
+        static bool s_TransitionsExpanded = false;
+
+        public static void AddTransitionsSection(
+            this UnityEditor.Editor editor, VisualElement ux, 
+            List<SerializedProperty> otherProperties = null)
+        {
+            var serializedObject = editor.serializedObject;
+            var target = editor.target as CinemachineVirtualCameraBase;
+
+            var foldout = ux.AddChild(new Foldout 
+            { 
+                value = s_TransitionsExpanded,
+                text = "Transition Settings", 
+                tooltip = "Settings to control how this camera interacts with other cameras" 
+            });
+            foldout.RegisterValueChangedCallback((evt) => 
+            {
+                if (evt.target == foldout)
+                    s_TransitionsExpanded = evt.newValue;
+            });
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
+            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
+            if (otherProperties != null)
+                foreach (var p in otherProperties)
+                    foldout.Add(new PropertyField(p));
+        }
+
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>
         public static void AddPipelineDropdowns(this UnityEditor.Editor editor, VisualElement ux)
         {
@@ -144,19 +181,21 @@ namespace Cinemachine.Editor
                 if (PipelineStageMenu.s_StageData[i].Types.Count < 2)
                     continue;
 
+                var stage = i; // capture for lambda
                 var row = ux.AddChild(new InspectorUtility.LeftRightRow());
+                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
+                    { style = { flexGrow = 1, alignSelf = Align.Center }});
+                var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
+                warningIcon.SetVisible(false);
+
                 int currentSelection = PipelineStageMenu.GetSelectedComponent(
                     i, target.GetCinemachineComponent((CinemachineCore.Stage)i));
-                var stage = i; // capture for lambda
-                var dropdown = new DropdownField
+                var dropdown = row.Right.AddChild(new DropdownField
                 {
-                    name = PipelineStageMenu.s_StageData[stage].Name + " selector",
-                    label = "",
                     choices = PipelineStageMenu.s_StageData[stage].Choices,
                     index = currentSelection,
                     style = { flexGrow = 1 }
-                };
-                dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+                });
                 dropdown.RegisterValueChangedCallback(evt => 
                 {
                     var newType = PipelineStageMenu.s_StageData[stage].Types[GetTypeIndexFromSelection(evt.newValue, stage)];
@@ -185,21 +224,6 @@ namespace Cinemachine.Editor
                         return 0;
                     }
                 });
-                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
-                    { style = { flexGrow = 1, alignSelf = Align.Center }});
-                var warningIcon = row.Left.AddChild(new Label 
-                { 
-                    tooltip = "Component is disabled or has a problem",
-                    style = 
-                    { 
-                        flexGrow = 0,
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
-                warningIcon.SetVisible(false);
-                row.Right.Add(dropdown);
 
                 pipelineItems.Add(new PipelineStageItem
                 {
@@ -213,6 +237,7 @@ namespace Cinemachine.Editor
             {
                 if (target == null)
                     return; // deleted
+                target.InvalidatePipelineCache();
                 for (int i = 0; i < pipelineItems.Count; ++i)
                 {
                     var item = pipelineItems[i];
@@ -482,17 +507,7 @@ namespace Cinemachine.Editor
                 for (int i = row.childCount - 1; i >= 0; --i)
                     row.RemoveAt(i);
 
-                var warningIcon = row.AddChild(new Label 
-                { 
-                    tooltip = "Item is null",
-                    style = 
-                    { 
-                        flexGrow = 0,
-                        backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.warnicon.sml").image,
-                        width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                        alignSelf = Align.Center
-                    }
-                });
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
                 var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
                 row.AddChild(new ObjectField 
                 { 
@@ -507,9 +522,9 @@ namespace Cinemachine.Editor
                 dragger.AddToClassList("unity-base-field__label--with-dragger");
 
                 var so = new SerializedObject(element);
-                var prop = so.FindProperty("PriorityAndChannel");
+                var prop = so.FindProperty("Priority");
                 var enabledProp = prop.FindPropertyRelative("Enabled");
-                var priorityProp = prop.FindPropertyRelative("Priority");
+                var priorityProp = prop.FindPropertyRelative("m_Value");
                 var priorityField = row.AddChild(new IntegerField
                 {
                     value = enabledProp.boolValue ? priorityProp.intValue : 0,

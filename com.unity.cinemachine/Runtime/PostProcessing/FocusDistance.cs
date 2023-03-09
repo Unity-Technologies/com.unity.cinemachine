@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.Rendering;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     internal class FocusDistance : CustomPass
     {

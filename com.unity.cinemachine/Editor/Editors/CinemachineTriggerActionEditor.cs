@@ -1,152 +1,112 @@
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Playables;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
-#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
     [CustomEditor(typeof(CinemachineTriggerAction))]
     class CinemachineTriggerActionEditor : UnityEditor.Editor
     {
         CinemachineTriggerAction Target => target as CinemachineTriggerAction;
 
-        CinemachineTriggerAction.ActionSettings m_Def = new(); // to access name strings
-
-        static bool s_EnterExpanded;
-        static bool s_ExitExpanded;
-
-        SerializedProperty[] m_RepeatProperties = new SerializedProperty[2];
-        GUIContent m_RepeatLabel;
-        GUIContent[] m_RepeatSubLabels = new GUIContent[2];
-
-        GUIStyle m_FoldoutStyle;
-
-        void OnEnable()
+        public override VisualElement CreateInspectorGUI()
         {
-            m_RepeatProperties[0] = serializedObject.FindProperty(() => Target.SkipFirst);
-            m_RepeatProperties[1] = serializedObject.FindProperty(() => Target.Repeating);
-            m_RepeatLabel = new GUIContent(
-                m_RepeatProperties[0].displayName, m_RepeatProperties[0].tooltip);
-            m_RepeatSubLabels[0] = GUIContent.none;
-            m_RepeatSubLabels[1] = new GUIContent(
-                m_RepeatProperties[1].displayName, m_RepeatProperties[1].tooltip);
+            var ux = new VisualElement();
+
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LayerMask)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.WithTag)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.WithoutTag)));
+
+            var row = ux.AddChild(InspectorUtility.PropertyRow(serializedObject.FindProperty(() => Target.SkipFirst), out _));
+            var repeatingProp = serializedObject.FindProperty(() => Target.Repeating);
+            row.Contents.AddChild(new Toggle { text = repeatingProp.displayName, style = { marginLeft = 5 }}).BindProperty(repeatingProp);
+
+            AddActionSettings(ux, serializedObject.FindProperty(() => Target.OnObjectEnter));
+            AddActionSettings(ux, serializedObject.FindProperty(() => Target.OnObjectExit));
+
+            return ux;
         }
 
-        public override void OnInspectorGUI()
+        void AddActionSettings(VisualElement ux, SerializedProperty property)
         {
-            serializedObject.Update();
+            CinemachineTriggerAction.ActionSettings def = new(); // to access name strings
 
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.LayerMask));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.WithTag));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.WithoutTag));
-            InspectorUtility.MultiPropertyOnLine(
-                EditorGUILayout.GetControlRect(), m_RepeatLabel,
-                m_RepeatProperties, m_RepeatSubLabels);
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
+            ux.AddSpace();
+            var foldout = ux.AddChild(new Foldout { text = $"<b>{property.displayName}</b>" });
+            foldout.BindProperty(property);
 
-            EditorGUILayout.Space();
-            s_EnterExpanded = DrawActionSettings(serializedObject.FindProperty(() => Target.OnObjectEnter), s_EnterExpanded);
-            s_ExitExpanded = DrawActionSettings(serializedObject.FindProperty(() => Target.OnObjectExit), s_ExitExpanded);
-        }
+            var actionProp = property.FindPropertyRelative(() => def.Action);
+            foldout.Add(new PropertyField(actionProp));
 
-        bool DrawActionSettings(SerializedProperty property, bool expanded)
-        {
-            if (m_FoldoutStyle == null)
-                m_FoldoutStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
+            var targetProp = property.FindPropertyRelative(() => def.Target);
+            var target = foldout.AddChild(new PropertyField(targetProp));
 
-            Rect r = EditorGUILayout.GetControlRect();
-            expanded = EditorGUI.Foldout(r, expanded, property.displayName, true, m_FoldoutStyle);
-            if (expanded)
-            {
-                SerializedProperty actionProp = property.FindPropertyRelative(() => m_Def.Action);
-                EditorGUILayout.PropertyField(actionProp);
-
-                SerializedProperty targetProp = property.FindPropertyRelative(() => m_Def.Target);
-                bool isCustom = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Custom);
-                if (!isCustom)
-                    EditorGUILayout.PropertyField(targetProp);
-
-                bool isBoost = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.PriorityBoost;
-                if (isBoost)
-                    EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_Def.BoostAmount));
+            var boostAmount = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.BoostAmount)));
 
 #if CINEMACHINE_TIMELINE
-                bool isPlay = actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Play;
-                if (isPlay)
-                {
-                    var props = new SerializedProperty[2]
-                    {
-                        property.FindPropertyRelative(() => m_Def.StartTime),
-                        property.FindPropertyRelative(() => m_Def.Mode)
-                    };
-                    var sublabels = new GUIContent[2]
-                    {
-                        GUIContent.none, new GUIContent("s", props[1].tooltip)
-                    };
-                    InspectorUtility.MultiPropertyOnLine(
-                        EditorGUILayout.GetControlRect(), null, props, sublabels);
-                }
+            var timelineRow = foldout.AddChild(InspectorUtility.PropertyRow(property.FindPropertyRelative(() => def.StartTime), out _));
+            timelineRow.Contents.AddChild(new Label { text = " s", tooltip = "Seconds", style = { alignSelf = Align.Center }});
+            timelineRow.Contents.AddChild(new PropertyField(
+                property.FindPropertyRelative(() => def.Mode), "") { style = { flexGrow = 1 }});
 #endif
-                if (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Custom)
-                {
-                    EditorGUILayout.HelpBox("Use the Event() list below to call custom methods", MessageType.Info);
-                }
+            var row = foldout.AddChild(new InspectorUtility.LeftRightRow());
+            var helpMessage = row.Right.AddChild(new HelpBox("Help text", HelpBoxMessageType.Warning));
+            foldout.Add(new PropertyField(property.FindPropertyRelative(() => def.Event)) { style = { marginTop = 5 }});
 
-                if (isBoost)
-                {
-                    if (GetTargetComponent<CinemachineVirtualCameraBase>(targetProp.objectReferenceValue) == null)
-                        EditorGUILayout.HelpBox("Target must be a CinemachineVirtualCameraBase in order to boost priority", MessageType.Warning);
-                }
+            foldout.TrackAnyUserActivity(() =>
+            {
+                var targetObject = targetProp.objectReferenceValue;
+                var action = (CinemachineTriggerAction.ActionSettings.ActionModes)actionProp.intValue;
 
-                bool isEnableDisable = (actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Enable
-                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Disable);
-                if (isEnableDisable)
-                {
-                    var value = targetProp.objectReferenceValue;
-                    if (value != null && (value as Behaviour) == null)
-                        EditorGUILayout.HelpBox("Target must be a Behaviour in order to Enable/Disable", MessageType.Warning);
-                }
+                bool isEventOnly = action == CinemachineTriggerAction.ActionSettings.ActionModes.EventOnly;
+                target.SetVisible(!isEventOnly);
+
+                string helpText = isEventOnly || targetObject != null 
+                    ? string.Empty : "No action will be taken because target is not valid";
+
+                boostAmount.SetVisible(action == CinemachineTriggerAction.ActionSettings.ActionModes.PriorityBoost);
 #if CINEMACHINE_TIMELINE
-                bool isPlayStop = isPlay
-                    || actionProp.intValue == (int)CinemachineTriggerAction.ActionSettings.ActionModes.Stop;
-                if (isPlayStop)
+                bool isTimeline = action == CinemachineTriggerAction.ActionSettings.ActionModes.Play
+                    || action == CinemachineTriggerAction.ActionSettings.ActionModes.Stop;
+                timelineRow.SetVisible(isTimeline);
+                if (isTimeline && !HasComponent<Animator>(targetObject) && !HasComponent<PlayableDirector>(targetObject))
+                    helpText = "Target must have a PlayableDirector or Animator in order to Play/Stop";
+#endif
+                if (string.IsNullOrEmpty(helpText))
                 {
-                    if (GetTargetComponent<Animator>(targetProp.objectReferenceValue) == null
-                        && GetTargetComponent<PlayableDirector>(targetProp.objectReferenceValue) == null)
+                    switch (action)
                     {
-                        EditorGUILayout.HelpBox("Target must have a PlayableDirector or Animator in order to Play/Stop", MessageType.Warning);
+                        default: break;
+                        case CinemachineTriggerAction.ActionSettings.ActionModes.PriorityBoost:
+                            if (!HasComponent<CinemachineVirtualCameraBase>(targetObject))
+                                helpText = "Target must be a Cinemachine Camera in order to boost priority";
+                            break;
+                        case CinemachineTriggerAction.ActionSettings.ActionModes.Enable:
+                        case CinemachineTriggerAction.ActionSettings.ActionModes.Disable:
+                            if (targetObject is not Behaviour)
+                                helpText = "Target must be a Behaviour in order to Enable/Disable";
+                            break;
                     }
                 }
-#endif
-                if (!isCustom && targetProp.objectReferenceValue == null)
-                    EditorGUILayout.HelpBox("No action will be taken because target is not valid", MessageType.Info);
+                helpMessage.text = helpText;
+                helpMessage.SetVisible(!string.IsNullOrEmpty(helpText));
+            });
 
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("This event will be invoked.  Add calls to custom methods here:");
-                EditorGUILayout.PropertyField(property.FindPropertyRelative(() => m_Def.Event));
-            }
-            property.serializedObject.ApplyModifiedProperties();
-            return expanded;
-        }
-
-        static T GetTargetComponent<T>(UnityEngine.Object obj) where T : Behaviour
-        {
-            UnityEngine.Object currentTarget = obj;
-            if (currentTarget != null)
+            static bool HasComponent<T>(Object obj) where T : Component
             {
-                GameObject targetGameObject = currentTarget as GameObject;
-                Behaviour targetBehaviour = currentTarget as Behaviour;
-                if (targetBehaviour != null)
-                    targetGameObject = targetBehaviour.gameObject;
-                if (targetBehaviour is T)
-                    return targetBehaviour as T;
-                if (targetGameObject != null && targetGameObject.TryGetComponent<T>(out var t))
-                    return t;
+                if (obj is T)
+                    return true;
+                var go = obj as GameObject;
+                if (go == null && obj is Component c)
+                    go = c.gameObject;
+                if (go != null)
+                    return go.TryGetComponent<T>(out _);
+                return false;
             }
-            return null;
         }
     }
-#endif
 }
+#endif

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Base class for a Monobehaviour that represents a Virtual Camera within the Unity scene.
@@ -46,12 +45,21 @@ namespace Cinemachine
             + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
             + "In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, "
             + "the value can be set here.")]
-        [FoldoutWithEnabledButton(toggleText: "(using default)")]
-        public OutputChannel PriorityAndChannel = OutputChannel.Default;
+        [EnabledProperty(toggleText: "(using default)")]
+        public PrioritySettings Priority = new ();
+
+        /// <summary>
+        /// The output channel behaves like Unity layers.  Use it to filter the output of CinemachineCameras
+        /// to different CinemachineBrains, for instance in a multi-screen environemnt.
+        /// </summary>
+        [NoSaveDuringPlay]
+        [Tooltip("The output channel behaves like Unity layers.  Use it to filter the output of CinemachineCameras "
+            + "to different CinemachineBrains, for instance in a multi-screen environemnt.")]
+        [EnabledProperty(toggleText: "(using default)")]
+        public OutputChannel OutputChannel = OutputChannel.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
-        [FormerlySerializedAs("m_ActivationId")]
         internal int ActivationId;
 
         int m_QueuePriority = int.MaxValue;
@@ -133,17 +141,11 @@ namespace Cinemachine
         internal protected virtual void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                PriorityAndChannel.SetPriority(m_LegacyPriority);
+                Priority.Value = m_LegacyPriority;
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
         int m_LegacyPriority = 10;
-
-        /// <summary>Obsolete field - use Priority instead</summary>
-        // GML Upgradable does not work because we can't auto-upgrade an int field to an int property :-/
-        //[Obsolete("m_Priority has been removed.  Please use Priority. (UnityUpgradable) -> Priority", false)]
-        [Obsolete("m_Priority has been removed.  Please use Priority.", false)]
-        public int m_Priority { get => Priority; set => Priority = value; }
 
         //============================================================================
 
@@ -408,21 +410,7 @@ namespace Cinemachine
 
         /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
         public virtual string Description => "";
-
-        /// <summary>Get the Priority of the virtual camera.  This determines its placement
-        /// in the CinemachineCore's queue of eligible shots.</summary>
-        public int Priority 
-        { 
-            get => PriorityAndChannel.GetPriority();
-            set => PriorityAndChannel.SetPriority(value);
-        }
-
         
-        /// <summary>Get the effective output channel mask.</summary>
-        /// <returns>Returns the effective output channel mask, when Custom Priority is enabled.
-        /// Returns Channels.Default otherwise.</returns>
-        public OutputChannel.Channels GetChannel() => PriorityAndChannel.GetChannel();
-
         /// <summary>The GameObject owner of the Virtual Camera behaviour.</summary>
         public GameObject VirtualCameraGameObject
         {
@@ -590,10 +578,8 @@ namespace Cinemachine
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void Update()
         {
-            if (Priority != m_QueuePriority)
-            {
+            if (Priority.Value != m_QueuePriority)
                 UpdateVcamPoolStatus(); // Force a re-sort
-            }
         }
 
         bool m_SlaveStatusUpdated = false;
@@ -637,7 +623,7 @@ namespace Cinemachine
             CinemachineCore.Instance.RemoveActiveCamera(this);
             if (m_ParentVcam == null && isActiveAndEnabled)
                 CinemachineCore.Instance.AddActiveCamera(this);
-            m_QueuePriority = Priority;
+            m_QueuePriority = Priority.Value;
         }
 
         /// <summary>When multiple virtual cameras have the highest priority, there is
@@ -659,10 +645,7 @@ namespace Cinemachine
         /// new CinemachineCamera is enabled: the most recent one goes to the top of the priority sub-queue.
         /// Use this method to push a camera to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
-        public void Prioritize()
-        {
-            UpdateVcamPoolStatus(); // Force a re-sort
-        }
+        public void Prioritize() => UpdateVcamPoolStatus(); // Force a re-sort
         
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera

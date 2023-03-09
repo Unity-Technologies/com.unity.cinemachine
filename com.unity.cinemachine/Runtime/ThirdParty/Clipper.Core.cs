@@ -11,7 +11,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
   struct Point64
   {

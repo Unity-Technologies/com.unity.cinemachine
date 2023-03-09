@@ -2,9 +2,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Cinemachine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class BrainTargetOverrideTests : CinemachineFixtureBase
@@ -32,7 +31,7 @@ namespace Tests.Runtime
             m_BrainAlone2.ControlledObject = m_GoWithoutBrain;
             
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
-            m_Vcam.Priority = 100;
+            m_Vcam.Priority.Value = 100;
             m_FollowObject = CreateGameObject("Follow Object");
             
         }

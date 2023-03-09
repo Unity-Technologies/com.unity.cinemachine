@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Splines;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSplineRoll))]
     [CanEditMultipleObjects]

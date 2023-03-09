@@ -1,9 +1,8 @@
 using UnityEngine;
 using NUnit.Framework;
-using Cinemachine.Utility;
 using UnityEngine.TestTools.Utils;
 
-namespace Tests.Editor
+namespace Unity.Cinemachine.Tests.Editor
 {
     [TestFixture]
     public class UnityVectorExtensionTests

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CameraTarget))]
     class CameraTargetPropertyDrawer : PropertyDrawer
@@ -25,17 +25,8 @@ namespace Cinemachine.Editor
 
         VisualElement CreateTargetProperty(SerializedProperty property, SerializedProperty customProp)
         {
-            var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            row.Add(new PropertyField(property) { style = { flexGrow = 1 }});
-            var button = row.AddChild(new Button { style = 
-            { 
-                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                alignSelf = Align.Center,
-                paddingRight = 0, borderRightWidth = 0, marginRight = 0
-            }});
-
-            var manipulator = new ContextualMenuManipulator((evt) => 
+            var row = InspectorUtility.PropertyRow(property, out _);
+            row.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
             {
                 evt.menu.AppendAction("Convert to TargetGroup", 
                     (action) => 
@@ -67,10 +58,7 @@ namespace Cinemachine.Editor
                         return customProp.boolValue ? DropdownMenuAction.Status.Checked : DropdownMenuAction.Status.Normal;
                     }
                 );  
-            });
-            manipulator.activators.Clear();
-            manipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
-            button.AddManipulator(manipulator);
+            })));
             return row;
         }
     }

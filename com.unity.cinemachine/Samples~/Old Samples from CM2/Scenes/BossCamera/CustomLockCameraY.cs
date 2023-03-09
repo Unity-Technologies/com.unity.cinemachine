@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Cinemachine.Examples
+namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// An add-on module for Cinemachine Virtual Camera that locks the camera's Y co-ordinate

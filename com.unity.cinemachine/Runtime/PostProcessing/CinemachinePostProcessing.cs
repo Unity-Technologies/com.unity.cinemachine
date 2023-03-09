@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 using System.Collections.Generic;
 using UnityEngine.Rendering.PostProcessing;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour is a liaison between Cinemachine and the Post-Processing v2 module.  You must
@@ -197,7 +197,7 @@ namespace Cinemachine
                                 if (focusTarget != null)
                                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
                             }
-                            CalculatedFocusDistance = state.Lens.FocusDistance 
+                            CalculatedFocusDistance = state.Lens.PhysicalProperties.FocusDistance 
                                 = dof.focusDistance.value = Mathf.Max(0.01f, focusDistance);
                         }
                     }
