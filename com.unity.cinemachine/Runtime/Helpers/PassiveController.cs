@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     [Serializable]
     public class PassiveController: LazyController, IController<PassiveController>

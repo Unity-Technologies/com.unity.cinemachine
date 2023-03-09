@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     public abstract class InputAxisBehaviour<T>: MonoBehaviour where T: IController<T>, new()
     {
@@ -121,9 +121,11 @@ namespace Cinemachine
                 if (!c.enabled)
                     continue;
 #if ENABLE_LEGACY_INPUT_MANAGER
+#if false // GML hacking
                 float legacyInputValue = 0;
                 if (!string.IsNullOrEmpty(c.LegacyInput) && GetInputAxisValue != null)
                     legacyInputValue = c.Control.InputValue = GetInputAxisValue(c.LegacyInput) * c.LegacyGain;
+#endif
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (c.IsValid())
@@ -131,7 +133,9 @@ namespace Cinemachine
                     var hint = i < inputAxisData.m_Axes.Count ? inputAxisData.m_Axes[i].Hint : 0;
                     var inputValue = inputAxisData.ReadInputAction(c, hint) * c.gain;
 #if ENABLE_LEGACY_INPUT_MANAGER
+#if false // GML hacking
                     if (legacyInputValue == 0 || inputValue != 0)
+#endif
 #endif
                     c.control.InputValue = inputValue;
                 }
