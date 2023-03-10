@@ -29,12 +29,12 @@ namespace Unity.Cinemachine.Samples
             m_HelpToggle.RegisterValueChangedCallback(evt => m_HelpBox.visible = evt.newValue);
             m_HelpToggleBox.Add(m_HelpToggle);
             
-            m_HelpBox = uiDocument.rootVisualElement.Q("HelpBox");
-            if (uiDocument.rootVisualElement.Q("HelpTitle") is Label helpTitle)
+            m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
+            if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle)
                 helpTitle.text = HelpTitle;
-            if (uiDocument.rootVisualElement.Q("HelpTextField") is TextField helpText)
+            if (uiDocument.rootVisualElement.Q("HelpTextBox__TextField") is TextField helpText)
                 helpText.value = HelpText;
-            if (uiDocument.rootVisualElement.Q("CloseButton") is Button closeButton) 
+            if (uiDocument.rootVisualElement.Q("HelpTextBox_CloseButton") is Button closeButton) 
                 closeButton.RegisterCallback<ClickEvent>(_ => CloseHelpBox());
             
             m_HelpBox.visible = m_HelpToggle.value = VisibleAtStart;
