@@ -10,7 +10,7 @@ using System.Linq;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This is a behaviour that is used to drive behaviours with IInputAxisOwner interface, 
+    /// This is a behaviour that is used to drive other behaviours that implement IInputAxisOwner, 
     /// which it discovers dynamically.  It is the bridge between the input system and 
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
     /// 
