@@ -30,8 +30,8 @@ namespace Unity.Cinemachine.Editor
                     var t = targets[i] as CinemachinePanTilt;
                     if (!t.HasInputHandler && t.VirtualCamera != null)
                     {
-                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
-                            Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
+                        if (!t.VirtualCamera.TryGetComponent<CinemachineInputAxisController>(out var controller))
+                            Undo.AddComponent<CinemachineInputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {
                             Undo.RecordObject(controller, "enable controller");

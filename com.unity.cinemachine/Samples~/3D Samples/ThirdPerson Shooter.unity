@@ -278,9 +278,9 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    m_Style: 1
-    m_Time: 2
-    m_CustomCurve:
+    Style: 1
+    Time: 2
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
@@ -444,12 +444,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1525634691}
@@ -462,10 +464,18 @@ MonoBehaviour:
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -2079,8 +2089,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[4].Input.Gain
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Controllers.Array.data[4].LegacyGain
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[5].Input.Gain
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Controllers.Array.data[5].LegacyGain
@@ -2115,6 +2133,14 @@ PrefabInstance:
       value: Fire1
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[4].Input.LegacyGain
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[5].Input.LegacyGain
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Controllers.Array.data[4].Control.AccelTime
       value: 0.2
       objectReference: {fileID: 0}
@@ -2123,12 +2149,36 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[4].Input.InputAction
+      value: 
+      objectReference: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[4].Input.LegacyInput
+      value: Mouse X
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Controllers.Array.data[5].Control.AccelTime
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Controllers.Array.data[5].Control.DecelTime
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[5].Input.InputAction
+      value: 
+      objectReference: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[5].Input.LegacyInput
+      value: Mouse Y
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[6].Input.InputAction
+      value: 
+      objectReference: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: Controllers.Array.data[6].Input.LegacyInput
+      value: Fire1
       objectReference: {fileID: 0}
     - target: {fileID: 8077383552022060413, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: Strafe
@@ -2592,12 +2642,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 10
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1525634691}
@@ -2610,10 +2662,18 @@ MonoBehaviour:
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -2708,12 +2768,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 325a6a3050a061e4b8aa51386c30e8e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: -18
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   DefaultTarget:
     Enabled: 0
@@ -2721,7 +2783,6 @@ MonoBehaviour:
       TrackingTarget: {fileID: 0}
       LookAtTarget: {fileID: 0}
       CustomLookAtTarget: 0
-  ShowDebugText: 0
   m_ChildCameras:
   - {fileID: 334051334}
   - {fileID: 2076565716644322337}
@@ -2741,9 +2802,9 @@ MonoBehaviour:
     ActivateAfter: 0
     MinDuration: 0
   DefaultBlend:
-    m_Style: 1
-    m_Time: 0.5
-    m_CustomCurve:
+    Style: 1
+    Time: 0.5
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2

@@ -37,9 +37,9 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// This is a deprecated component.  Use InputAxisDriver instead.
+    /// This is a deprecated component.  Use DefaultInputAxisDriver instead.
     /// </summary>
-    [Obsolete("CinemachineInputAxisDriver has been deprecated. Use InputAxisDriver instead.")]
+    [Obsolete("CinemachineInputAxisDriver has been deprecated. Use DefaultInputAxisDriver instead.")]
     [Serializable]
     public struct CinemachineInputAxisDriver
     {

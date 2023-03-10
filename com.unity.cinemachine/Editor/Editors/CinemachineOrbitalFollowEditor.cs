@@ -46,8 +46,8 @@ namespace Unity.Cinemachine.Editor
                     var t = (CinemachineOrbitalFollow)targets[i];
                     if (!t.HasInputHandler)
                     {
-                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
-                            Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
+                        if (!t.VirtualCamera.TryGetComponent<CinemachineInputAxisController>(out var controller))
+                            Undo.AddComponent<CinemachineInputAxisController>(t.VirtualCamera.gameObject);
                         else if (!controller.enabled)
                         {
                             Undo.RecordObject(controller, "enable controller");

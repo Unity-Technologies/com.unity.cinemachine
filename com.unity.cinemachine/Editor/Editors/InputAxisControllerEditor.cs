@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace Unity.Cinemachine.Editor
 {
-    [CustomEditor(typeof(InputAxisController), true)]
+    [CustomEditor(typeof(CinemachineInputAxisController), true)]
     class InputAxisControllerEditor : UnityEditor.Editor
     {
-        InputAxisController Target => target as InputAxisController;
+        CinemachineInputAxisController Target => target as CinemachineInputAxisController;
 
         void OnDisable()
         {
@@ -49,7 +49,7 @@ namespace Unity.Cinemachine.Editor
             list.BindProperty(controllersProperty);
 
             var istIsEmptyMessage = ux.AddChild(new HelpBox("No applicable components found.  Must have one of: "
-                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisSource)), HelpBoxMessageType.Warning));
+                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), HelpBoxMessageType.Warning));
 
             TrackControllerCount(controllersProperty);
             list.TrackPropertyValue(controllersProperty, TrackControllerCount);
@@ -63,8 +63,8 @@ namespace Unity.Cinemachine.Editor
         {
             static DefaultControlInitializer()
             {
-                InputAxisController.SetControlDefaults 
-                    = (in IInputAxisSource.AxisDescriptor axis, ref InputAxisController.Controller controller) => 
+                CinemachineInputAxisController.SetControlDefaults 
+                    = (in IInputAxisOwner.AxisDescriptor axis, ref CinemachineInputAxisController.Controller controller) => 
                 {
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var actionName = "";
@@ -78,12 +78,12 @@ namespace Unity.Cinemachine.Editor
                         actionName = "Player/Look";
                         inputName = axis.Hint switch
                         {
-                           IInputAxisSource.AxisDescriptor.Hints.X => "Mouse X",
-                           IInputAxisSource.AxisDescriptor.Hints.Y => "Mouse Y",
+                           IInputAxisOwner.AxisDescriptor.Hints.X => "Mouse X",
+                           IInputAxisOwner.AxisDescriptor.Hints.Y => "Mouse Y",
                            _ => ""
                         };
-                        invertY = axis.Hint == IInputAxisSource.AxisDescriptor.Hints.Y;
-                        controller.Control = new InputAxisControl { AccelTime = 0.2f, DecelTime = 0.2f };
+                        invertY = axis.Hint == IInputAxisOwner.AxisDescriptor.Hints.Y;
+                        controller.Driver = DefaultInputAxisDriver.Default;
                     }
 #if false
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
@@ -97,8 +97,8 @@ namespace Unity.Cinemachine.Editor
                         actionName = "Player/Move";
                         inputName = axis.Hint switch
                         {
-                           IInputAxisSource.AxisDescriptor.Hints.X => "Horizontal",
-                           IInputAxisSource.AxisDescriptor.Hints.Y => "Vertical",
+                           IInputAxisOwner.AxisDescriptor.Hints.X => "Horizontal",
+                           IInputAxisOwner.AxisDescriptor.Hints.Y => "Vertical",
                            _ => ""
                         };
                     }
@@ -116,15 +116,15 @@ namespace Unity.Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (actionName.Length != 0)
                     {
-                        controller.InputAction = (UnityEngine.InputSystem.InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
+                        controller.Input.InputAction = (UnityEngine.InputSystem.InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
                             "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").FirstOrDefault(
                                 x => x.name == actionName);
                     }
-                    controller.Gain = isMomentary ? 1 : 4f * (invertY ? -1 : 1);
+                    controller.Input.Gain = isMomentary ? 1 : 4f * (invertY ? -1 : 1);
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
-                    controller.LegacyInput = inputName;
-                    controller.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
+                    controller.Input.LegacyInput = inputName;
+                    controller.Input.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
 #endif
                     controller.Enabled = true;
                 };
@@ -132,24 +132,25 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(InputAxisController.Controller))]
+    [CustomPropertyDrawer(typeof(CinemachineInputAxisController.Controller))]
     class InputAxisControllerItemPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            InputAxisController.Controller def = new ();
+            CinemachineInputAxisController.Controller def = new ();
 
             var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
             overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "") 
                 { style = {flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
 
             // Draw the input value on the same line as the foldout, for convenience
+            var inputProperty = property.FindPropertyRelative(() => def.Input);
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.InputAction), "") 
+            overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.InputAction), "") 
                 { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
-            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.LegacyInput), "") 
+            overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.LegacyInput), "") 
                 { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight, marginLeft = 6}} );
 #endif
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip };
