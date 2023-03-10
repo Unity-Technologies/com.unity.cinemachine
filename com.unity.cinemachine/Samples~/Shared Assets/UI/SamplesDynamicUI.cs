@@ -58,13 +58,8 @@ namespace Unity.Cinemachine.Samples
                         label = item.Name,
                         value = item.IsToggle.Value,
                         focusable = false,
-                        style =
-                        {
-                            flexDirection = new StyleEnum<FlexDirection>(FlexDirection.RowReverse),
-                            alignSelf = new StyleEnum<Align>(Align.FlexStart),
-                            unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold),
-                        }
                     };
+                    toggle.AddToClassList("dynamicToggle");
                     toggle.RegisterValueChangedCallback(e => item.IsToggle.OnValueChanged.Invoke(e.newValue));
                     m_Root.Add(toggle);
                     m_DynamicElements.Add(toggle);
@@ -74,14 +69,9 @@ namespace Unity.Cinemachine.Samples
                     var button = new Button
                     {
                         text = item.Name,
-                        focusable = false,
-                        style =
-                        {
-                            backgroundColor = new StyleColor(new Color(196, 196, 196, 255)),
-                            alignSelf = new StyleEnum<Align>(Align.FlexStart),
-                            unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold),
-                        }
+                        focusable = false
                     };
+                    button.AddToClassList("dynamicButton");
                     button.clickable.clicked += item.OnClick.Invoke;
                     m_Root.Add(button);
                     m_DynamicElements.Add(button);

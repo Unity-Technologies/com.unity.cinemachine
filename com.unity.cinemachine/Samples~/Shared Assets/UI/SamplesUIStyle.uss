@@ -1,0 +1,15 @@
+Box {
+    background-color: rgba(196, 196, 196, 0.5);
+}
+
+.dynamicButton {
+    background-color: rgba(196, 196, 196, 1);
+    align-self: flex-start;
+    -unity-font-style: bold;
+}
+
+.dynamicToggle {
+    flex-direction: row-reverse;
+    align-self: flex-start;
+    -unity-font-style: bold;
+}
