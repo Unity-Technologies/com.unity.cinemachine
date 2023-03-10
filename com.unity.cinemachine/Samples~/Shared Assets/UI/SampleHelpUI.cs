@@ -17,7 +17,6 @@ namespace Unity.Cinemachine.Samples
 
         VisualElement m_HelpBox, m_HelpToggleBox;
         Toggle m_HelpToggle;
-        Button m_CloseButton;
 
         void OnEnable()
         {
@@ -25,23 +24,28 @@ namespace Unity.Cinemachine.Samples
             var uiDocument = GetComponent<UIDocument>();
             
             m_HelpToggleBox = uiDocument.rootVisualElement.Q("HelpToggleBox");
-            m_HelpToggle = new Toggle("Help")
-            {
-                visible = VisibleAtStart
-            };
+            m_HelpToggle = new Toggle("Help");
             m_HelpToggle.AddToClassList("helpToggle");
+            m_HelpToggle.RegisterValueChangedCallback(evt => m_HelpBox.visible = evt.newValue);
             m_HelpToggleBox.Add(m_HelpToggle);
+            
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpBox");
             if (uiDocument.rootVisualElement.Q("HelpTitle") is Label helpTitle)
                 helpTitle.text = HelpTitle;
             if (uiDocument.rootVisualElement.Q("HelpTextField") is TextField helpText)
                 helpText.value = HelpText;
-            m_CloseButton = uiDocument.rootVisualElement.Q("CloseButton") as Button;
+            if (uiDocument.rootVisualElement.Q("CloseButton") is Button closeButton) 
+                closeButton.RegisterCallback<ClickEvent>(_ => CloseHelpBox());
             
-            m_HelpToggle.RegisterValueChangedCallback(evt => m_HelpBox.visible = evt.newValue);
-            m_CloseButton.RegisterCallback<ClickEvent>(_ => m_HelpToggle.value = false);
+            m_HelpBox.visible = m_HelpToggle.value = VisibleAtStart;
         }
 
-        void OnDisable() => m_HelpToggleBox.Remove(m_HelpToggle);
+        void OnDisable()
+        {
+            CloseHelpBox();
+            m_HelpToggleBox.Remove(m_HelpToggle);
+        }
+
+        void CloseHelpBox() => m_HelpToggle.value = false;
     }
 }
