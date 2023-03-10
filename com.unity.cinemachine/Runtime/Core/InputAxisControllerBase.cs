@@ -5,6 +5,11 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
+    /// This interface identifies a behaviour that can drive IInputAxisOwners.
+    /// </summary>
+    public interface IInputAxisController {}
+
+    /// <summary>
     /// This is a base class for a behaviour that is used to drive IInputAxisOwner behviours, 
     /// which it discovers dynamically.  It is the bridge between the input system and 
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
@@ -13,7 +18,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [ExecuteAlways]
     [SaveDuringPlay]
-    public class InputAxisControllerBase<T> : MonoBehaviour where T : IInputAxisReader, new ()
+    public abstract class InputAxisControllerBase<T> : MonoBehaviour, IInputAxisController where T : IInputAxisReader, new ()
     {
         /// <summary>
         /// Leave this at -1 for single-player games.

@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -92,6 +97,70 @@ namespace Unity.Cinemachine.Editor
                 }
             }
         }
+
+        static List<Type> s_AllAxisControllerTypes;
+
+        public static void AddInputControllerHelp(
+            this UnityEditor.Editor editor, VisualElement ux, string text)
+        {
+            if (s_AllAxisControllerTypes == null)
+            {
+                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                    (Type t) => typeof(IInputAxisController).IsAssignableFrom(t) && !t.IsAbstract 
+                        && typeof(MonoBehaviour).IsAssignableFrom(t)
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                s_AllAxisControllerTypes = allTypes.ToList();
+            }
+            ContextualMenuManipulator menu = null;
+            if (s_AllAxisControllerTypes.Count > 1)
+            {
+                menu = new ContextualMenuManipulator((evt) => 
+                {
+                    foreach (var t in s_AllAxisControllerTypes)
+                        evt.menu.AppendAction(t.Name, (action) => AddController(t));
+                });
+            }
+
+            var help = ux.AddChild(InspectorUtility.HelpBoxWithButton(
+                text, HelpBoxMessageType.Info, "Add Input Controller", 
+                () => 
+                {
+                    if (s_AllAxisControllerTypes.Count == 1) 
+                        AddController(s_AllAxisControllerTypes[0]);
+                },
+                menu));
+
+            ux.TrackAnyUserActivity(() =>
+            {
+                if (editor == null)
+                    return;  // target was deleted
+                var noHandler = false;
+                for (int i = 0; i < editor.targets.Length; ++i)
+                    noHandler |= !(editor.targets[i] as CinemachineOrbitalFollow).HasInputHandler;
+                help.SetVisible(noHandler);
+            });
+
+            // Local fucntion
+            void AddController(Type controllerType)
+            {
+                Undo.SetCurrentGroupName("Add Input Controller");
+                for (int i = 0; i < editor.targets.Length; ++i)
+                {
+                    var t = (CinemachineOrbitalFollow)editor.targets[i];
+                    if (!t.HasInputHandler)
+                    {
+                        if (!t.VirtualCamera.TryGetComponent<IInputAxisController>(out var c))
+                            Undo.AddComponent(t.VirtualCamera.gameObject, controllerType);
+                        else if (c is MonoBehaviour b && !b.enabled)
+                        {
+                            Undo.RecordObject(b, "enable controller");
+                            b.enabled = true;
+                        }
+                    }
+                }
+            };
+        }
+            
 
         public static void OnGUI_DrawOnscreenTargetMarker(
             ICinemachineTargetGroup group, Vector3 worldPoint, 
