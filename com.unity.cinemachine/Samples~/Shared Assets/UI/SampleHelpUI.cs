@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Samples
@@ -31,7 +32,12 @@ namespace Unity.Cinemachine.Samples
             
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
             if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle)
+            {
+                if (HelpTitle == string.Empty)
+                    HelpTitle = SceneManager.GetActiveScene().name;
                 helpTitle.text = HelpTitle;
+            }
+
             if (uiDocument.rootVisualElement.Q("HelpTextBox__TextField") is TextField helpText)
                 helpText.value = HelpText;
             if (uiDocument.rootVisualElement.Q("HelpTextBox_CloseButton") is Button closeButton) 

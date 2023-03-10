@@ -47,7 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: e1340a64b3dbc4c60a6d59ca2fc83df8, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 625ec32eada784ffa8da2d56a8bd43c2, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: 625ec32eada784ffa8da2d56a8bd43c2,
+    type: 3}
   m_SortingOrder: 0
 --- !u!114 &6668015293666917239
 MonoBehaviour:
@@ -61,8 +62,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be49d5e8cf7024d6b8f8d5b9872c0f91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsVisible: 0
-  HelpTitle: Help
+  VisibleAtStart: 0
+  HelpTitle: 
   HelpText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Turpis massa tincidunt dui
     ut ornare lectus sit amet est. Cum sociis natoque penatibus et magnis dis. Erat
