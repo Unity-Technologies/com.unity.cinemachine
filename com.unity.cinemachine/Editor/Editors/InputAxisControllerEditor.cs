@@ -5,36 +5,24 @@ using System.Linq;
 
 namespace Unity.Cinemachine.Editor
 {
+    /// <summary>
+    /// This is an editor class for CinemachineInputAxisController.
+    /// It will also draw editors for derived classes.
+    /// If you have a custom InputAxisControllerBase, you can derive your custom editor
+    /// from this class and call the virtual implementation of CreateInspectorGUI.
+    /// </summary>
     [CustomEditor(typeof(CinemachineInputAxisController), true)]
-    class InputAxisControllerEditor : UnityEditor.Editor
+    public class InputAxisControllerEditor : UnityEditor.Editor
     {
         CinemachineInputAxisController Target => target as CinemachineInputAxisController;
 
-        void OnDisable()
-        {
-            EditorApplication.update -= UpdateControllersStatus;
-        }
-
-        void UpdateControllersStatus()
-        {
-            if (Target != null && !Target.ControllersAreValid())
-            {
-                Undo.RecordObject(Target, "SynchronizeControllers");
-                Target.SynchronizeControllers();
-            }
-        }
-        
         public override VisualElement CreateInspectorGUI()
         {
-            EditorApplication.update -= UpdateControllersStatus;
-            EditorApplication.update += UpdateControllersStatus;
-            
             var ux = new VisualElement();
 
-#if CINEMACHINE_UNITY_INPUTSYSTEM
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
-#endif
+
             ux.AddHeader("Driven Axes");
             var list = ux.AddChild(new ListView()
             {
@@ -45,16 +33,25 @@ namespace Unity.Cinemachine.Editor
                 showFoldoutHeader = false,
                 virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
             });
-            var controllersProperty = serializedObject.FindProperty(() => Target.Controllers);
+            // Use a string for this property, to support derived classes
+            var controllersProperty = serializedObject.FindProperty("Controllers");
             list.BindProperty(controllersProperty);
 
-            var istIsEmptyMessage = ux.AddChild(new HelpBox("No applicable components found.  Must have one of: "
-                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), HelpBoxMessageType.Warning));
+            var isEmptyMessage = ux.AddChild(new HelpBox(
+                "No applicable components found.  Must have one of: "
+                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 
+                HelpBoxMessageType.Warning));
+            list.TrackPropertyWithInitialCallback(
+                controllersProperty, (p) => isEmptyMessage.SetVisible(p.arraySize == 0));
 
-            TrackControllerCount(controllersProperty);
-            list.TrackPropertyValue(controllersProperty, TrackControllerCount);
-            void TrackControllerCount(SerializedProperty p) => istIsEmptyMessage.SetVisible(p.arraySize == 0);
-
+            ux.TrackAnyUserActivity(() =>
+            {
+                if (Target != null && !Target.ControllersAreValid())
+                {
+                    Undo.RecordObject(Target, "SynchronizeControllers");
+                    Target.SynchronizeControllers();
+                }
+            });
             return ux;
         }
         
@@ -132,7 +129,7 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(CinemachineInputAxisController.Controller))]
+    [CustomPropertyDrawer(typeof(CinemachineInputAxisController.Controller), true)]
     class InputAxisControllerItemPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
