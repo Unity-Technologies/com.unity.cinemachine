@@ -18,17 +18,24 @@ namespace Unity.Cinemachine.Samples
             [Tooltip("Text displayed on button")]
             public string Name = "Text";
 
-            [Tooltip("Set this to true to create a toggle button")]
-            public bool IsToggle;
+            [Serializable]
+            public class ToggleSettings
+            {
+                public bool Enabled;
 
-            [Tooltip("Value of the toggle")]
-            public bool ToggleValue;
+                [Tooltip("Initial value of the toggle")]
+                public bool Value;
+
+                [Tooltip("Event sent when toggle button is clicked")]
+                public UnityEvent<bool> OnValueChanged = new();
+            }
+
+            [Tooltip("Set this to true to create a toggle button")]
+            [FoldoutWithEnabledButton]
+            public ToggleSettings IsToggle = new();
 
             [Tooltip("Event sent when button is clicked")]
             public UnityEvent OnClick = new();
-
-            [Tooltip("Event sent when toggle button is clicked")]
-            public UnityEvent<bool> OnValueChanged = new();
         }
 
         [Tooltip("The buttons to be displayed")]
@@ -44,12 +51,12 @@ namespace Unity.Cinemachine.Samples
             m_Root = uiDocument.rootVisualElement.Q("TogglesAndButtons");
             m_DynamicElements = new List<VisualElement>(Buttons.Count);
             foreach (var item in Buttons)
-                if (item.IsToggle)
+                if (item.IsToggle.Enabled)
                 {
                     var toggle = new Toggle
                     {
                         label = item.Name,
-                        value = item.ToggleValue,
+                        value = item.IsToggle.Value,
                         focusable = false,
                         style =
                         {
@@ -58,7 +65,7 @@ namespace Unity.Cinemachine.Samples
                             unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold),
                         }
                     };
-                    toggle.RegisterValueChangedCallback(e => item.OnValueChanged.Invoke(e.newValue));
+                    toggle.RegisterValueChangedCallback(e => item.IsToggle.OnValueChanged.Invoke(e.newValue));
                     m_Root.Add(toggle);
                     m_DynamicElements.Add(toggle);
                 }
