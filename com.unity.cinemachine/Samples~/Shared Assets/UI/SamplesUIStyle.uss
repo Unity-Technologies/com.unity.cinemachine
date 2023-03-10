@@ -1,3 +1,7 @@
+* {
+    -unity-font-style: bold;
+}
+
 Box {
     background-color: rgba(196, 196, 196, 0.5);
 }
@@ -5,11 +9,21 @@ Box {
 .dynamicButton {
     background-color: rgba(196, 196, 196, 1);
     align-self: flex-start;
-    -unity-font-style: bold;
 }
 
 .dynamicToggle {
     flex-direction: row-reverse;
     align-self: flex-start;
-    -unity-font-style: bold;
+}
+
+.helpToggle {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-self: flex-end;
+    max-width: 80px;
+    -unity-text-align: upper-right;
+}
+
+#CloseButton {
+    
 }

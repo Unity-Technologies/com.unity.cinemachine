@@ -48,7 +48,7 @@ namespace Unity.Cinemachine.Samples
         {
             var uiDocument = GetComponent<UIDocument>();
 
-            m_Root = uiDocument.rootVisualElement.Q("TogglesAndButtons");
+            m_Root = uiDocument.rootVisualElement.Q("TogglesAndButtons"); // Should be justified - flex grow 1
             m_DynamicElements = new List<VisualElement>(Buttons.Count);
             foreach (var item in Buttons)
                 if (item.IsToggle.Enabled)
