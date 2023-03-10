@@ -34,7 +34,6 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("The buttons to be displayed")]
         public List<Item> Buttons = new();
 
-        Color m_UnityLightGray = new(196, 196, 196, 255);
         VisualElement m_Root;
         List<VisualElement> m_DynamicElements;
 
@@ -71,7 +70,7 @@ namespace Unity.Cinemachine.Samples
                         focusable = false,
                         style =
                         {
-                            backgroundColor = new StyleColor(m_UnityLightGray),
+                            backgroundColor = new StyleColor(new Color(196, 196, 196, 255)),
                             alignSelf = new StyleEnum<Align>(Align.FlexStart),
                             unityFontStyleAndWeight = new StyleEnum<FontStyle>(FontStyle.Bold),
                         }
