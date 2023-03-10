@@ -1,19 +1,26 @@
-* {
-    -unity-font-style: bold;
-}
-
 Box {
     background-color: rgba(196, 196, 196, 0.5);
 }
 
+#TogglesAndButtons {
+    margin-left: 4px; 
+    align-self: flex-start;
+}
+
 .dynamicButton {
     background-color: rgba(196, 196, 196, 1);
-    align-self: flex-start;
+    align-self: stretch;
+    -unity-font-style: bold;
 }
 
 .dynamicToggle {
     flex-direction: row-reverse;
     align-self: flex-start;
+    -unity-font-style: bold;
+}
+
+#HelpToggleBox {
+    align-self: flex-end; 
 }
 
 .helpToggle {
@@ -22,6 +29,34 @@ Box {
     align-items: stretch; 
     align-self: flex-end;
     -unity-text-align: upper-right; 
+    -unity-font-style: bold;
+    max-width: 80px;
+    
+}
+
+#HelpBox {
+    margin: 5%; 
+    padding: 5px; 
+    overflow: visible; 
+    flex-wrap: nowrap; 
+    justify-content: center; 
+    align-self: auto; 
+    border-radius: 4px; 
+    border-width: 1px;
+    border-color: rgb(56, 56, 56);
+    visibility: hidden; 
+    position: absolute; 
+    width: 90%; 
+    -unity-text-align: upper-left;
+    -unity-font-style: bold;
+}
+
+#HelpTextField {
+    flex-wrap: wrap; 
+    color: rgb(22, 19, 18); 
+    white-space: normal; 
+    max-height: 75%;
+    -unity-font-style: normal;
 }
 
 #CloseButton {
@@ -33,4 +68,5 @@ Box {
     border-width: 1px; 
     align-self: center; 
     background-color: black;
+    -unity-font-style: bold;
 }
