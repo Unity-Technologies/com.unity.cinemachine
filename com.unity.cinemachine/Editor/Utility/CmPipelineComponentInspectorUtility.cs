@@ -117,7 +117,7 @@ namespace Unity.Cinemachine.Editor
                 menu = new ContextualMenuManipulator((evt) => 
                 {
                     foreach (var t in s_AllAxisControllerTypes)
-                        evt.menu.AppendAction(t.Name, (action) => AddController(t));
+                        evt.menu.AppendAction(ObjectNames.NicifyVariableName(t.Name), (action) => AddController(t));
                 });
             }
 
