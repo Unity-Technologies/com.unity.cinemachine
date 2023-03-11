@@ -163,13 +163,15 @@ namespace Unity.Cinemachine
 
             // Rebuild the resetter list and register with them
             m_AxisResetters.Clear();
-            GetComponentsInChildren(m_AxisResetters);
-            foreach (var t in m_AxisResetters)
+            if (enabled)
             {
-                t.UnregisterResetHandler(OnResetInput);
-                t.RegisterResetHandler(OnResetInput);
+                GetComponentsInChildren(m_AxisResetters);
+                foreach (var t in m_AxisResetters)
+                {
+                    t.UnregisterResetHandler(OnResetInput);
+                    t.RegisterResetHandler(OnResetInput);
+                }
             }
-
             static int GetControllerIndex(List<Controller> list, IInputAxisOwner owner, string axisName)
             {
                 for (int i = 0; i < list.Count; ++i)

@@ -146,11 +146,11 @@ namespace Unity.Cinemachine.Editor
                 Undo.SetCurrentGroupName("Add Input Controller");
                 for (int i = 0; i < editor.targets.Length; ++i)
                 {
-                    var t = (CinemachineOrbitalFollow)editor.targets[i];
+                    var t = editor.targets[i] as CinemachineOrbitalFollow;
                     if (!t.HasInputHandler)
                     {
-                        if (!t.VirtualCamera.TryGetComponent<IInputAxisController>(out var c))
-                            Undo.AddComponent(t.VirtualCamera.gameObject, controllerType);
+                        if (!t.TryGetComponent<IInputAxisController>(out var c))
+                            Undo.AddComponent(t.gameObject, controllerType);
                         else if (c is MonoBehaviour b && !b.enabled)
                         {
                             Undo.RecordObject(b, "enable controller");
