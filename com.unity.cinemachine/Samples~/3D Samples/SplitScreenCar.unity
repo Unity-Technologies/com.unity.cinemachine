@@ -433,58 +433,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlueCar
       objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].Gain
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].InputAction
-      value: 
-      objectReference: {fileID: 3364986483885300090, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].LegacyInput
-      value: Mouse X
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[1].InputAction
-      value: 
-      objectReference: {fileID: 3364986483885300090, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[1].LegacyInput
-      value: Fire1
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[2].InputAction
-      value: 
-      objectReference: {fileID: -1767273502160521294, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[2].LegacyInput
-      value: Fire2
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].Input.InputAction
-      value: 
-      objectReference: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].Input.LegacyInput
-      value: Horizontal
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[1].Input.InputAction
-      value: 
-      objectReference: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[1].Input.LegacyInput
-      value: Vertical
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[2].Input.InputAction
-      value: 
-      objectReference: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[2].Input.LegacyInput
-      value: Fire3
-      objectReference: {fileID: 0}
     - target: {fileID: 1570214454041857243, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -937,30 +885,6 @@ PrefabInstance:
     - target: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Name
       value: RedCar
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].Input.InputAction
-      value: 
-      objectReference: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[0].Input.LegacyInput
-      value: Horizontal
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[1].Input.InputAction
-      value: 
-      objectReference: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[1].Input.LegacyInput
-      value: Vertical
-      objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[2].Input.InputAction
-      value: 
-      objectReference: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-      propertyPath: Controllers.Array.data[2].Input.LegacyInput
-      value: Fire3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

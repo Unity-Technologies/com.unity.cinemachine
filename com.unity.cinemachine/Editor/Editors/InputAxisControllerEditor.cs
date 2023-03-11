@@ -82,13 +82,11 @@ namespace Unity.Cinemachine.Editor
                         invertY = axis.Hint == IInputAxisOwner.AxisDescriptor.Hints.Y;
                         controller.Driver = DefaultInputAxisDriver.Default;
                     }
-#if false
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
                     {
-                        //actionName = "UI/ScrollWheel"; // best we can do - actually it doean't work because it'a Vector2 type
+                        actionName = "Player/Zoom";
                         inputName = "Mouse ScrollWheel";
                     }
-#endif
                     if (axis.Name.Contains("Move"))
                     {
                         actionName = "Player/Move";
@@ -102,26 +100,32 @@ namespace Unity.Cinemachine.Editor
                     if (axis.Name.Contains("Fire"))
                     {
                         actionName = "Player/Fire";
-                        inputName = "Fire";
+                        inputName = "Fire1";
                     }
                     if (axis.Name.Contains("Jump"))
                     {
-                        actionName = "UI/RightClick"; // best we can do
+                        actionName = "Player/Jump";
                         inputName = "Jump";
+                    }
+                    if (axis.Name.Contains("Sprint"))
+                    {
+                        actionName = "Player/Sprint";
+                        inputName = "Fire3"; // best we can do
                     }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (actionName.Length != 0)
                     {
-                        controller.Input.InputAction = (UnityEngine.InputSystem.InputActionReference)AssetDatabase.LoadAllAssetsAtPath(
-                            "Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions").FirstOrDefault(
-                                x => x.name == actionName);
+                        var asset = ScriptableObjectUtility.kPackageRoot 
+                            + "/Runtime/Input/CinemachineDefaultInputActions.inputactions";
+                        controller.Input.InputAction = (UnityEngine.InputSystem.InputActionReference)
+                            AssetDatabase.LoadAllAssetsAtPath(asset).FirstOrDefault(x => x.name == actionName);
                     }
-                    controller.Input.Gain = isMomentary ? 1 : 4f * (invertY ? -1 : 1);
+                    controller.Input.Gain = invertY ? -1 : 1;
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
                     controller.Input.LegacyInput = inputName;
-                    controller.Input.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
+                    controller.Input.LegacyGain = isMomentary ? 1 : 100 * (invertY ? -1 : 1);
 #endif
                     controller.Enabled = true;
                 };

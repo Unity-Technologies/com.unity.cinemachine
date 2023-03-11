@@ -246,7 +246,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 737942603}
-  m_LocalRotation: {x: 0.037952796, y: -0.0000000021492486, z: 8.162881e-11, w: 0.99927956}
+  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492477, z: -8.1628766e-11, w: 0.99927956}
   m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -331,7 +331,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838339814}
-  m_LocalRotation: {x: 0.037952796, y: -0.0000000021492486, z: 8.162881e-11, w: 0.99927956}
+  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492477, z: -8.1628766e-11, w: 0.99927956}
   m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -387,10 +387,10 @@ MonoBehaviour:
     Owner: {fileID: 838339822}
     Enabled: 1
     Input:
-      InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-      Gain: 4
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
       LegacyInput: Mouse X
-      LegacyGain: 200
+      LegacyGain: 100
     InputValue: 0
     Driver:
       AccelTime: 0.2
@@ -399,10 +399,10 @@ MonoBehaviour:
     Owner: {fileID: 838339822}
     Enabled: 1
     Input:
-      InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-      Gain: -4
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: -1
       LegacyInput: Mouse Y
-      LegacyGain: -200
+      LegacyGain: -100
     InputValue: 0
     Driver:
       AccelTime: 0.2
@@ -411,10 +411,10 @@ MonoBehaviour:
     Owner: {fileID: 838339822}
     Enabled: 1
     Input:
-      InputAction: {fileID: 0}
-      Gain: 4
-      LegacyInput: 
-      LegacyGain: 200
+      InputAction: {fileID: -1558737862816922118, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Mouse ScrollWheel
+      LegacyGain: 100
     InputValue: 0
     Driver:
       AccelTime: 0
