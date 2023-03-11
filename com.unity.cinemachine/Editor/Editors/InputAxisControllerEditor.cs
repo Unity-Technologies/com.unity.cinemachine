@@ -125,7 +125,7 @@ namespace Unity.Cinemachine.Editor
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
                     controller.Input.LegacyInput = inputName;
-                    controller.Input.LegacyGain = isMomentary ? 1 : 100 * (invertY ? -1 : 1);
+                    controller.Input.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
 #endif
                     controller.Enabled = true;
                 };

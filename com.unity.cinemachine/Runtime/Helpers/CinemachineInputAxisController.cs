@@ -93,8 +93,8 @@ namespace Unity.Cinemachine
             bool autoEnableInput,
             IInputAxisOwner.AxisDescriptor.Hints hint)
         {
-#if CINEMACHINE_UNITY_INPUTSYSTEM
             float inputValue = 0;
+#if CINEMACHINE_UNITY_INPUTSYSTEM
             if (InputAction != null)
                 inputValue = ResolveAndReadInputAction(context, playerIndex, autoEnableInput, hint) * Gain;
 #endif
@@ -102,7 +102,7 @@ namespace Unity.Cinemachine
 #if ENABLE_LEGACY_INPUT_MANAGER
             if (inputValue == 0 && !string.IsNullOrEmpty(LegacyInput))
             {
-                try { inputValue = CinemachineCore.GetInputAxis(LegacyInput); }
+                try { inputValue = CinemachineCore.GetInputAxis(LegacyInput) * LegacyGain; }
                 catch (ArgumentException) {}
                 //catch (ArgumentException e) { Debug.LogError(e.ToString()); }
             }
