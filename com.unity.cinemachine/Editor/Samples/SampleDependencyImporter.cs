@@ -196,10 +196,8 @@ namespace Unity.Cinemachine.Editor
                         MaterialUpgrader.UpgradeFlags.None);
                     m_UpgradedMaterials.Add(assetPath);
 #endif
-#if false // CINEMACHINE_HDRP
+#if CINEMACHINE_HDRP
                     var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
-                    // MaterialUpgrader.Upgrade(material,  MaterialUpgrader.UpgradeFlags.None);
-                    // need to access internals in UnityEditor.Rendering.HighDefinition
                     MaterialUpgrader.Upgrade(material, 
                         new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
                         MaterialUpgrader.UpgradeFlags.None);
