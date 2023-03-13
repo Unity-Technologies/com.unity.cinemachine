@@ -256,12 +256,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 2015024881}
@@ -274,10 +276,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -658,9 +668,9 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    m_Style: 1
-    m_Time: 2
-    m_CustomCurve:
+    Style: 1
+    Time: 2
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
@@ -739,8 +749,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558704396}
-  m_LocalRotation: {x: 0.028843066, y: 0.9191005, z: 0.06850965, w: -0.38694805}
-  m_LocalPosition: {x: 2.2477376, y: 0.52887934, z: 2.1963186}
+  m_LocalRotation: {x: -0.05325668, y: 0.000000017315676, z: 9.234858e-10, w: 0.9985809}
+  m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2106,12 +2116,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 2015024881}
@@ -2124,10 +2136,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -2295,34 +2315,37 @@ MonoBehaviour:
   - Name: Look Orbit X
     Owner: {fileID: 1721836170}
     Enabled: 1
-    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 4
-    LegacyInput: Mouse X
-    LegacyGain: 200
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Mouse X
+      LegacyGain: 100
+    InputValue: 0
+    Driver:
       AccelTime: 0.2
       DecelTime: 0.2
   - Name: Look Orbit Y
     Owner: {fileID: 1721836170}
     Enabled: 1
-    InputAction: {fileID: -5630151704836100654, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: -4
-    LegacyInput: Mouse Y
-    LegacyGain: -200
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: -1
+      LegacyInput: Mouse Y
+      LegacyGain: -100
+    InputValue: 0
+    Driver:
       AccelTime: 0.2
       DecelTime: 0.2
   - Name: Orbit Scale
     Owner: {fileID: 1721836170}
     Enabled: 1
-    InputAction: {fileID: 0}
-    Gain: 4
-    LegacyInput: 
-    LegacyGain: 200
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -1558737862816922118, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Mouse ScrollWheel
+      LegacyGain: 100
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
 --- !u!114 &1721836168
@@ -2353,7 +2376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 1, z: 0}
+  TargetOffset: {x: 0, y: 1, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -2424,7 +2447,7 @@ MonoBehaviour:
   RadialAxis:
     Value: 1
     Center: 1
-    Range: {x: 1, y: 1}
+    Range: {x: 1, y: 5}
     Wrap: 0
     Recentering:
       Enabled: 0
@@ -2443,12 +2466,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 140267361}
@@ -2461,10 +2486,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 8
     Events:
@@ -2478,7 +2511,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721836166}
-  m_LocalRotation: {x: -0.05325671, y: -0.00000002079702, z: -0.0000000011091548, w: 0.9985809}
+  m_LocalRotation: {x: -0.05325668, y: 0.000000017315676, z: 9.234858e-10, w: 0.9985809}
   m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2977,12 +3010,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 2015024881}
@@ -2995,10 +3030,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:

@@ -184,44 +184,48 @@ MonoBehaviour:
   - Name: Move X
     Owner: {fileID: 8077383552022060413}
     Enabled: 1
-    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Horizontal
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -1680190386980627800, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Horizontal
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
   - Name: Move Z
     Owner: {fileID: 8077383552022060413}
     Enabled: 1
-    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Vertical
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -1680190386980627800, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Vertical
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
   - Name: Jump
     Owner: {fileID: 8077383552022060413}
     Enabled: 1
-    InputAction: {fileID: -4090225696740746782, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Jump
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -8322308610609176083, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Jump
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
   - Name: Sprint
     Owner: {fileID: 8077383552022060413}
     Enabled: 1
-    InputAction: {fileID: -2185481485913320682, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Fire3
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: 7062761312785054794, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Fire3
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0

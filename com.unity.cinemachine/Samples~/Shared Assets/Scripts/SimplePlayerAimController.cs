@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Samples
     /// This component expects to be in a child object of the player, to decouple player aiming from player rotation.
     /// This only works in worlds where CharacterController is valid, ie when up is world up.
     /// </summary>
-    public class SimplePlayerAimController : MonoBehaviour, IInputAxisSource
+    public class SimplePlayerAimController : MonoBehaviour, IInputAxisOwner
     {
         public bool LockPlayerToCamera;
         public float RotationDamping = 0.2f;
@@ -26,10 +26,10 @@ namespace Unity.Cinemachine.Samples
         /// We use the Input Axis Controller because it works with both the Input package
         /// and the Legacy input system.  This is sample code and we
         /// want it to work everywhere.
-        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
-            axes.Add(new () { DrivenAxis = () => ref HorizontalLook, Name = "Horizontal Look", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
-            axes.Add(new () { DrivenAxis = () => ref VerticalLook, Name = "Vertical Look", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref HorizontalLook, Name = "Horizontal Look", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref VerticalLook, Name = "Vertical Look", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
         }
 
         void OnValidate()

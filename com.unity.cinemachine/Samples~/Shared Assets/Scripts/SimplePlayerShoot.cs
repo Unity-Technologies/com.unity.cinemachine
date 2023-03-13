@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
-    class SimplePlayerShoot : MonoBehaviour, IInputAxisSource
+    class SimplePlayerShoot : MonoBehaviour, IInputAxisOwner
     {
         public GameObject BulletPrefab;
         public float MaxBulletsPerSec = 10;
@@ -27,7 +27,7 @@ namespace Unity.Cinemachine.Samples
         /// We use the Input Axis Controller because it works with both the Input package
         /// and the Legacy input system.  This is sample code and we
         /// want it to work everywhere.
-        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
             axes.Add(new () { DrivenAxis = () => ref Fire, Name = "Fire" });
         }

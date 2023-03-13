@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - LensSettings was refactored to improve handling of SensorSize and other physical properties.
 - Full physical camera support for builtin pipeline.
 - LensPresets and PhysicalLensPresets are now separate assets.
+- CinemachineInputAxisController refactored to be more easily customized.
 
 
 ## [3.0.0-pre.4] - 2023-02-09

@@ -82,7 +82,7 @@ namespace Unity.Cinemachine.Editor
                 vcam.Follow = targetObject.transform;
             Undo.AddComponent<CinemachineOrbitalFollow>(vcam.gameObject).OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
-            Undo.AddComponent<InputAxisController>(vcam.gameObject);
+            Undo.AddComponent<CinemachineInputAxisController>(vcam.gameObject);
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject).enabled = false;
         }
         

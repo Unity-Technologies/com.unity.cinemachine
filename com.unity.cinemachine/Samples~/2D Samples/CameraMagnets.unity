@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0.479
@@ -219,12 +219,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Channel: 1
-    Priority: 0
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 838270489}
@@ -237,10 +239,18 @@ MonoBehaviour:
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -1208,6 +1218,9 @@ MonoBehaviour:
     Toggling them on makes them attract the camera's attention: the closer the player
     is to the magnet, the stronger the attraction.  This is implemented by the MagnetGroupController
     behaviour on the CameraMagnets object."
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &2125070645
 Transform:
   m_ObjectHideFlags: 0
@@ -1391,9 +1404,9 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    m_Style: 1
-    m_Time: 1
-    m_CustomCurve:
+    Style: 1
+    Time: 1
+    CustomCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2

@@ -156,34 +156,37 @@ MonoBehaviour:
   - Name: Move X
     Owner: {fileID: 878341184440332478}
     Enabled: 1
-    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Horizontal
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -1680190386980627800, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Horizontal
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
   - Name: Move Z
     Owner: {fileID: 878341184440332478}
     Enabled: 1
-    InputAction: {fileID: -1680190386980627800, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
-    Gain: 1
-    LegacyInput: Vertical
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -1680190386980627800, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Vertical
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
   - Name: Brake
     Owner: {fileID: 878341184440332478}
     Enabled: 1
-    InputAction: {fileID: -8322308610609176083, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
-    Gain: 1
-    LegacyInput: Jump
-    LegacyGain: 1
-    Control:
-      InputValue: 0
+    Input:
+      InputAction: {fileID: -8322308610609176083, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
+      LegacyInput: Jump
+      LegacyGain: 1
+    InputValue: 0
+    Driver:
       AccelTime: 0
       DecelTime: 0
 --- !u!1 &1570214454009041785

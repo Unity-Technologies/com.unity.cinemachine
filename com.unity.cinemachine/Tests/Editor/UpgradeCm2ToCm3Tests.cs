@@ -78,7 +78,7 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.That(freelookGo.GetComponent<CinemachineOrbitalFollow>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineRotationComposer>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponent<CinemachineFreeLookModifier>(), Is.Not.Null);
-            Assert.That(freelookGo.GetComponent<InputAxisController>(), Is.Not.Null);
+            Assert.That(freelookGo.GetComponent<CinemachineInputAxisController>(), Is.Not.Null);
             Assert.That(freelookGo.GetComponents<MonoBehaviour>().Length, Is.EqualTo(5));
         }
 #pragma warning restore CS0618

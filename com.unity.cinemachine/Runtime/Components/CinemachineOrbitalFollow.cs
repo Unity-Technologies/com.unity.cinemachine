@@ -16,7 +16,7 @@ namespace Unity.Cinemachine
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineOrbitalFollow.html")]
     public class CinemachineOrbitalFollow 
-        : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
+        : CinemachineComponentBase, IInputAxisOwner, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Input axis controller registers here a delegate to call when the camera is reset
         /// </summary>
-        IInputAxisResetSource.ResetHandler m_ResetHandler;
+        Action m_ResetHandler;
         
         void OnValidate()
         {
@@ -119,20 +119,20 @@ namespace Unity.Cinemachine
 
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
-        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
-            axes.Add(new () { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
-            axes.Add(new () { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
             axes.Add(new () { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale" });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to register</param>
-        void IInputAxisResetSource.RegisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler += handler;
+        void IInputAxisResetSource.RegisterResetHandler(Action handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to unregister</param>
-        void IInputAxisResetSource.UnregisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler -= handler;
+        void IInputAxisResetSource.UnregisterResetHandler(Action handler) => m_ResetHandler -= handler;
 
         /// <summary>Inspector checks this and displays warning if no handler</summary>
         internal bool HasInputHandler => m_ResetHandler != null;

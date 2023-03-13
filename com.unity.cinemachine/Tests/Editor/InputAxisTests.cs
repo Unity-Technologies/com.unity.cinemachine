@@ -29,33 +29,33 @@ namespace Unity.Cinemachine.Tests.Editor
         public void TestAxisDriverAccel(float accelTime)
         {
             var axis = new InputAxis { Range = new Vector2(-100f, 100f), Value = 0, Center = 0, Wrap = false };
-            var control = new InputAxisControl { InputValue = 1, AccelTime = accelTime, DecelTime = accelTime };
+            var driver = new DefaultInputAxisDriver{ AccelTime = accelTime, DecelTime = accelTime };
             axis.Validate();
-            control.Validate();
-            var driver = new InputAxisDriver();
+            driver.Validate();
             var prevValue = axis.Value;
             var prevDelta = 0f;
+            var inputValue = 1;
 
             // Accelerate to speed
             for (int i = 0; i < 20; ++i)
             {
-                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
+                driver.ProcessInput(ref axis, inputValue, k_DeltaTime);
                 var delta = axis.Value - prevValue;
                 UnityEngine.Assertions.Assert.IsTrue(delta > prevDelta); // must be speeding up
                 prevValue = axis.Value;
                 prevDelta = delta;
                 if (k_DeltaTime * i >= accelTime)
                     break;
-                UnityEngine.Assertions.Assert.IsTrue(delta < control.InputValue * k_DeltaTime); // must be not at target speed
+                UnityEngine.Assertions.Assert.IsTrue(delta < inputValue * k_DeltaTime); // must be not at target speed
             }
             // Must have reached the target speed
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(prevDelta, control.InputValue * k_DeltaTime, 0.001f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(prevDelta, inputValue * k_DeltaTime, 0.001f);
 
             // Decelerate to zero
-            control.InputValue = 0;
+            inputValue = 0;
             for (int i = 0; i < 20; ++i)
             {
-                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
+                driver.ProcessInput(ref axis, inputValue, k_DeltaTime);
                 var delta = axis.Value - prevValue;
                 UnityEngine.Assertions.Assert.IsTrue(delta < prevDelta); // must be slowing down
                 prevValue = axis.Value;
@@ -91,26 +91,13 @@ namespace Unity.Cinemachine.Tests.Editor
         public void TestInputAxis(
             Vector2 range, bool wrap, float accelTime, float decelTime, float inputValue, float[] expectedResults)
         {
-            var axis = new InputAxis
-            {
-                Range = range,
-                Center = 0,
-                Wrap = wrap,
-            };
+            var axis = new InputAxis { Range = range, Center = 0, Wrap = wrap };
             axis.Validate();
-            
-            var control = new InputAxisControl
-            {
-                InputValue = inputValue,
-                AccelTime = accelTime,
-                DecelTime = decelTime,
-            };
-            control.Validate();
-
-            var driver = new InputAxisDriver();
+            var driver = new DefaultInputAxisDriver { AccelTime = accelTime, DecelTime = decelTime };
+            driver.Validate();
             foreach (var result in expectedResults)
             {
-                driver.ProcessInput(k_DeltaTime, ref axis, ref control);
+                driver.ProcessInput(ref axis, inputValue, k_DeltaTime);
                 UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, result);
             }
         }
@@ -130,9 +117,12 @@ namespace Unity.Cinemachine.Tests.Editor
         [Test, TestCaseSource(nameof(RecenteringTestCases))]
         public void TestInputAxisRecentering(float value, float center, float recenterTime)
         {
-            var axis = new InputAxis { Range = new Vector2(-100, 100) };
-            axis.Value = value;
-            axis.Center = center;
+            var axis = new InputAxis
+            {
+                Range = new Vector2(-100, 100),
+                Value = value,
+                Center = center
+            };
             axis.Recentering.Time = recenterTime;
             axis.Validate();
 
