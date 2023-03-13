@@ -10,7 +10,7 @@ namespace Unity.Cinemachine
     public interface IInputAxisController {}
 
     /// <summary>
-    /// This is a base class for a behaviour that is used to drive IInputAxisOwner behviours, 
+    /// This is a base class for a behaviour that is used to drive IInputAxisOwner behaviours, 
     /// which it discovers dynamically.  It is the bridge between the input system and 
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
     /// If you want to read inputs from a third-party source, then you must specialize this class 

@@ -14,7 +14,7 @@ namespace Unity.Cinemachine
     /// which it discovers dynamically.  It is the bridge between the input system and 
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
     /// 
-    /// This inplementation can read input from the Input package, or from the legacy input system, 
+    /// This implementation can read input from the Input package, or from the legacy input system, 
     /// or both, depending on what is installed in the project.
     /// </summary>
     [ExecuteAlways]
@@ -27,8 +27,8 @@ namespace Unity.Cinemachine
         /// This is a mechanism to allow the inspector to set up default values 
         /// when the component is reset.
         /// </summary>
-        /// <param name="axis"></param>
-        /// <param name="controller"></param>
+        /// <param name="axis">The information of the input axis.</param>
+        /// <param name="controller">Reference to the controller to change.</param>
         internal delegate void SetControlDefaultsForAxis(
             in IInputAxisOwner.AxisDescriptor axis, ref Controller controller);
         internal static SetControlDefaultsForAxis SetControlDefaults;
@@ -82,7 +82,7 @@ namespace Unity.Cinemachine
 #endif
 
         /// <summary>Get the current value of the axis.</summary>
-        /// <param name="context">The context GameObjectr, can be used for logging diagnostics</param>
+        /// <param name="context">The context GameObject, can be used for logging diagnostics</param>
         /// <param name="playerIndex">For multiplayer games the player index if applicable, or -1 for default</param>
         /// <param name="autoEnableInput">If true, then disabled controls should be automatically enabled on first reading</param>
         /// <param name="hint">A hint for converting a Vector2 value to a float</param>
