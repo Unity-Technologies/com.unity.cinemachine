@@ -46,7 +46,9 @@ namespace Unity.Cinemachine
         /// <summary>If set, a recursive search for IInputAxisOwners behaviours will be performed.  
         /// Otherwise, only behaviours attached directly to this GameObject will be considered, 
         /// and child objects will be ignored.</summary>
-        [Tooltip("If set, Input Actions will be auto-enabled at start")]
+        [Tooltip("If set, a recursive search for IInputAxisOwners behaviours will be performed.  "
+            + "Otherwise, only behaviours attached directly to this GameObject will be considered, "
+            + "and child objects will be ignored")]
         public bool ScanRecursively = true;
         
         /// <summary>
