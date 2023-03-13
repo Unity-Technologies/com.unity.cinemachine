@@ -15,7 +15,8 @@ namespace Unity.Cinemachine.Editor
     public class InputAxisControllerEditor : UnityEditor.Editor
     {
         CinemachineInputAxisController Target => target as CinemachineInputAxisController;
-
+        
+        /// <inheritdoc />
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
