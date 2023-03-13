@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Samples
     [RequireComponent(typeof(UIDocument))]
     public class SampleHelpUI : MonoBehaviour
     {
-        public bool VisibleAtStart; // TODO: no sync
+        public bool VisibleAtStart;
         public string HelpTitle;
         [TextArea(minLines: 10, maxLines: 50)]
         public string HelpText;
