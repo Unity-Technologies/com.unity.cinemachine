@@ -25,6 +25,7 @@ namespace Unity.Cinemachine
     /// If you want to read inputs from a third-party source, then you must specialize this class 
     /// with an appropriate implementation of IInputAxisReader.
     /// </summary>
+    /// <typeparam name="T">The axis reader that will read the inputs.</typeparam>
     [ExecuteAlways]
     [SaveDuringPlay]
     public abstract class InputAxisControllerBase<T> : MonoBehaviour, IInputAxisController where T : IInputAxisReader, new ()
