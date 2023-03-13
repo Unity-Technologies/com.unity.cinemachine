@@ -22,6 +22,7 @@ namespace Unity.Cinemachine.Editor
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
 
             ux.AddHeader("Driven Axes");
             var list = ux.AddChild(new ListView()

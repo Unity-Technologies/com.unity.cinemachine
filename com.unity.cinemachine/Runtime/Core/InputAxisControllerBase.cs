@@ -7,7 +7,16 @@ namespace Unity.Cinemachine
     /// <summary>
     /// This interface identifies a behaviour that can drive IInputAxisOwners.
     /// </summary>
-    public interface IInputAxisController {}
+    public interface IInputAxisController 
+    {
+        /// <summary>
+        /// Called by editor only.  Normally we should have one controller per 
+        /// IInputAxisOwner axis.  This will scan the object for IInputAxisOwner
+        /// behaviours, create missing controllers (in their 
+        /// default state), and remove any that are no longer relevant.
+        /// </summary>
+        void SynchronizeControllers();
+    }
 
     /// <summary>
     /// This is a base class for a behaviour that is used to drive IInputAxisOwner behaviours, 
@@ -33,6 +42,12 @@ namespace Unity.Cinemachine
         /// <summary>If set, Input Actions will be auto-enabled at start</summary>
         [Tooltip("If set, Input Actions will be auto-enabled at start")]
         public bool AutoEnableInputs = true;
+        
+        /// <summary>If set, a recursive search for IInputAxisOwners behaviours will be performed.  
+        /// Otherwise, only behaviours attached directly to this GameObject will be considered, 
+        /// and child objects will be ignored.</summary>
+        [Tooltip("If set, Input Actions will be auto-enabled at start")]
+        public bool ScanRecursively = true;
         
         /// <summary>
         /// Each discovered axis will get a Controller to drive it in Update().
@@ -87,6 +102,7 @@ namespace Unity.Cinemachine
             CreateControllers();
             PlayerIndex = -1;
             AutoEnableInputs = true;
+            ScanRecursively = true;
         }
 
         void OnEnable()
@@ -105,11 +121,19 @@ namespace Unity.Cinemachine
         }
 
 #if UNITY_EDITOR
-        static List<IInputAxisOwner> s_AxisTargetsCache = new ();
+        /// <summary>
+        /// Called by editor only.  Used to check if a controller synchronization is necessary.
+        /// Normally we should have one controller per IInputAxisOwner axis.
+        /// </summary>
+        /// <returns>True if there is one controller defined per IInputAxisOwner axis, 
+        /// false if there is a mismatch</returns>
         internal bool ControllersAreValid()
         {
             s_AxisTargetsCache.Clear();
-            GetComponentsInChildren(s_AxisTargetsCache);
+            if (ScanRecursively)
+                GetComponentsInChildren(s_AxisTargetsCache);
+            else
+                GetComponents(s_AxisTargetsCache);
             var count = s_AxisTargetsCache.Count;
             bool isValid = count == m_AxisOwners.Count;
             for (int i = 0; isValid && i < count; ++i)
@@ -117,14 +141,24 @@ namespace Unity.Cinemachine
                     isValid = false;
             return isValid;
         }
-        internal void SynchronizeControllers() => CreateControllers();
+        static readonly List<IInputAxisOwner> s_AxisTargetsCache = new ();
 #endif
+
+        /// <summary>
+        /// Called by editor only.  Normally we should have one controller per 
+        /// IInputAxisOwner axis.  This will create missing controllers (in their 
+        /// default state) and remove any that are no longer releant.
+        /// </summary>
+        public void SynchronizeControllers() => CreateControllers();
 
         void CreateControllers()
         {
             m_Axes.Clear();
             m_AxisOwners.Clear();
-            GetComponentsInChildren(m_AxisOwners);
+            if (ScanRecursively)
+                GetComponentsInChildren(m_AxisOwners);
+            else
+                GetComponents(m_AxisOwners);
 
             // Trim excess controllers
             for (int i = Controllers.Count - 1; i >= 0; --i)
@@ -165,7 +199,10 @@ namespace Unity.Cinemachine
             m_AxisResetters.Clear();
             if (enabled)
             {
-                GetComponentsInChildren(m_AxisResetters);
+                if (ScanRecursively)
+                    GetComponentsInChildren(m_AxisResetters);
+                else
+                    GetComponents(m_AxisResetters);
                 foreach (var t in m_AxisResetters)
                 {
                     t.UnregisterResetHandler(OnResetInput);
