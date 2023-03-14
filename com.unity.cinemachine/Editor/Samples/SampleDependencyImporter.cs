@@ -93,7 +93,7 @@ namespace Unity.Cinemachine.Editor
                             if (assetsImported)
                             {
                                 ConvertMaterials(sharedDestinations.Concat(localDestinations));
-                                FixLights(m_PackageInfo);
+                                FixStagePrefab(m_PackageInfo);
                             }
                             #endif
                             
@@ -212,8 +212,8 @@ namespace Unity.Cinemachine.Editor
                 }
             }
         }
-        
-        void FixLights(PackageInfo packageInfo)
+
+        static void FixStagePrefab(PackageInfo packageInfo)
         {
     #if CINEMACHINE_HDRP
             var sharedAssetsPath = $"Assets/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets";
