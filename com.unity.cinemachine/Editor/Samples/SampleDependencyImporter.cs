@@ -25,8 +25,6 @@ namespace Unity.Cinemachine.Editor
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
         VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
 
-        List<string> m_UpgradedMaterials;
-
         public void OnPackageAddedOrUpdated(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
         public void OnPackageRemoved(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
 
@@ -183,30 +181,33 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
+        List<string> m_UpgradedMaterials;
+        readonly List<string> k_IgnoredMaterials = new() { "FadeOut.mat" }; // materials we can't upgrade
         void ConvertMaterials(string assetPath)
         {
+#if CINEMACHINE_URP || CINEMACHINE_HDRP
             if (m_SampleConfiguration != null)
             {
-                if (assetPath.EndsWith(".mat") && !assetPath.EndsWith("FadeOut.mat") && !m_UpgradedMaterials.Contains(assetPath))
+                if (assetPath.EndsWith(".mat") // a material
+                    && !k_IgnoredMaterials.Any(assetPath.EndsWith) // not ignored
+                    && !m_UpgradedMaterials.Contains(assetPath)) // not upgraded yet
                 {
-#if CINEMACHINE_URP
+    #if CINEMACHINE_URP
                     var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
                     MaterialUpgrader.Upgrade(material, 
                         new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
                         MaterialUpgrader.UpgradeFlags.None);
                     m_UpgradedMaterials.Add(assetPath);
-#endif
-#if CINEMACHINE_HDRP
+    #elif CINEMACHINE_HDRP
                     var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
                     MaterialUpgrader.Upgrade(material, 
                         new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
                         MaterialUpgrader.UpgradeFlags.None);
                     m_UpgradedMaterials.Add(assetPath);
-#endif
+    #endif
                 }
-
             }
-            
+#endif
         }
         
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
