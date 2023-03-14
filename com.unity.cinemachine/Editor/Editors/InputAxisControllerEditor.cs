@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Linq;
+using UnityEngine;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -20,10 +21,15 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
+            SerializedProperty prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true)) {
+                do {
+                    if (prop.name != "Controllers") {
+                        ux.Add(new PropertyField(serializedObject.FindProperty(prop.name)));
+                    }
+                }
+                while (prop.NextVisible(false));
+            }
 
             ux.AddHeader("Driven Axes");
             var list = ux.AddChild(new ListView()
