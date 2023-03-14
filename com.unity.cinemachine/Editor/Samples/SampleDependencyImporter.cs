@@ -41,14 +41,13 @@ namespace Unity.Cinemachine.Editor
                 m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
                 if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration))
                 {
-                    m_UpgradedMaterials = new List<string>();
-                    SamplePostprocessor.AssetImported += ProcessAssets;
+                    SamplePostprocessor.AssetImported += LoadAssetDependencies;
                 }
             }
             else if (!cmPackageInfo)
             {
                 m_PackageInfo = null;
-                SamplePostprocessor.AssetImported -= ProcessAssets;
+                SamplePostprocessor.AssetImported -= LoadAssetDependencies;
             }
         }
 
@@ -66,12 +65,6 @@ namespace Unity.Cinemachine.Editor
             return false;
         }
 
-        void ProcessAssets(string assetPath)
-        {
-            LoadAssetDependencies(assetPath);
-            ConvertMaterials(assetPath);
-        }
-        
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
         List<string> m_PackageDependencies = new ();
@@ -89,11 +82,18 @@ namespace Unity.Cinemachine.Editor
                         {
                             // Import common asset dependencies
                             assetsImported = ImportAssetDependencies(
-                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
+                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, out var sharedDestinations);
                             
                             // Import sample-specific asset dependencies
                             assetsImported |= ImportAssetDependencies(
-                                m_PackageInfo, sampleEntry.AssetDependencies);
+                                m_PackageInfo, sampleEntry.AssetDependencies, out var localDestinations);
+
+                            #if CINEMACHINE_URP || CINEMACHINE_HDRP
+                            if (assetsImported)
+                            {
+                                ConvertMaterials(sharedDestinations.Concat(localDestinations));
+                            }
+                            #endif
                             
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
@@ -149,8 +149,9 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             
-            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths)
+            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out List<string> copyTos)
             {
+                copyTos = new List<string>();
                 if (paths == null)
                     return false;
 
@@ -163,6 +164,7 @@ namespace Unity.Cinemachine.Editor
                         var copyTo = 
                             $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
                         CopyDirectory(dependencyPath, copyTo);
+                        copyTos.Add(copyTo);
                         assetsImported = true;
                     }
                 }
@@ -181,34 +183,34 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        List<string> m_UpgradedMaterials;
-        readonly List<string> k_IgnoredMaterials = new() { "FadeOut.mat" }; // materials we can't upgrade
-        void ConvertMaterials(string assetPath)
-        {
 #if CINEMACHINE_URP || CINEMACHINE_HDRP
-            if (m_SampleConfiguration != null)
+        static readonly string[] k_MaterialFolders = { "Materials", "Cameron/Model" };
+
+        void ConvertMaterials(IEnumerable<string> folders)
+        {
+            foreach (var folder in folders)
             {
-                if (assetPath.EndsWith(".mat") // a material
-                    && !k_IgnoredMaterials.Any(assetPath.EndsWith) // not ignored
-                    && !m_UpgradedMaterials.Contains(assetPath)) // not upgraded yet
+                foreach (var materialFolder in k_MaterialFolders)
                 {
-    #if CINEMACHINE_URP
-                    var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
-                    MaterialUpgrader.Upgrade(material, 
-                        new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
-                        MaterialUpgrader.UpgradeFlags.None);
-                    m_UpgradedMaterials.Add(assetPath);
-    #elif CINEMACHINE_HDRP
-                    var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
-                    MaterialUpgrader.Upgrade(material, 
-                        new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
-                        MaterialUpgrader.UpgradeFlags.None);
-                    m_UpgradedMaterials.Add(assetPath);
-    #endif
+                    var dir = new DirectoryInfo(folder + "/" + materialFolder);
+                    var materialInfos = dir.GetFiles("*.mat");
+                    foreach (var matInfo in materialInfos)
+                    {
+                        var localPath = matInfo.FullName[Application.dataPath.Length..];
+                        var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
+
+                     MaterialUpgrader.Upgrade(material, 
+#if CINEMACHINE_URP
+                         new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+#elif CINEMACHINE_HDRP
+                         new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
+#endif
+                         MaterialUpgrader.UpgradeFlags.None);
+                    }
                 }
             }
-#endif
         }
+#endif
         
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
