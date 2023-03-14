@@ -8,6 +8,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
@@ -92,6 +93,7 @@ namespace Unity.Cinemachine.Editor
                             if (assetsImported)
                             {
                                 ConvertMaterials(sharedDestinations.Concat(localDestinations));
+                                FixLights(m_PackageInfo);
                             }
                             #endif
                             
@@ -200,17 +202,62 @@ namespace Unity.Cinemachine.Editor
                         var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
 
                      MaterialUpgrader.Upgrade(material, 
-#if CINEMACHINE_URP
+    #if CINEMACHINE_URP
                          new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
-#elif CINEMACHINE_HDRP
+    #elif CINEMACHINE_HDRP
                          new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
-#endif
+    #endif
                          MaterialUpgrader.UpgradeFlags.None);
                     }
                 }
             }
         }
+        
+        void FixLights(PackageInfo packageInfo)
+        {
+    #if CINEMACHINE_HDRP
+            var sharedAssetsPath = $"Assets/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets";
+            var prefabAssetPath = $"{sharedAssetsPath}/Prefabs/Checkerboard Stage.prefab";
+            var contentsRoot = PrefabUtility.LoadPrefabContents(prefabAssetPath);
+            if (contentsRoot.TryGetComponent(out Light light))
+            {
+                light.intensity = 5f;
+            }
+            
+            var volumeGo = new GameObject
+            {
+                transform =
+                {
+                    parent = contentsRoot.transform
+                }
+            };
+            var volume = volumeGo.AddComponent<Volume>();
+            var profilePath = $"{sharedAssetsPath}/~HDRP/Volume Profile.asset";
+            volume.profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(profilePath);
+            
+            PrefabUtility.SaveAsPrefabAsset(contentsRoot, prefabAssetPath);
+            PrefabUtility.UnloadPrefabContents(contentsRoot);
+
+            // var hdrpPrefabFix = $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets/~HDRP";
+            // var prefabsFolder = $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets/Prefabs";
+            // var dir = new DirectoryInfo(hdrpPrefabFix);
+            // if (dir.Exists)
+            //     foreach (var fix in dir.GetFiles())
+            //     {
+            //         try
+            //         {
+            //             File.Copy(fix.FullName, prefabsFolder, true);
+            //         }
+            //         catch (IOException iox)
+            //         {
+            //             Console.WriteLine(iox.Message);
+            //         }
+            //     }
 #endif
+        }
+#endif
+
+        
         
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
