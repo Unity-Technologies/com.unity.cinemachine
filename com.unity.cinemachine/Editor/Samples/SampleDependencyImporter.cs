@@ -217,43 +217,13 @@ namespace Unity.Cinemachine.Editor
         {
     #if CINEMACHINE_HDRP
             var sharedAssetsPath = $"Assets/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets";
+            var hdrpPrefabAssetPath = $"{sharedAssetsPath}/~HDRP/Checkerboard Stage.prefab";
+            var contentsRoot = PrefabUtility.LoadPrefabContents(hdrpPrefabAssetPath);
+            
             var prefabAssetPath = $"{sharedAssetsPath}/Prefabs/Checkerboard Stage.prefab";
-            var contentsRoot = PrefabUtility.LoadPrefabContents(prefabAssetPath);
-            if (contentsRoot.TryGetComponent(out Light light))
-            {
-                light.intensity = 5f;
-            }
-            
-            var volumeGo = new GameObject
-            {
-                transform =
-                {
-                    parent = contentsRoot.transform
-                }
-            };
-            var volume = volumeGo.AddComponent<Volume>();
-            var profilePath = $"{sharedAssetsPath}/~HDRP/Volume Profile.asset";
-            volume.profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(profilePath);
-            
             PrefabUtility.SaveAsPrefabAsset(contentsRoot, prefabAssetPath);
             PrefabUtility.UnloadPrefabContents(contentsRoot);
-
-            // var hdrpPrefabFix = $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets/~HDRP";
-            // var prefabsFolder = $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets/Prefabs";
-            // var dir = new DirectoryInfo(hdrpPrefabFix);
-            // if (dir.Exists)
-            //     foreach (var fix in dir.GetFiles())
-            //     {
-            //         try
-            //         {
-            //             File.Copy(fix.FullName, prefabsFolder, true);
-            //         }
-            //         catch (IOException iox)
-            //         {
-            //             Console.WriteLine(iox.Message);
-            //         }
-            //     }
-#endif
+    #endif
         }
 #endif
 
