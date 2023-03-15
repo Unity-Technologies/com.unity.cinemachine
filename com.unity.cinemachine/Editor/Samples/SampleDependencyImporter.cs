@@ -7,6 +7,7 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEditor.Rendering;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
@@ -214,10 +215,10 @@ namespace Unity.Cinemachine.Editor
 
         static void FixPrefabs(IEnumerable<string> folders)
         {
-    #if CINEMACHINE_HDRP
             foreach (var folder in folders)
             {
                 var hdrpPath = folder + "/~HDRP/";
+    #if CINEMACHINE_HDRP
                 var hdrpDir = new DirectoryInfo(hdrpPath);
                 var prefabPath = folder + "/Prefabs/";
                 var prefabDir = new DirectoryInfo(prefabPath);
@@ -234,8 +235,16 @@ namespace Unity.Cinemachine.Editor
                     PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
                     PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
                 }
+
+                var assets = hdrpDir.GetFiles("*.asset*"); // assets and their meta files
+                foreach (var asset in assets) 
+                    asset.CopyTo(folder);
+#endif
+                // delete ~HDRP folder (first its meta file, otherwise Unity will restore the folder)
+                var hdrpMeta = new FileInfo(folder + "/~HDRP.meta");
+                hdrpMeta.Delete();
+                Directory.Delete(hdrpPath, true);
             }
-    #endif
         }
 #endif
 
