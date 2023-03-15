@@ -45,8 +45,8 @@ namespace Cinemachine
         [Range(0, 1)]
         public float CameraSide;
 
-        /// <summary>How far baehind the hand the camera will be placed.</summary>
-        [Tooltip("How far baehind the hand the camera will be placed")]
+        /// <summary>How far behind the hand the camera will be placed.</summary>
+        [Tooltip("How far behind the hand the camera will be placed")]
         public float CameraDistance;
 
 #if CINEMACHINE_PHYSICS
