@@ -31,12 +31,8 @@ namespace Unity.Cinemachine.Samples
             m_HelpToggleBox.Add(m_HelpToggle);
             
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
-            if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle)
-            {
-                if (HelpTitle == string.Empty)
-                    HelpTitle = SceneManager.GetActiveScene().name;
-                helpTitle.text = HelpTitle;
-            }
+            if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle) 
+                helpTitle.text = string.IsNullOrEmpty(HelpTitle) ? SceneManager.GetActiveScene().name : HelpTitle;
 
             if (uiDocument.rootVisualElement.Q("HelpTextBox__TextField") is TextField helpText)
                 helpText.value = HelpText;
