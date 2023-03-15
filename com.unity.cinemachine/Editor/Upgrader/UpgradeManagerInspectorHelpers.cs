@@ -59,7 +59,8 @@ namespace Unity.Cinemachine.Editor
                         + "scripts that interact with these objects will not necessarily be upgraded.  If your custom scripts "
                         + "reference obsolete classes and APIs, they will probably break.  "
                         + "Please see the <a href=\"" + Documentation.BaseURL + "manual/CinemachineUpgradeFrom2.html\">Cinemachine Upgrade Guide</a> "
-                        + "for tips and techniques to smooth the upgrade process.",
+                        + "for tips and techniques to smooth the upgrade process.\n\n"
+                        + "<b>NOTE:</b> Error and warning messages may be logged to the console window during this process.",
                     enableRichText = true,
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
