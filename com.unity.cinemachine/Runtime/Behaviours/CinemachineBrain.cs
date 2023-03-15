@@ -394,6 +394,7 @@ namespace Unity.Cinemachine
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
         }
 
+        // TODO-KGB: replace this with UITK
         void OnGuiHandler(CinemachineBrain brain)
         {
 #if CINEMACHINE_UNITY_IMGUI
@@ -439,6 +440,7 @@ namespace Unity.Cinemachine
 #endif
         }
 
+        // TODO-KGB: replace this with UITK
 #if UNITY_EDITOR
         void OnGUI()
         {
