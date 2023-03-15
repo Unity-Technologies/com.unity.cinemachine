@@ -56,14 +56,26 @@ namespace Unity.Cinemachine.Editor
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
 
-            ux.AddHeader("Procedural Motion");
+            var defaultTargetLabel = new Label() { style = { alignSelf = Align.FlexEnd, opacity = 0.5f }};
+            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Procedural Motion</b>", "", defaultTargetLabel));
+            row.focusable = false;
+            row.style.paddingTop = InspectorUtility.SingleLineHeight / 2;
+            row.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
+
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
             this.AddPipelineDropdowns(ux);
 
             ux.AddSpace();
             this.AddExtensionsDropdown(ux);
 
-            ux.TrackAnyUserActivity(() => CmCameraInspectorUtility.SortComponents(target as CinemachineVirtualCameraBase));
+            ux.TrackAnyUserActivity(() => 
+            {
+                bool haveDefault = Target.Target.TrackingTarget != Target.Follow;
+                defaultTargetLabel.SetVisible(haveDefault);
+                if (haveDefault)
+                    defaultTargetLabel.text = "Default target: " + Target.Follow.name;
+                CmCameraInspectorUtility.SortComponents(target as CinemachineVirtualCameraBase);
+            });
 
             return ux;
         }
