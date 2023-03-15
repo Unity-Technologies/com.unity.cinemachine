@@ -8,8 +8,6 @@ using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
 using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Unity.Cinemachine.Editor
@@ -24,7 +22,7 @@ namespace Unity.Cinemachine.Editor
         PackageChecker m_PackageChecker = new ();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
-        VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
+        UnityEngine.UIElements.VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
 
         public void OnPackageAddedOrUpdated(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
         public void OnPackageRemoved(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
@@ -205,7 +203,7 @@ namespace Unity.Cinemachine.Editor
     #if CINEMACHINE_URP
                          new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
     #elif CINEMACHINE_HDRP
-                         new UnityEditor.Rendering.HighDefinition.StandardsToHDLitMaterialUpgrader("Standard", "HDRP/Lit"),
+                         MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
     #endif
                          MaterialUpgrader.UpgradeFlags.None);
                     }
