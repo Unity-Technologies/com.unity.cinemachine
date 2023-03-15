@@ -1,3 +1,4 @@
+#if UNITY_EDITOR //Selection.activeGameObject
 using System.Collections;
 using NUnit.Framework;
 using UnityEditor;
@@ -37,3 +38,4 @@ namespace Unity.Cinemachine.Tests.Editor
         }
     }
 }
+#endif
