@@ -28,6 +28,13 @@ namespace Unity.Cinemachine.Tests.Editor
             m_Vcam.gameObject.AddComponent<InputController1AllAxis>();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            GameObject.Destroy(m_Vcam.gameObject);
+            GameObject.Destroy(m_Brain.gameObject);
+        }
+
         [UnityTest]
         public IEnumerator SelectBrainWithoutCameraComponentDoesNotCauseErrors()
         {
