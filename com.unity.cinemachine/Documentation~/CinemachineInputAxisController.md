@@ -17,6 +17,7 @@ If you like, you can also use CinemachineInputAxisController with your own scrip
 |:---|:---|
 | __Player Index__ | Which player's input controls to query. Leave this at the default value of -1 for single-player games. Otherwise, this should be the index of the player in the `UnityEngine.Input.InputUser.all` list. This setting only appears if Unity's Input package is installed. |
 | __Auto Enable Inputs__ | If Unity's Input package is installed, this option is available. It will automatically enable any mapped input actions at startup |
+| __Scan Recursively__ | If set, a recursive search for IInputAxisOwners behaviours will be performed.  Otherwise, only behaviours attached directly to this GameObject will be considered, and child objects will be ignored. |
 | __Enabled__ | The controller will drive the input axis while this value is true.  If false, the axis will not be driven by the controller. |
 | __Legacy Input__ | If the legacy input manager is being used, the Input Axis Name to query is specified here. |
 | __Legacy Gain__ | If the legacy input manager is being used, the input value read will be multiplied by this amount. |

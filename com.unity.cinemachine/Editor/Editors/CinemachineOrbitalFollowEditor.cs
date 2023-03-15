@@ -36,51 +36,17 @@ namespace Unity.Cinemachine.Editor
             var m_Orbits = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Orbits)));
 
             ux.AddSpace();
-            var noControllerHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
-                "Orbital Follow has no input axis controller behaviour.", HelpBoxMessageType.Info,
-                "Add Input Controller", () =>
-            {
-                Undo.SetCurrentGroupName("Add Input Axis Controller");
-                for (int i = 0; i < targets.Length; ++i)
-                {
-                    var t = (CinemachineOrbitalFollow)targets[i];
-                    if (!t.HasInputHandler)
-                    {
-                        if (!t.VirtualCamera.TryGetComponent<InputAxisController>(out var controller))
-                            Undo.AddComponent<InputAxisController>(t.VirtualCamera.gameObject);
-                        else if (!controller.enabled)
-                        {
-                            Undo.RecordObject(controller, "enable controller");
-                            controller.enabled = true;
-                        }
-                    }
-                }
-            }));
+            this.AddInputControllerHelp(ux, "Orbital Follow has no input axis controller behaviour.");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.HorizontalAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalAxis)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.RadialAxis)));
 
-            TrackOrbitMode(orbitModeProp);
-            ux.TrackPropertyValue(orbitModeProp, TrackOrbitMode);
-
-            void TrackOrbitMode(SerializedProperty modeProp)
+            ux.TrackPropertyWithInitialCallback(orbitModeProp, (p) =>
             {
-                var mode = (CinemachineOrbitalFollow.OrbitStyles)modeProp.intValue;
+                var mode = (CinemachineOrbitalFollow.OrbitStyles)p.intValue;
                 m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.Sphere);
                 m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
-            }
-
-            ux.TrackAnyUserActivity(() =>
-            {
-                if (target == null || noControllerHelp == null)
-                    return;  // target was deleted
-
-                var noHandler = false;
-                for (int i = 0; i < targets.Length; ++i)
-                    noHandler |= !(targets[i] as CinemachineOrbitalFollow).HasInputHandler;
-                noControllerHelp.SetVisible(noHandler);
             });
-
             return ux;
         }
 
