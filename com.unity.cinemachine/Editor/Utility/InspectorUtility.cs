@@ -775,11 +775,17 @@ namespace Unity.Cinemachine.Editor
 
         public static VisualElement HelpBoxWithButton(
             string message, HelpBoxMessageType messageType, 
-            string buttonText, Action onClicked)
+            string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new HelpBox(message, messageType) { style = { flexGrow = 1 }});
-            row.Add(new Button(onClicked) { text = buttonText, style = { marginLeft = 0 }});
+            var button = row.AddChild(new Button(onClicked) { text = buttonText, style = { marginLeft = 0 }});
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
             return row;
         }
     }

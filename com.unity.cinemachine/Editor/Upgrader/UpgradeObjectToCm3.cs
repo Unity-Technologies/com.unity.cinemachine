@@ -339,8 +339,8 @@ namespace Unity.Cinemachine.Editor
 
         static void ConvertInputAxis(GameObject go, string name, ref AxisState axis)
         {
-            if (!go.TryGetComponent<InputAxisController>(out var iac))
-                iac = Undo.AddComponent<InputAxisController>(go);
+            if (!go.TryGetComponent<CinemachineInputAxisController>(out var iac))
+                iac = Undo.AddComponent<CinemachineInputAxisController>(go);
 
             // Force creation of missing input controllers
             iac.SynchronizeControllers();
@@ -359,18 +359,18 @@ namespace Unity.Cinemachine.Editor
                 if (c.Name == name)
                 {
 #if ENABLE_LEGACY_INPUT_MANAGER
-                    c.LegacyInput = axis.m_InputAxisName;
-                    c.LegacyGain = axis.m_MaxSpeed;
+                    c.Input.LegacyInput = axis.m_InputAxisName;
+                    c.Input.LegacyGain = axis.m_MaxSpeed;
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (provider != null)
-                        c.InputAction = provider.XYAxis;
-                    c.Gain = axis.m_MaxSpeed;
+                        c.Input.InputAction = provider.XYAxis;
+                    c.Input.Gain = axis.m_MaxSpeed;
                     if (axis.m_SpeedMode == AxisState.SpeedMode.MaxSpeed)
-                        c.Gain /= 100; // very approx
+                        c.Input.Gain /= 100; // very approx
 #endif
-                    c.Control.AccelTime = axis.m_AccelTime;
-                    c.Control.DecelTime = axis.m_DecelTime;
+                    c.Driver.AccelTime = axis.m_AccelTime;
+                    c.Driver.DecelTime = axis.m_DecelTime;
                     break;
                 }
             }

@@ -4,7 +4,7 @@ using System;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class SimplePlayerController : MonoBehaviour, IInputAxisSource
+    public class SimplePlayerController : MonoBehaviour, IInputAxisOwner
     {
         public float Speed = 1f;
         public float SprintSpeed = 4;
@@ -64,10 +64,10 @@ namespace Unity.Cinemachine.Samples
         /// We use the Input Axis Controller because it works with both the Input package
         /// and the Legacy input system.  This is sample code and we
         /// want it to work everywhere.
-        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
-            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisSource.AxisDescriptor.Hints.X });
-            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisSource.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
             axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
             axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
         }
