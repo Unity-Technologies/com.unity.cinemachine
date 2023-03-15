@@ -38,10 +38,8 @@ namespace Unity.Cinemachine.Editor
             {
                 m_PackageInfo = packageInfo;
                 m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
-                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration))
-                {
+                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration)) 
                     SamplePostprocessor.AssetImported += LoadAssetDependencies;
-                }
             }
             else if (!cmPackageInfo)
             {
@@ -151,9 +149,9 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             
-            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out List<string> copyTos)
+            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out List<string> destinations)
             {
-                copyTos = new List<string>();
+                destinations = new List<string>();
                 if (paths == null)
                     return false;
 
@@ -166,7 +164,7 @@ namespace Unity.Cinemachine.Editor
                         var copyTo = 
                             $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
                         CopyDirectory(dependencyPath, copyTo);
-                        copyTos.Add(copyTo);
+                        destinations.Add(copyTo);
                         assetsImported = true;
                     }
                 }
@@ -187,7 +185,6 @@ namespace Unity.Cinemachine.Editor
 
 #if CINEMACHINE_URP || CINEMACHINE_HDRP
         static readonly string[] k_MaterialFolders = { "Materials", "Cameron/Model" };
-
         static void ConvertMaterials(IEnumerable<string> folders)
         {
             foreach (var folder in folders)
