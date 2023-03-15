@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - New IgnoreTarget blend hint will blend rotations without considering the tracking target.
+- Cinemachine 2 to Cinemachine 3 upgrade functionality is now public.
 
 ### Changed
 - All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
