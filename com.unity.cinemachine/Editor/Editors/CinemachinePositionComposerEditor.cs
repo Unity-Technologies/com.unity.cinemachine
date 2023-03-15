@@ -62,7 +62,8 @@ namespace Unity.Cinemachine.Editor
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
-            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+            if (brain == null || brain.OutputCamera == null
+                    || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
             var vcam = Target.VirtualCamera;
