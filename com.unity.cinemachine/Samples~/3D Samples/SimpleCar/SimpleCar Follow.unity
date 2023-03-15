@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -149,12 +152,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Priority: 0
-    Channel: 1
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 0}
@@ -167,10 +172,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -223,12 +236,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Priority: 0
-    Channel: 1
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1868264081772963616}
@@ -241,10 +256,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -263,7 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0, z: 0}
   Lookahead:
     Enabled: 1
     Time: 0.3
@@ -344,12 +367,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c26251a3e1f5ac41afa5ffb404c5f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Priority: 0
-    Channel: 1
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   DefaultTarget:
     Enabled: 0
@@ -536,7 +561,7 @@ Transform:
   m_GameObject: {fileID: 742461950}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.95, z: 0}
-  m_LocalScale: {x: 5.2, y: 4, z: 16}
+  m_LocalScale: {x: 5, y: 4, z: 16}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1051405110}
@@ -821,75 +846,121 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4436525663902916670, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
+    - target: {fileID: 4436525663902916670, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_Name
       value: Checkerboard Stage
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4436525663896002925, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2109093637}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
+--- !u!1 &1878244420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1878244422}
+  - component: {fileID: 1878244421}
+  m_Layer: 0
+  m_Name: Help
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1878244421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878244420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonText: Help
+  Position: {x: 0.9, y: 0.05}
+  Displayed: 0
+  HelpText: "This scene shows a Mixing Camera that follows a car. Mixing Camera mixes
+    two cameras (Cm Camera Slow, Cm Camera Fast) based on the speed of the car (CapsuleCar).
+    The mixing is done by manipulating the weights of the children of the Mixing
+    Camera. In the sample, this is done by a script called MixCamerasBasedOnSpeed.\r\n\r\nTry
+    accelerating and then braking hard (with Space) to see a nice effect of the mixing.\r\n\r\nThe
+    scene also contains a Stunt area (Stunt GameObject), this is located in front
+    of the car. This area has a trigger volume (indicated by a transparent grey box)
+    on the ramps. When the car enters the trigger volume, a side view camera (Cm
+    Camera Stunt Sideview) is activated using Cinemachine Trigger Action found on
+    TriggerVolume GameObject. \r\n\r\nCm Camera Stunt Sideview is a static camera
+    that is placed manually and does not have any procedural motion.\r\n\r\nThe default
+    blend in CinemachineBrain is set to Cut."
+  OnHelpDismissed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &1878244422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1878244420}
+  m_LocalRotation: {x: -2.3283064e-10, y: -0.00041019917, z: -0, w: 1}
+  m_LocalPosition: {x: -8.832576, y: 40.053345, z: -1.0612526}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1967210314
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,7 +992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 0, z: 0}
   Lookahead:
     Enabled: 1
     Time: 0.6
@@ -969,12 +1040,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PriorityAndChannel:
+  Priority:
     Enabled: 0
-    Priority: 0
-    Channel: 1
+    m_Value: 0
+  OutputChannel:
+    Enabled: 0
+    m_Value: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20221011
+  m_StreamingVersion: 20230301
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1868264081772963616}
@@ -987,10 +1060,18 @@ MonoBehaviour:
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    m_SensorSize: {x: 1, y: 1}
-    FocusDistance: 10
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
   Transitions:
     BlendHint: 0
     Events:
@@ -1117,125 +1198,6 @@ Transform:
   m_Father: {fileID: 1051405110}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -10, y: 0, z: 0}
---- !u!1001 &2107964271
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: HelpText
-      value: "This scene shows a Mixing Camera that follows a car. Mixing Camera
-        mixes two cameras (Cm Camera Slow, Cm Camera Fast) based on the speed of
-        the car (CapsuleCar). The mixing is done by manipulating the weights of the
-        children of the Mixing Camera. In the sample, this is done by a script called
-        MixCamerasBasedOnSpeed.\r\n\r\nTry accelerating and then braking hard (with
-        Space) to see a nice effect of the mixing.\r\n\r\nThe scene also contains
-        a Stunt area (Stunt GameObject), this is located in front of the car. This
-        area has a trigger volume (indicated by a transparent grey box) on the ramps.
-        When the car enters the trigger volume, a side view camera (Cm Camera Stunt
-        Sideview) is activated using Cinemachine Trigger Action found on TriggerVolume
-        GameObject. \r\n\r\nCm Camera Stunt Sideview is a static camera that is placed
-        manually and does not have any procedural motion.\r\n\r\nThe default blend
-        in CinemachineBrain is set to Cut."
-      objectReference: {fileID: 0}
-    - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6,
-        type: 3}
-      propertyPath: m_Name
-      value: HelpUI
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
---- !u!1 &2109093635 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4436525663896002925, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-    type: 3}
-  m_PrefabInstance: {fileID: 1380885699}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2109093637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2109093635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 3
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
 --- !u!1001 &1570214456050329275
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1244,63 +1206,51 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.09
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalPosition.z
       value: 9.46
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-        type: 3}
+    - target: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Name
       value: CapsuleCar
       objectReference: {fileID: 0}
@@ -1311,13 +1261,11 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
 --- !u!4 &1868264081772963616 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
   m_PrefabInstance: {fileID: 1570214456050329275}
   m_PrefabAsset: {fileID: 0}
 --- !u!54 &1868264081772963620 stripped
 Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
   m_PrefabInstance: {fileID: 1570214456050329275}
   m_PrefabAsset: {fileID: 0}
