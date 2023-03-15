@@ -19,7 +19,7 @@ namespace Unity.Cinemachine.Editor
     /// <summary>
     /// Upgrades cm2 to cm3
     /// </summary>
-    class CinemachineUpgradeManager
+    public class CinemachineUpgradeManager
     {
         const string k_UnupgradableTag = " BACKUP - not fully upgradable by CM";
 
@@ -127,7 +127,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
         /// <param name="objects"></param>
         /// <returns></returns>
-        public static bool ObjectsUsePrefabs(UnityEngine.Object[] objects)
+        internal static bool ObjectsUsePrefabs(UnityEngine.Object[] objects)
         {
             for (int i = 0; i < objects.Length; ++i)
             {
@@ -147,7 +147,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
         /// <param name="objects"></param>
         /// <returns></returns>
-        public static bool CurrentSceneUsesPrefabs()
+        internal static bool CurrentSceneUsesPrefabs()
         {
             var manager = new CinemachineUpgradeManager(false);
             var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
