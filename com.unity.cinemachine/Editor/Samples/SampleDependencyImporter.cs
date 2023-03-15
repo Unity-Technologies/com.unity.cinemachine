@@ -90,8 +90,9 @@ namespace Unity.Cinemachine.Editor
                             #if CINEMACHINE_URP || CINEMACHINE_HDRP
                             if (assetsImported)
                             {
-                                ConvertMaterials(sharedDestinations.Concat(localDestinations));
-                                FixPrefabs(m_PackageInfo);
+                                var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations)); 
+                                ConvertMaterials(uniqueFolders);
+                                FixPrefabs(uniqueFolders);
                             }
                             #endif
                             
@@ -192,8 +193,10 @@ namespace Unity.Cinemachine.Editor
             {
                 foreach (var materialFolder in k_MaterialFolders)
                 {
-                    var dir = new DirectoryInfo(folder + "/" + materialFolder);
-                    var materialInfos = dir.GetFiles("*.mat");
+                    var materialDir = new DirectoryInfo(folder + "/" + materialFolder);
+                    if (!materialDir.Exists)
+                        continue;
+                    var materialInfos = materialDir.GetFiles("*.mat");
                     foreach (var matInfo in materialInfos)
                     {
                         var localPath = matInfo.FullName[Application.dataPath.Length..];
@@ -211,20 +214,28 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        static void FixPrefabs(PackageInfo packageInfo)
+        static void FixPrefabs(IEnumerable<string> folders)
         {
     #if CINEMACHINE_HDRP
-            var sharedAssetsPath = $"Assets/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets";
-            var hdrpDir = new DirectoryInfo(Path.GetFullPath(sharedAssetsPath + "/~HDRP/"));
-            var hdrpPrefabs = hdrpDir.GetFiles("*.prefab");
-            foreach(var hdrpPrefabFile in hdrpPrefabs)
+            foreach (var folder in folders)
             {
-                var hdrpPrefabPath = sharedAssetsPath + "/~HDRP/" + hdrpPrefabFile.Name;
-                var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPrefabPath);
+                var hdrpPath = folder + "/~HDRP/";
+                var hdrpDir = new DirectoryInfo(hdrpPath);
+                var prefabPath = folder + "/Prefab/";
+                var prefabDir = new DirectoryInfo(prefabPath);
+                if (!hdrpDir.Exists || !prefabDir.Exists)
+                    continue;
                 
-                var builtinPrefabPath = sharedAssetsPath + "/Prefabs/" + hdrpPrefabFile.Name;
-                PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
-                PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+                var hdrpPrefabs = hdrpDir.GetFiles("*.prefab");
+                foreach (var hdrpPrefabFile in hdrpPrefabs)
+                {
+                    var hdrpPrefabPath = hdrpPath + hdrpPrefabFile.Name;
+                    var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPrefabPath);
+
+                    var builtinPrefabPath = prefabPath + hdrpPrefabFile.Name;
+                    PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
+                    PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+                }
             }
     #endif
         }
