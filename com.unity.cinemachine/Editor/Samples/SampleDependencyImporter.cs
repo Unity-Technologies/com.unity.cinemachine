@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
+#if CINEMACHINE_URP || CINEMACHINE_HDRP
 using UnityEditor.Rendering;
-using UnityEditor.VersionControl;
-using UnityEngine;
+#endif
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Unity.Cinemachine.Editor
@@ -86,15 +87,14 @@ namespace Unity.Cinemachine.Editor
                             assetsImported |= ImportAssetDependencies(
                                 m_PackageInfo, sampleEntry.AssetDependencies, out var localDestinations);
 
-                            #if CINEMACHINE_URP || CINEMACHINE_HDRP
+
                             if (assetsImported)
                             {
                                 AssetDatabase.Refresh();
-                                var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations)); 
+                                var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations));
                                 ConvertMaterials(uniqueFolders);
                                 FixPrefabs(uniqueFolders);
                             }
-                            #endif
                             
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
@@ -184,10 +184,10 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-#if CINEMACHINE_URP || CINEMACHINE_HDRP
         static readonly string[] k_MaterialFolders = { "Materials", "Cameron/Model" };
         static void ConvertMaterials(IEnumerable<string> folders)
         {
+#if CINEMACHINE_URP || CINEMACHINE_HDRP
             foreach (var folder in folders)
             {
                 foreach (var materialFolder in k_MaterialFolders)
@@ -211,14 +211,15 @@ namespace Unity.Cinemachine.Editor
                     }
                 }
             }
+#endif
         }
-
+        
         static void FixPrefabs(IEnumerable<string> folders)
         {
             foreach (var folder in folders)
             {
                 var hdrpPath = folder + "/~HDRP/";
-    #if CINEMACHINE_HDRP
+#if CINEMACHINE_HDRP
                 var hdrpDir = new DirectoryInfo(hdrpPath);
                 var prefabPath = folder + "/Prefabs/";
                 var prefabDir = new DirectoryInfo(prefabPath);
@@ -246,7 +247,6 @@ namespace Unity.Cinemachine.Editor
                 Directory.Delete(hdrpPath, true);
             }
         }
-#endif
 
         
         
