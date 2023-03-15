@@ -93,7 +93,7 @@ namespace Unity.Cinemachine.Editor
                             if (assetsImported)
                             {
                                 ConvertMaterials(sharedDestinations.Concat(localDestinations));
-                                FixStagePrefab(m_PackageInfo);
+                                FixPrefabs(m_PackageInfo);
                             }
                             #endif
                             
@@ -213,16 +213,21 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        static void FixStagePrefab(PackageInfo packageInfo)
+        static void FixPrefabs(PackageInfo packageInfo)
         {
     #if CINEMACHINE_HDRP
             var sharedAssetsPath = $"Assets/Samples/{packageInfo.displayName}/{packageInfo.version}/Shared Assets";
-            var hdrpPrefabAssetPath = $"{sharedAssetsPath}/~HDRP/Checkerboard Stage.prefab";
-            var contentsRoot = PrefabUtility.LoadPrefabContents(hdrpPrefabAssetPath);
-            
-            var prefabAssetPath = $"{sharedAssetsPath}/Prefabs/Checkerboard Stage.prefab";
-            PrefabUtility.SaveAsPrefabAsset(contentsRoot, prefabAssetPath);
-            PrefabUtility.UnloadPrefabContents(contentsRoot);
+            var hdrpDir = new DirectoryInfo(Path.GetFullPath(sharedAssetsPath + "/~HDRP/"));
+            var hdrpPrefabs = hdrpDir.GetFiles("*.prefab");
+            foreach(var hdrpPrefabFile in hdrpPrefabs)
+            {
+                var hdrpPrefabPath = sharedAssetsPath + "/~HDRP/" + hdrpPrefabFile.Name;
+                var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPrefabPath);
+                
+                var builtinPrefabPath = sharedAssetsPath + "/Prefabs/" + hdrpPrefabFile.Name;
+                PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
+                PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+            }
     #endif
         }
 #endif
