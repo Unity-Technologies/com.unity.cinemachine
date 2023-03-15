@@ -204,7 +204,7 @@ namespace Unity.Cinemachine.Editor
     #if CINEMACHINE_URP
                          new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
     #elif CINEMACHINE_HDRP
-                         MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
+                         UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
     #endif
                          MaterialUpgrader.UpgradeFlags.None);
                     }

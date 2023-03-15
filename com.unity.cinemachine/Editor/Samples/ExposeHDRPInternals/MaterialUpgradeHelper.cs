@@ -1,10 +1,8 @@
 #if HDRP_1_OR_NEWER
 using System.Collections.Generic;
-using UnityEditor.Rendering;
-using UnityEditor.Rendering.HighDefinition;
 using UnityEngine;
 
-namespace Unity.Cinemachine.Editor
+namespace UnityEditor.Rendering.HighDefinition
 {
     public static class MaterialUpgradeHelper
     {
