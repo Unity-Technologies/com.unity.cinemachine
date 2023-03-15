@@ -90,6 +90,7 @@ namespace Unity.Cinemachine.Editor
                             #if CINEMACHINE_URP || CINEMACHINE_HDRP
                             if (assetsImported)
                             {
+                                AssetDatabase.Refresh();
                                 var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations)); 
                                 ConvertMaterials(uniqueFolders);
                                 FixPrefabs(uniqueFolders);
@@ -187,7 +188,7 @@ namespace Unity.Cinemachine.Editor
 #if CINEMACHINE_URP || CINEMACHINE_HDRP
         static readonly string[] k_MaterialFolders = { "Materials", "Cameron/Model" };
 
-        void ConvertMaterials(IEnumerable<string> folders)
+        static void ConvertMaterials(IEnumerable<string> folders)
         {
             foreach (var folder in folders)
             {
@@ -221,7 +222,7 @@ namespace Unity.Cinemachine.Editor
             {
                 var hdrpPath = folder + "/~HDRP/";
                 var hdrpDir = new DirectoryInfo(hdrpPath);
-                var prefabPath = folder + "/Prefab/";
+                var prefabPath = folder + "/Prefabs/";
                 var prefabDir = new DirectoryInfo(prefabPath);
                 if (!hdrpDir.Exists || !prefabDir.Exists)
                     continue;
