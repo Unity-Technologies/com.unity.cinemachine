@@ -31,14 +31,12 @@ namespace Unity.Cinemachine
         }
 #endif
 
-        // TODO-KGB: replace this with UITK
         /// <summary>
         /// Delegate for OnGUI debugging.  
         /// This will be called by the CinemachineBrain in its OnGUI (editor only)
         /// </summary>
         public delegate void OnGUIDelegate(CinemachineBrain brain);
 
-        // TODO-KGB: replace this with UITK
         /// <summary>
         /// Delegate for OnGUI debugging.  
         /// This will be called by the CinemachineBrain in its OnGUI (editor only)
