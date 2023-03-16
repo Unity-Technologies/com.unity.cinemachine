@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Unity.Cinemachine.Tests.Editor
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class CinemachineBrainSetup : CinemachineFixtureBase
