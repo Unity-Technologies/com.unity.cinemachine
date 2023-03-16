@@ -407,17 +407,19 @@ namespace Unity.Cinemachine
         void SetupRuntimeUITK(CinemachineBrain brain)
         {
             if (m_UIDocumentGo != null && !ShowDebugText)
-            {
-                // clean-up our stuff
-                RuntimeUtility.DestroyObject(m_UIDocumentGo);
-            }
-            
+                RuntimeUtility.DestroyObject(m_UIDocumentGo); // clean-up
+
             if (!ShowDebugText || brain != this) 
                 return;
             
             if (m_UIDocument == null)
             {
-                m_UIDocumentGo = new GameObject("CinemachineRuntimeUI") { transform = { parent = brain.transform } };
+                m_UIDocumentGo = new GameObject("CinemachineRuntimeUI")
+                {
+                    transform = { parent = brain.transform },
+                    hideFlags = HideFlags.NotEditable,
+                    tag = "EditorOnly"
+                };
                 m_UIDocument = m_UIDocumentGo.AddComponent<UIDocument>();
                 const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
                 m_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
