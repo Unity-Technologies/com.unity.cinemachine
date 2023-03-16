@@ -425,8 +425,9 @@ namespace Unity.Cinemachine
                 const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
                 m_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
                 m_UIDocument.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path + "CinemachineDebugText.uxml");
+                
+                m_DebugLabel = m_UIDocument.rootVisualElement.Q("DebugLabel") as Label;
             }
-            m_DebugLabel = m_UIDocument.rootVisualElement.Q("DebugLabel") as Label;
         }
         
         void OnGUI()
