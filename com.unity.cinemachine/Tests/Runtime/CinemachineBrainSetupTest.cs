@@ -25,12 +25,13 @@ namespace Unity.Cinemachine.Tests.Editor
             m_Vcam.gameObject.AddComponent<CinemachineOrbitalFollow>();
             m_Vcam.gameObject.AddComponent<CinemachineRotationComposer>();
             m_Vcam.gameObject.AddComponent<CinemachineFreeLookModifier>();
-            m_Vcam.gameObject.AddComponent<InputController1AllAxis>();
+            m_Vcam.gameObject.AddComponent<CinemachineInputAxisController>();
         }
 
         [TearDown]
         public void TearDown()
         {
+            GameObject.Destroy(m_FollowObject);
             GameObject.Destroy(m_Vcam.gameObject);
             GameObject.Destroy(m_Brain.gameObject);
         }
