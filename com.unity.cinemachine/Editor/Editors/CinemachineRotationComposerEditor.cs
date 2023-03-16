@@ -60,7 +60,8 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             // Don't draw the guides if rendering to texture
-            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+            if (brain == null || brain.OutputCamera == null
+                    || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
                 return;
 
             var vcam = Target.VirtualCamera;
