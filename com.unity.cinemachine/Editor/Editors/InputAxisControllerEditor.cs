@@ -24,6 +24,8 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
+            var suppressInput = ux.AddChild(
+                new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
 
             ux.AddHeader("Driven Axes");
             var list = ux.AddChild(new ListView()
@@ -48,11 +50,12 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() =>
             {
-                if (Target != null && !Target.ControllersAreValid())
+                if (!Target.ControllersAreValid())
                 {
                     Undo.RecordObject(Target, "SynchronizeControllers");
                     Target.SynchronizeControllers();
                 }
+                suppressInput.SetVisible(Target.TryGetComponent<CinemachineVirtualCameraBase>(out _));
             });
             return ux;
         }
