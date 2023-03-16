@@ -3,10 +3,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
@@ -267,6 +269,10 @@ namespace Unity.Cinemachine
         void OnValidate()
         {
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
+            
+#if UNITY_EDITOR
+            SetupRuntimeUITK(this);
+#endif
         }
 
         void Reset()
@@ -350,8 +356,8 @@ namespace Unity.Cinemachine
                 m_FrameStack.Add(new BrainFrame());
 
             CinemachineCore.Instance.AddActiveBrain(this);
-            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers -= DebugTextHandler;
+            CinemachineDebug.OnGUIHandlers += DebugTextHandler;
 
             // We check in after the physics system has had a chance to move things
             m_PhysicsCoroutine = StartCoroutine(AfterPhysics());
@@ -365,7 +371,7 @@ namespace Unity.Cinemachine
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
-            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers -= DebugTextHandler;
             CinemachineCore.Instance.RemoveActiveBrain(this);
             m_FrameStack.Clear();
             StopCoroutine(m_PhysicsCoroutine);
@@ -393,61 +399,70 @@ namespace Unity.Cinemachine
             m_LastFrameUpdated = -1;
             UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
         }
-
-        // TODO-KGB: replace this with UITK
-        void OnGuiHandler(CinemachineBrain brain)
-        {
-#if CINEMACHINE_UNITY_IMGUI
-            if (ShowDebugText && brain == this)
-            {
-                // Show the active camera and blend
-                var sb = CinemachineDebug.SBFromPool();
-                Color color = GUI.color;
-                sb.Length = 0;
-                sb.Append("CM ");
-                sb.Append(gameObject.name);
-                sb.Append(": ");
-                if (SoloCamera != null)
-                {
-                    sb.Append("SOLO ");
-                    GUI.color = GetSoloGUIColor();
-                }
-
-                if (IsBlending)
-                    sb.Append(ActiveBlend.Description);
-                else
-                {
-                    ICinemachineCamera vcam = ActiveVirtualCamera;
-                    if (vcam == null)
-                        sb.Append("(none)");
-                    else
-                    {
-                        sb.Append(vcam.Name);
-                        var desc = vcam.Description;
-                        if (!string.IsNullOrEmpty(desc))
-                        {
-                            sb.Append(" ");
-                            sb.Append(desc);
-                        }
-                    }
-                }
-                string text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
-                GUI.Label(r, text, GUI.skin.box);
-                GUI.color = color;
-                CinemachineDebug.ReturnToPool(sb);
-            }
-#endif
-        }
-
-        // TODO-KGB: replace this with UITK
+        
 #if UNITY_EDITOR
+        UIDocument m_UIDocument;
+        Label m_DebugLabel;
+        void SetupRuntimeUITK(CinemachineBrain brain)
+        {
+            if (!ShowDebugText || brain != this) return;
+            
+            // TODO-KGB: cache our own UIDocument. Who knows, maybe the user has a UIDocument here, we don't want to override it
+            if (!brain.TryGetComponent<UIDocument>(out var uiDocument))
+            {
+                const string panelSettingsPath = "Packages/com.unity.cinemachine/Runtime/UI/CinemachinePanelSettings.asset";
+                uiDocument = brain.gameObject.AddComponent<UIDocument>();
+                uiDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(panelSettingsPath);
+            }
+
+            m_DebugLabel = uiDocument.rootVisualElement.Q("DebugLabel") as Label;
+        }
+        
         void OnGUI()
         {
             if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
-                CinemachineDebug.OnGUIHandlers(this);
+                    CinemachineDebug.OnGUIHandlers(this);
         }
 #endif
+        
+        void DebugTextHandler(CinemachineBrain brain)
+        {
+            if (!ShowDebugText || brain != this || m_DebugLabel == null) return;
+
+            // Show the active camera and blend
+            var sb = CinemachineDebug.SBFromPool();
+            Color color = GUI.color;
+            sb.Length = 0;
+            sb.Append("CM ");
+            sb.Append(gameObject.name);
+            sb.Append(": ");
+            if (SoloCamera != null)
+            {
+                sb.Append("SOLO ");
+                GUI.color = GetSoloGUIColor();
+            }
+
+            if (IsBlending)
+                sb.Append(ActiveBlend.Description);
+            else
+            {
+                ICinemachineCamera vcam = ActiveVirtualCamera;
+                if (vcam == null)
+                    sb.Append("(none)");
+                else
+                {
+                    sb.Append(vcam.Name);
+                    var desc = vcam.Description;
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        sb.Append(" ");
+                        sb.Append(desc);
+                    }
+                }
+            }
+            m_DebugLabel.text = sb.ToString();
+            CinemachineDebug.ReturnToPool(sb);
+        }
 
         IEnumerator AfterPhysics()
         {
