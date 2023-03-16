@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Added
+### Fixed
+- Bugfix: MixingCamera calls OnTransitionFromCamera correctly for all its children.
 
+### Added
 - New IgnoreTarget blend hint will blend rotations without considering the tracking target.
 
 ### Changed

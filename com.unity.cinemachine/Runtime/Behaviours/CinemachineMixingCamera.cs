@@ -196,11 +196,7 @@ namespace Unity.Cinemachine
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             for (int i = 0; i < MaxCameras && i < ChildCameras.Count; ++i)
-            {
-                var vcam = ChildCameras[i];
-                if (vcam.isActiveAndEnabled && GetWeight(i) > UnityVectorExtensions.Epsilon)
-                    vcam.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            }
+                ChildCameras[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InternalUpdateCameraState(worldUp, deltaTime);
         }
 
