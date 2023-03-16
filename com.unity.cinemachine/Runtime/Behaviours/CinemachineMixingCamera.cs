@@ -251,11 +251,7 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             CinemachineVirtualCameraBase[] children = ChildCameras;
             for (int i = 0; i < MaxCameras && i < children.Length; ++i)
-            {
-                CinemachineVirtualCameraBase vcam = children[i];
-                if (vcam.isActiveAndEnabled && GetWeight(i) > UnityVectorExtensions.Epsilon)
-                    vcam.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            }
+                children[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             InternalUpdateCameraState(worldUp, deltaTime);
         }
 
