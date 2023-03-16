@@ -356,6 +356,9 @@ namespace Unity.Cinemachine
                 m_FrameStack.Add(new BrainFrame());
 
             CinemachineCore.Instance.AddActiveBrain(this);
+#if UNITY_EDITOR
+            SetupRuntimeUIToolKit();
+#endif
             CinemachineDebug.OnGUIHandlers -= DebugTextHandler;
             CinemachineDebug.OnGUIHandlers += DebugTextHandler;
 
@@ -406,7 +409,7 @@ namespace Unity.Cinemachine
         Label m_DebugLabel;
         void SetupRuntimeUIToolKit()
         {
-            if (!ShowDebugText)
+            if (!ShowDebugText || this == null)
             {
                 if (m_UIDocumentGo != null)
                     RuntimeUtility.DestroyObject(m_UIDocumentGo); // clean-up
