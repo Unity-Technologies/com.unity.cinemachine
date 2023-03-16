@@ -13,7 +13,6 @@ namespace Unity.Cinemachine.Editor
     class CinemachineBlenderSettingsEditor : UnityEditor.Editor
     {
         CinemachineBlenderSettings Target => target as CinemachineBlenderSettings;
-        const string k_NoneLabel = "(none)";
 
         /// <summary>
         /// Called when building the Camera popup menus, to get the domain of possible
@@ -38,6 +37,8 @@ namespace Unity.Cinemachine.Editor
         string[] m_CameraCandidates;
         Dictionary<string, int> m_CameraIndexLookup;
         List<CinemachineVirtualCameraBase> m_AllCameras = new();
+
+        const string k_NoneLabel = "(none)";
 
         public override void OnInspectorGUI()
         {
@@ -193,7 +194,7 @@ namespace Unity.Cinemachine.Editor
                 foreach (var c in allCameras)
                     if (c != null && !availableCameras.Contains(c.Name))
                         availableCameras.Add(c.Name);
-                list.RefreshItems();
+                list.RefreshItems();  // rebuild the list
             });
 
             // Delay to work around a bug in ListView (UUM-27687 and UUM-27688)
@@ -236,13 +237,22 @@ namespace Unity.Cinemachine.Editor
             VisualElement CreateCameraPopup(SerializedProperty p)
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
+                var textField = row.AddChild(new TextField { isDelayed = true, style = { flexGrow = 1 }});
+                textField.BindProperty(p);
                 if (availableCameras.FindIndex(x => x == p.stringValue) < 0)
-                    row.AddChild(InspectorUtility.MiniHelpIcon("No available camera has this name"));
-                var popup = row.AddChild(new PopupField<string>()
-                    { style = { marginLeft = 0, marginRight = 3, flexGrow = 1 }});
-                popup.BindProperty(p);
-                popup.choices = availableCameras;
-                popup.formatListItemCallback = (s) => string.IsNullOrEmpty(s) ? k_NoneLabel : s;
+                    row.AddChild(InspectorUtility.MiniHelpIcon("No in-scene camera matches this name"));
+                var popup = row.AddChild(InspectorUtility.MiniDropdownButton(
+                    "Choose from currently-avaliable cameras", new ContextualMenuManipulator((evt) => 
+                {
+                    for (int i = 0; i < availableCameras.Count; ++i)
+                        evt.menu.AppendAction(availableCameras[i], 
+                            (action) => 
+                            {
+                                p.stringValue = action.name;
+                                p.serializedObject.ApplyModifiedProperties();
+                            });
+                })));
+                popup.style.marginRight = 5;
                 return row;
             }
 
