@@ -269,9 +269,9 @@ namespace Unity.Cinemachine
         void OnValidate()
         {
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
-            
 #if UNITY_EDITOR
-            SetupRuntimeUITK(this);
+            EditorApplication.delayCall -= SetupRuntimeUIToolKit;
+            EditorApplication.delayCall += SetupRuntimeUIToolKit;
 #endif
         }
 
@@ -404,20 +404,21 @@ namespace Unity.Cinemachine
         GameObject m_UIDocumentGo;
         UIDocument m_UIDocument;
         Label m_DebugLabel;
-        void SetupRuntimeUITK(CinemachineBrain brain)
+        void SetupRuntimeUIToolKit()
         {
-            if (m_UIDocumentGo != null && !ShowDebugText)
-                RuntimeUtility.DestroyObject(m_UIDocumentGo); // clean-up
-
-            if (!ShowDebugText || brain != this) 
+            if (!ShowDebugText)
+            {
+                if (m_UIDocumentGo != null)
+                    RuntimeUtility.DestroyObject(m_UIDocumentGo); // clean-up
                 return;
+            }
             
-            if (m_UIDocument == null)
+            if (m_UIDocumentGo == null)
             {
                 m_UIDocumentGo = new GameObject("CinemachineRuntimeUI")
                 {
-                    transform = { parent = brain.transform },
-                    hideFlags = HideFlags.NotEditable,
+                    transform = { parent = transform },
+                    hideFlags = HideFlags.NotEditable | HideFlags.DontSaveInEditor,
                     tag = "EditorOnly"
                 };
                 m_UIDocument = m_UIDocumentGo.AddComponent<UIDocument>();
