@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Label tabindex="-1" display-tooltip-when-elided="true" name="DebugLabel" enable-rich-text="false" style="-unity-text-align: middle-left; white-space: nowrap; background-color: rgba(128, 128, 128, 0.25); top: 0; left: 0; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; padding-left: 1px; padding-right: 1px; padding-top: 1px; padding-bottom: 1px; align-self: flex-start; font-size: 8%; -unity-font-style: normal; border-top-left-radius: 2px; border-bottom-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px;" />
+</ui:UXML>

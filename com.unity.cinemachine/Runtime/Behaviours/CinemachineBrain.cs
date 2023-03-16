@@ -401,21 +401,29 @@ namespace Unity.Cinemachine
         }
         
 #if UNITY_EDITOR
+        GameObject m_UIDocumentGo;
         UIDocument m_UIDocument;
         Label m_DebugLabel;
         void SetupRuntimeUITK(CinemachineBrain brain)
         {
-            if (!ShowDebugText || brain != this) return;
-            
-            // TODO-KGB: cache our own UIDocument. Who knows, maybe the user has a UIDocument here, we don't want to override it
-            if (!brain.TryGetComponent<UIDocument>(out var uiDocument))
+            if (m_UIDocumentGo != null && !ShowDebugText)
             {
-                const string panelSettingsPath = "Packages/com.unity.cinemachine/Runtime/UI/CinemachinePanelSettings.asset";
-                uiDocument = brain.gameObject.AddComponent<UIDocument>();
-                uiDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(panelSettingsPath);
+                // clean-up our stuff
+                RuntimeUtility.DestroyObject(m_UIDocumentGo);
             }
-
-            m_DebugLabel = uiDocument.rootVisualElement.Q("DebugLabel") as Label;
+            
+            if (!ShowDebugText || brain != this) 
+                return;
+            
+            if (m_UIDocument == null)
+            {
+                m_UIDocumentGo = new GameObject("CinemachineRuntimeUI") { transform = { parent = brain.transform } };
+                m_UIDocument = m_UIDocumentGo.AddComponent<UIDocument>();
+                const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
+                m_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
+                m_UIDocument.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path + "CinemachineDebugText.uxml");
+            }
+            m_DebugLabel = m_UIDocument.rootVisualElement.Q("DebugLabel") as Label;
         }
         
         void OnGUI()
@@ -427,7 +435,8 @@ namespace Unity.Cinemachine
         
         void DebugTextHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText || brain != this || m_DebugLabel == null) return;
+            if (!ShowDebugText || brain != this || m_DebugLabel == null) 
+                return;
 
             // Show the active camera and blend
             var sb = CinemachineDebug.SBFromPool();
