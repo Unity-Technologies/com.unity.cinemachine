@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
@@ -476,7 +477,19 @@ namespace Unity.Cinemachine
                     }
                 }
             }
-            m_DebugLabel.text = sb.ToString();
+
+            var text = sb.ToString();
+            // var r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
+            var r = OutputCamera.pixelRect;
+            
+            m_DebugLabel.text = text;
+            // TODO: this is wrong here - bottom and left and not correct. experiments only. 
+            var labelHeight = m_DebugLabel.resolvedStyle.height;
+            Debug.Log(r + brain.name + labelHeight);
+            Debug.Log((r.y + r.height)/2f + labelHeight);
+            // Debug.Log(labelHeight);
+            m_DebugLabel.style.bottom = new Length((r.y + r.height)/2f + labelHeight + (r.y / r.height) * 2 * labelHeight, LengthUnit.Pixel);
+            m_DebugLabel.style.left = new Length(r.x, LengthUnit.Pixel);
             CinemachineDebug.ReturnToPool(sb);
         }
 
