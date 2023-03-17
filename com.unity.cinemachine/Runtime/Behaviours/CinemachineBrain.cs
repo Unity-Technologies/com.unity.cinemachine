@@ -481,13 +481,14 @@ namespace Unity.Cinemachine
             }
             
             var panel = m_ViewportContainer.panel;
-            var panelWidth = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, 0)).x;
-            var panelHeight = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(0, Screen.height)).y;
+            var screenPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, Screen.height));
             var viewport = OutputCamera.pixelRect;
-            m_ViewportContainer.style.top = new Length(panelHeight - viewport.yMax, LengthUnit.Pixel);
-            m_ViewportContainer.style.bottom = new Length(viewport.yMin, LengthUnit.Pixel);
-            m_ViewportContainer.style.left = new Length(viewport.xMin, LengthUnit.Pixel);
-            m_ViewportContainer.style.right = new Length(panelWidth - viewport.xMax, LengthUnit.Pixel);
+            var viewPortMaxPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, viewport.max);
+            var viewPortMinPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, viewport.min);
+            m_ViewportContainer.style.top = new Length(screenPanelSpace.y - viewPortMaxPanelSpace.y, LengthUnit.Pixel);
+            m_ViewportContainer.style.bottom = new Length(viewPortMinPanelSpace.y, LengthUnit.Pixel);
+            m_ViewportContainer.style.left = new Length(viewPortMinPanelSpace.x, LengthUnit.Pixel);
+            m_ViewportContainer.style.right = new Length(screenPanelSpace.x - viewPortMaxPanelSpace.x, LengthUnit.Pixel);
             
             m_DebugLabel.text = sb.ToString();
             CinemachineDebug.ReturnToPool(sb);
