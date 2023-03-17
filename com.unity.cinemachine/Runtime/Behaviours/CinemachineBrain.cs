@@ -3,14 +3,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 #if CINEMACHINE_HDRP
     using UnityEngine.Rendering.HighDefinition;
 #elif CINEMACHINE_URP
