@@ -83,6 +83,11 @@
             "name": "com.unity.inputsystem",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
+        },
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.0.0-pre.4",
+            "define": "CINEMACHINE_3_OR_NEWER"
         }
     ],
     "noEngineReferences": false
