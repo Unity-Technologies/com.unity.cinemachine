@@ -108,7 +108,7 @@ namespace Unity.Cinemachine.Editor
             var vcamChildren = vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
             for (var c = 1; c < vcamChildren.Length; c++)
             {
-                if ((CinemachineVirtualCameraBase)vcamChildren[c].ParentCamera == vcamBase)
+                if (vcamChildren[c].ParentCamera == vcamBase)
                     CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
             }
         }

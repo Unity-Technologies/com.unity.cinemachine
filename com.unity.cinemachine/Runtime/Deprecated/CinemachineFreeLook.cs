@@ -296,7 +296,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
+        public override bool IsLiveChild(CinemachineVirtualCameraBase vcam, bool dominantChildOnly = false)
         {
             // Do not update the rig cache here or there will be infinite loop at creation time
             if (!RigsAreCreated)
@@ -304,19 +304,19 @@ namespace Unity.Cinemachine
             var y = GetYAxisValue();
             if (dominantChildOnly)
             {
-                if (vcam == (ICinemachineCamera)m_Rigs[0])
+                if (vcam == m_Rigs[0])
                     return y > 0.666f;
-                if (vcam == (ICinemachineCamera)m_Rigs[2])
+                if (vcam == m_Rigs[2])
                     return y < 0.333;
-                if (vcam == (ICinemachineCamera)m_Rigs[1])
+                if (vcam == m_Rigs[1])
                     return y >= 0.333f && y <= 0.666f;
                 return false;
             }
-            if (vcam == (ICinemachineCamera)m_Rigs[1])
+            if (vcam == m_Rigs[1])
                 return true;
             if (y < 0.5f)
-                return vcam == (ICinemachineCamera)m_Rigs[2];
-            return vcam == (ICinemachineCamera)m_Rigs[0];
+                return vcam == m_Rigs[2];
+            return vcam == m_Rigs[0];
         }
 
         /// <summary>This is called to notify the vcam that a target got warped,

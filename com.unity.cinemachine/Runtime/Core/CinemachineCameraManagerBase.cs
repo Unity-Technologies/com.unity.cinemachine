@@ -70,7 +70,7 @@ namespace Unity.Cinemachine
         /// Returns the camera that is currently live.  If a blend is in progress, then the
         /// incoming camera is considered to be the live child.
         /// </summary>
-        public abstract ICinemachineCamera LiveChild { get; }
+        public abstract CinemachineVirtualCameraBase LiveChild { get; }
 
         /// <summary>
         /// Get the current active blend in progress.  Will return null if no blend is in progress.
@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
+        public override bool IsLiveChild(CinemachineVirtualCameraBase vcam, bool dominantChildOnly = false)
         {
             return vcam == LiveChild || (ActiveBlend != null && ActiveBlend.Uses(vcam));
         }
@@ -110,7 +110,7 @@ namespace Unity.Cinemachine
         /// <returns>The current live child's TransitionParams settings</returns>
         public override TransitionParams GetTransitionParams()
         {
-            var child = LiveChild as CinemachineVirtualCameraBase;
+            var child = LiveChild;
             return child != null ? child.GetTransitionParams() : default;
         }
 

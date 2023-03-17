@@ -134,7 +134,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the State Driven Camera were active.</summary>
-        public override ICinemachineCamera LiveChild => PreviousStateIsValid ? m_LiveChild : null;
+        public override CinemachineVirtualCameraBase LiveChild => PreviousStateIsValid ? m_LiveChild : null;
 
         /// <summary>
         /// Get the current active blend in progress.  Will return null if no blend is in progress.
@@ -163,13 +163,13 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
+        public override bool IsLiveChild(CinemachineVirtualCameraBase vcam, bool dominantChildOnly = false)
         {
             if (dominantChildOnly)
-                return (ICinemachineCamera)m_LiveChild == vcam;
+                return m_LiveChild == vcam;
             var children = ChildCameras;
             for (int i = 0; i < MaxCameras && i < children.Count; ++i)
-                if ((ICinemachineCamera)children[i] == vcam)
+                if (children[i] == vcam)
                     return GetWeight(i) > UnityVectorExtensions.Epsilon && children[i].isActiveAndEnabled;
             return false;
         }

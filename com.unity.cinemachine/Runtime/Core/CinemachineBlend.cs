@@ -264,16 +264,10 @@ namespace Unity.Cinemachine
 
         public string Name { get; private set; }
         public string Description => string.Empty;
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public bool IsValid => true;
-        public ICinemachineCamera ParentCamera => null;
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 
     /// <summary>
@@ -288,13 +282,8 @@ namespace Unity.Cinemachine
 
         public string Name => "Mid-blend";
         public string Description => Blend == null ? "(null)" : Blend.Description;
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
-        public ICinemachineCamera ParentCamera => null;
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
-            => Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB);
         public CameraState CalculateNewState(float deltaTime) => State;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
@@ -304,8 +293,6 @@ namespace Unity.Cinemachine
                 State = Blend.State;
             }
         }
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 }

@@ -142,9 +142,10 @@ namespace Unity.Cinemachine.Editor
             SerializedProperty followTarget, SerializedProperty lookAtTarget)
         {
             EditorGUI.BeginChangeCheck();
+            var parentVcam = Target.ParentCamera;
             if (!IsPropertyExcluded(followTarget.name))
             {
-                if (Target.ParentCamera == null || Target.ParentCamera.Follow == null)
+                if (parentVcam == null || parentVcam.Follow == null)
                     EditorGUILayout.PropertyField(followTarget);
                 else
                     EditorGUILayout.PropertyField(followTarget,
@@ -153,7 +154,7 @@ namespace Unity.Cinemachine.Editor
             }
             if (!IsPropertyExcluded(lookAtTarget.name))
             {
-                if (Target.ParentCamera == null || Target.ParentCamera.LookAt == null)
+                if (parentVcam == null || parentVcam.LookAt == null)
                     EditorGUILayout.PropertyField(lookAtTarget);
                 else
                     EditorGUILayout.PropertyField(lookAtTarget,

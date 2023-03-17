@@ -612,16 +612,19 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <param name="vcam">The virtual camera to check</param>
         /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
-        public bool IsLiveInBlend(ICinemachineCamera vcam)
+        public bool IsLiveInBlend(ICinemachineCamera cam)
         {
             // Ignore m_CurrentLiveCameras.CamB
-            if (vcam == m_CurrentLiveCameras.CamA)
+            if (cam == m_CurrentLiveCameras.CamA)
                 return true;
-            if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(vcam))
+            if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
                 return true;
-            ICinemachineCamera parent = vcam.ParentCamera;
-            if (parent != null && parent.IsLiveChild(vcam, false))
-                return IsLiveInBlend(parent);
+            if (cam is CinemachineVirtualCameraBase vcam)
+            {
+                var parent = vcam.ParentCamera;
+                if (parent != null && parent.IsLiveChild(vcam, false))
+                    return IsLiveInBlend(parent);
+            }
             return false;
         }
 
@@ -940,20 +943,15 @@ namespace Unity.Cinemachine
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the camera is live (directly or indirectly)
         /// or part of a blend in progress.</returns>
-        public bool IsLive(ICinemachineCamera vcam, bool dominantChildOnly = false)
+        public bool IsLive(ICinemachineCamera cam, bool dominantChildOnly = false)
         {
-            if ((ICinemachineCamera)SoloCamera == vcam)
+            if ((ICinemachineCamera)SoloCamera == cam || m_CurrentLiveCameras.Uses(cam))
                 return true;
-            if (m_CurrentLiveCameras.Uses(vcam))
-                return true;
-
-            ICinemachineCamera parent = vcam.ParentCamera;
-            while (parent != null && parent.IsLiveChild(vcam, dominantChildOnly))
+            if (cam is CinemachineVirtualCameraBase vcam)
             {
-                if ((ICinemachineCamera)SoloCamera == parent || m_CurrentLiveCameras.Uses(parent))
-                    return true;
-                vcam = parent;
-                parent = vcam.ParentCamera;
+                var parent = vcam.ParentCamera;
+                if (parent != null && parent.IsLiveChild(vcam, dominantChildOnly))
+                    return IsLive(parent, dominantChildOnly);
             }
             return false;
         }

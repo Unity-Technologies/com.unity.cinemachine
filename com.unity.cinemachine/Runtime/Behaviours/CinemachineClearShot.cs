@@ -100,7 +100,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Get the current "best" child virtual camera, that would be chosen
         /// if the State Driven Camera were active.</summary>
-        public override ICinemachineCamera LiveChild => PreviousStateIsValid ? m_LiveChild : null;
+        public override CinemachineVirtualCameraBase LiveChild => PreviousStateIsValid ? m_LiveChild : null;
 
         /// <summary>
         /// Get the current active blend in progress.  Will return null if no blend is in progress.

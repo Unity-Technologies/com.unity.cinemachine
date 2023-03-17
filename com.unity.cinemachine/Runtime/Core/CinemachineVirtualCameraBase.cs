@@ -324,7 +324,7 @@ namespace Unity.Cinemachine
                         e.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
                 }
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
+            var parent = ParentCamera;
             if (parent != null)
                 parent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
         }
@@ -357,7 +357,7 @@ namespace Unity.Cinemachine
                         e.PrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
                 }
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
+            var parent = ParentCamera;
             if (parent != null)
                 parent.InvokePrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
         }
@@ -433,7 +433,7 @@ namespace Unity.Cinemachine
         /// virtual camera is in fact the public face of a private army of virtual cameras, which
         /// it manages on its own.  This method gets the VirtualCamera owner, if any.
         /// Private armies are implemented as Transform children of the parent vcam.</summary>
-        public ICinemachineCamera ParentCamera
+        public CinemachineVirtualCameraBase ParentCamera
         {
             get
             {
@@ -452,7 +452,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
+        public virtual bool IsLiveChild(CinemachineVirtualCameraBase vcam, bool dominantChildOnly = false) => false;
 
         /// <summary>Get the LookAt target for the Aim component in the Cinemachine pipeline.</summary>
         public abstract Transform LookAt { get; set; }
@@ -663,9 +663,8 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].OnTargetObjectWarped(vcam, target, positionDelta);
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
-            if (parent != null)
-                parent.OnTargetObjectWarped(vcam, target, positionDelta);
+            if (ParentCamera != null)
+                ParentCamera.OnTargetObjectWarped(vcam, target, positionDelta);
         }
 
         /// <summary>
@@ -681,9 +680,8 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].ForceCameraPosition(pos, rot);
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
-            if (parent != null)
-                parent.ForceCameraPosition(pos, rot);
+            if (ParentCamera != null)
+                ParentCamera.ForceCameraPosition(pos, rot);
         }
 
         /// <summary>
