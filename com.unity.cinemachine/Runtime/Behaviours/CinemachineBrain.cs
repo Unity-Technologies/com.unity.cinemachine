@@ -8,12 +8,6 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-#if CINEMACHINE_HDRP
-    using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_URP
-    using UnityEngine.Rendering.Universal;
-#endif
-
 namespace Unity.Cinemachine
 {
     /// <summary>
@@ -182,7 +176,7 @@ namespace Unity.Cinemachine
         /// <summary>Controls whether CM cameras can change the lens mode.</summary>
         [FoldoutWithEnabledButton]
         public LensModeOverrideSettings LensModeOverride 
-            = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
+            = new () { DefaultMode = LensSettings.OverrideModes.Perspective };
 
         /// <summary>
         /// The blend which is used if you don't explicitly define a blend between two Virtual Cameras.
@@ -190,8 +184,7 @@ namespace Unity.Cinemachine
         [Tooltip("The blend that is used in cases where you haven't explicitly defined a "
             + "blend between two Virtual Cameras")]
         [FormerlySerializedAs("m_DefaultBlend")]
-        public CinemachineBlendDefinition DefaultBlend
-            = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 2f);
+        public CinemachineBlendDefinition DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 2f);
 
         /// <summary>
         /// This is the asset which contains custom settings for specific blends.
@@ -213,7 +206,7 @@ namespace Unity.Cinemachine
         /// <summary>This event will fire whenever a virtual camera goes live and there is no blend</summary>
         [Tooltip("This event will fire whenever a virtual camera goes live and there is no blend")]
         [FormerlySerializedAs("m_CameraCutEvent")]
-        public BrainEvent CameraCutEvent = new BrainEvent();
+        public BrainEvent CameraCutEvent = new ();
 
         /// <summary>This event will fire whenever a virtual camera goes live.  If a blend is involved,
         /// then the event will fire on the first frame of the blend.
@@ -222,7 +215,7 @@ namespace Unity.Cinemachine
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is "
             + "involved, then the event will fire on the first frame of the blend.")]
         [FormerlySerializedAs("m_CameraActivatedEvent")]
-        public VcamActivatedEvent CameraActivatedEvent = new VcamActivatedEvent();
+        public VcamActivatedEvent CameraActivatedEvent = new ();
 
         Camera m_OutputCamera = null; // never use directly - use accessor
         GameObject m_TargetOverride = null; // never use directly - use accessor
@@ -234,12 +227,12 @@ namespace Unity.Cinemachine
         class BrainFrame
         {
             public int id;
-            public CinemachineBlend blend = new CinemachineBlend(null, null, null, 0, 0);
-            public bool Active { get { return blend.IsValid; } }
+            public CinemachineBlend blend = new (null, null, null, 0, 0);
+            public bool Active => blend.IsValid;
 
             // Working data - updated every frame
-            public CinemachineBlend workingBlend = new CinemachineBlend(null, null, null, 0, 0);
-            public BlendSourceVirtualCamera workingBlendSource = new BlendSourceVirtualCamera(null);
+            public CinemachineBlend workingBlend = new (null, null, null, 0, 0);
+            public BlendSourceVirtualCamera workingBlendSource = new (null);
 
             // Used by Timeline Preview for overriding the current value of deltaTime
             public float deltaTimeOverride;
@@ -250,16 +243,16 @@ namespace Unity.Cinemachine
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
-        List<BrainFrame> m_FrameStack = new List<BrainFrame>();
+        List<BrainFrame> m_FrameStack = new ();
         int m_NextFrameId = 1;
 
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
-        CinemachineBlend m_CurrentLiveCameras = new CinemachineBlend(null, null, null, 0, 0);
+        CinemachineBlend m_CurrentLiveCameras = new (null, null, null, 0, 0);
         
         // To avoid GC memory alloc every frame
         static readonly AnimationCurve s_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
-        WaitForFixedUpdate m_WaitForFixedUpdate = new WaitForFixedUpdate();
+        WaitForFixedUpdate m_WaitForFixedUpdate = new ();
 
         ICinemachineCamera m_ActiveCameraPreviousFrame;
         CinemachineVirtualCameraBase m_ActiveCameraPreviousFrameGameObject;
@@ -635,7 +628,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Is there a blend in progress?
         /// </summary>
-        public bool IsBlending { get { return ActiveBlend != null; } }
+        public bool IsBlending => ActiveBlend != null;
 
         /// <summary>
         /// Get the current blend in progress.  Returns null if none.
@@ -817,7 +810,19 @@ namespace Unity.Cinemachine
                     if (blendDef.BlendCurve != null && blendDuration > UnityVectorExtensions.Epsilon)
                     {
                         if (frame.blend.IsComplete)
-                            frame.blend.CamA = outGoingCamera;  // new blend
+                        {
+                            // new blend
+/* GML todo: think about this
+                            if (outGoingCamera is CinemachineVirtualCameraBase outgoingVcamBase
+                                && (outgoingVcamBase.GetTransitionParams().BlendHint 
+                                    & TransitionParams.BlendHints.BlendOutFromSnapshot) != 0)
+                            {
+                                frame.blend.CamA = new StaticPointVirtualCamera(outGoingCamera.State, outGoingCamera.Name);
+                            }
+                            else
+*/
+                                frame.blend.CamA = outGoingCamera;  
+                        }
                         else
                         {
                             // Special case: if backing out of a blend-in-progress

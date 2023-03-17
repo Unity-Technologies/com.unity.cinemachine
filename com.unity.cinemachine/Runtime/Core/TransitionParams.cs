@@ -22,7 +22,9 @@ namespace Unity.Cinemachine
             /// as the current position of the Unity Camera</summary>
             InheritPosition = 8,
             /// <summary>Do not consider the tracking target when blending, just do a spherical interpolation</summary>
-            IgnoreTarget = 16
+            IgnoreTarget = 16,
+            // /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            //BlendOutFromSnapshot = 32, GML todo: think about this
         }
 
         /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 

@@ -94,13 +94,13 @@ namespace Unity.Cinemachine
             IgnoreLookAtTarget = TransitionParams.BlendHints.IgnoreTarget,
 
             /// <summary>This state does not affect the camera position</summary>
-            NoPosition = 32,
+            NoPosition = 1 << 16,
             /// <summary>This state does not affect the camera rotation</summary>
-            NoOrientation = 64,
+            NoOrientation = 2 << 16,
             /// <summary>Combination of NoPosition and NoOrientation</summary>
             NoTransform = NoPosition | NoOrientation,
             /// <summary>This state does not affect the lens</summary>
-            NoLens = 128,
+            NoLens = 4 << 16,
         }
 
         /// <summary>

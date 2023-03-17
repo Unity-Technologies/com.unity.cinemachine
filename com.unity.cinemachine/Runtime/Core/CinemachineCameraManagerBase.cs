@@ -256,14 +256,18 @@ namespace Unity.Cinemachine
                     m_BlendStartPosition = 1 - progress;
                 }
 
-                if (camB is CinemachineVirtualCameraBase 
-                    && (camB as CinemachineVirtualCameraBase).GetTransitionParams().InheritPosition)
-                    camA = null;  // otherwise we get a pop when camB is moved
+                if (camB is CinemachineVirtualCameraBase vcamBaseB && vcamBaseB.GetTransitionParams().InheritPosition)
+                    camA = null;  // otherwise we can get a pop when camB is moved
                 else
                     camA = new BlendSourceVirtualCamera(activeBlend);
             }
             if (camA == null)
                 camA = new StaticPointVirtualCamera(State, "(none)");
+/* GML todo: think about this
+            else if (camA is CinemachineVirtualCameraBase vcamBaseA 
+                && (vcamBaseA.GetTransitionParams().BlendHint & TransitionParams.BlendHints.BlendOutFromSnapshot) != 0)
+                camA = new StaticPointVirtualCamera(camA.State, camA.Name);
+*/                
             return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.BlendTime, 0);
         }
     }
