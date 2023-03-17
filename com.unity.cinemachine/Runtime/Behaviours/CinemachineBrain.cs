@@ -445,7 +445,7 @@ namespace Unity.Cinemachine
         
         void DebugTextHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText || brain != this || m_DebugLabel == null) 
+            if (!ShowDebugText || brain != this || m_ViewportContainer == null || m_DebugLabel == null) 
                 return;
 
             // Show the active camera and blend
@@ -480,44 +480,16 @@ namespace Unity.Cinemachine
                 }
             }
             
-            Color bgcolor = Color.yellow;
-            if (OutputCamera.name == "Fixed Update Brain")
-                bgcolor = new Color(1f, 0, 0, 0.25f);
-            if (OutputCamera.name == "Smart Update Brain")
-                bgcolor = new Color(0, 1f, 0, 0.25f);
-            if (OutputCamera.name == "Late Update Brain")
-                bgcolor = new Color(0, 0f, 1f, 0.25f);
-                
-            var text = sb.ToString();
-            m_ViewportContainer.style.backgroundColor = bgcolor;
-
-            //var screenPosition = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box).position;
-            var viewportPixelRect = OutputCamera.pixelRect;
-            var topLeft = new Vector2(viewportPixelRect.xMin, viewportPixelRect.yMax);
-            var topRight = new Vector2(viewportPixelRect.xMax, viewportPixelRect.yMax);
-            var botLeft = new Vector2(viewportPixelRect.xMin, viewportPixelRect.yMin);
-            var botRight = new Vector2(viewportPixelRect.xMax, viewportPixelRect.yMin);
-
             var panel = m_ViewportContainer.panel;
-            var topLeftPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, topLeft);
-            var topRightPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, topRight);
-            var botLeftPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, botLeft);
-            var botRightPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, botRight);
-
-            var width = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, 0)) -
-                RuntimePanelUtils.ScreenToPanel(panel, Vector3.zero);
-            var height = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(0, Screen.height)) -
-                RuntimePanelUtils.ScreenToPanel(panel, Vector3.zero);
-            // var bottomRightScreenSpace = new Vector2(topLeftScreenSpace.x + viewportPixelRect.width, topLeftScreenSpace.y - viewportPixelRect.height);
-            // var topLeftPanelSpace = RuntimePanelUtils.ScreenToPanel(m_ViewportContainer.panel, topLeftScreenSpace);
-            // var bottomRightPanelSpace = RuntimePanelUtils.ScreenToPanel(m_ViewportContainer.panel, bottomRightScreenSpace);
-            //
-            m_ViewportContainer.style.top = new Length(height.y - topLeftPanelSpace.y, LengthUnit.Pixel);
-            m_ViewportContainer.style.bottom = new Length(botRightPanelSpace.y, LengthUnit.Pixel);
-            m_ViewportContainer.style.left = new Length(topLeftPanelSpace.x, LengthUnit.Pixel);
-            m_ViewportContainer.style.right = new Length(width.x - botRightPanelSpace.x, LengthUnit.Pixel);
+            var panelWidth = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, 0)).x;
+            var panelHeight = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(0, Screen.height)).y;
+            var viewport = OutputCamera.pixelRect;
+            m_ViewportContainer.style.top = new Length(panelHeight - viewport.yMax, LengthUnit.Pixel);
+            m_ViewportContainer.style.bottom = new Length(viewport.yMin, LengthUnit.Pixel);
+            m_ViewportContainer.style.left = new Length(viewport.xMin, LengthUnit.Pixel);
+            m_ViewportContainer.style.right = new Length(panelWidth - viewport.xMax, LengthUnit.Pixel);
             
-            m_DebugLabel.text = text;
+            m_DebugLabel.text = sb.ToString();
             CinemachineDebug.ReturnToPool(sb);
         }
 
