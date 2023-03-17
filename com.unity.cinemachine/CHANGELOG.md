@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Added
+### Fixed
+- Bugfix: MixingCamera calls OnTransitionFromCamera correctly for all its children.
 
+### Added
 - New IgnoreTarget blend hint will blend rotations without considering the tracking target.
 
 ### Changed
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Full physical camera support for builtin pipeline.
 - LensPresets and PhysicalLensPresets are now separate assets.
 - CinemachineInputAxisController refactored to be more easily customized.
+- CinemachineUpgradeManager re-opens original scene after upgrade is complete.
 
 
 ## [3.0.0-pre.4] - 2023-02-09
