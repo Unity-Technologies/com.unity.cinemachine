@@ -445,7 +445,7 @@ namespace Unity.Cinemachine
         
         void DebugTextHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText || brain != this || m_ViewportContainer == null || m_DebugLabel == null) 
+            if (!ShowDebugText || brain != this || m_ViewportContainer?.panel == null || m_DebugLabel == null) 
                 return;
 
             // Show the active camera and blend
