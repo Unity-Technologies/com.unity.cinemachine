@@ -107,6 +107,7 @@ namespace Unity.Cinemachine.Editor
                 "I made a backup, go ahead", "Cancel"))
             {
                 Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
+                var originalScenePath = EditorSceneManager.GetActiveScene().path;
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
                 var manager = new CinemachineUpgradeManager(true);
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
@@ -121,6 +122,7 @@ namespace Unity.Cinemachine.Editor
                 EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1);
                 manager.CleanupPrefabAssets();
                 EditorUtility.ClearProgressBar();
+                EditorSceneManager.OpenScene(originalScenePath); // re-open scene where the user was before upgrading
             }
         }
 
