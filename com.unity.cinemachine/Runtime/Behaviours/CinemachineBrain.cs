@@ -407,6 +407,7 @@ namespace Unity.Cinemachine
 #if UNITY_EDITOR
         GameObject m_UIDocumentGo;
         UIDocument m_UIDocument;
+        VisualElement m_ViewportContainer;
         Label m_DebugLabel;
         void SetupRuntimeUIToolKit()
         {
@@ -429,8 +430,9 @@ namespace Unity.Cinemachine
                 const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
                 m_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
                 m_UIDocument.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path + "CinemachineDebugText.uxml");
-                
-                m_DebugLabel = m_UIDocument.rootVisualElement.Q("DebugLabel") as Label;
+
+                m_ViewportContainer = m_UIDocument.rootVisualElement.Q("ViewportContainer");
+                m_DebugLabel = m_ViewportContainer.Q("DebugLabel") as Label;
             }
         }
         
@@ -477,19 +479,45 @@ namespace Unity.Cinemachine
                     }
                 }
             }
-
+            
+            Color bgcolor = Color.yellow;
+            if (OutputCamera.name == "Fixed Update Brain")
+                bgcolor = new Color(1f, 0, 0, 0.25f);
+            if (OutputCamera.name == "Smart Update Brain")
+                bgcolor = new Color(0, 1f, 0, 0.25f);
+            if (OutputCamera.name == "Late Update Brain")
+                bgcolor = new Color(0, 0f, 1f, 0.25f);
+                
             var text = sb.ToString();
-            // var r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
-            var r = OutputCamera.pixelRect;
+            m_ViewportContainer.style.backgroundColor = bgcolor;
+
+            //var screenPosition = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box).position;
+            var viewportPixelRect = OutputCamera.pixelRect;
+            var topLeft = new Vector2(viewportPixelRect.xMin, viewportPixelRect.yMax);
+            var topRight = new Vector2(viewportPixelRect.xMax, viewportPixelRect.yMax);
+            var botLeft = new Vector2(viewportPixelRect.xMin, viewportPixelRect.yMin);
+            var botRight = new Vector2(viewportPixelRect.xMax, viewportPixelRect.yMin);
+
+            var panel = m_ViewportContainer.panel;
+            var topLeftPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, topLeft);
+            var topRightPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, topRight);
+            var botLeftPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, botLeft);
+            var botRightPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, botRight);
+
+            var width = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, 0)) -
+                RuntimePanelUtils.ScreenToPanel(panel, Vector3.zero);
+            var height = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(0, Screen.height)) -
+                RuntimePanelUtils.ScreenToPanel(panel, Vector3.zero);
+            // var bottomRightScreenSpace = new Vector2(topLeftScreenSpace.x + viewportPixelRect.width, topLeftScreenSpace.y - viewportPixelRect.height);
+            // var topLeftPanelSpace = RuntimePanelUtils.ScreenToPanel(m_ViewportContainer.panel, topLeftScreenSpace);
+            // var bottomRightPanelSpace = RuntimePanelUtils.ScreenToPanel(m_ViewportContainer.panel, bottomRightScreenSpace);
+            //
+            m_ViewportContainer.style.top = new Length(height.y - topLeftPanelSpace.y, LengthUnit.Pixel);
+            m_ViewportContainer.style.bottom = new Length(botRightPanelSpace.y, LengthUnit.Pixel);
+            m_ViewportContainer.style.left = new Length(topLeftPanelSpace.x, LengthUnit.Pixel);
+            m_ViewportContainer.style.right = new Length(width.x - botRightPanelSpace.x, LengthUnit.Pixel);
             
             m_DebugLabel.text = text;
-            // TODO: this is wrong here - bottom and left and not correct. experiments only. 
-            var labelHeight = m_DebugLabel.resolvedStyle.height;
-            Debug.Log(r + brain.name + labelHeight);
-            Debug.Log((r.y + r.height)/2f + labelHeight);
-            // Debug.Log(labelHeight);
-            m_DebugLabel.style.bottom = new Length((r.y + r.height)/2f + labelHeight + (r.y / r.height) * 2 * labelHeight, LengthUnit.Pixel);
-            m_DebugLabel.style.left = new Length(r.x, LengthUnit.Pixel);
             CinemachineDebug.ReturnToPool(sb);
         }
 
