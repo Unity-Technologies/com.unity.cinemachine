@@ -79,9 +79,9 @@ namespace Unity.Cinemachine
             CustomBlends = null;
         }
 
-        protected internal override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        protected internal override void PerformLegacyUpgrade(int streamedVersion)
         {
-            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
+            base.PerformLegacyUpgrade(streamedVersion);
             if (streamedVersion < 20220721)
             {
                 DefaultTarget = new DefaultTargetSettings 
