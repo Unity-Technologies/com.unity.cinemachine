@@ -44,5 +44,23 @@ namespace Unity.Cinemachine
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime);
+
+        /// <summary>
+        /// Returns the ICinemachineMixer within which this Camera is nested, or null.
+        /// </summary>
+        ICinemachineMixer ParentCamera { get; }
+    }
+
+    /// <summary>
+    /// This is a ICinemachineCamera that can own child ICinemachineCameras.
+    /// ICinemachineCamera nesting is defined using this interface.
+    /// </summary>
+    public interface ICinemachineMixer : ICinemachineCamera
+    {
+        /// <summary>Check whether the cam is a live child of this camera.</summary>
+        /// <param name="child">The child ICienamchineCamera to check</param>
+        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
+        /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
+        bool IsLiveChild(ICinemachineCamera child, bool dominantChildOnly = false);
     }
 }

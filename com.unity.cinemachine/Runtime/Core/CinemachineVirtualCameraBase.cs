@@ -26,7 +26,8 @@ namespace Unity.Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera, ISerializationCallbackReceiver
+    public abstract class CinemachineVirtualCameraBase 
+        : MonoBehaviour, ICinemachineCamera, ICinemachineMixer, ISerializationCallbackReceiver
     {
         /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
@@ -324,9 +325,8 @@ namespace Unity.Cinemachine
                         e.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
                 }
             }
-            var parent = ParentCamera;
-            if (parent != null)
-                parent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
         }
         
         /// <summary>
@@ -357,9 +357,8 @@ namespace Unity.Cinemachine
                         e.PrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
                 }
             }
-            var parent = ParentCamera;
-            if (parent != null)
-                parent.InvokePrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.InvokePrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
         }
 
         /// <summary>
@@ -433,7 +432,7 @@ namespace Unity.Cinemachine
         /// virtual camera is in fact the public face of a private army of virtual cameras, which
         /// it manages on its own.  This method gets the VirtualCamera owner, if any.
         /// Private armies are implemented as Transform children of the parent vcam.</summary>
-        public CinemachineVirtualCameraBase ParentCamera
+        public ICinemachineMixer ParentCamera
         {
             get
             {
@@ -452,7 +451,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public virtual bool IsLiveChild(CinemachineVirtualCameraBase vcam, bool dominantChildOnly = false) => false;
+        public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
 
         /// <summary>Get the LookAt target for the Aim component in the Cinemachine pipeline.</summary>
         public abstract Transform LookAt { get; set; }
@@ -601,8 +600,8 @@ namespace Unity.Cinemachine
         public Transform ResolveLookAt(Transform localLookAt)
         {
             Transform lookAt = localLookAt;
-            if (lookAt == null && ParentCamera != null)
-                lookAt = ParentCamera.LookAt; // Parent provides default
+            if (lookAt == null && ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                lookAt = vcamParent.LookAt; // Parent provides default
             return lookAt;
         }
 
@@ -613,8 +612,8 @@ namespace Unity.Cinemachine
         public Transform ResolveFollow(Transform localFollow)
         {
             Transform follow = localFollow;
-            if (follow == null && ParentCamera != null)
-                follow = ParentCamera.Follow; // Parent provides default
+            if (follow == null && ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                follow = vcamParent.Follow; // Parent provides default
             return follow;
         }
 
@@ -663,8 +662,8 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].OnTargetObjectWarped(vcam, target, positionDelta);
             }
-            if (ParentCamera != null)
-                ParentCamera.OnTargetObjectWarped(vcam, target, positionDelta);
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.OnTargetObjectWarped(vcam, target, positionDelta);
         }
 
         /// <summary>
@@ -680,8 +679,6 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].ForceCameraPosition(pos, rot);
             }
-            if (ParentCamera != null)
-                ParentCamera.ForceCameraPosition(pos, rot);
         }
 
         /// <summary>

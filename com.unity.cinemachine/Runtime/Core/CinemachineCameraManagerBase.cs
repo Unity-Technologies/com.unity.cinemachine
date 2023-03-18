@@ -101,9 +101,9 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(CinemachineVirtualCameraBase vcam, bool dominantChildOnly = false)
+        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
-            return vcam == LiveChild || (ActiveBlend != null && ActiveBlend.Uses(vcam));
+            return vcam == (ICinemachineCamera)LiveChild || (ActiveBlend != null && ActiveBlend.Uses(vcam));
         }
 
         /// <summary>Returns the current live child's TransitionParams settings</summary>

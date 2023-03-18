@@ -143,6 +143,15 @@ namespace Unity.Cinemachine
     [Serializable]
     public struct CinemachineBlendDefinition
     {
+        /// <summary>
+        /// Delegate for finding a blend definition to use when blending between 2 cameras.
+        /// </summary>
+        /// <param name="fromKey">The outgoing camera</param>
+        /// <param name="toKey">The incoming camera</param>
+        /// <returns>An approprate blend definition,.  Must not be null.</returns>
+        public delegate CinemachineBlendDefinition LookupBlendDelegate(
+            ICinemachineCamera fromKey, ICinemachineCamera toKey);
+
         /// <summary>Supported predefined shapes for the blend curve.</summary>
         public enum Styles
         {
@@ -268,6 +277,7 @@ namespace Unity.Cinemachine
         public bool IsValid => true;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public ICinemachineMixer ParentCamera => null;
     }
 
     /// <summary>
@@ -294,5 +304,6 @@ namespace Unity.Cinemachine
             }
         }
         public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public ICinemachineMixer ParentCamera => null;
     }
 }

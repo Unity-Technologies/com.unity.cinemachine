@@ -11,49 +11,6 @@ using UnityEngine.Serialization;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This interface is specifically for Timeline.  Do not use it.
-    /// </summary>
-    public interface ICameraOverrideStack
-    {
-        /// <summary>
-        /// Override the current camera and current blend.  This setting will trump
-        /// any in-game logic that sets virtual camera priorities and Enabled states.
-        /// This is the main API for the timeline.
-        /// </summary>
-        /// <param name="overrideId">Id to represent a specific client.  An internal
-        /// stack is maintained, with the most recent non-empty override taking precedence.
-        /// This id must be > 0.  If you pass -1, a new id will be created, and returned.
-        /// Use that id for subsequent calls.  Don't forget to
-        /// call ReleaseCameraOverride after all overriding is finished, to
-        /// free the OverrideStack resources.</param>
-        /// <param name="camA">The camera to set, corresponding to weight=0.</param>
-        /// <param name="camB">The camera to set, corresponding to weight=1.</param>
-        /// <param name="weightB">The blend weight.  0=camA, 1=camB.</param>
-        /// <param name="deltaTime">Override for deltaTime.  Should be Time.FixedDelta for
-        /// time-based calculations to be included, -1 otherwise.</param>
-        /// <returns>The override ID.  Don't forget to call ReleaseCameraOverride
-        /// after all overriding is finished, to free the OverrideStack resources.</returns>
-        int SetCameraOverride(
-            int overrideId,
-            ICinemachineCamera camA, ICinemachineCamera camB,
-            float weightB, float deltaTime);
-
-        /// <summary>
-        /// See SetCameraOverride.  Call ReleaseCameraOverride after all overriding
-        /// is finished, to free the OverrideStack resources.
-        /// </summary>
-        /// <param name="overrideId">The ID to released.  This is the value that
-        /// was returned by SetCameraOverride</param>
-        void ReleaseCameraOverride(int overrideId);
-
-        /// <summary>
-        /// Get the current definition of Up.  May be different from Vector3.up.
-        /// </summary>
-        Vector3 DefaultWorldUp { get; }
-    }
-
-
-    /// <summary>
     /// CinemachineBrain is the link between the Unity Camera and the Cinemachine Virtual
     /// Cameras in the scene.  It monitors the priority stack to choose the current
     /// Virtual Camera, and blend with another if necessary.  Finally and most importantly,
@@ -211,48 +168,23 @@ namespace Unity.Cinemachine
         /// <summary>This event will fire whenever a virtual camera goes live.  If a blend is involved,
         /// then the event will fire on the first frame of the blend.
         /// 
-        /// The Parameters are (incoming_vcam, outgoing_vcam), in that order.</summary>
+        /// The Parameters are (incoming_vcam, outgoing_vcam), in that order.<ry>
         [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is "
             + "involved, then the event will fire on the first frame of the blend.")]
         [FormerlySerializedAs("m_CameraActivatedEvent")]
         public VcamActivatedEvent CameraActivatedEvent = new ();
 
         Camera m_OutputCamera = null; // never use directly - use accessor
-        GameObject m_TargetOverride = null; // never use directly - use accessor
+        GameObject m_TargetOverride = null; // never use directly - use 
         Coroutine m_PhysicsCoroutine;
         int m_LastFrameUpdated;
 
         static CinemachineVirtualCameraBase s_SoloCamera;
 
-        class BrainFrame
-        {
-            public int id;
-            public CinemachineBlend blend = new (null, null, null, 0, 0);
-            public bool Active => blend.IsValid;
-
-            // Working data - updated every frame
-            public CinemachineBlend workingBlend = new (null, null, null, 0, 0);
-            public BlendSourceVirtualCamera workingBlendSource = new (null);
-
-            // Used by Timeline Preview for overriding the current value of deltaTime
-            public float deltaTimeOverride;
-
-            // Used for blend reversal.  Range is 0...1,
-            // representing where the blend started when reversed mid-blend
-            public float blendStartPosition;
-        }
-
-        // Current game state is always frame 0, overrides are subsequent frames
-        List<BrainFrame> m_FrameStack = new ();
-        int m_NextFrameId = 1;
-
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
         CinemachineBlend m_CurrentLiveCameras = new (null, null, null, 0, 0);
-        
-        // To avoid GC memory alloc every frame
-        static readonly AnimationCurve s_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
-
-        WaitForFixedUpdate m_WaitForFixedUpdate = new ();
+        readonly CameraBlendStack m_BlendStack = new ();
+        readonly WaitForFixedUpdate m_WaitForFixedUpdate = new ();
 
         ICinemachineCamera m_ActiveCameraPreviousFrame;
         CinemachineVirtualCameraBase m_ActiveCameraPreviousFrameGameObject;
@@ -278,6 +210,68 @@ namespace Unity.Cinemachine
             CameraActivatedEvent = new VcamActivatedEvent();
         }
 
+        void Awake()
+        {
+            ControlledObject.TryGetComponent(out m_OutputCamera);
+        }
+        
+        void Start()
+        {
+            m_LastFrameUpdated = -1;
+            UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
+        }
+
+        void OnEnable()
+        {
+            m_BlendStack.OnEnable();
+
+            CinemachineCore.Instance.AddActiveBrain(this);
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
+
+            // We check in after the physics system has had a chance to move things
+            m_PhysicsCoroutine = StartCoroutine(AfterPhysics());
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+        }
+
+        void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineCore.Instance.RemoveActiveBrain(this);
+
+            m_BlendStack.OnDisable();
+            StopCoroutine(m_PhysicsCoroutine);
+        }
+
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode) 
+        { 
+            if (Time.frameCount == m_LastFrameUpdated && m_BlendStack.IsInitialized)
+                ManualUpdate();
+        }
+
+        void OnSceneUnloaded(Scene scene)
+        {
+            if (Time.frameCount == m_LastFrameUpdated && m_BlendStack.IsInitialized)
+                ManualUpdate();
+        }
+        
+        /// <inheritdoc />
+        public int SetCameraOverride(
+            int overrideId,
+            ICinemachineCamera camA, ICinemachineCamera camB,
+            float weightB, float deltaTime) => m_BlendStack.SetCameraOverride(overrideId, camA, camB, weightB, deltaTime);
+
+        /// <inheritdoc />
+        public void ReleaseCameraOverride(int overrideId) => m_BlendStack.ReleaseCameraOverride(overrideId);
+        
+        /// <summary>Get the default world up for the virtual cameras.</summary>
+        public Vector3 DefaultWorldUp => (WorldUpOverride != null) ? WorldUpOverride.transform.up : Vector3.up;
+       
         /// <summary>
         /// Get the Unity Camera that is attached to this GameObject.  This is the camera
         /// that will be controlled by the brain.
@@ -332,60 +326,6 @@ namespace Unity.Cinemachine
         /// <summary>API for the Unity Editor.</summary>
         /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
         internal static Color GetSoloGUIColor() => Color.Lerp(Color.red, Color.yellow, 0.8f);
-
-        /// <summary>Get the default world up for the virtual cameras.</summary>
-        public Vector3 DefaultWorldUp => (WorldUpOverride != null) ? WorldUpOverride.transform.up : Vector3.up;
-
-        void OnEnable()
-        {
-            // Make sure there is a first stack frame
-            if (m_FrameStack.Count == 0)
-                m_FrameStack.Add(new BrainFrame());
-
-            CinemachineCore.Instance.AddActiveBrain(this);
-            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
-
-            // We check in after the physics system has had a chance to move things
-            m_PhysicsCoroutine = StartCoroutine(AfterPhysics());
-
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.sceneUnloaded += OnSceneUnloaded;
-        }
-
-        void OnDisable()
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
-
-            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            CinemachineCore.Instance.RemoveActiveBrain(this);
-            m_FrameStack.Clear();
-            StopCoroutine(m_PhysicsCoroutine);
-        }
-
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) 
-        { 
-            if (Time.frameCount == m_LastFrameUpdated && m_FrameStack.Count > 0)
-                ManualUpdate();
-        }
-
-        void OnSceneUnloaded(Scene scene)
-        {
-            if (Time.frameCount == m_LastFrameUpdated && m_FrameStack.Count > 0)
-                ManualUpdate();
-        }
-        
-        void Awake()
-        {
-            ControlledObject.TryGetComponent(out m_OutputCamera);
-        }
-        
-        void Start()
-        {
-            m_LastFrameUpdated = -1;
-            UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
-        }
 
         void OnGuiHandler(CinemachineBrain brain)
         {
@@ -461,7 +401,7 @@ namespace Unity.Cinemachine
                 // Choose the active vcam and apply it to the Unity camera
                 if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
                 {
-                    UpdateFrame0(Time.fixedDeltaTime);
+                    m_BlendStack.UpdateRootFrame(TopCameraFromPriorityQueue(), Time.fixedDeltaTime, LookupBlend);
                     ProcessActiveCamera(Time.fixedDeltaTime);
                 }
             }
@@ -485,9 +425,9 @@ namespace Unity.Cinemachine
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                UpdateFrame0(deltaTime);
+                m_BlendStack.UpdateRootFrame(TopCameraFromPriorityQueue(), deltaTime, LookupBlend);
 
-            ComputeCurrentBlend(ref m_CurrentLiveCameras, 0);
+            m_BlendStack.ComputeCurrentBlend(ref m_CurrentLiveCameras, 0);
 
             if (UpdateMethod == UpdateMethods.FixedUpdate)
             {
@@ -542,17 +482,11 @@ namespace Unity.Cinemachine
                 return Time.unscaledDeltaTime;
 
             if (!Application.isPlaying)
-            {
-                for (int i = m_FrameStack.Count - 1; i > 0; --i)
-                {
-                    var frame = m_FrameStack[i];
-                    if (frame.Active)
-                        return frame.deltaTimeOverride;
-                }
-                return -1;
-            }
+                return m_BlendStack.GetDeltaTimeOverride();
+
             if (IgnoreTimeScale)
                 return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
+
             return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
         }
 
@@ -647,91 +581,7 @@ namespace Unity.Cinemachine
                     return null;
                 return m_CurrentLiveCameras;
             }
-            set
-            {
-                if (value == null)
-                    m_FrameStack[0].blend.Duration = 0;
-                else
-                    m_FrameStack[0].blend = value;
-            }
-        }
-
-        /// Get the frame index corresponding to the ID
-        int GetBrainFrame(int withId)
-        {
-            int count = m_FrameStack.Count;
-            for (int i = count - 1; i > 0; --i)
-                if (m_FrameStack[i].id == withId)
-                    return i;
-            // Not found - add it
-            m_FrameStack.Add(new BrainFrame() { id = withId });
-            return m_FrameStack.Count - 1;
-        }
-
-        
-        /// <summary>
-        /// This API is specifically for Timeline.  Do not use it.
-        /// Override the current camera and current blend.  This setting will trump
-        /// any in-game logic that sets virtual camera priorities and Enabled states.
-        /// This is the main API for the timeline.
-        /// </summary>
-        /// <param name="overrideId">Id to represent a specific client.  An internal
-        /// stack is maintained, with the most recent non-empty override taking precedence.
-        /// This id must be > 0.  If you pass -1, a new id will be created, and returned.
-        /// Use that id for subsequent calls.  Don't forget to
-        /// call ReleaseCameraOverride after all overriding is finished, to
-        /// free the OverrideStack resources.</param>
-        /// <param name="camA"> The camera to set, corresponding to weight=0</param>
-        /// <param name="camB"> The camera to set, corresponding to weight=1</param>
-        /// <param name="weightB">The blend weight.  0=camA, 1=camB</param>
-        /// <param name="deltaTime">override for deltaTime.  Should be Time.FixedDelta for
-        /// time-based calculations to be included, -1 otherwise</param>
-        /// <returns>The override ID.  Don't forget to call ReleaseCameraOverride
-        /// after all overriding is finished, to free the OverrideStack resources.</returns>
-        public int SetCameraOverride(
-            int overrideId,
-            ICinemachineCamera camA, ICinemachineCamera camB,
-            float weightB, float deltaTime)
-        {
-            if (overrideId < 0)
-                overrideId = m_NextFrameId++;
-
-            BrainFrame frame = m_FrameStack[GetBrainFrame(overrideId)];
-            frame.deltaTimeOverride = deltaTime;
-            frame.blend.CamA = camA;
-            frame.blend.CamB = camB;
-            frame.blend.BlendCurve = s_DefaultLinearAnimationCurve;
-            frame.blend.Duration = 1;
-            frame.blend.TimeInBlend = weightB;
-
-            // In case vcams are inactive game objects, make sure they get initialized properly
-            var cam = camA as CinemachineVirtualCameraBase;
-            if (cam != null)
-                cam.EnsureStarted();
-            cam = camB as CinemachineVirtualCameraBase;
-            if (cam != null)
-                cam.EnsureStarted();
-
-            return overrideId;
-        }
-
-        /// <summary>
-        /// This API is specifically for Timeline.  Do not use it.
-        /// Release the resources used for a camera override client.
-        /// See SetCameraOverride.
-        /// </summary>
-        /// <param name="overrideId">The ID to released.  This is the value that
-        /// was returned by SetCameraOverride</param>
-        public void ReleaseCameraOverride(int overrideId)
-        {
-            for (int i = m_FrameStack.Count - 1; i > 0; --i)
-            {
-                if (m_FrameStack[i].id == overrideId)
-                {
-                    m_FrameStack.RemoveAt(i);
-                    return;
-                }
-            }
+            set => m_BlendStack.SetRootBlend(value);
         }
 
         void ProcessActiveCamera(float deltaTime)
@@ -785,154 +635,6 @@ namespace Unity.Cinemachine
             }
             m_ActiveCameraPreviousFrame = activeCamera;
             m_ActiveCameraPreviousFrameGameObject = activeCamera as CinemachineVirtualCameraBase;
-        }
-
-        void UpdateFrame0(float deltaTime)
-        {
-            // Make sure there is a first stack frame
-            if (m_FrameStack.Count == 0)
-                m_FrameStack.Add(new BrainFrame());
-
-            // Update the in-game frame (frame 0)
-            BrainFrame frame = m_FrameStack[0];
-
-            // Are we transitioning cameras?
-            var activeCamera = TopCameraFromPriorityQueue();
-            var outGoingCamera = frame.blend.CamB;
-
-            if (activeCamera != outGoingCamera)
-            {
-                // Do we need to create a game-play blend?
-                if ((UnityEngine.Object)activeCamera != null
-                    && (UnityEngine.Object)outGoingCamera != null && deltaTime >= 0)
-                {
-                    // Create a blend (curve will be null if a cut)
-                    var blendDef = LookupBlend(outGoingCamera, activeCamera);
-                    float blendDuration = blendDef.BlendTime;
-                    float blendStartPosition = 0;
-                    if (blendDef.BlendCurve != null && blendDuration > UnityVectorExtensions.Epsilon)
-                    {
-                        if (frame.blend.IsComplete)
-                        {
-                            // new blend
-/* GML todo: think about this
-                            if (outGoingCamera is CinemachineVirtualCameraBase outgoingVcamBase
-                                && (outgoingVcamBase.GetTransitionParams().BlendHint 
-                                    & TransitionParams.BlendHints.BlendOutFromSnapshot) != 0)
-                            {
-                                frame.blend.CamA = new StaticPointVirtualCamera(outGoingCamera.State, outGoingCamera.Name);
-                            }
-                            else
-*/
-                                frame.blend.CamA = outGoingCamera;  
-                        }
-                        else
-                        {
-                            // Special case: if backing out of a blend-in-progress
-                            // with the same blend in reverse, adjust the blend time
-                            // to cancel out the progress made in the opposite direction
-                            if ((frame.blend.CamA == activeCamera 
-                                    || (frame.blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
-                                && frame.blend.CamB == outGoingCamera)
-                            {
-                                // How far have we blended?  That is what we must undo
-                                var progress = frame.blendStartPosition 
-                                    + (1 - frame.blendStartPosition) * frame.blend.TimeInBlend / frame.blend.Duration;
-                                blendDuration *= progress;
-                                blendStartPosition = 1 - progress;
-                            }
-                            // Chain to existing blend
-                            frame.blend.CamA = new BlendSourceVirtualCamera(
-                                new CinemachineBlend(
-                                    frame.blend.CamA, frame.blend.CamB,
-                                    frame.blend.BlendCurve, frame.blend.Duration,
-                                    frame.blend.TimeInBlend));
-                        }
-                    }
-                    frame.blend.BlendCurve = blendDef.BlendCurve;
-                    frame.blend.Duration = blendDuration;
-                    frame.blend.TimeInBlend = 0;
-                    frame.blendStartPosition = blendStartPosition;
-                }
-                // Set the current active camera
-                frame.blend.CamB = activeCamera;
-            }
-
-            // Advance the current blend (if any)
-            if (frame.blend.CamA != null)
-            {
-                frame.blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.blend.Duration;
-                if (frame.blend.IsComplete)
-                {
-                    // No more blend
-                    frame.blend.CamA = null;
-                    frame.blend.BlendCurve = null;
-                    frame.blend.Duration = 0;
-                    frame.blend.TimeInBlend = 0;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Used internally to compute the current blend, taking into account
-        /// the in-game camera and all the active overrides.  Caller may optionally
-        /// exclude n topmost overrides.
-        /// </summary>
-        /// <param name="outputBlend">Receives the nested blend</param>
-        /// <param name="numTopLayersToExclude">Optionally exclude the last number 
-        /// of overrides from the blend</param>
-        public void ComputeCurrentBlend(
-            ref CinemachineBlend outputBlend, int numTopLayersToExclude)
-        {
-            // Make sure there is a first stack frame
-            if (m_FrameStack.Count == 0)
-                m_FrameStack.Add(new BrainFrame());
-
-            // Resolve the current working frame states in the stack
-            int lastActive = 0;
-            int topLayer = Mathf.Max(1, m_FrameStack.Count - numTopLayersToExclude);
-            for (int i = 0; i < topLayer; ++i)
-            {
-                BrainFrame frame = m_FrameStack[i];
-                if (i == 0 || frame.Active)
-                {
-                    frame.workingBlend.CamA = frame.blend.CamA;
-                    frame.workingBlend.CamB = frame.blend.CamB;
-                    frame.workingBlend.BlendCurve = frame.blend.BlendCurve;
-                    frame.workingBlend.Duration = frame.blend.Duration;
-                    frame.workingBlend.TimeInBlend = frame.blend.TimeInBlend;
-                    if (i > 0 && !frame.blend.IsComplete)
-                    {
-                        if (frame.workingBlend.CamA == null)
-                        {
-                            if (m_FrameStack[lastActive].blend.IsComplete)
-                                frame.workingBlend.CamA = m_FrameStack[lastActive].blend.CamB;
-                            else
-                            {
-                                frame.workingBlendSource.Blend = m_FrameStack[lastActive].workingBlend;
-                                frame.workingBlend.CamA = frame.workingBlendSource;
-                            }
-                        }
-                        else if (frame.workingBlend.CamB == null)
-                        {
-                            if (m_FrameStack[lastActive].blend.IsComplete)
-                                frame.workingBlend.CamB = m_FrameStack[lastActive].blend.CamB;
-                            else
-                            {
-                                frame.workingBlendSource.Blend = m_FrameStack[lastActive].workingBlend;
-                                frame.workingBlend.CamB = frame.workingBlendSource;
-                            }
-                        }
-                    }
-                    lastActive = i;
-                }
-            }
-            var workingBlend = m_FrameStack[lastActive].workingBlend;
-            outputBlend.CamA = workingBlend.CamA;
-            outputBlend.CamB = workingBlend.CamB;
-            outputBlend.BlendCurve = workingBlend.BlendCurve;
-            outputBlend.Duration = workingBlend.Duration;
-            outputBlend.TimeInBlend = workingBlend.TimeInBlend;
         }
 
         /// <summary>

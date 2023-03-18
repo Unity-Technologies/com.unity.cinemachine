@@ -142,7 +142,7 @@ namespace Unity.Cinemachine.Editor
             SerializedProperty followTarget, SerializedProperty lookAtTarget)
         {
             EditorGUI.BeginChangeCheck();
-            var parentVcam = Target.ParentCamera;
+            var parentVcam = Target.ParentCamera as CinemachineVirtualCameraBase;
             if (!IsPropertyExcluded(followTarget.name))
             {
                 if (parentVcam == null || parentVcam.Follow == null)

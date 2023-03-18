@@ -60,7 +60,7 @@ namespace Unity.Cinemachine
 
                             int nestLevel = 0;
                             for (var p = vcam.ParentCamera; 
-                                p != null && p != mainVcam; p = p.ParentCamera)
+                                p != null && p != (ICinemachineCamera)mainVcam; p = p.ParentCamera)
                             {
                                 ++nestLevel;
                             }

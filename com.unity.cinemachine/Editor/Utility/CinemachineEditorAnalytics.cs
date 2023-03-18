@@ -91,7 +91,8 @@ namespace Unity.Cinemachine.Editor
 
         static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
         {
-            if (vcamBase == null) return;
+            if (vcamBase == null) 
+                return;
             
             var vcamData = new VcamData(id, vcamBase);
             
@@ -108,7 +109,7 @@ namespace Unity.Cinemachine.Editor
             var vcamChildren = vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
             for (var c = 1; c < vcamChildren.Length; c++)
             {
-                if (vcamChildren[c].ParentCamera == vcamBase)
+                if (vcamChildren[c].ParentCamera == (ICinemachineCamera)vcamBase)
                     CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
             }
         }
