@@ -132,3 +132,25 @@ namespace Unity.Cinemachine
     public class CinemachineInputProvider : MonoBehaviour {}
 }
 #endif
+
+namespace Unity.Cinemachine
+{
+    [Obsolete("IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead")]
+    public static class CinemachineInputProviderExtensions
+    {
+        /// <summary>
+        /// Locate the first component that implements AxisState.IInputAxisProvider.
+        /// </summary>
+        /// <returns>The first AxisState.IInputAxisProvider or null if none</returns>
+        public static AxisState.IInputAxisProvider GetInputAxisProvider(this CinemachineVirtualCameraBase vcam)
+        {
+            var components = vcam.GetComponentsInChildren<MonoBehaviour>();
+            for (int i = 0; i < components.Length; ++i)
+            {
+                if (components[i] is AxisState.IInputAxisProvider provider)
+                    return provider;
+            }
+            return null;
+        }
+    }
+}
