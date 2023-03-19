@@ -119,7 +119,7 @@ namespace Unity.Cinemachine
         public delegate CinemachineBlendDefinition GetBlendOverrideDelegate(
             ICinemachineCamera fromVcam, ICinemachineCamera toVcam,
             CinemachineBlendDefinition defaultBlend,
-            MonoBehaviour owner);
+            UnityEngine.Object owner);
 
         /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
@@ -129,13 +129,13 @@ namespace Unity.Cinemachine
         public static GetBlendOverrideDelegate GetBlendOverride;
 
         /// <summary>This event will fire after a brain updates its Camera</summary>
-        public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new CinemachineBrain.BrainEvent();
+        public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new ();
 
-        /// <summary>This event will fire after a brain updates its Camera</summary>
-        public static CinemachineBrain.BrainEvent CameraCutEvent = new CinemachineBrain.BrainEvent();
+        /// <summary>This event will fire when the current camera changes, at the start of a blend</summary>
+        public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
 
         /// <summary>List of all active CinemachineBrains.</summary>
-        List<CinemachineBrain> m_ActiveBrains = new List<CinemachineBrain>();
+        List<CinemachineBrain> m_ActiveBrains = new ();
 
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public int BrainCount => m_ActiveBrains.Count;
@@ -164,7 +164,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>List of all active ICinemachineCameras.</summary>
-        List<CinemachineVirtualCameraBase> m_ActiveCameras = new List<CinemachineVirtualCameraBase>();
+        List<CinemachineVirtualCameraBase> m_ActiveCameras = new ();
         bool m_ActiveCamerasAreSorted;
         int m_ActivationSequence;
         
@@ -424,7 +424,7 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < BrainCount; ++i)
                 {
                     var b = GetActiveBrain(i);
-                    if (b != null && b.IsLive(vcam))
+                    if (b != null && b.IsLiveChild(vcam))
                         return true;
                 }
             }
@@ -456,39 +456,28 @@ namespace Unity.Cinemachine
         /// If the camera is live, then all CinemachineBrains that are showing it will
         /// send an activation event.
         /// </summary>
-        /// <param name="vcam">The virtual camera being activated</param>
-        /// <param name="vcamFrom">The previously-active virtual camera (may be null)</param>
-        public void GenerateCameraActivationEvent(ICinemachineCamera vcam, ICinemachineCamera vcamFrom)
+        /// <param name="outgoing">The previously-active virtual camera (may be null)</param>
+        /// <param name="incoming">The virtual camera being activated</param>
+        /// <param name="isCut">If true then transition is instantaneous</param>
+        public void GenerateCameraActivationEvent(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming, bool isCut)
         {
-            if (vcam != null)
+            if (incoming != null)
             {
                 for (int i = 0; i < BrainCount; ++i)
                 {
-                    var b = GetActiveBrain(i);
-                    if (b != null && b.IsLive(vcam))
-                        b.CameraActivatedEvent.Invoke(vcam, vcamFrom);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Signal that the virtual camera's content is discontinuous WRT the previous frame.
-        /// If the camera is live, then all CinemachineBrains that are showing it will send a cut event.
-        /// </summary>
-        /// <param name="vcam">The virtual camera being cut to</param>
-        public void GenerateCameraCutEvent(ICinemachineCamera vcam)
-        {
-            if (vcam != null)
-            {
-                for (int i = 0; i < BrainCount; ++i)
-                {
-                    var b = GetActiveBrain(i);
-                    if (b != null && b.IsLive(vcam))
+                    var brain = GetActiveBrain(i);
+                    if (brain != null && brain.IsLiveChild(incoming))
                     {
-                        if (b.CameraCutEvent != null)
-                            b.CameraCutEvent.Invoke(b);
-                        if (CameraCutEvent != null)
-                            CameraCutEvent.Invoke(b);
+                        var eventParams = new ICinemachineCamera.ActivationEventParams()
+                        {
+                            Origin = brain,
+                            IncomingCamera = incoming,
+                            OutgoingCamera = outgoing,
+                            IsCut = isCut
+                        };
+                        brain.CameraActivatedEvent.Invoke(eventParams);
+                        CameraActivatedEvent.Invoke(eventParams);
                     }
                 }
             }
@@ -514,7 +503,7 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < numBrains; ++i)
                 {
                     var b = GetActiveBrain(i);
-                    if (b != null && b.OutputCamera != null && b.IsLive(vcam))
+                    if (b != null && b.OutputCamera != null && b.IsLiveChild(vcam))
                         return b;
                 }
                 var channel = (uint)vcam.OutputChannel.Value;

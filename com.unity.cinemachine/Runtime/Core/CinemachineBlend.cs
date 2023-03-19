@@ -276,7 +276,7 @@ namespace Unity.Cinemachine
         public CameraState State { get; private set; }
         public bool IsValid => true;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
         public ICinemachineMixer ParentCamera => null;
     }
 
@@ -303,7 +303,7 @@ namespace Unity.Cinemachine
                 State = Blend.State;
             }
         }
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
         public ICinemachineMixer ParentCamera => null;
     }
 }

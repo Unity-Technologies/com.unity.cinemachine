@@ -142,7 +142,6 @@ namespace Unity.Cinemachine
             // Make sure there is a first stack frame
             m_FrameStack.Clear();
             m_FrameStack.Add(new StackFrame());
-            //m_NextFrameId = -1;
         }
 
          /// <summary>Call this when object is disabled</summary>
@@ -156,7 +155,7 @@ namespace Unity.Cinemachine
         public bool IsInitialized => m_FrameStack.Count > 0;
 
         /// <summary>
-        /// Call thi every frame with the current active camera of the root frame.
+        /// Call this every frame with the current active camera of the root frame.
         /// </summary>
         /// <param name="activeCamera">Current active camera (pre-override)</param>
         /// <param name="deltaTime">How much time has elapsed, for computing blends</param>

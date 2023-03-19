@@ -208,8 +208,13 @@ namespace Unity.Cinemachine
             }
         }
 
-        static void OnCameraCut(CinemachineBrain brain)
+        static void OnCameraCut(ICinemachineCamera.ActivationEventParams evt)
         {
+            if (!evt.IsCut)
+                return;
+            var brain = evt.Origin as CinemachineBrain;
+            if (brain == null)
+                return;
             // Debug.Log("Camera cut event");
             PostProcessLayer postFX = GetPPLayer(brain);
             if (postFX != null)
@@ -222,7 +227,7 @@ namespace Unity.Cinemachine
             if (ppLayer == null || !ppLayer.enabled  || ppLayer.volumeLayer == 0)
                 return;
 
-            CameraState state = brain.CurrentCameraState;
+            CameraState state = brain.State;
             int numBlendables = state.GetNumCustomBlendables();
             List<PostProcessVolume> volumes = GetDynamicBrainVolumes(brain, ppLayer, numBlendables);
             for (int i = 0; i < volumes.Count; ++i)
@@ -316,7 +321,7 @@ namespace Unity.Cinemachine
             if (found && !ReferenceEquals(layer, null))
             {
                 // layer is a deleted object
-                brain.CameraCutEvent.RemoveListener(OnCameraCut);
+                brain.CameraActivatedEvent.RemoveListener(OnCameraCut);
                 s_BrainToLayer.Remove(brain);
                 layer = null;
                 found = false;
@@ -326,7 +331,7 @@ namespace Unity.Cinemachine
             brain.TryGetComponent(out layer);
             if (layer != null)
             {
-                brain.CameraCutEvent.AddListener(OnCameraCut); // valid layer
+                brain.CameraActivatedEvent.AddListener(OnCameraCut); // valid layer
                 s_BrainToLayer[brain] = layer;
             }
             return layer;
@@ -339,7 +344,7 @@ namespace Unity.Cinemachine
             {
                 var brain = iter.Current.Key;
                 if (brain != null)
-                    brain.CameraCutEvent.RemoveListener(OnCameraCut);
+                    brain.CameraActivatedEvent.RemoveListener(OnCameraCut);
             }
             s_BrainToLayer.Clear();
             iter.Dispose();

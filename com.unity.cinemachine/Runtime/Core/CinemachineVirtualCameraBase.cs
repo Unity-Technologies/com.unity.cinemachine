@@ -483,6 +483,14 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
+        /// <inheritdoc />
+        public virtual void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) 
+        {
+            if (evt.IncomingCamera == (ICinemachineCamera)this)
+                OnTransitionFromCamera(evt.OutgoingCamera, evt.WorldUp, evt.DeltaTime);
+        }
+
+        // GML todo: get rid of OnTransitionFromCamera
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>

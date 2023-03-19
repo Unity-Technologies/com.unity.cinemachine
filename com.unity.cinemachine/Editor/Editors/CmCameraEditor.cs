@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
             var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cam);
             if (brain != null)
             {
-                cam.Lens = brain.CurrentCameraState.Lens;
+                cam.Lens = brain.State.Lens;
                 cam.transform.SetPositionAndRotation(brain.transform.position, brain.transform.rotation);
             }
         }

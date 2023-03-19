@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
@@ -29,7 +31,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Update the camera's state.
         /// The implementation must guarantee against multiple calls per frame, and should
-        /// use CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, Vector3, mfloat), which
+        /// use CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, Vector3, float), which
         /// has protection against multiple calls per frame.
         /// </summary>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
@@ -37,18 +39,37 @@ namespace Unity.Cinemachine
         void UpdateCameraState(Vector3 worldUp, float deltaTime);
 
         /// <summary>
-        /// Notification that a new camera is being activated.  This is sent to the
-        /// currently active camera.  Both may be active simultaneously for a while, if blending.
+        /// Notification that this camera is being activated.  This is sent to the newly activated camera.  
+        /// Multiple camera may be active simultaneously for a while, if blending.
+        /// evt.IncomingCamera will always be "this".
         /// </summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime);
+        /// <param name="evt">Context for the camera activation.</param>
+        void OnCameraActivated(ActivationEventParams evt);
 
         /// <summary>
         /// Returns the ICinemachineMixer within which this Camera is nested, or null.
         /// </summary>
         ICinemachineMixer ParentCamera { get; }
+
+        /// <summary>This is sent with ActivationEvent</summary>
+        public struct ActivationEventParams
+        {
+            /// <summary>Object that originated the event</summary>
+            public ICinemachineMixer Origin;
+            /// <summary>Camera that is being deactivated (may be null)</summary>
+            public ICinemachineCamera OutgoingCamera;
+            /// <summary>Camera that is being activated (may be null)</summary>
+            public ICinemachineCamera IncomingCamera;
+            /// <summary>If true, then the transition is instantaneous</summary>
+            public bool IsCut;
+            /// <summary>Up direction for this frame.  Unity vector in world coords.</summary>
+            public Vector3 WorldUp;
+            /// <summary>Effective deltaTime for this frame</summary>
+            public float DeltaTime;
+        }
+
+        /// <summary>Event that is fired when a Cinemachine camera is activated.</summary>
+        [Serializable] public class ActivationEvent : UnityEvent<ActivationEventParams> {}
     }
 
     /// <summary>

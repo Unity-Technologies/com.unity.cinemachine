@@ -64,7 +64,7 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+            public TransitionParams.OnCameraLiveEvent m_OnCameraLive;
         }
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
@@ -611,8 +611,7 @@ namespace Unity.Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (Transitions.Events.OnCameraLive != null)
-                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
+            Transitions.Events.OnCameraLive?.Invoke(this, fromCam);
         }
         
         /// <summary>Tells whether this vcam requires input.</summary>

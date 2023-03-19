@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
@@ -39,6 +40,12 @@ namespace Unity.Cinemachine
         public bool InheritPosition => (BlendHint & BlendHints.InheritPosition) != 0;
 
         /// <summary>
+        /// Event that is fired when a virtual camera is activated.
+        /// If a blend is involved, it will be fired at the start of the blend.
+        /// </summary>
+        [Serializable] public class OnCameraLiveEvent : UnityEvent<ICinemachineCamera, ICinemachineCamera> {}
+        
+        /// <summary>
         /// These events fire when a transition occurs
         /// </summary>
         [Serializable]
@@ -46,7 +53,7 @@ namespace Unity.Cinemachine
         {
             /// <summary>This event fires when the CinemachineCamera goes Live</summary>
             [Tooltip("This event fires when the CinemachineCamera goes Live")]
-            public CinemachineBrain.VcamActivatedEvent OnCameraLive;
+            public OnCameraLiveEvent OnCameraLive;
         }
         /// <summary>
         /// These events fire when a transition occurs

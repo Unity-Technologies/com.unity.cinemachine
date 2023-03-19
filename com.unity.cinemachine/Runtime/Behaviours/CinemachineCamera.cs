@@ -195,8 +195,7 @@ namespace Unity.Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
 
-            if (Transitions.Events.OnCameraLive != null)
-                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
+            Transitions.Events.OnCameraLive?.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time

@@ -153,22 +153,27 @@ namespace Unity.Cinemachine
             // Are we transitioning cameras?
             if (previousCam != LiveChild && LiveChild != null)
             {
-                // Notify incoming camera of transition
-                LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
-
-                // Generate Camera Activation event in the brain if live
-                CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild, previousCam);
-
-                // Are we transitioning cameras?
+                bool isCut = true;
                 if (previousCam != null)
                 {
                     // Create a blend (will be null if a cut)
                     m_ActiveBlend = CreateActiveBlend(previousCam, LiveChild, LookupBlend(previousCam, LiveChild));
-
-                    // If cutting, generate a camera cut event if live
-                    if (m_ActiveBlend == null || !m_ActiveBlend.Uses(previousCam))
-                        CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
+                    isCut = m_ActiveBlend == null || !m_ActiveBlend.Uses(previousCam);
                 }
+
+                // Notify incoming camera of transition
+                LiveChild.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
+                {
+                    Origin = this as ICinemachineMixer, //GML todo
+                    OutgoingCamera = previousCam, 
+                    IncomingCamera = LiveChild,
+                    IsCut = isCut,
+                    WorldUp = worldUp, 
+                    DeltaTime = deltaTime
+                });
+
+                // Generate Camera Activation event in the brain if live
+                CinemachineCore.Instance.GenerateCameraActivationEvent(previousCam, LiveChild, isCut);
             }
 
             // Advance the current blend (if any)
@@ -183,12 +188,21 @@ namespace Unity.Cinemachine
             if (m_ActiveBlend != null)
             {
                 m_ActiveBlend.UpdateCameraState(worldUp, deltaTime);
-                m_State =  m_ActiveBlend.State;
+                m_State = m_ActiveBlend.State;
             }
             else if (LiveChild != null)
             {
+                // Special case to handle being called from OnTransitionFromCamera()
                 if (m_TransitioningFrom != null)
-                    LiveChild.OnTransitionFromCamera(m_TransitioningFrom, worldUp, deltaTime);
+                    LiveChild.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
+                    {
+                        Origin = this as ICinemachineMixer, // GML todo
+                        OutgoingCamera = m_TransitioningFrom,
+                        IncomingCamera = LiveChild,
+                        IsCut = false,
+                        WorldUp = worldUp, 
+                        DeltaTime = deltaTime
+                    });
                 m_State =  LiveChild.State;
             }
             m_TransitioningFrom = null;

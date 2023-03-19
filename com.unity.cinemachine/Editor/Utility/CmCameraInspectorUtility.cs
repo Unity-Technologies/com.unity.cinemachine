@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Editor
             var target = editor.target as CinemachineVirtualCameraBase; // capture for lambda
             soloButton.RegisterCallback<ClickEvent>(_ =>
             {
-                var isSolo = CinemachineBrain.SoloCamera != target;
+                var isSolo = CinemachineBrain.SoloCamera != (ICinemachineCamera)target;
                 CinemachineBrain.SoloCamera = isSolo ? target : null;
                 InspectorUtility.RepaintGameView();
             });
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine.Editor
                     if (target == null)
                         return;
 
-                    bool isSolo = CinemachineBrain.SoloCamera == target;
+                    bool isSolo = CinemachineBrain.SoloCamera == (ICinemachineCamera)target;
                     var color = isSolo ? Color.Lerp(normalColor, CinemachineBrain.GetSoloGUIColor(), 0.5f) : normalColor;
 
                     bool isLive = CinemachineCore.Instance.IsLive(target);
@@ -128,7 +128,7 @@ namespace Unity.Cinemachine.Editor
             // Kill solo when inspector shuts down
             ux.RegisterCallback<DetachFromPanelEvent>(_ =>
             {
-                if (target != null && CinemachineBrain.SoloCamera == target)
+                if (target != null && CinemachineBrain.SoloCamera == (ICinemachineCamera)target)
                 {
                     CinemachineBrain.SoloCamera = null;
                     InspectorUtility.RepaintGameView();

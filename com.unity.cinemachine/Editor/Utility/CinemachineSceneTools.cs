@@ -568,7 +568,7 @@ namespace Unity.Cinemachine.Editor
         }
         
         static bool s_IsDragging;
-        static CinemachineVirtualCameraBase s_UserSolo;
+        static ICinemachineCamera s_UserSolo;
         public static void SoloOnDrag(bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId)
         {
             if (isDragged)
