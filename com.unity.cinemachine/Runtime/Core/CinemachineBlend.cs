@@ -51,26 +51,18 @@ namespace Unity.Cinemachine
         {
             get
             {
-                var sb = CinemachineDebug.SBFromPool();
                 if (CamB == null || !CamB.IsValid)
-                    sb.Append("(none)");
-                else
-                {
-                    sb.Append("[");
-                    sb.Append(CamB.Name);
-                    sb.Append("]");
-                }
+                    return "(none)";
+
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append(CamB.Name);
                 sb.Append(" ");
                 sb.Append((int)(BlendWeight * 100f));
                 sb.Append("% from ");
                 if (CamA == null || !CamA.IsValid)
                     sb.Append("(none)");
                 else
-                {
-                    sb.Append("[");
                     sb.Append(CamA.Name);
-                    sb.Append("]");
-                }
                 string text = sb.ToString();
                 CinemachineDebug.ReturnToPool(sb);
                 return text;

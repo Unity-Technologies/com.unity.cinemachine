@@ -260,7 +260,34 @@ namespace Unity.Cinemachine
         /// <returns>True if the camera is live (directly or indirectly)
         /// or part of a blend in progress.</returns>
         public bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
-            => (ICinemachineCamera)SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly);
+        {
+            if (SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
+                return true;
+
+            // Walk up the parents
+            var parent = cam.ParentCamera;
+            if (parent != null && parent.IsLiveChild(cam, dominantChildOnly))
+                return IsLiveChild(parent, dominantChildOnly);
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the vcam is live as part of an outgoing blend.  
+        /// Does not check whether the vcam is also the current active vcam.
+        /// </summary>
+        /// <param name="vcam">The virtual camera to check</param>
+        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
+        public bool IsLiveInBlend(ICinemachineCamera cam)
+        {
+            if (m_BlendManager.IsLiveInBlend(cam))
+                return true;
+
+            // Walk up the parents
+            var parent = cam.ParentCamera;
+            if (parent != null && parent.IsLiveChild(cam, false))
+                return IsLiveInBlend(parent);
+            return false;
+        }
 
         /// <inheritdoc />
         public string Name => name;
@@ -270,11 +297,17 @@ namespace Unity.Cinemachine
         {
             get
             {
-                if (IsBlending)
-                    return ActiveBlend.Description;
                 if (ActiveVirtualCamera == null)
                     return "(none)";
-                return $"{ActiveVirtualCamera.Name} {ActiveVirtualCamera.Description}";
+                if (IsBlending)
+                    return ActiveBlend.Description;
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append(ActiveVirtualCamera.Name);
+                sb.Append(" ");
+                sb.Append(ActiveVirtualCamera.Description);
+                var text = sb.ToString();
+                CinemachineDebug.ReturnToPool(sb);
+                return text;
             }
         }
 
@@ -517,19 +550,7 @@ namespace Unity.Cinemachine
         /// a default blend will be created, which could be a cut.
         /// </summary>
         CinemachineBlendDefinition LookupBlend(ICinemachineCamera fromKey, ICinemachineCamera toKey)
-        {
-            // Get the blend curve that's most appropriate for these cameras
-            CinemachineBlendDefinition blend = DefaultBlend;
-            if (CustomBlends != null)
-            {
-                string fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
-                string toCameraName = (toKey != null) ? toKey.Name : string.Empty;
-                blend = CustomBlends.GetBlendForVirtualCameras(fromCameraName, toCameraName, blend);
-            }
-            if (CinemachineCore.GetBlendOverride != null)
-                blend = CinemachineCore.GetBlendOverride(fromKey, toKey, blend, this);
-            return blend;
-        }
+            => CinemachineBlenderSettings.LookupBlend(fromKey, toKey, DefaultBlend, CustomBlends, this);
         
         float GetEffectiveDeltaTime(bool fixedDelta)
         {
@@ -575,14 +596,6 @@ namespace Unity.Cinemachine
         /// Get the current active virtual camera.
         /// </summary>
         public ICinemachineCamera ActiveVirtualCamera => SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
-
-        /// <summary>
-        /// Checks if the vcam is live as part of an outgoing blend.  
-        /// Does not check whether the vcam is also the current active vcam.
-        /// </summary>
-        /// <param name="vcam">The virtual camera to check</param>
-        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
-        public bool IsLiveInBlend(ICinemachineCamera cam) => m_BlendManager.IsLiveInBlend(cam);
 
         /// <summary>
         /// Is there a blend in progress?

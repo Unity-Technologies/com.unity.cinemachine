@@ -82,6 +82,23 @@ namespace Unity.Cinemachine
         /// </summary>
         public bool IsBlending => ActiveBlend != null;
 
+        /// <summary>Describe the current blend state</summary>
+        public string Description
+        {
+            get
+            {
+                if (ActiveVirtualCamera == null)
+                    return "[(none)]";
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append("[");
+                sb.Append(IsBlending ? ActiveBlend.Description : ActiveVirtualCamera.Name);
+                sb.Append("]");
+                var text = sb.ToString();
+                CinemachineDebug.ReturnToPool(sb);
+                return text;
+            }
+        }
+
         /// <summary>
         /// Checks if the vcam is live as part of an outgoing blend.  
         /// Does not check whether the vcam is also the current active vcam.
@@ -95,35 +112,21 @@ namespace Unity.Cinemachine
                 return true;
             if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
                 return true;
-            if (cam is CinemachineVirtualCameraBase vcam)
-            {
-                var parent = vcam.ParentCamera;
-                if (parent != null && parent.IsLiveChild(vcam, false))
-                    return IsLiveInBlend(parent);
-            }
             return false;
         }
 
         /// <summary>
-        /// True if the ICinemachineCamera the current active camera,
+        /// True if the ICinemachineCamera is the current active camera,
         /// or part of a current blend, either directly or indirectly because its parents are live.
         /// </summary>
         /// <param name="vcam">The camera to test whether it is live</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the camera is live (directly or indirectly)
         /// or part of a blend in progress.</returns>
-        public bool IsLive(ICinemachineCamera cam, bool dominantChildOnly = false)
-        {
-            if (m_CurrentLiveCameras.Uses(cam))
-                return true;
-            if (cam is CinemachineVirtualCameraBase vcam)
-            {
-                var parent = vcam.ParentCamera;
-                if (parent != null && parent.IsLiveChild(vcam, dominantChildOnly))
-                    return IsLive(parent, dominantChildOnly);
-            }
-            return false;
-        }
+        public bool IsLive(ICinemachineCamera cam, bool dominantChildOnly = false) => m_CurrentLiveCameras.Uses(cam);
+        
+        /// <summary>Clear the state of the root frame: no current camera, no blend.</summary>
+        public void ResetRootFrame() => m_BlendStack.ResetRootFrame();
         
         /// <summary>
         /// Call this every frame with the current active camera of the root frame.

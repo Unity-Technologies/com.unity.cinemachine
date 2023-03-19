@@ -154,6 +154,16 @@ namespace Unity.Cinemachine
         /// <summary>Has OnEnable been called?</summary>
         public bool IsInitialized => m_FrameStack.Count > 0;
 
+        /// <summary>Clear the state of the root frame: no current camera, no blend.</summary>
+        public void ResetRootFrame()
+        {
+            // Make sure there is a first stack frame
+            if (m_FrameStack.Count == 0)
+                m_FrameStack.Add(new StackFrame());
+            else
+                m_FrameStack[0] = new StackFrame();
+        }
+
         /// <summary>
         /// Call this every frame with the current active camera of the root frame.
         /// </summary>
@@ -177,7 +187,7 @@ namespace Unity.Cinemachine
             if (activeCamera != outGoingCamera)
             {
                 // Do we need to create a game-play blend?
-                if (activeCamera != null && activeCamera.IsValid
+                if (lookupBlend != null && activeCamera != null && activeCamera.IsValid
                     && outGoingCamera != null && outGoingCamera.IsValid && deltaTime >= 0)
                 {
                     // Create a blend (curve will be null if a cut)
@@ -189,7 +199,7 @@ namespace Unity.Cinemachine
                         if (frame.Blend.IsComplete)
                         {
                             // new blend
-/* GML todo: think about this
+#if false // GML todo: think about this
                             if (outGoingCamera is CinemachineVirtualCameraBase outgoingVcamBase
                                 && (outgoingVcamBase.GetTransitionParams().BlendHint 
                                     & TransitionParams.BlendHints.BlendOutFromSnapshot) != 0)
@@ -197,8 +207,8 @@ namespace Unity.Cinemachine
                                 frame.Blend.CamA = new StaticPointVirtualCamera(outGoingCamera.State, outGoingCamera.Name);
                             }
                             else
-*/
-                                frame.Blend.CamA = outGoingCamera;  
+#endif
+                            frame.Blend.CamA = outGoingCamera;  
                         }
                         else
                         {
@@ -215,12 +225,25 @@ namespace Unity.Cinemachine
                                 blendDuration *= progress;
                                 BlendStartPosition = 1 - progress;
                             }
-                            // Chain to existing blend
-                            frame.Blend.CamA = new BlendSourceVirtualCamera(
-                                new CinemachineBlend(
-                                    frame.Blend.CamA, frame.Blend.CamB,
-                                    frame.Blend.BlendCurve, frame.Blend.Duration,
-                                    frame.Blend.TimeInBlend));
+                            
+                            // Chain to existing blend.
+                            // Special check here: if incoming is InheritPosition and if it's already live
+                            // in the outgoing blend, use a snapshot otherwise there could be a pop
+                            if (activeCamera is CinemachineVirtualCameraBase vcamBaseB 
+                                && vcamBaseB.GetTransitionParams().InheritPosition
+                                && frame.Blend.Uses(activeCamera))
+                            {
+                                frame.Blend.CamA = new StaticPointVirtualCamera(
+                                    frame.Blend.State, frame.Blend.CamB.Name + " mid-blend");
+                            }
+                            else
+                            {
+                                frame.Blend.CamA = new BlendSourceVirtualCamera(
+                                    new CinemachineBlend(
+                                        frame.Blend.CamA, frame.Blend.CamB,
+                                        frame.Blend.BlendCurve, frame.Blend.Duration,
+                                        frame.Blend.TimeInBlend));
+                            }
                         }
                     }
                     frame.Blend.BlendCurve = blendDef.BlendCurve;
