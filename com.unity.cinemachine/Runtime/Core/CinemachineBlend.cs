@@ -267,9 +267,9 @@ namespace Unity.Cinemachine
         public string Description => string.Empty;
         public CameraState State { get; private set; }
         public bool IsValid => true;
+        public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
         public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
-        public ICinemachineMixer ParentCamera => null;
     }
 
     /// <summary>
@@ -282,11 +282,11 @@ namespace Unity.Cinemachine
         public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
 
-        public string Name => "Mid-blend";
+        public string Name => Blend == null ? "(null)" : Blend.CamB.Name + " mid-blend";
         public string Description => Blend == null ? "(null)" : Blend.Description;
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
-        public CameraState CalculateNewState(float deltaTime) => State;
+        public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (Blend != null)
@@ -296,6 +296,5 @@ namespace Unity.Cinemachine
             }
         }
         public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
-        public ICinemachineMixer ParentCamera => null;
     }
 }

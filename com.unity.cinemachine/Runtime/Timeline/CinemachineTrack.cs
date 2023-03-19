@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
         public override Playable CreateTrackMixer(
             PlayableGraph graph, GameObject go, int inputCount)
         {
-            var mixer = ScriptPlayable<CinemachineMixer>.Create(graph);
+            var mixer = ScriptPlayable<CinemachinePlayableMixer>.Create(graph);
             mixer.SetInputCount(inputCount);
             return mixer;
         }

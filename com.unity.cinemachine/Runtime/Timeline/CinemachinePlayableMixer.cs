@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Unity.Cinemachine
 {
-    internal sealed class CinemachineMixer : PlayableBehaviour
+    internal sealed class CinemachinePlayableMixer : PlayableBehaviour
     {
         public delegate PlayableDirector MasterDirectorDelegate();
 

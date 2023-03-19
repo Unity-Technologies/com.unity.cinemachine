@@ -29,6 +29,11 @@ namespace Unity.Cinemachine
         bool IsValid { get; }
 
         /// <summary>
+        /// Returns the ICinemachineMixer within which this Camera is nested, or null.
+        /// </summary>
+        ICinemachineMixer ParentCamera { get; }
+
+        /// <summary>
         /// Update the camera's state.
         /// The implementation must guarantee against multiple calls per frame, and should
         /// use CinemachineCore.UpdateVirtualCamera(ICinemachineCamera, Vector3, float), which
@@ -45,11 +50,6 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <param name="evt">Context for the camera activation.</param>
         void OnCameraActivated(ActivationEventParams evt);
-
-        /// <summary>
-        /// Returns the ICinemachineMixer within which this Camera is nested, or null.
-        /// </summary>
-        ICinemachineMixer ParentCamera { get; }
 
         /// <summary>This is sent with ActivationEvent</summary>
         public struct ActivationEventParams
