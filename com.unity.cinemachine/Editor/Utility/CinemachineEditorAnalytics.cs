@@ -100,7 +100,7 @@ namespace Unity.Cinemachine.Editor
             var vcam = vcamBase as CinemachineCamera;
             if (vcam != null)
             {
-                vcamData.SetTransitionsAndLens(vcam.Transitions, vcam.Lens);
+                vcamData.SetTransitionsAndLens(vcam.BlendHint, vcam.Lens);
                 vcamData.SetComponents(vcam.GetComponents<CinemachineComponentBase>());
                 vcamDatas.Add(vcamData);
                 return;
@@ -174,10 +174,10 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             
-            public void SetTransitionsAndLens(TransitionParams transitions, LensSettings lens)
+            public void SetTransitionsAndLens(CinemachineCore.BlendHints hints, LensSettings lens)
             {
-                blend_hint = transitions.BlendHint.ToString();
-                inherit_position = transitions.InheritPosition;
+                blend_hint = hints.ToString();
+                inherit_position = (hints & CinemachineCore.BlendHints.InheritPosition) != 0;
                 mode_overwrite = lens.ModeOverride.ToString();
             }
 

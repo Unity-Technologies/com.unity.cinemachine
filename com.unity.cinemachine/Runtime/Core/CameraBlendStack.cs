@@ -200,12 +200,8 @@ namespace Unity.Cinemachine
                         {
                             // new blend
 #if false // GML todo: think about this
-                            if (outGoingCamera is CinemachineVirtualCameraBase outgoingVcamBase
-                                && (outgoingVcamBase.GetTransitionParams().BlendHint 
-                                    & TransitionParams.BlendHints.BlendOutFromSnapshot) != 0)
-                            {
+                            if ((outGoingCamera.State.BlendHint & CameraState.BlendHints.BlendOutFromSnapshot) != 0)
                                 frame.Blend.CamA = new StaticPointVirtualCamera(outGoingCamera.State, outGoingCamera.Name);
-                            }
                             else
 #endif
                             frame.Blend.CamA = outGoingCamera;  
@@ -229,8 +225,7 @@ namespace Unity.Cinemachine
                             // Chain to existing blend.
                             // Special check here: if incoming is InheritPosition and if it's already live
                             // in the outgoing blend, use a snapshot otherwise there could be a pop
-                            if (activeCamera is CinemachineVirtualCameraBase vcamBaseB 
-                                && vcamBaseB.GetTransitionParams().InheritPosition
+                            if ((activeCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
                                 && frame.Blend.Uses(activeCamera))
                             {
                                 frame.Blend.CamA = new StaticPointVirtualCamera(

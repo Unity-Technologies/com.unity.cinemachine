@@ -103,20 +103,12 @@ namespace Unity.Cinemachine
         /// </summary>
         public ICinemachineCamera LiveChild => PreviousStateIsValid ? m_BlendManager.ActiveVirtualCamera : null;
 
-        /// <summary>Returns the current live child's TransitionParams settings</summary>
-        /// <returns>The current live child's TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams()
-        {
-            var child = LiveChild as CinemachineVirtualCameraBase;
-            return child != null ? child.GetTransitionParams() : default;
-        }
-
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
         public override Transform LookAt
         {
             get 
-            { 
+            {
                 if (!DefaultTarget.Enabled)
                     return null;
                 return ResolveLookAt(DefaultTarget.Target.CustomLookAtTarget 

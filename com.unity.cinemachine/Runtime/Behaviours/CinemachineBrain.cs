@@ -539,7 +539,7 @@ namespace Unity.Cinemachine
                 state.RawPosition = target.position;
                 state.RawOrientation = target.rotation;
                 state.Lens = LensSettings.FromCamera(m_OutputCamera);
-                state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
+                state.BlendHint |= CameraState.BlendHints.NoTransform | CameraState.BlendHints.NoLens;
                 PushStateToUnityCamera(ref state);
             }
         }
@@ -640,11 +640,11 @@ namespace Unity.Cinemachine
         {
             m_CameraState = state;
             var target = ControlledObject.transform;
-            if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
+            if ((state.BlendHint & CameraState.BlendHints.NoPosition) == 0)
                 target.position = state.GetFinalPosition();
-            if ((state.BlendHint & CameraState.BlendHintValue.NoOrientation) == 0)
+            if ((state.BlendHint & CameraState.BlendHints.NoOrientation) == 0)
                 target.rotation = state.GetFinalOrientation();
-            if ((state.BlendHint & CameraState.BlendHintValue.NoLens) == 0)
+            if ((state.BlendHint & CameraState.BlendHints.NoLens) == 0)
             {
                 Camera cam = OutputCamera;
                 if (cam != null)

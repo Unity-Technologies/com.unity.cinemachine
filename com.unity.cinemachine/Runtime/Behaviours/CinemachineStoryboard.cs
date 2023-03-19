@@ -153,7 +153,7 @@ namespace Unity.Cinemachine
             if (ShowImage)
                 state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item { Custom = this, Weight = 1});
             if (MuteCamera)
-                state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
+                state.BlendHint |= CameraState.BlendHints.NoTransform | CameraState.BlendHints.NoLens;
         }
 
         /// <summary>

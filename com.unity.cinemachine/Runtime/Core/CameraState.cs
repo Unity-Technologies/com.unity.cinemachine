@@ -80,18 +80,23 @@ namespace Unity.Cinemachine
         /// These hints can be or'ed together to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
-        public enum BlendHintValue
+        public enum BlendHints
         {
             /// <summary>Normal state blending</summary>
             Nothing = 0,
             /// <summary>Spherical blend about the LookAt target (if any)</summary>
-            SphericalPositionBlend = TransitionParams.BlendHints.SphericalPosition,
+            SphericalPositionBlend = CinemachineCore.BlendHints.SphericalPosition,
             /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
-            CylindricalPositionBlend = TransitionParams.BlendHints.CylindricalPosition,
+            CylindricalPositionBlend = CinemachineCore.BlendHints.CylindricalPosition,
             /// <summary>Radial blend when the LookAt target changes(if any)</summary>
-            ScreenSpaceAimWhenTargetsDiffer = TransitionParams.BlendHints.ScreenSpaceAimWhenTargetsDiffer,
+            ScreenSpaceAimWhenTargetsDiffer = CinemachineCore.BlendHints.ScreenSpaceAimWhenTargetsDiffer,
+            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
+            /// as the current position of the outgoing Camera</summary>
+            InheritPosition = CinemachineCore.BlendHints.InheritPosition,
             /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
-            IgnoreLookAtTarget = TransitionParams.BlendHints.IgnoreTarget,
+            IgnoreLookAtTarget = CinemachineCore.BlendHints.IgnoreTarget,
+            // /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            //BlendOutFromSnapshot = CinemachineCore.BlendHints.BlendOutFromSnapshot, // GML todo: think about this
 
             /// <summary>This state does not affect the camera position</summary>
             NoPosition = 1 << 16,
@@ -107,7 +112,7 @@ namespace Unity.Cinemachine
         /// These hints can be or'ed together to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
-        public BlendHintValue BlendHint;
+        public BlendHints BlendHint;
 
         /// <summary>
         /// State with default values
@@ -123,7 +128,7 @@ namespace Unity.Cinemachine
             PositionCorrection = Vector3.zero,
             OrientationCorrection = Quaternion.identity,
             RotationDampingBypass = Quaternion.identity,
-            BlendHint = BlendHintValue.Nothing
+            BlendHint = BlendHints.Nothing
         };
 
         /// <summary>
@@ -213,22 +218,22 @@ namespace Unity.Cinemachine
             CameraState state = new CameraState();
 
             // Combine the blend hints intelligently
-            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
-                state.BlendHint |= BlendHintValue.NoPosition;
-            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
-                state.BlendHint |= BlendHintValue.NoOrientation;
-            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoLens) != 0)
-                state.BlendHint |= BlendHintValue.NoLens;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.SphericalPositionBlend) != 0)
-                state.BlendHint |= BlendHintValue.SphericalPositionBlend;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.CylindricalPositionBlend) != 0)
-                state.BlendHint |= BlendHintValue.CylindricalPositionBlend;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoPosition) != 0)
+                state.BlendHint |= BlendHints.NoPosition;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoOrientation) != 0)
+                state.BlendHint |= BlendHints.NoOrientation;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoLens) != 0)
+                state.BlendHint |= BlendHints.NoLens;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.SphericalPositionBlend) != 0)
+                state.BlendHint |= BlendHints.SphericalPositionBlend;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.CylindricalPositionBlend) != 0)
+                state.BlendHint |= BlendHints.CylindricalPositionBlend;
 
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0)
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoLens) == 0)
                 state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);
-            else if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoLens) == 0)
+            else if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoLens) == 0)
             {
-                if ((stateA.BlendHint & BlendHintValue.NoLens) != 0)
+                if ((stateA.BlendHint & BlendHints.NoLens) != 0)
                     state.Lens = stateB.Lens;
                 else
                     state.Lens = stateA.Lens;
@@ -256,7 +261,7 @@ namespace Unity.Cinemachine
                 // Re-interpolate FOV to preserve target composition, if possible
                 float fovA = stateA.Lens.FieldOfView;
                 float fovB = stateB.Lens.FieldOfView;
-                if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0
+                if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoLens) == 0
                     && !state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
                 {
                     LensSettings lens = state.Lens;
@@ -284,7 +289,7 @@ namespace Unity.Cinemachine
 
             // Interpolate the LookAt in Screen Space if requested
             if (state.HasLookAt() 
-                && ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.ScreenSpaceAimWhenTargetsDiffer) != 0)
+                && ((stateA.BlendHint | stateB.BlendHint) & BlendHints.ScreenSpaceAimWhenTargetsDiffer) != 0)
             {
                 state.ReferenceLookAt = state.RawPosition + Vector3.Slerp(
                         stateA.ReferenceLookAt - state.RawPosition, 
@@ -293,10 +298,10 @@ namespace Unity.Cinemachine
 
             // Clever orientation interpolation
             Quaternion newOrient = state.RawOrientation;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoOrientation) == 0)
             {
                 Vector3 dirTarget = Vector3.zero;
-                if (state.HasLookAt())//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.ScreenSpaceAimWhenTargetsDiffer) == 0)
+                if (state.HasLookAt())//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHints.ScreenSpaceAimWhenTargetsDiffer) == 0)
                 {
                     // If orientations are different, use LookAt to blend them
                     float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
@@ -305,7 +310,7 @@ namespace Unity.Cinemachine
                 }
                 
                 if (dirTarget.AlmostZero() 
-                    || ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.IgnoreLookAtTarget) != 0)
+                    || ((stateA.BlendHint | stateB.BlendHint) & BlendHints.IgnoreLookAtTarget) != 0)
                 {
                     // Don't know what we're looking at - can only slerp
                     newOrient = Quaternion.Slerp(stateA.RawOrientation, stateB.RawOrientation, t);
@@ -368,29 +373,29 @@ namespace Unity.Cinemachine
         }
 
         static Vector3 ApplyPosBlendHint(
-            Vector3 posA, BlendHintValue hintA, 
-            Vector3 posB, BlendHintValue hintB, 
+            Vector3 posA, BlendHints hintA, 
+            Vector3 posB, BlendHints hintB, 
             Vector3 original, Vector3 blended)
         {
-            if (((hintA | hintB) & BlendHintValue.NoPosition) == 0)
+            if (((hintA | hintB) & BlendHints.NoPosition) == 0)
                 return blended;
-            if (((hintA & hintB) & BlendHintValue.NoPosition) != 0)
+            if (((hintA & hintB) & BlendHints.NoPosition) != 0)
                 return original;
-            if ((hintA & BlendHintValue.NoPosition) != 0)
+            if ((hintA & BlendHints.NoPosition) != 0)
                 return posB;
             return posA;
         }
 
         static Quaternion ApplyRotBlendHint(
-            Quaternion rotA, BlendHintValue hintA, 
-            Quaternion rotB, BlendHintValue hintB, 
+            Quaternion rotA, BlendHints hintA, 
+            Quaternion rotB, BlendHints hintB, 
             Quaternion original, Quaternion blended)
         {
-            if (((hintA | hintB) & BlendHintValue.NoOrientation) == 0)
+            if (((hintA | hintB) & BlendHints.NoOrientation) == 0)
                 return blended;
-            if (((hintA & hintB) & BlendHintValue.NoOrientation) != 0)
+            if (((hintA & hintB) & BlendHints.NoOrientation) != 0)
                 return original;
-            if ((hintA & BlendHintValue.NoOrientation) != 0)
+            if ((hintA & BlendHints.NoOrientation) != 0)
                 return rotB;
             return rotA;
         }
@@ -399,13 +404,13 @@ namespace Unity.Cinemachine
             Vector3 posA, Vector3 pivotA,
             Vector3 posB, Vector3 pivotB,
             float t,
-            BlendHintValue blendHint, Vector3 up)
+            BlendHints blendHint, Vector3 up)
         {
         #pragma warning disable 1718 // comparison made to same variable
             if (pivotA == pivotA && pivotB == pivotB) // check for NaN
         #pragma warning restore 1718
             {
-                if ((blendHint & BlendHintValue.CylindricalPositionBlend) != 0)
+                if ((blendHint & BlendHints.CylindricalPositionBlend) != 0)
                 {
                     // Cylindrical interpolation about pivot
                     var a = Vector3.ProjectOnPlane(posA - pivotA, up);
@@ -414,7 +419,7 @@ namespace Unity.Cinemachine
                     posA = (posA - a) + c;
                     posB = (posB - b) + c;
                 }
-                else if ((blendHint & BlendHintValue.SphericalPositionBlend) != 0)
+                else if ((blendHint & BlendHints.SphericalPositionBlend) != 0)
                 {
                     // Spherical interpolation about pivot
                     var c = Vector3.Slerp(posA - pivotA, posB - pivotB, t);

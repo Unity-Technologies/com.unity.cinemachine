@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
+using System;
 
 namespace Unity.Cinemachine
 {
@@ -21,7 +22,7 @@ namespace Unity.Cinemachine
     public sealed class CinemachineCore
     {
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
-        public static readonly int kStreamingVersion = 20230301;
+        public const int kStreamingVersion = 20230301;
 
         /// <summary>
         /// Stages in the Cinemachine Component pipeline.  This enum defines the pipeline order.
@@ -42,6 +43,26 @@ namespace Unity.Cinemachine
             /// types, after the pipeline is complete</summary>
             Finalize
         };
+        
+
+        /// <summary>Hint for transitioning to and from Cinemachine cameras</summary>
+        [Flags]
+        public enum BlendHints
+        {
+            /// <summary>Spherical blend about Tracking target position</summary>
+            SphericalPosition = 1, 
+            /// <summary>Cylindrical blend about Tracking target position (vertical co-ordinate is linearly interpolated)</summary>
+            CylindricalPosition = 2,
+            /// <summary>Screen-space blend between LookAt targets instead of world space lerp of target position</summary>
+            ScreenSpaceAimWhenTargetsDiffer = 4,
+            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
+            /// as the current position of the outgoing Camera</summary>
+            InheritPosition = 8,
+            /// <summary>Do not consider the tracking target when blending, just do a spherical interpolation</summary>
+            IgnoreTarget = 16,
+            // /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            //BlendOutFromSnapshot = 32, // GML todo: think about this
+        }
         
         static CinemachineCore s_Instance = null;
 

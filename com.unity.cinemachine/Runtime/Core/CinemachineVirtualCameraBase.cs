@@ -442,10 +442,6 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Returns the camera's TransitionParams settings</summary>
-        /// <returns>The camera's TransitionParams settings</returns>
-        public abstract TransitionParams GetTransitionParams();
-
         /// <summary>Check whether the vcam a live child of this camera.
         /// This base class implementation always returns false.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>

@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
         [Tooltip("Hint for transitioning to and from this virtual camera")]
         [FormerlySerializedAs("m_PositionBlending")]
         [FormerlySerializedAs("m_BlendHint")]
-        public TransitionParams.BlendHints TransitionHint = 0;
+        public CinemachineCore.BlendHints BlendHint = 0;
 
         Camera m_Camera;
         CameraState m_State = CameraState.Default;
@@ -44,10 +44,6 @@ namespace Unity.Cinemachine
         /// <summary>This vcam defines no targets</summary>
         [HideInInspector]
         public override Transform Follow { get; set; }
-
-        /// <summary>Returns the TransitionParams settings</summary>
-        /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => default;
 
         /// <summary>Internal use only.  Do not call this method</summary>
         /// <param name="worldUp">Effective world up</param>
@@ -73,7 +69,7 @@ namespace Unity.Cinemachine
                     m_State.ReferenceLookAt = m_State.RawPosition + Vector3.Project(
                         dir, State.RawOrientation * Vector3.forward);
             }
-            m_State.BlendHint = (CameraState.BlendHintValue)TransitionHint;
+            m_State.BlendHint = (CameraState.BlendHints)BlendHint;
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
