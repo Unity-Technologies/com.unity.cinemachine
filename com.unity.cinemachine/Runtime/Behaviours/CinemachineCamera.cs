@@ -50,7 +50,7 @@ namespace Unity.Cinemachine
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/Cinemachine Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCamera.html")]
-    public sealed class CinemachineCamera : CinemachineVirtualCameraBase, ISerializationCallbackReceiver
+    public sealed class CinemachineCamera : CinemachineVirtualCameraBase
     {
         /// <summary>The Tracking and LookAt targets for this camera.</summary>
         [NoSaveDuringPlay]

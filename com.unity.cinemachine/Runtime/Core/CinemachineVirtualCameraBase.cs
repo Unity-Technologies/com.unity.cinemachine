@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera, ISerializationCallbackReceiver
+    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
         /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
@@ -117,28 +117,13 @@ namespace Unity.Cinemachine
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         int m_StreamingVersion;
 
-        /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
-            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
-                LegacyUpgradeMayBeCalledFromThread(m_StreamingVersion);
-            m_StreamingVersion = CinemachineCore.kStreamingVersion;
-        }
-
-        /// <summary>Pre-Serialization handler - delegates to derived classes</summary>
-        void ISerializationCallbackReceiver.OnBeforeSerialize() 
-        {
-            m_StreamingVersion = CinemachineCore.kStreamingVersion;
-            OnBeforeSerialize();
-        }
-
         /// <summary>
         /// Override this to handle any upgrades necessitated by a streaming version change.
         /// Note that since this method is not called from the main thread, there are many things
         /// it cannot do, including checking a unity object for null.
         /// </summary>
         /// <param name="streamedVersion">The version that was streamed</param>
-        internal protected virtual void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        internal protected virtual void PerformLegacyUpgrade(int streamedVersion)
         {
             if (streamedVersion < 20220601)
                 Priority.Value = m_LegacyPriority;
@@ -148,8 +133,6 @@ namespace Unity.Cinemachine
         int m_LegacyPriority = 10;
 
         //============================================================================
-
-        internal virtual void OnBeforeSerialize() {}
 
         /// <summary>
         /// Query components and extensions for the maximum damping time.
@@ -528,6 +511,12 @@ namespace Unity.Cinemachine
             if (!m_WasStarted)
             {
                 m_WasStarted = true;
+
+                // Perform legacy upgrade if necessary
+                if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                    PerformLegacyUpgrade(m_StreamingVersion);
+                m_StreamingVersion = CinemachineCore.kStreamingVersion;
+
                 var extensions = GetComponentsInChildren<CinemachineExtension>();
                 for (int i = 0; i < extensions.Length; ++i)
                     extensions[i].EnsureStarted();
@@ -681,9 +670,6 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].ForceCameraPosition(pos, rot);
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
-            if (parent != null)
-                parent.ForceCameraPosition(pos, rot);
         }
 
         /// <summary>
