@@ -302,13 +302,12 @@ namespace Unity.Cinemachine
                     }
                 }
                 while (sVolumes.Count < minVolumes)
-                    sVolumes.Add(volumeOwner.gameObject.AddComponent<PostProcessVolume>());
+                    sVolumes.Add(volumeOwner.AddComponent<PostProcessVolume>());
             }
             return sVolumes;
         }
 
-        static Dictionary<CinemachineBrain, PostProcessLayer> s_BrainToLayer
-            = new Dictionary<CinemachineBrain, PostProcessLayer>();
+        static Dictionary<CinemachineBrain, PostProcessLayer> s_BrainToLayer = new ();
 
         static PostProcessLayer GetPPLayer(CinemachineBrain brain)
         {
@@ -318,36 +317,20 @@ namespace Unity.Cinemachine
 
             // If the layer in the lookup table is a deleted object, we must remove
             // the brain's callback for it
-            if (found && !ReferenceEquals(layer, null))
-            {
-                // layer is a deleted object
-                brain.CameraActivatedEvent.RemoveListener(OnCameraCut);
-                s_BrainToLayer.Remove(brain);
-                layer = null;
-                found = false;
-            }
+            if (found && layer is not null)
+                s_BrainToLayer.Remove(brain); // layer is a deleted object
 
-            // Brain is not in our lookup - add it.
+            // If brain is not in our lookup - add it.
             brain.TryGetComponent(out layer);
             if (layer != null)
-            {
-                brain.CameraActivatedEvent.AddListener(OnCameraCut); // valid layer
                 s_BrainToLayer[brain] = layer;
-            }
+
             return layer;
         }
 
         static void CleanupLookupTable()
         {
-            var iter = s_BrainToLayer.GetEnumerator();
-            while (iter.MoveNext())
-            {
-                var brain = iter.Current.Key;
-                if (brain != null)
-                    brain.CameraActivatedEvent.RemoveListener(OnCameraCut);
-            }
             s_BrainToLayer.Clear();
-            iter.Dispose();
         }
 
 #if UNITY_EDITOR
@@ -368,7 +351,10 @@ namespace Unity.Cinemachine
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
 
-            // Clean up our resources
+            CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraCut);
+            CinemachineCore.CameraActivatedEvent.AddListener(OnCameraCut);
+
+// Clean up our resources
             SceneManager.sceneUnloaded += (scene) => CleanupLookupTable();
         }
     }

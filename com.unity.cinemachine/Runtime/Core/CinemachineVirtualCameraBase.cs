@@ -393,11 +393,10 @@ namespace Unity.Cinemachine
             {
 #if UNITY_EDITOR
                 // Allow vcam name changes when not playing
-                if (!Application.isPlaying || m_CachedName == null)
-#else
-                if (m_CachedName == null)
+                if (!Application.isPlaying)
+                    m_CachedName = null;
 #endif
-                    m_CachedName = (this == null) ? "(deleted)" : name;
+                m_CachedName ??= IsValid ? name : "(deleted)";
                 return m_CachedName;
             }
         }
@@ -405,17 +404,6 @@ namespace Unity.Cinemachine
         /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
         public virtual string Description => "";
         
-        /// <summary>The GameObject owner of the Virtual Camera behaviour.</summary>
-        public GameObject VirtualCameraGameObject
-        {
-            get
-            {
-                if (this == null)
-                    return null; // object deleted
-                return gameObject;
-            }
-        }
-
         /// <summary>Returns false if the object has been deleted</summary>
         public bool IsValid => !(this == null);
 

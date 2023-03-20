@@ -14,7 +14,6 @@ namespace Unity.Cinemachine.Editor
     {
         CinemachineBrain Target => target as CinemachineBrain;
 
-        bool m_EventsExpanded = false;
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
@@ -44,22 +43,6 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
             ux.Add(EmbeddedAssetEditorUtility.EmbeddedAssetInspector<CinemachineBlenderSettings>(
                 serializedObject.FindProperty(() => Target.CustomBlends), null));
-
-            var foldout = ux.AddChild(new Foldout 
-            { 
-                text = "Events", 
-                tooltip = "Add handlers for these events, if desired", 
-                value = m_EventsExpanded 
-            });
-            foldout.RegisterValueChangedCallback((evt) => 
-            {
-                if (evt.target == foldout)
-                {
-                    m_EventsExpanded = evt.newValue;
-                    evt.StopPropagation();
-                }
-            });
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
 
             ux.ContinuousUpdate(() =>
             {

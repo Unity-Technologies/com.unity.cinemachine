@@ -215,7 +215,7 @@ namespace Unity.Cinemachine
             }
         }
 
-        static void OnCameraCut(BlendManager.ActivationEventParams evt)
+        static void OnCameraCut(ICinemachineCamera.ActivationEventParams evt)
         {
             var brain = evt.Origin as CinemachineBrain;
             //Debug.Log($"Camera cut to {brain?.ActiveVirtualCamera.Name}");
@@ -240,7 +240,7 @@ namespace Unity.Cinemachine
 
         static void ApplyPostFX(CinemachineBrain brain)
         {
-            CameraState state = brain.CurrentCameraState;
+            CameraState state = brain.State;
             int numBlendables = state.GetNumCustomBlendables();
             var volumes = GetDynamicBrainVolumes(brain, numBlendables);
             for (int i = 0; i < volumes.Count; ++i)
@@ -276,8 +276,8 @@ namespace Unity.Cinemachine
 //                Debug.Log($"Applied post FX for {numPPblendables} PP blendables in {brain.ActiveVirtualCamera.Name}");
         }
 
-        static string sVolumeOwnerName = "__CMVolumes";
-        static List<Volume> sVolumes = new List<Volume>();
+        const string sVolumeOwnerName = "__CMVolumes";
+        static List<Volume> sVolumes = new();
         static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes)
         {
             // Locate the camera's child object that holds our dynamic volumes

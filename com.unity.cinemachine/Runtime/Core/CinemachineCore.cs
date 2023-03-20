@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 using System;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
@@ -149,14 +150,18 @@ namespace Unity.Cinemachine
         /// </summary>
         public static GetBlendOverrideDelegate GetBlendOverride;
 
+        /// <summary>Event with CinemachineBrain as parameter.</summary>
+        [Serializable]
+        public class BrainEvent : UnityEvent<CinemachineBrain> {}
+        
         /// <summary>This event will fire after a brain updates its Camera</summary>
-        public static CinemachineBrain.BrainEvent CameraUpdatedEvent = new ();
+        public static BrainEvent CameraUpdatedEvent = new ();
 
         /// <summary>This event will fire when the current camera changes, at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
 
         /// <summary>List of all active CinemachineBrains.</summary>
-        List<CinemachineBrain> m_ActiveBrains = new ();
+        readonly List<CinemachineBrain> m_ActiveBrains = new ();
 
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public int BrainCount => m_ActiveBrains.Count;
@@ -238,7 +243,7 @@ namespace Unity.Cinemachine
         }
 
         // Registry of all vcams that are present, active or not
-        List<List<CinemachineVirtualCameraBase>> m_AllCameras = new();
+        readonly List<List<CinemachineVirtualCameraBase>> m_AllCameras = new();
 
         /// <summary>Called when a vcam is enabled.</summary>
         internal void CameraEnabled(CinemachineVirtualCameraBase vcam)
@@ -485,6 +490,7 @@ namespace Unity.Cinemachine
         {
             if (incoming != null)
             {
+                // Generate an event for each brain in which the camera is live
                 for (int i = 0; i < BrainCount; ++i)
                 {
                     var brain = GetActiveBrain(i);
@@ -497,7 +503,6 @@ namespace Unity.Cinemachine
                             OutgoingCamera = outgoing,
                             IsCut = isCut
                         };
-                        brain.CameraActivatedEvent.Invoke(eventParams);
                         CameraActivatedEvent.Invoke(eventParams);
                     }
                 }

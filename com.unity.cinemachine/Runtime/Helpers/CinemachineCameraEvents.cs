@@ -18,6 +18,8 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCameraEvents.html")]
     public class CinemachineCameraEvents : MonoBehaviour
     {
+        // GML todo: change parameters to brain, outgoing, incoming, isCut.
+        // How to support back-compatibility with CM2 if we do that?  Keep this but deprecate it?
         /// <summary>
         /// This event is fired when a virtual camera is activated.
         /// If a blend is involved, it will be fired at the start of the blend.

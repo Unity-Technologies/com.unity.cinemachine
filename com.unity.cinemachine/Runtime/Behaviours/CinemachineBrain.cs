@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -148,17 +146,6 @@ namespace Unity.Cinemachine
             + "specific virtual cameras in your scene")]
         [FormerlySerializedAs("m_CustomBlends")]
         public CinemachineBlenderSettings CustomBlends = null;
-
-        /// <summary>
-        /// Event that is fired when a virtual camera is activated.  
-        /// If a blend is involved, it will be fired at the start of the blend.
-        /// </summary>
-        [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is "
-            + "involved, then the event will fire on the first frame of the blend.")]
-        public ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
-
-        /// <summary>Event with CinemachineBrain as parameter.</summary>
-        public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         Camera m_OutputCamera = null; // never use directly - use accessor
         GameObject m_TargetOverride = null; // never use directly - use 
@@ -318,14 +305,13 @@ namespace Unity.Cinemachine
         public bool IsValid => this != null;
 
         /// <summary>Does nothing</summary>
-        public void UpdateCameraState(Vector3 up, float deltaTime) {} // GML todo
+        public void UpdateCameraState(Vector3 up, float deltaTime) {} // GML todo: think about this
 
-        /// <summary>Invokes CameraActivatedEvent</summary>
-        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) 
-            => CameraActivatedEvent.Invoke(evt);
+        /// <summary>Does nothing</summary>
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {} // GML todo: think about this
         
         /// <summary>Does nothing</summary>
-        public ICinemachineMixer ParentCamera => null; // GML todo
+        public ICinemachineMixer ParentCamera => null; // GML todo: think about this
 
         /// <summary>
         /// Get the Unity Camera that is attached to this GameObject.  This is the camera
