@@ -814,13 +814,13 @@ namespace Unity.Cinemachine
         /// <summary>Check to see whether this camera is currently participating in a blend 
         /// within its parent manager or in a CinemacineBrain</summary>
         /// <returns>True if the camera is participating in a blend</returns>
-        public bool IsParticipatinInBlend()
+        public bool IsParticipatingInBlend()
         {
             if (IsLive)
             {
                 var parent = ParentCamera as CinemachineCameraManagerBase;
                 if (parent != null)
-                    return (parent.ActiveBlend != null && parent.ActiveBlend.Uses(this)) || parent.IsParticipatinInBlend();
+                    return (parent.ActiveBlend != null && parent.ActiveBlend.Uses(this)) || parent.IsParticipatingInBlend();
                 var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
                 if (brain != null)
                     return brain.ActiveBlend != null && brain.ActiveBlend.Uses(this);

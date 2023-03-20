@@ -250,9 +250,10 @@ namespace Unity.Cinemachine
             if (!Application.isPlaying)
                 return;
 
-            if (SuppressInputWhileBlending && TryGetComponent<CinemachineVirtualCameraBase>(out var vcam))
-                if (vcam.IsParticipatinInBlend())
-                    return;
+            if (SuppressInputWhileBlending 
+                && TryGetComponent<CinemachineVirtualCameraBase>(out var vcam)
+                && vcam.IsParticipatingInBlend())
+                return;
 
             var deltaTime = Time.deltaTime;
             //bool gotInput = false;
