@@ -61,7 +61,6 @@ namespace Unity.Cinemachine
 
 
         CinemachineVirtualCameraBase m_LiveChild;
-        CinemachineBlend m_ActiveBlend;
         CameraState m_State = CameraState.Default;
         Dictionary<CinemachineVirtualCameraBase, int> m_IndexMap;
 
@@ -139,7 +138,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Get the current active blend in progress.  Will return null if no blend is in progress.
         /// </summary>
-        public override CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_ActiveBlend : null;
+        public override CinemachineBlend ActiveBlend => null;
 
         /// <summary>The State of the current live child</summary>
         public override CameraState State => m_State;
@@ -210,10 +209,7 @@ namespace Unity.Cinemachine
         {
             UpdateCameraCache();
             if (!PreviousStateIsValid)
-            {
                 m_LiveChild = null;
-                m_ActiveBlend = null;
-            }
 
             var children = ChildCameras;
             m_LiveChild = null;

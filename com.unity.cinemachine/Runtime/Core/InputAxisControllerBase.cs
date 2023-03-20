@@ -52,6 +52,12 @@ namespace Unity.Cinemachine
             + "and child objects will be ignored")]
         public bool ScanRecursively = true;
         
+        /// <summary>If set, input will not be processed while the Cinemachine Camera is 
+        /// participating in a blend.</summary>
+        [Tooltip("If set, input will not be processed while the Cinemachine Camera is "
+            + "participating in a blend.")]
+        public bool SuppressInputWhileBlending = true;
+
         /// <summary>
         /// Each discovered axis will get a Controller to drive it in Update().
         /// </summary>
@@ -106,6 +112,7 @@ namespace Unity.Cinemachine
             PlayerIndex = -1;
             AutoEnableInputs = true;
             ScanRecursively = true;
+            SuppressInputWhileBlending = true;
         }
 
         void OnEnable()
@@ -241,6 +248,11 @@ namespace Unity.Cinemachine
         void Update()
         {
             if (!Application.isPlaying)
+                return;
+
+            if (SuppressInputWhileBlending 
+                && TryGetComponent<CinemachineVirtualCameraBase>(out var vcam)
+                && vcam.IsParticipatingInBlend())
                 return;
 
             var deltaTime = Time.deltaTime;

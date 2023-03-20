@@ -110,6 +110,18 @@ namespace Unity.Cinemachine
 
         // Cache for GameObject name, to avoid GC allocs
         string m_CachedName;
+        bool m_WasStarted;
+        bool m_SlaveStatusUpdated = false;
+        CinemachineVirtualCameraBase m_ParentVcam = null;
+
+        Transform m_CachedFollowTarget;
+        CinemachineVirtualCameraBase m_CachedFollowTargetVcam;
+        ICinemachineTargetGroup m_CachedFollowTargetGroup;
+
+        Transform m_CachedLookAtTarget;
+        CinemachineVirtualCameraBase m_CachedLookAtTargetVcam;
+        ICinemachineTargetGroup m_CachedLookAtTargetGroup;
+
 
         //============================================================================
         // Legacy streaming support
@@ -435,7 +447,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
+        public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
 
         /// <summary>Get the LookAt target for the Aim component in the Cinemachine pipeline.</summary>
         public abstract Transform LookAt { get; set; }
@@ -479,29 +491,6 @@ namespace Unity.Cinemachine
                 PreviousStateIsValid = false;
         }
 
-        /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
-        protected virtual void OnDestroy()
-        {
-            CinemachineCore.Instance.CameraDestroyed(this);
-        }
-
-        /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
-        protected virtual void OnTransformParentChanged()
-        {
-            CinemachineCore.Instance.CameraDisabled(this);
-            CinemachineCore.Instance.CameraEnabled(this);
-            UpdateSlaveStatus();
-            UpdateVcamPoolStatus();
-        }
-
-        bool m_WasStarted;
-
-        /// <summary>Derived classes should call base class implementation.</summary>
-        protected virtual void Start()
-        {
-            m_WasStarted = true;
-        }
-        
         /// <summary>
         /// Called on inactive object when being artificially activated by timeline.
         /// This is necessary because Awake() isn't called on inactive gameObjects.
@@ -534,6 +523,27 @@ namespace Unity.Cinemachine
         }
 #endif
 
+        /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
+        protected virtual void OnTransformParentChanged()
+        {
+            CinemachineCore.Instance.CameraDisabled(this);
+            CinemachineCore.Instance.CameraEnabled(this);
+            UpdateSlaveStatus();
+            UpdateVcamPoolStatus();
+        }
+
+        /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
+        protected virtual void OnDestroy()
+        {
+            CinemachineCore.Instance.CameraDestroyed(this);
+        }
+
+        /// <summary>Derived classes should call base class implementation.</summary>
+        protected virtual void Start()
+        {
+            m_WasStarted = true;
+        }
+        
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
         {
@@ -570,9 +580,6 @@ namespace Unity.Cinemachine
             if (Priority.Value != m_QueuePriority)
                 UpdateVcamPoolStatus(); // Force a re-sort
         }
-
-        bool m_SlaveStatusUpdated = false;
-        CinemachineVirtualCameraBase m_ParentVcam = null;
 
         void UpdateSlaveStatus()
         {
@@ -693,14 +700,6 @@ namespace Unity.Cinemachine
             return state;
         }
 
-        Transform m_CachedFollowTarget;
-        CinemachineVirtualCameraBase m_CachedFollowTargetVcam;
-        ICinemachineTargetGroup m_CachedFollowTargetGroup;
-
-        Transform m_CachedLookAtTarget;
-        CinemachineVirtualCameraBase m_CachedLookAtTargetVcam;
-        ICinemachineTargetGroup m_CachedLookAtTargetGroup;
-
         void InvalidateCachedTargets()
         {
             m_CachedFollowTarget = null;
@@ -794,5 +793,25 @@ namespace Unity.Cinemachine
         /// <param name="stage">The stage for which we want the component</param>
         /// <returns>The Cinemachine component for that stage, or null if not present.</returns>
         public virtual CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage) => null;
+
+        /// <summary>Returns true if this camera is currently live for some CinemachineBrain.</summary>
+        public bool IsLive => CinemachineCore.Instance.IsLive(this);
+
+        /// <summary>Check to see whether this camera is currently participating in a blend 
+        /// within its parent manager or in a CinemacineBrain</summary>
+        /// <returns>True if the camera is participating in a blend</returns>
+        public bool IsParticipatingInBlend()
+        {
+            if (IsLive)
+            {
+                var parent = ParentCamera as CinemachineCameraManagerBase;
+                if (parent != null)
+                    return (parent.ActiveBlend != null && parent.ActiveBlend.Uses(this)) || parent.IsParticipatingInBlend();
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+                if (brain != null)
+                    return brain.ActiveBlend != null && brain.ActiveBlend.Uses(this);
+            }
+            return false;
+        }
     }
 }
