@@ -59,7 +59,6 @@ namespace Unity.Cinemachine.Editor
                     evt.StopPropagation();
                 }
             });
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
             foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
 
             ux.ContinuousUpdate(() =>

@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Editor
             var target = editor.target as CinemachineVirtualCameraBase; // capture for lambda
             soloButton.RegisterCallback<ClickEvent>(_ =>
             {
-                var isSolo = CinemachineBrain.SoloCamera != target;
+                var isSolo = CinemachineBrain.SoloCamera != (ICinemachineCamera)target;
                 CinemachineBrain.SoloCamera = isSolo ? target : null;
                 InspectorUtility.RepaintGameView();
             });
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine.Editor
                     if (target == null)
                         return;
 
-                    bool isSolo = CinemachineBrain.SoloCamera == target;
+                    bool isSolo = CinemachineBrain.SoloCamera == (ICinemachineCamera)target;
                     var color = isSolo ? Color.Lerp(normalColor, CinemachineBrain.GetSoloGUIColor(), 0.5f) : normalColor;
 
                     bool isLive = CinemachineCore.Instance.IsLive(target);
@@ -128,7 +128,7 @@ namespace Unity.Cinemachine.Editor
             // Kill solo when inspector shuts down
             ux.RegisterCallback<DetachFromPanelEvent>(_ =>
             {
-                if (target != null && CinemachineBrain.SoloCamera == target)
+                if (target != null && CinemachineBrain.SoloCamera == (ICinemachineCamera)target)
                 {
                     CinemachineBrain.SoloCamera = null;
                     InspectorUtility.RepaintGameView();
@@ -136,32 +136,18 @@ namespace Unity.Cinemachine.Editor
             });
         }
 
-        static bool s_TransitionsExpanded = false;
-
         public static void AddTransitionsSection(
             this UnityEditor.Editor editor, VisualElement ux, 
             List<SerializedProperty> otherProperties = null)
         {
             var serializedObject = editor.serializedObject;
             var target = editor.target as CinemachineVirtualCameraBase;
-
-            var foldout = ux.AddChild(new Foldout 
-            { 
-                value = s_TransitionsExpanded,
-                text = "Transition Settings", 
-                tooltip = "Settings to control how this camera interacts with other cameras" 
-            });
-            foldout.RegisterValueChangedCallback((evt) => 
-            {
-                if (evt.target == foldout)
-                    s_TransitionsExpanded = evt.newValue;
-            });
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
             if (otherProperties != null)
                 foreach (var p in otherProperties)
-                    foldout.Add(new PropertyField(p));
+                    ux.Add(new PropertyField(p));
         }
 
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>

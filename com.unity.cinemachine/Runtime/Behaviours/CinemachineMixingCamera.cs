@@ -60,9 +60,46 @@ namespace Unity.Cinemachine
         public float Weight7 = 0.5f;
 
 
-        CinemachineVirtualCameraBase m_LiveChild;
-        CameraState m_State = CameraState.Default;
+        CameraState m_CameraState = CameraState.Default;
         Dictionary<CinemachineVirtualCameraBase, int> m_IndexMap;
+        float m_LiveChildPercent;
+
+        /// <summary>Makes sure the weights are non-negative</summary>
+        void OnValidate()
+        {
+            for (int i = 0; i < MaxCameras; ++i)
+                SetWeight(i, Mathf.Max(0, GetWeight(i)));
+        }
+
+        /// <summary>Reset the component to default values.</summary>
+        protected override void Reset()
+        {
+            base.Reset();
+            for (var i = 0; i < MaxCameras; ++i)
+                SetWeight(i, i == 0 ? 1 : 0);
+        }
+        
+        /// <summary>The resulting CameraState for the current live child and blend</summary>
+        public override CameraState State => m_CameraState;
+
+        /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
+        public override string Description 
+        {
+            get
+            {
+                if (LiveChild == null)
+                    return "[(none)]";
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append("[");
+                sb.Append(LiveChild.Name);
+                sb.Append(" ");
+                sb.Append(Mathf.RoundToInt(m_LiveChildPercent));
+                sb.Append("%]");
+                var text = sb.ToString();
+                CinemachineDebug.ReturnToPool(sb);
+                return text;
+            }
+        }
 
         /// <summary>Get the weight of the child at an index.</summary>
         /// <param name="index">The child index. Only immediate CinemachineVirtualCameraBase
@@ -113,8 +150,6 @@ namespace Unity.Cinemachine
             UpdateCameraCache();
             if (m_IndexMap.TryGetValue(vcam, out var index))
                 return GetWeight(index);
-            Debug.LogError("CinemachineMixingCamera: Invalid child: "
-                + ((vcam != null) ? vcam.Name : "(null)"));
             return 0;
         }
 
@@ -131,33 +166,6 @@ namespace Unity.Cinemachine
                     + ((vcam != null) ? vcam.Name : "(null)"));
         }
 
-        /// <summary>Get the current "best" child virtual camera, that would be chosen
-        /// if the State Driven Camera were active.</summary>
-        public override ICinemachineCamera LiveChild => PreviousStateIsValid ? m_LiveChild : null;
-
-        /// <summary>
-        /// Get the current active blend in progress.  Will return null if no blend is in progress.
-        /// </summary>
-        public override CinemachineBlend ActiveBlend => null;
-
-        /// <summary>The State of the current live child</summary>
-        public override CameraState State => m_State;
-
-        /// <summary>Makes sure the weights are non-negative</summary>
-        void OnValidate()
-        {
-            for (int i = 0; i < MaxCameras; ++i)
-                SetWeight(i, Mathf.Max(0, GetWeight(i)));
-        }
-
-        /// <summary>Reset the component to default values.</summary>
-        protected override void Reset()
-        {
-            base.Reset();
-            for (var i = 0; i < MaxCameras; ++i)
-                SetWeight(i, i == 0 ? 1 : 0);
-        }
-
         /// <summary>Check whether the vcam a live child of this camera.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
@@ -165,7 +173,7 @@ namespace Unity.Cinemachine
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             if (dominantChildOnly)
-                return (ICinemachineCamera)m_LiveChild == vcam;
+                return LiveChild == vcam;
             var children = ChildCameras;
             for (int i = 0; i < MaxCameras && i < children.Count; ++i)
                 if ((ICinemachineCamera)children[i] == vcam)
@@ -208,16 +216,14 @@ namespace Unity.Cinemachine
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             UpdateCameraCache();
-            if (!PreviousStateIsValid)
-                m_LiveChild = null;
 
+            CinemachineVirtualCameraBase liveChild = null;
             var children = ChildCameras;
-            m_LiveChild = null;
             float highestWeight = 0;
             float totalWeight = 0;
             for (var i = 0; i < MaxCameras && i < children.Count; ++i)
             {
-                CinemachineVirtualCameraBase vcam = children[i];
+                var vcam = children[i];
                 if (vcam.isActiveAndEnabled)
                 {
                     float weight = Mathf.Max(0, GetWeight(i));
@@ -225,19 +231,22 @@ namespace Unity.Cinemachine
                     {
                         totalWeight += weight;
                         if (totalWeight == weight)
-                            m_State = vcam.State;
+                            m_CameraState = vcam.State;
                         else
-                            m_State = CameraState.Lerp(m_State, vcam.State, weight / totalWeight);
+                            m_CameraState = CameraState.Lerp(m_CameraState, vcam.State, weight / totalWeight);
 
                         if (weight > highestWeight)
                         {
                             highestWeight = weight;
-                            m_LiveChild = vcam;
+                            liveChild = vcam;
                         }
                     }
                 }
             }
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            m_LiveChildPercent = totalWeight > 0.001f ? (highestWeight * 100 / totalWeight) : 0;
+            SetLiveChild(liveChild, worldUp, deltaTime, null);
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_CameraState, deltaTime);
+            PreviousStateIsValid = true;
         }
     }
 }

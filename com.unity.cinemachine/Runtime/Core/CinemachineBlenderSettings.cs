@@ -101,5 +101,38 @@ namespace Unity.Cinemachine
 
             return defaultBlend;
         }
+
+        /// <summary>
+        /// Create a blend curve for blending from one ICinemachineCamera to another.
+        /// If there is a specific blend defined for these cameras it will be used, otherwise
+        /// a default blend will be created, which could be a cut.
+        /// 
+        /// CinemachineCore.GetBlendOverride will be called at the end, so that the
+        /// client may override the choice of blend.
+        /// </summary>
+        /// <param name="fromKey">The game object name of the from camera</param>
+        /// <param name="toKey">The game object name of the to camera</param>
+        /// <param name="defaultBlend">Blend to return if no custom blend found.</param>
+        /// <param name="customBlends">The custom blends asset to search, or null.</param>
+        /// <param name="owner">The object that is requesting the blend, for 
+        /// GetBlendOverride callback context.</param>
+        public static CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera fromKey, ICinemachineCamera toKey,
+            CinemachineBlendDefinition defaultBlend,
+            CinemachineBlenderSettings customBlends,
+            UnityEngine.Object owner)
+        {
+            // Get the blend curve that's most appropriate for these cameras
+            CinemachineBlendDefinition blend = defaultBlend;
+            if (customBlends != null)
+            {
+                string fromCameraName = (fromKey != null) ? fromKey.Name : string.Empty;
+                string toCameraName = (toKey != null) ? toKey.Name : string.Empty;
+                blend = customBlends.GetBlendForVirtualCameras(fromCameraName, toCameraName, blend);
+            }
+            if (CinemachineCore.GetBlendOverride != null)
+                blend = CinemachineCore.GetBlendOverride(fromKey, toKey, blend, owner);
+            return blend;
+        }
     }
 }

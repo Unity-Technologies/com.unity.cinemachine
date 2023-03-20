@@ -71,7 +71,7 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             // Screen guides
-            bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
+            bool isLive = targets.Length <= 1 && brain.IsLiveChild(vcam, true);
             m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
 
             // Draw an on-screen gizmo for the target

@@ -51,26 +51,18 @@ namespace Unity.Cinemachine
         {
             get
             {
-                var sb = CinemachineDebug.SBFromPool();
                 if (CamB == null || !CamB.IsValid)
-                    sb.Append("(none)");
-                else
-                {
-                    sb.Append("[");
-                    sb.Append(CamB.Name);
-                    sb.Append("]");
-                }
+                    return "(none)";
+
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append(CamB.Name);
                 sb.Append(" ");
                 sb.Append((int)(BlendWeight * 100f));
                 sb.Append("% from ");
                 if (CamA == null || !CamA.IsValid)
                     sb.Append("(none)");
                 else
-                {
-                    sb.Append("[");
                     sb.Append(CamA.Name);
-                    sb.Append("]");
-                }
                 string text = sb.ToString();
                 CinemachineDebug.ReturnToPool(sb);
                 return text;
@@ -143,6 +135,15 @@ namespace Unity.Cinemachine
     [Serializable]
     public struct CinemachineBlendDefinition
     {
+        /// <summary>
+        /// Delegate for finding a blend definition to use when blending between 2 cameras.
+        /// </summary>
+        /// <param name="fromKey">The outgoing camera</param>
+        /// <param name="toKey">The incoming camera</param>
+        /// <returns>An approprate blend definition,.  Must not be null.</returns>
+        public delegate CinemachineBlendDefinition LookupBlendDelegate(
+            ICinemachineCamera fromKey, ICinemachineCamera toKey);
+
         /// <summary>Supported predefined shapes for the blend curve.</summary>
         public enum Styles
         {
@@ -264,16 +265,11 @@ namespace Unity.Cinemachine
 
         public string Name { get; private set; }
         public string Description => string.Empty;
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public bool IsValid => true;
-        public ICinemachineCamera ParentCamera => null;
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
+        public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
     }
 
     /// <summary>
@@ -286,16 +282,11 @@ namespace Unity.Cinemachine
         public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
 
-        public string Name => "Mid-blend";
+        public string Name => Blend == null ? "(null)" : Blend.CamB.Name + " mid-blend";
         public string Description => Blend == null ? "(null)" : Blend.Description;
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
-        public ICinemachineCamera ParentCamera => null;
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
-            => Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB);
-        public CameraState CalculateNewState(float deltaTime) => State;
+        public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (Blend != null)
@@ -304,8 +295,6 @@ namespace Unity.Cinemachine
                 State = Blend.State;
             }
         }
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
     }
 }

@@ -45,9 +45,17 @@ namespace Unity.Cinemachine
             + "Unity camera when the vcam is active.")]
         public LensSettings Lens = LensSettings.Default;
 
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from
-        /// other virtual cameras </summary>
-        public TransitionParams Transitions;
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// make an arbitrary choice.</summary>
+        [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
+            + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+            + "make an arbitrary choice.")]
+        public CinemachineCore.BlendHints BlendHint;
+
+        /// <summary>This event fires when a transition occurs.</summary>
+        [Tooltip("This event fires when a transition occurs")]
+        public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
         
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
@@ -64,7 +72,7 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+            public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLive;
         }
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
@@ -81,19 +89,19 @@ namespace Unity.Cinemachine
                 if (m_LegacyTransitions.m_BlendHint != 0)
                 {
                     if (m_LegacyTransitions.m_BlendHint == 3)
-                        Transitions.BlendHint = TransitionParams.BlendHints.ScreenSpaceAimWhenTargetsDiffer;
+                        BlendHint = CinemachineCore.BlendHints.ScreenSpaceAimWhenTargetsDiffer;
                     else
-                        Transitions.BlendHint = (TransitionParams.BlendHints)m_LegacyTransitions.m_BlendHint;
+                        BlendHint = (CinemachineCore.BlendHints)m_LegacyTransitions.m_BlendHint;
                     m_LegacyTransitions.m_BlendHint = 0;
                 }
                 if (m_LegacyTransitions.m_InheritPosition)
                 {
-                    Transitions.BlendHint |= TransitionParams.BlendHints.InheritPosition;
+                    BlendHint |= CinemachineCore.BlendHints.InheritPosition;
                     m_LegacyTransitions.m_InheritPosition = false;
                 }
                 if (m_LegacyTransitions.m_OnCameraLive != null)
                 {
-                    Transitions.Events.OnCameraLive = m_LegacyTransitions.m_OnCameraLive;
+                    m_OnCameraLiveEvent = m_LegacyTransitions.m_OnCameraLive;
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
@@ -133,11 +141,6 @@ namespace Unity.Cinemachine
             set { m_Follow = value; }
         }
 
-        
-        /// <summary>Returns the TransitionParams settings</summary>
-        /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => Transitions;
-
         /// <summary>
         /// Query components and extensions for the maximum damping time.
         /// </summary>
@@ -167,7 +170,7 @@ namespace Unity.Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            m_State.BlendHint = (CameraState.BlendHintValue)Transitions.BlendHint;
+            m_State.BlendHint = (CameraState.BlendHints)BlendHint;
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -565,8 +568,7 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = true;
-            transform.position = pos;
-            transform.rotation = rot;
+            transform.SetPositionAndRotation(pos, rot);
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
@@ -592,16 +594,17 @@ namespace Unity.Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
-            if (Transitions.InheritPosition && fromCam != null
-                 && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if (fromCam != null
+                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && !CinemachineCore.Instance.IsLiveInBlend(this))
+            {
                 ForceCameraPosition(fromCam.State.GetFinalPosition(), fromCam.State.GetFinalOrientation());
-
+            }
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             if (m_ComponentPipeline != null)
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
-                    if (m_ComponentPipeline[i].OnTransitionFromCamera(
-                            fromCam, worldUp, deltaTime, ref Transitions))
+                    if (m_ComponentPipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime))
                         forceUpdate = true;
             }
             if (forceUpdate)
@@ -611,8 +614,7 @@ namespace Unity.Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (Transitions.Events.OnCameraLive != null)
-                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
+            m_OnCameraLiveEvent?.Invoke(this, fromCam);
         }
         
         /// <summary>Tells whether this vcam requires input.</summary>

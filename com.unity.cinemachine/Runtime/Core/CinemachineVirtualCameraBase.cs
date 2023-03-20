@@ -26,7 +26,8 @@ namespace Unity.Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
+    public abstract class CinemachineVirtualCameraBase 
+        : MonoBehaviour, ICinemachineCamera, ICinemachineMixer
     {
         /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
@@ -319,9 +320,8 @@ namespace Unity.Cinemachine
                         e.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
                 }
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
-            if (parent != null)
-                parent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
         }
         
         /// <summary>
@@ -352,9 +352,8 @@ namespace Unity.Cinemachine
                         e.PrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
                 }
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
-            if (parent != null)
-                parent.InvokePrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.InvokePrePipelineMutateCameraStateCallback(vcam, ref newState, deltaTime);
         }
 
         /// <summary>
@@ -428,7 +427,7 @@ namespace Unity.Cinemachine
         /// virtual camera is in fact the public face of a private army of virtual cameras, which
         /// it manages on its own.  This method gets the VirtualCamera owner, if any.
         /// Private armies are implemented as Transform children of the parent vcam.</summary>
-        public ICinemachineCamera ParentCamera
+        public ICinemachineMixer ParentCamera
         {
             get
             {
@@ -437,10 +436,6 @@ namespace Unity.Cinemachine
                 return m_ParentVcam;
             }
         }
-
-        /// <summary>Returns the camera's TransitionParams settings</summary>
-        /// <returns>The camera's TransitionParams settings</returns>
-        public abstract TransitionParams GetTransitionParams();
 
         /// <summary>Check whether the vcam a live child of this camera.
         /// This base class implementation always returns false.</summary>
@@ -479,6 +474,14 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
+        /// <inheritdoc />
+        public virtual void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) 
+        {
+            if (evt.IncomingCamera == (ICinemachineCamera)this)
+                OnTransitionFromCamera(evt.OutgoingCamera, evt.WorldUp, evt.DeltaTime);
+        }
+
+        // GML todo: get rid of OnTransitionFromCamera
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -597,8 +600,8 @@ namespace Unity.Cinemachine
         public Transform ResolveLookAt(Transform localLookAt)
         {
             Transform lookAt = localLookAt;
-            if (lookAt == null && ParentCamera != null)
-                lookAt = ParentCamera.LookAt; // Parent provides default
+            if (lookAt == null && ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                lookAt = vcamParent.LookAt; // Parent provides default
             return lookAt;
         }
 
@@ -609,8 +612,8 @@ namespace Unity.Cinemachine
         public Transform ResolveFollow(Transform localFollow)
         {
             Transform follow = localFollow;
-            if (follow == null && ParentCamera != null)
-                follow = ParentCamera.Follow; // Parent provides default
+            if (follow == null && ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                follow = vcamParent.Follow; // Parent provides default
             return follow;
         }
 
@@ -659,9 +662,8 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < Extensions.Count; ++i)
                     Extensions[i].OnTargetObjectWarped(vcam, target, positionDelta);
             }
-            var parent = ParentCamera as CinemachineVirtualCameraBase;
-            if (parent != null)
-                parent.OnTargetObjectWarped(vcam, target, positionDelta);
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.OnTargetObjectWarped(vcam, target, positionDelta);
         }
 
         /// <summary>

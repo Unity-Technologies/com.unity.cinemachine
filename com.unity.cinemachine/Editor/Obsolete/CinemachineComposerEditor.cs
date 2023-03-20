@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
         {
             m_GameViewGuides.GetComposition = () => Target.Composition;
             m_GameViewGuides.SetComposition = (s) => Target.Composition = s;
-            m_GameViewGuides.Target = () => { return serializedObject; };
+            m_GameViewGuides.Target = () => serializedObject;
             m_GameViewGuides.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
@@ -65,11 +65,11 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             var vcam = Target.VirtualCamera;
-            if (!brain.IsLive(vcam))
+            if (!brain.IsLiveChild(vcam))
                 return;
 
             // Screen guides
-            bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
+            bool isLive = targets.Length <= 1 && brain.IsLiveChild(vcam, true);
             m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
 
             // Draw an on-screen gizmo for the target

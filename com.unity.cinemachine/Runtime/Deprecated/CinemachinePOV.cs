@@ -206,17 +206,16 @@ namespace Unity.Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref TransitionParams transitionParams)
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, -1, 0);
             m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, -1, 0);
             m_HorizontalRecentering.CancelRecentering();
             m_VerticalRecentering.CancelRecentering();
-            if (fromCam != null && transitionParams.InheritPosition  
+            if (fromCam != null 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
