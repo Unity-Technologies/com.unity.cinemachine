@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - New IgnoreTarget blend hint will blend rotations without considering the tracking target.
+- InputAxisController has the option to suppress input while the attached camera is blending.
 
 ### Changed
 - All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
@@ -24,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Full physical camera support for builtin pipeline.
 - LensPresets and PhysicalLensPresets are now separate assets.
 - CinemachineInputAxisController refactored to be more easily customized.
+- Samples are compatible with Built-in, Universal, and High Definition Render Pipelines.
 - CinemachineUpgradeManager re-opens original scene after upgrade is complete.
 
 

@@ -73,9 +73,9 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_Lens")]
         LegacyLensSettings m_LegacyLens;
 
-        internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {
-            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
+            base.PerformLegacyUpgrade(streamedVersion);
             if (streamedVersion < 20221011)
             {
                 if (m_LegacyTransitions.m_BlendHint != 0)

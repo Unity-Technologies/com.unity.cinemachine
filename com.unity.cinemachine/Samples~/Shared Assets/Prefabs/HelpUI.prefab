@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9138370430051789472
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2451271811042757136}
+  - component: {fileID: 6712450386776849522}
+  - component: {fileID: 6668015293666917239}
+  m_Layer: 5
+  m_Name: HelpUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2451271811042757136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9138370430051789472}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6712450386776849522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9138370430051789472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: e1340a64b3dbc4c60a6d59ca2fc83df8, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 625ec32eada784ffa8da2d56a8bd43c2,
+    type: 3}
+  m_SortingOrder: 0
+--- !u!114 &6668015293666917239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9138370430051789472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be49d5e8cf7024d6b8f8d5b9872c0f91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VisibleAtStart: 0
+  HelpTitle: 
+  HelpText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Turpis massa tincidunt dui
+    ut ornare lectus sit amet est. Cum sociis natoque penatibus et magnis dis. Erat
+    velit scelerisque in dictum non consectetur a. Purus sit amet luctus venenatis
+    lectus magna fringilla urna porttitor. Fames ac turpis egestas sed tempus. Sed
+    lectus vestibulum mattis ullamcorper velit. Pretium fusce id velit ut tortor
+    pretium. Gravida rutrum quisque non tellus orci ac auctor augue. Gravida in fermentum
+    et sollicitudin ac. Leo integer malesuada nunc vel risus. Cursus sit amet dictum
+    sit.
+
+
+    Vel orci porta non pulvinar neque laoreet suspendisse. Nulla aliquet
+    enim tortor at auctor. Condimentum id venenatis a condimentum vitae sapien pellentesque
+    habitant morbi. Varius vel pharetra vel turpis nunc. Cursus in hac habitasse
+    platea dictumst quisque sagittis purus sit. Augue eget arcu dictum varius. Pretium
+    quam vulputate dignissim suspendisse in. Tempor orci dapibus ultrices in. In
+    hac habitasse platea dictumst. Maecenas volutpat blandit aliquam etiam erat velit
+    scelerisque. Risus feugiat in ante metus dictum at tempor commodo. Eu tincidunt
+    tortor aliquam nulla facilisi cras fermentum odio eu. Vitae semper quis lectus
+    nulla at. Enim nunc faucibus a pellentesque sit amet. Orci dapibus ultrices in
+    iaculis nunc sed augue lacus. Enim eu turpis egestas pretium aenean pharetra
+    magna ac.
+
+
+    Quam pellentesque nec nam aliquam sem et tortor consequat id.
+    Erat velit scelerisque in dictum non consectetur a. Venenatis a condimentum vitae
+    sapien pellentesque habitant morbi tristique. Dignissim sodales ut eu sem integer.
+    Sed nisi lacus sed viverra tellus. Platea dictumst vestibulum rhoncus est pellentesque
+    elit ullamcorper dignissim cras. Nam at lectus urna duis. Quis viverra nibh cras
+    pulvinar mattis nunc. Est ullamcorper eget nulla facilisi. Congue mauris rhoncus
+    aenean vel elit. Facilisis magna etiam tempor orci eu lobortis elementum. Quis
+    lectus nulla at volutpat diam ut venenatis tellus. Vel risus commodo viverra
+    maecenas accumsan lacus vel facilisis volutpat. Enim blandit volutpat maecenas
+    volutpat blandit aliquam. Interdum velit euismod in pellentesque massa placerat
+    duis. Sit amet porttitor eget dolor morbi non. Turpis egestas pretium aenean
+    pharetra magna ac placerat vestibulum lectus. Dolor purus non enim praesent elementum
+    facilisis leo. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing.
+
+
+    Porta
+    nibh venenatis cras sed felis eget. Tortor at risus viverra adipiscing at in
+    tellus integer. Sit amet consectetur adipiscing elit. Urna condimentum mattis
+    pellentesque id nibh tortor id. Et tortor consequat id porta nibh venenatis cras
+    sed. Non sodales neque sodales ut etiam sit amet. Auctor neque vitae tempus quam
+    pellentesque nec nam aliquam sem. Aliquet risus feugiat in ante. Id semper risus
+    in hendrerit gravida rutrum quisque. Arcu ac tortor dignissim convallis aenean
+    et tortor at. Scelerisque eleifend donec pretium vulputate sapien nec sagittis
+    aliquam malesuada. Parturient montes nascetur ridiculus mus. Turpis egestas pretium
+    aenean pharetra magna ac. Phasellus egestas tellus rutrum tellus pellentesque
+    eu tincidunt. Eu consequat ac felis donec. Turpis massa sed elementum tempus
+    egestas sed sed risus.
+
+
+    Pharetra diam sit amet nisl suscipit adipiscing
+    bibendum. Suspendisse faucibus interdum posuere lorem ipsum dolor sit. Enim sit
+    amet venenatis urna cursus eget nunc. Metus vulputate eu scelerisque felis imperdiet
+    proin fermentum leo. Vitae justo eget magna fermentum iaculis eu. Ultricies integer
+    quis auctor elit sed. Elit eget gravida cum sociis natoque penatibus et magnis
+    dis. Sit amet mauris commodo quis. Mi tempus imperdiet nulla malesuada pellentesque
+    elit eget gravida cum. Molestie at elementum eu facilisis sed. Nulla pharetra
+    diam sit amet. Dolor sed viverra ipsum nunc aliquet bibendum. Ullamcorper malesuada
+    proin libero nunc consequat interdum. Gravida dictum fusce ut placerat orci.
+    Pellentesque massa placerat duis ultricies lacus sed turpis. Blandit aliquam
+    etiam erat velit scelerisque in dictum non consectetur. Sit amet massa vitae
+    tortor condimentum.'

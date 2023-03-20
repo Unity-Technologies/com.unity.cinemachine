@@ -62,7 +62,7 @@ namespace Unity.Cinemachine
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineTargetGroup.html")]
-    public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup, ISerializationCallbackReceiver
+    public class CinemachineTargetGroup : MonoBehaviour, ICinemachineTargetGroup
     {
         /// <summary>Holds the information that represents a member of the group</summary>
         [Serializable] public class Target
@@ -171,16 +171,12 @@ namespace Unity.Cinemachine
         [SerializeField, FormerlySerializedAs("m_Targets")]
         Target[] m_LegacyTargets;
 
-        /// <summary>Post-Serialization handler - performs legacy upgrade</summary>
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        void Awake()
         {
             if (m_LegacyTargets != null && m_LegacyTargets.Length > 0)
                 Targets.AddRange(m_LegacyTargets);
             m_LegacyTargets = null;
         }
-
-        /// <summary>Pre-Serialization handler - this implementation does nothing</summary>
-        void ISerializationCallbackReceiver.OnBeforeSerialize() {}
 
         /// <summary>Obsolete Targets</summary>
         [Obsolete("m_Targets is obsolete.  Please use Targets instead")]
