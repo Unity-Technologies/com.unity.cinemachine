@@ -65,13 +65,15 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_WorldUpOverride")]
         public Transform WorldUpOverride;
 
-        /// <summary>The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to any of the channels selected. 
-        /// CinemachineCameras that do not output to one of these channels will be ignored.  Use this in situations where multiple
-        /// CinemachineBrains are needed (for example, Split-screen).</summary>
-        [Tooltip("The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to any of the channels selected. "
-            + "CinemachineCameras that do not output to one of these channels will be ignored.  Use this in situations "
-            + "where multiple CinemachineBrains are needed (for example, Split-screen).")]
-        public OutputChannel.Channels ChannelMask = OutputChannel.Channels.Default;
+        /// <summary>The CinemachineBrain will find the highest-priority CinemachineCamera that outputs 
+        /// to any of the channels selected.  CinemachineCameras that do not output to one of these 
+        /// channels will be ignored.  Use this in situations where multiple CinemachineBrains are 
+        /// needed (for example, Split-screen).</summary>
+        [Tooltip("The CinemachineBrain will find the highest-priority CinemachineCamera that outputs to "
+            + "any of the channels selected.  CinemachineCameras that do not output to one of these "
+            + "channels will be ignored.  Use this in situations where multiple CinemachineBrains are "
+            + "needed (for example, Split-screen).")]
+        public OutputChannel.Channels ChannelMask = (OutputChannel.Channels)(-1);  // default is Everything
 
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -170,7 +172,7 @@ namespace Unity.Cinemachine
             ShowCameraFrustum = true;
             IgnoreTimeScale = false;
             WorldUpOverride = null;
-            ChannelMask = OutputChannel.Channels.Default;
+            ChannelMask = (OutputChannel.Channels)(-1);
             UpdateMethod = UpdateMethods.SmartUpdate;
             BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
             LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
