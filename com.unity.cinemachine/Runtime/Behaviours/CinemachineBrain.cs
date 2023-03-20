@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -153,12 +154,10 @@ namespace Unity.Cinemachine
         GameObject m_TargetOverride = null; // never use directly - use accessor
 
         int m_LastFrameUpdated;
-
         Coroutine m_PhysicsCoroutine;
         readonly WaitForFixedUpdate m_WaitForFixedUpdate = new ();
-
         readonly BlendManager m_BlendManager = new ();
-
+        static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
 
         void OnValidate()
@@ -195,7 +194,7 @@ namespace Unity.Cinemachine
         {
             m_BlendManager.OnEnable(this);
 
-            CameraUpdateManager.AddActiveBrain(this);
+            s_ActiveBrains.Add(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 
@@ -212,7 +211,7 @@ namespace Unity.Cinemachine
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            CameraUpdateManager.RemoveActiveBrain(this);
+            s_ActiveBrains.Remove(this);
 
             m_BlendManager.OnDisable();
             StopCoroutine(m_PhysicsCoroutine);
@@ -362,6 +361,17 @@ namespace Unity.Cinemachine
                 return IsLiveChild(parent, dominantChildOnly);
             return false;
         }
+
+        // ============ Global Brain cache ================
+
+        /// <summary>Access the array of active CinemachineBrains in the scene</summary>
+        public static int ActiveBrainCount => s_ActiveBrains.Count;
+
+        /// <summary>Access the array of active CinemachineBrains in the scene
+        /// without generating garbage</summary>
+        /// <param name="index">Index of the brain to access, range 0-ActiveBrainCount</param>
+        /// <returns>The brain at the specified index</returns>
+        public static CinemachineBrain GetActiveBrain(int index) => s_ActiveBrains[index];
 
         // ============================
 

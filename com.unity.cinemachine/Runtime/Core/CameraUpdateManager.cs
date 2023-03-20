@@ -10,9 +10,6 @@ namespace Unity.Cinemachine
     /// been updated each frame.</summary>
     internal sealed class CameraUpdateManager
     {
-        /// <summary>List of all active CinemachineBrains.</summary>
-        static readonly List<CinemachineBrain> s_ActiveBrains = new ();
-
         /// <summary>List of all active ICinemachineCameras.</summary>
         static readonly List<CinemachineVirtualCameraBase> s_ActiveCameras = new ();
 
@@ -47,26 +44,6 @@ namespace Unity.Cinemachine
             SmartLate = Smart | Late
         }
         internal static UpdateFilter s_CurrentUpdateFilter;
-
-        /// <summary>Access the array of active CinemachineBrains in the scene</summary>
-        public static int BrainCount => s_ActiveBrains.Count;
-
-        /// <summary>Access the array of active CinemachineBrains in the scene
-        /// without generating garbage</summary>
-        /// <param name="index">Index of the brain to access, range 0-BrainCount</param>
-        /// <returns>The brain at the specified index</returns>
-        public static CinemachineBrain GetActiveBrain(int index) => s_ActiveBrains[index];
-
-        /// <summary>Called when a CinemachineBrain is enabled.</summary>
-        internal static void AddActiveBrain(CinemachineBrain brain)
-        {
-            // First remove it, just in case it's being added twice
-            RemoveActiveBrain(brain);
-            s_ActiveBrains.Insert(0, brain);
-        }
-
-        /// <summary>Called when a CinemachineBrain is disabled.</summary>
-        internal static void RemoveActiveBrain(CinemachineBrain brain) => s_ActiveBrains.Remove(brain);
        
         /// <summary>
         /// List of all active CinemachineCameras for all brains.

@@ -301,8 +301,8 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         static CinemachineBrain GetOrCreateBrain()
         {
-            if (CinemachineCore.BrainCount > 0)
-                return CinemachineCore.GetActiveBrain(0);
+            if (CinemachineBrain.ActiveBrainCount > 0)
+                return CinemachineBrain.GetActiveBrain(0);
 
             // Create a CinemachineBrain on the main camera
             var cam = Camera.main;

@@ -153,15 +153,6 @@ namespace Unity.Cinemachine
         /// <summary>This event will fire when the current camera changes, at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
 
-        /// <summary>Access the array of active CinemachineBrains in the scene</summary>
-        public static int BrainCount => CameraUpdateManager.BrainCount;
-        
-        /// <summary>Access the array of active CinemachineBrains in the scene
-        /// without generating garbage</summary>
-        /// <param name="index">Index of the brain to access, range 0-BrainCount</param>
-        /// <returns>The brain at the specified index</returns>
-        public static CinemachineBrain GetActiveBrain(int index) => CameraUpdateManager.GetActiveBrain(index);
-
         /// <summary>
         /// List of all active CinemachineCameras for all brains.
         /// This list is kept sorted by priority.
@@ -207,10 +198,10 @@ namespace Unity.Cinemachine
         {
             if (vcam != null)
             {
-                int numBrains = CameraUpdateManager.BrainCount;
+                int numBrains = CinemachineBrain.ActiveBrainCount;
                 for (int i = 0; i < numBrains; ++i)
                 {
-                    var b = CameraUpdateManager.GetActiveBrain(i);
+                    var b = CinemachineBrain.GetActiveBrain(i);
                     if (b != null && b.IsLiveChild(vcam))
                         return true;
                 }
@@ -228,10 +219,10 @@ namespace Unity.Cinemachine
         {
             if (vcam != null)
             {
-                int numBrains = CameraUpdateManager.BrainCount;
+                int numBrains = CinemachineBrain.ActiveBrainCount;
                 for (int i = 0; i < numBrains; ++i)
                 {
-                    var b = CameraUpdateManager.GetActiveBrain(i);
+                    var b = CinemachineBrain.GetActiveBrain(i);
                     if (b != null && b.IsLiveInBlend(vcam))
                         return true;
                 }
@@ -256,10 +247,10 @@ namespace Unity.Cinemachine
             if (vcam != null)
             {
                 // If it's live in some brain, that's good enough for us
-                int numBrains = CameraUpdateManager.BrainCount;
+                int numBrains = CinemachineBrain.ActiveBrainCount;
                 for (int i = 0; i < numBrains; ++i)
                 {
-                    var b = GetActiveBrain(i);
+                    var b = CinemachineBrain.GetActiveBrain(i);
                     if (b != null && b.OutputCamera != null && b.IsLiveChild(vcam))
                         return b;
                 }
@@ -267,7 +258,7 @@ namespace Unity.Cinemachine
                 var channel = (uint)vcam.OutputChannel.Value;
                 for (int i = 0; i < numBrains; ++i)
                 {
-                    var b = GetActiveBrain(i);
+                    var b = CinemachineBrain.GetActiveBrain(i);
                     if (b != null && b.OutputCamera != null && ((uint)b.ChannelMask & channel) != 0)
                         return b;
                 }

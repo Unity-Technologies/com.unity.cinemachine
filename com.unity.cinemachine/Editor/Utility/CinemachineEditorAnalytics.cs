@@ -73,7 +73,7 @@ namespace Unity.Cinemachine.Editor
 
             var projectData = new ProjectData
             {
-                brain_count = CinemachineCore.BrainCount,
+                brain_count = CinemachineBrain.ActiveBrainCount,
                 vcam_count = CinemachineCore.VirtualCameraCount,
                 cam_count = Camera.allCamerasCount,
                 vcams = vcamDatas,

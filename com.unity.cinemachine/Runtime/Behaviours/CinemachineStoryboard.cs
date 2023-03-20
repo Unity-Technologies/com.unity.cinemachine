@@ -275,10 +275,10 @@ namespace Unity.Cinemachine
 
         void DestroyCanvas()
         {
-            int numBrains = CinemachineCore.BrainCount;
+            int numBrains = CinemachineBrain.ActiveBrainCount;
             for (int i = 0; i < numBrains; ++i)
             {
-                var parent = CinemachineCore.GetActiveBrain(i);
+                var parent = CinemachineBrain.GetActiveBrain(i);
                 int numChildren = parent.transform.childCount;
                 for (int j = numChildren - 1; j >= 0; --j)
                 {

@@ -10,8 +10,8 @@ namespace Unity.Cinemachine.Editor
         public override void OnCreate(TrackAsset track, TrackAsset copiedFrom)
         {
             base.OnCreate(track, copiedFrom);
-            if (CinemachineCore.BrainCount == 1)
-                TimelineEditor.inspectedDirector.SetGenericBinding(track, CinemachineCore.GetActiveBrain(0));
+            if (CinemachineBrain.ActiveBrainCount == 1)
+                TimelineEditor.inspectedDirector.SetGenericBinding(track, CinemachineBrain.GetActiveBrain(0));
         }
     }
 }
