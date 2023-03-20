@@ -182,7 +182,7 @@ namespace Unity.Cinemachine
         {
             if (fromCam != null 
                 && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
                 m_prevRotation = fromCam.State.RawOrientation;

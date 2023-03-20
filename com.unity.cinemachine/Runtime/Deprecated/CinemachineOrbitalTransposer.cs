@@ -283,7 +283,7 @@ namespace Unity.Cinemachine
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
                         ref orbital.m_RecenterToTargetHeading,
-                        CinemachineCore.Instance.IsLive(orbital.VirtualCamera));
+                        CinemachineCore.IsLive(orbital.VirtualCamera));
                 };
 
         /// <summary>
@@ -422,7 +422,7 @@ namespace Unity.Cinemachine
             if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != BindingMode.LazyFollow
                 && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);
                 return true;

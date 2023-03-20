@@ -96,7 +96,7 @@ namespace Unity.Cinemachine.Editor
             if (target.IsValid && !target.HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                Gizmos.color = CinemachineCore.IsLive(target.VirtualCamera)
                     ? CinemachineCorePrefs.ActiveGizmoColour.Value
                     : CinemachineCorePrefs.InactiveGizmoColour.Value;
 

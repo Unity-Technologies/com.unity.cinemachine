@@ -176,7 +176,7 @@ namespace Unity.Cinemachine
 
             // Can't inherit position if already live, because there will be a pop
             if ((State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
+                && fromCam != null && !CinemachineCore.IsLiveInBlend(this))
             {
                 var state = fromCam.State;
                 ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());

@@ -117,7 +117,7 @@ namespace Unity.Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
 #if CINEMACHINE_HDRP
-            if (FocusTarget != FocusTrackingMode.ScreenCenter || !CinemachineCore.Instance.IsLive(vcam))
+            if (FocusTarget != FocusTrackingMode.ScreenCenter || !CinemachineCore.IsLive(vcam))
                 ReleaseFocusVolume();
 #endif
             // Set the focus after the camera has been fully positioned
@@ -200,7 +200,7 @@ namespace Unity.Cinemachine
             }
             if (m_CustomPassVolume == null)
             {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+                var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
                 var cam = brain == null ? null : brain.OutputCamera;
                 if (cam != null)
                 {

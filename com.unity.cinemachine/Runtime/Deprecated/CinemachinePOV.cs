@@ -130,7 +130,7 @@ namespace Unity.Cinemachine
                 return;
 
             // Only read joystick when game is playing
-            if (deltaTime >= 0 && (!VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera)))
+            if (deltaTime >= 0 && (!VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)))
                 deltaTime = -1;
             if (deltaTime >= 0)
             {
@@ -216,7 +216,7 @@ namespace Unity.Cinemachine
             m_VerticalRecentering.CancelRecentering();
             if (fromCam != null 
                 && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
                 return true;

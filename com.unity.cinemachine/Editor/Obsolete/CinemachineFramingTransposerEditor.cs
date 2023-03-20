@@ -41,7 +41,7 @@ namespace Unity.Cinemachine.Editor
             }
             else
             {
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
+                CinemachineBrain brain = CinemachineCore.FindPotentialTargetBrain(Target.VirtualCamera);
                 bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
                 if (ortho)
                 {
@@ -129,7 +129,7 @@ namespace Unity.Cinemachine.Editor
             if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
-            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.BrainCount > 1))
                 return;
 
             var vcam = Target.VirtualCamera;

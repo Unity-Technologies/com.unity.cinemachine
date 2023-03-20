@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Editor
         static void AdoptGameViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
-            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
             if (brain != null)
             {
                 vcam.Lens = brain.State.Lens;

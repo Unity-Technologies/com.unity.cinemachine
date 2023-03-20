@@ -451,7 +451,7 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
-            CinemachineCore.Instance.UpdateVirtualCamera(this, worldUp, deltaTime);
+            CameraUpdateManager.UpdateVirtualCamera(this, worldUp, deltaTime);
         }
 
         /// <summary>Internal use only.  Do not call this method.
@@ -517,8 +517,8 @@ namespace Unity.Cinemachine
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
         protected virtual void OnTransformParentChanged()
         {
-            CinemachineCore.Instance.CameraDisabled(this);
-            CinemachineCore.Instance.CameraEnabled(this);
+            CameraUpdateManager.CameraDisabled(this);
+            CameraUpdateManager.CameraEnabled(this);
             UpdateSlaveStatus();
             UpdateVcamPoolStatus();
         }
@@ -526,7 +526,7 @@ namespace Unity.Cinemachine
         /// <summary>Maintains the global vcam registry.  Always call the base class implementation.</summary>
         protected virtual void OnDestroy()
         {
-            CinemachineCore.Instance.CameraDestroyed(this);
+            CameraUpdateManager.CameraDestroyed(this);
         }
 
         /// <summary>Derived classes should call base class implementation.</summary>
@@ -540,9 +540,9 @@ namespace Unity.Cinemachine
         {
             UpdateSlaveStatus();
             UpdateVcamPoolStatus();    // Add to queue
-            if (!CinemachineCore.Instance.IsLive(this))
+            if (!CinemachineCore.IsLive(this))
                 PreviousStateIsValid = false;
-            CinemachineCore.Instance.CameraEnabled(this);
+            CameraUpdateManager.CameraEnabled(this);
             InvalidateCachedTargets();
             // Sanity check - if another vcam component is enabled, shut down
             var vcamComponents = GetComponents<CinemachineVirtualCameraBase>();
@@ -562,7 +562,7 @@ namespace Unity.Cinemachine
         protected virtual void OnDisable()
         {
             UpdateVcamPoolStatus();    // Remove from queue
-            CinemachineCore.Instance.CameraDisabled(this);
+            CameraUpdateManager.CameraDisabled(this);
         }
 
         /// <summary>Base class implementation makes sure the priority queue remains up-to-date.</summary>
@@ -607,9 +607,9 @@ namespace Unity.Cinemachine
 
         void UpdateVcamPoolStatus()
         {
-            CinemachineCore.Instance.RemoveActiveCamera(this);
+            CameraUpdateManager.RemoveActiveCamera(this);
             if (m_ParentVcam == null && isActiveAndEnabled)
-                CinemachineCore.Instance.AddActiveCamera(this);
+                CameraUpdateManager.AddActiveCamera(this);
             m_QueuePriority = Priority.Value;
         }
 
@@ -682,7 +682,7 @@ namespace Unity.Cinemachine
             state.RawOrientation = TargetPositionCache.GetTargetRotation(transform);
             state.ReferenceUp = worldUp;
 
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+            CinemachineBrain brain = CinemachineCore.FindPotentialTargetBrain(this);
             if (brain != null && brain.OutputCamera != null)
                 lens.PullInheritedPropertiesFromCamera(brain.OutputCamera);
 
@@ -785,7 +785,7 @@ namespace Unity.Cinemachine
         public virtual CinemachineComponentBase GetCinemachineComponent(CinemachineCore.Stage stage) => null;
 
         /// <summary>Returns true if this camera is currently live for some CinemachineBrain.</summary>
-        public bool IsLive => CinemachineCore.Instance.IsLive(this);
+        public bool IsLive => CinemachineCore.IsLive(this);
 
         /// <summary>Check to see whether this camera is currently participating in a blend 
         /// within its parent manager or in a CinemacineBrain</summary>
@@ -797,7 +797,7 @@ namespace Unity.Cinemachine
                 var parent = ParentCamera as CinemachineCameraManagerBase;
                 if (parent != null)
                     return (parent.ActiveBlend != null && parent.ActiveBlend.Uses(this)) || parent.IsParticipatingInBlend();
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+                var brain = CinemachineCore.FindPotentialTargetBrain(this);
                 if (brain != null)
                     return brain.ActiveBlend != null && brain.ActiveBlend.Uses(this);
             }

@@ -205,7 +205,7 @@ namespace Unity.Cinemachine
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
-            var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(ComponentOwner);
+            var showIt = enabled && ShowImage && CinemachineCore.IsLive(ComponentOwner);
             var channel = (uint)ComponentOwner.OutputChannel.Value;
             if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
@@ -275,10 +275,10 @@ namespace Unity.Cinemachine
 
         void DestroyCanvas()
         {
-            int numBrains = CinemachineCore.Instance.BrainCount;
+            int numBrains = CinemachineCore.BrainCount;
             for (int i = 0; i < numBrains; ++i)
             {
-                var parent = CinemachineCore.Instance.GetActiveBrain(i);
+                var parent = CinemachineCore.GetActiveBrain(i);
                 int numChildren = parent.transform.childCount;
                 for (int j = numChildren - 1; j >= 0; --j)
                 {

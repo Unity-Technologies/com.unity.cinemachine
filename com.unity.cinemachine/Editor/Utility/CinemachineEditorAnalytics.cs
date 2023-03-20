@@ -61,21 +61,20 @@ namespace Unity.Cinemachine.Editor
 
             var startTime = Time.realtimeSinceStartup;
 
-            var cinemachineCore = CinemachineCore.Instance;
-            var vcamCount = cinemachineCore.VirtualCameraCount;
+            var vcamCount = CinemachineCore.VirtualCameraCount;
             var vcamDatas = new List<VcamData>();
 
             // collect data from all vcams
             for (int i = 0; i < vcamCount; ++i)
             {
-                var vcamBase = cinemachineCore.GetVirtualCamera(i);
+                var vcamBase = CinemachineCore.GetVirtualCamera(i);
                 CollectData(vcamBase, i.ToString(), ref vcamDatas);
             }
 
             var projectData = new ProjectData
             {
-                brain_count = cinemachineCore.BrainCount,
-                vcam_count = cinemachineCore.VirtualCameraCount,
+                brain_count = CinemachineCore.BrainCount,
+                vcam_count = CinemachineCore.VirtualCameraCount,
                 cam_count = Camera.allCamerasCount,
                 vcams = vcamDatas,
                 time_elapsed = Time.realtimeSinceStartup - startTime,

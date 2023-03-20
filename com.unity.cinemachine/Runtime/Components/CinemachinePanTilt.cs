@@ -123,7 +123,7 @@ namespace Unity.Cinemachine
             if (!IsValid)
                 return;
 
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera))
                 m_ResetHandler?.Invoke();
 
             var referenceFrame = GetReferenceFrame(curState.ReferenceUp);
@@ -161,7 +161,7 @@ namespace Unity.Cinemachine
             m_ResetHandler?.Invoke(); // Cancel re-centering
             if (fromCam != null 
                 && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0  
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
                 return true;

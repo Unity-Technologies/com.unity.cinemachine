@@ -403,7 +403,7 @@ namespace Unity.Cinemachine
             PreviousStateIsValid = true;
 
             // Set up for next frame
-            bool activeCam = PreviousStateIsValid && CinemachineCore.Instance.IsLive(this);
+            bool activeCam = PreviousStateIsValid && CinemachineCore.IsLive(this);
             if (activeCam && deltaTime >= 0)
             {
                 if (m_YAxis.Update(deltaTime))
@@ -432,7 +432,7 @@ namespace Unity.Cinemachine
 //            m_YAxis.m_Recentering.CancelRecentering();
             if (fromCam != null 
                 && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                && !CinemachineCore.Instance.IsLiveInBlend(this))
+                && !CinemachineCore.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
 
@@ -783,7 +783,7 @@ namespace Unity.Cinemachine
                 m_CachedXAxisHeading = orbital.UpdateHeading(
                     PreviousStateIsValid ? deltaTime : -1, up,
                     ref m_XAxis, ref m_RecenterToTargetHeading,
-                    CinemachineCore.Instance.IsLive(this));
+                    CinemachineCore.IsLive(this));
                 // Allow externally-driven values to work in this mode
                 if (m_BindingMode == TargetTracking.BindingMode.LazyFollow)
                     m_XAxis.Value = oldValue;

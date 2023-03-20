@@ -63,7 +63,7 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             if (brain == null || brain.OutputCamera == null
-                    || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+                    || (brain.OutputCamera.activeTexture != null && CinemachineCore.BrainCount > 1))
                 return;
 
             var vcam = Target.VirtualCamera;

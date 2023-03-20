@@ -59,8 +59,8 @@ namespace Unity.Cinemachine.Editor
             var target = editor.target as CinemachineVirtualCameraBase; // capture for lambda
             soloButton.RegisterCallback<ClickEvent>(_ =>
             {
-                var isSolo = CinemachineBrain.SoloCamera != (ICinemachineCamera)target;
-                CinemachineBrain.SoloCamera = isSolo ? target : null;
+                var isSolo = CinemachineCore.SoloCamera != (ICinemachineCamera)target;
+                CinemachineCore.SoloCamera = isSolo ? target : null;
                 InspectorUtility.RepaintGameView();
             });
 
@@ -94,10 +94,10 @@ namespace Unity.Cinemachine.Editor
                     if (target == null)
                         return;
 
-                    bool isSolo = CinemachineBrain.SoloCamera == (ICinemachineCamera)target;
+                    bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
                     var color = isSolo ? Color.Lerp(normalColor, CinemachineBrain.GetSoloGUIColor(), 0.5f) : normalColor;
 
-                    bool isLive = CinemachineCore.Instance.IsLive(target);
+                    bool isLive = CinemachineCore.IsLive(target);
                     statusText.text = isLive ? "Status: Live"
                         : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
                     statusText.SetEnabled(isLive);
@@ -107,7 +107,7 @@ namespace Unity.Cinemachine.Editor
                         updateMode.SetVisible(false);
                     else
                     {
-                        var mode = CinemachineCore.Instance.GetVcamUpdateStatus(target);
+                        var mode = CameraUpdateManager.GetVcamUpdateStatus(target);
                         updateMode.text = mode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
                         updateMode.SetVisible(true);
                     }
@@ -128,9 +128,9 @@ namespace Unity.Cinemachine.Editor
             // Kill solo when inspector shuts down
             ux.RegisterCallback<DetachFromPanelEvent>(_ =>
             {
-                if (target != null && CinemachineBrain.SoloCamera == (ICinemachineCamera)target)
+                if (target != null && CinemachineCore.SoloCamera == (ICinemachineCamera)target)
                 {
-                    CinemachineBrain.SoloCamera = null;
+                    CinemachineCore.SoloCamera = null;
                     InspectorUtility.RepaintGameView();
                 }
             });

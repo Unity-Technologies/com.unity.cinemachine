@@ -150,14 +150,12 @@ namespace Unity.Cinemachine
         public CinemachineBlenderSettings CustomBlends = null;
 
         Camera m_OutputCamera = null; // never use directly - use accessor
-        GameObject m_TargetOverride = null; // never use directly - use 
+        GameObject m_TargetOverride = null; // never use directly - use accessor
         Coroutine m_PhysicsCoroutine;
         int m_LastFrameUpdated;
         readonly WaitForFixedUpdate m_WaitForFixedUpdate = new ();
         readonly BlendManager m_BlendManager = new ();
         CameraState m_CameraState;
-
-        static ICinemachineCamera s_SoloCamera;
 
         void OnValidate()
         {
@@ -186,14 +184,14 @@ namespace Unity.Cinemachine
         void Start()
         {
             m_LastFrameUpdated = -1;
-            UpdateVirtualCameras(CinemachineCore.UpdateFilter.Late, -1f);
+            UpdateVirtualCameras(CameraUpdateManager.UpdateFilter.Late, -1f);
         }
 
         void OnEnable()
         {
             m_BlendManager.OnEnable(this);
 
-            CinemachineCore.Instance.AddActiveBrain(this);
+            CameraUpdateManager.AddActiveBrain(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 
@@ -210,7 +208,7 @@ namespace Unity.Cinemachine
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            CinemachineCore.Instance.RemoveActiveBrain(this);
+            CameraUpdateManager.RemoveActiveBrain(this);
 
             m_BlendManager.OnDisable();
             StopCoroutine(m_PhysicsCoroutine);
@@ -250,7 +248,7 @@ namespace Unity.Cinemachine
         /// or part of a blend in progress.</returns>
         public bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
         {
-            if (SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
+            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
                 return true;
 
             // Walk up the parents
@@ -351,29 +349,6 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>
-        /// API for the Unity Editor.
-        /// Show this camera no matter what.  This is static, and so affects all Cinemachine brains.
-        /// </summary>
-        public static ICinemachineCamera SoloCamera
-        {
-            get => s_SoloCamera;
-            set
-            {
-                if (value != null && !CinemachineCore.Instance.IsLive(value))
-                    value.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
-                    {
-                        Origin = null,
-                        OutgoingCamera = null,
-                        IncomingCamera = value,
-                        IsCut = true,
-                        WorldUp = Vector3.up,
-                        DeltaTime = CinemachineCore.DeltaTime
-                    });
-                s_SoloCamera = value;
-            }
-        }
-
         /// <summary>API for the Unity Editor.</summary>
         /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
         internal static Color GetSoloGUIColor() => Color.Lerp(Color.red, Color.yellow, 0.8f);
@@ -390,7 +365,7 @@ namespace Unity.Cinemachine
                 sb.Append("CM ");
                 sb.Append(gameObject.name);
                 sb.Append(": ");
-                if (SoloCamera != null)
+                if (CinemachineCore.SoloCamera != null)
                 {
                     sb.Append("SOLO ");
                     GUI.color = GetSoloGUIColor();
@@ -422,12 +397,12 @@ namespace Unity.Cinemachine
                 if (UpdateMethod == UpdateMethods.FixedUpdate
                     || UpdateMethod == UpdateMethods.SmartUpdate)
                 {
-                    CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Fixed;
+                    var filter = CameraUpdateManager.UpdateFilter.Fixed;
                     if (UpdateMethod == UpdateMethods.SmartUpdate)
                     {
                         // Track the targets
                         UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed);
-                        filter = CinemachineCore.UpdateFilter.SmartFixed;
+                        filter = CameraUpdateManager.UpdateFilter.SmartFixed;
                     }
                     UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
                 }
@@ -468,19 +443,19 @@ namespace Unity.Cinemachine
                 // since the last physics frame must be updated now
                 if (BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
                 {
-                    CinemachineCore.Instance.m_CurrentUpdateFilter = CinemachineCore.UpdateFilter.Fixed;
-                    if (SoloCamera == null)
+                    CameraUpdateManager.s_CurrentUpdateFilter = CameraUpdateManager.UpdateFilter.Fixed;
+                    if (CinemachineCore.SoloCamera == null)
                         m_BlendManager.RefreshCurrentCameraState(DefaultWorldUp, GetEffectiveDeltaTime(true));
                 }
             }
             else
             {
-                CinemachineCore.UpdateFilter filter = CinemachineCore.UpdateFilter.Late;
+                var filter = CameraUpdateManager.UpdateFilter.Late;
                 if (UpdateMethod == UpdateMethods.SmartUpdate)
                 {
                     // Track the targets
                     UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late);
-                    filter = CinemachineCore.UpdateFilter.SmartLate;
+                    filter = CameraUpdateManager.UpdateFilter.SmartLate;
                 }
                 UpdateVirtualCameras(filter, deltaTime);
             }
@@ -507,9 +482,9 @@ namespace Unity.Cinemachine
 
         void ProcessActiveCamera(float deltaTime)
         {
-            if (SoloCamera != null)
+            if (CinemachineCore.SoloCamera != null)
             {
-                var state = SoloCamera.State;
+                var state = CinemachineCore.SoloCamera.State;
                 PushStateToUnityCamera(ref state);
             }
             else if (m_BlendManager.ProcessActiveCamera(DefaultWorldUp, deltaTime) != null)
@@ -545,7 +520,7 @@ namespace Unity.Cinemachine
             if (CinemachineCore.UniformDeltaTimeOverride >= 0)
                 return CinemachineCore.UniformDeltaTimeOverride;
 
-            if (SoloCamera != null)
+            if (CinemachineCore.SoloCamera != null)
                 return Time.unscaledDeltaTime;
 
             if (!Application.isPlaying)
@@ -557,33 +532,33 @@ namespace Unity.Cinemachine
             return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
         }
 
-        void UpdateVirtualCameras(CinemachineCore.UpdateFilter updateFilter, float deltaTime)
+        void UpdateVirtualCameras(CameraUpdateManager.UpdateFilter updateFilter, float deltaTime)
         {
             // We always update all active virtual cameras
-            CinemachineCore.Instance.m_CurrentUpdateFilter = updateFilter;
-            CinemachineCore.Instance.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
+            CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
+            CameraUpdateManager.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
 
             // Make sure all live cameras get updated, in case some of them are deactivated
-            if (SoloCamera != null)
-                SoloCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
+            if (CinemachineCore.SoloCamera != null)
+                CinemachineCore.SoloCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
             m_BlendManager.RefreshCurrentCameraState(DefaultWorldUp, deltaTime);
 
             // Restore the filter for general use
-            updateFilter = CinemachineCore.UpdateFilter.Late;
+            updateFilter = CameraUpdateManager.UpdateFilter.Late;
             if (Application.isPlaying)
             {
                 if (UpdateMethod == UpdateMethods.SmartUpdate)
-                    updateFilter |= CinemachineCore.UpdateFilter.Smart;
+                    updateFilter |= CameraUpdateManager.UpdateFilter.Smart;
                 else if (UpdateMethod == UpdateMethods.FixedUpdate)
-                    updateFilter = CinemachineCore.UpdateFilter.Fixed;
+                    updateFilter = CameraUpdateManager.UpdateFilter.Fixed;
             }
-            CinemachineCore.Instance.m_CurrentUpdateFilter = updateFilter;
+            CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
         }
 
         /// <summary>
         /// Get the current active virtual camera.
         /// </summary>
-        public ICinemachineCamera ActiveVirtualCamera => SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
+        public ICinemachineCamera ActiveVirtualCamera => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
 
         /// <summary>
         /// Is there a blend in progress?
@@ -612,12 +587,11 @@ namespace Unity.Cinemachine
         /// </summary>
         ICinemachineCamera TopCameraFromPriorityQueue()
         {
-            CinemachineCore core = CinemachineCore.Instance;
-            int numCameras = core.VirtualCameraCount;
+            int numCameras = CameraUpdateManager.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)
             {
-                var cam = core.GetVirtualCamera(i);
-                if (IsValidChannel( core.GetVirtualCamera(i)))
+                var cam = CameraUpdateManager.GetVirtualCamera(i);
+                if (IsValidChannel(CameraUpdateManager.GetVirtualCamera(i)))
                     return cam;
             }
             return null;

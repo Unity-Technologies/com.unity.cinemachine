@@ -596,7 +596,7 @@ namespace Unity.Cinemachine
 
             if (fromCam != null
                 && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                && !CinemachineCore.Instance.IsLiveInBlend(this))
+                && !CinemachineCore.IsLiveInBlend(this))
             {
                 ForceCameraPosition(fromCam.State.GetFinalPosition(), fromCam.State.GetFinalOrientation());
             }
