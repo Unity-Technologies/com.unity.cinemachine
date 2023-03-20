@@ -752,7 +752,7 @@ namespace Unity.Cinemachine
                             orbital = vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
                         if (orbital != null)
                         {
-                            orbital.m_HeadingIsSlave = true;
+                            orbital.m_HeadingIsDriven = true;
                             orbital.HideOffsetInInspector = true;
                             orbital.m_XAxis.m_InputAxisName = string.Empty;
                             orbital.HeadingUpdater = UpdateXAxisHeading;

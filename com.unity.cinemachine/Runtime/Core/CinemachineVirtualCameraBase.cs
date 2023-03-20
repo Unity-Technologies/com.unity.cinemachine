@@ -112,7 +112,7 @@ namespace Unity.Cinemachine
         // Cache for GameObject name, to avoid GC allocs
         string m_CachedName;
         bool m_WasStarted;
-        bool m_SlaveStatusUpdated = false;
+        bool m_ChildStatusUpdated = false;
         CinemachineVirtualCameraBase m_ParentVcam = null;
 
         Transform m_CachedFollowTarget;
@@ -419,8 +419,8 @@ namespace Unity.Cinemachine
         {
             get
             {
-                if (!m_SlaveStatusUpdated || !Application.isPlaying)
-                    UpdateSlaveStatus();
+                if (!m_ChildStatusUpdated || !Application.isPlaying)
+                    UpdateStatusAsChild();
                 return m_ParentVcam;
             }
         }
@@ -519,7 +519,7 @@ namespace Unity.Cinemachine
         {
             CameraUpdateManager.CameraDisabled(this);
             CameraUpdateManager.CameraEnabled(this);
-            UpdateSlaveStatus();
+            UpdateStatusAsChild();
             UpdateVcamPoolStatus();
         }
 
@@ -538,7 +538,7 @@ namespace Unity.Cinemachine
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
         {
-            UpdateSlaveStatus();
+            UpdateStatusAsChild();
             UpdateVcamPoolStatus();    // Add to queue
             if (!CinemachineCore.IsLive(this))
                 PreviousStateIsValid = false;
@@ -572,9 +572,9 @@ namespace Unity.Cinemachine
                 UpdateVcamPoolStatus(); // Force a re-sort
         }
 
-        void UpdateSlaveStatus()
+        void UpdateStatusAsChild()
         {
-            m_SlaveStatusUpdated = true;
+            m_ChildStatusUpdated = true;
             m_ParentVcam = null;
             Transform p = transform.parent;
             if (p != null)

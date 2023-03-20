@@ -263,8 +263,9 @@ namespace Unity.Cinemachine
         /// Drive the x-axis setting programmatically.
         /// Automatic heading updating will be disabled.
         /// </summary>
+        [FormerlySerializedAs("m_HeadingIsSlave")]
         [HideInInspector, NoSaveDuringPlay]
-        public bool m_HeadingIsSlave = false;
+        public bool m_HeadingIsDriven = false;
 
         /// <summary>
         /// Delegate that allows the the m_XAxis object to be replaced with another one.
@@ -365,7 +366,7 @@ namespace Unity.Cinemachine
         internal void UpdateInputAxisProvider()
         {
             m_XAxis.SetInputAxisProvider(0, null);
-            if (!m_HeadingIsSlave && VirtualCamera != null)
+            if (!m_HeadingIsDriven && VirtualCamera != null)
             {
                 var provider = VirtualCamera.GetComponent<AxisState.IInputAxisProvider>();
                 if (provider != null)
