@@ -49,6 +49,11 @@
       "displayName": "Old Samples from CM2",
       "description": "Samples made with CM 2.X, using obsolete API",
       "path": "Samples~/Old Samples from CM2"
+    },
+    {
+      "displayName": "Input system",
+      "description": "Sample scenes illustrating use cases with the input system package and components",
+      "path": "Samples~/Input System"
     }
   ]
 }
