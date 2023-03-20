@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Full physical camera support for builtin pipeline.
 - LensPresets and PhysicalLensPresets are now separate assets.
 - CinemachineInputAxisController refactored to be more easily customized.
+- Samples are compatible with Built-in, Universal, and High Definition Render Pipelines.
 - CinemachineUpgradeManager re-opens original scene after upgrade is complete.
 
 
