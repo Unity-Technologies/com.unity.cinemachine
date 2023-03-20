@@ -1,7 +1,8 @@
-﻿#if CINEMACHINE_UNITY_INPUTSYSTEM
-using System;
-using System.Linq;
+﻿using System;
 using UnityEngine;
+
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+using System.Linq;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 
@@ -118,8 +119,6 @@ namespace Unity.Cinemachine
     }
 }
 #else
-using UnityEngine;
-
 namespace Unity.Cinemachine
 {
     /// <summary>
