@@ -95,7 +95,7 @@ namespace Unity.Cinemachine.Editor
                         return;
 
                     bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
-                    var color = isSolo ? Color.Lerp(normalColor, CinemachineBrain.GetSoloGUIColor(), 0.5f) : normalColor;
+                    var color = isSolo ? Color.Lerp(normalColor, CinemachineCore.SoloGUIColor(), 0.5f) : normalColor;
 
                     bool isLive = CinemachineCore.IsLive(target);
                     statusText.text = isLive ? "Status: Live"
@@ -114,7 +114,7 @@ namespace Unity.Cinemachine.Editor
 
                     soloButton.style.color = color;
                     soloButton.style.backgroundColor = isSolo 
-                        ? Color.Lerp(normalBkgColor, CinemachineBrain.GetSoloGUIColor(), 0.2f) : normalBkgColor;
+                        ? Color.Lerp(normalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : normalBkgColor;
 
                     // Refresh the game view if solo and not playing
                     if (isSolo && !Application.isPlaying)

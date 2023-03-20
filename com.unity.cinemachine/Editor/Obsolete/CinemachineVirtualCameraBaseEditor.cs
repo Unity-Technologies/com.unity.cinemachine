@@ -216,7 +216,7 @@ namespace Unity.Cinemachine.Editor
             Color color = GUI.color;
             bool isSolo = (CinemachineCore.SoloCamera == Target);
             if (isSolo)
-                GUI.color = CinemachineBrain.GetSoloGUIColor();
+                GUI.color = CinemachineCore.SoloGUIColor();
 
             bool isLive = CinemachineCore.IsLive(Target);
             GUI.enabled = isLive;

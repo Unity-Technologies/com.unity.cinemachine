@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEngine.Assertions;
 using System;
 using UnityEngine.Events;
 
@@ -26,6 +24,28 @@ namespace Unity.Cinemachine
         internal const int kStreamingVersion = 20230301;
 
         /// <summary>
+        /// Unit-test support:
+        /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
+        /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
+        /// </summary>
+        internal static float CurrentUnscaledTimeTimeOverride = -1;
+        
+        /// <summary>
+        /// Unit-test support:
+        /// Replacement for Time.unscaledTime, taking CurrentUnscaledTimeTimeOverride into account.
+        /// </summary>
+        internal static float CurrentUnscaledTime => CurrentUnscaledTimeTimeOverride >= 0
+            ? CurrentUnscaledTimeTimeOverride
+            : Time.unscaledTime;
+
+        /// <summary>Unit-test support: Special mode for deterministic unit tests.</summary>
+        internal static bool UnitTestMode = false;
+        
+        /// <summary>API for the Unity Editor.</summary>
+        /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
+        internal static Color SoloGUIColor() => Color.Lerp(Color.red, Color.yellow, 0.8f);
+        
+        /// <summary>
         /// Stages in the Cinemachine Component pipeline.  This enum defines the pipeline order.
         /// </summary>
         public enum Stage
@@ -44,7 +64,6 @@ namespace Unity.Cinemachine
             /// types, after the pipeline is complete</summary>
             Finalize
         };
-        
 
         /// <summary>Hint for transitioning to and from Cinemachine cameras</summary>
         [Flags]
@@ -101,19 +120,6 @@ namespace Unity.Cinemachine
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
         
         /// <summary>
-        /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
-        /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
-        /// </summary>
-        internal static float CurrentUnscaledTimeTimeOverride = -1;
-        
-        /// <summary>
-        /// Replacement for Time.unscaledTime, taking CurrentUnscaledTimeTimeOverride into account.
-        /// </summary>
-        internal static float CurrentUnscaledTime => CurrentUnscaledTimeTimeOverride >= 0
-            ? CurrentUnscaledTimeTimeOverride
-            : Time.unscaledTime;
-
-        /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
         /// A handler can either return the default blend, or a new blend specific to
         /// current conditions.
@@ -146,9 +152,6 @@ namespace Unity.Cinemachine
 
         /// <summary>This event will fire when the current camera changes, at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
-
-        /// <summary>Special mode for deterministic unit tests.</summary>
-        internal static bool UnitTestMode = false;
 
         /// <summary>Access the array of active CinemachineBrains in the scene</summary>
         public static int BrainCount => CameraUpdateManager.BrainCount;
@@ -252,6 +255,7 @@ namespace Unity.Cinemachine
         {
             if (vcam != null)
             {
+                // If it's live in some brain, that's good enough for us
                 int numBrains = CameraUpdateManager.BrainCount;
                 for (int i = 0; i < numBrains; ++i)
                 {
@@ -259,6 +263,7 @@ namespace Unity.Cinemachine
                     if (b != null && b.OutputCamera != null && b.IsLiveChild(vcam))
                         return b;
                 }
+                // If it's not live anywhere, then where might it become live?
                 var channel = (uint)vcam.OutputChannel.Value;
                 for (int i = 0; i < numBrains; ++i)
                 {
@@ -285,39 +290,6 @@ namespace Unity.Cinemachine
             var numVcams = CameraUpdateManager.VirtualCameraCount;
             for (int i = 0; i < numVcams; ++i)
                 GetVirtualCamera(i).OnTargetObjectWarped(target, positionDelta);
-        }
-
-        /// <summary>
-        /// Signal that the virtual has been activated.
-        /// If the camera is live, then all CinemachineBrains that are showing it will
-        /// send an activation event.
-        /// </summary>
-        /// <param name="outgoing">The previously-active virtual camera (may be null)</param>
-        /// <param name="incoming">The virtual camera being activated</param>
-        /// <param name="isCut">If true then transition is instantaneous</param>
-        internal static void GenerateCameraActivationEvent(
-            ICinemachineCamera outgoing, ICinemachineCamera incoming, bool isCut)
-        {
-            if (incoming != null)
-            {
-                // Generate an event for each brain in which the camera is live
-                int numBrains = CameraUpdateManager.BrainCount;
-                for (int i = 0; i < numBrains; ++i)
-                {
-                    var brain = GetActiveBrain(i);
-                    if (brain != null && brain.IsLiveChild(incoming))
-                    {
-                        var eventParams = new ICinemachineCamera.ActivationEventParams()
-                        {
-                            Origin = brain,
-                            IncomingCamera = incoming,
-                            OutgoingCamera = outgoing,
-                            IsCut = isCut
-                        };
-                        CameraActivatedEvent.Invoke(eventParams);
-                    }
-                }
-            }
         }
     }
 }

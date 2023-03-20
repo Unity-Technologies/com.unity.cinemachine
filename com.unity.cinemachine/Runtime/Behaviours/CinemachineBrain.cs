@@ -151,11 +151,15 @@ namespace Unity.Cinemachine
 
         Camera m_OutputCamera = null; // never use directly - use accessor
         GameObject m_TargetOverride = null; // never use directly - use accessor
-        Coroutine m_PhysicsCoroutine;
+
         int m_LastFrameUpdated;
+
+        Coroutine m_PhysicsCoroutine;
         readonly WaitForFixedUpdate m_WaitForFixedUpdate = new ();
+
         readonly BlendManager m_BlendManager = new ();
-        CameraState m_CameraState;
+
+        CameraState m_CameraState; // Cached camera state
 
         void OnValidate()
         {
@@ -226,6 +230,75 @@ namespace Unity.Cinemachine
                 ManualUpdate();
         }
         
+        void LateUpdate()
+        {
+            if (UpdateMethod != UpdateMethods.ManualUpdate)
+                ManualUpdate();
+        }
+
+        // Instead of FixedUpdate() we have this, to ensure that it happens
+        // after all physics updates have taken place
+        IEnumerator AfterPhysics()
+        {
+            while (true)
+            {
+                // FixedUpdate can be called multiple times per frame
+                yield return m_WaitForFixedUpdate;
+                DoFixedUpdate();
+            }
+        }
+        
+#if UNITY_EDITOR
+        /// This is only needed in editor mode to force timeline to call OnGUI while
+        /// timeline is up and the game is not running, in order to allow dragging
+        /// the composer guide in the game view.
+        void OnPreCull()
+        {
+            if (!Application.isPlaying)
+            {
+                // Note: this call will cause any screen canvas attached to the camera
+                // to be painted one frame out of sync.  It will only happen in the editor when not playing.
+                ProcessActiveCamera(GetEffectiveDeltaTime(false));
+            }
+        }
+
+        // We don't want this in runtime because it's only for debugging and it can generate garbage
+        void OnGUI()
+        {
+            if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
+                CinemachineDebug.OnGUIHandlers(this);
+        }
+#endif
+
+        void OnGuiHandler(CinemachineBrain brain)
+        {
+#if CINEMACHINE_UNITY_IMGUI
+            if (ShowDebugText && brain == this)
+            {
+                // Show the active camera and blend
+                var sb = CinemachineDebug.SBFromPool();
+                Color color = GUI.color;
+                sb.Length = 0;
+                sb.Append("CM ");
+                sb.Append(gameObject.name);
+                sb.Append(": ");
+                if (CinemachineCore.SoloCamera != null)
+                {
+                    sb.Append("SOLO ");
+                    GUI.color = CinemachineCore.SoloGUIColor();
+                }
+                sb.Append(Description);
+                string text = sb.ToString();
+                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
+                GUI.Label(r, text, GUI.skin.box);
+                GUI.color = color;
+                CinemachineDebug.ReturnToPool(sb);
+            }
+#endif
+        }
+
+        // ============ ICameraOverrideStack implementation ================
+
         /// <inheritdoc />
         public int SetCameraOverride(
             int overrideId,
@@ -238,43 +311,7 @@ namespace Unity.Cinemachine
         /// <summary>Get the default world up for the virtual cameras.</summary>
         public Vector3 DefaultWorldUp => (WorldUpOverride != null) ? WorldUpOverride.transform.up : Vector3.up;
 
-        /// <summary>
-        /// True if the ICinemachineCamera the current active camera,
-        /// or part of a current blend, either directly or indirectly because its parents are live.
-        /// </summary>
-        /// <param name="vcam">The camera to test whether it is live</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
-        /// <returns>True if the camera is live (directly or indirectly)
-        /// or part of a blend in progress.</returns>
-        public bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
-        {
-            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
-                return true;
-
-            // Walk up the parents
-            var parent = cam.ParentCamera;
-            if (parent != null && parent.IsLiveChild(cam, dominantChildOnly))
-                return IsLiveChild(parent, dominantChildOnly);
-            return false;
-        }
-
-        /// <summary>
-        /// Checks if the vcam is live as part of an outgoing blend.  
-        /// Does not check whether the vcam is also the current active vcam.
-        /// </summary>
-        /// <param name="vcam">The virtual camera to check</param>
-        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
-        public bool IsLiveInBlend(ICinemachineCamera cam)
-        {
-            if (m_BlendManager.IsLiveInBlend(cam))
-                return true;
-
-            // Walk up the parents
-            var parent = cam.ParentCamera;
-            if (parent != null && parent.IsLiveChild(cam, false))
-                return IsLiveInBlend(parent);
-            return false;
-        }
+        // ============ ICinemachineMixer implementation ================
 
         /// <inheritdoc />
         public string Name => name;
@@ -305,28 +342,29 @@ namespace Unity.Cinemachine
         public bool IsValid => this != null;
 
         /// <summary>Does nothing</summary>
+        public ICinemachineMixer ParentCamera => null; // GML todo: think about this
+
+        /// <summary>Does nothing</summary>
         public void UpdateCameraState(Vector3 up, float deltaTime) {} // GML todo: think about this
 
         /// <summary>Does nothing</summary>
         public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {} // GML todo: think about this
         
-        /// <summary>Does nothing</summary>
-        public ICinemachineMixer ParentCamera => null; // GML todo: think about this
-
-        /// <summary>
-        /// Get the Unity Camera that is attached to this GameObject.  This is the camera
-        /// that will be controlled by the brain.
-        /// </summary>
-        public Camera OutputCamera
+        /// <inheritdoc />
+        public bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
         {
-            get
-            {
-                if (m_OutputCamera == null && !Application.isPlaying)
-                    ControlledObject.TryGetComponent(out m_OutputCamera);
-                return m_OutputCamera;
-            }
+            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
+                return true;
+
+            // Walk up the parents
+            var parent = cam.ParentCamera;
+            if (parent != null && parent.IsLiveChild(cam, dominantChildOnly))
+                return IsLiveChild(parent, dominantChildOnly);
+            return false;
         }
-        
+
+        // ============================
+
         /// <summary>
         /// CinemachineBrain controls this GameObject.  Normally, this is the GameObject to which 
         /// the CinemachineBrain component is attached.  However, it is possible to override this
@@ -349,76 +387,62 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>API for the Unity Editor.</summary>
-        /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
-        internal static Color GetSoloGUIColor() => Color.Lerp(Color.red, Color.yellow, 0.8f);
-
-        void OnGuiHandler(CinemachineBrain brain)
+        /// <summary>
+        /// Get the Unity Camera that is attached to this GameObject.  This is the camera
+        /// that will be controlled by the brain.
+        /// </summary>
+        public Camera OutputCamera
         {
-#if CINEMACHINE_UNITY_IMGUI
-            if (ShowDebugText && brain == this)
+            get
             {
-                // Show the active camera and blend
-                var sb = CinemachineDebug.SBFromPool();
-                Color color = GUI.color;
-                sb.Length = 0;
-                sb.Append("CM ");
-                sb.Append(gameObject.name);
-                sb.Append(": ");
-                if (CinemachineCore.SoloCamera != null)
-                {
-                    sb.Append("SOLO ");
-                    GUI.color = GetSoloGUIColor();
-                }
-                sb.Append(Description);
-                string text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
-                GUI.Label(r, text, GUI.skin.box);
-                GUI.color = color;
-                CinemachineDebug.ReturnToPool(sb);
-            }
-#endif
-        }
-
-#if UNITY_EDITOR
-        void OnGUI()
-        {
-            if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
-                CinemachineDebug.OnGUIHandlers(this);
-        }
-#endif
-
-        IEnumerator AfterPhysics()
-        {
-            while (true)
-            {
-                // FixedUpdate can be called multiple times per frame
-                yield return m_WaitForFixedUpdate;
-                if (UpdateMethod == UpdateMethods.FixedUpdate
-                    || UpdateMethod == UpdateMethods.SmartUpdate)
-                {
-                    var filter = CameraUpdateManager.UpdateFilter.Fixed;
-                    if (UpdateMethod == UpdateMethods.SmartUpdate)
-                    {
-                        // Track the targets
-                        UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed);
-                        filter = CameraUpdateManager.UpdateFilter.SmartFixed;
-                    }
-                    UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
-                }
-                // Choose the active vcam and apply it to the Unity camera
-                if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
-                {
-                    m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), Time.fixedDeltaTime, LookupBlend);
-                    ProcessActiveCamera(Time.fixedDeltaTime);
-                }
+                if (m_OutputCamera == null && !Application.isPlaying)
+                    ControlledObject.TryGetComponent(out m_OutputCamera);
+                return m_OutputCamera;
             }
         }
+        
+        /// <summary>
+        /// Get the current active virtual camera.
+        /// </summary>
+        public ICinemachineCamera ActiveVirtualCamera => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
 
-        void LateUpdate()
+        /// <summary>
+        /// Is there a blend in progress?
+        /// </summary>
+        public bool IsBlending => m_BlendManager.IsBlending;
+
+        /// <summary>
+        /// Get the current blend in progress.  Returns null if none.
+        /// It is also possible to set the current blend, but this is not a recommended usage.
+        /// </summary>
+        public CinemachineBlend ActiveBlend 
         {
-            if (UpdateMethod != UpdateMethods.ManualUpdate)
-                ManualUpdate();
+            get => m_BlendManager.ActiveBlend;
+            set => m_BlendManager.ActiveBlend = value;
+        }
+
+        /// <summary>Returns true if camera is on a channel that is handles by this Brain.</summary>
+        /// <param name="vcam">The camera to check</param>
+        /// <returns></returns>
+        public bool IsValidChannel(CinemachineVirtualCameraBase vcam) 
+            => vcam != null && ((uint)vcam.OutputChannel.Value & (uint)ChannelMask) != 0;
+
+        /// <summary>
+        /// Checks if the vcam is live as part of an outgoing blend.  
+        /// Does not check whether the vcam is also the current active vcam.
+        /// </summary>
+        /// <param name="cam">The virtual camera to check</param>
+        /// <returns>True if the virtual camera is part of a live outgoing blend, false otherwise</returns>
+        public bool IsLiveInBlend(ICinemachineCamera cam)
+        {
+            if (m_BlendManager.IsLiveInBlend(cam))
+                return true;
+
+            // Walk up the parents
+            var parent = cam.ParentCamera;
+            if (parent != null && parent.IsLiveChild(cam, false))
+                return IsLiveInBlend(parent);
+            return false;
         }
 
         /// <summary>
@@ -465,21 +489,66 @@ namespace Unity.Cinemachine
                 ProcessActiveCamera(deltaTime);
         }
 
-#if UNITY_EDITOR
-        /// This is only needed in editor mode to force timeline to call OnGUI while
-        /// timeline is up and the game is not running, in order to allow dragging
-        /// the composer guide in the game view.
-        void OnPreCull()
+        /// Called in the place of FixedUpdate
+        void DoFixedUpdate()
         {
-            if (!Application.isPlaying)
+            if (UpdateMethod == UpdateMethods.FixedUpdate
+                || UpdateMethod == UpdateMethods.SmartUpdate)
             {
-                // Note: this call will cause any screen canvas attached to the camera
-                // to be painted one frame out of sync.  It will only happen in the editor when not playing.
-                ProcessActiveCamera(GetEffectiveDeltaTime(false));
+                var filter = CameraUpdateManager.UpdateFilter.Fixed;
+                if (UpdateMethod == UpdateMethods.SmartUpdate)
+                {
+                    // Track the targets
+                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed);
+                    filter = CameraUpdateManager.UpdateFilter.SmartFixed;
+                }
+                UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
+            }
+
+            // Choose the active vcam and apply it to the Unity camera
+            if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
+            {
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), Time.fixedDeltaTime, LookupBlend);
+                ProcessActiveCamera(Time.fixedDeltaTime);
             }
         }
-#endif
 
+        float GetEffectiveDeltaTime(bool fixedDelta)
+        {
+            if (CinemachineCore.UniformDeltaTimeOverride >= 0)
+                return CinemachineCore.UniformDeltaTimeOverride;
+
+            if (CinemachineCore.SoloCamera != null)
+                return Time.unscaledDeltaTime;
+
+            if (!Application.isPlaying)
+                return m_BlendManager.GetDeltaTimeOverride();
+
+            if (IgnoreTimeScale)
+                return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
+
+            return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
+        }
+        
+        /// <summary>
+        /// Get the highest-priority Enabled ICinemachineCamera
+        /// that is visible to my camera.  Channele Mask is used to test visibility.
+        /// </summary>
+        ICinemachineCamera TopCameraFromPriorityQueue()
+        {
+            int numCameras = CameraUpdateManager.VirtualCameraCount;
+            for (int i = 0; i < numCameras; ++i)
+            {
+                var cam = CameraUpdateManager.GetVirtualCamera(i);
+                if (IsValidChannel(cam))
+                    return cam;
+            }
+            return null;
+        }
+
+        CinemachineBlendDefinition LookupBlend(ICinemachineCamera fromKey, ICinemachineCamera toKey)
+            => CinemachineBlenderSettings.LookupBlend(fromKey, toKey, DefaultBlend, CustomBlends, this);
+            
         void ProcessActiveCamera(float deltaTime)
         {
             if (CinemachineCore.SoloCamera != null)
@@ -507,31 +576,6 @@ namespace Unity.Cinemachine
             }
         }
         
-        /// <summary>
-        /// Create a blend curve for blending from one ICinemachineCamera to another.
-        /// If there is a specific blend defined for these cameras it will be used, otherwise
-        /// a default blend will be created, which could be a cut.
-        /// </summary>
-        CinemachineBlendDefinition LookupBlend(ICinemachineCamera fromKey, ICinemachineCamera toKey)
-            => CinemachineBlenderSettings.LookupBlend(fromKey, toKey, DefaultBlend, CustomBlends, this);
-        
-        float GetEffectiveDeltaTime(bool fixedDelta)
-        {
-            if (CinemachineCore.UniformDeltaTimeOverride >= 0)
-                return CinemachineCore.UniformDeltaTimeOverride;
-
-            if (CinemachineCore.SoloCamera != null)
-                return Time.unscaledDeltaTime;
-
-            if (!Application.isPlaying)
-                return m_BlendManager.GetDeltaTimeOverride();
-
-            if (IgnoreTimeScale)
-                return fixedDelta ? Time.fixedDeltaTime : Time.unscaledDeltaTime;
-
-            return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
-        }
-
         void UpdateVirtualCameras(CameraUpdateManager.UpdateFilter updateFilter, float deltaTime)
         {
             // We always update all active virtual cameras
@@ -553,48 +597,6 @@ namespace Unity.Cinemachine
                     updateFilter = CameraUpdateManager.UpdateFilter.Fixed;
             }
             CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
-        }
-
-        /// <summary>
-        /// Get the current active virtual camera.
-        /// </summary>
-        public ICinemachineCamera ActiveVirtualCamera => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
-
-        /// <summary>
-        /// Is there a blend in progress?
-        /// </summary>
-        public bool IsBlending => m_BlendManager.IsBlending;
-
-        /// <summary>
-        /// Get the current blend in progress.  Returns null if none.
-        /// It is also possible to set the current blend, but this is not a recommended usage.
-        /// </summary>
-        public CinemachineBlend ActiveBlend 
-        {
-            get => m_BlendManager.ActiveBlend;
-            set => m_BlendManager.ActiveBlend = value;
-        }
-
-        /// <summary>Returns true if camera is on a channel that is handles by this Brain.</summary>
-        /// <param name="vcam">The camera to check</param>
-        /// <returns></returns>
-        public bool IsValidChannel(CinemachineVirtualCameraBase vcam) 
-            => vcam != null && ((uint)vcam.OutputChannel.Value & (uint)ChannelMask) != 0;
-
-        /// <summary>
-        /// Get the highest-priority Enabled ICinemachineCamera
-        /// that is visible to my camera.  Culling Mask is used to test visibility.
-        /// </summary>
-        ICinemachineCamera TopCameraFromPriorityQueue()
-        {
-            int numCameras = CameraUpdateManager.VirtualCameraCount;
-            for (int i = 0; i < numCameras; ++i)
-            {
-                var cam = CameraUpdateManager.GetVirtualCamera(i);
-                if (IsValidChannel(CameraUpdateManager.GetVirtualCamera(i)))
-                    return cam;
-            }
-            return null;
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
