@@ -1,23 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Assertions;
 
 namespace Unity.Cinemachine
 {
-    /// <summary>A singleton that manages complete lists of CinemachineBrain and,
-    /// CinemachineCamera, and the priority queue.  Provides
-    /// services to keeping track of whether CinemachineCameras have
-    /// been updated each frame.</summary>
+    /// <summary>Owns Camera Registry.
+    /// Provides services to update cinemcahine cameras and keep track of 
+    /// whether and how they have been updated each frame.</summary>
     internal sealed class CameraUpdateManager
     {
-        /// <summary>List of all active ICinemachineCameras.</summary>
-        static readonly List<CinemachineVirtualCameraBase> s_ActiveCameras = new ();
+        static readonly VirtualCameraRegistry s_CameraRegistry = new ();
 
-        // Registry of all vcams that are present, active or not
-        static readonly List<List<CinemachineVirtualCameraBase>> s_AllCameras = new();
-
-        static bool s_ActiveCamerasAreSorted;
-        static int s_ActivationSequence;
         static CinemachineVirtualCameraBase s_RoundRobinVcamLastFrame = null;
         static float s_LastUpdateTime;
         static int s_FixedFrameCount; // Current fixed frame count
@@ -49,66 +41,39 @@ namespace Unity.Cinemachine
         /// List of all active CinemachineCameras for all brains.
         /// This list is kept sorted by priority.
         /// </summary>
-        public static int VirtualCameraCount => s_ActiveCameras.Count;
+        public static int VirtualCameraCount => s_CameraRegistry.ActiveCameraCount;
 
         /// <summary>Access the priority-sorted array of active ICinemachineCamera in the scene
         /// without generating garbage</summary>
         /// <param name="index">Index of the camera to access, range 0-VirtualCameraCount</param>
         /// <returns>The virtual camera at the specified index</returns>
-        public static CinemachineVirtualCameraBase GetVirtualCamera(int index)
-        {
-            if (!s_ActiveCamerasAreSorted && s_ActiveCameras.Count > 1)
-            {
-                s_ActiveCameras.Sort((x, y) => 
-                    x.Priority.Value == y.Priority.Value 
-                        ? y.ActivationId.CompareTo(x.ActivationId) 
-                        : y.Priority.Value.CompareTo(x.Priority.Value));
-                s_ActiveCamerasAreSorted = true;
-            }
-            return s_ActiveCameras[index];
-        }
+        public static CinemachineVirtualCameraBase GetVirtualCamera(int index) 
+            => s_CameraRegistry.GetActiveCamera(index);
 
         /// <summary>Called when a CinemachineCamera is enabled.</summary>
-        internal static void AddActiveCamera(CinemachineVirtualCameraBase vcam)
-        {
-            Assert.IsFalse(s_ActiveCameras.Contains(vcam));
-            vcam.ActivationId = s_ActivationSequence++;
-            s_ActiveCameras.Add(vcam);
-            s_ActiveCamerasAreSorted = false;
-        }
+        internal static void AddActiveCamera(CinemachineVirtualCameraBase vcam) 
+            => s_CameraRegistry.AddActiveCamera(vcam);
 
         /// <summary>Called when a CinemachineCamera is disabled.</summary>
         internal static void RemoveActiveCamera(CinemachineVirtualCameraBase vcam)
-        {
-            if (s_ActiveCameras.Contains(vcam))
-                s_ActiveCameras.Remove(vcam);
-        }
+            => s_CameraRegistry.RemoveActiveCamera(vcam);
 
         /// <summary>Called when a CinemachineCamera is destroyed.</summary>
         internal static void CameraDestroyed(CinemachineVirtualCameraBase vcam)
         {
-            if (s_ActiveCameras.Contains(vcam))
-                s_ActiveCameras.Remove(vcam);
+            s_CameraRegistry.CameraDestroyed(vcam);
             if (s_UpdateStatus != null && s_UpdateStatus.ContainsKey(vcam))
                 s_UpdateStatus.Remove(vcam);
         }
 
         /// <summary>Called when a vcam is enabled.</summary>
         internal static void CameraEnabled(CinemachineVirtualCameraBase vcam)
-        {
-            int parentLevel = 0;
-            for (var p = vcam.ParentCamera; p != null; p = p.ParentCamera)
-                ++parentLevel;
-            while (s_AllCameras.Count <= parentLevel)
-                s_AllCameras.Add(new List<CinemachineVirtualCameraBase>());
-            s_AllCameras[parentLevel].Add(vcam);
-        }
+            => s_CameraRegistry.CameraEnabled(vcam);
 
         /// <summary>Called when a vcam is disabled.</summary>
         internal static void CameraDisabled(CinemachineVirtualCameraBase vcam)
         {
-            for (int i = 0; i < s_AllCameras.Count; ++i)
-                s_AllCameras[i].Remove(vcam);
+            s_CameraRegistry.CameraDisabled(vcam);
             if (s_RoundRobinVcamLastFrame == vcam)
                 s_RoundRobinVcamLastFrame = null;
         }
@@ -131,9 +96,10 @@ namespace Unity.Cinemachine
             }
 
             // Update the leaf-most cameras first
-            for (int i = s_AllCameras.Count-1; i >= 0; --i)
+            var allCameras = s_CameraRegistry.AllCamrasSortedByNestingLevel;
+            for (int i = allCameras.Count-1; i >= 0; --i)
             {
-                var sublist = s_AllCameras[i];
+                var sublist = allCameras[i];
                 for (int j = sublist.Count - 1; j >= 0; --j)
                 {
                     var vcam = sublist[j];
