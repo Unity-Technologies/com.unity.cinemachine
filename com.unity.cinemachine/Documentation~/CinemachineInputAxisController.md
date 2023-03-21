@@ -53,7 +53,6 @@ public class SliderReader : IInputAxisReader
         bool autoEnableInput, 
         IInputAxisOwner.AxisDescriptor.Hints hint)
     {
-        // The value returned will change the axis value.
         if (m_Slider != null)
             return m_Slider.value;
         
@@ -71,7 +70,7 @@ public class SliderControllerEditor : Unity.Cinemachine.Editor.InputAxisControll
 #endif
 ```
 
-## PlayerInput and PlayerInputManager components with Cinemachine
+## Using PlayerInput and PlayerInputManager components with Cinemachine
 
 We assume you already know how to setup `PlayerInput` and `PlayerInputManager`. All the documentation can be found on the Input System package documentation page and samples.
 
@@ -88,9 +87,9 @@ using UnityEngine.InputSystem;
 class PlayerInputReceiver : InputAxisControllerBase<SimpleReader>
 {
     [SerializeField]
-    private PlayerInput m_PlayerInput;
+    PlayerInput m_PlayerInput;
 
-    private void Awake()
+    void Awake()
     {
         // Call back when the PlayerInput receives an Input.
         m_PlayerInput.onActionTriggered += OnActionTriggered;
@@ -99,9 +98,9 @@ class PlayerInputReceiver : InputAxisControllerBase<SimpleReader>
     public void OnActionTriggered(InputAction.CallbackContext value)
     {
         // Sends the Input to all the controllers.
-        foreach (var controller in Controllers)
+        for (var i = 0; i < Controllers.Count; i ++)
         {
-            controller.Input.SetValue(value.action);
+            Controllers[i].Input.SetValue(value.action);
         }
     }
 }
@@ -110,9 +109,11 @@ class PlayerInputReceiver : InputAxisControllerBase<SimpleReader>
 class SimpleReader : IInputAxisReader
 {
     // Assumes the action is a Vector2 for simplicity but can be changed for a float.
-    private Vector2 m_Value;
+    Vector2 m_Value;
     [SerializeField]
-    private InputActionReference m_Input;
+    InputActionReference m_Input;
+    [SerializeField]
+    float m_Gain;
     
     public void SetValue(InputAction action)
     {
@@ -124,9 +125,9 @@ class SimpleReader : IInputAxisReader
     public float GetValue(UnityEngine.Object context, int playerIndex, bool autoEnableInput, IInputAxisOwner.AxisDescriptor.Hints hint)
     {
         if(hint == IInputAxisOwner.AxisDescriptor.Hints.X)
-            return m_Value.x * 100;
+            return m_Value.x * m_Gain;
         
-        return m_Value.y * 100;
+        return m_Value.y * m_Gain;
     }
 }
 
@@ -157,6 +158,7 @@ public class CinemachineCameraSetter : MonoBehaviour
         
         // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
         var channel = 1 << CinemachineCore.Instance.BrainCount;
+        
         // Shift one bit per brain Count on the CinemachineCamera.
         m_CinemachineBrain.ChannelMask = (OutputChannel.Channels) channel;
         // Shift one bit per brain Count on the CinemachineCamera.
