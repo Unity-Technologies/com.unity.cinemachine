@@ -72,11 +72,11 @@ public class SliderControllerEditor : Unity.Cinemachine.Editor.InputAxisControll
 
 ## Using PlayerInput and PlayerInputManager components with Cinemachine
 
-We assume you already know how to setup `PlayerInput` and `PlayerInputManager`. All the documentation can be found on the Input System package documentation page and samples.
+For more complex input configuration like supporting multiple devices, local multiplayer... You will need to receive inputs from the `PlayerInput` component provided by the Input System package. This section is assuming you already know how to setup this component. All the documentation can be found on the Input System package documentation page and samples.
 
 ### Read from PlayerInput component
 
-You will need a custom InputAxisController that receives axis from the PlayerInput component. Add this script to your CinemachineCamera and assign the `PlayerInput` field. The `behaviour` field must be set to `InvokeCSharpEvents`.
+To read values from a `PlayerInput` with a `behaviour` set to `InvokeCSharpEvents`, You need to create a custom `InputAxisController` that subscribes to `onActionTriggered`. The example bellow shows how to receive and wire those inputs accordingly. Add this script to your `CinemachineCamera` and assign the `PlayerInput` field.
 
 ```cs
 using UnityEngine;
@@ -122,7 +122,10 @@ class SimpleReader : IInputAxisReader
             m_Value = action.ReadValue<Vector2>();
     }
 
-    public float GetValue(UnityEngine.Object context, int playerIndex, bool autoEnableInput, IInputAxisOwner.AxisDescriptor.Hints hint)
+    public float GetValue(UnityEngine.Object context, 
+        int playerIndex, 
+        bool autoEnableInput, 
+        IInputAxisOwner.AxisDescriptor.Hints hint)
     {
         if(hint == IInputAxisOwner.AxisDescriptor.Hints.X)
             return m_Value.x * m_Gain;
@@ -137,9 +140,9 @@ public class PlayerInputReceiverEditor : Unity.Cinemachine.Editor.InputAxisContr
 #endif
 ```
 
-### Local multiplayer
+### Local split screen multiplayer
 
-To use the previous script in a multiplayer environment you will need one `CinemachineBrain` attached on the Player prefab Camera and increase the channel mask of both the `CinemachineCamera` and the `CinemachineBrain`.
+In a split screen multiplayer environment using `PlayerInputManager` and `PlayerInput` components you will need one `CinemachineBrain` and one `CinemachineCamera` per player `Camera` and increase the channel mask of both the `CinemachineCamera` and the `CinemachineBrain`.
 
 ```cs
 using Unity.Cinemachine;
