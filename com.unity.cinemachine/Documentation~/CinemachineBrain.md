@@ -59,3 +59,30 @@ Cinemachine Brain holds the following key properties:
 | __Camera Cut Event__ || This event fires when a CinemachineCamera goes live and there is no blend.  |
 | __Camera Activated Event__ || This event fires when a CinemachineCamera goes live. If a blend is involved, then the event fires on the first frame of the blend. |
 
+## Instantiate multiple CinemachineBrain at runtime
+
+To instantiate a `CinemachineBrain` at Runtime for example if you need to setup a split screen with an unknown number of players and `Camera`. You will need to connect a `CinemachineBrain` and a `CinemachineCamera` by code. The following example shows how to assign `OutputChannel.Channels` flag enum on each.
+
+```cs
+using Unity.Cinemachine;
+using UnityEngine;
+
+public class CinemachineCameraSetter : MonoBehaviour
+{
+    [SerializeField]
+    CinemachineBrain m_CinemachineBrain;
+    [SerializeField]
+    CinemachineCamera m_CinemachineCamera;
+
+    void Start()
+    {        
+        // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
+        var channel = 1 << CinemachineCore.Instance.BrainCount;
+        
+        // Shift one bit per brain Count on the CinemachineCamera.
+        m_CinemachineBrain.ChannelMask = (OutputChannel.Channels) channel;
+        // Shift one bit per brain Count on the CinemachineCamera.
+        m_CinemachineCamera.OutputChannel.Value = (OutputChannel.Channels) channel;
+    }
+}
+```

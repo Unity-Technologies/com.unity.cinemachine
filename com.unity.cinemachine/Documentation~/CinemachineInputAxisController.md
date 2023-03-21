@@ -140,30 +140,4 @@ public class PlayerInputReceiverEditor : Unity.Cinemachine.Editor.InputAxisContr
 #endif
 ```
 
-### Local split screen multiplayer
-
-In a split screen multiplayer environment using `PlayerInputManager` and `PlayerInput` components you will need one `CinemachineBrain` and one `CinemachineCamera` per `Camera`. You will also need to assign a different channel mask for both the `CinemachineCamera` and the `CinemachineBrain` for every player. The Camera component is automatically setup by the `PlayerInputManager`. In this configuration you won't need to change it.
-
-```cs
-using Unity.Cinemachine;
-using UnityEngine;
-
-public class CinemachineCameraSetter : MonoBehaviour
-{
-    [SerializeField]
-    CinemachineBrain m_CinemachineBrain;
-    [SerializeField]
-    CinemachineCamera m_CinemachineCamera;
-
-    void Start()
-    {        
-        // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
-        var channel = 1 << CinemachineCore.Instance.BrainCount;
-        
-        // Shift one bit per brain Count on the CinemachineCamera.
-        m_CinemachineBrain.ChannelMask = (OutputChannel.Channels) channel;
-        // Shift one bit per brain Count on the CinemachineCamera.
-        m_CinemachineCamera.OutputChannel.Value = (OutputChannel.Channels) channel;
-    }
-}
-```
+See also the `CinemachineBrain` documentation and example if you need to dynamically instantiate cameras.
