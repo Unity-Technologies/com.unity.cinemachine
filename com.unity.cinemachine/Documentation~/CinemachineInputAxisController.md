@@ -33,7 +33,7 @@ This component makes it easy to control a `CinemachineCamera` in a single player
 
 ## Creating your own Input Axis Controller
 
-The default implementation of `CinemachineInputAxisController` can process input from the Input package and from Unity's legacy input system. In the case where you want your input to come from an other source, you may need to create your own input controller.
+The default implementation of `CinemachineInputAxisController` can process input from the Input package and from Unity's legacy input system. In the case where you want your input to come from an other source, you may need to create your own input controller. This example shows how to control a Camera with a slider. It can be easily modified to be used with other objects.
 
 ```cs
 using Unity.Cinemachine;
@@ -113,11 +113,11 @@ class SimpleReader : IInputAxisReader
     [SerializeField]
     InputActionReference m_Input;
     [SerializeField]
-    float m_Gain;
+    float m_Gain = 1;
     
     public void SetValue(InputAction action)
     {
-        // Is the input referenced in the inspector matches the updated one update the value.
+        // If the input referenced in the inspector matches the updated one update the value.
         if (m_Input!= null && m_Input.action.id == action.id)
             m_Value = action.ReadValue<Vector2>();
     }
@@ -156,10 +156,7 @@ public class CinemachineCameraSetter : MonoBehaviour
     CinemachineCamera m_CinemachineCamera;
 
     void Start()
-    {
-        // Places each new player in a line on the X axis.
-        transform.position = new Vector3(CinemachineCore.Instance.BrainCount, 2, 0);
-        
+    {        
         // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
         var channel = 1 << CinemachineCore.Instance.BrainCount;
         
