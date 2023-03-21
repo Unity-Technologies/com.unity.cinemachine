@@ -60,7 +60,7 @@ public class SliderReader : IInputAxisReader
 //The component that you will add to your CinemachineCamera.
 public class SliderInputController : InputAxisControllerBase<SliderReader> {} 
 
-// Optional but recommended if want a nice inspector.
+// Optional but recommended to display a nice inspector.
 #if UNITY_EDITOR
 [UnityEditor.CustomEditor(typeof(SliderInputController))]
 public class SliderControllerEditor : Unity.Cinemachine.Editor.InputAxisControllerEditor {}
