@@ -242,7 +242,7 @@ namespace Unity.Cinemachine.Editor
                 if (availableCameras.FindIndex(x => x == p.stringValue) < 0)
                     row.AddChild(InspectorUtility.MiniHelpIcon("No in-scene camera matches this name"));
                 var popup = row.AddChild(InspectorUtility.MiniDropdownButton(
-                    "Choose from currently-avaliable cameras", new ContextualMenuManipulator((evt) => 
+                    "Choose from currently-available cameras", new ContextualMenuManipulator((evt) => 
                 {
                     for (int i = 0; i < availableCameras.Count; ++i)
                         evt.menu.AppendAction(availableCameras[i], 
