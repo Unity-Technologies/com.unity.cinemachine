@@ -154,6 +154,7 @@ public class CinemachineCameraSetter : MonoBehaviour
 
     void Start()
     {
+        // Places each new player in a line on the X axis.
         transform.position = new Vector3(CinemachineCore.Instance.BrainCount, 2, 0);
         
         // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
