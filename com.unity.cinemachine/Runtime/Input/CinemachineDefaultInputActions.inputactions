@@ -284,7 +284,7 @@
                 {
                     "name": "",
                     "id": "d36494ba-7a16-444f-8787-4f1bfe7a4a5b",
-                    "path": "<Mouse>/rightButton",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
@@ -294,11 +294,33 @@
                 },
                 {
                     "name": "",
+                    "id": "45e2d02f-9aea-438e-8e0a-9036079cddb8",
+                    "path": "<XInputController>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "5b152a7e-d6e0-40a6-8026-566177e4bdf1",
-                    "path": "<Mouse>/middleButton",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8a7656a5-6b15-4e5c-b665-335515f2e5d6",
+                    "path": "<XInputController>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -309,6 +331,17 @@
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
                     "processors": "ScaleVector2(x=0.005,y=0.005)",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3953424e-6d70-4c66-b245-8fc858da4694",
+                    "path": "<Gamepad>/dpad/y",
+                    "interactions": "",
+                    "processors": "",
                     "groups": "",
                     "action": "Zoom",
                     "isComposite": false,
