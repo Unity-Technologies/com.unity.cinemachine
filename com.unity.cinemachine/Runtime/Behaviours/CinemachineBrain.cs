@@ -143,7 +143,9 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_DefaultBlend")]
         public CinemachineBlendDefinition DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 2f);
 
-        /// This is the asset that contains custom settings for specific blends.
+        /// <summary>
+        /// This is the asset that contains custom settings for blends between 
+        /// specific virtual cameras in your scene.
         /// </summary>
         [Tooltip("This is the asset that contains custom settings for blends between "
             + "specific virtual cameras in your scene")]
@@ -340,13 +342,13 @@ namespace Unity.Cinemachine
         /// <inheritdoc />
         public bool IsValid => this != null;
 
-        /// <summary>Does nothing</summary>
+        /// <inheritdoc />
         public ICinemachineMixer ParentCamera => null; // GML todo: think about this
 
-        /// <summary>Does nothing</summary>
+        /// <inheritdoc />
         public void UpdateCameraState(Vector3 up, float deltaTime) {} // GML todo: think about this
 
-        /// <summary>Does nothing</summary>
+        /// <inheritdoc />
         public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {} // GML todo: think about this
         
         /// <inheritdoc />

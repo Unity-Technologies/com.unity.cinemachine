@@ -134,12 +134,16 @@ namespace Unity.Cinemachine
 
 namespace Unity.Cinemachine
 {
+    /// <summary>
+    /// IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead.
+    /// </summary>
     [Obsolete("IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead")]
     public static class CinemachineInputProviderExtensions
     {
         /// <summary>
         /// Locate the first component that implements AxisState.IInputAxisProvider.
         /// </summary>
+        /// <param name="vcam">The virtual camera in queston</param>
         /// <returns>The first AxisState.IInputAxisProvider or null if none</returns>
         public static AxisState.IInputAxisProvider GetInputAxisProvider(this CinemachineVirtualCameraBase vcam)
         {
