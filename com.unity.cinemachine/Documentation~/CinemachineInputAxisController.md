@@ -8,6 +8,8 @@ It is compatible with both Unity's Input Package and Unity's legacy input manage
 
 The Input Axis Controller not only maps inputs to the exposed axes, it also provides settings for each axis to tune the responsiveness with accel/decel and gain.
 
+If you like, you can also use CinemachineInputAxisController with your own scripts to drive input axes, for example in scripts that implement player motion. See the Cinemachine Sample scenes for examples of this.
+
 ## Usage
 
 This component makes it easy to control a `CinemachineCamera` in a single player environment with a mouse and keyboard or a controller.
@@ -31,7 +33,7 @@ This component makes it easy to control a `CinemachineCamera` in a single player
 
 ## Creating your own Input Axis Controller
 
-In some cases you may need to create your own Input controller. This example shows how to control a Camera with a slider. It can be easily modified to be used with other objects.
+The default implementation of `CinemachineInputAxisController` can process input from the Input package and from Unity's legacy input system. In the case where you want your input to come from an other source, you may need to create your own input controller.
 
 ```cs
 using Unity.Cinemachine;
@@ -39,7 +41,6 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Must implement IInputAxisReader InputAxisControllerBase.
 [Serializable]
 public class SliderReader : IInputAxisReader 
 {
@@ -47,7 +48,10 @@ public class SliderReader : IInputAxisReader
     [SerializeField]
     Slider m_Slider; 
 
-    public float GetValue(UnityEngine.Object context, int playerIndex, bool autoEnableInput, IInputAxisOwner.AxisDescriptor.Hints hint)
+    public float GetValue(UnityEngine.Object context, 
+        int playerIndex, 
+        bool autoEnableInput, 
+        IInputAxisOwner.AxisDescriptor.Hints hint)
     {
         // The value returned will change the axis value.
         if (m_Slider != null)
@@ -83,8 +87,8 @@ using UnityEngine.InputSystem;
 
 class PlayerInputReceiver : InputAxisControllerBase<SimpleReader>
 {
-[SerializeField]
-private PlayerInput m_PlayerInput;
+    [SerializeField]
+    private PlayerInput m_PlayerInput;
 
     private void Awake()
     {
