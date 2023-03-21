@@ -39,30 +39,35 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Must implement IInputAxisReader InputAxisControllerBase.
 [Serializable]
-public class SliderReader : IInputAxisReader // Required to use InputAxisControllerBase.
+public class SliderReader : IInputAxisReader 
 {
+    // Replace this with the type you would like to use
     [SerializeField]
-    Slider m_Slider; // Replace this with your own type.
+    Slider m_Slider; 
 
     public float GetValue(UnityEngine.Object context, int playerIndex, bool autoEnableInput, IInputAxisOwner.AxisDescriptor.Hints hint)
     {
+        // The value returned will change the axis value.
         if (m_Slider != null)
-            return m_Slider.value; // The value returned will change the axis value.
+            return m_Slider.value;
         
         return 0;
     }
 }
 
-public class SliderInputController : InputAxisControllerBase<SliderReader> {} //The component of your reader. Input InputAxisControllerBase handles the setup.
+//The component that you will add to your CinemachineCamera.
+public class SliderInputController : InputAxisControllerBase<SliderReader> {} 
 
+// Optional but recommended if want a nice inspector.
 #if UNITY_EDITOR
-[UnityEditor.CustomEditor(typeof(SliderInputController))] // Optional but recommended if want a nice inspector.
+[UnityEditor.CustomEditor(typeof(SliderInputController))]
 public class SliderControllerEditor : Unity.Cinemachine.Editor.InputAxisControllerEditor {}
 #endif
 ```
 
-## CinemachineCamera and Input system components
+## PlayerInput and PlayerInputManager components with Cinemachine
 
 We assume you already know how to setup `PlayerInput` and `PlayerInputManager`. All the documentation can be found on the Input System package documentation page and samples.
 
@@ -83,14 +88,16 @@ private PlayerInput m_PlayerInput;
 
     private void Awake()
     {
-        m_PlayerInput.onActionTriggered += OnActionTriggered; // Call back when the PlayerInput receives an Input.
+        // Call back when the PlayerInput receives an Input.
+        m_PlayerInput.onActionTriggered += OnActionTriggered;
     }
 
     public void OnActionTriggered(InputAction.CallbackContext value)
     {
+        // Sends the Input to all the controllers.
         foreach (var controller in Controllers)
         {
-            controller.Input.SetValue(value.action); // Send the Input to all the controllers.
+            controller.Input.SetValue(value.action);
         }
     }
 }
@@ -98,14 +105,16 @@ private PlayerInput m_PlayerInput;
 [Serializable]
 class SimpleReader : IInputAxisReader
 {
-    private Vector2 m_Value; // Assumes the action is a Vector2 for simplicity but can be changed for a float.
+    // Assumes the action is a Vector2 for simplicity but can be changed for a float.
+    private Vector2 m_Value;
     [SerializeField]
     private InputActionReference m_Input;
     
     public void SetValue(InputAction action)
     {
+        // Is the input referenced in the inspector matches the updated one update the value.
         if (m_Input!= null && m_Input.action.id == action.id)
-            m_Value = action.ReadValue<Vector2>(); // Is the input referenced in the inspector matches the updated one update the value.
+            m_Value = action.ReadValue<Vector2>();
     }
 
     public float GetValue(UnityEngine.Object context, int playerIndex, bool autoEnableInput, IInputAxisOwner.AxisDescriptor.Hints hint)
@@ -140,11 +149,14 @@ public class CinemachineCameraSetter : MonoBehaviour
 
     void Start()
     {
-        transform.position = new Vector3(CinemachineCore.Instance.BrainCount, 2, 0);// Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
-        m_CinemachineBrain.ChannelMask = (OutputChannel.Channels) (1 << CinemachineCore.Instance.BrainCount); // Shift one bit per brain Count on the CinemachineCamera.
-        m_CinemachineCamera.OutputChannel.Value = (OutputChannel.Channels) (1 << CinemachineCore.Instance.BrainCount); // Shift one bit per brain Count on the CinemachineCamera.
+        transform.position = new Vector3(CinemachineCore.Instance.BrainCount, 2, 0);
+        
+        // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
+        var channel = 1 << CinemachineCore.Instance.BrainCount;
+        // Shift one bit per brain Count on the CinemachineCamera.
+        m_CinemachineBrain.ChannelMask = (OutputChannel.Channels) channel;
+        // Shift one bit per brain Count on the CinemachineCamera.
+        m_CinemachineCamera.OutputChannel.Value = (OutputChannel.Channels) channel;
     }
 }
 ```
-
-Refer to the samples for more information on the recommended setup.
