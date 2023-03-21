@@ -76,7 +76,7 @@ For more complex input configuration like supporting multiple devices, local mul
 
 ### Read from PlayerInput component
 
-To read values from a `PlayerInput` with a `behaviour` set to `InvokeCSharpEvents`, You need to create a custom `InputAxisController` that subscribes to `onActionTriggered`. The example bellow shows how to receive and wire those inputs accordingly. Add this script to your `CinemachineCamera` and assign the `PlayerInput` field.
+To read values from a `PlayerInput` with a `behaviour` set to `InvokeCSharpEvents`, you need to create a custom `InputAxisController` that subscribes to `onActionTriggered`. The example bellow shows how to receive and wire those inputs accordingly. Add this script to your `CinemachineCamera` and assign the `PlayerInput` field.
 
 ```cs
 using UnityEngine;
@@ -142,7 +142,7 @@ public class PlayerInputReceiverEditor : Unity.Cinemachine.Editor.InputAxisContr
 
 ### Local split screen multiplayer
 
-In a split screen multiplayer environment using `PlayerInputManager` and `PlayerInput` components you will need one `CinemachineBrain` and one `CinemachineCamera` per player `Camera` and increase the channel mask of both the `CinemachineCamera` and the `CinemachineBrain`.
+In a split screen multiplayer environment using `PlayerInputManager` and `PlayerInput` components you will need one `CinemachineBrain` and one `CinemachineCamera` per `Camera`. You will also need to assign a different channel mask for both the `CinemachineCamera` and the `CinemachineBrain` for every player.
 
 ```cs
 using Unity.Cinemachine;
