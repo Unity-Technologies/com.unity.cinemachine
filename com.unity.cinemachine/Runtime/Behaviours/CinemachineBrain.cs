@@ -416,7 +416,8 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Get the current active virtual camera.
         /// </summary>
-        public ICinemachineCamera ActiveVirtualCamera => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
+        public ICinemachineCamera ActiveVirtualCamera 
+            => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
 
         /// <summary>
         /// Is there a blend in progress?
@@ -542,10 +543,30 @@ namespace Unity.Cinemachine
             return fixedDelta ? Time.fixedDeltaTime : Time.deltaTime;
         }
         
-        /// <summary>
-        /// Get the highest-priority Enabled ICinemachineCamera
-        /// that is visible to my camera.  Channele Mask is used to test visibility.
-        /// </summary>
+        void UpdateVirtualCameras(CameraUpdateManager.UpdateFilter updateFilter, float deltaTime)
+        {
+            // We always update all active virtual cameras
+            CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
+            CameraUpdateManager.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
+
+            // Make sure all live cameras get updated, in case some of them are deactivated
+            if (CinemachineCore.SoloCamera != null)
+                CinemachineCore.SoloCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
+            m_BlendManager.RefreshCurrentCameraState(DefaultWorldUp, deltaTime);
+
+            // Restore the filter for general use
+            updateFilter = CameraUpdateManager.UpdateFilter.Late;
+            if (Application.isPlaying)
+            {
+                if (UpdateMethod == UpdateMethods.SmartUpdate)
+                    updateFilter |= CameraUpdateManager.UpdateFilter.Smart;
+                else if (UpdateMethod == UpdateMethods.FixedUpdate)
+                    updateFilter = CameraUpdateManager.UpdateFilter.Fixed;
+            }
+            CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
+        }
+        
+        /// Get the highest-priority Enabled ICinemachineCamera that is in my Channel Mask.
         ICinemachineCamera TopCameraFromPriorityQueue()
         {
             int numCameras = CameraUpdateManager.VirtualCameraCount;
@@ -586,29 +607,6 @@ namespace Unity.Cinemachine
                 state.BlendHint |= CameraState.BlendHints.NoTransform | CameraState.BlendHints.NoLens;
                 PushStateToUnityCamera(ref state);
             }
-        }
-        
-        void UpdateVirtualCameras(CameraUpdateManager.UpdateFilter updateFilter, float deltaTime)
-        {
-            // We always update all active virtual cameras
-            CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
-            CameraUpdateManager.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
-
-            // Make sure all live cameras get updated, in case some of them are deactivated
-            if (CinemachineCore.SoloCamera != null)
-                CinemachineCore.SoloCamera.UpdateCameraState(DefaultWorldUp, deltaTime);
-            m_BlendManager.RefreshCurrentCameraState(DefaultWorldUp, deltaTime);
-
-            // Restore the filter for general use
-            updateFilter = CameraUpdateManager.UpdateFilter.Late;
-            if (Application.isPlaying)
-            {
-                if (UpdateMethod == UpdateMethods.SmartUpdate)
-                    updateFilter |= CameraUpdateManager.UpdateFilter.Smart;
-                else if (UpdateMethod == UpdateMethods.FixedUpdate)
-                    updateFilter = CameraUpdateManager.UpdateFilter.Fixed;
-            }
-            CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
         }
 
         /// <summary> Apply a cref="CameraState"/> to the game object</summary>
@@ -673,8 +671,8 @@ namespace Unity.Cinemachine
                     }
                 }
             }
-            if (CinemachineCore.CameraUpdatedEvent != null)
-                CinemachineCore.CameraUpdatedEvent.Invoke(this);
+            // Send the camera updated event
+            CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
     }
 }
