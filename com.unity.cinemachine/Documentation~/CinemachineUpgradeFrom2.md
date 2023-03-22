@@ -18,6 +18,9 @@ Here are the steps to take when upgrading an existing project from CM 2.X:
 1. After the data upgrade, object references might be broken. You will need to check and repair them if necessary.
 1. If you are using layers to filter cameras into separate split-screen brains, that filtering will stop working until after you have upgraded to CinemachineCameras and switched the filtering over to Channels.
 
+Note: if at any stage you get errors of this nature, just restart Unity:
+
+![Assembly Errors](images/AssemblyErrors.png)
 
 ## What has Changed in the API
 
