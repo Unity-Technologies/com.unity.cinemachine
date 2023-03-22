@@ -110,8 +110,8 @@ namespace Unity.Cinemachine
         /// CinemachineCore.GetBlendOverride will be called at the end, so that the
         /// client may override the choice of blend.
         /// </summary>
-        /// <param name="fromKey">The game object name of the from camera</param>
-        /// <param name="toKey">The game object name of the to camera</param>
+        /// <param name="fromKey">The game object of the from camera.</param>
+        /// <param name="toKey">The game object of the to camera.</param>
         /// <param name="defaultBlend">Blend to return if no custom blend found.</param>
         /// <param name="customBlends">The custom blends asset to search, or null.</param>
         /// <param name="owner">The object that is requesting the blend, for 

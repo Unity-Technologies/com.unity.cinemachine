@@ -75,7 +75,7 @@ namespace Unity.Cinemachine
         int m_NextFrameId = 1;
 
         // To avoid GC memory alloc every frame
-        static readonly AnimationCurve s_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        static readonly AnimationCurve k_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
         // GML todo: delete this
         /// <summary>Get the default world up for the virtual cameras.</summary>
@@ -96,7 +96,7 @@ namespace Unity.Cinemachine
             frame.DeltaTimeOverride = deltaTime;
             frame.Blend.CamA = camA;
             frame.Blend.CamB = camB;
-            frame.Blend.BlendCurve = s_DefaultLinearAnimationCurve;
+            frame.Blend.BlendCurve = k_DefaultLinearAnimationCurve;
             frame.Blend.Duration = 1;
             frame.Blend.TimeInBlend = weightB;
 
@@ -109,18 +109,18 @@ namespace Unity.Cinemachine
                 cam.EnsureStarted();
 
             return overrideId;
-        }
-
-        /// Get the frame index corresponding to the ID
-        int FindFrame(int withId)
-        {
-            int count = m_FrameStack.Count;
-            for (int i = count - 1; i > 0; --i)
-                if (m_FrameStack[i].id == withId)
-                    return i;
-            // Not found - add it
-            m_FrameStack.Add(new StackFrame() { id = withId });
-            return m_FrameStack.Count - 1;
+            
+            // local function to get the frame index corresponding to the ID
+            int FindFrame(int withId)
+            {
+                int count = m_FrameStack.Count;
+                for (int i = count - 1; i > 0; --i)
+                    if (m_FrameStack[i].id == withId)
+                        return i;
+                // Not found - add it
+                m_FrameStack.Add(new StackFrame { id = withId });
+                return m_FrameStack.Count - 1;
+            }
         }
 
         /// <inheritdoc />

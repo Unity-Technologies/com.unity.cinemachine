@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
-    internal static class Documentation 
+    static class Documentation 
     {
         /// <summary>This must be used like
         /// [HelpURL(Documentation.BaseURL + "api/some-page.html")]
@@ -18,7 +18,7 @@ namespace Unity.Cinemachine
     /// CinemachineCamera, and the priority queue.  Provides
     /// services to keeping track of whether CinemachineCameras have
     /// been updated each frame.</summary>
-    public sealed class CinemachineCore
+    public static class CinemachineCore
     {
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
         internal const int kStreamingVersion = 20230301;
