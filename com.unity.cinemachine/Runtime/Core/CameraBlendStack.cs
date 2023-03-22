@@ -4,7 +4,8 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This interface is specifically for Timeline.  Do not use it.
+    /// This interface is specifically for Timeline.  The cinemachine timeline track
+    /// drives its target via this interface.
     /// </summary>
     public interface ICameraOverrideStack
     {
@@ -75,7 +76,7 @@ namespace Unity.Cinemachine
         int m_NextFrameId = 1;
 
         // To avoid GC memory alloc every frame
-        static readonly AnimationCurve k_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
+        static readonly AnimationCurve s_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
         // GML todo: delete this
         /// <summary>Get the default world up for the virtual cameras.</summary>
@@ -96,7 +97,7 @@ namespace Unity.Cinemachine
             frame.DeltaTimeOverride = deltaTime;
             frame.Blend.CamA = camA;
             frame.Blend.CamB = camB;
-            frame.Blend.BlendCurve = k_DefaultLinearAnimationCurve;
+            frame.Blend.BlendCurve = s_DefaultLinearAnimationCurve;
             frame.Blend.Duration = 1;
             frame.Blend.TimeInBlend = weightB;
 
@@ -273,7 +274,7 @@ namespace Unity.Cinemachine
         /// <param name="outputBlend">Receives the nested blend</param>
         /// <param name="numTopLayersToExclude">Optionally exclude the last number 
         /// of overrides from the blend</param>
-        public void ComputeCurrentBlend(
+        public void ProcessOverrideFrames(
             ref CinemachineBlend outputBlend, int numTopLayersToExclude)
         {
             // Make sure there is a first stack frame

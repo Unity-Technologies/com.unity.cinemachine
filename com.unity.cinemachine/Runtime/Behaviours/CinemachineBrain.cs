@@ -194,7 +194,7 @@ namespace Unity.Cinemachine
 
         void OnEnable()
         {
-            m_BlendManager.OnEnable(this);
+            m_BlendManager.OnEnable();
 
             s_ActiveBrains.Add(this);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
@@ -568,7 +568,7 @@ namespace Unity.Cinemachine
                 var state = CinemachineCore.SoloCamera.State;
                 PushStateToUnityCamera(ref state);
             }
-            else if (m_BlendManager.ProcessActiveCamera(DefaultWorldUp, deltaTime) != null)
+            else if (m_BlendManager.ProcessActiveCamera(this, DefaultWorldUp, deltaTime) != null)
             {
                 // Apply the vcam state to the Unity camera
                 var state = m_BlendManager.CameraState;

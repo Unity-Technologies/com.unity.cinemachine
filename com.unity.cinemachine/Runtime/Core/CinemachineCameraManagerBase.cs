@@ -54,7 +54,7 @@ namespace Unity.Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            m_BlendManager.OnEnable(this);
+            m_BlendManager.OnEnable();
             InvalidateCameraCache();
         }
 
@@ -215,7 +215,7 @@ namespace Unity.Cinemachine
         {
             m_BlendManager.UpdateRootFrame(activeCamera, deltaTime, lookupBlend);
             m_BlendManager.ComputeCurrentBlend();
-            m_BlendManager.ProcessActiveCamera(worldUp, deltaTime);
+            m_BlendManager.ProcessActiveCamera(this, worldUp, deltaTime);
         }
 
         /// <summary>Cancel current active camera and all blends</summary>
