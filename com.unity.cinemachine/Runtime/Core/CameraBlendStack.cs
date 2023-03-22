@@ -52,22 +52,45 @@ namespace Unity.Cinemachine
     /// </summary>
     internal class CameraBlendStack : ICameraOverrideStack
     {
-        class StackFrame
+        const float kEpsilon = UnityVectorExtensions.Epsilon;
+
+        class StackFrame : BlendSourceVirtualCamera
         {
             public int id;
-            public CinemachineBlend Blend = new (null, null, null, 0, 0);
-            public bool Active => Blend.IsValid;
-
-            // Working data - updated every frame
-            public CinemachineBlend WorkingBlend = new (null, null, null, 0, 0);
-            public BlendSourceVirtualCamera WorkingBlendSource = new (null);
-
-            // Used by Timeline Preview for overriding the current value of deltaTime
+            public readonly CinemachineBlend Source = new (null, null, null, 1, 0);
             public float DeltaTimeOverride;
 
-            // Used for blend reversal.  Range is 0...1,
-            // representing where the blend started when reversed mid-blend
-            public float BlendStartPosition;
+            // If blending in from a snapshot, this holds the source state
+            readonly StaticStateVirtualCamera m_Snapshot = new (CameraState.Default, string.Empty);
+            ICinemachineCamera m_SnapshotSource;
+            float m_SnapshotBlendWeight;
+
+            public StackFrame() : base(new (null, null, null, 1, 0)) {}
+            public bool Active => Source.IsValid;
+
+            // This is a little tricky, because we only want to take a new snapshot at the start 
+            // of a blend.  In other cases, we reuse the last snapshot taken, until a new blend starts.
+            public ICinemachineCamera GetSnapshotIfAppropriate(ICinemachineCamera cam, float weight)
+            {
+                if (cam == null || (cam.State.BlendHint & CameraState.BlendHints.FreezeWhenBlendingOut) == 0)
+                {
+                    // No snapshot required - reset it
+                    m_SnapshotSource = null;
+                    return cam;
+                }
+                // A snapshot is needed
+                if (m_SnapshotSource != cam || m_SnapshotBlendWeight > weight)
+                {
+                    // At this point we're pretty sure this is a new blend,
+                    // so we take a new snapshot of the camera state
+                    m_Snapshot.Name = cam.Name;
+                    m_Snapshot.State = cam.State;
+                    m_SnapshotSource = cam;
+                    m_SnapshotBlendWeight = weight;
+                }
+                // Use the most recent snapshot
+                return m_Snapshot;
+            }
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
@@ -90,23 +113,19 @@ namespace Unity.Cinemachine
             if (overrideId < 0)
                 overrideId = m_NextFrameId++;
 
-// GML todo: how to handle BlendHints.BlendOutFromSnapshot?
-
             var frame = m_FrameStack[FindFrame(overrideId)];
             frame.DeltaTimeOverride = deltaTime;
-            frame.Blend.CamA = camA;
-            frame.Blend.CamB = camB;
-            frame.Blend.BlendCurve = s_DefaultLinearAnimationCurve;
-            frame.Blend.Duration = 1;
-            frame.Blend.TimeInBlend = weightB;
+            frame.Source.CamA = camA;
+            frame.Source.CamB = camB;
+            frame.Source.Duration = 1;
+            frame.Source.BlendCurve = s_DefaultLinearAnimationCurve;
+            frame.Source.TimeInBlend = weightB;
 
             // In case vcams are inactive game objects, make sure they get initialized properly
-            var cam = camA as CinemachineVirtualCameraBase;
-            if (cam != null)
-                cam.EnsureStarted();
-            cam = camB as CinemachineVirtualCameraBase;
-            if (cam != null)
-                cam.EnsureStarted();
+            if (camA is CinemachineVirtualCameraBase vcamA)
+                vcamA.EnsureStarted();
+            if (camB is CinemachineVirtualCameraBase vcamB)
+                vcamB.EnsureStarted();
 
             return overrideId;
         }
@@ -161,7 +180,11 @@ namespace Unity.Cinemachine
             if (m_FrameStack.Count == 0)
                 m_FrameStack.Add(new StackFrame());
             else
-                m_FrameStack[0] = new StackFrame();
+            {
+                var frame = m_FrameStack[0];
+                frame.Blend.CamA = frame.Blend.CamB = null;
+                frame.Source.CamA = frame.Source.CamB = null;
+            }
         }
 
         /// <summary>
@@ -178,79 +201,70 @@ namespace Unity.Cinemachine
             if (m_FrameStack.Count == 0)
                 m_FrameStack.Add(new StackFrame());
 
-            // Update the in-game frame (frame 0)
+            // Update the root frame (frame 0)
             var frame = m_FrameStack[0];
-
-            // Are we transitioning cameras?
-            var outGoingCamera = frame.Blend.CamB;
-
-            if (activeCamera != outGoingCamera)
+            var outgoingCamera = frame.Source.CamB;
+            if (activeCamera != outgoingCamera)
             {
+                bool backingOutOfBlend = false;
+
                 // Do we need to create a game-play blend?
                 if (lookupBlend != null && activeCamera != null && activeCamera.IsValid
-                    && outGoingCamera != null && outGoingCamera.IsValid && deltaTime >= 0)
+                    && outgoingCamera != null && outgoingCamera.IsValid && deltaTime >= 0)
                 {
                     // Create a blend (curve will be null if a cut)
-                    var blendDef = lookupBlend(outGoingCamera, activeCamera);
-                    float blendDuration = blendDef.BlendTime;
-                    float BlendStartPosition = 0;
-                    if (blendDef.BlendCurve != null && blendDuration > UnityVectorExtensions.Epsilon)
+                    var blendDef = lookupBlend(outgoingCamera, activeCamera);
+                    if (blendDef.BlendCurve != null && blendDef.BlendTime > kEpsilon)
                     {
-                        if (frame.Blend.IsComplete)
-                        {
-                            // new blend
-#if false // GML todo: think about this
-                            if ((outGoingCamera.State.BlendHint & CameraState.BlendHints.BlendOutFromSnapshot) != 0)
-                                frame.Blend.CamA = new StaticPointVirtualCamera(outGoingCamera.State, outGoingCamera.Name);
-                            else
-#endif
-                            frame.Blend.CamA = outGoingCamera;  
-                        }
-                        else
-                        {
-                            // Special case: if backing out of a blend-in-progress
-                            // with the same blend in reverse, adjust the blend time
-                            // to cancel out the progress made in the opposite direction
-                            if ((frame.Blend.CamA == activeCamera 
-                                    || (frame.Blend.CamA as BlendSourceVirtualCamera)?.Blend.CamB == activeCamera) 
-                                && frame.Blend.CamB == outGoingCamera)
-                            {
-                                // How far have we blended?  That is what we must undo
-                                var progress = frame.BlendStartPosition 
-                                    + (1 - frame.BlendStartPosition) * frame.Blend.TimeInBlend / frame.Blend.Duration;
-                                blendDuration *= progress;
-                                BlendStartPosition = 1 - progress;
-                            }
-                            
-                            // Chain to existing blend.
-                            // Special check here: if incoming is InheritPosition and if it's already live
-                            // in the outgoing blend, use a snapshot otherwise there could be a pop
-                            if ((activeCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
-                                && frame.Blend.Uses(activeCamera))
-                            {
-                                frame.Blend.CamA = new StaticPointVirtualCamera(
-                                    frame.Blend.State, frame.Blend.CamB.Name + " mid-blend");
-                            }
-                            else
-                            {
-                                frame.Blend.CamA = new BlendSourceVirtualCamera(
-                                    new CinemachineBlend(
-                                        frame.Blend.CamA, frame.Blend.CamB,
-                                        frame.Blend.BlendCurve, frame.Blend.Duration,
-                                        frame.Blend.TimeInBlend));
-                            }
-                        }
+                        // Are we backing out of a blend-in-progress?
+                        backingOutOfBlend = frame.Source.CamA == activeCamera && frame.Source.CamB == outgoingCamera;
+
+                        frame.Source.CamA = outgoingCamera;
+                        frame.Source.BlendCurve = blendDef.BlendCurve;
+                        frame.Source.Duration = blendDef.BlendTime;
+                        frame.Source.TimeInBlend = 0;
                     }
-                    frame.Blend.BlendCurve = blendDef.BlendCurve;
-                    frame.Blend.Duration = blendDuration;
-                    frame.Blend.TimeInBlend = 0;
-                    frame.BlendStartPosition = BlendStartPosition;
                 }
-                // Set the current active camera
+                frame.Source.CamB = activeCamera;
+
+                // Update the working blend:
+                // Check the status of the working blend.  If not blending, no problem.
+                // Otherwise, we need to do some work to chain the blends.
+                var duration = frame.Source.Duration;
+                if (frame.Blend.IsComplete)
+                    frame.Blend.CamA = frame.GetSnapshotIfAppropriate(outgoingCamera, 0); // new blend
+                else
+                {
+                    bool snapshot = (frame.Blend.State.BlendHint & CameraState.BlendHints.FreezeWhenBlendingOut) != 0;
+                    
+                    // Special check here: if incoming is InheritPosition and if it's already live
+                    // in the outgoing blend, use a snapshot otherwise there could be a pop
+                    if (!snapshot 
+                        && (activeCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                        && frame.Blend.Uses(activeCamera))
+                        snapshot = true;
+
+                    // Special case: if backing out of a blend-in-progress
+                    // with the same blend in reverse, adjust the blend time
+                    // to cancel out the progress made in the opposite direction
+                    if (backingOutOfBlend)
+                    {
+                        snapshot = true;
+                        duration = frame.Blend.TimeInBlend;
+                    }
+
+                    // Chain to existing blend
+                    frame.Blend.CamA = snapshot 
+                        ? new StaticStateVirtualCamera(frame.Blend.State, outgoingCamera.Name)
+                        : new BlendSourceVirtualCamera(new CinemachineBlend(frame.Blend));
+                }
                 frame.Blend.CamB = activeCamera;
+                frame.Blend.BlendCurve = frame.Source.BlendCurve;
+                frame.Blend.Duration = duration;
+                frame.Blend.TimeInBlend = 0;
             }
 
-            // Advance the current blend (if any)
+            // Advance the working blend
             if (frame.Blend.CamA != null)
             {
                 frame.Blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.Blend.Duration;
@@ -273,8 +287,7 @@ namespace Unity.Cinemachine
         /// <param name="outputBlend">Receives the nested blend</param>
         /// <param name="numTopLayersToExclude">Optionally exclude the last number 
         /// of overrides from the blend</param>
-        public void ComputeCurrentBlend(
-            ref CinemachineBlend outputBlend, int numTopLayersToExclude)
+        public void ComputeCurrentBlend(ref CinemachineBlend outputBlend, int numTopLayersToExclude)
         {
             // Make sure there is a first stack frame
             if (m_FrameStack.Count == 0)
@@ -282,49 +295,28 @@ namespace Unity.Cinemachine
 
             // Resolve the current working frame states in the stack
             int lastActive = 0;
-            int topLayer = Mathf.Max(1, m_FrameStack.Count - numTopLayersToExclude);
-            for (int i = 0; i < topLayer; ++i)
+            int topLayer = Mathf.Max(0, m_FrameStack.Count - numTopLayersToExclude);
+            for (int i = 1; i < topLayer; ++i)
             {
-                StackFrame frame = m_FrameStack[i];
-                if (i == 0 || frame.Active)
+                var frame = m_FrameStack[i];
+                if (frame.Active)
                 {
-                    frame.WorkingBlend.CamA = frame.Blend.CamA;
-                    frame.WorkingBlend.CamB = frame.Blend.CamB;
-                    frame.WorkingBlend.BlendCurve = frame.Blend.BlendCurve;
-                    frame.WorkingBlend.Duration = frame.Blend.Duration;
-                    frame.WorkingBlend.TimeInBlend = frame.Blend.TimeInBlend;
-                    if (i > 0 && !frame.Blend.IsComplete)
+                    frame.Blend.CopyFrom(frame.Source);
+                    if (frame.Source.CamA != null)
+                        frame.Blend.CamA = frame.GetSnapshotIfAppropriate(
+                            frame.Source.CamA, frame.Source.TimeInBlend);
+
+                    // Handle cases where we're blending into or out of nothing
+                    if (!frame.Blend.IsComplete)
                     {
-                        if (frame.WorkingBlend.CamA == null)
-                        {
-                            if (m_FrameStack[lastActive].Blend.IsComplete)
-                                frame.WorkingBlend.CamA = m_FrameStack[lastActive].Blend.CamB;
-                            else
-                            {
-                                frame.WorkingBlendSource.Blend = m_FrameStack[lastActive].WorkingBlend;
-                                frame.WorkingBlend.CamA = frame.WorkingBlendSource;
-                            }
-                        }
-                        else if (frame.WorkingBlend.CamB == null)
-                        {
-                            if (m_FrameStack[lastActive].Blend.IsComplete)
-                                frame.WorkingBlend.CamB = m_FrameStack[lastActive].Blend.CamB;
-                            else
-                            {
-                                frame.WorkingBlendSource.Blend = m_FrameStack[lastActive].WorkingBlend;
-                                frame.WorkingBlend.CamB = frame.WorkingBlendSource;
-                            }
-                        }
+                        frame.Blend.CamA ??= frame.GetSnapshotIfAppropriate(
+                            m_FrameStack[lastActive], frame.Blend.TimeInBlend);
+                        frame.Blend.CamB ??= m_FrameStack[lastActive];
                     }
                     lastActive = i;
                 }
             }
-            var workingBlend = m_FrameStack[lastActive].WorkingBlend;
-            outputBlend.CamA = workingBlend.CamA;
-            outputBlend.CamB = workingBlend.CamB;
-            outputBlend.BlendCurve = workingBlend.BlendCurve;
-            outputBlend.Duration = workingBlend.Duration;
-            outputBlend.TimeInBlend = workingBlend.TimeInBlend;
+            outputBlend.CopyFrom(m_FrameStack[lastActive].Blend);
         }
 
         /// <summary>
@@ -338,7 +330,7 @@ namespace Unity.Cinemachine
                 if (blend == null)
                     m_FrameStack[0].Blend.Duration = 0;
                 else
-                    m_FrameStack[0].Blend = blend;
+                    m_FrameStack[0].Blend.CopyFrom(blend);
             }
         }
 

@@ -37,7 +37,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
-        public bool IsValid => ((CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid));
+        public bool IsValid => (CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid);
 
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration;
@@ -96,6 +96,21 @@ namespace Unity.Cinemachine
             BlendCurve = curve;
             TimeInBlend = t;
             Duration = duration;
+        }
+
+        /// <summary>Construct a blend</summary>
+        /// <param name="src">Copy fields from this blend</param>
+        public CinemachineBlend(CinemachineBlend src) => CopyFrom(src);
+
+        /// <summary>Copy contents of a blend</summary>
+        /// <param name="src">Copy fields from this blend</param>
+        public void CopyFrom(CinemachineBlend src)
+        {
+            CamA = src.CamA;
+            CamB = src.CamB;
+            BlendCurve = src.BlendCurve;
+            TimeInBlend = src.TimeInBlend;
+            Duration = src.Duration;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
@@ -255,17 +270,30 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// Point source for blending. It's not really a virtual camera, but takes
+    /// Static source for blending. It's not really a virtual camera, but takes
     /// a CameraState and exposes it as a virtual camera for the purposes of blending.
     /// </summary>
-    internal class StaticPointVirtualCamera : ICinemachineCamera
+    internal class StaticStateVirtualCamera : ICinemachineCamera
     {
-        public StaticPointVirtualCamera(CameraState state, string name) { State = state; Name = name; }
-        public void SetState(CameraState state) { State = state; }
+        string m_Name;
+        CameraState m_State;
 
-        public string Name { get; private set; }
-        public string Description => string.Empty;
-        public CameraState State { get; private set; }
+        public StaticStateVirtualCamera(CameraState state, string name) 
+        {
+            m_State = state;
+            m_Name = name;
+        }
+        public string Name { get => m_Name; set => m_Name = value; }
+        public string Description => "snapshot";
+        public CameraState State 
+        {
+            get => m_State; 
+            set 
+            {
+                m_State = value; 
+                m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
+            }
+        }
         public bool IsValid => true;
         public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
@@ -282,7 +310,7 @@ namespace Unity.Cinemachine
         public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
 
-        public string Name => Blend == null ? "(null)" : Blend.CamB.Name + " mid-blend";
+        public string Name => (Blend == null || Blend.CamB == null)? "(null)" : Blend.CamB.Name;
         public string Description => Blend == null ? "(null)" : Blend.Description;
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
