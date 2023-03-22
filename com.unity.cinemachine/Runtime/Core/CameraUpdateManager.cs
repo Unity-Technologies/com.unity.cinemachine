@@ -4,12 +4,11 @@ using System.Collections.Generic;
 namespace Unity.Cinemachine
 {
     /// <summary>Owns Camera Registry.
-    /// Provides services to update cinemcahine cameras and keep track of 
+    /// Provides services to update cinemachine cameras and keep track of 
     /// whether and how they have been updated each frame.</summary>
-    internal sealed class CameraUpdateManager
+    static class CameraUpdateManager
     {
         static readonly VirtualCameraRegistry s_CameraRegistry = new ();
-
         static CinemachineVirtualCameraBase s_RoundRobinVcamLastFrame = null;
         static float s_LastUpdateTime;
         static int s_FixedFrameCount; // Current fixed frame count
@@ -96,7 +95,7 @@ namespace Unity.Cinemachine
             }
 
             // Update the leaf-most cameras first
-            var allCameras = s_CameraRegistry.AllCamrasSortedByNestingLevel;
+            var allCameras = s_CameraRegistry.AllCamerasSortedByNestingLevel;
             for (int i = allCameras.Count-1; i >= 0; --i)
             {
                 var sublist = allCameras[i];

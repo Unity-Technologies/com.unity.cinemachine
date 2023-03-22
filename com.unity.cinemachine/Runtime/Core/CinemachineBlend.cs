@@ -155,7 +155,7 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <param name="fromKey">The outgoing camera</param>
         /// <param name="toKey">The incoming camera</param>
-        /// <returns>An approprate blend definition,.  Must not be null.</returns>
+        /// <returns>An appropriate blend definition,.  Must not be null.</returns>
         public delegate CinemachineBlendDefinition LookupBlendDelegate(
             ICinemachineCamera fromKey, ICinemachineCamera toKey);
 

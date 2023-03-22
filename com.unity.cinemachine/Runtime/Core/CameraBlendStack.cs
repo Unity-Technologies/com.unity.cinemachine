@@ -4,7 +4,8 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This interface is specifically for Timeline.  Do not use it.
+    /// This interface is specifically for Timeline.  The cinemachine timeline track
+    /// drives its target via this interface.
     /// </summary>
     public interface ICameraOverrideStack
     {
@@ -128,18 +129,18 @@ namespace Unity.Cinemachine
                 vcamB.EnsureStarted();
 
             return overrideId;
-        }
-
-        /// Get the frame index corresponding to the ID
-        int FindFrame(int withId)
-        {
-            int count = m_FrameStack.Count;
-            for (int i = count - 1; i > 0; --i)
-                if (m_FrameStack[i].id == withId)
-                    return i;
-            // Not found - add it
-            m_FrameStack.Add(new StackFrame() { id = withId });
-            return m_FrameStack.Count - 1;
+            
+            // local function to get the frame index corresponding to the ID
+            int FindFrame(int withId)
+            {
+                int count = m_FrameStack.Count;
+                for (int i = count - 1; i > 0; --i)
+                    if (m_FrameStack[i].id == withId)
+                        return i;
+                // Not found - add it
+                m_FrameStack.Add(new StackFrame { id = withId });
+                return m_FrameStack.Count - 1;
+            }
         }
 
         /// <inheritdoc />
@@ -287,7 +288,8 @@ namespace Unity.Cinemachine
         /// <param name="outputBlend">Receives the nested blend</param>
         /// <param name="numTopLayersToExclude">Optionally exclude the last number 
         /// of overrides from the blend</param>
-        public void ComputeCurrentBlend(ref CinemachineBlend outputBlend, int numTopLayersToExclude)
+        public void ProcessOverrideFrames(
+            ref CinemachineBlend outputBlend, int numTopLayersToExclude)
         {
             // Make sure there is a first stack frame
             if (m_FrameStack.Count == 0)

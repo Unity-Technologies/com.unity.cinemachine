@@ -5,7 +5,7 @@ namespace Unity.Cinemachine
 {
     /// <summary>Keeps track of CinemachineCameras.  Sorts them by priority, and 
     /// by nesting level, so cameras can get updated leafmost-first.</summary>
-    internal sealed class VirtualCameraRegistry
+    sealed class VirtualCameraRegistry
     {
         /// <summary>List of all active ICinemachineCameras.</summary>
         readonly List<CinemachineVirtualCameraBase> m_ActiveCameras = new ();
@@ -20,7 +20,7 @@ namespace Unity.Cinemachine
         /// All cameras (active or not) sorted by nesting level.  This is to enable
         /// processing in leaf-first order.  Level 0 is root.
         /// </summary>
-        public List<List<CinemachineVirtualCameraBase>> AllCamrasSortedByNestingLevel => m_AllCameras;
+        public List<List<CinemachineVirtualCameraBase>> AllCamerasSortedByNestingLevel => m_AllCameras;
 
         /// <summary>
         /// List of all active CinemachineCameras for all brains.

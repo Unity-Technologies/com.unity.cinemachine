@@ -6,6 +6,8 @@ Sometimes it's desirable to have events sent only for a specific camera, so that
 
 If you add it to a CinemachineCamera, it will expose events that will be fired based on that camera's activity.  Any listeners you add will be called when the events happen for that camera.
 
+If you want to attach events to a CinemachineBrain, please see [Cinemachine Brain Events](CinemachineBrainEvents.md).
+
 ## Properties:
 
 | **Property:** | **Function:** |

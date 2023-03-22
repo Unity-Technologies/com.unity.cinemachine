@@ -7,43 +7,11 @@ namespace Unity.Cinemachine
     /// It takes care of looking up BlendDefinitions when blends need to be created,
     /// and it generates ActivationEvents for camweras when necessary.
     /// </summary>
-    internal class BlendManager : ICameraOverrideStack
+    internal class BlendManager : CameraBlendStack
     {
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
         CinemachineBlend m_CurrentLiveCameras = new (null, null, null, 0, 0);
         ICinemachineCamera m_OutgoingCamera;
-        readonly CameraBlendStack m_BlendStack = new();
-        ICinemachineMixer m_Mixer;
-
-        /// <summary>Call this when owner object is enabled</summary>
-        public void OnEnable(ICinemachineMixer mixer)
-        {
-            m_BlendStack.OnEnable();
-            m_Mixer = mixer;
-        }
-
-         /// <summary>Call this when owner object is disabled</summary>
-        public void OnDisable()
-        {
-            m_BlendStack.OnDisable();
-            m_Mixer = null;
-        }
-        
-        /// <summary>Has OnEnable been called?</summary>
-        public bool IsInitialized => m_BlendStack.IsInitialized;
-
-        /// <inheritdoc />
-        public int SetCameraOverride(
-            int overrideId,
-            ICinemachineCamera camA, ICinemachineCamera camB,
-            float weightB, float deltaTime) => m_BlendStack.SetCameraOverride(overrideId, camA, camB, weightB, deltaTime);
-
-        /// <inheritdoc />
-        public void ReleaseCameraOverride(int overrideId) => m_BlendStack.ReleaseCameraOverride(overrideId);
-        
-        // GML todo: delete this
-        /// <summary>Get the default world up for the virtual cameras.</summary>
-        public Vector3 DefaultWorldUp => Vector3.up;
 
         /// <summary>Get the current active virtual camera.</summary>
         public ICinemachineCamera ActiveVirtualCamera => DeepCamBFromBlend(m_CurrentLiveCameras);
@@ -74,7 +42,7 @@ namespace Unity.Cinemachine
                     return null;
                 return m_CurrentLiveCameras;
             }
-            set => m_BlendStack.SetRootBlend(value);
+            set => SetRootBlend(value);
         }
 
         /// <summary>
@@ -125,28 +93,12 @@ namespace Unity.Cinemachine
         /// or part of a blend in progress.</returns>
         public bool IsLive(ICinemachineCamera cam, bool dominantChildOnly = false) => m_CurrentLiveCameras.Uses(cam);
         
-        /// <summary>Clear the state of the root frame: no current camera, no blend.</summary>
-        public void ResetRootFrame() => m_BlendStack.ResetRootFrame();
-        
-        /// <summary>
-        /// Call this every frame with the current active camera of the root frame.
-        /// </summary>
-        /// <param name="incomingCamera">Current active camera (pre-override)</param>
-        /// <param name="deltaTime">How much time has elapsed, for computing blends</param>
-        /// <param name="lookupBlend">Delegate to use to find a blend definition, when a blend is being created</param>
-        public void UpdateRootFrame(
-            ICinemachineCamera incomingCamera, float deltaTime, 
-            CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
-        {
-            m_BlendStack.UpdateRootFrame(incomingCamera, deltaTime, lookupBlend);
-        }
-
         /// <summary>
         /// Compute the current blend, taking into account
         /// the in-game camera and all the active overrides.  Caller may optionally
         /// exclude n topmost overrides.
         /// </summary>
-        public void ComputeCurrentBlend() => m_BlendStack.ComputeCurrentBlend(ref m_CurrentLiveCameras, 0);
+        public void ComputeCurrentBlend() => ProcessOverrideFrames(ref m_CurrentLiveCameras, 0);
 
         /// <summary>
         /// Special support for fixed update: cameras that have been enabled
@@ -163,7 +115,7 @@ namespace Unity.Cinemachine
         /// <param name="up">Current world up</param>
         /// <param name="deltaTime">Current delta time for this update frame</param>
         /// <returns>Active virtual camera this frame</returns>
-        public ICinemachineCamera ProcessActiveCamera(Vector3 up, float deltaTime)
+        public ICinemachineCamera ProcessActiveCamera(ICinemachineMixer mixer, Vector3 up, float deltaTime)
         {
             var incomingCamera = ActiveVirtualCamera;
             if (incomingCamera != null && incomingCamera.IsValid)
@@ -176,7 +128,7 @@ namespace Unity.Cinemachine
                     // Generate ActivationEvents
                     var evt = new ICinemachineCamera.ActivationEventParams
                     {
-                        Origin = m_Mixer,
+                        Origin = mixer,
                         OutgoingCamera = m_OutgoingCamera,
                         IncomingCamera = incomingCamera,
                         IsCut = !IsBlending || (m_OutgoingCamera != null && !ActiveBlend.Uses(m_OutgoingCamera)),
@@ -184,7 +136,7 @@ namespace Unity.Cinemachine
                         DeltaTime = deltaTime
                     };
                     incomingCamera.OnCameraActivated(evt);
-                    m_Mixer.OnCameraActivated(evt);
+                    mixer.OnCameraActivated(evt);
                     CinemachineCore.CameraActivatedEvent.Invoke(evt);
 
                     // Re-update in case it's inactive
@@ -197,11 +149,5 @@ namespace Unity.Cinemachine
 
         /// <summary>Get the current state, representing the active camera and blend state.</summary>
         public CameraState CameraState => m_CurrentLiveCameras.State;
-
-        /// <summary>
-        /// Get the current active deltaTime override, defined in the topmost override frame.
-        /// </summary>
-        /// <returns>The active deltaTime override, or -1 for none</returns>
-        public float GetDeltaTimeOverride() => m_BlendStack.GetDeltaTimeOverride();
     }
 }
