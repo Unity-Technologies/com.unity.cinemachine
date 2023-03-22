@@ -55,6 +55,7 @@
     * [Cinemachine and top-down games](CinemachineTopDown.md)
     * [Processing User Input with Cinemachine](CinemachineInputAxisController.md)
     * [Cinemachine Camera Events](CinemachineCameraEvents.md)
+	* [Cinemachine Brain Events](CinemachineBrainEvents.md)
     * [Cinemachine Impulse](CinemachineImpulse.md)
         * [Cinemachine Impulse Sources](CinemachineImpulseSourceOverview.md)
             * [Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource.md)

@@ -67,7 +67,12 @@ Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the 
 You will now see the `cm` child objects of your legacy CM vcams in the hierarchy, because CM3 unhides them. This is not a license to mess with these objects - they were hidden for a reason. We recommend that you get rid of them by upgrading the parent objects to their CM3 equivalents.
 
 ### New Input Handling
-User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller.
+User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller by inheriting InputAxisControllerBase.
+
+### New Events Architecture
+While CM2.X has events in CinemachineVirtualCamera and CinemachineBrain, CM3 only fires global events via CinemachineCore.  Scripts can add listeners to those events and take action based on them. Listeners will receive events for all cameras and all Brains.  
+
+Camera-specific and Brain-specific events are now supported via two new behaviours: [Cinemachine Brain Events](CinemachineBrainEvents.md) and [Cinemachine Camera Events](CinemachineCameraEvents.md).  These monitor the global events and fire more specialized ones related to the objects to which they are attached.
 
 ### New Spline Implementation
 Cinemachine's paths are now implemented using Unity's native Splines, which provide equivalent functionality. The Cinemachine Upgrader will automatically convert your CM paths to Splines. The CM path implementations still exist, but are now deprecated.
@@ -93,7 +98,7 @@ You can launch the Cinemachine Upgrader upgrade tool from any CM VirtualCamera o
 ### Upgrading a Single Object
 If you want to upgrade only the Cinemachine object currently being inspected, you can do this provided that it isn't a prefab instance. In this case, it will upgrade only the inspected objects, replacing them with CM3 equivalents. Undo is supported, so you can try it out and then change your mind if you want.  
 
-Note that any script references to this object will be lost (because the class will change), as will any animation tracks that are writing to fields inside this camera (because classes and field names have changed).  If you have script references or animation tracks or if this camera is part of a prefab or prefab instance, then you need to use the "Upgrade Entire Project" option, which will scan the project for references and make the appropriate updates.
+Note that any script references to this object will be lost (because the class will change), as will any animation tracks that are writing to fields inside this camera (because classes and field names have changed).  Timelines referencing this object will lose their bindings.  If you have script references or animation tracks or if this camera is part of a prefab or prefab instance, then you need to use the "Upgrade Entire Project" option, which will scan the project for references and make the appropriate updates.
 
 ### Upgrading a Single Scene
 You can also choose to update all the CM objects in the current scene. Again, this will not update any assets outside of the scene, so it is not appropriate for any but the simplest of scenes. Undo is also supported for this operation.
