@@ -9,9 +9,9 @@ using UnityEngine.UIElements;
 namespace Unity.Cinemachine
 {
     /// <summary>Manages onscreen positions for Cinemachine debugging output</summary>
-    class CinemachineDebug
+    static class CinemachineDebug
     {
-        static List<StringBuilder> m_AvailableStringBuilders;
+        static List<StringBuilder> s_AvailableStringBuilders;
 
 #if CINEMACHINE_UNITY_IMGUI
         /// <summary>Reserve an on-screen rectangle for debugging output.</summary>
@@ -108,10 +108,10 @@ namespace Unity.Cinemachine
         /// Client must call ReturnToPool when done</returns>
         public static StringBuilder SBFromPool()
         {
-            if (m_AvailableStringBuilders == null || m_AvailableStringBuilders.Count == 0)
+            if (s_AvailableStringBuilders == null || s_AvailableStringBuilders.Count == 0)
                 return new StringBuilder();
-            var sb = m_AvailableStringBuilders[m_AvailableStringBuilders.Count - 1];
-            m_AvailableStringBuilders.RemoveAt(m_AvailableStringBuilders.Count - 1);
+            var sb = s_AvailableStringBuilders[s_AvailableStringBuilders.Count - 1];
+            s_AvailableStringBuilders.RemoveAt(s_AvailableStringBuilders.Count - 1);
             sb.Length = 0;
             return sb;
         }
@@ -120,9 +120,9 @@ namespace Unity.Cinemachine
         /// <param name="sb">The string builder object to return to the pool</param>
         public static void ReturnToPool(StringBuilder sb)
         {
-            if (m_AvailableStringBuilders == null)
-                m_AvailableStringBuilders = new List<StringBuilder>();
-            m_AvailableStringBuilders.Add(sb);
+            if (s_AvailableStringBuilders == null)
+                s_AvailableStringBuilders = new List<StringBuilder>();
+            s_AvailableStringBuilders.Add(sb);
         }
     }
 }
