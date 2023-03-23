@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+#if UNITY_EDITOR
+using UnityEngine.UIElements;
+#endif
 
 namespace Unity.Cinemachine
 {
@@ -197,8 +200,11 @@ namespace Unity.Cinemachine
             m_BlendManager.OnEnable();
 
             s_ActiveBrains.Add(this);
+#if UNITY_EDITOR
+            SetupRuntimeUI();
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
+#endif
 
             // We check in after the physics system has had a chance to move things
             m_PhysicsCoroutine = StartCoroutine(AfterPhysics());
@@ -211,8 +217,11 @@ namespace Unity.Cinemachine
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
-
+            
+#if UNITY_EDITOR
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            DestroyRuntimeUI();
+#endif
             s_ActiveBrains.Remove(this);
 
             m_BlendManager.OnDisable();
@@ -269,34 +278,109 @@ namespace Unity.Cinemachine
             if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
                 CinemachineDebug.OnGUIHandlers(this);
         }
-#endif
+        
+        VisualElement[] m_ViewportContainers;
+        Label[] m_DebugLabels;
+        void SetupRuntimeUI()
+        {
+            if (!ShowDebugText || this == null)
+                return;
+            
+            m_ViewportContainers = CinemachineDebug.CreateRuntimeUIContainers();
+            m_DebugLabels = new Label[m_ViewportContainers.Length];
+            for (var i = 0; i < m_ViewportContainers.Length; i++)
+            {
+                m_DebugLabels[i] = new Label
+                {
+                    style =
+                    {
+                        backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)),
+                        marginBottom = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginTop = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginLeft = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginRight = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        paddingBottom = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingTop = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingLeft = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingRight = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        fontSize = new StyleLength(new Length(10, LengthUnit.Percent)),
+                        color = new StyleColor(Color.white),
+                        position = new StyleEnum<Position>(Position.Relative),
+                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
+                    }
+                };
+                m_ViewportContainers[i].Add(m_DebugLabels[i]);
+            }
+        }
 
+        void DestroyRuntimeUI()
+        {
+            for (int i = m_ViewportContainers.Length - 1; i >= 0; --i)
+                m_ViewportContainers[i].RemoveFromHierarchy();
+            m_ViewportContainers = null;
+            m_DebugLabels = null;
+        }
+        
         void OnGuiHandler(CinemachineBrain brain)
         {
-#if CINEMACHINE_UNITY_IMGUI
-            if (ShowDebugText && brain == this)
+            if (ActiveVirtualCamera == null ||
+                m_ViewportContainers == null || m_ViewportContainers.Length == 0 || 
+                m_DebugLabels == null || m_DebugLabels.Length == 0) 
+                return;
+            
+            for (int i = 0; i < m_ViewportContainers.Length; ++i) 
+                m_ViewportContainers[i].style.visibility = 
+                    new StyleEnum<Visibility>(ShowDebugText ? Visibility.Visible : Visibility.Hidden);
+
+            if (!ShowDebugText || brain != this || brain == null)
+                return;
+
+            var outputCamera = brain.OutputCamera;
+            if (outputCamera == null)
+                return;
+
+            // Show the active camera and blend
+            var sb = CinemachineDebug.SBFromPool();
+            Color color = GUI.color;
+            sb.Length = 0;
+            sb.Append("CM ");
+            sb.Append(gameObject.name);
+            sb.Append(": ");
+            if (CinemachineCore.SoloCamera != null)
             {
-                // Show the active camera and blend
-                var sb = CinemachineDebug.SBFromPool();
-                Color color = GUI.color;
-                sb.Length = 0;
-                sb.Append("CM ");
-                sb.Append(gameObject.name);
-                sb.Append(": ");
-                if (CinemachineCore.SoloCamera != null)
-                {
-                    sb.Append("SOLO ");
-                    GUI.color = CinemachineCore.SoloGUIColor();
-                }
-                sb.Append(Description);
-                string text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
-                GUI.Label(r, text, GUI.skin.box);
-                GUI.color = color;
-                CinemachineDebug.ReturnToPool(sb);
+                sb.Append("SOLO ");
+                GUI.color = CinemachineCore.SoloGUIColor();
             }
-#endif
+
+            if (IsBlending)
+                sb.Append(ActiveBlend.Description);
+            else
+            {
+                ICinemachineCamera vcam = ActiveVirtualCamera;
+                if (vcam == null)
+                    sb.Append("(none)");
+                else
+                {
+                    sb.Append(vcam.Name);
+                    var desc = vcam.Description;
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        sb.Append(" ");
+                        sb.Append(desc);
+                    }
+                }
+            }
+
+            for (int i = 0; i < m_ViewportContainers.Length; ++i)
+            {
+                CinemachineDebug.PositionWithinCameraView(
+                    m_ViewportContainers[i], outputCamera, ActiveVirtualCamera.State.Lens);
+                m_DebugLabels[i].text = sb.ToString();
+            }
+            
+            CinemachineDebug.ReturnToPool(sb);
         }
+#endif
 
         // ============ ICameraOverrideStack implementation ================
 
