@@ -93,37 +93,60 @@ namespace Unity.Cinemachine
 
             return cameraRect;
         }
-        
-        public static VisualElement[] CreateRuntimeUIContainers()
-        {
-            var assembly = typeof(EditorWindow).Assembly;
-            var type = assembly.GetType("UnityEditor.GameView");
-            var gameViews = Resources.FindObjectsOfTypeAll(type);
 
-            var runtimeUIContainers = new VisualElement[gameViews.Length];
-            for (int i = 0; i < gameViews.Length; ++i)
+        const string k_DebugUIName = "CinemachineDebugUI";
+        static GameObject s_UIDocumentHolder;
+        static UIDocument s_UIDocument;
+        public static VisualElement CreateRuntimeUIContainer()
+        {
+            if (s_UIDocumentHolder == null)
             {
-                var gameViewRoot = (gameViews[0] as EditorWindow).rootVisualElement;
-                runtimeUIContainers[i] = new VisualElement { name = "CinemachineRuntimeUIContainer" };
-                gameViewRoot.Add(runtimeUIContainers[i]);
+                s_UIDocumentHolder = GameObject.Find(k_DebugUIName);
+                if (s_UIDocumentHolder == null)
+                {
+                    s_UIDocumentHolder = new GameObject(k_DebugUIName)
+                    {
+                        hideFlags = HideFlags.NotEditable,
+                        tag = "EditorOnly"
+                    };
+                }
             }
 
-            return runtimeUIContainers;
+            if (!s_UIDocumentHolder.TryGetComponent(out s_UIDocument)) {
+                s_UIDocument = s_UIDocumentHolder.AddComponent<UIDocument>();
+                
+                const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
+                s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
+                s_UIDocument.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path + "CinemachineDebugPanel.uxml");
+            }
+
+            var viewportContainer = new VisualElement
+            {
+                name = "CinemachineDebugPanel_ViewportContainer",
+                style = { position = new StyleEnum<Position>(Position.Absolute) }
+            };
+            s_UIDocument.rootVisualElement.Add(viewportContainer);
+
+            return viewportContainer;
         }
 
-        public static void PositionWithinCameraView(VisualElement visualElement, Camera camera, LensSettings lens)
+        /// <summary>Position the input visual element in the panel defined by s_ViewportContainer and the camera.</summary>
+        /// <param name="visualElement">The visual element to position. It must be a child of s_ViewportContainer</param>
+        /// <param name="camera">The camera that defines the view area.</param>
+        public static void PositionWithinCameraView(VisualElement visualElement, Camera camera)
         {
-            // source:
-            // - https://github.cds.internal.unity3d.com/unity/unity/blob/e3b4b5cd738c7d63c68471c6f80930455695de16/Editor/Mono/GameView/GameView.cs#L203
-            // - https://github.cds.internal.unity3d.com/unity/unity/blob/661772bfdb9f6e0d13c5a0a14524195b0df8920e/Editor/Mono/EditorGUI.cs#L126
-            const float gameViewToolbarHeight = 21f; // could also get it with reflection from EditorGUI
+            if (s_UIDocument == null)
+                return;
             
-            var cameraRect = GetCameraRect(camera, lens);
-            var top = cameraRect.y + gameViewToolbarHeight;
-            var left = cameraRect.x;
-            visualElement.style.position = new StyleEnum<Position>(Position.Absolute);
-            visualElement.style.top = new Length(top, LengthUnit.Pixel);
-            visualElement.style.left = new Length(left, LengthUnit.Pixel);
+            var panel = s_UIDocument.rootVisualElement.panel;
+            var screenPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, Screen.height));
+            var viewport = camera.pixelRect;
+            var viewPortMaxPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, viewport.max);
+            var viewPortMinPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, viewport.min);
+            visualElement.style.top = new Length(screenPanelSpace.y - viewPortMaxPanelSpace.y, LengthUnit.Pixel);
+            visualElement.style.bottom = new Length(viewPortMinPanelSpace.y, LengthUnit.Pixel);
+            visualElement.style.left = new Length(viewPortMinPanelSpace.x, LengthUnit.Pixel);
+            visualElement.style.right = new Length(screenPanelSpace.x - viewPortMaxPanelSpace.x, LengthUnit.Pixel);
         }
 
         /// <summary>
