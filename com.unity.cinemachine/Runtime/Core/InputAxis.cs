@@ -64,6 +64,10 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <param name="handler">Then handler to unregister</param>
         public void UnregisterResetHandler(Action handler);
+
+        /// <summary>Checks whether any reset handlers have been registered</summary>
+        /// <returns>True if at least one reset handler is registered</returns>
+        public bool HasResetHandler { get; }
     }
 
     /// <summary>Abstraction for reading the value of an input axis</summary>

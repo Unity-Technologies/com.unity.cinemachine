@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -749,13 +749,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558704396}
-  m_LocalRotation: {x: -0.05325668, y: 0.000000017315676, z: 9.234858e-10, w: 0.9985809}
+  m_LocalRotation: {x: -0.053256698, y: -0.000000017315676, z: -9.234861e-10, w: 0.9985809}
   m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &599297602
 GameObject:
@@ -1232,7 +1232,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4436525663902916665, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2311,13 +2311,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerIndex: -1
   AutoEnableInputs: 1
+  ScanRecursively: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1721836170}
     Enabled: 1
     Input:
-      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
-      Gain: 1
       LegacyInput: Mouse X
       LegacyGain: 100
     InputValue: 0
@@ -2328,8 +2327,6 @@ MonoBehaviour:
     Owner: {fileID: 1721836170}
     Enabled: 1
     Input:
-      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
-      Gain: -1
       LegacyInput: Mouse Y
       LegacyGain: -100
     InputValue: 0
@@ -2340,8 +2337,6 @@ MonoBehaviour:
     Owner: {fileID: 1721836170}
     Enabled: 1
     Input:
-      InputAction: {fileID: -1558737862816922118, guid: cb572737576f6df4182085d6bbea2294, type: 3}
-      Gain: 1
       LegacyInput: Mouse ScrollWheel
       LegacyGain: 100
     InputValue: 0
@@ -2511,7 +2506,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721836166}
-  m_LocalRotation: {x: -0.05325668, y: 0.000000017315676, z: 9.234858e-10, w: 0.9985809}
+  m_LocalRotation: {x: -0.053256698, y: -0.000000017315676, z: -9.234861e-10, w: 0.9985809}
   m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3461,5 +3456,5 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

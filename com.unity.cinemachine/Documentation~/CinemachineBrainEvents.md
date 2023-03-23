@@ -6,7 +6,7 @@ Sometimes it's desirable to have events sent only for a specific Cinemachine Bra
 
 If you add it to a CinemachineBrain object, it will expose events that will be fired based on that brain's activity.  Any listeners you add will be called when the events happen for that brain.
 
-If you are looking for evemnts that fire for a specific CinemachineCamera, see [Cinemachine Camera Events](CinemachineCameraEvents.md).
+If you are looking for events that fire for a specific CinemachineCamera, see [Cinemachine Camera Events](CinemachineCameraEvents.md).
 
 ## Properties:
 

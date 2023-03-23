@@ -17,13 +17,13 @@ namespace Unity.Cinemachine
         [Serializable]
         public struct CustomBlend
         {
-            /// <summary>When blending from this camera</summary>
-            [Tooltip("When blending from this camera")]
+            /// <summary>When blending from a camera with this name</summary>
+            [Tooltip("When blending from a camera with this name")]
             [FormerlySerializedAs("m_From")]
             public string From;
 
-            /// <summary>When blending to this camera</summary>
-            [Tooltip("When blending to this camera")]
+            /// <summary>When blending to a camera with this name</summary>
+            [Tooltip("When blending to a camera with this name")]
             [FormerlySerializedAs("m_To")]
             public string To;
 
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_CustomBlends")]
         public CustomBlend[] CustomBlends = null;
 
-        /// <summary>Internal API for the inspector editopr: a label to represent any camera</summary>
+        /// <summary>Internal API for the inspector editor: a label to represent any camera</summary>
         internal const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
 
         /// <summary>

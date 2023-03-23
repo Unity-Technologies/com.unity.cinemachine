@@ -143,7 +143,8 @@ namespace Unity.Cinemachine.Editor
                     return;  // target was deleted
                 var noHandler = false;
                 for (int i = 0; i < editor.targets.Length; ++i)
-                    noHandler |= !(editor.targets[i] as CinemachineOrbitalFollow).HasInputHandler;
+                    if (editor.targets[i] is IInputAxisResetSource src)
+                        noHandler |= !src.HasResetHandler;
                 help.SetVisible(noHandler);
             });
 
@@ -153,9 +154,9 @@ namespace Unity.Cinemachine.Editor
                 Undo.SetCurrentGroupName("Add Input Controller");
                 for (int i = 0; i < editor.targets.Length; ++i)
                 {
-                    var t = editor.targets[i] as CinemachineOrbitalFollow;
-                    if (!t.HasInputHandler)
+                    if (editor.targets[i] is IInputAxisResetSource src && !src.HasResetHandler)
                     {
+                        var t = editor.targets[i] as MonoBehaviour;
                         if (!t.TryGetComponent<IInputAxisController>(out var c))
                             Undo.AddComponent(t.gameObject, controllerType);
                         else if (c is MonoBehaviour b && !b.enabled)

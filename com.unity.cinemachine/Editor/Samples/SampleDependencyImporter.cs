@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEditor.PackageManager.UI;
-using UnityEngine;
-using UnityEngine.UIElements;
+#if CINEMACHINE_URP || CINEMACHINE_HDRP
+using UnityEditor.Rendering;
+#endif
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Unity.Cinemachine.Editor
@@ -22,7 +24,7 @@ namespace Unity.Cinemachine.Editor
         PackageChecker m_PackageChecker = new ();
 
         static SampleDependencyImporter() => PackageManagerExtensions.RegisterExtension(new SampleDependencyImporter());
-        VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
+        UnityEngine.UIElements.VisualElement IPackageManagerExtension.CreateExtensionUI() => default;
 
         public void OnPackageAddedOrUpdated(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
         public void OnPackageRemoved(PackageInfo packageInfo) => m_PackageChecker.RefreshPackageCache();
@@ -61,7 +63,7 @@ namespace Unity.Cinemachine.Editor
             configuration = null;
             return false;
         }
-        
+
         AddRequest m_PackageAddRequest;
         int m_PackageDependencyIndex;
         List<string> m_PackageDependencies = new ();
@@ -79,11 +81,20 @@ namespace Unity.Cinemachine.Editor
                         {
                             // Import common asset dependencies
                             assetsImported = ImportAssetDependencies(
-                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies);
+                                m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, out var sharedDestinations);
                             
                             // Import sample-specific asset dependencies
                             assetsImported |= ImportAssetDependencies(
-                                m_PackageInfo, sampleEntry.AssetDependencies);
+                                m_PackageInfo, sampleEntry.AssetDependencies, out var localDestinations);
+
+
+                            if (assetsImported)
+                            {
+                                AssetDatabase.Refresh();
+                                var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations));
+                                ConvertMaterials(uniqueFolders);
+                                FixPrefabs(uniqueFolders);
+                            }
                             
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
@@ -139,8 +150,9 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             
-            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths)
+            static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out List<string> destinations)
             {
+                destinations = new List<string>();
                 if (paths == null)
                     return false;
 
@@ -153,6 +165,7 @@ namespace Unity.Cinemachine.Editor
                         var copyTo = 
                             $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
                         CopyDirectory(dependencyPath, copyTo);
+                        destinations.Add(copyTo);
                         assetsImported = true;
                     }
                 }
@@ -170,6 +183,72 @@ namespace Unity.Cinemachine.Editor
                     "Import samples without their dependencies");
             }
         }
+
+        static readonly string[] k_MaterialFolders = { "Materials", "Cameron/Model" };
+        static void ConvertMaterials(IEnumerable<string> folders)
+        {
+#if CINEMACHINE_URP || CINEMACHINE_HDRP
+            foreach (var folder in folders)
+            {
+                foreach (var materialFolder in k_MaterialFolders)
+                {
+                    var materialDir = new DirectoryInfo(folder + "/" + materialFolder);
+                    if (!materialDir.Exists)
+                        continue;
+                    var materialInfos = materialDir.GetFiles("*.mat");
+                    foreach (var matInfo in materialInfos)
+                    {
+                        var localPath = matInfo.FullName[Application.dataPath.Length..];
+                        var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
+
+                     MaterialUpgrader.Upgrade(material, 
+    #if CINEMACHINE_URP
+                         new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+    #elif CINEMACHINE_HDRP
+                         UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
+    #endif
+                         MaterialUpgrader.UpgradeFlags.None);
+                    }
+                }
+            }
+#endif
+        }
+        
+        static void FixPrefabs(IEnumerable<string> folders)
+        {
+            foreach (var folder in folders)
+            {
+                var hdrpPath = folder + "/~HDRP/";
+#if CINEMACHINE_HDRP
+                var hdrpDir = new DirectoryInfo(hdrpPath);
+                var prefabPath = folder + "/Prefabs/";
+                var prefabDir = new DirectoryInfo(prefabPath);
+                if (!hdrpDir.Exists || !prefabDir.Exists)
+                    continue;
+                
+                var hdrpPrefabs = hdrpDir.GetFiles("*.prefab");
+                foreach (var hdrpPrefabFile in hdrpPrefabs)
+                {
+                    var hdrpPrefabPath = hdrpPath + hdrpPrefabFile.Name;
+                    var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPrefabPath);
+
+                    var builtinPrefabPath = prefabPath + hdrpPrefabFile.Name;
+                    PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
+                    PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+                }
+
+                var assets = hdrpDir.GetFiles("*.asset*"); // assets and their meta files
+                foreach (var asset in assets) 
+                    asset.CopyTo(folder);
+#endif
+                // delete ~HDRP folder (first its meta file, otherwise Unity will restore the folder)
+                var hdrpMeta = new FileInfo(folder + "/~HDRP.meta");
+                hdrpMeta.Delete();
+                Directory.Delete(hdrpPath, true);
+            }
+        }
+
+        
         
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)

@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Inspector checks this and displays warning if no handler</summary>
-        internal bool HasInputHandler => m_ResetHandler != null;
+        bool IInputAxisResetSource.HasResetHandler => m_ResetHandler != null;
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid => enabled;
