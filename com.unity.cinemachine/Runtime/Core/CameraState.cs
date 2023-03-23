@@ -95,8 +95,8 @@ namespace Unity.Cinemachine
             InheritPosition = CinemachineCore.BlendHints.InheritPosition,
             /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
             IgnoreLookAtTarget = CinemachineCore.BlendHints.IgnoreTarget,
-            // /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
-            //BlendOutFromSnapshot = CinemachineCore.BlendHints.BlendOutFromSnapshot, // GML todo: think about this
+            /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            FreezeWhenBlendingOut = CinemachineCore.BlendHints.FreezeWhenBlendingOut,
 
             /// <summary>This state does not affect the camera position</summary>
             NoPosition = 1 << 16,
@@ -215,7 +215,7 @@ namespace Unity.Cinemachine
             t = Mathf.Clamp01(t);
             float adjustedT = t;
 
-            CameraState state = new CameraState();
+            CameraState state = new ();
 
             // Combine the blend hints intelligently
             if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoPosition) != 0)
@@ -228,6 +228,8 @@ namespace Unity.Cinemachine
                 state.BlendHint |= BlendHints.SphericalPositionBlend;
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.CylindricalPositionBlend) != 0)
                 state.BlendHint |= BlendHints.CylindricalPositionBlend;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.FreezeWhenBlendingOut) != 0)
+                state.BlendHint |= BlendHints.FreezeWhenBlendingOut;
 
             if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoLens) == 0)
                 state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);

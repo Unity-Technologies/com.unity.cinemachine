@@ -80,8 +80,8 @@ namespace Unity.Cinemachine
             InheritPosition = 8,
             /// <summary>Do not consider the tracking target when blending, just do a spherical interpolation</summary>
             IgnoreTarget = 16,
-            // /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
-            //BlendOutFromSnapshot = 32, // GML todo: think about this
+            /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            FreezeWhenBlendingOut = 32,
         }
 
         /// <summary>Delegate for overriding Unity's default input system.  Returns the value

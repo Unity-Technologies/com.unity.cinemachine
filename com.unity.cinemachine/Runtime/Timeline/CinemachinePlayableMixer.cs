@@ -222,12 +222,15 @@ namespace Unity.Cinemachine
 
             // Special case: check for only one clip that's fading out - it must be outgoing
             if (activeInputs == 1 && weightB < 1 
-                    && playable.GetInput(clipIndexB).GetTime() > playable.GetInput(clipIndexB).GetDuration() / 2)
+                && playable.GetInput(clipIndexB).GetTime() > playable.GetInput(clipIndexB).GetDuration() / 2)
             {
+                // Note: this will be wrong in the case where the clip's blend-in time is longer
+                // than half the clip's duration, but I can't find a way to check for this condition.
                 incomingIsA = true;
             }
             if (incomingIsA)
             {
+                // Swap 'em
                 (clipIndexA, clipIndexB) = (clipIndexB, clipIndexA);
                 weightB = 1 - weightB;
             }

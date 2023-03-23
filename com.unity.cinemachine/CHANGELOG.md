@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: MixingCamera calls OnTransitionFromCamera correctly for all its children.
 
 ### Added
-- New IgnoreTarget blend hint will blend rotations without considering the tracking target.
+- New BlendHint: IgnoreTarget will blend rotations without considering the tracking target.
+- New BlendHint: FreezeWhenBlendingOut will blend out from a snapshot of the camera state.
 - InputAxisController has the option to suppress input while the attached camera is blending.
 
 ### Changed
