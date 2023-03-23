@@ -135,7 +135,7 @@ namespace Unity.Cinemachine
         void IInputAxisResetSource.UnregisterResetHandler(Action handler) => m_ResetHandler -= handler;
 
         /// <summary>Inspector checks this and displays warning if no handler</summary>
-        internal bool HasInputHandler => m_ResetHandler != null;
+        bool IInputAxisResetSource.HasResetHandler => m_ResetHandler != null;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue => GetCameraPoint().w;
 
