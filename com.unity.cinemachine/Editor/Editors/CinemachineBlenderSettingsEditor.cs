@@ -16,13 +16,13 @@ namespace Unity.Cinemachine.Editor
 
         /// <summary>
         /// Called when building the Camera popup menus, to get the domain of possible
-        /// cameras.  If no delegate is set, will find all top-level (non-slave)
-        /// virtual cameras in the scene.
+        /// cameras.  If no delegate is set, will find all top-level virtual cameras in the scene,
+        /// i.e. vcams that are not feeding a specific mixer.
         /// </summary>
         public GetAllVirtualCamerasDelegate GetAllVirtualCameras = GetToplevelCameras;
         public delegate void GetAllVirtualCamerasDelegate(List<CinemachineVirtualCameraBase> list);
 
-        // Get all top-level (i.e. non-slave) virtual cameras
+        // Get all top-level virtual cameras
         static void GetToplevelCameras(List<CinemachineVirtualCameraBase> list)
         {
             var candidates = Resources.FindObjectsOfTypeAll<CinemachineVirtualCameraBase>();

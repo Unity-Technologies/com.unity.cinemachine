@@ -75,6 +75,8 @@ namespace Unity.Cinemachine.Editor
                             case RequiredTargets.Group: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
                         }
                     }
+                    else if (targets[i] is MonoBehaviour b)
+                        noCamera |= !b.TryGetComponent<CinemachineVirtualCameraBase>(out _);
                 }
                 noCameraHelp?.SetVisible(noCamera);
                 noTargetHelp?.SetVisible(noTarget && !noCamera);
@@ -94,6 +96,11 @@ namespace Unity.Cinemachine.Editor
                 {
                     if (x != null && x.ComponentOwner == null)
                         Undo.AddComponent<CinemachineCamera>(x.gameObject).AddExtension(x);
+                }
+                else if (targets[i] is MonoBehaviour b)
+                {
+                    if (!b.TryGetComponent<CinemachineVirtualCameraBase>(out _))
+                        Undo.AddComponent<CinemachineCamera>(b.gameObject);
                 }
             }
         }

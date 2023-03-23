@@ -46,7 +46,7 @@ namespace Unity.Cinemachine.Samples
                 var vcam = Cameras[i];
                 if (vcam != null)
                 {
-                    GUI.color = CinemachineCore.Instance.IsLive(vcam) ? m_LiveColor : baseColor;
+                    GUI.color = CinemachineCore.IsLive(vcam) ? m_LiveColor : baseColor;
                     if (GUI.Button(new Rect(pos, m_Size), vcam.Name))
                         vcam.Prioritize();
                     pos.y += m_Size.y + vSpace;

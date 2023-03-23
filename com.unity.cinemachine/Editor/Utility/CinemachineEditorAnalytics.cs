@@ -61,21 +61,20 @@ namespace Unity.Cinemachine.Editor
 
             var startTime = Time.realtimeSinceStartup;
 
-            var cinemachineCore = CinemachineCore.Instance;
-            var vcamCount = cinemachineCore.VirtualCameraCount;
+            var vcamCount = CinemachineCore.VirtualCameraCount;
             var vcamDatas = new List<VcamData>();
 
             // collect data from all vcams
             for (int i = 0; i < vcamCount; ++i)
             {
-                var vcamBase = cinemachineCore.GetVirtualCamera(i);
+                var vcamBase = CinemachineCore.GetVirtualCamera(i);
                 CollectData(vcamBase, i.ToString(), ref vcamDatas);
             }
 
             var projectData = new ProjectData
             {
-                brain_count = cinemachineCore.BrainCount,
-                vcam_count = cinemachineCore.VirtualCameraCount,
+                brain_count = CinemachineBrain.ActiveBrainCount,
+                vcam_count = CinemachineCore.VirtualCameraCount,
                 cam_count = Camera.allCamerasCount,
                 vcams = vcamDatas,
                 time_elapsed = Time.realtimeSinceStartup - startTime,
@@ -91,7 +90,8 @@ namespace Unity.Cinemachine.Editor
 
         static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
         {
-            if (vcamBase == null) return;
+            if (vcamBase == null) 
+                return;
             
             var vcamData = new VcamData(id, vcamBase);
             
@@ -99,7 +99,7 @@ namespace Unity.Cinemachine.Editor
             var vcam = vcamBase as CinemachineCamera;
             if (vcam != null)
             {
-                vcamData.SetTransitionsAndLens(vcam.Transitions, vcam.Lens);
+                vcamData.SetTransitionsAndLens(vcam.BlendHint, vcam.Lens);
                 vcamData.SetComponents(vcam.GetComponents<CinemachineComponentBase>());
                 vcamDatas.Add(vcamData);
                 return;
@@ -108,7 +108,7 @@ namespace Unity.Cinemachine.Editor
             var vcamChildren = vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
             for (var c = 1; c < vcamChildren.Length; c++)
             {
-                if ((CinemachineVirtualCameraBase)vcamChildren[c].ParentCamera == vcamBase)
+                if (vcamChildren[c].ParentCamera == (ICinemachineCamera)vcamBase)
                     CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
             }
         }
@@ -173,10 +173,10 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             
-            public void SetTransitionsAndLens(TransitionParams transitions, LensSettings lens)
+            public void SetTransitionsAndLens(CinemachineCore.BlendHints hints, LensSettings lens)
             {
-                blend_hint = transitions.BlendHint.ToString();
-                inherit_position = transitions.InheritPosition;
+                blend_hint = hints.ToString();
+                inherit_position = (hints & CinemachineCore.BlendHints.InheritPosition) != 0;
                 mode_overwrite = lens.ModeOverride.ToString();
             }
 

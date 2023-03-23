@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Unity.Cinemachine
 {
-    internal sealed class CinemachineMixer : PlayableBehaviour
+    internal sealed class CinemachinePlayableMixer : PlayableBehaviour
     {
         public delegate PlayableDirector MasterDirectorDelegate();
 
@@ -59,8 +59,8 @@ namespace Unity.Cinemachine
                             var vcam = scratch[j];
 
                             int nestLevel = 0;
-                            for (ICinemachineCamera p = vcam.ParentCamera; 
-                                    p != null && p != (ICinemachineCamera)mainVcam; p = p.ParentCamera)
+                            for (var p = vcam.ParentCamera; 
+                                p != null && p != (ICinemachineCamera)mainVcam; p = p.ParentCamera)
                             {
                                 ++nestLevel;
                             }

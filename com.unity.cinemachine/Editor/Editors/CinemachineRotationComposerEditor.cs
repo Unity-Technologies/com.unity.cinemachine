@@ -61,7 +61,7 @@ namespace Unity.Cinemachine.Editor
 
             // Don't draw the guides if rendering to texture
             if (brain == null || brain.OutputCamera == null
-                    || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+                    || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
                 return;
 
             var vcam = Target.VirtualCamera;
@@ -69,7 +69,7 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             // Screen guides
-            bool isLive = targets.Length <= 1 && brain.IsLive(vcam, true);
+            bool isLive = targets.Length <= 1 && brain.IsLiveChild(vcam, true);
             m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
 
             // Draw an on-screen gizmo for the target

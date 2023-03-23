@@ -38,7 +38,7 @@ namespace Unity.Cinemachine.Samples
                     rb.MovePosition(newPos);
 
                 // Notify any CinemachineCameras that are targeting this object
-                CinemachineCore.Instance.OnTargetObjectWarped(transform, delta);
+                CinemachineCore.OnTargetObjectWarped(transform, delta);
             }
         }
     }

@@ -568,21 +568,21 @@ namespace Unity.Cinemachine.Editor
         }
         
         static bool s_IsDragging;
-        static CinemachineVirtualCameraBase s_UserSolo;
+        static ICinemachineCamera s_UserSolo;
         public static void SoloOnDrag(bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId)
         {
             if (isDragged)
             {
                 if (!s_IsDragging)
                 {
-                    s_UserSolo = CinemachineBrain.SoloCamera;
+                    s_UserSolo = CinemachineCore.SoloCamera;
                     s_IsDragging = true;
                 }
-                CinemachineBrain.SoloCamera = vcam;
+                CinemachineCore.SoloCamera = vcam;
             }
             else if (s_IsDragging && handleMaxId != -1) // Handles sometimes return -1 as id, ignore those frames
             {
-                CinemachineBrain.SoloCamera = s_UserSolo;
+                CinemachineCore.SoloCamera = s_UserSolo;
                 InspectorUtility.RepaintGameView();
                 s_IsDragging = false;
                 s_UserSolo = null;

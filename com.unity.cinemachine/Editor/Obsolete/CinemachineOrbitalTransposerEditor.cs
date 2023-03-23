@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            if (Target.m_HeadingIsSlave)
+            if (Target.m_HeadingIsDriven)
             {
                 excluded.Add(FieldPath(x => x.m_BindingMode));
                 excluded.Add(FieldPath(x => x.m_Heading));
@@ -96,7 +96,7 @@ namespace Unity.Cinemachine.Editor
             if (target.IsValid && !target.HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                Gizmos.color = CinemachineCore.IsLive(target.VirtualCamera)
                     ? CinemachineCorePrefs.ActiveGizmoColour.Value
                     : CinemachineCorePrefs.InactiveGizmoColour.Value;
 

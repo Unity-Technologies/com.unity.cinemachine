@@ -311,7 +311,12 @@ namespace Unity.Cinemachine.Editor
             cmCamera.LookAt = vcam.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = vcam.m_Follow != vcam.m_LookAt;
             cmCamera.Lens = vcam.Lens;
-            cmCamera.Transitions = vcam.Transitions;
+            cmCamera.BlendHint = vcam.BlendHint;
+            if (vcam.m_OnCameraLiveEvent.GetPersistentEventCount() > 0)
+            {
+                var evts = Undo.AddComponent<CinemachineCameraEvents>(go);
+                evts.OnCameraLive = vcam.m_OnCameraLiveEvent;
+            }
                 
             // Transfer the component pipeline
             var pipeline = vcam.GetComponentPipeline();
@@ -400,7 +405,12 @@ namespace Unity.Cinemachine.Editor
             cmCamera.Follow = freelook.m_Follow;
             cmCamera.LookAt = freelook.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = freelook.m_Follow != freelook.m_LookAt;
-            cmCamera.Transitions = freelook.Transitions;
+            cmCamera.BlendHint = freelook.BlendHint;
+            if (freelook.m_OnCameraLiveEvent.GetPersistentEventCount() > 0)
+            {
+                var evts = Undo.AddComponent<CinemachineCameraEvents>(go);
+                evts.OnCameraLive = freelook.m_OnCameraLiveEvent;
+            }
                     
             var freeLookModifier = Undo.AddComponent<CinemachineFreeLookModifier>(go);
             ConvertFreelookLens(freelook, cmCamera, freeLookModifier);

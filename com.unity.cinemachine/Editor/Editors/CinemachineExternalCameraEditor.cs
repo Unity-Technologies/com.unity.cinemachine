@@ -15,7 +15,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.TransitionHint) });
+            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.BlendHint) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LookAtTarget)));
 
             return ux;

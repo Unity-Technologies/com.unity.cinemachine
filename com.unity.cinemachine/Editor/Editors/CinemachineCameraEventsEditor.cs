@@ -1,0 +1,21 @@
+using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+
+namespace Unity.Cinemachine.Editor
+{
+    [CustomEditor(typeof(CinemachineCameraEvents))]
+    [CanEditMultipleObjects]
+    class CinemachineCameraEventsEditor : UnityEditor.Editor
+    {
+        CinemachineCameraEvents Target => target as CinemachineCameraEvents;
+
+        public override VisualElement CreateInspectorGUI()
+        {
+            var ux = new VisualElement();
+            this.AddMissingCmCameraHelpBox(ux);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OnCameraLive)));
+            return ux;
+        }
+    }
+}

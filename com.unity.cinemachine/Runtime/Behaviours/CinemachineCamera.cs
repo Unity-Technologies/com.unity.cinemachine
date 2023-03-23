@@ -63,10 +63,13 @@ namespace Unity.Cinemachine
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         public LensSettings Lens = LensSettings.Default;
 
-        /// <summary>Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras.</summary>
-        [Tooltip("Parameters that influence how this CinemachineCamera transitions from other CinemachineCameras")]
-        [HideFoldout]
-        public TransitionParams Transitions;
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// make an arbitrary choice.</summary>
+        [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
+            + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+            + "make an arbitrary choice.")]
+        public CinemachineCore.BlendHints BlendHint;
 
         CameraState m_State = CameraState.Default;
         CinemachineComponentBase[] m_Pipeline;
@@ -103,10 +106,6 @@ namespace Unity.Cinemachine
             get { return ResolveFollow(Target.TrackingTarget); }
             set { Target.TrackingTarget = value; }
         }
-
-        /// <summary>Returns the TransitionParams settings</summary>
-        /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => Transitions;
 
         /// <summary>This is called to notify the CinemachineCamera that a target got warped,
         /// so that the CinemachineCamera can update its internal state to make the camera
@@ -176,14 +175,15 @@ namespace Unity.Cinemachine
             bool forceUpdate = false;
 
             // Can't inherit position if already live, because there will be a pop
-            if (Transitions.InheritPosition && fromCam != null && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if ((State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && fromCam != null && !CinemachineCore.IsLiveInBlend(this))
             {
                 var state = fromCam.State;
                 ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());
             }
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
-                if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime, ref Transitions))
+                if (m_Pipeline[i] != null && m_Pipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime))
                     forceUpdate = true;
 
             if (!forceUpdate)
@@ -194,9 +194,6 @@ namespace Unity.Cinemachine
                 InternalUpdateCameraState(worldUp, deltaTime);
                 InternalUpdateCameraState(worldUp, deltaTime);
             }
-
-            if (Transitions.Events.OnCameraLive != null)
-                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
         }
 
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
@@ -221,7 +218,7 @@ namespace Unity.Cinemachine
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
             InvokeComponentPipeline(ref m_State, deltaTime);
-            m_State.BlendHint = (CameraState.BlendHintValue)Transitions.BlendHint;
+            m_State.BlendHint = (CameraState.BlendHints)BlendHint;
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.

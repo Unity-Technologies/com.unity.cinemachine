@@ -44,7 +44,7 @@ namespace Unity.Cinemachine.Editor
             
             if (target.IsValid)
             {
-                var isLive = CinemachineCore.Instance.IsLive(target.VirtualCamera);
+                var isLive = CinemachineCore.IsLive(target.VirtualCamera);
                 Color originalGizmoColour = Gizmos.color;
                 Gizmos.color = isLive
                     ? CinemachineCorePrefs.ActiveGizmoColour.Value

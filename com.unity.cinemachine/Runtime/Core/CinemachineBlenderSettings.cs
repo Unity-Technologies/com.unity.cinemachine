@@ -101,5 +101,39 @@ namespace Unity.Cinemachine
 
             return defaultBlend;
         }
+
+        /// <summary>
+        /// Find a blend curve for blending from one ICinemachineCamera to another.
+        /// If there is a specific blend defined for these cameras it will be used, otherwise
+        /// a default blend will be created, which could be a cut.
+        /// 
+        /// CinemachineCore.GetBlendOverride will be called at the end, so that the
+        /// client may override the choice of blend.
+        /// </summary>
+        /// <param name="outgoing">The camera we're blending from.</param>
+        /// <param name="incoming">The camera we're blending to.</param>
+        /// <param name="defaultBlend">Blend to return if no custom blend found.</param>
+        /// <param name="customBlends">The custom blends asset to search, or null.</param>
+        /// <param name="owner">The object that is requesting the blend, for 
+        /// GetBlendOverride callback context.</param>
+        /// <returns>The blend to use for this camera transition.</returns>
+        public static CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming,
+            CinemachineBlendDefinition defaultBlend,
+            CinemachineBlenderSettings customBlends,
+            UnityEngine.Object owner)
+        {
+            // Get the blend curve that's most appropriate for these cameras
+            CinemachineBlendDefinition blend = defaultBlend;
+            if (customBlends != null)
+            {
+                string fromCameraName = (outgoing != null) ? outgoing.Name : string.Empty;
+                string toCameraName = (incoming != null) ? incoming.Name : string.Empty;
+                blend = customBlends.GetBlendForVirtualCameras(fromCameraName, toCameraName, blend);
+            }
+            if (CinemachineCore.GetBlendOverride != null)
+                blend = CinemachineCore.GetBlendOverride(outgoing, incoming, blend, owner);
+            return blend;
+        }
     }
 }

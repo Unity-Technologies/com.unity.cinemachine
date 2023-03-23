@@ -149,7 +149,7 @@ namespace Unity.Cinemachine.Editor
             var vcam = orbital.VirtualCamera;
             if (vcam != null && vcam.Follow != null)
             {
-                var color = CinemachineCore.Instance.IsLive(vcam)
+                var color = CinemachineCore.IsLive(vcam)
                     ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
                     : CinemachineCorePrefs.InactiveGizmoColour.Value;
                 var targetPos = orbital.FollowTargetPosition;
