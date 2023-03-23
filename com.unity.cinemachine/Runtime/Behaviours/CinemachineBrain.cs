@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
-using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEngine.UIElements;
 #endif
@@ -713,6 +712,7 @@ namespace Unity.Cinemachine
             CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
 
+#if UNITY_EDITOR
         class DebugText : IDisposable
         {
             VisualElement m_DebugUIContainer;
@@ -776,5 +776,6 @@ namespace Unity.Cinemachine
                 }
             }
         }
+#endif
     }
 }

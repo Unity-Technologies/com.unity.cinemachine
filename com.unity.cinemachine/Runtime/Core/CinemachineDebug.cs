@@ -1,10 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
+#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.Compilation;
 using UnityEngine.UIElements;
+#endif
 
 namespace Unity.Cinemachine
 {
@@ -35,6 +35,8 @@ namespace Unity.Cinemachine
         }
 #endif
 
+        
+#if UNITY_EDITOR
         const string k_DebugUIName = "CinemachineDebugUI";
         static GameObject s_UIDocumentHolder;
         static UIDocument s_UIDocument;
@@ -87,6 +89,7 @@ namespace Unity.Cinemachine
             visualElement.style.left = new Length(viewPortMinPanelSpace.x, LengthUnit.Pixel);
             visualElement.style.right = new Length(screenPanelSpace.x - viewPortMaxPanelSpace.x, LengthUnit.Pixel);
         }
+#endif
 
         /// <summary>
         /// Delegate for OnGUI debugging.  
