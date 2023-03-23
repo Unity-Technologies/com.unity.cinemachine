@@ -111,22 +111,21 @@ namespace Unity.Cinemachine
                     };
                 }
             }
-
-            if (!s_UIDocumentHolder.TryGetComponent(out s_UIDocument)) {
+            if (!s_UIDocumentHolder.TryGetComponent(out s_UIDocument))
+            {
                 s_UIDocument = s_UIDocumentHolder.AddComponent<UIDocument>();
                 
                 const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
                 s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
                 s_UIDocument.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path + "CinemachineDebugPanel.uxml");
             }
-
+            
             var viewportContainer = new VisualElement
             {
-                name = "CinemachineDebugPanel_ViewportContainer",
+                name = "CinemachineDebugUI_ViewportContainer",
                 style = { position = new StyleEnum<Position>(Position.Absolute) }
             };
-            s_UIDocument.rootVisualElement.Add(viewportContainer);
-
+            s_UIDocument.rootVisualElement?.Add(viewportContainer);
             return viewportContainer;
         }
 

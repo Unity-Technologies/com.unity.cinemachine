@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEngine.UIElements;
 #endif
@@ -165,13 +166,15 @@ namespace Unity.Cinemachine
         static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
 
+#if UNITY_EDITOR
+        DebugText m_DebugText;
+#endif
+        
         void OnValidate()
         {
 #if UNITY_EDITOR
-            if (m_DebugUIContainer != null)
-                m_DebugUIContainer.visible = ShowDebugText;
+            m_DebugText?.SetVisibility(ShowDebugText);
 #endif
-            
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
         }
 
@@ -206,7 +209,7 @@ namespace Unity.Cinemachine
 
             s_ActiveBrains.Add(this);
 #if UNITY_EDITOR
-            SetupDebugUI();
+            m_DebugText = new DebugText();
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 #endif
@@ -225,7 +228,8 @@ namespace Unity.Cinemachine
             
 #if UNITY_EDITOR
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            DestroyDebugUI();
+            m_DebugText.Dispose();
+            m_DebugText = null;
 #endif
             s_ActiveBrains.Remove(this);
 
@@ -284,51 +288,9 @@ namespace Unity.Cinemachine
                 CinemachineDebug.OnGUIHandlers(this);
         }
 
-        VisualElement m_DebugUIContainer;
-        Label m_DebugLabel;
-        void SetupDebugUI()
-        {
-            m_DebugUIContainer = CinemachineDebug.CreateRuntimeUIContainer();
-            m_DebugLabel = new Label
-            {
-                style =
-                {
-                    backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)),
-                    marginBottom = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                    marginTop = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                    marginLeft = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                    marginRight = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                    paddingBottom = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                    paddingTop = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                    paddingLeft = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                    paddingRight = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                    fontSize = new StyleLength(new Length(10, LengthUnit.Percent)),
-                    color = new StyleColor(Color.white),
-                    position = new StyleEnum<Position>(Position.Relative),
-                    alignSelf = new StyleEnum<Align>(Align.FlexStart)
-                }
-            };
-            m_DebugUIContainer.Add(m_DebugLabel);
-        }
-
-        void DestroyDebugUI()
-        {
-            if (m_DebugLabel != null)
-            {
-                m_DebugLabel.RemoveFromHierarchy();
-                m_DebugLabel = null;
-            }
-
-            if (m_DebugUIContainer != null)
-            {
-                m_DebugUIContainer.RemoveFromHierarchy();
-                m_DebugUIContainer = null;
-            }
-        }
-        
         void OnGuiHandler(CinemachineBrain brain)
         {
-            if (ActiveVirtualCamera == null || m_DebugLabel == null || !ShowDebugText || brain != this || brain == null)
+            if (ActiveVirtualCamera == null || m_DebugText == null || !ShowDebugText || brain != this || brain == null)
                 return;
 
             var outputCamera = brain.OutputCamera;
@@ -367,8 +329,8 @@ namespace Unity.Cinemachine
                 }
             }
             
-            m_DebugLabel.text = sb.ToString();
-            CinemachineDebug.PositionWithinCameraView(m_DebugUIContainer, outputCamera);
+            m_DebugText.SetText(sb.ToString());
+            m_DebugText.PositionWithinCameraView(outputCamera);
             
             CinemachineDebug.ReturnToPool(sb);
         }
@@ -749,6 +711,70 @@ namespace Unity.Cinemachine
             }
             // Send the camera updated event
             CinemachineCore.CameraUpdatedEvent.Invoke(this);
+        }
+
+        class DebugText : IDisposable
+        {
+            VisualElement m_DebugUIContainer;
+            Label m_DebugLabel;
+
+            public DebugText()
+            {
+                m_DebugUIContainer = CinemachineDebug.CreateRuntimeUIContainer();
+                m_DebugLabel = new Label
+                {
+                    style =
+                    {
+                        backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)),
+                        marginBottom = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginTop = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginLeft = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginRight = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        paddingBottom = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingTop = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingLeft = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingRight = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        fontSize = new StyleLength(new Length(10, LengthUnit.Percent)),
+                        color = new StyleColor(Color.white),
+                        position = new StyleEnum<Position>(Position.Relative),
+                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
+                    }
+                };
+                m_DebugUIContainer.Add(m_DebugLabel);
+            }
+
+            public void SetVisibility(bool v) => m_DebugUIContainer.visible = v;
+
+            public void SetText(string text) => m_DebugLabel.text = text;
+
+            public void PositionWithinCameraView(Camera outputCamera) => 
+                CinemachineDebug.PositionWithinCameraView(m_DebugUIContainer, outputCamera);
+            
+            public void Dispose()
+            {
+                ReleaseUnmanagedResources();
+                GC.SuppressFinalize(this);
+            }
+
+            ~DebugText()
+            {
+                ReleaseUnmanagedResources();
+            }
+            
+            void ReleaseUnmanagedResources()
+            {
+                if (m_DebugLabel != null)
+                {
+                    m_DebugLabel.RemoveFromHierarchy();
+                    m_DebugLabel = null;
+                }
+
+                if (m_DebugUIContainer != null)
+                {
+                    m_DebugUIContainer.RemoveFromHierarchy();
+                    m_DebugUIContainer = null;
+                }
+            }
         }
     }
 }
