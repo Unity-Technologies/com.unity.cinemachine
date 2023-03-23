@@ -763,7 +763,7 @@ namespace Unity.Cinemachine.Editor
             public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
-                if (label.Length != 0)
+                if (!string.IsNullOrEmpty(label))
                     Label = AddChild(this, new Label(label) 
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });

@@ -76,35 +76,36 @@ namespace Unity.Cinemachine.Editor
         {
             var a = (EnabledPropertyAttribute)attribute;
             var enabledProp = property.FindPropertyRelative(a.EnabledPropertyName);
-            if (enabledProp == null)
-                return new PropertyField(property);
 
-            var row = InspectorUtility.PropertyRow(enabledProp, out var enabledField, property.displayName);
-            enabledField.style.flexBasis = InspectorUtility.SingleLineHeight;
-            enabledField.style.flexGrow = 0;
-            enabledField.style.alignSelf = Align.Center;
-            enabledField.style.marginTop = 2;
-            Label disabledText = null;
-            if (!string.IsNullOrEmpty(a.ToggleDisabledText))
-                disabledText = row.Contents.AddChild(new Label(a.ToggleDisabledText)
-                    { style = { flexGrow = 0, flexBasis = 0, marginLeft = 3, alignSelf = Align.Center, opacity = 0.5f }});
-
-            // Draw the first property in the struct
-            VisualElement childField = null;
+            // Use the first child field found
             var childProperty = property.Copy();
             var endProperty = childProperty.GetEndProperty();
             childProperty.NextVisible(true);
-            while (childField == null && !SerializedProperty.EqualContents(childProperty, endProperty))
+            while (!SerializedProperty.EqualContents(childProperty, endProperty))
             {
                 if (!SerializedProperty.EqualContents(childProperty, enabledProp))
-                {
-                    childField = row.Contents.AddChild(
-                        new InspectorUtility.CompactPropertyField(childProperty, "") 
-                        { style = { flexGrow = 1, marginTop = 0, marginBottom = 0 }});
-                    row.Label.AddPropertyDragger(childProperty, childField);
-                }
+                    break;
                 childProperty.NextVisible(false);
             }
+            if (SerializedProperty.EqualContents(childProperty, endProperty))
+                childProperty = null;
+            if (enabledProp == null || childProperty == null)
+                return new PropertyField(property);
+
+            var row = new InspectorUtility.LabeledRow(preferredLabel, childProperty.tooltip);
+            var toggle = row.Contents.AddChild(new Toggle("") 
+                { style = { flexGrow = 0, marginTop = 2, marginLeft = 0, alignSelf = Align.Center }});
+            toggle.BindProperty(enabledProp);
+
+            Label disabledText = null;
+            if (!string.IsNullOrEmpty(a.ToggleDisabledText))
+                disabledText = row.Contents.AddChild(new Label(a.ToggleDisabledText)
+                    { style = { flexGrow = 0, flexBasis = 0, marginLeft = 8, alignSelf = Align.Center, opacity = 0.5f }});
+
+            var childField = row.Contents.AddChild(new PropertyField(childProperty, "") 
+                { style = { flexGrow = 1, marginTop = -1, marginLeft = 5, marginBottom = -1 }});
+            row.Label.AddPropertyDragger(childProperty, childField);
+            childField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
 
             row.TrackPropertyWithInitialCallback(enabledProp, (p) => 
             {
