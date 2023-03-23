@@ -34,65 +34,6 @@ namespace Unity.Cinemachine
             return new Rect(pos, size);
         }
 #endif
-        public static Rect GetCameraRect(Camera outputCamera, LensSettings lens)
-        {
-            Rect cameraRect = outputCamera.pixelRect;
-            float screenHeight = cameraRect.height;
-            float screenWidth = cameraRect.width;
-
-            float screenAspect = screenWidth / screenHeight;
-            switch (outputCamera.gateFit)
-            {
-                case Camera.GateFitMode.Vertical:
-                    screenWidth = screenHeight * lens.Aspect;
-                    cameraRect.position += new Vector2((cameraRect.width - screenWidth) * 0.5f, 0);
-                    break;
-                case Camera.GateFitMode.Horizontal:
-                    screenHeight = screenWidth / lens.Aspect;
-                    cameraRect.position += new Vector2(0, (cameraRect.height - screenHeight) * 0.5f);
-                    break;
-                case Camera.GateFitMode.Overscan:
-                    if (screenAspect < lens.Aspect)
-                    {
-                        screenHeight = screenWidth / lens.Aspect;
-                        cameraRect.position += new Vector2(0, (cameraRect.height - screenHeight) * 0.5f);
-                    }
-                    else
-                    {
-                        screenWidth = screenHeight * lens.Aspect;
-                        cameraRect.position += new Vector2((cameraRect.width - screenWidth) * 0.5f, 0);
-                    }
-                    break;
-                case Camera.GateFitMode.Fill:
-                    if (screenAspect > lens.Aspect)
-                    {
-                        screenHeight = screenWidth / lens.Aspect;
-                        cameraRect.position += new Vector2(0, (cameraRect.height - screenHeight) * 0.5f);
-                    }
-                    else
-                    {
-                        screenWidth = screenHeight * lens.Aspect;
-                        cameraRect.position += new Vector2((cameraRect.width - screenWidth) * 0.5f, 0);
-                    }
-                    break;
-                case Camera.GateFitMode.None:
-                    break;
-            }
-
-            cameraRect = new Rect(cameraRect.position, new Vector2(screenWidth, screenHeight));
-
-            // Invert Y
-            float h = cameraRect.height;
-            cameraRect.yMax = Screen.height - cameraRect.yMin;
-            cameraRect.yMin = cameraRect.yMax - h;
-
-            // Shift the guides along with the lens
-            if (lens.IsPhysicalCamera)
-                cameraRect.position += new Vector2(
-                    -screenWidth * lens.PhysicalProperties.LensShift.x, screenHeight * lens.PhysicalProperties.LensShift.y);
-
-            return cameraRect;
-        }
 
         const string k_DebugUIName = "CinemachineDebugUI";
         static GameObject s_UIDocumentHolder;
