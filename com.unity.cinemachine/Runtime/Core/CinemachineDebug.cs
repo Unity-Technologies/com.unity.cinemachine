@@ -117,7 +117,6 @@ namespace Unity.Cinemachine
                 
                 const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
                 s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
-                s_UIDocument.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path + "CinemachineDebugPanel.uxml");
             }
             
             var viewportContainer = new VisualElement
@@ -134,7 +133,7 @@ namespace Unity.Cinemachine
         /// <param name="camera">The camera that defines the view area.</param>
         public static void PositionWithinCameraView(VisualElement visualElement, Camera camera)
         {
-            if (s_UIDocument == null)
+            if (s_UIDocument == null || s_UIDocument.rootVisualElement == null)
                 return;
             
             var panel = s_UIDocument.rootVisualElement.panel;
