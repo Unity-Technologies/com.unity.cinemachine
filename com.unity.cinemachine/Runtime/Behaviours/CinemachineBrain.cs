@@ -298,7 +298,6 @@ namespace Unity.Cinemachine
 
             // Show the active camera and blend
             var sb = CinemachineDebug.SBFromPool();
-            Color color = GUI.color;
             sb.Length = 0;
             sb.Append("CM ");
             sb.Append(gameObject.name);
@@ -306,8 +305,10 @@ namespace Unity.Cinemachine
             if (CinemachineCore.SoloCamera != null)
             {
                 sb.Append("SOLO ");
-                GUI.color = CinemachineCore.SoloGUIColor();
+                m_DebugText.SetTextColor(CinemachineCore.SoloGUIColor());
             }
+            else
+                m_DebugText.RestoreOriginalTextColor();
 
             if (IsBlending)
                 sb.Append(ActiveBlend.Description);
@@ -717,6 +718,7 @@ namespace Unity.Cinemachine
         {
             VisualElement m_DebugUIContainer;
             Label m_DebugLabel;
+            StyleColor m_OriginalTextColor;
 
             public DebugText()
             {
@@ -741,7 +743,11 @@ namespace Unity.Cinemachine
                     }
                 };
                 m_DebugUIContainer.Add(m_DebugLabel);
+                m_OriginalTextColor = m_DebugLabel.style.color;
             }
+
+            public void SetTextColor(Color color) => m_DebugLabel.style.color = new StyleColor(color);
+            public void RestoreOriginalTextColor() => m_DebugLabel.style.color = m_OriginalTextColor;
 
             public void SetVisibility(bool v) => m_DebugUIContainer.visible = v;
 
