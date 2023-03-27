@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine.UIElements;
 #endif
 
@@ -166,7 +167,7 @@ namespace Unity.Cinemachine
         CameraState m_CameraState; // Cached camera state
 
 #if UNITY_EDITOR
-        CinemachineDebug.DebugText m_DebugText;
+        DebugText m_DebugText;
 #endif
         
         void OnValidate()
@@ -208,7 +209,7 @@ namespace Unity.Cinemachine
 
             s_ActiveBrains.Add(this);
 #if UNITY_EDITOR
-            m_DebugText = new CinemachineDebug.DebugText(OutputCamera);
+            m_DebugText = new DebugText(OutputCamera);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 #endif
@@ -224,11 +225,13 @@ namespace Unity.Cinemachine
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
-            
+
 #if UNITY_EDITOR
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            m_DebugText.Dispose();
-            m_DebugText = null;
+            if (m_DebugText != null) {
+                m_DebugText.Dispose();
+                m_DebugText = null;
+            }
 #endif
             s_ActiveBrains.Remove(this);
 
