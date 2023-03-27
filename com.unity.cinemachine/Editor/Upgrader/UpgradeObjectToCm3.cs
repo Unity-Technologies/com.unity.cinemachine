@@ -314,7 +314,7 @@ namespace Unity.Cinemachine.Editor
             cmCamera.BlendHint = vcam.BlendHint;
             if (vcam.m_OnCameraLiveEvent.GetPersistentEventCount() > 0)
             {
-                var evts = Undo.AddComponent<CinemachineCameraEvents>(go);
+                var evts = Undo.AddComponent<CinemachineLegacyCameraEvents>(go);
                 evts.OnCameraLive = vcam.m_OnCameraLiveEvent;
             }
                 
@@ -408,7 +408,7 @@ namespace Unity.Cinemachine.Editor
             cmCamera.BlendHint = freelook.BlendHint;
             if (freelook.m_OnCameraLiveEvent.GetPersistentEventCount() > 0)
             {
-                var evts = Undo.AddComponent<CinemachineCameraEvents>(go);
+                var evts = Undo.AddComponent<CinemachineLegacyCameraEvents>(go);
                 evts.OnCameraLive = freelook.m_OnCameraLiveEvent;
             }
                     

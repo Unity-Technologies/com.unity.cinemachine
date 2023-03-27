@@ -12,7 +12,9 @@ If you are looking for events that fire for a specific CinemachineCamera, see [C
 
 | **Property:** | **Function:** |
 |:---|:---|
-| __Camera Activated Event__ | This is called at the beginning of a blend, when a camera becomes live.  Parameters are: brain, incoming camera. A cut is considered to be a blend of length 0 |
+| __Camera Activated Event__ | This is called at the beginning of a blend, when a camera becomes live.  Parameters are: brain, incoming camera. A cut is considered to be a blend of length zero. |
+| __Camera Deactivated Event__ | This event will fire whenever a Cinemachine Camera stops being live.  If a blend is involved, then the event will fire after the last frame of the blend. |
+| __Camera Blend Finished Event__ | This event will fire whenever a Cinemachine Camera finishes blending in.  It will not fire if the blend length is zero. |
 | __Camera Cut Event__ | This is called when a zero-length blend happens. |
-| __Camera Updated Event__ | This event is sent immediately after the brain has processed all the CinemachineCameras, and has updated the main Camera.  Code that depends on the main camera position or that wants to modify it can be executed from this event handler. |
+| __Updated Event__ | This event is sent immediately after the brain has processed all the CinemachineCameras, and has updated the main Camera.  Code that depends on the main camera position or that wants to modify it can be executed from this event handler. |
 

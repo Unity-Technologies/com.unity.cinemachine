@@ -74,6 +74,8 @@ namespace Unity.Cinemachine
         /// <returns>True if the camera is involved in the blend</returns>
         public bool Uses(ICinemachineCamera cam)
         {
+            if (cam == null)
+                return false;
             if (cam == CamA || cam == CamB)
                 return true;
             if (CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))

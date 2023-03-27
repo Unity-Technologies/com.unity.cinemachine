@@ -12,5 +12,7 @@ If you want to attach events to a CinemachineBrain, please see [Cinemachine Brai
 
 | **Property:** | **Function:** |
 |:---|:---|
-| __On Camera Live__ | This is called at the beginning of a blend, when a camera becomes live.  Parameters are: incoming camera, outgoing camera. A cut is considered to be a blend of length 0 |
+| __Camera Activated Event__ | This is called at the beginning of a blend, when a camera becomes live.  Parameters are: brain, incoming camera. A cut is considered to be a blend of length zero. |
+| __Camera Deactivated Event__ | This event will fire whenever a Cinemachine Camera stops being live.  If a blend is involved, then the event will fire after the last frame of the blend. |
+| __Camera Blend Finished Event__ | This event will fire whenever a Cinemachine Camera finishes blending in.  It will not fire if the blend length is zero. |
 

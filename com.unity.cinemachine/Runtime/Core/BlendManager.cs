@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -11,23 +12,24 @@ namespace Unity.Cinemachine
     {
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
         CinemachineBlend m_CurrentLiveCameras = new (null, null, null, 0, 0);
-        ICinemachineCamera m_OutgoingCamera;
+
+        // Current cameras last frame, used for computing deltas
+        CinemachineBlend m_PreviousLiveCameras = new (null, null, null, 0, 0);
+
+        // This is to control GC allocs when generating camera deactivated events
+        List<ICinemachineCamera> m_CameraCache = new();
 
         /// <summary>Get the current active virtual camera.</summary>
         public ICinemachineCamera ActiveVirtualCamera => DeepCamBFromBlend(m_CurrentLiveCameras);
 
         static ICinemachineCamera DeepCamBFromBlend(CinemachineBlend blend)
         {
-            ICinemachineCamera vcam = blend.CamB;
-            while (vcam != null)
-            {
-                if (!vcam.IsValid)
-                    return null;    // deleted!
-                if (vcam is not BlendSourceVirtualCamera bs)
-                    break;
-                vcam = bs.Blend.CamB;
-            }
-            return vcam;
+            var cam = blend?.CamB;
+            while (cam is BlendSourceVirtualCamera bs)
+                cam = bs.Blend.CamB;
+            if (cam != null && cam.IsValid)
+                return cam;
+            return null;
         }
 
         /// <summary>
@@ -38,7 +40,7 @@ namespace Unity.Cinemachine
         {
             get
             {
-                if (m_CurrentLiveCameras.CamA == null || m_CurrentLiveCameras.Equals(null) || m_CurrentLiveCameras.IsComplete)
+                if (m_CurrentLiveCameras.CamA == null || m_CurrentLiveCameras.IsComplete)
                     return null;
                 return m_CurrentLiveCameras;
             }
@@ -76,10 +78,13 @@ namespace Unity.Cinemachine
         public bool IsLiveInBlend(ICinemachineCamera cam)
         {
             // Ignore m_CurrentLiveCameras.CamB
-            if (cam == m_CurrentLiveCameras.CamA)
-                return true;
-            if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
-                return true;
+            if (cam != null)
+            {
+                if (cam == m_CurrentLiveCameras.CamA)
+                    return true;
+                if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
+                    return true;
+            }
             return false;
         }
 
@@ -92,13 +97,20 @@ namespace Unity.Cinemachine
         /// <returns>True if the camera is live (directly or indirectly)
         /// or part of a blend in progress.</returns>
         public bool IsLive(ICinemachineCamera cam, bool dominantChildOnly = false) => m_CurrentLiveCameras.Uses(cam);
-        
+
+        /// <summary>Get the current state, representing the active camera and blend state.</summary>
+        public CameraState CameraState => m_CurrentLiveCameras.State;
+
         /// <summary>
         /// Compute the current blend, taking into account
         /// the in-game camera and all the active overrides.  Caller may optionally
         /// exclude n topmost overrides.
         /// </summary>
-        public void ComputeCurrentBlend() => ProcessOverrideFrames(ref m_CurrentLiveCameras, 0);
+        public void ComputeCurrentBlend() 
+        {
+            m_PreviousLiveCameras.CopyFrom(m_CurrentLiveCameras);
+            ProcessOverrideFrames(ref m_CurrentLiveCameras, 0);
+        }
 
         /// <summary>
         /// Special support for fixed update: cameras that have been enabled
@@ -117,21 +129,37 @@ namespace Unity.Cinemachine
         /// <returns>Active virtual camera this frame</returns>
         public ICinemachineCamera ProcessActiveCamera(ICinemachineMixer mixer, Vector3 up, float deltaTime)
         {
+            // Send deactivation events
+            m_CameraCache.Clear();
+            CollectLiveCameras(m_PreviousLiveCameras, ref m_CameraCache);
+            for (int i = 0; i < m_CameraCache.Count; ++i)
+                if (!IsLive(m_CameraCache[i]))
+                    CinemachineCore.CameraDeactivatedEvent.Invoke(mixer, m_CameraCache[i]);
+
+            // Process newly activated cameras
             var incomingCamera = ActiveVirtualCamera;
             if (incomingCamera != null && incomingCamera.IsValid)
             {
                 // Has the current camera changed this frame?
-                if (m_OutgoingCamera != null && !m_OutgoingCamera.IsValid)
-                    m_OutgoingCamera = null; // object was deleted
-                if (incomingCamera != m_OutgoingCamera)
+                var outgoingCamera = DeepCamBFromBlend(m_PreviousLiveCameras);
+                if (outgoingCamera != null && !outgoingCamera.IsValid)
+                    outgoingCamera = null; // object was deleted
+
+                if (incomingCamera == outgoingCamera)
+                {
+                    // Send a blend completeed event if appropriate
+                    if (m_PreviousLiveCameras.CamA != null && m_CurrentLiveCameras.CamA == null)
+                        CinemachineCore.BlendFinishedEvent.Invoke(mixer, incomingCamera);
+                }
+                else
                 {
                     // Generate ActivationEvents
                     var evt = new ICinemachineCamera.ActivationEventParams
                     {
                         Origin = mixer,
-                        OutgoingCamera = m_OutgoingCamera,
+                        OutgoingCamera = outgoingCamera,
                         IncomingCamera = incomingCamera,
-                        IsCut = !IsBlending || (m_OutgoingCamera != null && !ActiveBlend.Uses(m_OutgoingCamera)),
+                        IsCut = !IsBlending || !IsLive(outgoingCamera),
                         WorldUp = up,
                         DeltaTime = deltaTime
                     };
@@ -143,11 +171,21 @@ namespace Unity.Cinemachine
                     incomingCamera.UpdateCameraState(up, deltaTime);
                 }
             }
-            m_OutgoingCamera = incomingCamera;
             return incomingCamera;
-        }
 
-        /// <summary>Get the current state, representing the active camera and blend state.</summary>
-        public CameraState CameraState => m_CurrentLiveCameras.State;
+            // local method - find all the live cameras in a blend
+            static void CollectLiveCameras(CinemachineBlend blend, ref List<ICinemachineCamera> cams)
+            {
+                if (blend.CamA is BlendSourceVirtualCamera a && a.Blend != null)
+                    CollectLiveCameras(a.Blend, ref cams);
+                else if (blend.CamA != null)
+                    cams.Add(blend.CamA);
+
+                if (blend.CamB is BlendSourceVirtualCamera b && b.Blend != null)
+                    CollectLiveCameras(b.Blend, ref cams);
+                else if (blend.CamB != null)
+                    cams.Add(blend.CamB);
+            }
+        }
     }
 }

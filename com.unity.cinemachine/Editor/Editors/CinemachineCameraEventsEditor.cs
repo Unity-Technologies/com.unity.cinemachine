@@ -14,7 +14,9 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.OnCameraLive)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDeactivatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraBlendFinishedEvent)));
             return ux;
         }
     }

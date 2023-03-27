@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
             ICinemachineCamera m_SnapshotSource;
             float m_SnapshotBlendWeight;
 
-            public StackFrame() : base(new (null, null, null, 1, 0)) {}
+            public StackFrame() : base(new (null, null, null, 0, 0)) {}
             public bool Active => Source.IsValid;
 
             // This is a little tricky, because we only want to take a new snapshot at the start 
@@ -222,9 +222,9 @@ namespace Unity.Cinemachine
 
                         frame.Source.CamA = outgoingCamera;
                         frame.Source.BlendCurve = blendDef.BlendCurve;
-                        frame.Source.Duration = blendDef.BlendTime;
-                        frame.Source.TimeInBlend = 0;
                     }
+                    frame.Source.Duration = blendDef.BlendTime;
+                    frame.Source.TimeInBlend = 0;
                 }
                 frame.Source.CamB = activeCamera;
 
@@ -250,7 +250,7 @@ namespace Unity.Cinemachine
                     // to cancel out the progress made in the opposite direction
                     if (backingOutOfBlend)
                     {
-                        snapshot = true;
+                        snapshot = true; // always use a snapshot for this to prevent pops
                         duration = frame.Blend.TimeInBlend;
                     }
 

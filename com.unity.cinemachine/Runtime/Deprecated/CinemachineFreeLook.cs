@@ -54,7 +54,7 @@ namespace Unity.Cinemachine
 
         /// <summary>This event fires when a transition occurs.</summary>
         [Tooltip("This event fires when a transition occurs")]
-        public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
+        public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
@@ -131,7 +131,7 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLive;
+            public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLive;
         }
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
