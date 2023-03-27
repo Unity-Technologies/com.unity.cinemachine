@@ -16,7 +16,7 @@ Because manager cameras act like normal CinemachineCameras, you can nest them. I
 
 ## Making Your Own Custom Manager Camera
 
-It is also possible to make your own manager camera that selects its current active child according to an arbitrary algorithmn that you provide.  For instance, if you are making a 2D Platformer and want a camera rig that frames itself differently according to whether the character is moving right or left, or jumping, or falling, a custom CameraManager class might be a good approach.
+It is also possible to make your own manager camera that selects its current active child according to an arbitrary algorithm that you provide.  For instance, if you are making a 2D Platformer and want a camera rig that frames itself differently according to whether the character is moving right or left, or jumping, or falling, a custom CameraManager class might be a good approach.
 
 To do this, make a new class that inherits `CinemachineCameraManagerBase`.  This base class implements an array of CinemachineCamera children, and a blender. 
 
@@ -26,6 +26,8 @@ If the new desired camera is different from what it was on the last frame, Cinem
 
 Once you've added the child cameras with the settings you like for each player state and have wired them into your manager instance, you will have a Cinemachine rig that adjusts itself according to player state.  The rig itself will look to the rest of the system just like an ordinary CinemachineCamera, and so can be used wherever CinemachineCameras can - including being nested within other rigs.
 
+Note that Cinemachine ships with [State-Driven Camera](CinemachineStateDrivenCamera.md), which implements this functionality provided that the relevant player state is encoded in an Animation Controller State-Machine.  You would implement your own manager in the case that the state is not being read from an Animation Controller.
+
 
 ### Managed Cameras need to be GameObject children of the manager
-This is mainly to prevent problems that can occur if you nest managers and end up with a recursive loop.  Forcing the managed cameras to be childen makes recursion impossible.
+This is mainly to prevent problems that can occur if you nest managers and end up with a recursive loop.  Forcing the managed cameras to be children makes recursion impossible.
