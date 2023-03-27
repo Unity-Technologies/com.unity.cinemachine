@@ -45,16 +45,6 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_RandomizeChoice")]
         public bool RandomizeChoice = false;
 
-        /// <summary>The blend which is used if you don't explicitly define a blend between two Virtual Cameras</summary>
-        [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Cameras")]
-        [FormerlySerializedAs("m_DefaultBlend")]
-        public CinemachineBlendDefinition DefaultBlend = new(CinemachineBlendDefinition.Styles.Cut, 0);
-
-        /// <summary>This is the asset which contains custom settings for specific blends</summary>
-        [HideInInspector]
-        [FormerlySerializedAs("m_CustomBlends")]
-        public CinemachineBlenderSettings CustomBlends = null;
-
         [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
         [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
@@ -63,9 +53,8 @@ namespace Unity.Cinemachine
         CinemachineVirtualCameraBase m_PendingCamera;
         bool m_RandomizeNow = false;
         List<CinemachineVirtualCameraBase> m_RandomizedChildren = null;
-        ICinemachineCamera m_TransitioningFrom;
 
-        /// <summary>Reset the component to default values.</summary>
+        /// <inheritdoc />
         protected override void Reset()
         {
             base.Reset();
@@ -95,66 +84,15 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Notification that this virtual camera is going live.
-        /// This implementation resets the child randomization.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <inheritdoc />
         public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            m_TransitioningFrom = fromCam;
             if (RandomizeChoice && !IsBlending)
-            {
                 m_RandomizedChildren = null;
-                ResetLiveChild();
-            }
-            InternalUpdateCameraState(worldUp, deltaTime);
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  This implementation
-        /// updates all the children, chooses the best one, and implements any required blending.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
-        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
-        {
-            UpdateCameraCache();
-            if (!PreviousStateIsValid)
-            {
-                ResetLiveChild();
-                m_ActivationTime = 0;
-                m_PendingActivationTime = 0;
-                m_PendingCamera = null;
-                m_RandomizedChildren = null;
-            }
-
-            // Choose the best camera
-            SetLiveChild(ChooseCurrentCamera(LiveChild as CinemachineVirtualCameraBase), worldUp, deltaTime, LookupBlend);
-
-            // Special case to handle being called from OnTransitionFromCamera() - GML todo: fix this
-            if (m_TransitioningFrom != null && !IsBlending && LiveChild != null)
-            {
-                LiveChild.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
-                {
-                    Origin = this,
-                    OutgoingCamera = m_TransitioningFrom,
-                    IncomingCamera = LiveChild,
-                    IsCut = false,
-                    WorldUp = worldUp, 
-                    DeltaTime = deltaTime
-                });
-            }
-
-            FinalizeCameraState(deltaTime);
-            m_TransitioningFrom = null;
-            PreviousStateIsValid = true;
-        }
-
-        CinemachineBlendDefinition LookupBlend(ICinemachineCamera fromKey, ICinemachineCamera toKey)
-            => CinemachineBlenderSettings.LookupBlend(fromKey, toKey, DefaultBlend, CustomBlends, this);
-            
         /// <summary>If RandomizeChoice is enabled, call this to re-randomize the children next frame.
         /// This is useful if you want to freshen up the shot.</summary>
         public void ResetRandomization()
@@ -163,8 +101,18 @@ namespace Unity.Cinemachine
             m_RandomizeNow = true;
         }
 
-        CinemachineVirtualCameraBase ChooseCurrentCamera(CinemachineVirtualCameraBase liveChild)
+        /// <inheritdoc />
+        protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
         {
+            if (!PreviousStateIsValid)
+            {
+                m_ActivationTime = 0;
+                m_PendingActivationTime = 0;
+                m_PendingCamera = null;
+                m_RandomizedChildren = null;
+            }
+
+            var liveChild = LiveChild as CinemachineVirtualCameraBase;
             if (ChildCameras == null || ChildCameras.Count == 0)
             {
                 m_ActivationTime = 0;
