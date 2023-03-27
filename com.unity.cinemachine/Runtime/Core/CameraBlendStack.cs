@@ -240,7 +240,7 @@ namespace Unity.Cinemachine
                     
                     // Special check here: if incoming is InheritPosition and if it's already live
                     // in the outgoing blend, use a snapshot otherwise there could be a pop
-                    if (!snapshot 
+                    if (!snapshot && activeCamera != null
                         && (activeCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
                         && frame.Blend.Uses(activeCamera))
                         snapshot = true;
