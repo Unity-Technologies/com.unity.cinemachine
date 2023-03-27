@@ -74,6 +74,8 @@ namespace Unity.Cinemachine
         /// <returns>True if the camera is involved in the blend</returns>
         public bool Uses(ICinemachineCamera cam)
         {
+            if (cam == null)
+                return false;
             if (cam == CamA || cam == CamB)
                 return true;
             if (CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
@@ -157,7 +159,7 @@ namespace Unity.Cinemachine
         /// <param name="toKey">The incoming camera</param>
         /// <returns>An appropriate blend definition,.  Must not be null.</returns>
         public delegate CinemachineBlendDefinition LookupBlendDelegate(
-            ICinemachineCamera fromKey, ICinemachineCamera toKey);
+            ICinemachineCamera outgoing, ICinemachineCamera incoming);
 
         /// <summary>Supported predefined shapes for the blend curve.</summary>
         public enum Styles

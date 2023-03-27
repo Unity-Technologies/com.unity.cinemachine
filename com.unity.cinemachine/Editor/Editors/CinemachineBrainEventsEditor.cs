@@ -19,8 +19,10 @@ namespace Unity.Cinemachine.Editor
                 HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDeactivatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraBlendFinishedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraUpdatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdatedEvent)));
 
             // Update state
             ux.TrackAnyUserActivity(() =>

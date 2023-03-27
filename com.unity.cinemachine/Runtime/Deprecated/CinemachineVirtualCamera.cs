@@ -55,7 +55,7 @@ namespace Unity.Cinemachine
 
         /// <summary>This event fires when a transition occurs.</summary>
         [Tooltip("This event fires when a transition occurs")]
-        public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
+        public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
         
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLive;
+            public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLive;
         }
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;

@@ -71,16 +71,21 @@ namespace Unity.Cinemachine
         {
             /// <summary>Spherical blend about Tracking target position</summary>
             SphericalPosition = 1, 
-            /// <summary>Cylindrical blend about Tracking target position (vertical co-ordinate is linearly interpolated)</summary>
+            /// <summary>Cylindrical blend about Tracking target position 
+            /// (vertical co-ordinate is linearly interpolated)</summary>
             CylindricalPosition = 2,
-            /// <summary>Screen-space blend between LookAt targets instead of world space lerp of target position</summary>
+            /// <summary>Screen-space blend between LookAt targets instead of 
+            /// world space lerp of target position</summary>
             ScreenSpaceAimWhenTargetsDiffer = 4,
-            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
+            /// <summary>When this virtual camera goes Live, attempt to force 
+            /// the position to be the same 
             /// as the current position of the outgoing Camera</summary>
             InheritPosition = 8,
-            /// <summary>Do not consider the tracking target when blending, just do a spherical interpolation</summary>
+            /// <summary>Do not consider the tracking target when blending, just 
+            /// do a spherical interpolation</summary>
             IgnoreTarget = 16,
-            /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            /// <summary>When blending out from this camera, use a snapshot of 
+            /// its outgoing state instead of a live state</summary>
             FreezeWhenBlendingOut = 32,
         }
 
@@ -106,7 +111,8 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Replacement for Time.deltaTime, taking UniformDeltaTimeOverride into account.
         /// </summary>
-        public static float DeltaTime => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
+        public static float DeltaTime 
+            => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
 
         /// <summary>
         /// If non-negative, cinemachine will use this value whenever it wants current game time.
@@ -143,15 +149,27 @@ namespace Unity.Cinemachine
         /// </summary>
         public static GetBlendOverrideDelegate GetBlendOverride;
 
-        /// <summary>Event with CinemachineBrain as parameter.</summary>
+        /// <summary>An event with ICinemachineMixer and ICinemachineCamera parameters.</summary>
+        [Serializable]
+        public class CameraEvent : UnityEvent<ICinemachineMixer, ICinemachineCamera> {}
+        
+        /// <summary>An Event with CinemachineBrain as parameter.</summary>
         [Serializable]
         public class BrainEvent : UnityEvent<CinemachineBrain> {}
         
         /// <summary>This event will fire after a brain updates its Camera</summary>
         public static BrainEvent CameraUpdatedEvent = new ();
 
-        /// <summary>This event will fire when the current camera changes, at the start of a blend</summary>
+        /// <summary>This event will fire when the current camera changes, 
+        /// at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
+
+        /// <summary>This event will fire immediately after a camera that is 
+        /// live in some context stops being live.</summary>
+        public static CameraEvent CameraDeactivatedEvent = new ();
+
+        /// <summary>This event will fire when the current camera completes a blend-in.</summary>
+        public static CameraEvent BlendFinishedEvent = new ();
 
         /// <summary>
         /// List of all active CinemachineCameras for all brains.
@@ -159,11 +177,11 @@ namespace Unity.Cinemachine
         /// </summary>
         public static int VirtualCameraCount => CameraUpdateManager.VirtualCameraCount;
 
-        /// <summary>Access the priority-sorted array of active ICinemachineCamera in the scene
-        /// without generating garbage</summary>
+        /// <summary>Access the priority-sorted array of active ICinemachineCamera in the scene.</summary>
         /// <param name="index">Index of the camera to access, range 0-VirtualCameraCount</param>
         /// <returns>The virtual camera at the specified index</returns>
-        public static CinemachineVirtualCameraBase GetVirtualCamera(int index) => CameraUpdateManager.GetVirtualCamera(index);
+        public static CinemachineVirtualCameraBase GetVirtualCamera(int index) 
+            => CameraUpdateManager.GetVirtualCamera(index);
 
         /// <summary>
         /// API for the Unity Editor.
