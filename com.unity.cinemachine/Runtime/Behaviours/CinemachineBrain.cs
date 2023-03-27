@@ -6,10 +6,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEngine.UIElements;
-#endif
 
 namespace Unity.Cinemachine
 {
@@ -290,7 +286,7 @@ namespace Unity.Cinemachine
 
         void OnGuiHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText || ActiveVirtualCamera == null || m_DebugText == null)
+            if (!ShowDebugText || ActiveVirtualCamera == null || m_DebugText == null || brain != this)
                 return;
 
             // Show the active camera and blend

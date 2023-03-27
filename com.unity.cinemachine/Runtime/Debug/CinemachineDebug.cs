@@ -61,7 +61,7 @@ namespace Unity.Cinemachine
                 s_UIDocument = s_UIDocumentHolder.AddComponent<UIDocument>();
                 
                 const string path = "Packages/com.unity.cinemachine/Runtime/UI/";
-                s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
+                s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset"); // TODO: find a runtime compatible way
             }
 
             if (s_CameraViewRectContainers.ContainsKey(outputCamera))
