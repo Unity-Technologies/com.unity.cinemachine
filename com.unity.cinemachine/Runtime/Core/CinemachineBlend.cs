@@ -159,7 +159,7 @@ namespace Unity.Cinemachine
         /// <param name="toKey">The incoming camera</param>
         /// <returns>An appropriate blend definition,.  Must not be null.</returns>
         public delegate CinemachineBlendDefinition LookupBlendDelegate(
-            ICinemachineCamera fromKey, ICinemachineCamera toKey);
+            ICinemachineCamera outgoing, ICinemachineCamera incoming);
 
         /// <summary>Supported predefined shapes for the blend curve.</summary>
         public enum Styles

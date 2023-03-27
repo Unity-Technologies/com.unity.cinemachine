@@ -164,12 +164,12 @@ namespace Unity.Cinemachine
         /// at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
 
-        /// <summary>This event will fire when the current camera completes a blend-in.</summary>
-        public static CameraEvent BlendFinishedEvent = new ();
-
         /// <summary>This event will fire immediately after a camera that is 
         /// live in some context stops being live.</summary>
         public static CameraEvent CameraDeactivatedEvent = new ();
+
+        /// <summary>This event will fire when the current camera completes a blend-in.</summary>
+        public static CameraEvent BlendFinishedEvent = new ();
 
         /// <summary>
         /// List of all active CinemachineCameras for all brains.
