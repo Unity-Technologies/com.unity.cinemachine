@@ -166,13 +166,13 @@ namespace Unity.Cinemachine
         CameraState m_CameraState; // Cached camera state
 
 #if UNITY_EDITOR
-        DebugText m_DebugText;
+        CinemachineDebug.DebugText m_DebugText;
 #endif
         
         void OnValidate()
         {
 #if UNITY_EDITOR
-            m_DebugText?.SetVisibility(ShowDebugText);
+            m_DebugText?.SetVisibility(ShowDebugText); // TODO: how to do this better? callback? when noone is using it this should not take any resources. should to work in runtime
 #endif
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
         }
@@ -208,7 +208,7 @@ namespace Unity.Cinemachine
 
             s_ActiveBrains.Add(this);
 #if UNITY_EDITOR
-            m_DebugText = new DebugText();
+            m_DebugText = new CinemachineDebug.DebugText(OutputCamera);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 #endif
@@ -292,10 +292,6 @@ namespace Unity.Cinemachine
             if (ActiveVirtualCamera == null || m_DebugText == null || !ShowDebugText || brain != this || brain == null)
                 return;
 
-            var outputCamera = brain.OutputCamera;
-            if (outputCamera == null)
-                return;
-
             // Show the active camera and blend
             var sb = CinemachineDebug.SBFromPool();
             sb.Length = 0;
@@ -330,7 +326,6 @@ namespace Unity.Cinemachine
             }
             
             m_DebugText.SetText(sb.ToString());
-            m_DebugText.PositionWithinCameraView(outputCamera);
             
             CinemachineDebug.ReturnToPool(sb);
         }
@@ -712,76 +707,5 @@ namespace Unity.Cinemachine
             // Send the camera updated event
             CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
-
-#if UNITY_EDITOR
-        class DebugText : IDisposable
-        {
-            VisualElement m_DebugUIContainer;
-            Label m_DebugLabel;
-            StyleColor m_OriginalTextColor;
-
-            public DebugText()
-            {
-                m_DebugUIContainer = CinemachineDebug.CreateRuntimeUIContainer();
-                m_DebugLabel = new Label
-                {
-                    style =
-                    {
-                        backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)),
-                        marginBottom = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                        marginTop = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                        marginLeft = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                        marginRight = new StyleLength(new Length(2, LengthUnit.Pixel)),
-                        paddingBottom = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                        paddingTop = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                        paddingLeft = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                        paddingRight = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                        fontSize = new StyleLength(new Length(10, LengthUnit.Percent)),
-                        color = new StyleColor(Color.white),
-                        position = new StyleEnum<Position>(Position.Relative),
-                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
-                    }
-                };
-                m_DebugUIContainer.Add(m_DebugLabel);
-                m_OriginalTextColor = m_DebugLabel.style.color;
-            }
-
-            public void SetTextColor(Color color) => m_DebugLabel.style.color = new StyleColor(color);
-            public void RestoreOriginalTextColor() => m_DebugLabel.style.color = m_OriginalTextColor;
-
-            public void SetVisibility(bool v) => m_DebugUIContainer.visible = v;
-
-            public void SetText(string text) => m_DebugLabel.text = text;
-
-            public void PositionWithinCameraView(Camera outputCamera) => 
-                CinemachineDebug.PositionWithinCameraView(m_DebugUIContainer, outputCamera);
-            
-            public void Dispose()
-            {
-                ReleaseUnmanagedResources();
-                GC.SuppressFinalize(this);
-            }
-
-            ~DebugText()
-            {
-                ReleaseUnmanagedResources();
-            }
-            
-            void ReleaseUnmanagedResources()
-            {
-                if (m_DebugLabel != null)
-                {
-                    m_DebugLabel.RemoveFromHierarchy();
-                    m_DebugLabel = null;
-                }
-
-                if (m_DebugUIContainer != null)
-                {
-                    m_DebugUIContainer.RemoveFromHierarchy();
-                    m_DebugUIContainer = null;
-                }
-            }
-        }
-#endif
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
@@ -76,7 +77,7 @@ namespace Unity.Cinemachine
         /// <param name="camera">The camera that defines the view area.</param>
         public static void PositionWithinCameraView(VisualElement visualElement, Camera camera)
         {
-            if (s_UIDocument == null || s_UIDocument.rootVisualElement == null)
+            if (s_UIDocument == null || s_UIDocument.rootVisualElement == null || camera == null)
                 return;
             
             var panel = s_UIDocument.rootVisualElement.panel;
@@ -124,5 +125,78 @@ namespace Unity.Cinemachine
                 s_AvailableStringBuilders = new List<StringBuilder>();
             s_AvailableStringBuilders.Add(sb);
         }
+        
+#if UNITY_EDITOR
+        internal class DebugText : IDisposable
+        {
+            Camera m_Camera;
+            VisualElement m_DebugUIContainer;
+            Label m_DebugLabel;
+            StyleColor m_OriginalTextColor;
+
+            public DebugText(Camera outputCamera)
+            {
+                m_Camera = outputCamera;
+                
+                m_DebugUIContainer = CreateRuntimeUIContainer();
+                m_DebugLabel = new Label
+                {
+                    style =
+                    {
+                        backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)),
+                        marginBottom = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginTop = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginLeft = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        marginRight = new StyleLength(new Length(2, LengthUnit.Pixel)),
+                        paddingBottom = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingTop = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingLeft = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        paddingRight = new StyleLength(new Length(0, LengthUnit.Pixel)),
+                        fontSize = new StyleLength(new Length(10, LengthUnit.Percent)),
+                        color = new StyleColor(Color.white),
+                        position = new StyleEnum<Position>(Position.Relative),
+                        alignSelf = new StyleEnum<Align>(Align.FlexStart)
+                    }
+                };
+                m_DebugUIContainer.Add(m_DebugLabel);
+                m_OriginalTextColor = m_DebugLabel.style.color;
+
+                m_DebugUIContainer.schedule.Execute(PositionElement).Every(0);
+            }
+
+            public void SetTextColor(Color color) => m_DebugLabel.style.color = new StyleColor(color);
+            public void RestoreOriginalTextColor() => m_DebugLabel.style.color = m_OriginalTextColor;
+            public void SetVisibility(bool v) => m_DebugUIContainer.visible = v;
+            public void SetText(string text) => m_DebugLabel.text = text;
+
+            public void Dispose()
+            {
+                ReleaseUnmanagedResources();
+                GC.SuppressFinalize(this);
+            }
+            
+            void PositionElement() => PositionWithinCameraView(m_DebugUIContainer, m_Camera);
+
+            ~DebugText()
+            {
+                ReleaseUnmanagedResources();
+            }
+            
+            void ReleaseUnmanagedResources()
+            {
+                if (m_DebugLabel != null)
+                {
+                    m_DebugLabel.RemoveFromHierarchy();
+                    m_DebugLabel = null;
+                }
+
+                if (m_DebugUIContainer != null)
+                {
+                    m_DebugUIContainer.RemoveFromHierarchy();
+                    m_DebugUIContainer = null;
+                }
+            }
+        }
+#endif
     }
 }
