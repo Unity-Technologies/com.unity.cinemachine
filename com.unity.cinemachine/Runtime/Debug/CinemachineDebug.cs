@@ -70,7 +70,11 @@ namespace Unity.Cinemachine
             var viewportContainer = new VisualElement
             {
                 name = "CinemachineDebugUI_ViewportContainer",
-                style = { position = new StyleEnum<Position>(Position.Absolute) }
+                style =
+                {
+                    position = new StyleEnum<Position>(Position.Absolute),
+                    flexWrap = new StyleEnum<Wrap>(Wrap.Wrap),
+                }
             };
             // need to use delayCall, because rootVisualElement may not be built at this point yet
             EditorApplication.delayCall += () => s_UIDocument.rootVisualElement.Add(viewportContainer);
