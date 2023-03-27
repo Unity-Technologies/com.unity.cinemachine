@@ -56,11 +56,10 @@ namespace Unity.Cinemachine
         [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
         [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
-        ICinemachineCamera m_TransitioningFrom;
         float m_ActivationTime = -1; // The time at which the current instruction went live
         int m_CurrentInstruction = 0;
 
-        /// <summary>Reset the component to default values.</summary>
+        /// <inheritdoc />
         protected override void Reset()
         {
             base.Reset();
@@ -68,7 +67,7 @@ namespace Unity.Cinemachine
             Instructions = null;
         }
 
-        private void OnValidate()
+        void OnValidate()
         {
             if (Instructions != null)
             {
@@ -100,75 +99,34 @@ namespace Unity.Cinemachine
             }
         }
         
-        /// <summary>Notification that this virtual camera is going live.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <inheritdoc />
         public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             m_ActivationTime = CinemachineCore.CurrentTime;
             m_CurrentInstruction = 0;
-            ResetLiveChild();
-            m_TransitioningFrom = fromCam;
-            InternalUpdateCameraState(worldUp, deltaTime);
         }
 
-        /// <summary>Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  This implementation
-        /// updates all the children, chooses the best one, and implements any required blending.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
+        /// <inheritdoc />
+        protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
         {
-            UpdateCameraCache();
             if (!PreviousStateIsValid)
             {
                 m_CurrentInstruction = -1;
-                ResetLiveChild();
                 ValidateInstructions();
             }
-
             AdvanceCurrentInstruction(deltaTime);
-
-            // Choose the best camera
-            CinemachineVirtualCameraBase best = null;
-            if (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Count)
-                best = Instructions[m_CurrentInstruction].Camera;
-            if (best != null)
-            {
-                // Auto-activate the cameras
-                if (!best.gameObject.activeInHierarchy)
-                {
-                    best.gameObject.SetActive(true);
-                    best.UpdateCameraState(worldUp, deltaTime);
-                }
-                SetLiveChild(best, worldUp, deltaTime, LookupBlend);
-            }
-
-            // Special case to handle being called from OnTransitionFromCamera() - GML todo: fix this
-            if (m_TransitioningFrom != null && !IsBlending && LiveChild != null)
-            {
-                LiveChild.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
-                {
-                    Origin = this,
-                    OutgoingCamera = m_TransitioningFrom,
-                    IncomingCamera = LiveChild,
-                    IsCut = false,
-                    WorldUp = worldUp, 
-                    DeltaTime = deltaTime
-                });
-            }
-
-            FinalizeCameraState(deltaTime);
-            m_TransitioningFrom = null;
-            PreviousStateIsValid = true;
+            return (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Count)
+                ? Instructions[m_CurrentInstruction].Camera : null;
         }
 
-        CinemachineBlendDefinition LookupBlend(ICinemachineCamera fromKey, ICinemachineCamera toKey)
-            => Instructions[m_CurrentInstruction].Blend;
-
+        /// <summary>Returns the current blend of the current instruction.</summary>
+        /// <param name="outgoing">The camera we're blending from (ignored).</param>
+        /// <param name="incoming">The camera we're blending to (ignored).</param>
+        /// <returns>The blend to use for this camera transition.</returns>
+        protected override CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming) => Instructions[m_CurrentInstruction].Blend;
+            
         /// <summary>Internal API for the inspector editor.</summary>
         /// // GML todo: make this private, part of UpdateCameraCache()
         internal void ValidateInstructions()

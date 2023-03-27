@@ -1,3 +1,4 @@
+#if CINEMACHINE_UNITY_ANIMATION
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,6 @@ using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
-#if CINEMACHINE_UNITY_ANIMATION
     /// <summary>
     /// This is a virtual camera "manager" that owns and manages a collection
     /// of child Virtual Cameras.  These child vcams are mapped to individual states in
@@ -71,20 +71,6 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_Instructions")]
         public Instruction[] Instructions;
 
-        /// <summary>
-        /// The blend which is used if you don't explicitly define a blend between two Virtual Camera children.
-        /// </summary>
-        [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
-        [FormerlySerializedAs("m_DefaultBlend")]
-        public CinemachineBlendDefinition DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 0.5f);
-
-        /// <summary>
-        /// This is the asset which contains custom settings for specific child blends.
-        /// </summary>
-        [Tooltip("This is the asset which contains custom settings for specific child blends")]
-        [FormerlySerializedAs("m_CustomBlends")]
-        public CinemachineBlenderSettings CustomBlends = null;
-
         /// <summary>Internal API for the Inspector editor.  This implements nested states.</summary>
         [Serializable]
         internal struct ParentHash
@@ -106,9 +92,9 @@ namespace Unity.Cinemachine
         Instruction m_PendingInstruction;
         Dictionary<int, int> m_InstructionDictionary;
         Dictionary<int, int> m_StateParentLookup;
-        List<AnimatorClipInfo>  m_clipInfoList = new ();
-        ICinemachineCamera m_TransitioningFrom;
+        readonly List<AnimatorClipInfo>  m_clipInfoList = new ();
 
+        /// <inheritdoc />
         protected override void Reset()
         {
             base.Reset();
@@ -139,64 +125,6 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Notification that this virtual camera is going live.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        public override void OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
-        {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            m_TransitioningFrom  = fromCam;
-            InternalUpdateCameraState(worldUp, deltaTime);
-        }
-
-        /// <summary>Internal use only.  Do not call this method.
-        /// Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  This implementation
-        /// updates all the children, chooses the best one, and implements any required blending.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
-        {
-            UpdateCameraCache();
-            if (!PreviousStateIsValid)
-            {
-                ResetLiveChild();
-                ValidateInstructions();
-            }
-
-            // Choose the best camera - auto-activate it if it's inactive
-            var best = ChooseCurrentCamera();
-            if (best != null && !best.gameObject.activeInHierarchy)
-            {
-                best.gameObject.SetActive(true);
-                best.UpdateCameraState(worldUp, deltaTime);
-            }
-            SetLiveChild(best, worldUp, deltaTime, LookupBlend);
-
-            // Special case to handle being called from OnTransitionFromCamera() - GML todo: fix this
-            if (m_TransitioningFrom != null && !IsBlending && LiveChild != null)
-            {
-                LiveChild.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
-                {
-                    Origin = this,
-                    OutgoingCamera = m_TransitioningFrom,
-                    IncomingCamera = LiveChild,
-                    IsCut = false,
-                    WorldUp = worldUp, 
-                    DeltaTime = deltaTime
-                });
-            }
-
-            FinalizeCameraState(deltaTime);
-            m_TransitioningFrom = null;
-            PreviousStateIsValid = true;
-        }
-
-        CinemachineBlendDefinition LookupBlend(ICinemachineCamera fromKey, ICinemachineCamera toKey)
-            => CinemachineBlenderSettings.LookupBlend(fromKey, toKey, DefaultBlend, CustomBlends, this);
-
         /// <summary>API for the inspector editor.  Animation module does not have hashes
         /// for state parents, so we have to invent them in order to implement nested state
         /// handling</summary>
@@ -213,8 +141,7 @@ namespace Unity.Cinemachine
         Dictionary<AnimationClip, List<HashPair>> m_HashCache;
         int LookupFakeHash(int parentHash, AnimationClip clip)
         {
-            if (m_HashCache == null)
-                m_HashCache = new Dictionary<AnimationClip, List<HashPair>>();
+            m_HashCache ??= new Dictionary<AnimationClip, List<HashPair>>();
             if (!m_HashCache.TryGetValue(clip, out var list))
             {
                 list = new List<HashPair>();
@@ -232,8 +159,7 @@ namespace Unity.Cinemachine
         /// <summary>Internal API for the inspector editor.</summary>
         internal void ValidateInstructions()
         {
-            if (Instructions == null)
-                Instructions = Array.Empty<Instruction>();
+            Instructions ??= Array.Empty<Instruction>();
             m_InstructionDictionary = new Dictionary<int, int>();
             for (int i = 0; i < Instructions.Length; ++i)
             {
@@ -257,8 +183,12 @@ namespace Unity.Cinemachine
             ResetLiveChild();
         }
 
-        CinemachineVirtualCameraBase ChooseCurrentCamera()
+        /// <inheritdoc />
+        protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
         {
+            if (!PreviousStateIsValid)
+                ValidateInstructions();
+
             var children = ChildCameras;
             if (children == null || children.Count == 0)
             {
@@ -377,5 +307,5 @@ namespace Unity.Cinemachine
             return hash;
         }
     }
-#endif
 }
+#endif

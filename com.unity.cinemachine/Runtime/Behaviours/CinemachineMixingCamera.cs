@@ -71,7 +71,7 @@ namespace Unity.Cinemachine
                 SetWeight(i, Mathf.Max(0, GetWeight(i)));
         }
 
-        /// <summary>Reset the component to default values.</summary>
+        /// <inheritdoc />
         protected override void Reset()
         {
             base.Reset();
@@ -79,10 +79,10 @@ namespace Unity.Cinemachine
                 SetWeight(i, i == 0 ? 1 : 0);
         }
         
-        /// <summary>The resulting CameraState for the current live child and blend</summary>
+        /// <inheritdoc />
         public override CameraState State => m_CameraState;
 
-        /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
+        /// <inheritdoc />
         public override string Description 
         {
             get
@@ -166,10 +166,7 @@ namespace Unity.Cinemachine
                     + ((vcam != null) ? vcam.Name : "(null)"));
         }
 
-        /// <summary>Check whether the vcam a live child of this camera.</summary>
-        /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
-        /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
+        /// <inheritdoc />
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             if (dominantChildOnly)
@@ -181,8 +178,7 @@ namespace Unity.Cinemachine
             return false;
         }
 
-        /// <summary>Rebuild the cached list of child cameras.</summary>
-        /// <returns>True, if rebuild was needed. False, otherwise.</returns>
+        /// <inheritdoc />
         protected override bool UpdateCameraCache()
         {
             if (!base.UpdateCameraCache())
@@ -194,25 +190,16 @@ namespace Unity.Cinemachine
             return true;
         }
 
-        /// <summary>Notification that this virtual camera is going live.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <inheritdoc />
         public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             for (int i = 0; i < MaxCameras && i < ChildCameras.Count; ++i)
                 ChildCameras[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            InternalUpdateCameraState(worldUp, deltaTime);
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  Do not call this method.
-        /// Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  This implementation
-        /// computes and caches the weighted blend of the tracked cameras.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
+        /// <inheritdoc />
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             UpdateCameraCache();
@@ -248,5 +235,8 @@ namespace Unity.Cinemachine
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_CameraState, deltaTime);
             PreviousStateIsValid = true;
         }
+
+        /// <inheritdoc />
+        protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime) => null;
     }
 }
