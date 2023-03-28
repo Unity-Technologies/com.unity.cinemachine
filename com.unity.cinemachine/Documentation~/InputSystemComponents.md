@@ -68,4 +68,4 @@ public class PlayerInputReceiverEditor : Unity.Cinemachine.Editor.InputAxisContr
 #endif
 ```
 
-See also [Cinemachine Multiple Camera](CinemachineMultipleCameras.md) documentation and example if you need to dynamically instantiate cameras.
+For more information, see the [Cinemachine Multiple Camera](CinemachineMultipleCameras.md) documentation and example if you need to dynamically instantiate cameras.
