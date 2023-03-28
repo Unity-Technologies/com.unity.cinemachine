@@ -74,4 +74,4 @@ public class SliderControllerEditor : Unity.Cinemachine.Editor.InputAxisControll
 #endif
 ```
 
-See also [Input System Components](InputSystemComponents.md) if you need to setup a local multiplayer input with the Input System package.
+For more information, see the [Input System Components](InputSystemComponents.md) documentation if you need to setup a local multiplayer input with the Input System package.
