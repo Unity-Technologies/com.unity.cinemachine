@@ -1629,16 +1629,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: HelpText
-      value: "This scene shows Confiner2D confining the camera inside a box collider,
-        such that it does not see outside the map.\n\nTo toggle between projection
-        modes, you can use the Orthographic Camera toggle in the top left corner
-        of the Game View.  \nNote: When the camera's projection mode changes, Confiner2D's
-        lens cache is invalidated to force an adjustment of the confiner to fit the
-        new camera projection mode.\n\nThe Camera Magnets illustrate a dynamic modification
-        of the Target Group.  Toggling them on makes them attract the camera's attention:
-        the closer the player is to the magnet, the stronger the attraction.  This
-        is implemented by the MagnetGroupController behaviour on the CameraMagnets
-        object."
+      value: "This scene shows a third person shooter game.  Use WASD to move, Spacebar
+        to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse
+        rotates the Player Aiming Core object, which controls the player direction
+        and aim. The camera is dirven by that: for this style of controller, there
+        is no direct independent control of the camera direction.\r\n\r\nThe camera
+        is managed by a StateDrivenCamera, which activates a special RoadieRun camera
+        when the player is sprinting.\r\n\r\nNormally, the Third Person Aim Camera
+        is active.  This camera has handheld noise, but it does not affect aiming
+        accuracy. Try aiming at objects in the scene and observe that the aim point
+        is steady, even while the camera is moving slightly.\r\n\r\nThe crosshair
+        indicates where the player is aiming.  The red dot indicates the actual hit
+        location if a ray would be fired from the Player Aiming Core.  When the crosshair
+        and the red dot do not align, this means there is an object between the player
+        and the aim point indicated by the crosshair. The crosshair is pulled apart
+        to indicate this.\r\n\r\nWhen the player fires a shot, the camera gets a
+        slight recoil.  This is achieved with a CinemachineImpulseSource added to
+        the Player Aiming Core, and it is triggered by a Fire event. The camera reacts
+        to the impulse because it has a CinemachineImpulseListener.\r\n\r\nWhen sprinting,
+        the RoadieRun Camera is active.  This camera takes away the crosshair from
+        the player, shifts position, widens the Field of View, and adds a more intense
+        noise. \r\n\r\nThe enemies will target the player when the player moves close
+        to them. To visualize the trigger zone, you can enable the Mesh Renderers
+        on the enemies'  ProximityTrigger child objects."
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: VisibleAtStart
