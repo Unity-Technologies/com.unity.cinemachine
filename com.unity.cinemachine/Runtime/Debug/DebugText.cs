@@ -25,7 +25,7 @@ namespace Unity.Cinemachine
                         paddingTop = new StyleLength(new Length(0, LengthUnit.Pixel)),
                         paddingLeft = new StyleLength(new Length(0, LengthUnit.Pixel)),
                         paddingRight = new StyleLength(new Length(0, LengthUnit.Pixel)),
-                        fontSize = new StyleLength(new Length(5, LengthUnit.Percent)),
+                        fontSize = new StyleLength(new Length(12, LengthUnit.Pixel)),
                         color = new StyleColor(Color.white),
                         position = new StyleEnum<Position>(Position.Relative),
                         alignSelf = new StyleEnum<Align>(Align.FlexStart)
