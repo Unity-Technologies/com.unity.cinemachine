@@ -82,13 +82,13 @@ namespace Unity.Cinemachine
             base.OnDisable();
         }
 
-        /// </inheritdoc />
+        /// <inheritdoc />
         public override string Description => m_BlendManager.Description;
 
-        /// </inheritdoc />
+        /// <inheritdoc />
         public override CameraState State => m_State;
 
-        /// </inheritdoc />
+        /// <inheritdoc />
         public virtual bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
             => m_BlendManager.IsLive(cam, dominantChildOnly);
 
