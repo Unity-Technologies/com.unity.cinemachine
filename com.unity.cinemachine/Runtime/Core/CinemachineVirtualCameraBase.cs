@@ -26,8 +26,7 @@ namespace Unity.Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase 
-        : MonoBehaviour, ICinemachineCamera, ICinemachineMixer
+    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
         /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
@@ -421,7 +420,7 @@ namespace Unity.Cinemachine
             {
                 if (!m_ChildStatusUpdated || !Application.isPlaying)
                     UpdateStatusAsChild();
-                return m_ParentVcam;
+                return m_ParentVcam as ICinemachineMixer;
             }
         }
 
