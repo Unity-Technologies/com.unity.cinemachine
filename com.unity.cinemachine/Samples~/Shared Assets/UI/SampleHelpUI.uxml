@@ -1,12 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Samples/Cinemachine/3.0.0-pre.5/Shared%20Assets/UI/SamplesUIStyle.uss?fileID=7433441132597879392&amp;guid=f5bb9549a4a38408d98f1dc629a432df&amp;type=3#SamplesUIStyle" />
-    <ui:Box name="HelpToggleBox" focusable="false" />
-    <ui:Box name="TogglesAndButtons" focusable="false" style="top: 12px;" />
-    <ui:Box name="HelpTextBox" focusable="false" style="justify-content: flex-start; top: 0; bottom: 0;">
-        <ui:Label name="HelpTextBox__Title" focusable="false" style="padding-left: 0; padding-right: 0;" />
-        <ui:ScrollView>
-            <ui:TextField name="HelpTextBox__TextField" focusable="false" vertical-scroller-visibility="Auto" multiline="true" style="margin-left: 5px; margin-right: 5px; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+    <ui:Button name="HelpButton" focusable="false" text="Help" />
+    <ui:Box name="TogglesAndButtons" focusable="false" />
+    <ui:Box name="HelpTextBox" focusable="false">
+        <ui:Label name="HelpTextBox__Title" focusable="false" />
+        <ui:ScrollView focusable="false" name="ScrollView" style="align-self: center; bottom: 0; top: 0; right: 0; left: 0; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
+            <ui:TextField name="HelpTextBox__TextField" focusable="false" multiline="true" />
         </ui:ScrollView>
-        <ui:Button name="HelpTextBox_CloseButton" focusable="false" text="Close" />
+        <ui:Button name="HelpTextBox__CloseButton" focusable="false" text="Close" />
     </ui:Box>
 </ui:UXML>

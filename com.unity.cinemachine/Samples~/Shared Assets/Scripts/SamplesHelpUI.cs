@@ -19,27 +19,25 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Event sent when the help window is dismissed")]
         public UnityEvent OnHelpDismissed = new ();
 
-        VisualElement m_HelpBox, m_HelpToggleBox;
-        Toggle m_HelpToggle;
+        VisualElement m_HelpBox;
+        Button m_HelpButton;
 
         void OnEnable()
         {
             var uiDocument = GetComponent<UIDocument>();
-            m_HelpToggleBox = uiDocument.rootVisualElement.Q("HelpToggleBox");
-            if (m_HelpToggleBox == null)
+            m_HelpButton = uiDocument.rootVisualElement.Q("HelpButton") as Button;
+            if (m_HelpButton == null)
             {
                 Debug.LogError("Cannot find HelpToggleBox.  Is the source asset set in the UIDocument?");
                 return;
             }
-            m_HelpToggle = new Toggle("Help");
-            m_HelpToggle.AddToClassList("helpToggle");
-            m_HelpToggle.RegisterValueChangedCallback((evt) => 
+            m_HelpButton.RegisterCallback(new EventCallback<ClickEvent>(_ =>
             {
-                m_HelpBox.visible = evt.newValue;
-                if (!evt.newValue)
-                    OnHelpDismissed.Invoke();
-            });
-            m_HelpToggleBox.Add(m_HelpToggle);
+                if (m_HelpButton != null)
+                    m_HelpButton.visible = false;
+                if (m_HelpBox != null)
+                    m_HelpBox.visible = true;
+            }));
             
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
             if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle) 
@@ -47,22 +45,26 @@ namespace Unity.Cinemachine.Samples
 
             if (uiDocument.rootVisualElement.Q("HelpTextBox__TextField") is TextField helpText)
                 helpText.value = HelpText;
-            if (uiDocument.rootVisualElement.Q("HelpTextBox_CloseButton") is Button closeButton) 
+            if (uiDocument.rootVisualElement.Q("HelpTextBox__CloseButton") is Button closeButton) 
                 closeButton.RegisterCallback<ClickEvent>(_ => CloseHelpBox());
             
-            m_HelpBox.visible = m_HelpToggle.value = VisibleAtStart;
+            m_HelpBox.visible = VisibleAtStart;
+            m_HelpButton.visible = !VisibleAtStart;
         }
 
         void OnDisable()
         {
             CloseHelpBox();
-            m_HelpToggleBox?.Remove(m_HelpToggle);
         }
 
         void CloseHelpBox()
         {
-            if (m_HelpToggle != null)
-                m_HelpToggle.value = false;
+            if (m_HelpButton != null)
+                m_HelpButton.visible = true;
+            if (m_HelpBox != null)
+                m_HelpBox.visible = false;
+            
+            OnHelpDismissed.Invoke();
         }
     }
 }
