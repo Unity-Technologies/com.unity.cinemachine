@@ -33,7 +33,11 @@ This component makes it easy to control a `CinemachineCamera` in a single player
 
 ## Creating your own Input Axis Controller
 
-The default implementation of `CinemachineInputAxisController` can process input from the Input package and from Unity's legacy input system. In the case where you want your input to come from an other source, you may need to create your own input controller. This example shows how to control a Camera with a slider. It can be easily modified to be used with other objects.
+The default implementation of `CinemachineInputAxisController` can process input sources from the Input package and from Unity's legacy input system. 
+
+For more complex scenarios (such as for a mobile device control), you can extend this default functionality and create your own Input Axis Controller using a script.
+
+The following example shows how to use a custom Input Controller script to control a Camera with a slider for a mobile device. The sample code can be used as a template and is easily modified to be used with other objects.
 
 ```cs
 using Unity.Cinemachine;
