@@ -32,7 +32,7 @@ namespace Unity.Cinemachine
                 return;
 
             var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
-            if (brain == null || !brain.IsLive(vcam))
+            if (brain == null || !brain.IsLiveChild(vcam))
                 return;
 
 #if CINEMACHINE_URP
