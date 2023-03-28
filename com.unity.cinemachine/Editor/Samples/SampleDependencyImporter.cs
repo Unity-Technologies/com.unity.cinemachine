@@ -184,31 +184,28 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        static readonly string[] k_MaterialFolders = { "Materials" };
         static void ConvertMaterials(IEnumerable<string> folders)
         {
 #if CINEMACHINE_URP || CINEMACHINE_HDRP
+            const string materialFolder = "Materials";
             foreach (var folder in folders)
             {
-                foreach (var materialFolder in k_MaterialFolders)
+                var materialDir = new DirectoryInfo(folder + "/" + materialFolder);
+                if (!materialDir.Exists)
+                    continue;
+                var materialInfos = materialDir.GetFiles("*.mat");
+                foreach (var matInfo in materialInfos)
                 {
-                    var materialDir = new DirectoryInfo(folder + "/" + materialFolder);
-                    if (!materialDir.Exists)
-                        continue;
-                    var materialInfos = materialDir.GetFiles("*.mat");
-                    foreach (var matInfo in materialInfos)
-                    {
-                        var localPath = matInfo.FullName[Application.dataPath.Length..];
-                        var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
+                    var localPath = matInfo.FullName[Application.dataPath.Length..];
+                    var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
 
-                     MaterialUpgrader.Upgrade(material, 
-    #if CINEMACHINE_URP
-                         new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
-    #elif CINEMACHINE_HDRP
-                         UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
-    #endif
-                         MaterialUpgrader.UpgradeFlags.None);
-                    }
+                 MaterialUpgrader.Upgrade(material, 
+#if CINEMACHINE_URP
+                     new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+#elif CINEMACHINE_HDRP
+                     UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
+#endif
+                     MaterialUpgrader.UpgradeFlags.None);
                 }
             }
 #endif
@@ -238,7 +235,7 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 var assets = hdrpDir.GetFiles("*.asset*"); // assets and their meta files
-                foreach (var asset in assets) 
+                foreach (var asset in assets)
                     asset.CopyTo(folder);
 #endif
                 // delete ~HDRP folder (first its meta file, otherwise Unity will restore the folder)
