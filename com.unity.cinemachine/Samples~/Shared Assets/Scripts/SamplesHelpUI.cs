@@ -31,13 +31,7 @@ namespace Unity.Cinemachine.Samples
                 Debug.LogError("Cannot find HelpToggleBox.  Is the source asset set in the UIDocument?");
                 return;
             }
-            m_HelpButton.RegisterCallback(new EventCallback<ClickEvent>(_ =>
-            {
-                if (m_HelpButton != null)
-                    m_HelpButton.visible = false;
-                if (m_HelpBox != null)
-                    m_HelpBox.visible = true;
-            }));
+            m_HelpButton.RegisterCallback(new EventCallback<ClickEvent>(_ => OpenHelpBox()));
             
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
             if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle) 
@@ -55,8 +49,18 @@ namespace Unity.Cinemachine.Samples
         void OnDisable()
         {
             CloseHelpBox();
+            m_HelpButton.UnregisterCallback(new EventCallback<ClickEvent>(_ => OpenHelpBox()));
+            m_HelpButton.visible = false;
         }
-
+        
+        void OpenHelpBox()
+        {
+            if (m_HelpButton != null)
+                m_HelpButton.visible = false;
+            if (m_HelpBox != null)
+                m_HelpBox.visible = true;
+        }
+        
         void CloseHelpBox()
         {
             if (m_HelpButton != null)
@@ -66,5 +70,7 @@ namespace Unity.Cinemachine.Samples
             
             OnHelpDismissed.Invoke();
         }
+
+        
     }
 }
