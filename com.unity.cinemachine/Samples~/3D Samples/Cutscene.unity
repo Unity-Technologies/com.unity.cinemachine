@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -288,12 +288,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 0
 --- !u!114 &159795163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,6 +538,78 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+--- !u!1001 &339727905
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: HelpText
+      value: "This is a denonstration of a cutscene that blends in from the game
+        camera, plays through, and then blends back out.\r\n\r\nWhen the player enters
+        the trigger zone around the chest, the cutscene timeline is started, thanks
+        to the CinemachineTriggerAction behaviour on the trigger zone.  The cutscene
+        timeline holds the chest animation and three static camera shots, which are
+        blended by Cinemachine to create camera movement.  \r\n\r\nThe TreasureChestRig
+        object contains all the assets, the camera shots, the timeline, and the trigger
+        zone."
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_Name
+      value: HelpUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1 &452003393
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,12 +744,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!81 &558704398
 AudioListener:
   m_ObjectHideFlags: 0
@@ -749,13 +810,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558704396}
-  m_LocalRotation: {x: -0.053256698, y: -0.000000017315676, z: -9.234861e-10, w: 0.9985809}
-  m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
+  m_LocalRotation: {x: 0.012472897, y: 0.9054012, z: 0.02666359, w: -0.42353535}
+  m_LocalPosition: {x: 6.119999, y: 0.5299992, z: 5.1100016}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &599297602
 GameObject:
@@ -2148,12 +2209,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 0
 --- !u!4 &1644528743
 Transform:
   m_ObjectHideFlags: 0
@@ -2312,13 +2368,16 @@ MonoBehaviour:
   PlayerIndex: -1
   AutoEnableInputs: 1
   ScanRecursively: 1
+  SuppressInputWhileBlending: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 1721836170}
     Enabled: 1
     Input:
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
       LegacyInput: Mouse X
-      LegacyGain: 100
+      LegacyGain: 200
     InputValue: 0
     Driver:
       AccelTime: 0.2
@@ -2327,8 +2386,10 @@ MonoBehaviour:
     Owner: {fileID: 1721836170}
     Enabled: 1
     Input:
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: -1
       LegacyInput: Mouse Y
-      LegacyGain: -100
+      LegacyGain: -200
     InputValue: 0
     Driver:
       AccelTime: 0.2
@@ -2337,8 +2398,10 @@ MonoBehaviour:
     Owner: {fileID: 1721836170}
     Enabled: 1
     Input:
+      InputAction: {fileID: -1558737862816922118, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
       LegacyInput: Mouse ScrollWheel
-      LegacyGain: 100
+      LegacyGain: 200
     InputValue: 0
     Driver:
       AccelTime: 0
@@ -2493,12 +2556,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 8
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 8
 --- !u!4 &1721836172
 Transform:
   m_ObjectHideFlags: 0
@@ -2506,7 +2564,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1721836166}
-  m_LocalRotation: {x: -0.053256698, y: -0.000000017315676, z: -9.234861e-10, w: 0.9985809}
+  m_LocalRotation: {x: -0.05325671, y: 0.000000020630054, z: 0.0000000011002501, w: 0.9985809}
   m_LocalPosition: {x: 0, y: 0.64870405, z: -3.284091}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3037,12 +3095,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 0
 --- !u!1 &2015024880
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,60 +3454,3 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!1 &2127019721
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2127019723}
-  - component: {fileID: 2127019722}
-  m_Layer: 0
-  m_Name: Help
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2127019722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2127019721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 0.9, y: 0.05}
-  Displayed: 0
-  HelpText: "This is a denonstration of a cutscene that blends in from the game camera,
-    plays through, and then blends back out.\r\n\r\nWhen the player enters the trigger
-    zone around the chest, the cutscene timeline is started, thanks to the CinemachineTriggerAction
-    behaviour on the trigger zone.  The cutscene timeline holds the chest animation
-    and three static camera shots, which are blended by Cinemachine to create camera
-    movement.  \r\n\r\nThe TreasureChestRig object contains all the assets, the camera
-    shots, the timeline, and the trigger zone."
-  OnHelpDismissed:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!4 &2127019723
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2127019721}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.3389516, y: -7.0279446, z: 5.3961143}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

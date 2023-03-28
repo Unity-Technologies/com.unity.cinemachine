@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -251,12 +251,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 0
 --- !u!1 &139026124
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,6 +868,83 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bfd45ae7994b04d538dc1317bc34bd62, type: 3}
+--- !u!1001 &608513646
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: HelpText
+      value: "This scene shows Confiner2D confining the camera inside a box collider,
+        such that it does not see outside the map.\n\nTo toggle between projection
+        modes, you can use the Orthographic Camera toggle in the top left corner
+        of the Game View.  \nNote: When the camera's projection mode changes, Confiner2D's
+        lens cache is invalidated to force an adjustment of the confiner to fit the
+        new camera projection mode.\n\nThe Camera Magnets illustrate a dynamic modification
+        of the Target Group.  Toggling them on makes them attract the camera's attention:
+        the closer the player is to the magnet, the stronger the attraction.  This
+        is implemented by the MagnetGroupController behaviour on the CameraMagnets
+        object."
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_Name
+      value: HelpUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1426563971}
+  m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1001 &773640720
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -883,7 +955,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4605135107048334721, guid: 083208d2392614ed684d6eeda5e44908, type: 3}
       propertyPath: m_Name
-      value: Simple Room
+      value: Simple Room 2D
       objectReference: {fileID: 0}
     - target: {fileID: 6730909480988340408, guid: 083208d2392614ed684d6eeda5e44908, type: 3}
       propertyPath: m_RootOrder
@@ -1000,6 +1072,124 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1426563970 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+  m_PrefabInstance: {fileID: 608513646}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1426563971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426563970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7950c6f52d74a4772bb69c03fe19a19b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Buttons:
+  - Name: Orthographic
+    IsToggle:
+      Enabled: 1
+      Value: 1
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 7726835707821803391}
+            m_TargetAssemblyTypeName: UnityEngine.Camera, UnityEngine
+            m_MethodName: set_orthographic
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+          - m_Target: {fileID: 129940157}
+            m_TargetAssemblyTypeName: Unity.Cinemachine.CinemachineConfiner2D, Unity.Cinemachine
+            m_MethodName: InvalidateLensCache
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    OnClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Camera Magnet (Yellow)
+    IsToggle:
+      Enabled: 1
+      Value: 1
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 436036890}
+            m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+            m_MethodName: SetActive
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    OnClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Camera Magnet (Green)
+    IsToggle:
+      Enabled: 1
+      Value: 1
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 248061844}
+            m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+            m_MethodName: SetActive
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    OnClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Camera Magnet (Blue)
+    IsToggle:
+      Enabled: 1
+      Value: 1
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 360032427}
+            m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+            m_MethodName: SetActive
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    OnClick:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1001 &1444045038
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1143,176 +1333,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetGroup: {fileID: 838270488}
---- !u!1 &2125070643
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2125070645}
-  - component: {fileID: 2125070644}
-  - component: {fileID: 2125070650}
-  m_Layer: 0
-  m_Name: Help
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2125070644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2125070643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 0.9, y: 0.05}
-  Displayed: 0
-  HelpText: "This scene shows Confiner2D confining the camera inside a box collider,
-    such that it does not see outside the map.\n\nTo toggle between projection modes,
-    you can use the Orthographic Camera toggle in the top left corner of the Game
-    View.  \nNote: When the camera's projection mode changes, Confiner2D's lens cache
-    is invalidated to force an adjustment of the confiner to fit the new camera projection
-    mode.\n\nThe Camera Magnets illustrate a dynamic modification of the Target Group. 
-    Toggling them on makes them attract the camera's attention: the closer the player
-    is to the magnet, the stronger the attraction.  This is implemented by the MagnetGroupController
-    behaviour on the CameraMagnets object."
-  OnHelpDismissed:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!4 &2125070645
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2125070643}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.4893465, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2125070650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2125070643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0579a4ea516e104d9026d0d304a87c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Position: {x: 0.01, y: 0.04}
-  Buttons:
-  - Name: Orthographic
-    IsToggle: 1
-    ToggleValue: 1
-    OnClick:
-      m_PersistentCalls:
-        m_Calls: []
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7726835707821803391}
-          m_TargetAssemblyTypeName: UnityEngine.Camera, UnityEngine
-          m_MethodName: set_orthographic
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-        - m_Target: {fileID: 129940157}
-          m_TargetAssemblyTypeName: Cinemachine.CinemachineConfiner2D, com.unity.cinemachine
-          m_MethodName: InvalidateLensCache
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - Name: Camera Magnet (Yellow)
-    IsToggle: 1
-    ToggleValue: 1
-    OnClick:
-      m_PersistentCalls:
-        m_Calls: []
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 436036890}
-          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_MethodName: SetActive
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - Name: Camera Magnet (Green)
-    IsToggle: 1
-    ToggleValue: 1
-    OnClick:
-      m_PersistentCalls:
-        m_Calls: []
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 248061844}
-          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_MethodName: SetActive
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - Name: Camera Magnet (Blue)
-    IsToggle: 1
-    ToggleValue: 1
-    OnClick:
-      m_PersistentCalls:
-        m_Calls: []
-    OnValueChanged:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 360032427}
-          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_MethodName: SetActive
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!4 &7726835707821803376
 Transform:
   m_ObjectHideFlags: 0
@@ -1321,12 +1341,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.065195, y: 3.249998, z: -10}
+  m_LocalPosition: {x: -12.319793, y: 3.249998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 90, y: -0.628, z: 0}
 --- !u!1 &7726835707821803386
 GameObject:
@@ -1360,7 +1380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugText: 1
+  ShowDebugText: 0
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
@@ -1380,12 +1400,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!81 &7726835707821803389
 AudioListener:
   m_ObjectHideFlags: 0
