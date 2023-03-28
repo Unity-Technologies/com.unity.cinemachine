@@ -97,7 +97,6 @@ namespace Unity.Cinemachine
             CreateControllers();
             ScanRecursively = true;
             SuppressInputWhileBlending = true;
-            OnResetInput();
             OnResetComponent();
         }
 

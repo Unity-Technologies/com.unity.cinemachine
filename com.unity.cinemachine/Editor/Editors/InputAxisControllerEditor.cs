@@ -20,10 +20,17 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
+            
+            SerializedProperty prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true)) {
+                do {
+                    if (prop.name != "Controllers" && prop.name != "SuppressInputWhileBlending") {
+                        ux.Add(new PropertyField(serializedObject.FindProperty(prop.name)));
+                    }
+                }
+                while (prop.NextVisible(false));
+            }
+            
             var suppressInput = ux.AddChild(
                 new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
 

@@ -113,12 +113,20 @@ namespace Unity.Cinemachine
         protected int m_PlayerIndex;
 
         protected bool m_autoEnableInput;
-
+        
+        /// <summary>
+        /// Change the index of the player when multiple controllers are used.
+        /// </summary>
+        /// <param name="index">The index of the controller.</param>
         public void SetPlayerIndex(int index)
         {
             m_PlayerIndex = index;
         }
-
+        
+        /// <summary>
+        /// Auto enable the Input Action map.
+        /// </summary>
+        /// <param name="isAutoEnabled">If true InputAction will be enabled automatically</param>
         public void SetAutoEnableInput(bool isAutoEnabled)
         {
             m_autoEnableInput = isAutoEnabled;
