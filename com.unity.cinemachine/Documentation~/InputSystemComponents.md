@@ -1,4 +1,4 @@
-# Input System Components
+# Using Input System components with Cinemachine
 
 For more complex input configuration like supporting multiple devices, local multiplayer... You will need to receive inputs from the `PlayerInput` component provided by the Input System package. This section is assuming you already know how to setup this component. All the documentation can be found on the Input System package documentation page and samples.
 
