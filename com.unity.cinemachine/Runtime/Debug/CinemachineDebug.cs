@@ -84,7 +84,7 @@ namespace Unity.Cinemachine
             };
             // need to use delayCall, because rootVisualElement may not be built at this point yet
             EditorApplication.delayCall += () => s_UIDocument.rootVisualElement.Add(viewportContainer);
-            viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera)).Every(0); // TODO: can we do better?
+            viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera)).Every(0);
             s_CameraViewRectContainers.Add(outputCamera, viewportContainer);
             
             return viewportContainer;
