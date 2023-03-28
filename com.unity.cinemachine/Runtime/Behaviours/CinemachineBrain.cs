@@ -205,7 +205,6 @@ namespace Unity.Cinemachine
 
             s_ActiveBrains.Add(this);
 #if UNITY_EDITOR
-            m_DebugText = new DebugText(OutputCamera);
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 #endif
@@ -224,7 +223,7 @@ namespace Unity.Cinemachine
 
 #if UNITY_EDITOR
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-            m_DebugText.Dispose();
+            m_DebugText?.Dispose();
             m_DebugText = null;
 #endif
             s_ActiveBrains.Remove(this);
@@ -286,8 +285,10 @@ namespace Unity.Cinemachine
 
         void OnGuiHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText || ActiveVirtualCamera == null || m_DebugText == null || brain != this)
+            if (!ShowDebugText || ActiveVirtualCamera == null || brain != this)
                 return;
+            if (m_DebugText == null) 
+                m_DebugText = new DebugText(OutputCamera);
 
             // Show the active camera and blend
             var sb = CinemachineDebug.SBFromPool();

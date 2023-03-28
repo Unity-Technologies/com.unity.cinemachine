@@ -78,14 +78,16 @@ namespace Unity.Cinemachine
             };
             // need to use delayCall, because rootVisualElement may not be built at this point yet
             EditorApplication.delayCall += () => s_UIDocument.rootVisualElement.Add(viewportContainer);
-            viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera)).Every(0); // TODO: can we do better?
+            var brain = outputCamera.GetComponent<CinemachineBrain>();
+            viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera, brain)).Every(0); // TODO: can we do better?
             s_CameraViewRectContainers.Add(outputCamera, viewportContainer);
             
             return viewportContainer;
             
-            static void PositionWithinCameraView(VisualElement visualElement, Camera camera)
+            static void PositionWithinCameraView(VisualElement visualElement, Camera camera, CinemachineBrain brain)
             {
-                if (s_UIDocument == null || s_UIDocument.rootVisualElement == null || camera == null)
+                if (s_UIDocument == null || s_UIDocument.rootVisualElement == null || 
+                    camera == null || brain == null || !brain.ShowDebugText)
                     return;
             
                 var panel = s_UIDocument.rootVisualElement.panel;
