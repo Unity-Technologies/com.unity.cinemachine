@@ -12,7 +12,7 @@ Next, add that channel to the CinemachineBrain's Channel mask.  Multiple channel
 
 ## Assigning Cinemachine Channels at Runtime
 
-If you need to assign channels and channel masks dynamically as new CinemachineBrains are added to the scene, you can do this based on the BrainCount.  When a new CinemachineBrain and CinemachineCamera combo is added to the scene, you can run this bit of code to choose a channel for the camera, and a channel mask for the brain:
+If you need to assign channels and channel masks dynamically as new CinemachineBrains are added to the scene, you can do this based on the BrainCount. When a new CinemachineBrain and CinemachineCamera combo is added to the scene, you can run the following code to choose a channel for the camera and a channel mask for the brain:
 
 ```cs
 using UnityEngine;
