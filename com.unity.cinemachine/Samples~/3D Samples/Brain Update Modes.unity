@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -154,7 +154,7 @@ Transform:
   - {fileID: 1675424139}
   - {fileID: 326221290}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &326221289
 GameObject:
@@ -182,7 +182,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326221289}
-  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -282,12 +282,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 0
 --- !u!1 &569987857
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +344,16 @@ MonoBehaviour:
       TrackingTarget: {fileID: 0}
       LookAtTarget: {fileID: 0}
       CustomLookAtTarget: 0
-  m_ChildCameras: []
+  DefaultBlend:
+    Style: 1
+    Time: 0.5
+    CustomCurve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  CustomBlends: {fileID: 0}
   Loop: 1
   Instructions:
   - Camera: {fileID: 1839922281}
@@ -376,90 +380,6 @@ MonoBehaviour:
     Hold: 3
   m_LegacyLookAt: {fileID: 0}
   m_LegacyFollow: {fileID: 0}
---- !u!1 &628253629
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 628253631}
-  - component: {fileID: 628253630}
-  - component: {fileID: 628253632}
-  m_Layer: 0
-  m_Name: GUI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &628253630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628253629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 0.9, y: 0.05}
-  Displayed: 1
-  HelpText: "This scene shows the importance of choosing the correct Brain Update
-    Mode, and of animating all targeted objects the same way.\r\n\r\nBoth cars are
-    driven by Rigidbodies, but unless both use Rigidbody Interpolation in the same
-    way, they cannot both be smooth on the screen at the same time, because they
-    are updated on different clocks.  Use the on-screen toggles to change the cars'
-    interpolation settings, and see the result.  Rigidbodies normally apply their
-    animation on the FixedUpdate clock.  With Interpolation enabled, the animation
-    is applied on the Update clock.\r\n\r\nThe three panels on the screen are three
-    independent CM worlds, each with its own CM Brain.  All worlds are running  cameras
-    looking at the same two cars.  Depending on the update mode in the world's CM
-    Brain, the cars may or may not be smooth on-screen.  \r\n\r\nSmartUpdate dynamically
-    adjusts its update clock to match how the current target is being animated. 
-    When the Interpolation settings on the cars are different from each other, you
-    can see in the bottom panel how the camera dynamically adapts to the current
-    target's update mode."
-  OnHelpDismissed:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!4 &628253631
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628253629}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.21569087, y: -1.5554366, z: 14.337207}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &628253632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 628253629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ec2a6f356d5711438672a28513e461b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Position: {x: 0.05, y: 0.05}
-  Items:
-  - Text: ' Enable Blue Car Interpolation'
-    Rb: {fileID: 1570214456050329276}
-  - Text: ' Enable Red Car Interpolation'
-    Rb: {fileID: 1245728188}
 --- !u!1 &896363043 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
@@ -475,7 +395,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalPosition.x
@@ -531,7 +451,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Interpolate
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
@@ -541,6 +461,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1245728187}
+    - targetCorrespondingSourceObject: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1245728189}
   m_SourcePrefab: {fileID: 100100000, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
 --- !u!4 &1245728185 stripped
 Transform:
@@ -567,11 +490,18 @@ MonoBehaviour:
   Axis: 2
   MinRange: -100
   MaxRange: 100
---- !u!54 &1245728188 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-  m_PrefabInstance: {fileID: 1245728184}
+--- !u!114 &1245728189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245728186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba786fa8607649dab5568a9a20a8906, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1254209701
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,12 +618,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &1300810983
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,7 +643,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300810983}
-  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -759,12 +683,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!20 &1300810986
 Camera:
   m_ObjectHideFlags: 0
@@ -847,7 +765,7 @@ Transform:
   - {fileID: 1300810984}
   - {fileID: 569987858}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1380885699
 PrefabInstance:
@@ -910,6 +828,156 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
+--- !u!1001 &1463374689
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: HelpText
+      value: "This scene shows the importance of choosing the correct Brain Update
+        Mode, and of animating all targeted objects the same way.\r\n\r\nBoth cars
+        are driven by Rigidbodies, but unless both use Rigidbody Interpolation in
+        the same way, they cannot both be smooth on the screen at the same time,
+        because they are updated on different clocks.  Use the on-screen toggles
+        to change the cars' interpolation settings, and see the result.  Rigidbodies
+        normally apply their animation on the FixedUpdate clock.  With Interpolation
+        enabled, the animation is applied on the Update clock.\r\n\r\nThe three panels
+        on the screen are three independent CM worlds, each with its own CM Brain. 
+        All worlds are running  cameras looking at the same two cars.  Depending
+        on the update mode in the world's CM Brain, the cars may or may not be smooth
+        on-screen.  \r\n\r\nSmartUpdate dynamically adjusts its update clock to match
+        how the current target is being animated.  When the Interpolation settings
+        on the cars are different from each other, you can see in the bottom panel
+        how the camera dynamically adapts to the current target's update mode."
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: VisibleAtStart
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_Name
+      value: HelpUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1463374691}
+  m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+--- !u!1 &1463374690 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+  m_PrefabInstance: {fileID: 1463374689}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1463374691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463374690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7950c6f52d74a4772bb69c03fe19a19b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Buttons:
+  - Name: Enable Blue Car Interpolation
+    IsToggle:
+      Enabled: 1
+      Value: 0
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 1868264081772963623}
+            m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.RigidbodyInterpolationSetter,
+              Assembly-CSharp
+            m_MethodName: SetInterpolation
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    OnClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - Name: Enable Red Car Interpolation
+    IsToggle:
+      Enabled: 1
+      Value: 1
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls:
+          - m_Target: {fileID: 1245728189}
+            m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.RigidbodyInterpolationSetter,
+              Assembly-CSharp
+            m_MethodName: SetInterpolation
+            m_Mode: 0
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
+    OnClick:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1 &1607092316
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,12 +1104,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 8
 --- !u!1 &1675424138
 GameObject:
   m_ObjectHideFlags: 0
@@ -1067,7 +1130,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675424138}
-  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1107,12 +1170,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!20 &1675424142
 Camera:
   m_ObjectHideFlags: 0
@@ -1190,7 +1247,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1839922277}
-  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
+  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1290,12 +1347,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 8
 --- !u!1 &1904777081
 GameObject:
   m_ObjectHideFlags: 0
@@ -1327,7 +1379,7 @@ Transform:
   - {fileID: 1254209704}
   - {fileID: 1967210318}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1967210314
 GameObject:
@@ -1440,12 +1492,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 0
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 0
 --- !u!4 &1967210318
 Transform:
   m_ObjectHideFlags: 0
@@ -1471,7 +1518,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1525,6 +1572,10 @@ PrefabInstance:
       propertyPath: MoveZ.Value
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      propertyPath: m_Interpolate
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1570214454041857243, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -1541,12 +1592,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1868264081772963622}
+    - targetCorrespondingSourceObject: {fileID: 878341184440332465, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1868264081772963623}
   m_SourcePrefab: {fileID: 100100000, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
---- !u!54 &1570214456050329276 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
-  m_PrefabInstance: {fileID: 1570214456050329275}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1868264081772963616 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 875930279785709979, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
@@ -1567,3 +1616,15 @@ MonoBehaviour:
   Axis: 2
   MinRange: -100
   MaxRange: 100
+--- !u!114 &1868264081772963623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896363043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba786fa8607649dab5568a9a20a8906, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

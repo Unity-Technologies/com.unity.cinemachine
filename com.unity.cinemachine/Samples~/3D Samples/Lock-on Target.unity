@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,6 +123,85 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &443530339
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2451271811042757136, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: HelpText
+      value: "Sample scene showing how to dynamically look onto an object based on
+        proximity.\nThere are two Cinemachine Cameras in the scene: Orbital Follow
+        and Follow with Lock On Boss.\n\n- The Orbital Follow: is a simple 3rd Person
+        View camera that is following and looking at the player while having the
+        ability to rotate around the player using the mouse.\n- Follow with Lock
+        On Boss: is also a simple 3rd Person View camera. However, this one is following
+        the an invisible GameObject (FollowTarget) on the player, while looking it
+        at the boss. The invisible GameObject is always rotated on the Y axis so
+        it looks towards the boss. This is achieved with the Look At Target script
+        on FollowTarget.\n\nThe switch between the two Cinemachine Cameras happens
+        when the player moves close to the boss. This is done using Cinemachine Trigger
+        Action. This proximity is visualized with a transparent cylinder around the
+        boss, see Proximity Trigger GameObject.\n\nUse WASD to move around, Spacebar
+        to jump, Shift to sprint.  Mouse moves the camera. \nIf using Input package,
+        right mouse button to jump and middle mouse button to sprint."
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: m_Name
+      value: HelpUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1 &737942603
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,12 +253,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!81 &737942605
 AudioListener:
   m_ObjectHideFlags: 0
@@ -252,7 +325,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &838339814
 GameObject:
@@ -318,12 +391,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 12
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 8
 --- !u!4 &838339818
 Transform:
   m_ObjectHideFlags: 0
@@ -383,13 +451,16 @@ MonoBehaviour:
   PlayerIndex: -1
   AutoEnableInputs: 1
   ScanRecursively: 1
+  SuppressInputWhileBlending: 1
   Controllers:
   - Name: Look Orbit X
     Owner: {fileID: 838339822}
     Enabled: 1
     Input:
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
       LegacyInput: Mouse X
-      LegacyGain: 100
+      LegacyGain: 200
     InputValue: 0
     Driver:
       AccelTime: 0.2
@@ -398,8 +469,10 @@ MonoBehaviour:
     Owner: {fileID: 838339822}
     Enabled: 1
     Input:
+      InputAction: {fileID: -5630151704836100654, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: -1
       LegacyInput: Mouse Y
-      LegacyGain: -100
+      LegacyGain: -200
     InputValue: 0
     Driver:
       AccelTime: 0.2
@@ -408,8 +481,10 @@ MonoBehaviour:
     Owner: {fileID: 838339822}
     Enabled: 1
     Input:
+      InputAction: {fileID: -1558737862816922118, guid: cb572737576f6df4182085d6bbea2294, type: 3}
+      Gain: 1
       LegacyInput: Mouse ScrollWheel
-      LegacyGain: 100
+      LegacyGain: 200
     InputValue: 0
     Driver:
       AccelTime: 0
@@ -475,71 +550,6 @@ MonoBehaviour:
       Wait: 1
       Time: 2
     Restrictions: 0
---- !u!1 &950181516
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 950181518}
-  - component: {fileID: 950181517}
-  m_Layer: 0
-  m_Name: Help
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &950181517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950181516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50e0de96d508d8e48b20097039b449d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ButtonText: Help
-  Position: {x: 0.9, y: 0.05}
-  Displayed: 0
-  HelpText: "Sample scene showing how to dynamically look onto an object based on
-    proximity.\nThere are two Cinemachine Cameras in the scene: Orbital Follow and
-    Follow with Lock On Boss.\n\n- The Orbital Follow: is a simple 3rd Person View
-    camera that is following and looking at the player while having the ability to
-    rotate around the player using the mouse.\n- Follow with Lock On Boss: is also
-    a simple 3rd Person View camera. However, this one is following the an invisible
-    GameObject (FollowTarget) on the player, while looking it at the boss. The invisible
-    GameObject is always rotated on the Y axis so it looks towards the boss. This
-    is achieved with the Look At Target script on FollowTarget.\n\nThe switch between
-    the two Cinemachine Cameras happens when the player moves close to the boss.
-    This is done using Cinemachine Trigger Action. This proximity is visualized with
-    a transparent cylinder around the boss, see Proximity Trigger GameObject.\n\nUse
-    WASD to move around, Spacebar to jump, Shift to sprint.  Mouse moves the camera.
-    \nIf using Input package, right mouse button to jump and middle mouse button
-    to sprint."
-  OnHelpDismissed:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!4 &950181518
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 950181516}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.841223, y: 40.053345, z: -1.0433245}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1106812490
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,12 +613,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  Transitions:
-    BlendHint: 4
-    Events:
-      OnCameraLive:
-        m_PersistentCalls:
-          m_Calls: []
+  BlendHint: 12
 --- !u!4 &1106812492
 Transform:
   m_ObjectHideFlags: 0

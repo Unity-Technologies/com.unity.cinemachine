@@ -184,7 +184,7 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        static readonly string[] k_MaterialFolders = { "Materials", "Cameron/Model" };
+        static readonly string[] k_MaterialFolders = { "Materials" };
         static void ConvertMaterials(IEnumerable<string> folders)
         {
 #if CINEMACHINE_URP || CINEMACHINE_HDRP
