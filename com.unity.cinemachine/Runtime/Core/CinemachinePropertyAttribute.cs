@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -12,6 +13,17 @@ namespace Unity.Cinemachine
     /// </summary>
     public sealed class HideFoldoutAttribute : PropertyAttribute {}
     
+    /// <summary>Hide this property if a component of a given type is not present</summary>
+    public sealed class HideIfNoComponentAttribute : PropertyAttribute 
+    {
+        /// <summary>The name of the field controlling the enabled state</summary>
+        public Type ComponentType; 
+
+        /// <summary>Constructor</summary>
+        /// <param name="type">Type of the component to check for</param>
+        public HideIfNoComponentAttribute(Type type) => ComponentType = type; 
+    }
+
     /// <summary>
     /// Draw a foldout with an Enabled toggle that shadows a field inside the foldout
     /// </summary>
@@ -116,4 +128,7 @@ namespace Unity.Cinemachine
         /// <param name="stage">The stage in the Camera Pipeline in which to position this component</param>
         public CameraPipelineAttribute(CinemachineCore.Stage stage) { Stage = stage; }
     }
+
+    /// <summary>Use special property drawer for a list of InputAxisControllerBase.Controller objects</summary>
+    public sealed class InputAxisControllerListAttribute : PropertyAttribute {}
 }

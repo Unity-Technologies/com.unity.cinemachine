@@ -1,6 +1,9 @@
+#define LISTVIEW_BUG_WORKAROUND // GML hacking because of another ListView bug
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
@@ -16,6 +19,16 @@ namespace Unity.Cinemachine
         /// default state), and remove any that are no longer relevant.
         /// </summary>
         void SynchronizeControllers();
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Available in Editor only.  Used to check if a controller synchronization is necessary.
+        /// Normally we should have one controller per IInputAxisOwner axis.
+        /// </summary>
+        /// <returns>True if there is one controller defined per IInputAxisOwner axis, 
+        /// false if there is a mismatch</returns>
+        bool ControllersAreValid();
+#endif
     }
 
     /// <summary>
@@ -40,6 +53,7 @@ namespace Unity.Cinemachine
         
         /// <summary>If set, input will not be processed while the Cinemachine Camera is 
         /// participating in a blend.</summary>
+        [HideIfNoComponent(typeof(CinemachineVirtualCameraBase))]
         [Tooltip("If set, input will not be processed while the Cinemachine Camera is "
             + "participating in a blend.")]
         public bool SuppressInputWhileBlending = true;
@@ -73,10 +87,27 @@ namespace Unity.Cinemachine
             [HideFoldout]
             public DefaultInputAxisDriver Driver;
         }
-        
-        /// <summary>This list is dynamically populated based on the discovered axes</summary>
-        public List<Controller> Controllers = new ();
 
+#if LISTVIEW_BUG_WORKAROUND
+        // This class is a hack to work around a ListView bug
+        [Serializable] internal class ControllerList { public List<Controller> Controllers = new (); }
+
+        /// <summary>This list is dynamically populated based on the discovered axes</summary>
+        [Header("Driven Axes")]
+        [InputAxisControllerList]
+        [SerializeField] internal ControllerList m_ControllerList = new ();
+
+        // GML hacking: Legacy support until our sample scenes are all upgraded
+        [SerializeField, HideInInspector, FormerlySerializedAs("Controllers")] List<Controller> m_LegacyControllers;
+
+        /// <summary>This list is dynamically populated based on the discovered axes</summary>
+        public List<Controller> Controllers => m_ControllerList.Controllers;
+#else
+        /// <summary>This list is dynamically populated based on the discovered axes</summary>
+        [Header("Driven Axes")]
+        [InputAxisControllerList]
+        public List<Controller> Controllers = new ();
+#endif
         /// <summary>
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisOwner"/>
         /// </summary>
@@ -84,28 +115,42 @@ namespace Unity.Cinemachine
         readonly List<IInputAxisOwner> m_AxisOwners = new ();
         readonly List<IInputAxisResetSource> m_AxisResetters = new ();
 
-        void OnValidate()
+
+        /// <summary>Editor only: Called by Unity when the component is serialized 
+        /// or the inspector is changed.</summary>
+        protected virtual void OnValidate()
         {
             for (var i = 0; i < Controllers.Count; ++i)
                 if (Controllers[i] != null)
                     Controllers[i].Driver.Validate();
         }
 
-        void Reset()
+        /// <summary>Called by Unity when the component is reset.</summary>
+        protected virtual void Reset()
         {
             Controllers.Clear();
             CreateControllers();
             ScanRecursively = true;
             SuppressInputWhileBlending = true;
-            OnResetComponent();
         }
 
-        void OnEnable()
+        /// <summary>Called by Unity when the inspector component is enabled</summary>
+        protected virtual void OnEnable()
         {
+#if LISTVIEW_BUG_WORKAROUND
+            // Legacy support: upgrade the saved data
+            if (m_LegacyControllers.Count > 0)
+            {
+                m_ControllerList.Controllers.Clear();
+                m_ControllerList.Controllers.AddRange(m_LegacyControllers);
+                m_LegacyControllers.Clear();
+            }
+#endif
             CreateControllers();
         }
 
-        void OnDisable()
+        /// <summary>Called by Unity when the inspector component is disabled</summary>
+        protected virtual void OnDisable()
         {
             foreach (var t in m_AxisResetters)
                 if ((t as UnityEngine.Object) != null)
@@ -116,13 +161,8 @@ namespace Unity.Cinemachine
         }
 
 #if UNITY_EDITOR
-        /// <summary>
-        /// Called by editor only.  Used to check if a controller synchronization is necessary.
-        /// Normally we should have one controller per IInputAxisOwner axis.
-        /// </summary>
-        /// <returns>True if there is one controller defined per IInputAxisOwner axis, 
-        /// false if there is a mismatch</returns>
-        internal bool ControllersAreValid()
+        /// <inheritdoc />
+        public bool ControllersAreValid()
         {
             s_AxisTargetsCache.Clear();
             if (ScanRecursively)
@@ -188,7 +228,11 @@ namespace Unity.Cinemachine
                     }
                 }
             }
+#if LISTVIEW_BUG_WORKAROUND
+            m_ControllerList.Controllers = newControllers;
+#else
             Controllers = newControllers;
+#endif
 
             // Rebuild the resetter list and register with them
             m_AxisResetters.Clear();
@@ -224,16 +268,6 @@ namespace Unity.Cinemachine
         { 
         }
         
-        /// <summary>
-        /// Called when the component is required to be reset.
-        /// </summary>
-        protected virtual void OnResetComponent() {}
-        
-        /// <summary>
-        /// Called when the inputs are updated
-        /// </summary>
-        protected virtual void OnUpdateInputs() {}
-
         void OnResetInput()
         {
             for (int i = 0; i < Controllers.Count; ++i)
@@ -242,11 +276,15 @@ namespace Unity.Cinemachine
         
         //TODO Support fixed update as well. Input system has a setting to update inputs only during fixed update.
         //TODO This won't work accuratly if this setting is enabled.
-        void Update()
+        void Update() 
         {
-            if (!Application.isPlaying)
-                return;
-
+            if (Application.isPlaying)
+                UpdateControllers();
+        }
+           
+        /// <summary>Read all the controllers and process their input.</summary>
+        protected void UpdateControllers()
+        {
             if (SuppressInputWhileBlending 
                 && TryGetComponent<CinemachineVirtualCameraBase>(out var vcam)
                 && vcam.IsParticipatingInBlend())
@@ -261,10 +299,7 @@ namespace Unity.Cinemachine
                     continue;
                 var hint = i < m_Axes.Count ? m_Axes[i].Hint : 0;
                 if (c.Input != null)
-                {
-                    OnUpdateInputs();
                     c.InputValue = c.Input.GetValue(this, hint);
-                }
 
                 c.Driver.ProcessInput(ref m_Axes[i].DrivenAxis(), c.InputValue, deltaTime);
                 //gotInput |= Mathf.Abs(c.InputValue) > 0.001f;
