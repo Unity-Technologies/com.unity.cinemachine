@@ -4,7 +4,7 @@ For more complex input configurations like supporting multiple devices, you will
 
 ### Read from PlayerInput
 
-To read values from a `PlayerInput` with a `behaviour` set to `InvokeCSharpEvents`, you need to create a custom `InputAxisController` that subscribes to `onActionTriggered`. The example bellow shows how to receive and wire those inputs accordingly. Add this script to your `CinemachineCamera` and assign the `PlayerInput` field.
+To read values from a `PlayerInput` with a `behaviour` set to `InvokeCSharpEvents`, you need to create a custom `InputAxisController` that subscribes to `onActionTriggered`. The example below shows how to receive and wire those inputs accordingly. Add this script to your `CinemachineCamera` and assign the `PlayerInput` field.
 
 ```cs
 using UnityEngine;
