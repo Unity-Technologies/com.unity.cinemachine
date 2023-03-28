@@ -22,17 +22,16 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
             
             SerializedProperty prop = serializedObject.GetIterator();
+            var suppressInput = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
+            
             if (prop.NextVisible(true)) {
                 do {
-                    if (prop.name != "Controllers" && prop.name != "SuppressInputWhileBlending") {
+                    if (prop.name != "Controllers" && prop.name != "SuppressInputWhileBlending" && prop.name != "m_Script") {
                         ux.Add(new PropertyField(serializedObject.FindProperty(prop.name)));
                     }
                 }
                 while (prop.NextVisible(false));
             }
-            
-            var suppressInput = ux.AddChild(
-                new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
 
             ux.AddHeader("Driven Axes");
             var list = ux.AddChild(new ListView()
