@@ -1,6 +1,6 @@
 # Input System Components
 
-For more complex input configuration like supporting multiple devices, local multiplayer... You will need to receive inputs from the `PlayerInput` component provided by the Input System package. This section is assuming you already know how to setup this component. All the documentation can be found on the Input System package documentation page and samples.
+For more complex input configurations like supporting multiple devices, you will need to receive inputs from the `PlayerInput` component provided by the Input System package. The following section assumes you already know how to setup this component. For more information, see the [Input System](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.5/manual/index.html) documentation and samples.
 
 ### Read from PlayerInput
 
