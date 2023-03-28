@@ -24,6 +24,20 @@ namespace Unity.Cinemachine
     public class CinemachineInputAxisController : InputAxisControllerBase<DefaultInputAxisReader> 
     {
         /// <summary>
+        /// Leave this at -1 for single-player games.
+        /// For multi-player games, set this to be the player index, and the actions will
+        /// be read from that player's controls
+        /// </summary>
+        [Tooltip("Leave this at -1 for single-player games.  "
+                 + "For multi-player games, set this to be the player index, and the actions will "
+                 + "be read from that player's controls")]
+        public int PlayerIndex = -1;
+
+        /// <summary>If set, Input Actions will be auto-enabled at start</summary>
+        [Tooltip("If set, Input Actions will be auto-enabled at start")]
+        public bool AutoEnableInputs = true;
+        
+        /// <summary>
         /// This is a mechanism to allow the inspector to set up default values 
         /// when the component is reset.
         /// </summary>
@@ -43,6 +57,21 @@ namespace Unity.Cinemachine
             in IInputAxisOwner.AxisDescriptor axis, Controller controller)
         { 
             SetControlDefaults?.Invoke(axis, ref controller);
+        }
+
+        protected override void OnResetComponent()
+        {
+            PlayerIndex = -1;
+            AutoEnableInputs = true;
+        }
+
+        protected override void OnUpdateInputs()
+        {
+            for (var i = 0; i < Controllers.Count; i++)
+            {
+                Controllers[i].Input.SetPlayerIndex(PlayerIndex);
+                Controllers[i].Input.SetAutoEnableInput(AutoEnableInputs);
+            }
         }
     }
 
@@ -81,6 +110,20 @@ namespace Unity.Cinemachine
         public float LegacyGain = 1;
 #endif
 
+        protected int m_PlayerIndex;
+
+        protected bool m_autoEnableInput;
+
+        public void SetPlayerIndex(int index)
+        {
+            m_PlayerIndex = index;
+        }
+
+        public void SetAutoEnableInput(bool isAutoEnabled)
+        {
+            m_autoEnableInput = isAutoEnabled;
+        }
+        
         /// <summary>Get the current value of the axis.</summary>
         /// <param name="context">The context GameObject, can be used for logging diagnostics</param>
         /// <param name="playerIndex">For multiplayer games the player index if applicable, or -1 for default</param>
@@ -88,15 +131,13 @@ namespace Unity.Cinemachine
         /// <param name="hint">A hint for converting a Vector2 value to a float</param>
         /// <returns>The axis value</returns>
         public float GetValue(
-            UnityEngine.Object context, 
-            int playerIndex,
-            bool autoEnableInput,
+            UnityEngine.Object context,
             IInputAxisOwner.AxisDescriptor.Hints hint)
         {
             float inputValue = 0;
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             if (InputAction != null)
-                inputValue = ResolveAndReadInputAction(context, playerIndex, autoEnableInput, hint) * Gain;
+                inputValue = ResolveAndReadInputAction(context, m_PlayerIndex, m_autoEnableInput, hint) * Gain;
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER

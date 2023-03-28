@@ -80,9 +80,7 @@ namespace Unity.Cinemachine
         /// <param name="hint">A hint for converting a Vector2 value to a float</param>
         /// <returns>The axis value</returns>
         public float GetValue(
-            UnityEngine.Object context, 
-            int playerIndex,
-            bool autoEnableInput,
+            UnityEngine.Object context,
             IInputAxisOwner.AxisDescriptor.Hints hint);
     }
 

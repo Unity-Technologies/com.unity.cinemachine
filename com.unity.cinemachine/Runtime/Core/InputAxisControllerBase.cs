@@ -30,20 +30,6 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     public abstract class InputAxisControllerBase<T> : MonoBehaviour, IInputAxisController where T : IInputAxisReader, new ()
     {
-        /// <summary>
-        /// Leave this at -1 for single-player games.
-        /// For multi-player games, set this to be the player index, and the actions will
-        /// be read from that player's controls
-        /// </summary>
-        [Tooltip("Leave this at -1 for single-player games.  "
-            + "For multi-player games, set this to be the player index, and the actions will "
-            + "be read from that player's controls")]
-        public int PlayerIndex = -1;
-
-        /// <summary>If set, Input Actions will be auto-enabled at start</summary>
-        [Tooltip("If set, Input Actions will be auto-enabled at start")]
-        public bool AutoEnableInputs = true;
-        
         /// <summary>If set, a recursive search for IInputAxisOwners behaviours will be performed.  
         /// Otherwise, only behaviours attached directly to this GameObject will be considered, 
         /// and child objects will be ignored.</summary>
@@ -109,10 +95,10 @@ namespace Unity.Cinemachine
         {
             Controllers.Clear();
             CreateControllers();
-            PlayerIndex = -1;
-            AutoEnableInputs = true;
             ScanRecursively = true;
             SuppressInputWhileBlending = true;
+            OnResetInput();
+            OnResetComponent();
         }
 
         void OnEnable()
@@ -238,13 +224,25 @@ namespace Unity.Cinemachine
             in IInputAxisOwner.AxisDescriptor axis, Controller controller)
         { 
         }
+        
+        /// <summary>
+        /// Called when the component is required to be reset.
+        /// </summary>
+        protected virtual void OnResetComponent() {}
+        
+        /// <summary>
+        /// Called when the inputs are updated
+        /// </summary>
+        protected virtual void OnUpdateInputs() {}
 
         void OnResetInput()
         {
             for (int i = 0; i < Controllers.Count; ++i)
                 Controllers[i].Driver.Reset(ref m_Axes[i].DrivenAxis());
         }
-
+        
+        //TODO Support fixed update as well. Input system has a setting to update inputs only during fixed update.
+        //TODO This won't work accuratly if this setting is enabled.
         void Update()
         {
             if (!Application.isPlaying)
@@ -264,7 +262,11 @@ namespace Unity.Cinemachine
                     continue;
                 var hint = i < m_Axes.Count ? m_Axes[i].Hint : 0;
                 if (c.Input != null)
-                    c.InputValue = c.Input.GetValue(this, PlayerIndex, AutoEnableInputs, hint);
+                {
+                    OnUpdateInputs();
+                    c.InputValue = c.Input.GetValue(this, hint);
+                }
+
                 c.Driver.ProcessInput(ref m_Axes[i].DrivenAxis(), c.InputValue, deltaTime);
                 //gotInput |= Mathf.Abs(c.InputValue) > 0.001f;
             }
