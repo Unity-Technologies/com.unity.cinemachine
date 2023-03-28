@@ -82,17 +82,14 @@ namespace Unity.Cinemachine
             base.OnDisable();
         }
 
-        /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
+        /// </inheritdoc />
         public override string Description => m_BlendManager.Description;
 
-        /// <summary>The resulting CameraState for the current live child and blend</summary>
+        /// </inheritdoc />
         public override CameraState State => m_State;
 
-        /// <summary>Check whether the vcam a live child of this camera.</summary>
-        /// <param name="cam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
-        /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
+        /// </inheritdoc />
+        public virtual bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
             => m_BlendManager.IsLive(cam, dominantChildOnly);
 
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
