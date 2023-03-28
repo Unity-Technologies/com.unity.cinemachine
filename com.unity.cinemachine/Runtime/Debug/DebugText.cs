@@ -39,7 +39,6 @@ namespace Unity.Cinemachine
 
             public void SetTextColor(Color color) => m_DebugLabel.style.color = new StyleColor(color);
             public void RestoreOriginalTextColor() => m_DebugLabel.style.color = m_OriginalTextColor;
-            public void SetVisibility(bool v) => m_DebugLabel.visible = v;
             public void SetText(string text) => m_DebugLabel.text = text;
 
             public void Dispose()

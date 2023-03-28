@@ -65,7 +65,13 @@ namespace Unity.Cinemachine
             }
 
             if (s_CameraViewRectContainers.ContainsKey(outputCamera))
-                return s_CameraViewRectContainers[outputCamera];
+            {
+                if (s_CameraViewRectContainers[outputCamera].childCount != 0)
+                    return s_CameraViewRectContainers[outputCamera];
+                
+                s_CameraViewRectContainers[outputCamera].RemoveFromHierarchy();
+                s_CameraViewRectContainers.Remove(outputCamera);
+            }
 
             var viewportContainer = new VisualElement
             {
@@ -78,18 +84,21 @@ namespace Unity.Cinemachine
             };
             // need to use delayCall, because rootVisualElement may not be built at this point yet
             EditorApplication.delayCall += () => s_UIDocument.rootVisualElement.Add(viewportContainer);
-            var brain = outputCamera.GetComponent<CinemachineBrain>();
-            viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera, brain)).Every(0); // TODO: can we do better?
+            viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera)).Every(0); // TODO: can we do better?
             s_CameraViewRectContainers.Add(outputCamera, viewportContainer);
             
             return viewportContainer;
             
-            static void PositionWithinCameraView(VisualElement visualElement, Camera camera, CinemachineBrain brain)
+            static void PositionWithinCameraView(VisualElement visualElement, Camera camera)
             {
-                if (s_UIDocument == null || s_UIDocument.rootVisualElement == null || 
-                    camera == null || brain == null || !brain.ShowDebugText)
+                if (s_UIDocument == null || s_UIDocument.rootVisualElement == null || camera == null)
                     return;
-            
+                if (visualElement.childCount == 0)
+                {
+                    visualElement.RemoveFromHierarchy();
+                    s_CameraViewRectContainers.Remove(camera);
+                }
+
                 var panel = s_UIDocument.rootVisualElement.panel;
                 var screenPanelSpace = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(Screen.width, Screen.height));
                 var viewport = camera.pixelRect;

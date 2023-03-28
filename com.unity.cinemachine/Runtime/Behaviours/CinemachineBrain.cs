@@ -168,9 +168,6 @@ namespace Unity.Cinemachine
         
         void OnValidate()
         {
-#if UNITY_EDITOR
-            m_DebugText?.SetVisibility(ShowDebugText); // TODO: how to do this better? callback? when noone is using it this should not take any resources. should to work in runtime
-#endif
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
         }
 
@@ -285,7 +282,16 @@ namespace Unity.Cinemachine
 
         void OnGuiHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText || ActiveVirtualCamera == null || brain != this)
+            if (!ShowDebugText)
+            {
+                if (m_DebugText != null)
+                {
+                    m_DebugText.Dispose();
+                    m_DebugText = null;
+                }
+                return;
+            }
+            if (ActiveVirtualCamera == null || brain != this)
                 return;
             if (m_DebugText == null) 
                 m_DebugText = new DebugText(OutputCamera);
