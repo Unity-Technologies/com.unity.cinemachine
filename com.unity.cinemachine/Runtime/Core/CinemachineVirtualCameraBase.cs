@@ -26,8 +26,7 @@ namespace Unity.Cinemachine
     /// Unity cameras simultaneously.
     /// </summary>
     [SaveDuringPlay]
-    public abstract class CinemachineVirtualCameraBase 
-        : MonoBehaviour, ICinemachineCamera, ICinemachineMixer
+    public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
         /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
@@ -421,16 +420,9 @@ namespace Unity.Cinemachine
             {
                 if (!m_ChildStatusUpdated || !Application.isPlaying)
                     UpdateStatusAsChild();
-                return m_ParentVcam;
+                return m_ParentVcam as ICinemachineMixer;
             }
         }
-
-        /// <summary>Check whether the vcam a live child of this camera.
-        /// This base class implementation always returns false.</summary>
-        /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
-        /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public virtual bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
 
         /// <summary>Get the LookAt target for the Aim component in the Cinemachine pipeline.</summary>
         public abstract Transform LookAt { get; set; }
