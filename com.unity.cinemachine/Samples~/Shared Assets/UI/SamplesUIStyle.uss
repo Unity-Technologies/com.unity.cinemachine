@@ -71,6 +71,8 @@ Box {
 }
 
 #HelpTextBox__CloseButton {
+    margin-top: 4px;
+    margin-bottom: 4px;
     margin-left: 2px;
     margin-right: 2px;
     padding: 8px;
