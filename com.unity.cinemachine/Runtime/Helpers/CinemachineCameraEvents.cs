@@ -1,17 +1,10 @@
-using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
     /// <summary>
     /// This component will generate camera-specific activation and deactivation events.
     /// Add it to a Cinemachine Camera.
-    /// 
-    /// GML todo: add events for
-    ///  - Blend finished
-    ///  - Camera deactivated
-    ///  - Camera activated (deprecate OnCameraLive)
     /// </summary>
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Camera Events")]
     [SaveDuringPlay]

@@ -42,15 +42,20 @@ namespace Unity.Cinemachine.Samples
         public List<Item> Buttons = new();
 
         VisualElement m_Root;
-        List<VisualElement> m_DynamicElements;
+        readonly List<VisualElement> m_DynamicElements = new ();
 
         void OnEnable()
         {
             var uiDocument = GetComponent<UIDocument>();
-
             m_Root = uiDocument.rootVisualElement.Q("TogglesAndButtons"); // Should be justified - flex grow 1
-            m_DynamicElements = new List<VisualElement>(Buttons.Count);
+            if (m_Root == null)
+            {
+                Debug.LogError("Cannot find TogglesAndButtons.  Is the source asset set in the UIDocument?");
+                return;
+            }
+            
             foreach (var item in Buttons)
+            {
                 if (item.IsToggle.Enabled)
                 {
                     var toggle = new Toggle
@@ -76,7 +81,7 @@ namespace Unity.Cinemachine.Samples
                     m_Root.Add(button);
                     m_DynamicElements.Add(button);
                 }
-
+            }
             m_Root.visible = Buttons.Count > 0;
         }
 

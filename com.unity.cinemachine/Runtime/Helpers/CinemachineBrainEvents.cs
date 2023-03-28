@@ -1,12 +1,11 @@
-using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This component will generate brain-specific events.
-    /// Add it to a a GameObject that has a CinemachineBrain.
+    /// This component will generate mixer-specific events.
+    /// Add it to a a GameObject that has a CinemachineBrain or another ICinemachineMixer, 
+    /// such as a CinemachineCameraManager.
     /// </summary>
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Brain Events")]
     [SaveDuringPlay]
@@ -43,18 +42,19 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("This event is fired when there is a camera cut.  A camera cut is a camera "
             + "activation with a zero-length blend.")]
-        public CinemachineCore.BrainEvent CameraCutEvent = new ();
+        public CinemachineCore.CameraEvent CameraCutEvent = new ();
 
-        /// <summary>This event will fire after the brain updates its Camera</summary>
+        /// <summary>This event will fire after the brain updates its Camera.
+        /// This evenet will only fire if this component is attached to a CinemachineBrain.</summary>
         [Tooltip("This event will fire after the brain updates its Camera.")]
-        public CinemachineCore.BrainEvent UpdatedEvent = new ();
+        public CinemachineCore.BrainEvent BrainUpdatedEvent = new ();
 
-        CinemachineBrain m_Brain;
+        ICinemachineMixer m_Mixer;
 
         void OnEnable()
         {
-            TryGetComponent(out m_Brain);
-            if (m_Brain != null)
+            TryGetComponent(out m_Mixer);
+            if (m_Mixer != null)
             {
                 CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
                 CinemachineCore.CameraDeactivatedEvent.AddListener(OnCameraDeactivated);
@@ -73,30 +73,30 @@ namespace Unity.Cinemachine
 
         void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt)
         {
-            if (evt.Origin == (ICinemachineMixer)m_Brain)
+            if (evt.Origin == m_Mixer)
             {
-                CameraActivatedEvent.Invoke(m_Brain, evt.IncomingCamera);
+                CameraActivatedEvent.Invoke(m_Mixer, evt.IncomingCamera);
                 if (evt.IsCut)
-                    CameraCutEvent.Invoke(m_Brain);
+                    CameraCutEvent.Invoke(m_Mixer, evt.IncomingCamera);
             }
         }
 
         void OnCameraDeactivated(ICinemachineMixer mixer, ICinemachineCamera cam)
         {
-            if (mixer == (ICinemachineMixer)m_Brain)
+            if (mixer == m_Mixer)
                 CameraDeactivatedEvent.Invoke(mixer, cam);
         }
 
         void OnBlendFinished(ICinemachineMixer mixer, ICinemachineCamera cam)
         {
-            if (mixer == (ICinemachineMixer)m_Brain)
-                CameraBlendFinishedEvent.Invoke(m_Brain, cam);
+            if (mixer == m_Mixer)
+                CameraBlendFinishedEvent.Invoke(m_Mixer, cam);
         }
 
         void OnCameraUpdated(CinemachineBrain brain)
         {
-            if (brain == m_Brain)
-                UpdatedEvent.Invoke(brain);
+            if ((ICinemachineMixer)brain == m_Mixer)
+                BrainUpdatedEvent.Invoke(brain);
         }
     }
 }
