@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/Samples/Cinemachine/3.0.0-pre.5/Shared%20Assets/UI/SamplesUIStyle.uss?fileID=7433441132597879392&amp;guid=f5bb9549a4a38408d98f1dc629a432df&amp;type=3#SamplesUIStyle" />
     <ui:Box name="HelpToggleBox" focusable="false" />
-    <ui:Box name="TogglesAndButtons" focusable="false" />
+    <ui:Box name="TogglesAndButtons" focusable="false" style="top: 12px;" />
     <ui:Box name="HelpTextBox" focusable="false" style="justify-content: flex-start; top: 0; bottom: 0;">
         <ui:Label name="HelpTextBox__Title" focusable="false" style="padding-left: 0; padding-right: 0;" />
         <ui:ScrollView>
