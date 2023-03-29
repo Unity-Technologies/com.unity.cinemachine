@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.ComponentOwner);
+            CinemachineBrain brain = CinemachineCore.FindPotentialTargetBrain(Target.ComponentOwner);
             bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
             if (!ortho)
                 excluded.Add(FieldPath(x => x.m_ConfineScreenEdges));

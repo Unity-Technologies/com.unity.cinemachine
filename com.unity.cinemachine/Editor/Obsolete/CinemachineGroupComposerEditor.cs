@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(MyTarget.VirtualCamera);
+            CinemachineBrain brain = CinemachineCore.FindPotentialTargetBrain(MyTarget.VirtualCamera);
             var ortho = brain != null && brain.OutputCamera.orthographic;
             if (ortho)
             {

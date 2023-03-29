@@ -142,8 +142,8 @@ namespace Unity.Cinemachine.Editor
 
                 if (!HideModeOverride)
                 {
-                    var brainHasModeOverride = CinemachineCore.Instance.BrainCount > 0 
-                        && CinemachineCore.Instance.GetActiveBrain(0).LensModeOverride.Enabled;
+                    var brainHasModeOverride = CinemachineBrain.ActiveBrainCount > 0 
+                        && CinemachineBrain.GetActiveBrain(0).LensModeOverride.Enabled;
                     modeHelp.SetVisible(!brainHasModeOverride
                         && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
                 }

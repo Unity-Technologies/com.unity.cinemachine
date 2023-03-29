@@ -595,6 +595,27 @@ namespace Unity.Cinemachine.Editor
             return button;
         }
 
+        /// <summary>A small dropdown context menu, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="contextMenu">The context menu to show when the button is pressed</param>
+        public static Button MiniDropdownButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
+        {
+            var button = new Button { tooltip = tooltip, style = 
+            {
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
+                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }};
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
+            return button;
+        }
+
         /// <summary>
         /// This is a hack to get proper layout within th inspector.
         /// There seems to be no sanctioned way to get the current inspector label width.
@@ -742,7 +763,7 @@ namespace Unity.Cinemachine.Editor
             public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
-                if (label.Length != 0)
+                if (!string.IsNullOrEmpty(label))
                     Label = AddChild(this, new Label(label) 
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });

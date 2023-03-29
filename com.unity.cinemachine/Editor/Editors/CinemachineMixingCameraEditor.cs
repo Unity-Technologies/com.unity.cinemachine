@@ -74,7 +74,7 @@ namespace Unity.Cinemachine.Editor
         {
             GUIStyle style = EditorStyles.centeredGreyMiniLabel;
             Color bkg = new Color(0.27f, 0.27f, 0.27f); // ack! no better way than this?
-            Color fg = Color.Lerp(CinemachineBrain.GetSoloGUIColor(), bkg, 0.8f);
+            Color fg = Color.Lerp(CinemachineCore.SoloGUIColor(), bkg, 0.8f);
             float totalHeight = (style.lineHeight + style.margin.vertical) * numCameras;
             Rect r = EditorGUILayout.GetControlRect(true, totalHeight);
             r.height /= numCameras; r.height -= 1;

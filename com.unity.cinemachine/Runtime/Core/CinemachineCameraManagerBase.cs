@@ -9,7 +9,7 @@ namespace Unity.Cinemachine
     /// This is a virtual camera "manager" that owns and manages a collection
     /// of child Cm Cameras.
     /// </summary>
-    public abstract class CinemachineCameraManagerBase : CinemachineVirtualCameraBase
+    public abstract class CinemachineCameraManagerBase : CinemachineVirtualCameraBase, ICinemachineMixer
     {
         /// <summary>If enabled, a default target will be available.  It will be used
         /// if a child rig needs a target and doesn't specify one itself.</summary>
@@ -35,24 +35,63 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public DefaultTargetSettings DefaultTarget;
 
-        /// State for CreateActiveBlend().  Used in the case of backing out of a blend in progress.
-        float m_BlendStartPosition;
+        /// <summary>
+        /// The blend which is used if you don't explicitly define a blend between two Virtual Camera children.
+        /// </summary>
+        [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
+        [FormerlySerializedAs("m_DefaultBlend")]
+        public CinemachineBlendDefinition DefaultBlend = new (CinemachineBlendDefinition.Styles.EaseInOut, 0.5f);
 
         /// <summary>
-        /// For the inspector ONLY.  Does not really need to be serialized other than for the inspector.
-        /// GML todo: make this go away
+        /// This is the asset which contains custom settings for specific child blends.
         /// </summary>
-        [SerializeField, HideInInspector, NoSaveDuringPlay] internal List<CinemachineVirtualCameraBase> m_ChildCameras;
+        [Tooltip("This is the asset which contains custom settings for specific child blends")]
+        [FormerlySerializedAs("m_CustomBlends")]
+        public CinemachineBlenderSettings CustomBlends = null;
+
+        List<CinemachineVirtualCameraBase> m_ChildCameras;
+        readonly BlendManager m_BlendManager = new ();
+        CameraState m_State = CameraState.Default;
+        ICinemachineCamera m_TransitioningFrom;
 
         /// <summary>Reset the component to default values.</summary>
         protected virtual void Reset()
         {
-            Priority = new();
+            Priority = default;
             OutputChannel = OutputChannel.Default;
             DefaultTarget = default;
             InvalidateCameraCache();
         }
         
+        /// <summary>
+        /// Standard MonoBehaviour OnEnable.  Derived classes must call base class implementation.
+        /// </summary>
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            m_BlendManager.OnEnable();
+            InvalidateCameraCache();
+        }
+
+        /// <summary>
+        /// Standard MonoBehaviour OnDisable.  Derived classes must call base class implementation.
+        /// </summary>
+        protected override void OnDisable()
+        {
+            m_BlendManager.OnDisable();
+            base.OnDisable();
+        }
+
+        /// <inheritdoc />
+        public override string Description => m_BlendManager.Description;
+
+        /// <inheritdoc />
+        public override CameraState State => m_State;
+
+        /// <inheritdoc />
+        public virtual bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
+            => m_BlendManager.IsLive(cam, dominantChildOnly);
+
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
         public List<CinemachineVirtualCameraBase> ChildCameras 
         { 
@@ -64,62 +103,24 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Is there a blend in progress?</summary>
-        public bool IsBlending => ActiveBlend != null;
-
-        /// <summary>
-        /// Returns the camera that is currently live.  If a blend is in progress, then the
-        /// incoming camera is considered to be the live child.
-        /// </summary>
-        public abstract ICinemachineCamera LiveChild { get; }
+        public bool IsBlending => m_BlendManager.IsBlending;
 
         /// <summary>
         /// Get the current active blend in progress.  Will return null if no blend is in progress.
         /// </summary>
-        public abstract CinemachineBlend ActiveBlend { get; }
+        public CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_BlendManager.ActiveBlend : null;
 
-        /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
-        public override string Description
-        {
-            get
-            {
-                // Show the active camera and blend
-                if (ActiveBlend != null)
-                    return ActiveBlend.Description;
-
-                ICinemachineCamera vcam = LiveChild;
-                if (vcam == null)
-                    return "(none)";
-                var sb = CinemachineDebug.SBFromPool();
-                sb.Append("["); sb.Append(vcam.Name); sb.Append("]");
-                string text = sb.ToString();
-                CinemachineDebug.ReturnToPool(sb);
-                return text;
-            }
-        }
-
-        /// <summary>Check whether the vcam a live child of this camera.</summary>
-        /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
-        /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
-        {
-            return vcam == LiveChild || (ActiveBlend != null && ActiveBlend.Uses(vcam));
-        }
-
-        /// <summary>Returns the current live child's TransitionParams settings</summary>
-        /// <returns>The current live child's TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams()
-        {
-            var child = LiveChild as CinemachineVirtualCameraBase;
-            return child != null ? child.GetTransitionParams() : default;
-        }
+        /// <summary>
+        /// Get the current active camera.  Will return null if no camera is active.
+        /// </summary>
+        public ICinemachineCamera LiveChild => PreviousStateIsValid ? m_BlendManager.ActiveVirtualCamera : null;
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
         public override Transform LookAt
         {
             get 
-            { 
+            {
                 if (!DefaultTarget.Enabled)
                     return null;
                 return ResolveLookAt(DefaultTarget.Target.CustomLookAtTarget 
@@ -150,6 +151,62 @@ namespace Unity.Cinemachine
             }
         }
 
+        /// <summary>Internal use only.  Do not call this method.
+        /// Called by CinemachineCore at designated update time
+        /// so the vcam can position itself and track its targets.  This implementation
+        /// updates all the children, chooses the best one, and implements any required blending.</summary>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
+        {
+            UpdateCameraCache();
+            if (!PreviousStateIsValid)
+                ResetLiveChild();
+
+            // Choose the best camera - auto-activate it if it's inactive
+            var best = ChooseCurrentCamera(worldUp, deltaTime);
+            if (best != null && !best.gameObject.activeInHierarchy)
+            {
+                best.gameObject.SetActive(true);
+                best.UpdateCameraState(worldUp, deltaTime);
+            }
+            SetLiveChild(best, worldUp, deltaTime, LookupBlend);
+
+            // Special case to handle being called from OnTransitionFromCamera() - GML todo: fix this
+            if (m_TransitioningFrom != null && !IsBlending && LiveChild != null)
+            {
+                LiveChild.OnCameraActivated(new ICinemachineCamera.ActivationEventParams
+                {
+                    Origin = this,
+                    OutgoingCamera = m_TransitioningFrom,
+                    IncomingCamera = LiveChild,
+                    IsCut = false,
+                    WorldUp = worldUp, 
+                    DeltaTime = deltaTime
+                });
+            }
+
+            FinalizeCameraState(deltaTime);
+            m_TransitioningFrom = null;
+            PreviousStateIsValid = true;
+        }
+        
+        /// <summary>Find a blend curve for blending from one child camera to another.</summary>
+        /// <param name="outgoing">The camera we're blending from.</param>
+        /// <param name="incoming">The camera we're blending to.</param>
+        /// <returns>The blend to use for this camera transition.</returns>
+        protected virtual CinemachineBlendDefinition LookupBlend(ICinemachineCamera outgoing, ICinemachineCamera incoming)
+            => CinemachineBlenderSettings.LookupBlend(outgoing, incoming, DefaultBlend, CustomBlends, this);
+            
+        /// <summary>
+        /// Choose the appropriate current camera from among the ChildCameras, based on current state.
+        /// If the returned camera is different from the current camera, an appropriate transition will be made.
+        /// </summary>
+        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
+        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <returns>The current child camera that should be active. Must be present in ChildCameras.</returns>
+        protected abstract CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime);
+        
         /// <summary>This is called to notify the vcam that a target got warped,
         /// so that the vcam can update its internal state to make the camera
         /// also warp seamlessly.</summary>
@@ -184,7 +241,9 @@ namespace Unity.Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            m_TransitioningFrom  = fromCam;
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
+            InternalUpdateCameraState(worldUp, deltaTime);
         }
 
         /// <summary>Force a rebuild of the child camera cache.  
@@ -211,60 +270,33 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Makes sure the internal child cache is up to date</summary>
-        protected override void OnEnable()
+        protected virtual void OnTransformChildrenChanged() => InvalidateCameraCache();
+
+        /// <summary>
+        /// Set the current active camera.  All necessary blends will be created, and events generated.
+        /// </summary>
+        /// <param name="activeCamera">Current active camera</param>
+        /// <param name="worldUp">Current world up</param>
+        /// <param name="deltaTime">Current deltaTime applicable for this frame</param>
+        /// <param name="lookupBlend">Delegate to use to find a blend definition, when a blend is being created</param>
+        protected void SetLiveChild(
+            ICinemachineCamera activeCamera, Vector3 worldUp, float deltaTime,
+            CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
         {
-            base.OnEnable();
-            InvalidateCameraCache();
-            m_BlendStartPosition = 0;
+            m_BlendManager.UpdateRootFrame(activeCamera, deltaTime, lookupBlend);
+            m_BlendManager.ComputeCurrentBlend();
+            m_BlendManager.ProcessActiveCamera(this, worldUp, deltaTime);
         }
 
-        /// <summary>Makes sure the internal child cache is up to date</summary>
-        protected virtual void OnTransformChildrenChanged()
+        /// <summary>Cancel current active camera and all blends</summary>
+        protected void ResetLiveChild() => m_BlendManager.ResetRootFrame();
+
+        /// <summary>At the end of InternalUpdateCameraState, call this to finalize the state</summary>
+        /// <param name="deltaTime">Current deltaTime for this frame</param>
+        protected void FinalizeCameraState(float deltaTime)
         {
-            InvalidateCameraCache();
-        }
-
-        /// <summary>Create a blend between 2 virtual cameras, taking into account
-        /// any existing active blend, with special case handling if the new blend is 
-        /// effectively an undo of the current blend.  The returned blend must be
-        /// used as the current active blend</summary>
-        /// <param name="camA">Outgoing virtual camera</param>
-        /// <param name="camB">Incoming virtual camera</param>
-        /// <param name="blendDef">Definition of the blend to create</param>
-        /// <returns>The new blend</returns>
-        protected CinemachineBlend CreateActiveBlend(
-            ICinemachineCamera camA, ICinemachineCamera camB,
-            CinemachineBlendDefinition blendDef)
-        {
-            var activeBlend = ActiveBlend;
-            var blendStartPosition = m_BlendStartPosition;
-            m_BlendStartPosition = 0;
-            if (blendDef.BlendCurve == null || blendDef.BlendTime <= 0 || (camA == null && camB == null))
-                return null;
-
-            if (activeBlend != null)
-            {
-                // Special case: if backing out of a blend-in-progress
-                // with the same blend in reverse, adjust the blend time
-                // to cancel out the progress made in the opposite direction
-                if (activeBlend != null && !activeBlend.IsComplete && activeBlend.CamA == camB && activeBlend.CamB == camA)
-                {
-                    // How far have we blended?  That is what we must undo
-                    var progress = blendStartPosition 
-                        + (1 - blendStartPosition) * activeBlend.TimeInBlend / activeBlend.Duration;
-                    blendDef.Time *= progress;
-                    m_BlendStartPosition = 1 - progress;
-                }
-
-                if (camB is CinemachineVirtualCameraBase 
-                    && (camB as CinemachineVirtualCameraBase).GetTransitionParams().InheritPosition)
-                    camA = null;  // otherwise we get a pop when camB is moved
-                else
-                    camA = new BlendSourceVirtualCamera(activeBlend);
-            }
-            if (camA == null)
-                camA = new StaticPointVirtualCamera(State, "(none)");
-            return new CinemachineBlend(camA, camB, blendDef.BlendCurve, blendDef.BlendTime, 0);
+            m_State = m_BlendManager.CameraState;
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
         }
     }
 }

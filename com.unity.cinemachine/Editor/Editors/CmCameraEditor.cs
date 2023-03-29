@@ -14,10 +14,10 @@ namespace Unity.Cinemachine.Editor
         static void AdoptGameViewCameraSettings(MenuCommand command)
         {
             var cam = command.context as CinemachineCamera;
-            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(cam);
+            var brain = CinemachineCore.FindPotentialTargetBrain(cam);
             if (brain != null)
             {
-                cam.Lens = brain.CurrentCameraState.Lens;
+                cam.Lens = brain.State.Lens;
                 cam.transform.SetPositionAndRotation(brain.transform.position, brain.transform.rotation);
             }
         }
@@ -50,7 +50,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.Transitions) });
+            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.BlendHint) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
             ux.AddHeader("Global Settings");

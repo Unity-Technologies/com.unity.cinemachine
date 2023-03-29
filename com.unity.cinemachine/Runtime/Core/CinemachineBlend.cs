@@ -37,7 +37,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
-        public bool IsValid => ((CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid));
+        public bool IsValid => (CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid);
 
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration;
@@ -51,26 +51,18 @@ namespace Unity.Cinemachine
         {
             get
             {
-                var sb = CinemachineDebug.SBFromPool();
                 if (CamB == null || !CamB.IsValid)
-                    sb.Append("(none)");
-                else
-                {
-                    sb.Append("[");
-                    sb.Append(CamB.Name);
-                    sb.Append("]");
-                }
+                    return "(none)";
+
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append(CamB.Name);
                 sb.Append(" ");
                 sb.Append((int)(BlendWeight * 100f));
                 sb.Append("% from ");
                 if (CamA == null || !CamA.IsValid)
                     sb.Append("(none)");
                 else
-                {
-                    sb.Append("[");
                     sb.Append(CamA.Name);
-                    sb.Append("]");
-                }
                 string text = sb.ToString();
                 CinemachineDebug.ReturnToPool(sb);
                 return text;
@@ -82,6 +74,8 @@ namespace Unity.Cinemachine
         /// <returns>True if the camera is involved in the blend</returns>
         public bool Uses(ICinemachineCamera cam)
         {
+            if (cam == null)
+                return false;
             if (cam == CamA || cam == CamB)
                 return true;
             if (CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
@@ -104,6 +98,21 @@ namespace Unity.Cinemachine
             BlendCurve = curve;
             TimeInBlend = t;
             Duration = duration;
+        }
+
+        /// <summary>Construct a blend</summary>
+        /// <param name="src">Copy fields from this blend</param>
+        public CinemachineBlend(CinemachineBlend src) => CopyFrom(src);
+
+        /// <summary>Copy contents of a blend</summary>
+        /// <param name="src">Copy fields from this blend</param>
+        public void CopyFrom(CinemachineBlend src)
+        {
+            CamA = src.CamA;
+            CamB = src.CamB;
+            BlendCurve = src.BlendCurve;
+            TimeInBlend = src.TimeInBlend;
+            Duration = src.Duration;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
@@ -143,6 +152,15 @@ namespace Unity.Cinemachine
     [Serializable]
     public struct CinemachineBlendDefinition
     {
+        /// <summary>
+        /// Delegate for finding a blend definition to use when blending between 2 cameras.
+        /// </summary>
+        /// <param name="fromKey">The outgoing camera</param>
+        /// <param name="toKey">The incoming camera</param>
+        /// <returns>An appropriate blend definition,.  Must not be null.</returns>
+        public delegate CinemachineBlendDefinition LookupBlendDelegate(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming);
+
         /// <summary>Supported predefined shapes for the blend curve.</summary>
         public enum Styles
         {
@@ -254,26 +272,34 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// Point source for blending. It's not really a virtual camera, but takes
+    /// Static source for blending. It's not really a virtual camera, but takes
     /// a CameraState and exposes it as a virtual camera for the purposes of blending.
     /// </summary>
-    internal class StaticPointVirtualCamera : ICinemachineCamera
+    internal class StaticStateVirtualCamera : ICinemachineCamera
     {
-        public StaticPointVirtualCamera(CameraState state, string name) { State = state; Name = name; }
-        public void SetState(CameraState state) { State = state; }
+        string m_Name;
+        CameraState m_State;
 
-        public string Name { get; private set; }
-        public string Description => string.Empty;
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
-        public CameraState State { get; private set; }
+        public StaticStateVirtualCamera(CameraState state, string name) 
+        {
+            m_State = state;
+            m_Name = name;
+        }
+        public string Name { get => m_Name; set => m_Name = value; }
+        public string Description => "snapshot";
+        public CameraState State 
+        {
+            get => m_State; 
+            set 
+            {
+                m_State = value; 
+                m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
+            }
+        }
         public bool IsValid => true;
-        public ICinemachineCamera ParentCamera => null;
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) => false;
+        public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
     }
 
     /// <summary>
@@ -286,16 +312,11 @@ namespace Unity.Cinemachine
         public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
 
-        public string Name => "Mid-blend";
+        public string Name => (Blend == null || Blend.CamB == null)? "(null)" : Blend.CamB.Name;
         public string Description => Blend == null ? "(null)" : Blend.Description;
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
-        public ICinemachineCamera ParentCamera => null;
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
-            => Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB);
-        public CameraState CalculateNewState(float deltaTime) => State;
+        public ICinemachineMixer ParentCamera => null;
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (Blend != null)
@@ -304,8 +325,6 @@ namespace Unity.Cinemachine
                 State = Blend.State;
             }
         }
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
     }
 }

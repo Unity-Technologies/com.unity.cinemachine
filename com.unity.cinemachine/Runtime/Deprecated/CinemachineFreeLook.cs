@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
@@ -14,7 +15,7 @@ namespace Unity.Cinemachine
     [ExecuteAlways]
     [ExcludeFromPreset]
     [AddComponentMenu("")] // Don't display in add component menu
-    public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
+    public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput, ICinemachineMixer
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -43,9 +44,17 @@ namespace Unity.Cinemachine
             + "Unity camera when the vcam is active")]
         public LensSettings Lens = LensSettings.Default;
 
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from
-        /// other virtual cameras </summary>
-        public TransitionParams Transitions;
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// make an arbitrary choice.</summary>
+        [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
+            + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+            + "make an arbitrary choice.")]
+        public CinemachineCore.BlendHints BlendHint;
+
+        /// <summary>This event fires when a transition occurs.</summary>
+        [Tooltip("This event fires when a transition occurs")]
+        public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
@@ -122,9 +131,8 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+            public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLive;
         }
-        [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
         [FormerlySerializedAs("m_LensAttributes")]
@@ -148,19 +156,19 @@ namespace Unity.Cinemachine
                 if (m_LegacyTransitions.m_BlendHint != 0)
                 {
                     if (m_LegacyTransitions.m_BlendHint == 3)
-                        Transitions.BlendHint = TransitionParams.BlendHints.ScreenSpaceAimWhenTargetsDiffer;
+                        BlendHint = CinemachineCore.BlendHints.ScreenSpaceAimWhenTargetsDiffer;
                     else
-                        Transitions.BlendHint = (TransitionParams.BlendHints)m_LegacyTransitions.m_BlendHint;
+                        BlendHint = (CinemachineCore.BlendHints)m_LegacyTransitions.m_BlendHint;
                     m_LegacyTransitions.m_BlendHint = 0;
                 }
                 if (m_LegacyTransitions.m_InheritPosition)
                 {
-                    Transitions.BlendHint |= TransitionParams.BlendHints.InheritPosition;
+                    BlendHint |= CinemachineCore.BlendHints.InheritPosition;
                     m_LegacyTransitions.m_InheritPosition = false;
                 }
                 if (m_LegacyTransitions.m_OnCameraLive != null)
                 {
-                    Transitions.Events.OnCameraLive = m_LegacyTransitions.m_OnCameraLive;
+                    m_OnCameraLiveEvent = m_LegacyTransitions.m_OnCameraLive;
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
@@ -287,16 +295,12 @@ namespace Unity.Cinemachine
             set { m_Follow = value; }
         }
 
-        /// <summary>Returns the TransitionParams settings</summary>
-        /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => Transitions;
-
         /// <summary>Check whether the vcam a live child of this camera.
         /// Returns true if the child is currently contributing actively to the camera state.</summary>
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
+        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             // Do not update the rig cache here or there will be infinite loop at creation time
             if (!RigsAreCreated)
@@ -381,7 +385,7 @@ namespace Unity.Cinemachine
 
             // Update the current state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            m_State.BlendHint = (CameraState.BlendHintValue)Transitions.BlendHint;
+            m_State.BlendHint = (CameraState.BlendHints)BlendHint;
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.  Leave the orientation alone, because it
@@ -399,7 +403,7 @@ namespace Unity.Cinemachine
             PreviousStateIsValid = true;
 
             // Set up for next frame
-            bool activeCam = PreviousStateIsValid && CinemachineCore.Instance.IsLive(this);
+            bool activeCam = PreviousStateIsValid && CinemachineCore.IsLive(this);
             if (activeCam && deltaTime >= 0)
             {
                 if (m_YAxis.Update(deltaTime))
@@ -426,8 +430,9 @@ namespace Unity.Cinemachine
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
 //            m_YAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null && Transitions.InheritPosition 
-                && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if (fromCam != null 
+                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && !CinemachineCore.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
 
@@ -449,8 +454,7 @@ namespace Unity.Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (Transitions.Events.OnCameraLive != null)
-                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
+            m_OnCameraLiveEvent?.Invoke(this, fromCam);
         }
         
         /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
@@ -748,7 +752,7 @@ namespace Unity.Cinemachine
                             orbital = vcam.AddCinemachineComponent<CinemachineOrbitalTransposer>();
                         if (orbital != null)
                         {
-                            orbital.m_HeadingIsSlave = true;
+                            orbital.m_HeadingIsDriven = true;
                             orbital.HideOffsetInInspector = true;
                             orbital.m_XAxis.m_InputAxisName = string.Empty;
                             orbital.HeadingUpdater = UpdateXAxisHeading;
@@ -779,7 +783,7 @@ namespace Unity.Cinemachine
                 m_CachedXAxisHeading = orbital.UpdateHeading(
                     PreviousStateIsValid ? deltaTime : -1, up,
                     ref m_XAxis, ref m_RecenterToTargetHeading,
-                    CinemachineCore.Instance.IsLive(this));
+                    CinemachineCore.IsLive(this));
                 // Allow externally-driven values to work in this mode
                 if (m_BindingMode == TargetTracking.BindingMode.LazyFollow)
                     m_XAxis.Value = oldValue;

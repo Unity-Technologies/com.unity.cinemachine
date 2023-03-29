@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
         [InitializeOnLoad]
         class EditorInitialize 
         { 
-            static EditorInitialize() { CinemachineMixer.GetMasterPlayableDirector = GetMasterDirector; } 
+            static EditorInitialize() { CinemachinePlayableMixer.GetMasterPlayableDirector = GetMasterDirector; } 
             static PlayableDirector GetMasterDirector() { return TimelineEditor.masterDirector; }
         }
         public delegate double TimelineGlobalToLocalTimeDelegate(double globalTime);

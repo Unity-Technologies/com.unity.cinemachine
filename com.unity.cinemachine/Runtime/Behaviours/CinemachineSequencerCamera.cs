@@ -56,14 +56,10 @@ namespace Unity.Cinemachine
         [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
         [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
-        CinemachineVirtualCameraBase m_LiveChild;
-        CinemachineBlend m_ActiveBlend;
-        ICinemachineCamera m_TransitioningFrom;
-        CameraState m_State = CameraState.Default;
         float m_ActivationTime = -1; // The time at which the current instruction went live
         int m_CurrentInstruction = 0;
 
-        /// <summary>Reset the component to default values.</summary>
+        /// <inheritdoc />
         protected override void Reset()
         {
             base.Reset();
@@ -71,7 +67,7 @@ namespace Unity.Cinemachine
             Instructions = null;
         }
 
-        private void OnValidate()
+        void OnValidate()
         {
             if (Instructions != null)
             {
@@ -103,113 +99,34 @@ namespace Unity.Cinemachine
             }
         }
         
-        /// <summary>Get the current "best" child virtual camera, that would be chosen
-        /// if the State Driven Camera were active.</summary>
-        public override ICinemachineCamera LiveChild => PreviousStateIsValid ? m_LiveChild : null;
-
-        /// <summary>
-        /// Get the current active blend in progress.  Will return null if no blend is in progress.
-        /// </summary>
-        public override CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_ActiveBlend : null;
-
-        /// <summary>The State of the current live child</summary>
-        public override CameraState State => m_State;
-
-        /// <summary>Notification that this virtual camera is going live.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <inheritdoc />
         public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             m_ActivationTime = CinemachineCore.CurrentTime;
             m_CurrentInstruction = 0;
-            m_LiveChild = null;
-            m_ActiveBlend = null;
-            m_TransitioningFrom = fromCam;
-            InternalUpdateCameraState(worldUp, deltaTime);
         }
 
-        /// <summary>Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  This implementation
-        /// updates all the children, chooses the best one, and implements any required blending.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
+        /// <inheritdoc />
+        protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
         {
-            UpdateCameraCache();
             if (!PreviousStateIsValid)
             {
                 m_CurrentInstruction = -1;
-                m_LiveChild = null;
-                m_ActiveBlend = null;
                 ValidateInstructions();
             }
-
             AdvanceCurrentInstruction(deltaTime);
-
-            CinemachineVirtualCameraBase best = null;
-            if (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Count)
-                best = Instructions[m_CurrentInstruction].Camera;
-
-            if (best != null)
-            {
-                if (!best.gameObject.activeInHierarchy)
-                {
-                    best.gameObject.SetActive(true);
-                    best.UpdateCameraState(worldUp, deltaTime);
-                }
-                var previousCam = LiveChild;
-                m_LiveChild = best;
-
-                // Are we transitioning cameras?
-                if (previousCam != LiveChild && LiveChild != null)
-                {
-                    // Notify incoming camera of transition
-                    LiveChild.OnTransitionFromCamera(previousCam, worldUp, deltaTime);
-
-                    // Generate Camera Activation event in the brain if live
-                    CinemachineCore.Instance.GenerateCameraActivationEvent(LiveChild, previousCam);
-
-                    if (previousCam != null)
-                    {
-                        // Create a blend (will be null if a cut)
-                        m_ActiveBlend = CreateActiveBlend(
-                            previousCam, LiveChild, Instructions[m_CurrentInstruction].Blend);
-
-                        // If cutting, generate a camera cut event if live
-                        if (m_ActiveBlend == null || !m_ActiveBlend.Uses(previousCam))
-                            CinemachineCore.Instance.GenerateCameraCutEvent(LiveChild);
-                    }
-                }
-            }
-
-            // Advance the current blend (if any)
-            if (m_ActiveBlend != null)
-            {
-                m_ActiveBlend.TimeInBlend += (deltaTime >= 0) ? deltaTime : m_ActiveBlend.Duration;
-                if (m_ActiveBlend.IsComplete)
-                    m_ActiveBlend = null;
-            }
-
-            if (m_ActiveBlend != null)
-            {
-                m_ActiveBlend.UpdateCameraState(worldUp, deltaTime);
-                m_State = m_ActiveBlend.State;
-            }
-            else if (LiveChild != null)
-            {
-                if (m_TransitioningFrom != null)
-                    LiveChild.OnTransitionFromCamera(m_TransitioningFrom, worldUp, deltaTime);
-                m_State =  LiveChild.State;
-            }
-            m_TransitioningFrom = null;
-            InvokePostPipelineStageCallback(
-                this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
-            PreviousStateIsValid = true;
+            return (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Count)
+                ? Instructions[m_CurrentInstruction].Camera : null;
         }
 
+        /// <summary>Returns the current blend of the current instruction.</summary>
+        /// <param name="outgoing">The camera we're blending from (ignored).</param>
+        /// <param name="incoming">The camera we're blending to (ignored).</param>
+        /// <returns>The blend to use for this camera transition.</returns>
+        protected override CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming) => Instructions[m_CurrentInstruction].Blend;
+            
         /// <summary>Internal API for the inspector editor.</summary>
         /// // GML todo: make this private, part of UpdateCameraCache()
         internal void ValidateInstructions()
@@ -234,7 +151,6 @@ namespace Unity.Cinemachine
             {
                 m_ActivationTime = -1;
                 m_CurrentInstruction = -1;
-                m_ActiveBlend = null;
                 return;
             }
 

@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Inspector checks this and displays warning if no handler</summary>
-        internal bool HasInputHandler => m_ResetHandler != null;
+        bool IInputAxisResetSource.HasResetHandler => m_ResetHandler != null;
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid => enabled;
@@ -123,7 +123,7 @@ namespace Unity.Cinemachine
             if (!IsValid)
                 return;
 
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera))
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera))
                 m_ResetHandler?.Invoke();
 
             var referenceFrame = GetReferenceFrame(curState.ReferenceUp);
@@ -154,15 +154,14 @@ namespace Unity.Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref TransitionParams transitionParams)
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             m_ResetHandler?.Invoke(); // Cancel re-centering
-            if (fromCam != null && transitionParams.InheritPosition  
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+            if (fromCam != null 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0  
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
                 return true;

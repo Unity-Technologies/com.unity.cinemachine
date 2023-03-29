@@ -75,6 +75,8 @@ namespace Unity.Cinemachine.Editor
                             case RequiredTargets.Group: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
                         }
                     }
+                    else if (targets[i] is MonoBehaviour b)
+                        noCamera |= !b.TryGetComponent<CinemachineVirtualCameraBase>(out _);
                 }
                 noCameraHelp?.SetVisible(noCamera);
                 noTargetHelp?.SetVisible(noTarget && !noCamera);
@@ -94,6 +96,11 @@ namespace Unity.Cinemachine.Editor
                 {
                     if (x != null && x.ComponentOwner == null)
                         Undo.AddComponent<CinemachineCamera>(x.gameObject).AddExtension(x);
+                }
+                else if (targets[i] is MonoBehaviour b)
+                {
+                    if (!b.TryGetComponent<CinemachineVirtualCameraBase>(out _))
+                        Undo.AddComponent<CinemachineCamera>(b.gameObject);
                 }
             }
         }
@@ -136,7 +143,8 @@ namespace Unity.Cinemachine.Editor
                     return;  // target was deleted
                 var noHandler = false;
                 for (int i = 0; i < editor.targets.Length; ++i)
-                    noHandler |= !(editor.targets[i] as CinemachineOrbitalFollow).HasInputHandler;
+                    if (editor.targets[i] is IInputAxisResetSource src)
+                        noHandler |= !src.HasResetHandler;
                 help.SetVisible(noHandler);
             });
 
@@ -146,9 +154,9 @@ namespace Unity.Cinemachine.Editor
                 Undo.SetCurrentGroupName("Add Input Controller");
                 for (int i = 0; i < editor.targets.Length; ++i)
                 {
-                    var t = editor.targets[i] as CinemachineOrbitalFollow;
-                    if (!t.HasInputHandler)
+                    if (editor.targets[i] is IInputAxisResetSource src && !src.HasResetHandler)
                     {
+                        var t = editor.targets[i] as MonoBehaviour;
                         if (!t.TryGetComponent<IInputAxisController>(out var c))
                             Undo.AddComponent(t.gameObject, controllerType);
                         else if (c is MonoBehaviour b && !b.enabled)
@@ -233,20 +241,18 @@ namespace Unity.Cinemachine.Editor
             var targets = editor.targets;
             for (int i = 0; i < targets.Length && !noCamera; ++i)
             {
-                var t = targets[i] as CinemachineComponentBase;
-                if (t != null)
+                if (targets[i] is CinemachineComponentBase c)
                 {
-                    noCamera |= t.VirtualCamera == null || t.VirtualCamera is CinemachineCameraManagerBase;
+                    noCamera |= c.VirtualCamera == null || c.VirtualCamera is CinemachineCameraManagerBase;
                     switch (requiredTargets)
                     {
-                        case RequiredTargets.Tracking: noTarget |= t.FollowTarget == null; break;
-                        case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
-                        case RequiredTargets.Group: noTarget |= t.FollowTargetAsGroup == null; break;
+                        case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
+                        case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
+                        case RequiredTargets.Group: noTarget |= c.FollowTargetAsGroup == null; break;
                     }
                 }
-                else
+                else if (targets[i] is CinemachineExtension x)
                 {
-                    var x = targets[i] as CinemachineExtension;
                     noCamera |= x.ComponentOwner == null;
                     switch (requiredTargets)
                     {

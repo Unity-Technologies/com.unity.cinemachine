@@ -66,9 +66,9 @@ namespace Unity.Cinemachine.Editor
         {
             Undo.undoRedoPerformed -= UpdateCameraState;
             
-            if (CinemachineBrain.SoloCamera == Target)
+            if (CinemachineCore.SoloCamera == Target)
             {
-                CinemachineBrain.SoloCamera = null;
+                CinemachineCore.SoloCamera = null;
                 InspectorUtility.RepaintGameView();
             }
         }
@@ -142,9 +142,10 @@ namespace Unity.Cinemachine.Editor
             SerializedProperty followTarget, SerializedProperty lookAtTarget)
         {
             EditorGUI.BeginChangeCheck();
+            var parentVcam = Target.ParentCamera as CinemachineVirtualCameraBase;
             if (!IsPropertyExcluded(followTarget.name))
             {
-                if (Target.ParentCamera == null || Target.ParentCamera.Follow == null)
+                if (parentVcam == null || parentVcam.Follow == null)
                     EditorGUILayout.PropertyField(followTarget);
                 else
                     EditorGUILayout.PropertyField(followTarget,
@@ -153,7 +154,7 @@ namespace Unity.Cinemachine.Editor
             }
             if (!IsPropertyExcluded(lookAtTarget.name))
             {
-                if (Target.ParentCamera == null || Target.ParentCamera.LookAt == null)
+                if (parentVcam == null || parentVcam.LookAt == null)
                     EditorGUILayout.PropertyField(lookAtTarget);
                 else
                     EditorGUILayout.PropertyField(lookAtTarget,
@@ -213,11 +214,11 @@ namespace Unity.Cinemachine.Editor
             rect.x += rectLabel.width;
 
             Color color = GUI.color;
-            bool isSolo = (CinemachineBrain.SoloCamera == Target);
+            bool isSolo = (CinemachineCore.SoloCamera == Target);
             if (isSolo)
-                GUI.color = CinemachineBrain.GetSoloGUIColor();
+                GUI.color = CinemachineCore.SoloGUIColor();
 
-            bool isLive = CinemachineCore.Instance.IsLive(Target);
+            bool isLive = CinemachineCore.IsLive(Target);
             GUI.enabled = isLive;
             GUI.Label(rectLabel, isLive ? "Status: Live"
                 : (Target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled"));
@@ -225,7 +226,7 @@ namespace Unity.Cinemachine.Editor
 
             float labelWidth = 0;
             GUIContent updateText = GUIContent.none;
-            UpdateTracker.UpdateClock updateMode = CinemachineCore.Instance.GetVcamUpdateStatus(Target);
+            UpdateTracker.UpdateClock updateMode = CameraUpdateManager.GetVcamUpdateStatus(Target);
             if (Application.isPlaying)
             {
                 updateText = new GUIContent(
@@ -237,7 +238,7 @@ namespace Unity.Cinemachine.Editor
             if (GUI.Button(rect, "Solo", "Button"))
             {
                 isSolo = !isSolo;
-                CinemachineBrain.SoloCamera = isSolo ? Target : null;
+                CinemachineCore.SoloCamera = isSolo ? Target : null;
                 InspectorUtility.RepaintGameView();
             }
             GUI.color = color;
@@ -289,7 +290,7 @@ namespace Unity.Cinemachine.Editor
             // This should be a global UX setting, but the best we can do now is to query 
             // the associated camera (if any) for the lens FOV display mode
             Camera camera = null;
-            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target);
+            var brain = CinemachineCore.FindPotentialTargetBrain(Target);
             if (brain != null)
                 camera = brain.OutputCamera;
             if (camera != null)

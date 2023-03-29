@@ -31,8 +31,8 @@ namespace Unity.Cinemachine
             if (stage != CinemachineCore.Stage.Body)
                 return;
 
-            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
-            if (brain == null || !brain.IsLive(vcam))
+            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
+            if (brain == null || !brain.IsLiveChild(vcam))
                 return;
 
 #if CINEMACHINE_URP

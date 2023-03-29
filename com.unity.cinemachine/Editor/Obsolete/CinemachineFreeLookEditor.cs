@@ -280,7 +280,7 @@ namespace Unity.Cinemachine
             CinemachineBrainEditor.DrawVirtualCameraBaseGizmos(vcam, selectionType);
 
             Color originalGizmoColour = Gizmos.color;
-            bool isActiveVirtualCam = CinemachineCore.Instance.IsLive(vcam);
+            bool isActiveVirtualCam = CinemachineCore.IsLive(vcam);
             Gizmos.color = isActiveVirtualCam
                 ? CinemachineCorePrefs.ActiveGizmoColour.Value
                 : CinemachineCorePrefs.InactiveGizmoColour.Value;

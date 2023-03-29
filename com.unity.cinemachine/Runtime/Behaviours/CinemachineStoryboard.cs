@@ -153,7 +153,7 @@ namespace Unity.Cinemachine
             if (ShowImage)
                 state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item { Custom = this, Weight = 1});
             if (MuteCamera)
-                state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
+                state.BlendHint |= CameraState.BlendHints.NoTransform | CameraState.BlendHints.NoLens;
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace Unity.Cinemachine
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
-            var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(ComponentOwner);
+            var showIt = enabled && ShowImage && CinemachineCore.IsLive(ComponentOwner);
             var channel = (uint)ComponentOwner.OutputChannel.Value;
             if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
@@ -275,10 +275,10 @@ namespace Unity.Cinemachine
 
         void DestroyCanvas()
         {
-            int numBrains = CinemachineCore.Instance.BrainCount;
+            int numBrains = CinemachineBrain.ActiveBrainCount;
             for (int i = 0; i < numBrains; ++i)
             {
-                var parent = CinemachineCore.Instance.GetActiveBrain(i);
+                var parent = CinemachineBrain.GetActiveBrain(i);
                 int numChildren = parent.transform.childCount;
                 for (int j = numChildren - 1; j >= 0; --j)
                 {
@@ -362,7 +362,7 @@ namespace Unity.Cinemachine
 
         static void StaticBlendingHandler(CinemachineBrain brain)
         {
-            var state = brain.CurrentCameraState;
+            var state = brain.State;
             int numBlendables = state.GetNumCustomBlendables();
             for (int i = 0; i < numBlendables; ++i)
             {

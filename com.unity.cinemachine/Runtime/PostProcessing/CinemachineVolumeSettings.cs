@@ -215,13 +215,14 @@ namespace Unity.Cinemachine
             }
         }
 
-        static void OnCameraCut(CinemachineBrain brain)
+        static void OnCameraCut(ICinemachineCamera.ActivationEventParams evt)
         {
-            //Debug.Log($"Camera cut to {brain.ActiveVirtualCamera.Name}");
+            var brain = evt.Origin as CinemachineBrain;
+            //Debug.Log($"Camera cut to {brain?.ActiveVirtualCamera.Name}");
 
 #if CINEMACHINE_HDRP
             // Reset temporal effects
-            var cam = brain.OutputCamera;
+            var cam = brain?.OutputCamera;
             if (cam != null)
             {
                 HDCamera hdCam = HDCamera.GetOrCreate(cam);
@@ -231,7 +232,7 @@ namespace Unity.Cinemachine
             }
 #elif CINEMACHINE_URP
             // Reset temporal effects
-            var cam = brain.OutputCamera;
+            var cam = brain?.OutputCamera;
             if (cam != null && cam.TryGetComponent<UniversalAdditionalCameraData>(out var data))
                 data.resetHistory = true;
 #endif
@@ -239,7 +240,7 @@ namespace Unity.Cinemachine
 
         static void ApplyPostFX(CinemachineBrain brain)
         {
-            CameraState state = brain.CurrentCameraState;
+            CameraState state = brain.State;
             int numBlendables = state.GetNumCustomBlendables();
             var volumes = GetDynamicBrainVolumes(brain, numBlendables);
             for (int i = 0; i < volumes.Count; ++i)
@@ -275,8 +276,8 @@ namespace Unity.Cinemachine
 //                Debug.Log($"Applied post FX for {numPPblendables} PP blendables in {brain.ActiveVirtualCamera.Name}");
         }
 
-        static string sVolumeOwnerName = "__CMVolumes";
-        static List<Volume> sVolumes = new List<Volume>();
+        const string sVolumeOwnerName = "__CMVolumes";
+        static List<Volume> sVolumes = new();
         static List<Volume> GetDynamicBrainVolumes(CinemachineBrain brain, int minVolumes)
         {
             // Locate the camera's child object that holds our dynamic volumes
@@ -340,8 +341,8 @@ namespace Unity.Cinemachine
             // After the brain pushes the state to the camera, hook in to the PostFX
             CinemachineCore.CameraUpdatedEvent.RemoveListener(ApplyPostFX);
             CinemachineCore.CameraUpdatedEvent.AddListener(ApplyPostFX);
-            CinemachineCore.CameraCutEvent.RemoveListener(OnCameraCut);
-            CinemachineCore.CameraCutEvent.AddListener(OnCameraCut);
+            CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraCut);
+            CinemachineCore.CameraActivatedEvent.AddListener(OnCameraCut);
         }
     }
 }

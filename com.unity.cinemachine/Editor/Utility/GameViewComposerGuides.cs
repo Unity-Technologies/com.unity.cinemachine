@@ -42,7 +42,7 @@ namespace Unity.Cinemachine.Editor
                     if (m_Root.panel != null && !Application.isPlaying
                         && CinemachineCorePrefs.ShowInGameGuides.Value
                         && CinemachineCorePrefs.DraggableComposerGuides.Value
-                        && CinemachineBrain.SoloCamera == null)
+                        && CinemachineCore.SoloCamera == null)
                     {
                         InspectorUtility.RepaintGameView();
                     }

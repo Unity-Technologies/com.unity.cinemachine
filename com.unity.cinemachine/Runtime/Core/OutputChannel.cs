@@ -49,10 +49,10 @@ namespace Unity.Cinemachine
         };
         
         /// <summary>
-        /// If false, default priority of 0 will be used.
-        /// If true, the the Priority field is valid.
+        /// If false, default channel will be used.
+        /// If true, the the Channel field is valid.
         /// </summary>
-        [Tooltip("Enable this to expose the Priority and Output Channel fields")]
+        [Tooltip("Enable this to expose the Output Channel field")]
         public bool Enabled;
 
         /// <summary>
