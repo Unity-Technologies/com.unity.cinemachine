@@ -128,7 +128,4 @@ namespace Unity.Cinemachine
         /// <param name="stage">The stage in the Camera Pipeline in which to position this component</param>
         public CameraPipelineAttribute(CinemachineCore.Stage stage) { Stage = stage; }
     }
-
-    /// <summary>Use special property drawer for a list of InputAxisControllerBase.Controller objects</summary>
-    public sealed class InputAxisControllerListAttribute : PropertyAttribute {}
 }

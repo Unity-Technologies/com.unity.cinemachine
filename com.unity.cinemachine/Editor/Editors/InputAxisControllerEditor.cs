@@ -1,5 +1,3 @@
-#define LISTVIEW_BUG_WORKAROUND // GML hacking because of another ListView bug
-
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -22,11 +20,8 @@ namespace Unity.Cinemachine.Editor
 #endif
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
-#if LISTVIEW_BUG_WORKAROUND
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_ControllerList)));
-#else
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Controllers)));
-#endif
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_ControllerManager)));
+
             return ux;
         }
         
@@ -144,14 +139,16 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(InputAxisControllerListAttribute))]
+    [CustomPropertyDrawer(typeof(InputAxisControllerManagerAttribute))]
     class InputAxisControllerListPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-#if LISTVIEW_BUG_WORKAROUND
+            // Why not make a PropertyDrawer for the list directly?  Because
+            // of a bug in ListView - PropertyDrawers directly on Lists don't work.
+            // This is a workaround for that bug.
             property = property.FindPropertyRelative("Controllers");
-#endif
+
             var ux = new VisualElement();
             var list = ux.AddChild(new ListView()
             {

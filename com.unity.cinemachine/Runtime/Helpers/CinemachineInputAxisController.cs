@@ -71,6 +71,14 @@ namespace Unity.Cinemachine
             SetControlDefaults?.Invoke(axis, ref controller);
         }
 
+        //TODO Support fixed update as well. Input system has a setting to update inputs only during fixed update.
+        //TODO This won't work accuratly if this setting is enabled.
+        void Update() 
+        {
+            if (Application.isPlaying)
+                UpdateControllers();
+        }
+        
         /// <summary>Read an input value from legacy input or from and Input Action</summary>
         [Serializable]
         public class Reader : IInputAxisReader
