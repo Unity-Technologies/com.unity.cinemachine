@@ -50,6 +50,17 @@ namespace Unity.Cinemachine
         internal static SetControlDefaultsForAxis SetControlDefaults;
         
 #if CINEMACHINE_UNITY_INPUTSYSTEM
+        /// <summary>
+        /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.  
+        /// To handle other types you can install a handler to read InputActions of a different type.
+        /// </summary>
+        /// <param name="action">The action to read</param>
+        /// <param name="hint">The axis hint of the action.</param>
+        /// <param name="context">The owner object, can be used for logging diagnostics</param>
+        /// <param name="defaultReadValue">The default reader to call if you don't handle the type</param>
+        /// <returns>The value of the control</returns>
+        public Reader.ControlValueReader ReadControlValueOverride;
+
         /// <inheritdoc />
         protected override void Reset()
         {
@@ -81,7 +92,7 @@ namespace Unity.Cinemachine
         
         /// <summary>Read an input value from legacy input or from and Input Action</summary>
         [Serializable]
-        public class Reader : IInputAxisReader
+        public sealed class Reader : IInputAxisReader
         {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             /// <summary>Action for the Input package (if used).</summary>
@@ -96,6 +107,19 @@ namespace Unity.Cinemachine
 
             /// <summary>The actual action, resolved for player</summary>
             internal InputAction m_CachedAction;
+
+            /// <summary>
+            /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.  
+            /// To handle other types you can install a handler to read InputActions of a different type.
+            /// </summary>
+            /// <param name="action">The action to read</param>
+            /// <param name="hint">The axis hint of the action.</param>
+            /// <param name="context">The owner object, can be used for logging diagnostics</param>
+            /// <param name="defaultReader">The default reader to call if you don't handle the type</param>
+            /// <returns>The value of the control</returns>
+            public delegate float ControlValueReader(
+                InputAction action, IInputAxisOwner.AxisDescriptor.Hints hint, UnityEngine.Object context,
+                ControlValueReader defaultReader);
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
@@ -122,14 +146,8 @@ namespace Unity.Cinemachine
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                 if (InputAction != null)
                 {
-                    int playerIndex = -1;
-                    bool autoEnableInput = true;
                     if (context is CinemachineInputAxisController c)
-                    {
-                        playerIndex = c.PlayerIndex;
-                        autoEnableInput = c.AutoEnableInputs;
-                    }
-                    inputValue = ResolveAndReadInputAction(context, playerIndex, autoEnableInput, hint) * Gain;
+                        inputValue = ResolveAndReadInputAction(c, hint) * Gain;
                 }
 #endif
 
@@ -146,8 +164,7 @@ namespace Unity.Cinemachine
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             float ResolveAndReadInputAction(
-                UnityEngine.Object context,
-                int playerIndex, bool autoEnableInput, 
+                CinemachineInputAxisController context,
                 IInputAxisOwner.AxisDescriptor.Hints hint)
             {
                 // Resolve Action for player
@@ -156,9 +173,9 @@ namespace Unity.Cinemachine
                 if (m_CachedAction == null)
                 {
                     m_CachedAction = InputAction.action;
-                    if (playerIndex != -1)
-                        m_CachedAction = GetFirstMatch(InputUser.all[playerIndex], InputAction);
-                    if (autoEnableInput && m_CachedAction != null)
+                    if (context.PlayerIndex != -1)
+                        m_CachedAction = GetFirstMatch(InputUser.all[context.PlayerIndex], InputAction);
+                    if (context.AutoEnableInputs && m_CachedAction != null)
                         m_CachedAction.Enable();
 
                     // local function to wrap the lambda which otherwise causes a tiny gc
@@ -176,7 +193,14 @@ namespace Unity.Cinemachine
                 }
 
                 // Read the value
-                return m_CachedAction != null ? ReadInput(m_CachedAction, hint, context) : 0f;
+                if (m_CachedAction != null)
+                {
+                    // If client installed an override, use it
+                    if (context.ReadControlValueOverride != null)
+                        return context.ReadControlValueOverride.Invoke(m_CachedAction, hint, context, ReadInput);
+                    return ReadInput(m_CachedAction, hint, context, null);
+                }
+                return 0;
             }
 
             /// <summary>
@@ -185,10 +209,12 @@ namespace Unity.Cinemachine
             /// </summary>
             /// <param name="action">The action being read.</param>
             /// <param name="hint">The axis hint of the action.</param>
-            /// <param name="context">The owner GameObject, can be used for logging diagnostics</param>
+            /// <param name="context">The owner object, can be used for logging diagnostics</param>
+            /// <param name="defaultReader">Not used</param>
             /// <returns>Returns the value of the input device.</returns>
-            protected virtual float ReadInput(
-                InputAction action, IInputAxisOwner.AxisDescriptor.Hints hint, UnityEngine.Object context)
+            float ReadInput(
+                InputAction action, IInputAxisOwner.AxisDescriptor.Hints hint, 
+                UnityEngine.Object context, ControlValueReader defaultReader)
             {
                 var control = action.activeControl;
                 if (control != null)
@@ -207,9 +233,9 @@ namespace Unity.Cinemachine
                     catch (InvalidOperationException)
                     {
                         Debug.LogError($"An action in {context.name} is mapped to a {control.valueType.Name} "
-                            + "control.  DefaultInputAxisReader can only handle float or Vector2 types.  "
-                            + "To handle other types you can create a class inheriting "
-                            + "DefaultInputAxisReader and override the ReadInput method.");
+                            + "control.  CinemachineInputAxisController.Reader can only handle float or Vector2 types.  "
+                            + "To handle other types you can install a custom handler for "
+                            + "CinemachineInputAxisController.ReadControlValueOverride.");
                     }
                 }
                 return 0f;
