@@ -55,7 +55,9 @@ namespace Unity.Cinemachine
     {
         /// <summary>The 2D shape within which the camera is to be contained.</summary>
         [Tooltip("The 2D shape within which the camera is to be contained.  " +
-                 "Can be polygon-, box-, or composite collider 2D.")]
+                 "Can be polygon-, box-, or composite collider 2D.\n\n" +
+                 "Remark: When assigning a GameObject here in the editor, " +
+                 "this will be set to the first Collider2D found on the assigned GameObject!")]
         [FormerlySerializedAs("m_BoundingShape2D")]
         public Collider2D BoundingShape2D;
 
@@ -130,10 +132,6 @@ namespace Unity.Cinemachine
                 };
                 m_LegacyMaxWindowSize = -2;
             }
-
-            if (BoundingShape2D != null && BoundingShape2D is not CompositeCollider2D)
-                if (BoundingShape2D.gameObject.TryGetComponent<CompositeCollider2D>(out var compositeCollider2D))
-                    BoundingShape2D = compositeCollider2D; // prioritize composite colliders
         }
 
         void Reset()
