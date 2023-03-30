@@ -57,16 +57,16 @@ Box {
 
 #HelpTextBox__ScrollView {
     margin: 5px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(38, 38, 38, 0.8);
 }
 
 #HelpTextBox__ScrollView__Label {
     flex-wrap: wrap;
-    color: black;
+    color: white;
     white-space: normal;
     -unity-font-style: normal;
-    margin: 0 5px;
-    padding: 0;
+    margin: 5px;
+    padding: 5px;
 }
 
 #HelpTextBox__CloseButton {
