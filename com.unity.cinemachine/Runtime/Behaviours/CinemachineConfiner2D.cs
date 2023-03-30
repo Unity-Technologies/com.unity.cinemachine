@@ -179,8 +179,9 @@ namespace Unity.Cinemachine
         {
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
-            foreach (var extra in m_ExtraStateCache)
+            for (var i = 0; i < m_ExtraStateCache.Count; i++)
             {
+                var extra = m_ExtraStateCache[i];
                 if (extra.Vcam != null)
                 {
                     extra.BakedSolution = null;
