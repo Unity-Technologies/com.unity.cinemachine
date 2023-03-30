@@ -38,8 +38,8 @@ Box {
     position: absolute;
     top: 5%;
     bottom: auto;
-    left: 5%;
-    right: 5%;
+    left: 10%;
+    right: 10%;
     max-height: 80%;
     justify-content: space-between;
 }
@@ -55,9 +55,14 @@ Box {
     padding-right: 0;
 }
 
+#HelpTextBox__ScrollView {
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
 #HelpTextBox__ScrollView__Label {
     flex-wrap: wrap;
-    color: rgb(22, 19, 18);
+    color: black;
     white-space: normal;
     -unity-font-style: normal;
     margin: 0 5px;
@@ -65,7 +70,6 @@ Box {
 }
 
 #HelpTextBox__CloseButton {
-    margin-top: 4px;
     margin-bottom: 4px;
     margin-left: 2px;
     margin-right: 2px;
