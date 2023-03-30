@@ -4,9 +4,7 @@
     <ui:Box name="TogglesAndButtons" focusable="false" />
     <ui:Box name="HelpTextBox" focusable="false">
         <ui:Label name="HelpTextBox__Title" focusable="false" />
-        <ui:ScrollView focusable="false" name="ScrollView" style="align-self: center; bottom: 0; top: 0; right: 0; left: 0; padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px;">
-            <ui:TextField name="HelpTextBox__TextField" focusable="false" multiline="true" />
-        </ui:ScrollView>
+        <ui:TextField name="HelpTextBox__TextField" focusable="false" multiline="true" vertical-scroller-visibility="AlwaysVisible"/>
         <ui:Button name="HelpTextBox__CloseButton" focusable="false" text="Close" />
     </ui:Box>
 </ui:UXML>
