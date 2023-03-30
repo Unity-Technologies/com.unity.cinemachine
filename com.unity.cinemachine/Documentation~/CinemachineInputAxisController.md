@@ -40,38 +40,36 @@ For more complex scenarios (such as for a mobile device control), you can extend
 The following example shows how to use a custom Input Controller script to control a Camera with a slider for a mobile device. The sample code can be used as a template and is easily modified to be used with other objects.
 
 ```cs
+using UnityEngine;
 using Unity.Cinemachine;
 using System;
-using UnityEngine;
 using UnityEngine.UI;
-
-[Serializable]
-public class SliderReader : IInputAxisReader 
-{
-    // Replace this with the type you would like to use
-    [SerializeField]
-    Slider m_Slider; 
-
-    public float GetValue(UnityEngine.Object context, 
-        int playerIndex, 
-        bool autoEnableInput, 
-        IInputAxisOwner.AxisDescriptor.Hints hint)
-    {
-        if (m_Slider != null)
-            return m_Slider.value;
-        
-        return 0;
-    }
-}
+using Object = UnityEngine.Object;
 
 //The component that you will add to your CinemachineCamera.
-public class SliderInputController : InputAxisControllerBase<SliderReader> {} 
+public class SliderInputController : InputAxisControllerBase<SliderInputController.SliderReader>
+{
+    void Update()
+    {
+        if (Application.isPlaying)
+            UpdateControllers();
+    }
 
-// Optional but recommended to display a nice inspector.
-#if UNITY_EDITOR
-[UnityEditor.CustomEditor(typeof(SliderInputController))]
-public class SliderControllerEditor : Unity.Cinemachine.Editor.InputAxisControllerEditor {}
-#endif
+    [Serializable]
+    public class SliderReader : IInputAxisReader
+    {
+        
+        public Slider m_Slider;
+
+        public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
+        {
+            if (m_Slider is not null)
+                return m_Slider.value;
+
+            return 0;
+        }
+    }
+}
 ```
 
 For more information, see the [Input System Components](InputSystemComponents.md) documentation if you need to setup a local multiplayer input with the Input System package.
