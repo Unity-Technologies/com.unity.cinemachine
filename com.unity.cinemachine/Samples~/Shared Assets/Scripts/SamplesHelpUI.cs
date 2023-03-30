@@ -37,8 +37,8 @@ namespace Unity.Cinemachine.Samples
             if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle) 
                 helpTitle.text = string.IsNullOrEmpty(HelpTitle) ? SceneManager.GetActiveScene().name : HelpTitle;
 
-            if (uiDocument.rootVisualElement.Q("HelpTextBox__TextField") is TextField helpText)
-                helpText.value = HelpText;
+            if (uiDocument.rootVisualElement.Q("HelpTextBox__ScrollView__Label") is Label helpLabel)
+                helpLabel.text = HelpText;
             if (uiDocument.rootVisualElement.Q("HelpTextBox__CloseButton") is Button closeButton) 
                 closeButton.RegisterCallback<ClickEvent>(_ => CloseHelpBox());
             

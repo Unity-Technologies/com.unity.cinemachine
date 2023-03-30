@@ -22,19 +22,14 @@ Box {
     -unity-font-style: bold;
 }
 
-#HelpToggleBox {
-    align-self: flex-end;
-    position: relative;
-}
-
 #HelpButton {
-    position: absolute; 
-    right: 0; 
+    position: absolute;
+    right: 0;
     top: 0;
     padding: 5px;
     margin: 2px;
-    -unity-font-style: bold; 
-    display: flex; 
+    -unity-font-style: bold;
+    display: flex;
     visibility: hidden;
 }
 
@@ -42,10 +37,10 @@ Box {
     visibility: hidden;
     position: absolute;
     top: 5%;
-    bottom: 5%;
-    left: 5%; 
-    right: 5%; 
-    max-width: 90%; 
+    bottom: auto;
+    left: 5%;
+    right: 5%;
+    max-height: 80%;
     justify-content: space-between;
 }
 
@@ -56,15 +51,14 @@ Box {
     margin-left: 5px;
     margin-right: 5px;
     -unity-font-style: bold;
-    padding-left: 0; 
+    padding-left: 0;
     padding-right: 0;
 }
 
-#HelpTextBox__TextField {
+#HelpTextBox__ScrollView__Label {
     flex-wrap: wrap;
     color: rgb(22, 19, 18);
     white-space: normal;
-    max-height: 75%;
     -unity-font-style: normal;
     margin: 0 5px;
     padding: 0;
