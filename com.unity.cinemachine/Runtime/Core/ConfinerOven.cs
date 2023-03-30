@@ -291,6 +291,8 @@ namespace Unity.Cinemachine
                 m_PolygonRect, m_OriginalPolygon, bakedSolution);
         }
 
+        public float TheoreticalMaxFrustumHeight() => m_Cache.theoreticalMaxFrustumHeight;
+
         struct PolygonSolution
         {
             public List<List<IntPoint>> polygons;

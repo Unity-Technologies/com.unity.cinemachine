@@ -141,6 +141,14 @@ namespace Unity.Cinemachine
             OversizeWindow = new ();
         }
 
+        // TODO: perspective ortho conversion
+        public float TheoreticalUpperBound(bool isOrthographic)
+        {
+            return m_ShapeCache.ConfinerOven.TheoreticalMaxFrustumHeight();
+        }
+            
+        
+
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
