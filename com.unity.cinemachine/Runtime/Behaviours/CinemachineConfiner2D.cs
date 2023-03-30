@@ -130,6 +130,10 @@ namespace Unity.Cinemachine
                 };
                 m_LegacyMaxWindowSize = -2;
             }
+
+            if (BoundingShape2D != null && BoundingShape2D is not CompositeCollider2D)
+                if (BoundingShape2D.gameObject.TryGetComponent<CompositeCollider2D>(out var compositeCollider2D))
+                    BoundingShape2D = compositeCollider2D; // prioritize composite colliders
         }
 
         void Reset()
