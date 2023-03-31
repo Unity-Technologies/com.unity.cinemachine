@@ -35,7 +35,7 @@ blend between them instead of changing one Confiner2D's input bounding shape, be
 ## Remarks
 Setting up a [Composite Collider 2D](https://docs.unity3d.com/Manual/class-CompositeCollider2D.html) is not straight forward. We recommend using the following structure.
 1. Create a GameObject and add a Composite Collider 2D component to it.
-2. Set the Geometry Type of the Composite Collider 2D component to Polygons.
+2. Set the `Geometry Type` of the Composite Collider 2D component to `Polygons`.
 3. When you added the Composite Collider 2D component, Unity automatically added a Rigidbody 2D component to your GameObject. Set the Rigidbody 2D's `Body Type` to `Static`.
 4. Add a child GameObject. This child GameObject is going to hold the Collider2Ds for the Composite Collider 2D.
 5. Add [Collider2Ds](https://docs.unity3d.com/Manual/Collider2D.html) to this GameObject. Set the `Composite Operation` on the Collider2D components to **`Merge`**.
