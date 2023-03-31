@@ -1,38 +1,6 @@
-/*using UnityEngine;
-using Unity.Cinemachine;
-using System;
-using UnityEngine.UI;
-using Object = UnityEngine.Object;
-
-
-public class SliderInputController : InputAxisControllerBase<SliderInputController.SliderReader>
-{
-    void Update()
-    {
-        if (Application.isPlaying)
-            UpdateControllers();
-    }
-
-    [Serializable]
-    public class SliderReader : IInputAxisReader
-    {
-        
-        public Slider m_Slider;
-
-        public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
-        {
-            if (m_Slider is not null)
-                return m_Slider.value;
-
-            return 0;
-        }
-    }
-}*/
-
 using UnityEngine;
 using Unity.Cinemachine;
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine.InputSystem;
 using Object = UnityEngine.Object;
 
