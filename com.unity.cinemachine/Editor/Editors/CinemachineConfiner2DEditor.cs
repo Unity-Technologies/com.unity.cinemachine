@@ -37,9 +37,9 @@ namespace Unity.Cinemachine.Editor
             void TrackVolume(SerializedProperty p)
             {
                 var c = p.objectReferenceValue;
-                boundsHelp.SetVisible(c is not (PolygonCollider2D or BoxCollider2D or CompositeCollider2D));
+                boundsHelp.SetVisible(c != null && c is not (PolygonCollider2D or BoxCollider2D or CompositeCollider2D));
                 polygonsHelp.SetVisible(c is CompositeCollider2D cc && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
-                invalidCollider2D.SetVisible(c is Collider2D && Target.IsConfinerOvenNull());
+                invalidCollider2D.SetVisible(c != null && Target.IsConfinerOvenNull());
             }
             
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));

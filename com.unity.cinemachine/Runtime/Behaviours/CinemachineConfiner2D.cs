@@ -20,8 +20,7 @@ namespace Unity.Cinemachine
     /// polygon is nontrivial and expensive, so it should be done only when absolutely necessary.
     ///
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
-    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateComputedConfiner().
-    /// An inspector button is also provided for this purpose.
+    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateLensCache().
     ///
     /// Confiner2D pre-calculates a cache to speed up calculation.
     /// The cache needs to be recomputed in the following circumstances:

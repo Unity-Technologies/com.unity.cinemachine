@@ -11,26 +11,42 @@ Necessary use cases in which you need to recompute the cached secondary polygon 
 - when the input polygon’s points change,
 - when the input polygon is non-uniformly scaled.
 
-In these cases, for efficiency reasons, Cinemachine does not automatically regenerate the inner polygon. The client needs to call the InvalidateCache() method to trigger the recalculation. You can do this from; 
+In these cases, for efficiency reasons, Cinemachine does not automatically regenerate the inner polygon. The client needs to call the InvalidateBoundingShapeCache() method to trigger the recalculation. You can do this from; 
 
 - the script by calling InvalidateCache, or 
-- the component inspector; to do so, press the **Invalidate Cache** button.
+- the component inspector; to do so, press the **Invalidate Bounding Shape Cache** button.
 
 If the input polygon scales uniformly or translates or rotates, the cache remains valid. 
 
+When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
+automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateLensCache() from script.
+
 ## Oversize Windows
-If sections of the confining polygon are too small to fully contain the camera window, Cinemachine calculates a polygon skeleton for those regions. This is a shape with no area, that serves as a place to put the camera when it is confined to this region of the shape.
+If sections of the confining polygon are too small to fully contain the camera window, Cinemachine calculates a polygon skeleton for those regions, when the Oversize Window option is enabled. This is a shape with no area, that serves as a place to put the camera when it is confined to this region of the shape.
 
 Skeleton computation is the most resource-heavy part of the cache calculation, so it is a good idea to tune this with some care:
 
 - To optimize the skeleton calculation, set the **Max Window Size** property to the largest size you expect the camera window to have. Cinemachine does not spend time calculating the skeleton for window sizes larger than that.
 
+## Efficiency
+It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and
+blend between them instead of changing one Confiner2D's input bounding shape, because the initial cost of calculating the confiner shape is costly.
+
+## Remarks
+Setting up a [Composite Collider 2D](https://docs.unity3d.com/Manual/class-CompositeCollider2D.html) is not straight forward. We recommend using the following structure.
+1. Create a GameObject and add a Composite Collider 2D component to it.
+2. Set the Geometry Type of the Composite Collider 2D component to Polygons.
+3. When you added the Composite Collider 2D component, Unity automatically added a Rigidbody 2D component to your GameObject. Set the Rigidbody 2D's `Body Type` to `Static`.
+4. Add a child GameObject. This child GameObject is going to hold the Collider2Ds for the Composite Collider 2D.
+5. Add [Collider2Ds](https://docs.unity3d.com/Manual/Collider2D.html) to this GameObject. Set the `Composite Operation` on the Collider2D components to **`Merge`**.
+
+When assigning a GameObject that contains a Collider2D to Bounding Shape 2D, Unity is going to select the top-most Collider2D.
 
 # Properties:
 
-|**Property:**|**Function:**|
-|:---|:---|
-|Bounding Shape 2D|Set the 2D shape you want to confine the camera viewport to.|
-|Damping|Damping Is applied around corners to avoid jumps. Higher numbers are more gradual.|
-| __Slowing Distance__ | Size of the slow-down zone at the edge of the bounding shape.  When the camera is moving towards an edge and is within this distance of it, it will slow down gradually until the edge is reached. |
-|Max Window Size|To optimize computation and memory performance, set this to the largest view size that the camera is expected to have. The Confiner 2D does not compute a polygon cache for frustum sizes larger than this. This refers to the size in world units of the frustum at the confiner plane (for orthographic cameras, this is just the orthographic size). If set to 0, then Cinemachine ignores this parameter and calculates a polygon cache for all potential window sizes.|
+| **Property:**         |**Function:**|
+|:----------------------|:---|
+| __Bounding Shape 2D__ |Set the 2D shape you want to confine the camera viewport to.|
+| __Damping__           |Damping Is applied around corners to avoid jumps. Higher numbers are more gradual.|
+| __Slowing Distance__  | Size of the slow-down zone at the edge of the bounding shape.  When the camera is moving towards an edge and is within this distance of it, it will slow down gradually until the edge is reached. |
+| __Max Window Size__   |To optimize computation and memory performance, set this to the largest view size that the camera is expected to have. The Confiner 2D does not compute a polygon cache for frustum sizes larger than this. This refers to the size in world units of the frustum at the confiner plane (for orthographic cameras, this is just the orthographic size). If set to 0, then Cinemachine ignores this parameter and calculates a polygon cache for all potential window sizes.|
