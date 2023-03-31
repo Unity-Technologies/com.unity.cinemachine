@@ -43,7 +43,10 @@ namespace Unity.Cinemachine.Samples
         [Header("Events")]
         [Tooltip("This event is sent when the player lands after a jump.")]
         public UnityEvent Landed = new ();
-
+        
+        [Tooltip("Override the main camera. Useful for split screen games.")]
+        public Camera CameraOverride;
+        
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
         float m_CurrentVelocityY;
@@ -148,7 +151,7 @@ namespace Unity.Cinemachine.Samples
             var up = UpDirection;
             var fwd = InputForward switch
             {
-                ForwardModes.Camera => Camera.main.transform.forward,
+                ForwardModes.Camera => CameraOverride is null? Camera.main.transform.forward : CameraOverride.transform.forward,
                 ForwardModes.Player => transform.forward,
                 _ => Vector3.forward,
             };

@@ -344,7 +344,7 @@ PrefabInstance:
     - target: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945,
         type: 3}
       propertyPath: m_Name
-      value: Player
+      value: Player Player Input
       objectReference: {fileID: 0}
     - target: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945,
         type: 3}
@@ -550,7 +550,10 @@ MonoBehaviour:
       Wait: 0
       Time: 0
     Restrictions: 6
-  Camera: {fileID: 3584176686272953806}
+  Landed:
+    m_PersistentCalls:
+      m_Calls: []
+  CameraOverride: {fileID: 3584176686272953806}
 --- !u!114 &-3331642126026098452
 MonoBehaviour:
   m_ObjectHideFlags: 0
