@@ -1,7 +1,8 @@
+#if TEST_CINEMACHINE_HDRP 
 using NUnit.Framework;
 using UnityEngine.Rendering;
 
-namespace Unity.Cinemachine.Tests.HDRP
+namespace Unity.Cinemachine.Tests.HDRP.Editor
 {
     [TestFixture]
     public class IsHDRPTests
@@ -13,3 +14,4 @@ namespace Unity.Cinemachine.Tests.HDRP
         }
     }
 }
+#endif
