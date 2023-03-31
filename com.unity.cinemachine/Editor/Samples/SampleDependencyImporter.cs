@@ -199,13 +199,13 @@ namespace Unity.Cinemachine.Editor
                     var localPath = matInfo.FullName[Application.dataPath.Length..];
                     var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
 
-                 MaterialUpgrader.Upgrade(material, 
+                    MaterialUpgrader.Upgrade(material, 
 #if CINEMACHINE_URP
-                     new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+                    new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
 #elif CINEMACHINE_HDRP
-                     UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
+                    UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
 #endif
-                     MaterialUpgrader.UpgradeFlags.None);
+                    MaterialUpgrader.UpgradeFlags.None);
                 }
             }
 #endif
@@ -237,7 +237,7 @@ namespace Unity.Cinemachine.Editor
 
                 var assets = hdrpDir.GetFiles("*.asset*"); // assets and their meta files
                 foreach (var asset in assets)
-                    asset.CopyTo(folder);
+                    asset.CopyTo(folder + "/" + asset.Name);
             }
 #endif
         }
