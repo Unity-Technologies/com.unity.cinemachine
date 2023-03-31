@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Samples
         public UnityEvent OnHelpDismissed = new ();
 
         VisualElement m_HelpBox;
-        Button m_HelpButton;
+        Button m_HelpButton, m_CloseButton;
 
         void OnEnable()
         {
@@ -31,7 +31,7 @@ namespace Unity.Cinemachine.Samples
                 Debug.LogError("Cannot find HelpToggleBox.  Is the source asset set in the UIDocument?");
                 return;
             }
-            m_HelpButton.RegisterCallback(new EventCallback<ClickEvent>(_ => OpenHelpBox()));
+            m_HelpButton.RegisterCallback(new EventCallback<ClickEvent>(OpenHelpBox));
             
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
             if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle) 
@@ -39,8 +39,14 @@ namespace Unity.Cinemachine.Samples
 
             if (uiDocument.rootVisualElement.Q("HelpTextBox__ScrollView__Label") is Label helpLabel)
                 helpLabel.text = HelpText;
-            if (uiDocument.rootVisualElement.Q("HelpTextBox__CloseButton") is Button closeButton) 
-                closeButton.RegisterCallback<ClickEvent>(_ => CloseHelpBox());
+            
+            m_CloseButton = uiDocument.rootVisualElement.Q("HelpTextBox__CloseButton") as Button;
+            if (m_CloseButton == null)
+            {
+                Debug.LogError("Cannot find HelpTextBox__CloseButton.  Is the source asset set in the UIDocument?");
+                return;
+            }
+            m_CloseButton.RegisterCallback<ClickEvent>(CloseHelpBox);
             
             m_HelpBox.visible = VisibleAtStart;
             m_HelpButton.visible = !VisibleAtStart;
@@ -48,12 +54,13 @@ namespace Unity.Cinemachine.Samples
 
         void OnDisable()
         {
-            CloseHelpBox();
-            m_HelpButton.UnregisterCallback(new EventCallback<ClickEvent>(_ => OpenHelpBox()));
+            CloseHelpBox(null);
+            m_HelpButton.UnregisterCallback(new EventCallback<ClickEvent>(OpenHelpBox));
+            m_CloseButton.UnregisterCallback(new EventCallback<ClickEvent>(CloseHelpBox));
             m_HelpButton.visible = false;
         }
         
-        void OpenHelpBox()
+        void OpenHelpBox(ClickEvent click)
         {
             if (m_HelpButton != null)
                 m_HelpButton.visible = false;
@@ -61,7 +68,7 @@ namespace Unity.Cinemachine.Samples
                 m_HelpBox.visible = true;
         }
         
-        void CloseHelpBox()
+        void CloseHelpBox(ClickEvent click)
         {
             if (m_HelpButton != null)
                 m_HelpButton.visible = true;
