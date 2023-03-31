@@ -488,9 +488,9 @@ namespace Cinemachine
             InvokePrePipelineMutateCameraStateCallback(this, ref state, deltaTime);
 
             // Then components
+            bool haveAim = false;
             if (m_ComponentPipeline == null)
             {
-                state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                 for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
             }
@@ -515,22 +515,21 @@ namespace Cinemachine
                             continue; // do the body stage of the pipeline after Aim
                         }
                         c.MutateCameraState(ref state, deltaTime);
+                        haveAim = stage == CinemachineCore.Stage.Aim;
                     }
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
 
-                    if (stage == CinemachineCore.Stage.Aim)
+                    // If we have saved a Body for after Aim, do it now
+                    if (stage == CinemachineCore.Stage.Aim && postAimBody != null)
                     {
-                        if (c == null)
-                            state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
-                        // If we have saved a Body for after Aim, do it now
-                        if (postAimBody != null)
-                        {
-                            postAimBody.MutateCameraState(ref state, deltaTime);
-                            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
-                        }
+                        postAimBody.MutateCameraState(ref state, deltaTime);
+                        InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Body, ref state, deltaTime);
                     }
                 }
             }
+            if (!haveAim)
+                state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
+
             return state;
         }
 
