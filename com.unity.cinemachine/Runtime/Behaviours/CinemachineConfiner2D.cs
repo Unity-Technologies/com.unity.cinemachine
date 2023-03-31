@@ -469,10 +469,8 @@ namespace Unity.Cinemachine
                 static bool HasAnyPoints(List<List<Vector2>> originalPath)
                 {
                     for (var i = 0; i < originalPath.Count; i++)
-                    {
                         if (originalPath[i].Count != 0)
                             return true;
-                    }
                     return false;
                 }
             }
