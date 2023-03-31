@@ -1,17 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Cinemachine;
 using UnityEngine;
 
-public class ConstantOrbitalRotation : MonoBehaviour
+namespace Unity.Cinemachine.Samples
 {
-    public CinemachineOrbitalFollow orbitalFollow;
-
-    public float speed;
-
-    // Update is called once per frame
-    void Update()
+    public class ConstantOrbitalRotation : MonoBehaviour
     {
-        orbitalFollow.HorizontalAxis.Value += Time.deltaTime * speed;
+        public CinemachineOrbitalFollow orbitalFollow;
+
+        public float Speed;
+        
+        void Update()
+        {
+            orbitalFollow.HorizontalAxis.Value += Time.deltaTime * Speed;
+        }
     }
 }

@@ -1,63 +1,62 @@
 using UnityEngine;
-using Unity.Cinemachine;
 using System;
 using UnityEngine.InputSystem;
 using Object = UnityEngine.Object;
 
-class PlayerInputReceiver : InputAxisControllerBase<PlayerInputReceiver.SimpleReader>
+namespace Unity.Cinemachine.Samples
 {
-    [SerializeField]
-    PlayerInput m_PlayerInput;
+    class PlayerInputReceiver : InputAxisControllerBase<PlayerInputReceiver.SimpleReader>
+    {
+        [SerializeField] PlayerInput m_PlayerInput;
 
-    void Awake()
-    {
-        // Call back when the PlayerInput receives an Input.
-        m_PlayerInput.onActionTriggered += OnActionTriggered;
-    }
-    
-    void Update()
-    {
-        if (Application.isPlaying)
-            UpdateControllers();
-    }
-
-    public void OnActionTriggered(InputAction.CallbackContext value)
-    {
-        // Sends the Input to all the controllers.
-        for (var i = 0; i < Controllers.Count; i ++)
+        void Awake()
         {
-            Controllers[i].Input.SetValue(value.action);
+            // Call back when the PlayerInput receives an Input.
+            m_PlayerInput.onActionTriggered += OnActionTriggered;
         }
-    }
-    
-    [Serializable]
-    public class SimpleReader : IInputAxisReader
-    {
-        // Assumes the action is a Vector2 for simplicity but can be changed for a float.
-        Vector2 m_Value;
-        [SerializeField]
-        InputActionReference m_Input;
-        [SerializeField]
-        float m_Gain = 1;
-    
-        public void SetValue(InputAction action)
+
+        void Update()
         {
-            // If the input referenced in the inspector matches the updated one update the value.
-            if (m_Input != null && m_Input.action.id == action.id)
+            if (Application.isPlaying)
+                UpdateControllers();
+        }
+
+        public void OnActionTriggered(InputAction.CallbackContext value)
+        {
+            // Sends the Input to all the controllers.
+            for (var i = 0; i < Controllers.Count; i++)
             {
-                if (action.expectedControlType == "Vector2")
-                    m_Value = action.ReadValue<Vector2>();
-                else
-                    m_Value = new Vector2(action.ReadValue<float>(), action.ReadValue<float>());
+                Controllers[i].Input.SetValue(value.action);
             }
         }
 
-        public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
+        [Serializable]
+        public class SimpleReader : IInputAxisReader
         {
-            if(hint == IInputAxisOwner.AxisDescriptor.Hints.X)
-                return m_Value.x * m_Gain;
-        
-            return m_Value.y * m_Gain;
+            // Assumes the action is a Vector2 for simplicity but can be changed for a float.
+            Vector2 m_Value;
+            [SerializeField] InputActionReference m_Input;
+            [SerializeField] float m_Gain = 1;
+
+            public void SetValue(InputAction action)
+            {
+                // If the input referenced in the inspector matches the updated one update the value.
+                if (m_Input != null && m_Input.action.id == action.id)
+                {
+                    if (action.expectedControlType == "Vector2")
+                        m_Value = action.ReadValue<Vector2>();
+                    else
+                        m_Value = new Vector2(action.ReadValue<float>(), action.ReadValue<float>());
+                }
+            }
+
+            public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
+            {
+                if (hint == IInputAxisOwner.AxisDescriptor.Hints.X)
+                    return m_Value.x * m_Gain;
+
+                return m_Value.y * m_Gain;
+            }
         }
     }
 }
