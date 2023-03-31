@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New BlendHint: IgnoreTarget will blend rotations without considering the tracking target.
 - New BlendHint: FreezeWhenBlendingOut will blend out from a snapshot of the camera state.
 - InputAxisController has the option to suppress input while the attached camera is blending.
+- Added CinemachineCameraEvents and CinemachineBrainEvents behaviours for event processing.
+- Added BlendFinished and CameraDeactivated events.
 
 ### Changed
 - All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
@@ -28,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineInputAxisController refactored to be more easily customized.
 - Samples are compatible with Built-in, Universal, and High Definition Render Pipelines.
 - CinemachineUpgradeManager re-opens original scene after upgrade is complete.
+- Events system refactored.
+- Refactored CinemachineCameraManagerBase to be more useful for customizing.
 
 
 ## [3.0.0-pre.4] - 2023-02-09

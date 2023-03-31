@@ -14,24 +14,33 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            var noBrainHelp = ux.AddChild(
-                new HelpBox("This behaviour will only work with a CinemachineBrain component.", 
+            var wrongComponentHelp = ux.AddChild(
+                new HelpBox("This behaviour will only work with the following components: "
+                    + InspectorUtility.GetAssignableBehaviourNames(typeof(ICinemachineMixer)), 
                 HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDeactivatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraBlendFinishedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraUpdatedEvent)));
+            var brainEvent = ux.AddChild(
+                new PropertyField(serializedObject.FindProperty(() => Target.BrainUpdatedEvent)));
 
             // Update state
             ux.TrackAnyUserActivity(() =>
             {
-                var noBrain = false;
-                for (int i = 0; i < targets.Length && !noBrain; ++i)
+                var haveBrain = false;
+                var noMixer = false;
+                for (int i = 0; i < targets.Length; ++i)
                 {
                     var t = targets[i] as CinemachineBrainEvents;
-                    noBrain |= !t.TryGetComponent<CinemachineBrain>(out _);
+                    if (t == null)
+                        break;
+                    noMixer |= !t.TryGetComponent<ICinemachineMixer>(out _);
+                    haveBrain |= t.TryGetComponent<CinemachineBrain>(out _);
                 }
-                noBrainHelp?.SetVisible(noBrain);
+                wrongComponentHelp?.SetVisible(noMixer);
+                brainEvent?.SetVisible(haveBrain);
             });
 
             return ux;

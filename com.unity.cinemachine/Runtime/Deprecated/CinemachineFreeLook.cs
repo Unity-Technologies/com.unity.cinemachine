@@ -15,7 +15,7 @@ namespace Unity.Cinemachine
     [ExecuteAlways]
     [ExcludeFromPreset]
     [AddComponentMenu("")] // Don't display in add component menu
-    public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput
+    public class CinemachineFreeLook : CinemachineVirtualCameraBase, AxisState.IRequiresInput, ICinemachineMixer
     {
         /// <summary>Object for the camera children to look at (the aim target)</summary>
         [Tooltip("Object for the camera children to look at (the aim target).")]
@@ -54,7 +54,7 @@ namespace Unity.Cinemachine
 
         /// <summary>This event fires when a transition occurs.</summary>
         [Tooltip("This event fires when a transition occurs")]
-        public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
+        public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
 
         /// <summary>The Vertical axis.  Value is 0..1.  Chooses how to blend the child rigs</summary>
         [Header("Axis Control")]
@@ -131,7 +131,7 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineCameraEvents.OnCameraLiveEvent m_OnCameraLive;
+            public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLive;
         }
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
@@ -300,7 +300,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The Virtual Camera to check</param>
         /// <param name="dominantChildOnly">If truw, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
-        public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
+        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             // Do not update the rig cache here or there will be infinite loop at creation time
             if (!RigsAreCreated)

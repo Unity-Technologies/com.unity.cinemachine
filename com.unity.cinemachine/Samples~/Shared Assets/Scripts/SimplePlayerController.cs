@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
@@ -38,6 +39,10 @@ namespace Unity.Cinemachine.Samples
 
         [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
         public InputAxis Sprint = InputAxis.DefaultMomentary;
+
+        [Header("Events")]
+        [Tooltip("This event is sent when the player lands after a jump.")]
+        public UnityEvent Landed = new ();
 
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
@@ -165,8 +170,7 @@ namespace Unity.Cinemachine.Samples
             if (!m_IsJumping && Jump.Value > 0.01f)
             {
                 m_IsJumping = true;
-                if (StartJump != null)
-                    StartJump();
+                StartJump?.Invoke();
                 m_CurrentVelocityY = m_IsSprinting ? SprintJumpSpeed : JumpSpeed;
             }
             if (IsGrounded() && m_CurrentVelocityY < 0)
@@ -174,10 +178,10 @@ namespace Unity.Cinemachine.Samples
                 m_CurrentVelocityY = 0;
                 if (m_IsJumping)
                 {
-                    if (EndJump != null)
-                        EndJump();
+                    EndJump?.Invoke();
                     m_IsJumping = false;
                     justLanded = true;
+                    Landed.Invoke();
                 }
             }
             return justLanded;
