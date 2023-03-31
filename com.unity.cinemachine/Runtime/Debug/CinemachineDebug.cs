@@ -13,29 +13,6 @@ namespace Unity.Cinemachine
     static class CinemachineDebug
     {
         static List<StringBuilder> s_AvailableStringBuilders;
-
-#if CINEMACHINE_UNITY_IMGUI
-        /// <summary>Reserve an on-screen rectangle for debugging output.</summary>
-        /// <param name="client">The client caller.  This is used as a handle.</param>
-        /// <param name="text">Sample text, for determining rectangle size</param>
-        /// <param name="style">What style will be used to draw, used here for
-        /// determining rect size</param>
-        /// <returns>An area on the game screen large enough to print the text
-        /// in the style indicated</returns>
-        public static Rect GetScreenPos(Camera camera, string text, GUIStyle style)
-        {
-            var size = style.CalcSize(new GUIContent(text));
-            var pos = Vector2.zero;
-            if (camera != null)
-            {
-                var r = camera.rect; 
-                pos.x += r.x * Screen.width;
-                pos.y += (1 - r.y - r.height) * Screen.height;
-            }
-            return new Rect(pos, size);
-        }
-#endif
-
         
 #if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
         const string k_DebugUIName = "CinemachineDebugUI";

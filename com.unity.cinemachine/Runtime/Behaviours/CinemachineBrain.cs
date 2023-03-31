@@ -201,7 +201,7 @@ namespace Unity.Cinemachine
             m_BlendManager.OnEnable();
 
             s_ActiveBrains.Add(this);
-#if UNITY_EDITOR
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
 #endif
@@ -218,12 +218,10 @@ namespace Unity.Cinemachine
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
-    #if CINEMACHINE_UIELEMENTS
             m_DebugText?.Dispose();
             m_DebugText = null;
-    #endif
 #endif
             s_ActiveBrains.Remove(this);
 
