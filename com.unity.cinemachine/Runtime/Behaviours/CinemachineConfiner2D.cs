@@ -1,7 +1,6 @@
 #if CINEMACHINE_PHYSICS_2D
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -572,6 +571,8 @@ namespace Unity.Cinemachine
         internal float BakeProgress() => m_ShapeCache.ConfinerOven != null ? m_ShapeCache.ConfinerOven.bakeProgress : 0f;
         internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null && 
             m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.TIMEOUT;
+
+        internal bool IsConfinerOvenNull() => m_ShapeCache.ConfinerOven == null;
 #endif
     }
 }
