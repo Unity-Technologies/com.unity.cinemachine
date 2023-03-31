@@ -1,6 +1,7 @@
 #if CINEMACHINE_PHYSICS_2D
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -454,6 +455,9 @@ namespace Unity.Cinemachine
                         return false;
                 }
 
+                if (!HasAnyPoints(OriginalPath))
+                    return false; // polygon or composite collider with 0 points
+
                 ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
                 m_BoundingShape2D = boundingShape2D;
                 m_OversizeWindowSettings = oversize;
@@ -462,6 +466,17 @@ namespace Unity.Cinemachine
                 CalculateDeltaTransformationMatrix();
 
                 return true;
+
+                // local function
+                static bool HasAnyPoints(List<List<Vector2>> originalPath)
+                {
+                    for (var i = 0; i < originalPath.Count; i++)
+                    {
+                        if (originalPath[i].Count != 0)
+                            return true;
+                    }
+                    return false;
+                }
             }
 
             bool IsValid(in Collider2D boundingShape2D, in OversizeWindowSettings oversize, float aspectRatio)
