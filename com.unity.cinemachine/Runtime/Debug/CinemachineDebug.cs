@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
-#if UNITY_EDITOR
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
 using UnityEditor;
 using UnityEngine.UIElements;
 #endif
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine
 #endif
 
         
-#if UNITY_EDITOR
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
         const string k_DebugUIName = "CinemachineDebugUI";
         static Dictionary<Camera, VisualElement> s_CameraViewRectContainers = new();
         static GameObject s_UIDocumentHolder;

@@ -1,10 +1,10 @@
+#if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine
 {
-    #if UNITY_EDITOR
         class DebugText : IDisposable
         {
             Label m_DebugLabel;
@@ -61,5 +61,5 @@ namespace Unity.Cinemachine
                 }
             }
         }
-#endif
 }
+#endif

@@ -162,7 +162,7 @@ namespace Unity.Cinemachine
         static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
 
-#if UNITY_EDITOR
+#if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
         DebugText m_DebugText;
 #endif
         
@@ -220,8 +220,10 @@ namespace Unity.Cinemachine
 
 #if UNITY_EDITOR
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+    #if CINEMACHINE_UIELEMENTS
             m_DebugText?.Dispose();
             m_DebugText = null;
+    #endif
 #endif
             s_ActiveBrains.Remove(this);
 
@@ -280,6 +282,7 @@ namespace Unity.Cinemachine
                 CinemachineDebug.OnGUIHandlers(this);
         }
 
+    #if CINEMACHINE_UIELEMENTS
         void OnGuiHandler(CinemachineBrain brain)
         {
             if (!ShowDebugText)
@@ -332,6 +335,7 @@ namespace Unity.Cinemachine
             m_DebugText.SetText(sb.ToString());
             CinemachineDebug.ReturnToPool(sb);
         }
+    #endif
 #endif
 
         // ============ ICameraOverrideStack implementation ================

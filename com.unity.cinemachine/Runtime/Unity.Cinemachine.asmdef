@@ -76,6 +76,11 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "com.unity.modules.uielements",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UIELEMENTS"
         }
     ],
     "noEngineReferences": false
