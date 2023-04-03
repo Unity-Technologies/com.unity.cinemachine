@@ -1,3 +1,4 @@
+#if UNITY_2023_2_OR_NEWER
 using UnityEngine;
 using UnityEditor;
 
@@ -82,3 +83,4 @@ namespace Unity.Cinemachine.Editor
         }
     }
 }
+#endif
