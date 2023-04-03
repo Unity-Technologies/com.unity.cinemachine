@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class CinemachineCameraSetter : MonoBehaviour
+    public class CinemachineChannelSelector : MonoBehaviour
     {
         [SerializeField] CinemachineBrain m_CinemachineBrain;
         [SerializeField] CinemachineCamera m_CinemachineCamera;

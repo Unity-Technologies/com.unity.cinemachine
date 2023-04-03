@@ -151,7 +151,7 @@ namespace Unity.Cinemachine.Samples
             var up = UpDirection;
             var fwd = InputForward switch
             {
-                ForwardModes.Camera => CameraOverride is null? Camera.main.transform.forward : CameraOverride.transform.forward,
+                ForwardModes.Camera => CameraOverride == null? Camera.main.transform.forward : CameraOverride.transform.forward,
                 ForwardModes.Player => transform.forward,
                 _ => Vector3.forward,
             };

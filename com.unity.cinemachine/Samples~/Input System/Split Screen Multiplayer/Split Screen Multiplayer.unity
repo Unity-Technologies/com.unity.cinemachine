@@ -954,7 +954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orbitalFollow: {fileID: 1846637272}
-  speed: 10
+  Speed: 10
 --- !u!1 &2082728274
 GameObject:
   m_ObjectHideFlags: 0
