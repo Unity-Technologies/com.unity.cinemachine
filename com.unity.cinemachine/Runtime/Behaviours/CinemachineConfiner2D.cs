@@ -153,13 +153,42 @@ namespace Unity.Cinemachine
             if (m_ShapeCache.ConfinerOven == null)
                 return -1f;
             
-            var maxFrustumHeight = m_ShapeCache.ConfinerOven.TheoreticalMaxFrustumHeight();
+            var frustumHeight = m_ShapeCache.ConfinerOven.TheoreticalMaxFrustumHeight();
+            return FrustumHeightToLensSize(frustumHeight, cinemachineCamera);
+        }
+
+        /// <summary>
+        /// Returns the maximum Field of View or Orthographic Size for the given CinemachineCamera that can fit inside
+        /// Confiner2D without needing oversize window.
+        /// Returns -1, if the internal calculations are not finished or oversize window is disabled.
+        /// </summary>
+        /// <remarks>
+        /// This value is calculated only when oversize window is enabled!
+        /// Once the value is obtained, it can be turned off.
+        /// </remarks>
+        /// <param name="cinemachineCamera">CinemachineCamera for which to find the upper bound.</param>
+        /// <returns>The maximum Field of View or Orthographic Size for the given CinemachineCamera for this Confiner2D.
+        /// Returns -1, if the bound is not yet calculated or Confiner2D's input Collider2D is invalid.</returns>
+        public float NotOversizedUpperBound(CinemachineCamera cinemachineCamera)
+        {
+            if (m_ShapeCache.ConfinerOven == null)
+                return -1f;
+            
+            var frustumHeight = m_ShapeCache.ConfinerOven.MinFrustumHeightForOversized();
+            if (frustumHeight < 0)
+                return frustumHeight;
+            
+            return FrustumHeightToLensSize(frustumHeight, cinemachineCamera);
+        }
+
+        float FrustumHeightToLensSize(float frustumHeight, CinemachineCamera cinemachineCamera)
+        {
             if (cinemachineCamera.Lens.Orthographic)
-                return maxFrustumHeight;
+                return frustumHeight;
 
             var distance = Mathf.Abs(
                 m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(cinemachineCamera.State.GetFinalPosition()).z);
-            return Mathf.Atan(maxFrustumHeight / distance) * 2f * Mathf.Rad2Deg;
+            return Mathf.Atan(frustumHeight / distance) * 2f * Mathf.Rad2Deg;
         }
 
         /// <summary>

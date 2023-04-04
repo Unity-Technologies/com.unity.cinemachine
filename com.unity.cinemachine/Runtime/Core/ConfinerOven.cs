@@ -292,6 +292,7 @@ namespace Unity.Cinemachine
         }
 
         public float TheoreticalMaxFrustumHeight() => m_Cache.theoreticalMaxFrustumHeight;
+        public float MinFrustumHeightForOversized() => m_Cache.minFrustumHeightForOversized;
 
         struct PolygonSolution
         {
@@ -332,6 +333,7 @@ namespace Unity.Cinemachine
             public float maxFrustumHeight;
             public float userSetMaxFrustumHeight;
             public float theoreticalMaxFrustumHeight;
+            public float minFrustumHeightForOversized;
             public float currentFrustumHeight;
 
             public float bakeTime;
@@ -342,6 +344,7 @@ namespace Unity.Cinemachine
         void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
         {
             m_Skeleton.Clear();
+            m_Cache.minFrustumHeightForOversized = -1f;
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
 
@@ -545,6 +548,7 @@ namespace Unity.Cinemachine
             // TODO: KGB: think about shrinking bones to a point to solve problem of seeing outside of the confiner area.
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
+                var first = true;
                 var clipper = new Clipper64();
                 var offsetter = new ClipperOffset(k_MitterLimit);
                 // At each state change point (1-2, 3-4, ...), collect geometry that gets lost over the transition
@@ -575,6 +579,11 @@ namespace Unity.Cinemachine
                     // Add that lost geometry to the skeleton
                     if (solution.Count > 0 && solution[0].Count > 0)
                     {
+                        if (first)
+                        {
+                            first = false;
+                            m_Cache.minFrustumHeightForOversized = prev.frustumHeight;
+                        }
                         m_Skeleton.AddRange(solution);
                         // Exact comparison is intentional
                         if (m_MinFrustumHeightWithBones == float.MaxValue)
