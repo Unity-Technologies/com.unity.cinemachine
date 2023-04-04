@@ -20,8 +20,7 @@ namespace Unity.Cinemachine
     /// polygon is nontrivial and expensive, so it should be done only when absolutely necessary.
     ///
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
-    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateComputedConfiner().
-    /// An inspector button is also provided for this purpose.
+    /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateLensCache().
     ///
     /// Confiner2D pre-calculates a cache to speed up calculation.
     /// The cache needs to be recomputed in the following circumstances:
@@ -463,6 +462,9 @@ namespace Unity.Cinemachine
                         return false;
                 }
 
+                if (!HasAnyPoints(OriginalPath))
+                    return false; // polygon or composite collider with 0 points
+
                 ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
                 m_BoundingShape2D = boundingShape2D;
                 m_OversizeWindowSettings = oversize;
@@ -471,6 +473,15 @@ namespace Unity.Cinemachine
                 CalculateDeltaTransformationMatrix();
 
                 return true;
+
+                // local function
+                static bool HasAnyPoints(List<List<Vector2>> originalPath)
+                {
+                    for (var i = 0; i < originalPath.Count; i++)
+                        if (originalPath[i].Count != 0)
+                            return true;
+                    return false;
+                }
             }
 
             bool IsValid(in Collider2D boundingShape2D, in OversizeWindowSettings oversize, float aspectRatio)
@@ -566,6 +577,8 @@ namespace Unity.Cinemachine
         internal float BakeProgress() => m_ShapeCache.ConfinerOven != null ? m_ShapeCache.ConfinerOven.bakeProgress : 0f;
         internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null && 
             m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.TIMEOUT;
+
+        internal bool IsConfinerOvenNull() => m_ShapeCache.ConfinerOven == null;
 #endif
     }
 }

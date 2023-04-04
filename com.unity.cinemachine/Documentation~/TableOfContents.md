@@ -54,6 +54,7 @@
     * [Cinemachine and 2D graphics](Cinemachine2D.md)
     * [Cinemachine and top-down games](CinemachineTopDown.md)
     * [Processing User Input with Cinemachine](CinemachineInputAxisController.md)
+      * [Using Input System components with Cinemachine](InputSystemComponents.md)
     * [Cinemachine Camera Events](CinemachineCameraEvents.md)
 	* [Cinemachine Brain Events](CinemachineBrainEvents.md)
     * [Cinemachine Impulse](CinemachineImpulse.md)

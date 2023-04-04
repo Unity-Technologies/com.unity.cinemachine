@@ -5,58 +5,23 @@ using System.Linq;
 
 namespace Unity.Cinemachine.Editor
 {
-    /// <summary>
-    /// This is an editor class for CinemachineInputAxisController.
-    /// It will also draw editors for derived classes.
-    /// If you have a custom InputAxisControllerBase, you can derive your custom editor
-    /// from this class and call the virtual implementation of CreateInspectorGUI.
-    /// </summary>
-    [CustomEditor(typeof(CinemachineInputAxisController), true)]
-    public class InputAxisControllerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(CinemachineInputAxisController))]
+    class InputAxisControllerEditor : UnityEditor.Editor
     {
         CinemachineInputAxisController Target => target as CinemachineInputAxisController;
         
-        /// <inheritdoc />
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
+            
+#if CINEMACHINE_UNITY_INPUTSYSTEM
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
+#endif
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
-            var suppressInput = ux.AddChild(
-                new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_ControllerManager)));
 
-            ux.AddHeader("Driven Axes");
-            var list = ux.AddChild(new ListView()
-            {
-                reorderable = false,
-                showAddRemoveFooter = false,
-                showBorder = false,
-                showBoundCollectionSize = false,
-                showFoldoutHeader = false,
-                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
-            });
-            // Use a string for this property, to support derived classes
-            var controllersProperty = serializedObject.FindProperty("Controllers");
-            list.BindProperty(controllersProperty);
-
-            var isEmptyMessage = ux.AddChild(new HelpBox(
-                "No applicable components found.  Must have one of: "
-                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 
-                HelpBoxMessageType.Warning));
-            list.TrackPropertyWithInitialCallback(
-                controllersProperty, (p) => isEmptyMessage.SetVisible(p.arraySize == 0));
-
-            ux.TrackAnyUserActivity(() =>
-            {
-                if (!Target.ControllersAreValid())
-                {
-                    Undo.RecordObject(Target, "SynchronizeControllers");
-                    Target.SynchronizeControllers();
-                }
-                suppressInput.SetVisible(Target.TryGetComponent<CinemachineVirtualCameraBase>(out _));
-            });
             return ux;
         }
         
@@ -171,6 +136,53 @@ namespace Unity.Cinemachine.Editor
                 childProperty.NextVisible(false);
             }
             return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null);
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(InputAxisControllerManagerAttribute))]
+    class InputAxisControllerListPropertyDrawer : PropertyDrawer
+    {
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            // Why not make a PropertyDrawer for the list directly?  Because
+            // of a bug in ListView - PropertyDrawers directly on Lists don't work.
+            // This is a workaround for that bug.
+            property = property.FindPropertyRelative("Controllers");
+
+            var ux = new VisualElement();
+            var list = ux.AddChild(new ListView()
+            {
+                reorderable = false,
+                showAddRemoveFooter = false,
+                showBorder = false,
+                showBoundCollectionSize = false,
+                showFoldoutHeader = false,
+                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
+            });
+            list.BindProperty(property);
+
+            var isEmptyMessage = ux.AddChild(new HelpBox(
+                "No applicable components found.  Must have one of: "
+                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 
+                HelpBoxMessageType.Warning));
+            list.TrackPropertyWithInitialCallback(
+                property, (p) => isEmptyMessage.SetVisible(p.arraySize == 0));
+
+            // Synchronize the controller list
+            ux.TrackAnyUserActivity(() =>
+            {
+                var targets = property.serializedObject.targetObjects;
+                for (int i = 0; i < targets.Length; ++i)
+                {
+                    var target = targets[i] as IInputAxisController;
+                    if (!target.ControllersAreValid())
+                    {
+                        Undo.RecordObject(targets[i], "SynchronizeControllers");
+                        target.SynchronizeControllers();
+                    }
+                }
+            });
+            return ux;
         }
     }
 }

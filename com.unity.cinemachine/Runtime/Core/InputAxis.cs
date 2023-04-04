@@ -75,14 +75,10 @@ namespace Unity.Cinemachine
     {
         /// <summary>Get the current value of the axis.</summary>
         /// <param name="context">The owner GameObject, can be used for logging diagnostics</param>
-        /// <param name="playerIndex">For multiplayer games the player index if applicable, or -1 for default</param>
-        /// <param name="autoEnableInput">If true, then disabled controls should be automatically enabled on first reading</param>
         /// <param name="hint">A hint for converting a Vector2 value to a float</param>
         /// <returns>The axis value</returns>
         public float GetValue(
-            UnityEngine.Object context, 
-            int playerIndex,
-            bool autoEnableInput,
+            UnityEngine.Object context,
             IInputAxisOwner.AxisDescriptor.Hints hint);
     }
 
