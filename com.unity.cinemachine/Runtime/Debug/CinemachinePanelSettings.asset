@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: CinemachinePanelSettings
   m_EditorClassIdentifier: 
-  themeUss: {fileID: -4733365628477956816, guid: df9aec944f4474a04847b6d6375e4138, type: 3}
+  themeUss: {fileID: -4733365628477956816, guid: df9aec944f4474a04847b6d6375e4138,
+    type: 3}
   m_TargetTexture: {fileID: 0}
   m_ScaleMode: 0
   m_ReferenceSpritePixelsPerUnit: 100
@@ -22,7 +23,7 @@ MonoBehaviour:
   m_ReferenceResolution: {x: 1200, y: 800}
   m_ScreenMatchMode: 0
   m_Match: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
   m_ClearDepthStencil: 1
   m_ClearColor: 0

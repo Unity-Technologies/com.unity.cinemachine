@@ -18,8 +18,7 @@ namespace Unity.Cinemachine
         const string k_DebugUIName = "CinemachineDebugUI";
         static Dictionary<Camera, VisualElement> s_CameraViewRectContainers = new();
         static GameObject s_UIDocumentHolder;
-        static UIDocument s_UIDocument;
-        public static VisualElement CreateRuntimeUIContainer(Camera outputCamera)
+        static GameObject GetUIDocumentHolder()
         {
             if (s_UIDocumentHolder == null)
             {
@@ -29,16 +28,22 @@ namespace Unity.Cinemachine
                     s_UIDocumentHolder = new GameObject(k_DebugUIName)
                     {
                         hideFlags = HideFlags.HideAndDontSave,
-                        tag = "EditorOnly" // TODO: we may want runtime too
+                        tag = "EditorOnly"
                     };
                 }
             }
-            if (!s_UIDocumentHolder.TryGetComponent(out s_UIDocument))
+            return s_UIDocumentHolder;
+        }
+        static UIDocument s_UIDocument;
+        public static VisualElement CreateRuntimeUIContainer(Camera outputCamera)
+        {
+            var uiDocumentHolder = GetUIDocumentHolder();
+            if (!uiDocumentHolder.TryGetComponent(out s_UIDocument))
             {
-                s_UIDocument = s_UIDocumentHolder.AddComponent<UIDocument>();
+                s_UIDocument = uiDocumentHolder.AddComponent<UIDocument>();
                 
                 const string path = "Packages/com.unity.cinemachine/Runtime/Debug/";
-                s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset"); // TODO: find a runtime compatible way
+                s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
             }
 
             if (s_CameraViewRectContainers.ContainsKey(outputCamera))
@@ -59,13 +64,23 @@ namespace Unity.Cinemachine
                     flexWrap = new StyleEnum<Wrap>(Wrap.Wrap),
                 }
             };
-            // need to use delayCall, because rootVisualElement may not be built at this point yet
-            EditorApplication.delayCall += () => s_UIDocument.rootVisualElement.Add(viewportContainer);
+            SetRoot(viewportContainer);
             viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera)).Every(0);
             s_CameraViewRectContainers.Add(outputCamera, viewportContainer);
             
             return viewportContainer;
             
+            // local functions
+            static void SetRoot(VisualElement viewportContainer)
+            {
+                // Need to wait until rootVisualElement is created.
+                if (s_UIDocument.rootVisualElement == null)
+                {
+                    EditorApplication.delayCall += () => SetRoot(viewportContainer);
+                    return;
+                }
+                s_UIDocument.rootVisualElement.Add(viewportContainer);
+            }
             static void PositionWithinCameraView(VisualElement visualElement, Camera camera)
             {
                 if (s_UIDocument == null || s_UIDocument.rootVisualElement == null || camera == null)
