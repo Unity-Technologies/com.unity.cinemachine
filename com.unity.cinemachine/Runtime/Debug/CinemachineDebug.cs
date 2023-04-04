@@ -22,7 +22,15 @@ namespace Unity.Cinemachine
         {
             if (s_UIDocumentHolder == null)
             {
+                // if the holder exists in the scene without any view containers, then it is better to delete it,
+                // and create a new one, because UITK may have failed to create a rootVisualElement.
                 s_UIDocumentHolder = GameObject.Find(k_DebugUIName);
+                if (s_CameraViewRectContainers.Count == 0)
+                {
+                    RuntimeUtility.DestroyObject(s_UIDocumentHolder);
+                    s_UIDocumentHolder = null;
+                }
+
                 if (s_UIDocumentHolder == null)
                 {
                     s_UIDocumentHolder = new GameObject(k_DebugUIName)
