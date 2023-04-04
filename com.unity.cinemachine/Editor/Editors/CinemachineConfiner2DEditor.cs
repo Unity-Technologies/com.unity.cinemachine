@@ -26,6 +26,9 @@ namespace Unity.Cinemachine.Editor
             var polygonsHelp = ux.AddChild(new HelpBox(
                 "CompositeCollider2D geometry type must be Polygons.", 
                 HelpBoxMessageType.Warning));
+            var invalidCollider2D = ux.AddChild(new HelpBox(
+                "The input Collider2D is not valid; it has no points.", 
+                HelpBoxMessageType.Warning));
 
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
@@ -34,10 +37,9 @@ namespace Unity.Cinemachine.Editor
             void TrackVolume(SerializedProperty p)
             {
                 var c = p.objectReferenceValue;
-                boundsHelp.SetVisible(!(c is PolygonCollider2D || c is BoxCollider2D || c is CompositeCollider2D));
-
-                var cc = c as CompositeCollider2D;
-                polygonsHelp.SetVisible(cc != null && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
+                boundsHelp.SetVisible(c != null && c is not (PolygonCollider2D or BoxCollider2D or CompositeCollider2D));
+                polygonsHelp.SetVisible(c is CompositeCollider2D cc && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
+                invalidCollider2D.SetVisible(c != null && Target.IsConfinerOvenNull());
             }
             
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));

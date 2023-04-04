@@ -93,7 +93,7 @@ namespace Unity.Cinemachine.Editor
                                 AssetDatabase.Refresh();
                                 var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations));
                                 ConvertMaterials(uniqueFolders);
-                                FixPrefabs(uniqueFolders);
+                                FixPrefabs(uniqueFolders, m_PackageInfo);
                             }
                             
                             // Import common amd sample specific package dependencies
@@ -184,42 +184,39 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        static readonly string[] k_MaterialFolders = { "Materials" };
         static void ConvertMaterials(IEnumerable<string> folders)
         {
 #if CINEMACHINE_URP || CINEMACHINE_HDRP
+            const string materialFolder = "Materials";
             foreach (var folder in folders)
             {
-                foreach (var materialFolder in k_MaterialFolders)
+                var materialDir = new DirectoryInfo(folder + "/" + materialFolder);
+                if (!materialDir.Exists)
+                    continue;
+                var materialInfos = materialDir.GetFiles("*.mat");
+                foreach (var matInfo in materialInfos)
                 {
-                    var materialDir = new DirectoryInfo(folder + "/" + materialFolder);
-                    if (!materialDir.Exists)
-                        continue;
-                    var materialInfos = materialDir.GetFiles("*.mat");
-                    foreach (var matInfo in materialInfos)
-                    {
-                        var localPath = matInfo.FullName[Application.dataPath.Length..];
-                        var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
+                    var localPath = matInfo.FullName[Application.dataPath.Length..];
+                    var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
 
-                     MaterialUpgrader.Upgrade(material, 
-    #if CINEMACHINE_URP
-                         new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
-    #elif CINEMACHINE_HDRP
-                         UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
-    #endif
-                         MaterialUpgrader.UpgradeFlags.None);
-                    }
+                    MaterialUpgrader.Upgrade(material, 
+#if CINEMACHINE_URP
+                    new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+#elif CINEMACHINE_HDRP
+                    UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
+#endif
+                    MaterialUpgrader.UpgradeFlags.None);
                 }
             }
 #endif
         }
         
-        static void FixPrefabs(IEnumerable<string> folders)
+        static void FixPrefabs(IEnumerable<string> folders, PackageInfo packageInfo)
         {
+#if CINEMACHINE_HDRP
             foreach (var folder in folders)
             {
-                var hdrpPath = folder + "/~HDRP/";
-#if CINEMACHINE_HDRP
+                var hdrpPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/HDRP~/");
                 var hdrpDir = new DirectoryInfo(hdrpPath);
                 var prefabPath = folder + "/Prefabs/";
                 var prefabDir = new DirectoryInfo(prefabPath);
@@ -229,23 +226,20 @@ namespace Unity.Cinemachine.Editor
                 var hdrpPrefabs = hdrpDir.GetFiles("*.prefab");
                 foreach (var hdrpPrefabFile in hdrpPrefabs)
                 {
-                    var hdrpPrefabPath = hdrpPath + hdrpPrefabFile.Name;
-                    var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPrefabPath);
-
                     var builtinPrefabPath = prefabPath + hdrpPrefabFile.Name;
-                    PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
-                    PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+                    if (File.Exists(builtinPrefabPath))
+                    {
+                        var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPath + hdrpPrefabFile.Name);
+                        PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
+                        PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+                    }
                 }
 
                 var assets = hdrpDir.GetFiles("*.asset*"); // assets and their meta files
-                foreach (var asset in assets) 
-                    asset.CopyTo(folder);
-#endif
-                // delete ~HDRP folder (first its meta file, otherwise Unity will restore the folder)
-                var hdrpMeta = new FileInfo(folder + "/~HDRP.meta");
-                hdrpMeta.Delete();
-                Directory.Delete(hdrpPath, true);
+                foreach (var asset in assets)
+                    asset.CopyTo(folder + "/" + asset.Name);
             }
+#endif
         }
 
         

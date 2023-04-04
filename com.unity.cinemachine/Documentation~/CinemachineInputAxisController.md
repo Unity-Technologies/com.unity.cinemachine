@@ -10,6 +10,9 @@ The Input Axis Controller not only maps inputs to the exposed axes, it also prov
 
 If you like, you can also use CinemachineInputAxisController with your own scripts to drive input axes, for example in scripts that implement player motion. See the Cinemachine Sample scenes for examples of this.
 
+## Usage
+
+This component makes it easy to control a `CinemachineCamera` in a single player environment with a mouse and keyboard or a controller.
 
 ## Properties:
 
@@ -28,3 +31,45 @@ If you like, you can also use CinemachineInputAxisController with your own scrip
 | __Accel Time__ | The time it takes for the input value to accelerate to a larger value |
 | __Decel Time__ | The time it takes for the input value to decelerate to a smaller value |
 
+## Creating your own Input Axis Controller
+
+The default implementation of `CinemachineInputAxisController` can process input sources from the Input package and from Unity's legacy input system. 
+
+For more complex scenarios (such as for a mobile device control), you can extend this default functionality and create your own Input Axis Controller using a script.
+
+The following example shows how to use a custom Input Controller script to control a Camera with a slider for a mobile device. The sample code can be used as a template and is easily modified to be used with other objects.
+
+```cs
+using UnityEngine;
+using Unity.Cinemachine;
+using System;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
+
+//The component that you will add to your CinemachineCamera.
+public class SliderInputController : InputAxisControllerBase<SliderInputController.SliderReader>
+{
+    void Update()
+    {
+        if (Application.isPlaying)
+            UpdateControllers();
+    }
+
+    [Serializable]
+    public class SliderReader : IInputAxisReader
+    {
+        
+        public Slider m_Slider;
+
+        public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
+        {
+            if (m_Slider is not null)
+                return m_Slider.value;
+
+            return 0;
+        }
+    }
+}
+```
+
+For more information, see the [Input System Components](InputSystemComponents.md) documentation if you need to setup a local multiplayer input with the Input System package.
