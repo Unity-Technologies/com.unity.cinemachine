@@ -7,6 +7,7 @@ Box {
 #TogglesAndButtons {
     align-self: flex-start;
     position: absolute;
+    top: 12px;
 }
 
 .dynamicButton {
@@ -21,36 +22,26 @@ Box {
     -unity-font-style: bold;
 }
 
-#HelpToggleBox {
-    align-self: flex-end;
-    position: relative;
-}
-
-.helpToggle {
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: stretch;
-    align-self: flex-end;
-    -unity-text-align: upper-right;
+#HelpButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px;
+    margin: 2px;
     -unity-font-style: bold;
-    max-width: 80px;
+    display: flex;
+    visibility: hidden;
 }
 
 #HelpTextBox {
-    margin: 5%;
-    padding: 5px;
-    overflow: visible;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-self: auto;
-    border-radius: 4px;
-    border-width: 1px;
-    border-color: rgb(56, 56, 56);
     visibility: hidden;
     position: absolute;
-    width: 90%;
-    -unity-text-align: upper-left;
-    -unity-font-style: bold;
+    top: 5%;
+    bottom: auto;
+    left: 10%;
+    right: 10%;
+    max-height: 80%;
+    justify-content: space-between;
 }
 
 #HelpTextBox__Title {
@@ -60,17 +51,26 @@ Box {
     margin-left: 5px;
     margin-right: 5px;
     -unity-font-style: bold;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-#HelpTextBox__TextField {
+#HelpTextBox__ScrollView {
+    margin: 5px;
+    background-color: rgba(38, 38, 38, 0.8);
+}
+
+#HelpTextBox__ScrollView__Label {
     flex-wrap: wrap;
-    color: rgb(22, 19, 18);
+    color: white;
     white-space: normal;
-    max-height: 75%;
     -unity-font-style: normal;
+    margin: 5px;
+    padding: 5px;
 }
 
-#HelpTextBox_CloseButton {
+#HelpTextBox__CloseButton {
+    margin-bottom: 4px;
     margin-left: 2px;
     margin-right: 2px;
     padding: 8px;
