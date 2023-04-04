@@ -28,7 +28,7 @@ namespace Unity.Cinemachine
                 {
                     s_UIDocumentHolder = new GameObject(k_DebugUIName)
                     {
-                        hideFlags = HideFlags.NotEditable | HideFlags.HideInHierarchy,
+                        hideFlags = HideFlags.HideAndDontSave,
                         tag = "EditorOnly" // TODO: we may want runtime too
                     };
                 }
