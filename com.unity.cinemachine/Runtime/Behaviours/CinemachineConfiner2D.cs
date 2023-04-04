@@ -140,13 +140,27 @@ namespace Unity.Cinemachine
             OversizeWindow = new ();
         }
 
-        // TODO: perspective ortho conversion
-        public float TheoreticalUpperBound(bool isOrthographic)
+        /// <summary>
+        /// Returns the maximum Field of View or Orthographic Size for the given CinemachineCamera based on the
+        /// axis-aligned bounding box of Confiner2D's input Collider2D.
+        /// Return -1, if the internal calculations are not finished or the input Collider2D is invalid.
+        /// </summary>
+        /// <param name="cinemachineCamera">CinemachineCamera for which to find the upper bound.</param>
+        /// <returns>The maximum Field of View or Orthographic Size for the given CinemachineCamera for this Confiner2D.
+        /// Returns -1, if the bound is not yet calculated or Confiner2D's input Collider2D is invalid.</returns>
+        public float TheoreticalUpperBound(CinemachineCamera cinemachineCamera)
         {
-            return m_ShapeCache.ConfinerOven.TheoreticalMaxFrustumHeight();
-        }
+            if (m_ShapeCache.ConfinerOven == null)
+                return -1f;
             
-        
+            var maxFrustumHeight = m_ShapeCache.ConfinerOven.TheoreticalMaxFrustumHeight();
+            if (cinemachineCamera.Lens.Orthographic)
+                return maxFrustumHeight;
+
+            var distance = Mathf.Abs(
+                m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(cinemachineCamera.State.GetFinalPosition()).z);
+            return Mathf.Atan(maxFrustumHeight / distance) * 2f * Mathf.Rad2Deg;
+        }
 
         /// <summary>
         /// Report maximum damping time needed for this component.
