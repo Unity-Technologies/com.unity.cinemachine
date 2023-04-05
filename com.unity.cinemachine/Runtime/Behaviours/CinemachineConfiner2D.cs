@@ -413,7 +413,7 @@ namespace Unity.Cinemachine
             /// Checks if we have a valid confiner state cache. Calculates cache if it is invalid (outdated or empty).
             /// </summary>
             /// <param name="boundingShape2D">Bounding shape</param>
-            /// <param name="maxWindowSize">Max Window size (calculation upper bound)</param>
+            /// <param name="oversize">If enabled and not 0, defines a calculation upper bound.</param>
             /// <param name="aspectRatio">Aspect ratio</param>
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
