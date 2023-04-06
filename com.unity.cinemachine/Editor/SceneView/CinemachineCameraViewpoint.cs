@@ -65,9 +65,9 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        public float nearPlane => target.Lens.NearClipPlane;
+        public float nearClipPlane => target.Lens.NearClipPlane;
 
-        public float farPlane => target.Lens.FarClipPlane;
+        public float farClipPlane => target.Lens.FarClipPlane;
 
         public bool usePhysicalProperties => target.Lens.IsPhysicalCamera;
 
