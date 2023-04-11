@@ -2104,7 +2104,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  - Name: Active Leader Camera
+  - Name: Leader Camera
     IsToggle:
       Enabled: 0
       Value: 0
@@ -2138,7 +2138,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  - Name: Active Group Framing Camera
+  - Name: Group Framing Camera
     IsToggle:
       Enabled: 0
       Value: 0
