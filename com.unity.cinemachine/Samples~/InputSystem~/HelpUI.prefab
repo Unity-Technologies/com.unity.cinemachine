@@ -66,24 +66,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VisibleAtStart: 0
   HelpTitle: 
-  HelpText: 'This scene shows a Clearshot camera set up so that the shot quality
-    is driven by target visibility.
-
-
-    The player is moved automatically on the
-    z-axis. Observe that once the player is occluded a new camera is selected to
-    frame it.
-
-
-    The ClearShot camera has 3 child cameras. Clearshot selects from
-    its children based on shot quality. When more than one camera has the highest
-    quality shot, then their priority value determines which one is selected.
-
-
-    The
-    shot quality evaluation (line of sight) is done by the CinemachineDeoccluder
-    extension found on the Clearshot camera. The user can supply their own shot evaluator
-    by implementing IShotQualityEvaluator.'
+  HelpText:
   OnHelpDismissed:
     m_PersistentCalls:
       m_Calls: []
