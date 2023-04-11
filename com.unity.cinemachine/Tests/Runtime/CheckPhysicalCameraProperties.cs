@@ -1,4 +1,4 @@
-#if TEST_CINEMACHINE_HDRP
+#if CINEMACHINE_HDRP
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
