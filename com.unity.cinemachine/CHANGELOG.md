@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - InputAxisController has the option to suppress input while the attached camera is blending.
 - Added CinemachineCameraEvents and CinemachineBrainEvents behaviours for event processing.
 - Added BlendFinished and CameraDeactivated events.
+- Samples UI works with both built-in Input System.
 
 ### Changed
 - All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
