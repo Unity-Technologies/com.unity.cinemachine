@@ -325,7 +325,7 @@ MonoBehaviour:
       Input:
         m_Input: {fileID: -8022919341252192936, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 10
+        m_Gain: 50
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -336,7 +336,7 @@ MonoBehaviour:
       Input:
         m_Input: {fileID: -8022919341252192936, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 10
+        m_Gain: 50
       InputValue: 0
       Driver:
         AccelTime: 0
