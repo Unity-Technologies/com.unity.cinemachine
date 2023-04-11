@@ -294,8 +294,8 @@ namespace Unity.Cinemachine
             }
             if (ActiveVirtualCamera == null || brain != this)
                 return;
-            if (m_DebugText == null) 
-                m_DebugText = new DebugText(OutputCamera);
+
+            m_DebugText ??= new DebugText(OutputCamera);
 
             // Show the active camera and blend
             var sb = CinemachineDebug.SBFromPool();
@@ -315,7 +315,7 @@ namespace Unity.Cinemachine
                 sb.Append(ActiveBlend.Description);
             else
             {
-                ICinemachineCamera vcam = ActiveVirtualCamera;
+                var vcam = ActiveVirtualCamera;
                 if (vcam == null)
                     sb.Append("(none)");
                 else
