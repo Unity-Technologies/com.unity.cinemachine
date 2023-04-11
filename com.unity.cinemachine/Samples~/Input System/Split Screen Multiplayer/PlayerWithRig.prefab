@@ -344,7 +344,7 @@ PrefabInstance:
     - target: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945,
         type: 3}
       propertyPath: m_Name
-      value: Player Player Input
+      value: PlayerWithRig
       objectReference: {fileID: 0}
     - target: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945,
         type: 3}
@@ -425,7 +425,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945,
         type: 3}
       insertIndex: 1
-      addedObject: {fileID: 4110175741734546185}
+      addedObject: {fileID: 5297068731434638811}
     - targetCorrespondingSourceObject: {fileID: 5822944720597535731, guid: 970e9f2326c0d445f8c78ae675268945,
         type: 3}
       insertIndex: -1
@@ -449,7 +449,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6922502204019172752}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4110175741734546185
+--- !u!114 &5297068731434638811
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -463,6 +463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CinemachineBrain: {fileID: 2003210075026762981}
   m_CinemachineCamera: {fileID: 2811812332877931025}
+  m_NonPlayerBrain: 1
 --- !u!143 &3503563561542408220
 CharacterController:
   m_ObjectHideFlags: 0

@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: 65334558}
   - component: {fileID: 65334557}
   m_Layer: 0
-  m_Name: Plot player 1
+  m_Name: Plot Player 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 122939470}
   - component: {fileID: 122939469}
   m_Layer: 0
-  m_Name: Plot player 3
+  m_Name: Plot Player 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 387383894}
   - component: {fileID: 387383893}
   m_Layer: 0
-  m_Name: Plot player 2
+  m_Name: Plot Player 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1059,7 +1059,7 @@ GameObject:
   - component: {fileID: 2082728276}
   - component: {fileID: 2082728275}
   m_Layer: 0
-  m_Name: Plot player 4
+  m_Name: Plot Player 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
