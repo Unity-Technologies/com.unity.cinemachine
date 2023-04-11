@@ -162,6 +162,10 @@ namespace Unity.Cinemachine
         static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
 
+#if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
+        DebugText m_DebugText;
+#endif
+        
         void OnValidate()
         {
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
@@ -197,8 +201,10 @@ namespace Unity.Cinemachine
             m_BlendManager.OnEnable();
 
             s_ActiveBrains.Add(this);
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
+#endif
 
             // We check in after the physics system has had a chance to move things
             m_PhysicsCoroutine = StartCoroutine(AfterPhysics());
@@ -212,7 +218,11 @@ namespace Unity.Cinemachine
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            m_DebugText?.Dispose();
+            m_DebugText = null;
+#endif
             s_ActiveBrains.Remove(this);
 
             m_BlendManager.OnDisable();
@@ -269,34 +279,62 @@ namespace Unity.Cinemachine
             if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
                 CinemachineDebug.OnGUIHandlers(this);
         }
-#endif
 
+    #if CINEMACHINE_UIELEMENTS
         void OnGuiHandler(CinemachineBrain brain)
         {
-#if CINEMACHINE_UNITY_IMGUI
-            if (ShowDebugText && brain == this)
+            if (!ShowDebugText)
             {
-                // Show the active camera and blend
-                var sb = CinemachineDebug.SBFromPool();
-                Color color = GUI.color;
-                sb.Length = 0;
-                sb.Append("CM ");
-                sb.Append(gameObject.name);
-                sb.Append(": ");
-                if (CinemachineCore.SoloCamera != null)
+                if (m_DebugText != null)
                 {
-                    sb.Append("SOLO ");
-                    GUI.color = CinemachineCore.SoloGUIColor();
+                    m_DebugText.Dispose();
+                    m_DebugText = null;
                 }
-                sb.Append(Description);
-                string text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
-                GUI.Label(r, text, GUI.skin.box);
-                GUI.color = color;
-                CinemachineDebug.ReturnToPool(sb);
+                return;
             }
-#endif
+            if (ActiveVirtualCamera == null || brain != this)
+                return;
+
+            m_DebugText ??= new DebugText(OutputCamera);
+
+            // Show the active camera and blend
+            var sb = CinemachineDebug.SBFromPool();
+            sb.Length = 0;
+            sb.Append("CM ");
+            sb.Append(gameObject.name);
+            sb.Append(": ");
+            if (CinemachineCore.SoloCamera != null)
+            {
+                sb.Append("SOLO ");
+                m_DebugText.SetTextColor(CinemachineCore.SoloGUIColor());
+            }
+            else
+                m_DebugText.RestoreOriginalTextColor();
+
+            if (IsBlending)
+                sb.Append(ActiveBlend.Description);
+            else
+            {
+                var vcam = ActiveVirtualCamera;
+                if (vcam == null)
+                    sb.Append("(none)");
+                else
+                {
+                    sb.Append(vcam.Name);
+                    var desc = vcam.Description;
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        sb.Append(" ");
+                        sb.Append(desc);
+                    }
+                }
+            }
+            
+            m_DebugText.SetText(sb.ToString());
+            CinemachineDebug.ReturnToPool(sb);
         }
+    #endif
+#endif
 
         // ============ ICameraOverrideStack implementation ================
 
