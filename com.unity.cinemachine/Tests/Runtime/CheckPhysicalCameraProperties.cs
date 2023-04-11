@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Unity.Cinemachine.Tests.HDRP
+namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
     public class CheckPhysicalCameraProperties : CinemachineFixtureBase
