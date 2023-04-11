@@ -192,10 +192,11 @@ namespace Unity.Cinemachine
         /// Call this every frame with the current active camera of the root frame.
         /// </summary>
         /// <param name="activeCamera">Current active camera (pre-override)</param>
+        /// <param name="up">Current world up</param>
         /// <param name="deltaTime">How much time has elapsed, for computing blends</param>
         /// <param name="lookupBlend">Delegate to use to find a blend definition, when a blend is being created</param>
         public void UpdateRootFrame(
-            ICinemachineCamera activeCamera, float deltaTime, 
+            ICinemachineCamera activeCamera, Vector3 up, float deltaTime, 
             CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
         {
             // Make sure there is a first stack frame
@@ -278,6 +279,7 @@ namespace Unity.Cinemachine
                     frame.Blend.TimeInBlend = 0;
                 }
             }
+            frame.UpdateCameraState(up, deltaTime);
         }
 
         /// <summary>

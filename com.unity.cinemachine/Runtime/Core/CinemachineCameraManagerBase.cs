@@ -90,7 +90,7 @@ namespace Unity.Cinemachine
 
         /// <inheritdoc />
         public virtual bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
-            => m_BlendManager.IsLive(cam, dominantChildOnly);
+            => m_BlendManager.IsLive(cam);
 
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
         public List<CinemachineVirtualCameraBase> ChildCameras 
@@ -283,7 +283,7 @@ namespace Unity.Cinemachine
             ICinemachineCamera activeCamera, Vector3 worldUp, float deltaTime,
             CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
         {
-            m_BlendManager.UpdateRootFrame(activeCamera, deltaTime, lookupBlend);
+            m_BlendManager.UpdateRootFrame(activeCamera, worldUp, deltaTime, lookupBlend);
             m_BlendManager.ComputeCurrentBlend();
             m_BlendManager.ProcessActiveCamera(this, worldUp, deltaTime);
         }

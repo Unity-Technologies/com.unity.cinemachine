@@ -392,7 +392,7 @@ namespace Unity.Cinemachine
         /// <inheritdoc />
         public bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
         {
-            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
+            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam))
                 return true;
 
             // Walk up the parents
@@ -508,7 +508,8 @@ namespace Unity.Cinemachine
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), deltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(
+                    TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime, LookupBlend);
 
             m_BlendManager.ComputeCurrentBlend();
 
@@ -559,7 +560,8 @@ namespace Unity.Cinemachine
             // Choose the active vcam and apply it to the Unity camera
             if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
             {
-                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), Time.fixedDeltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(
+                    TopCameraFromPriorityQueue(), DefaultWorldUp, Time.fixedDeltaTime, LookupBlend);
                 ProcessActiveCamera(Time.fixedDeltaTime);
             }
         }
