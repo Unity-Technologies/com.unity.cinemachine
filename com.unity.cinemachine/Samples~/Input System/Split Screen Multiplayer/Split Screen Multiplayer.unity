@@ -658,7 +658,7 @@ PrefabInstance:
         type: 3}
       propertyPath: HelpText
       value: "Split screen system with Cinemachine and the Input system. Press the
-        left mouse button or A button on a controller to add a player.\n\n\rThis
+        left mouse button or the right trigger on a controller to add a player.\n\n\rThis
         sample shows:\n- How to dynamically add a Brain and a Cinemachine Camera.\n-
         How to create a custom Input receiver that works with the player input Component.\n"
       objectReference: {fileID: 0}
