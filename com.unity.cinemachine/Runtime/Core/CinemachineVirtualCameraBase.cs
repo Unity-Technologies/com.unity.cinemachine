@@ -430,7 +430,8 @@ namespace Unity.Cinemachine
         /// <summary>Get the Follow target for the Body component in the Cinemachine pipeline.</summary>
         public abstract Transform Follow { get; set; }
 
-        /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>
+        /// <summary>Set this to force the next update to ignore state from the previous frame.  
+        /// This is useful, for example, if you want to cancel damping or other time-based processing.</summary>
         public virtual bool PreviousStateIsValid { get; set; }
 
         /// <summary>
