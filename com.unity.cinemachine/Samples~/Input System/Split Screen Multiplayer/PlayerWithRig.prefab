@@ -323,9 +323,9 @@ MonoBehaviour:
       Owner: {fileID: 536667594111509029}
       Enabled: 1
       Input:
-        m_Input: {fileID: -8022919341252192936, guid: 97210cd740af04df697b1fa71c9c9623,
+        Input: {fileID: -8022919341252192936, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 50
+        Gain: 50
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -334,9 +334,9 @@ MonoBehaviour:
       Owner: {fileID: 536667594111509029}
       Enabled: 1
       Input:
-        m_Input: {fileID: -8022919341252192936, guid: 97210cd740af04df697b1fa71c9c9623,
+        Input: {fileID: -8022919341252192936, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 50
+        Gain: 50
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -345,13 +345,13 @@ MonoBehaviour:
       Owner: {fileID: 536667594111509029}
       Enabled: 1
       Input:
-        m_Input: {fileID: 0}
-        m_Gain: 1
+        Input: {fileID: 0}
+        Gain: 0
       InputValue: 0
       Driver:
         AccelTime: 0
         DecelTime: 0
-  m_PlayerInput: {fileID: 8899812594144203026}
+  PlayerInput: {fileID: 8899812594144203026}
 --- !u!1 &8899812594330443548
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,9 +532,9 @@ MonoBehaviour:
       Owner: {fileID: 836224694118566995}
       Enabled: 1
       Input:
-        m_Input: {fileID: 7199698757197948867, guid: 97210cd740af04df697b1fa71c9c9623,
+        Input: {fileID: 7199698757197948867, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 1
+        Gain: 1
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -543,9 +543,9 @@ MonoBehaviour:
       Owner: {fileID: 836224694118566995}
       Enabled: 1
       Input:
-        m_Input: {fileID: 7199698757197948867, guid: 97210cd740af04df697b1fa71c9c9623,
+        Input: {fileID: 7199698757197948867, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 1
+        Gain: 1
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -554,9 +554,9 @@ MonoBehaviour:
       Owner: {fileID: 836224694118566995}
       Enabled: 1
       Input:
-        m_Input: {fileID: 5897109224154240165, guid: 97210cd740af04df697b1fa71c9c9623,
+        Input: {fileID: 5897109224154240165, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 1
+        Gain: 1
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -565,14 +565,14 @@ MonoBehaviour:
       Owner: {fileID: 836224694118566995}
       Enabled: 1
       Input:
-        m_Input: {fileID: 6636173697634985313, guid: 97210cd740af04df697b1fa71c9c9623,
+        Input: {fileID: 6636173697634985313, guid: 97210cd740af04df697b1fa71c9c9623,
           type: 3}
-        m_Gain: 1
+        Gain: 1
       InputValue: 0
       Driver:
         AccelTime: 0
         DecelTime: 0
-  m_PlayerInput: {fileID: 8899812594144203026}
+  PlayerInput: {fileID: 8899812594144203026}
 --- !u!114 &8899812594144203026
 MonoBehaviour:
   m_ObjectHideFlags: 0
