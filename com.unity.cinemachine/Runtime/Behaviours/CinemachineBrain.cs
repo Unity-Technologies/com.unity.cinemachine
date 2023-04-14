@@ -459,6 +459,13 @@ namespace Unity.Cinemachine
             => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
 
         /// <summary>
+        /// Call this to reset the current active camera, causing the brain to choose a new 
+        /// one without blending.  It is useful, for example,
+        /// when you want to restart a game level.
+        /// </summary>
+        public void ResetState() => m_BlendManager.ResetRootFrame();
+
+        /// <summary>
         /// Is there a blend in progress?
         /// </summary>
         public bool IsBlending => m_BlendManager.IsBlending;

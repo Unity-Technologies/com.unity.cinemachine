@@ -103,6 +103,18 @@ namespace Unity.Cinemachine
             }
         }
 
+        /// <inheritdoc />
+        public override bool PreviousStateIsValid 
+        { 
+            get => base.PreviousStateIsValid;
+            set 
+            {
+                base.PreviousStateIsValid = value;
+                for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
+                    m_ChildCameras[i].PreviousStateIsValid =false;
+            }
+        }
+
         /// <summary>Is there a blend in progress?</summary>
         public bool IsBlending => m_BlendManager.IsBlending;
 

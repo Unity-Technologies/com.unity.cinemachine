@@ -1,6 +1,14 @@
 using UnityEngine;
 using Unity.Cinemachine;
 
+/// <summary>
+/// This class inherits CinemachineCameraManagerBase, which is a convenient base class for
+/// making complex cameras by transitioning between a number of worker cameras, depending
+/// on some arbitrary game state.
+/// 
+/// In this case, we monitor the player's facing direction and motion, and select a camera
+/// with the appropriate settings.  CinemachineCameraManagerBase takes care of handling the blends.
+/// </summary>
 [ExecuteAlways]
 public class PlatformerCamera2D : CinemachineCameraManagerBase
 {
@@ -15,6 +23,7 @@ public class PlatformerCamera2D : CinemachineCameraManagerBase
     [Space]
     public float FallingSpeedThreshold = 0.1f;
 
+    // The cameras in these fields must be GameObject childen of the manager camera.
     [Header("State Cameras")]
     [ChildCameraProperty] public CinemachineVirtualCameraBase RightCamera;
     [ChildCameraProperty] public CinemachineVirtualCameraBase LeftCamera;
@@ -47,6 +56,9 @@ public class PlatformerCamera2D : CinemachineCameraManagerBase
         return isLeft ? PlayerState.Left : PlayerState.Right;
     }
 
+    /// <summary>
+    /// Choose the appropriate child camera depending on player state.
+    /// </summary>
     protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
     {
         return GetPlayerState() switch

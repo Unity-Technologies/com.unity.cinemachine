@@ -492,7 +492,6 @@ GameObject:
   - component: {fileID: 234952070}
   - component: {fileID: 234952073}
   - component: {fileID: 234952072}
-  - component: {fileID: 234952074}
   m_Layer: 0
   m_Name: Falling Camera Right
   m_TagString: Untagged
@@ -508,7 +507,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234952069}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.987398, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -14.487398, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -591,25 +590,6 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 8
---- !u!114 &234952074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 234952069}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BoundingShape2D: {fileID: 614903041}
-  Damping: 0.9
-  SlowingDistance: 5
-  OversizeWindow:
-    Enabled: 1
-    MaxWindowSize: 3
-  m_LegacyMaxWindowSize: -2
 --- !u!1 &289220589
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,7 +601,6 @@ GameObject:
   - component: {fileID: 289220593}
   - component: {fileID: 289220592}
   - component: {fileID: 289220591}
-  - component: {fileID: 289220594}
   m_Layer: 0
   m_Name: Camera Right
   m_TagString: Untagged
@@ -713,32 +692,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289220589}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.987398, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -14.487398, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1074941661}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &289220594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 289220589}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BoundingShape2D: {fileID: 614903041}
-  Damping: 0.5
-  SlowingDistance: 5
-  OversizeWindow:
-    Enabled: 1
-    MaxWindowSize: 3
-  m_LegacyMaxWindowSize: -2
 --- !u!1 &468136274
 GameObject:
   m_ObjectHideFlags: 0
@@ -937,15 +897,15 @@ PrefabInstance:
         
 
         It
-        includes a custom camera manager (Normal Camera), which selects from its
-        child cameras based on game state.  It also features a Boss room with its
-        own camera which is activated while the player is in the room.  This is done
-        with a CinemachineTriggerAction behaviour on the room trigger.
+        includes a custom camera manager (2D Camera), which selects from its child
+        cameras based on game state.  It also features a Boss room with its own camera
+        which is activated while the player is in the room.  This is done with a
+        CinemachineTriggerAction behaviour on the room trigger.
 
         
 
         The
-        Boss Camera frames the entire room regardlkess of aspect ratio by using a
+        Boss Camera frames the entire room regardless of aspect ratio by using a
         CinemachineTargetGroup holding invisible objects in the room corners.
 
 '
@@ -13486,8 +13446,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1074941661}
   - component: {fileID: 1074941660}
+  - component: {fileID: 1074941662}
   m_Layer: 0
-  m_Name: Normal Camera
+  m_Name: 2D Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13554,6 +13515,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1074941662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1074941659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BoundingShape2D: {fileID: 614903041}
+  Damping: 1
+  SlowingDistance: 5
+  OversizeWindow:
+    Enabled: 1
+    MaxWindowSize: 3
+  m_LegacyMaxWindowSize: -2
 --- !u!1001 &1108915797
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13663,7 +13643,7 @@ Transform:
   - {fileID: 1025796638}
   - {fileID: 192214617}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1229351973 stripped
 Transform:
@@ -14084,7 +14064,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1531341273
 MonoBehaviour:
@@ -14117,7 +14097,6 @@ GameObject:
   - component: {fileID: 1620057288}
   - component: {fileID: 1620057291}
   - component: {fileID: 1620057290}
-  - component: {fileID: 1620057292}
   m_Layer: 0
   m_Name: Falling Camera Left
   m_TagString: Untagged
@@ -14133,7 +14112,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620057287}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.987398, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -14.487398, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14216,25 +14195,6 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 8
---- !u!114 &1620057292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1620057287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BoundingShape2D: {fileID: 614903041}
-  Damping: 0.9
-  SlowingDistance: 5
-  OversizeWindow:
-    Enabled: 1
-    MaxWindowSize: 3
-  m_LegacyMaxWindowSize: -2
 --- !u!1 &1649289740
 GameObject:
   m_ObjectHideFlags: 0
@@ -14265,7 +14225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 1229351973}
-  StartPosition: {x: -5.96, y: 4.41, z: 0}
+  StartPosition: {x: -3.5, y: 4.41, z: 0}
 --- !u!4 &1649289742
 Transform:
   m_ObjectHideFlags: 0
@@ -14292,7 +14252,6 @@ GameObject:
   - component: {fileID: 1719199629}
   - component: {fileID: 1719199628}
   - component: {fileID: 1719199627}
-  - component: {fileID: 1719199630}
   m_Layer: 0
   m_Name: Camera Left
   m_TagString: Untagged
@@ -14384,32 +14343,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719199625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.449533, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -14.949533, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1074941661}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1719199630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1719199625}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BoundingShape2D: {fileID: 614903041}
-  Damping: 0.5
-  SlowingDistance: 5
-  OversizeWindow:
-    Enabled: 1
-    MaxWindowSize: 3
-  m_LegacyMaxWindowSize: -2
 --- !u!1 &1820774246 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3465208512811397513, guid: 0f4631e9e1d144693abb1e2c6d332d99, type: 3}
@@ -14527,7 +14467,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2294858455320007780, guid: 644483867df6df74a8a80c26422ed3c5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6
+      value: -3.5
       objectReference: {fileID: 0}
     - target: {fileID: 2294858455320007780, guid: 644483867df6df74a8a80c26422ed3c5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -14582,7 +14522,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.0536766, y: 5.6241198, z: -10}
+  m_LocalPosition: {x: -3.2689312, y: 5.6241198, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
