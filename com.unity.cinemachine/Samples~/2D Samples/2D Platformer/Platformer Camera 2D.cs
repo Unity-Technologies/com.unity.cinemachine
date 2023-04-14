@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Cinemachine;
 
+[ExecuteAlways]
 public class PlatformerCamera2D : CinemachineCameraManagerBase
 {
     public enum PlayerState
@@ -11,6 +12,7 @@ public class PlatformerCamera2D : CinemachineCameraManagerBase
         FallingLeft
     }
 
+    [Space]
     public float FallingSpeedThreshold = 0.1f;
 
     [Header("State Cameras")]

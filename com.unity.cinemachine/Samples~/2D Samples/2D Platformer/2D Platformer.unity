@@ -253,7 +253,6 @@ Transform:
   m_Children:
   - {fileID: 1433668585}
   - {fileID: 614903040}
-  - {fileID: 192214617}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -269,7 +268,7 @@ GameObject:
   - component: {fileID: 192214618}
   - component: {fileID: 192214619}
   m_Layer: 0
-  m_Name: BossRoomBounds
+  m_Name: BossRoomBoundsTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -282,12 +281,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 192214616}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 141363983}
+  m_Father: {fileID: 1192928271}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &192214618
@@ -322,7 +321,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 21.572863, y: 8.388578}
+  m_Offset: {x: 22.242603, y: 8.388578}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -333,7 +332,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 14.652924, y: 9.216743}
+  m_Size: {x: 13.3134365, y: 9.216743}
   m_EdgeRadius: 0
 --- !u!114 &192214619
 MonoBehaviour:
@@ -509,7 +508,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234952069}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.957409, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -16.953957, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -569,7 +568,7 @@ MonoBehaviour:
   m_StreamingVersion: 0
   m_LegacyPriority: 10
   Target:
-    TrackingTarget: {fileID: 1229351973}
+    TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -624,7 +623,7 @@ GameObject:
   - component: {fileID: 289220591}
   - component: {fileID: 289220594}
   m_Layer: 0
-  m_Name: Normal Camera Right
+  m_Name: Camera Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -683,7 +682,7 @@ MonoBehaviour:
   m_StreamingVersion: 0
   m_LegacyPriority: 10
   Target:
-    TrackingTarget: {fileID: 1229351973}
+    TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -714,7 +713,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289220589}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.957409, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -16.953957, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13645,6 +13644,7 @@ Transform:
   - {fileID: 60320000}
   - {fileID: 993540928}
   - {fileID: 1025796638}
+  - {fileID: 192214617}
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14116,7 +14116,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620057287}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.957409, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -16.953957, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14176,7 +14176,7 @@ MonoBehaviour:
   m_StreamingVersion: 0
   m_LegacyPriority: 10
   Target:
-    TrackingTarget: {fileID: 1229351973}
+    TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -14277,7 +14277,7 @@ GameObject:
   - component: {fileID: 1719199627}
   - component: {fileID: 1719199630}
   m_Layer: 0
-  m_Name: Normal Camera Left
+  m_Name: Camera Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14336,7 +14336,7 @@ MonoBehaviour:
   m_StreamingVersion: 0
   m_LegacyPriority: 10
   Target:
-    TrackingTarget: {fileID: 1229351973}
+    TrackingTarget: {fileID: 0}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -14367,7 +14367,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719199625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.479523, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -17.482975, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14565,7 +14565,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.771032, y: 5.6241097, z: -10}
+  m_LocalPosition: {x: 10.909507, y: 0.012516975, z: -50.27145}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14675,7 +14675,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 2
+  orthographic size: 29.976784
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
