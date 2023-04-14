@@ -128,4 +128,10 @@ namespace Unity.Cinemachine
         /// <param name="stage">The stage in the Camera Pipeline in which to position this component</param>
         public CameraPipelineAttribute(CinemachineCore.Stage stage) { Stage = stage; }
     }
+
+    /// <summary>
+    /// Attribute applied to a CinemachineVirtualCameraBase property to produce
+    /// a child camera selector in the inspectoe.
+    /// </summary>
+    public sealed class ChildCameraPropertyAttribute : PropertyAttribute {}
 }
