@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Samples
         [SerializeField] CinemachineCamera m_CinemachineCamera;
         void Start()
         {
-            // Increment to the next channel based on the brain count for the CinemachineBrain and the CinemachineCamera.
+            // Initializing the start position of the player.
             transform.position = new Vector3(CinemachineBrain.ActiveBrainCount * 2, 2, 0);
 
             // Shift one bit per brain Count.

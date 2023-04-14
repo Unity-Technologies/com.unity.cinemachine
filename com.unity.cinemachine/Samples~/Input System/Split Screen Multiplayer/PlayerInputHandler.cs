@@ -42,7 +42,6 @@ namespace Unity.Cinemachine.Samples
         public class Reader : IInputAxisReader
         {
             public InputActionReference Input;
-            public float Gain;
             Vector2 m_Value; // the cached value of the input
 
             public void ProcessInput(InputAction action)
@@ -60,7 +59,7 @@ namespace Unity.Cinemachine.Samples
             // IInputAxisReader interface: Called by the framework to read the input value
             public float GetValue(UnityEngine.Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
             {
-                return (hint == IInputAxisOwner.AxisDescriptor.Hints.Y ? m_Value.y : m_Value.x) * Gain;
+                return (hint == IInputAxisOwner.AxisDescriptor.Hints.Y ? m_Value.y : m_Value.x);
             }
         }
     }
