@@ -41,15 +41,7 @@ namespace Unity.Cinemachine.Editor
             ux.AddHeader("State Driven Camera");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(EmbeddedAssetEditorUtility.EmbeddedAssetInspector<CinemachineBlenderSettings>(
-                serializedObject.FindProperty(() => Target.CustomBlends),
-                (ed) =>
-                {
-                    var editor = ed as CinemachineBlenderSettingsEditor;
-                    if (editor != null)
-                        editor.GetAllVirtualCameras = (list) => list.AddRange(Target.ChildCameras);
-                }));
-
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
 
             var layerProp = serializedObject.FindProperty(() => Target.LayerIndex);

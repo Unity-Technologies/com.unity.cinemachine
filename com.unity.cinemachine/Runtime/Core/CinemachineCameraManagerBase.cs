@@ -47,6 +47,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("This is the asset which contains custom settings for specific child blends")]
         [FormerlySerializedAs("m_CustomBlends")]
+        [EmbeddedBlenderSettingsProperty]
         public CinemachineBlenderSettings CustomBlends = null;
 
         List<CinemachineVirtualCameraBase> m_ChildCameras;

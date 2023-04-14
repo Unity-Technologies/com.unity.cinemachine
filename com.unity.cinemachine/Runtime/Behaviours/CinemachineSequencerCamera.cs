@@ -31,6 +31,7 @@ namespace Unity.Cinemachine
             /// <summary>The virtual camera to activate when this instruction becomes active</summary>
             [Tooltip("The virtual camera to activate when this instruction becomes active")]
             [FormerlySerializedAs("m_VirtualCamera")]
+            [ChildCameraProperty]
             public CinemachineVirtualCameraBase Camera;
 
             /// <summary>How to blend to the next virtual camera in the list (if any)</summary>

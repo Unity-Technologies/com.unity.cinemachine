@@ -134,4 +134,9 @@ namespace Unity.Cinemachine
     /// a child camera selector in the inspectoe.
     /// </summary>
     public sealed class ChildCameraPropertyAttribute : PropertyAttribute {}
+
+    /// <summary>
+    /// Draws BlenderSettings asset embedded within the inspector.
+    /// </summary>
+    public sealed class EmbeddedBlenderSettingsPropertyAttribute : PropertyAttribute {}
 }

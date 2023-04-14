@@ -150,6 +150,7 @@ namespace Unity.Cinemachine
         [Tooltip("This is the asset that contains custom settings for blends between "
             + "specific virtual cameras in your scene")]
         [FormerlySerializedAs("m_CustomBlends")]
+        [EmbeddedBlenderSettingsProperty]
         public CinemachineBlenderSettings CustomBlends = null;
 
         Camera m_OutputCamera = null; // never use directly - use accessor
