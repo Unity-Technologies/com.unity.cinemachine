@@ -9,7 +9,10 @@ public class GameControl : MonoBehaviour
 
     public void RestartGame()
     {
+        // Move the plyer to its start position
         Player.transform.SetLocalPositionAndRotation(StartPosition, Quaternion.identity);
+
+        // Reset the camera state, to cancel damping
         CinemachineCore.ResetCameraState();
 
         // Activate the initial camera, deactivate the rest
