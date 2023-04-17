@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineCameraEvents and CinemachineBrainEvents behaviours for event processing.
 - Added BlendFinished and CameraDeactivated events.
 - Samples UI works with both built-in Input System.
+- Timeline: Added Track Priority field in CinemachineTrack to control track precedence when tracks are contained in nested timelines.
 
 ### Changed
 - All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
