@@ -46,7 +46,8 @@ namespace Unity.Cinemachine
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
-                if (m_Solution.Count <= 0) return pointToConfine; // empty confiner -> no need to confine
+                if (m_Solution.Count <= 0) 
+                    return pointToConfine; // empty confiner -> no need to confine
 
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
                 var p = new IntPoint(pInConfinerSpace.x * k_FloatToIntScaler, pInConfinerSpace.y * k_FloatToIntScaler);
