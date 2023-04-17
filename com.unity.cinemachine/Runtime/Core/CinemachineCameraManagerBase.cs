@@ -111,7 +111,7 @@ namespace Unity.Cinemachine
             {
                 base.PreviousStateIsValid = value;
                 for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
-                    m_ChildCameras[i].PreviousStateIsValid =false;
+                    m_ChildCameras[i].PreviousStateIsValid = value;
             }
         }
 
