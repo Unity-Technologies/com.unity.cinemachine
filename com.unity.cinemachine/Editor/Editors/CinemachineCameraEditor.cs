@@ -4,9 +4,13 @@ using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
+    /// <summary>
+    /// Draws inspector for CinemachineCamera.  Inspectors for CinemachineCamera subclasses
+    /// can be made by inheriting this class.
+    /// </summary>
     [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
-    class CmCameraEditor : UnityEditor.Editor 
+    public class CinemachineCameraEditor : UnityEditor.Editor 
     {
         CinemachineCamera Target => target as CinemachineCamera;
 
@@ -29,7 +33,11 @@ namespace Unity.Cinemachine.Editor
             cam.Lens = CinemachineMenu.MatchSceneViewCamera(cam.transform);
         }
 
-        void OnEnable()
+        /// <summary>
+        /// Called when the inspector is initially displayed.  Subclasses should make sure 
+        /// to call the base class implementation.
+        /// </summary>
+        protected virtual void OnEnable()
         {
             Undo.undoRedoPerformed += ResetTarget;
 
@@ -37,7 +45,11 @@ namespace Unity.Cinemachine.Editor
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
         }
 
-        void OnDisable()
+        /// <summary>
+        /// Called when the inspector is dismissed.  Subclasses should make sure 
+        /// to call the base class implementation.
+        /// </summary>
+        protected virtual void OnDisable()
         {
             Undo.undoRedoPerformed -= ResetTarget;
 
@@ -45,6 +57,11 @@ namespace Unity.Cinemachine.Editor
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
         }
 
+        /// <summary>
+        /// Create inspector for CinemachineCamera.  
+        /// Subclasses may call the base class implementation, then add additional fields.
+        /// </summary>
+        /// <returns>Container with the inspector contents.</returns>
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();

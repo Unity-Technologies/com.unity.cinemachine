@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineUpgradeManager re-opens original scene after upgrade is complete.
 - Events system refactored.
 - Refactored CinemachineCameraManagerBase to be more useful for customizing.
+- CinemachineCameraEditor is now public and inheritable.
 
 
 ## [3.0.0-pre.4] - 2023-02-09
