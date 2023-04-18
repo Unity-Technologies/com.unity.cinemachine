@@ -567,6 +567,7 @@ namespace Unity.Cinemachine.Editor
                 style = 
                 { 
                     flexGrow = 0,
+                    flexBasis = SingleLineHeight,
                     backgroundImage = (StyleBackground)EditorGUIUtility.IconContent(icon).image,
                     width = SingleLineHeight, height = SingleLineHeight,
                     alignSelf = Align.Center
@@ -581,8 +582,10 @@ namespace Unity.Cinemachine.Editor
         {
             var button = new Button { tooltip = tooltip, style = 
             {
+                flexGrow = 0,
+                flexBasis = SingleLineHeight,
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
                 paddingRight = 0, borderRightWidth = 0, marginRight = 0
             }};
@@ -602,8 +605,10 @@ namespace Unity.Cinemachine.Editor
         {
             var button = new Button { tooltip = tooltip, style = 
             {
+                flexGrow = 0,
+                flexBasis = SingleLineHeight,
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
                 paddingRight = 0, borderRightWidth = 0, marginRight = 0
             }};

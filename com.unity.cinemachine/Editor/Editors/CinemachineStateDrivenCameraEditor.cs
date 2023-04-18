@@ -1,3 +1,4 @@
+#define USE_IMGUI_INSTRUCTION_LIST // We use IMGUI while we wait for UUM-27687 and UUM-27688 to be fixed
 #if CINEMACHINE_UNITY_ANIMATION
 using System;
 using System.Collections.Generic;
@@ -66,10 +67,13 @@ namespace Unity.Cinemachine.Editor
                 UpdateTargetStates();
                 layerSel.choices = m_LayerNames;
                 layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);
+#if USE_IMGUI_INSTRUCTION_LIST
                 UpdateCameraCandidates();
+#endif
                 noTargetHelp.SetVisible(Target.AnimatedTarget == null);
             });
             
+#if USE_IMGUI_INSTRUCTION_LIST
             // GML todo: We use IMGUI for this while we wait for UUM-27687 and UUM-27688 to be fixed
             UpdateTargetStates();
             UpdateCameraCandidates();
@@ -84,7 +88,9 @@ namespace Unity.Cinemachine.Editor
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
             }));
-
+#else
+            // GML todo: UITK implementation
+#endif
             ux.AddSpace();
             this.AddChildCameras(ux, null);
             this.AddExtensionsDropdown(ux);
@@ -221,6 +227,7 @@ namespace Unity.Cinemachine.Editor
             return m_StateIndexLookup[stateHash];
         }
 
+#if USE_IMGUI_INSTRUCTION_LIST
         void UpdateCameraCandidates()
         {
             List<string> vcams = new();
@@ -359,6 +366,7 @@ namespace Unity.Cinemachine.Editor
                     menu.ShowAsContext();
                 };
         }
+#endif
     }
 }
 #endif
