@@ -93,7 +93,7 @@ namespace Unity.Cinemachine.Editor
             // Local function
             static void FormatElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)
             {
-                e1.style.marginLeft = isHeader ? InspectorUtility.SingleLineHeight : -12;
+                e1.style.marginLeft = isHeader ? InspectorUtility.SingleLineHeight : 0;
                 e1.style.flexBasis = InspectorUtility.SingleLineHeight; 
                 e1.style.flexGrow = 3;
                 
