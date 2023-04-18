@@ -55,8 +55,7 @@ namespace Unity.Cinemachine.Tests.Editor
 
         void ProcessFrame(ICinemachineCamera cam, float deltaTime)
         {
-            m_BlendManager.UpdateRootFrame(cam, Vector3.up, deltaTime, (outgoing, incoming)
-                => new (CinemachineBlendDefinition.Styles.EaseInOut, 1)); // constant blend time of 1
+            m_BlendManager.UpdateRootFrame(cam, Vector3.up, deltaTime);
             m_BlendManager.ComputeCurrentBlend();
             m_BlendManager.ProcessActiveCamera(m_Mixer, Vector3.up, deltaTime);
         }
@@ -64,6 +63,9 @@ namespace Unity.Cinemachine.Tests.Editor
         [Test]
         public void TestEvents()
         {
+            m_BlendManager.LookupBlendDelegate = (outgoing, incoming)
+                => new (CinemachineBlendDefinition.Styles.EaseInOut, 1); // constant blend time of 1
+
             ResetCounters();
             m_BlendManager.ResetRootFrame();
 

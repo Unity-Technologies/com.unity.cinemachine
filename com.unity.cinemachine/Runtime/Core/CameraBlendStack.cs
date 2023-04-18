@@ -174,6 +174,10 @@ namespace Unity.Cinemachine
         /// <summary>Has OnEnable been called?</summary>
         public bool IsInitialized => m_FrameStack.Count > 0;
 
+        /// <summary>This holds the function that performs a blend lookup.
+        /// This is used to find a blend definition, when a blend is being created.</summary>
+        public CinemachineBlendDefinition.LookupBlendDelegate LookupBlendDelegate { get; set; }
+
         /// <summary>Clear the state of the root frame: no current camera, no blend.</summary>
         public void ResetRootFrame()
         {
@@ -194,10 +198,8 @@ namespace Unity.Cinemachine
         /// <param name="activeCamera">Current active camera (pre-override)</param>
         /// <param name="up">Current world up</param>
         /// <param name="deltaTime">How much time has elapsed, for computing blends</param>
-        /// <param name="lookupBlend">Delegate to use to find a blend definition, when a blend is being created</param>
         public void UpdateRootFrame(
-            ICinemachineCamera activeCamera, Vector3 up, float deltaTime, 
-            CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
+            ICinemachineCamera activeCamera, Vector3 up, float deltaTime)
         {
             // Make sure there is a first stack frame
             if (m_FrameStack.Count == 0)
@@ -211,11 +213,11 @@ namespace Unity.Cinemachine
                 bool backingOutOfBlend = false;
 
                 // Do we need to create a game-play blend?
-                if (lookupBlend != null && activeCamera != null && activeCamera.IsValid
+                if (LookupBlendDelegate != null && activeCamera != null && activeCamera.IsValid
                     && outgoingCamera != null && outgoingCamera.IsValid && deltaTime >= 0)
                 {
                     // Create a blend (curve will be null if a cut)
-                    var blendDef = lookupBlend(outgoingCamera, activeCamera);
+                    var blendDef = LookupBlendDelegate(outgoingCamera, activeCamera);
                     if (blendDef.BlendCurve != null && blendDef.BlendTime > kEpsilon)
                     {
                         // Are we backing out of a blend-in-progress?
