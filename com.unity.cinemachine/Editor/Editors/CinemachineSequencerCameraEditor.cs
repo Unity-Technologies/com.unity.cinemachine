@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -67,7 +66,14 @@ namespace Unity.Cinemachine.Editor
                 var vcamSel = row.AddChild(new PopupField<Object>());
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.TrackAnyUserActivity(() => vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList());
+                vcamSel.TrackAnyUserActivity(() => 
+                {
+                    vcamSel.choices ??= new();
+                    vcamSel.choices.Clear();
+                    var children = Target.ChildCameras;
+                    for (int i = 0; i < children.Count; ++i)
+                        vcamSel.choices.Add(children[i]);
+                });
         
                 var blend = row.AddChild(
                     new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
