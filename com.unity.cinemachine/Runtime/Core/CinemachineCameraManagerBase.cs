@@ -218,8 +218,8 @@ namespace Unity.Cinemachine
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
         {
             UpdateCameraCache();
-            foreach (var vcam in m_ChildCameras)
-                vcam.OnTargetObjectWarped(target, positionDelta);
+            for (int i = 0; i < m_ChildCameras.Count; ++i)
+                m_ChildCameras[i].OnTargetObjectWarped(target, positionDelta);
             base.OnTargetObjectWarped(target, positionDelta);
         }
 
@@ -231,8 +231,8 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             UpdateCameraCache();
-            foreach (var vcam in m_ChildCameras)
-                vcam.ForceCameraPosition(pos, rot);
+            for (int i = 0; i < m_ChildCameras.Count; ++i)
+                m_ChildCameras[i].ForceCameraPosition(pos, rot);
             base.ForceCameraPosition(pos, rot);
         }
 

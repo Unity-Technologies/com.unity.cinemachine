@@ -157,10 +157,10 @@ namespace Unity.Cinemachine.Editor
                         return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
                 );
-                int i = 0;
-                foreach (var a in presetAssets)
+                for (int i = 0; i < presetAssets.Count; ++i)
                 {
-                    evt.menu.AppendAction(presetNames[i++], 
+                    var a = presetAssets[i];
+                    evt.menu.AppendAction(presetNames[i], 
                         (action) => 
                         {
                             property.objectReferenceValue = a;
@@ -189,8 +189,9 @@ namespace Unity.Cinemachine.Editor
                         return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
                 );
-                foreach (var t in assetTypes)
+                for (int i = 0; i < assetTypes.Count; ++i)
                 {
+                    var t = assetTypes[i];
                     evt.menu.AppendAction("New " + InspectorUtility.NicifyClassName(t), 
                         (action) => 
                         {
@@ -247,10 +248,10 @@ namespace Unity.Cinemachine.Editor
 
                 if (!string.IsNullOrEmpty(presetPath))
                 {
-                    foreach (var t in assetTypes)
-                        InspectorUtility.AddAssetsFromPackageSubDirectory(t, presetAssets, presetPath);
-                    foreach (var n in presetAssets)
-                        presetNames.Add("Presets/" + n.name);
+                    for (int i = 0; i < assetTypes.Count; ++i)
+                        InspectorUtility.AddAssetsFromPackageSubDirectory(assetTypes[i], presetAssets, presetPath);
+                    for (int i = 0; i < presetAssets.Count; ++i)
+                        presetNames.Add("Presets/" + presetAssets[i].name);
                 }
                 return presetAssets;
             }

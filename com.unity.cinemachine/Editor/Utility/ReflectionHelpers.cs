@@ -64,8 +64,9 @@ namespace Unity.Cinemachine
         /// <returns>The type matching the name, or null if not found</returns>
         public static Type GetTypeInAllDependentAssemblies(string typeName)
         {
-            foreach (Type type in GetTypesInAllDependentAssemblies(t => t.Name == typeName))
-                return type;
+            var iter = GetTypesInAllDependentAssemblies(t => t.Name == typeName).GetEnumerator();
+            if (iter.MoveNext())
+                return iter.Current;
             return null;
         }
 
@@ -75,10 +76,11 @@ namespace Unity.Cinemachine
         public static IEnumerable<Type> GetTypesInAllDependentAssemblies(Predicate<Type> predicate)
         {
             List<Type> foundTypes = new(100);
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            string definedIn = typeof(CinemachineComponentBase).Assembly.GetName().Name;
-            foreach (Assembly assembly in assemblies)
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var definedIn = typeof(CinemachineComponentBase).Assembly.GetName().Name;
+            for (int i = 0; i < assemblies.Length; ++i)
             {
+                var assembly = assemblies[i];
                 if (assembly.GlobalAssemblyCache)
                     continue;
 
@@ -96,8 +98,9 @@ namespace Unity.Cinemachine
 
                 try
                 {
-                    foreach (Type foundType in GetTypesInAssembly(assembly, predicate))
-                        foundTypes.Add(foundType);
+                    var iter = GetTypesInAssembly(assembly, predicate).GetEnumerator();
+                    while (iter.MoveNext())
+                        foundTypes.Add(iter.Current);
                 }
                 catch (Exception) {} // Just skip uncooperative assemblies
             }
@@ -214,8 +217,9 @@ namespace Unity.Cinemachine
         {
             bool doneSomething = false;
             var components = go.GetComponentsInChildren<MonoBehaviour>(true);
-            foreach (var c in components)
+            for (int i = 0; i < components.Length; ++i)
             {
+                var c = components[i];
                 var obj = c as object;
                 if (ScanFields(ref obj, updater))
                 {
@@ -239,8 +243,10 @@ namespace Unity.Cinemachine
                     bindingFlags |= BindingFlags.NonPublic; // you can inspect non-public fields if thy have the attribute
 
                 var fields = obj.GetType().GetFields(bindingFlags);
-                foreach (var f in fields)
+                for (int j = 0; j < fields.Length; ++j)
                 {
+                    var f = fields[j];
+
                     if (!f.IsPublic && f.GetCustomAttribute(typeof(SerializeField)) == null)
                         continue;
 

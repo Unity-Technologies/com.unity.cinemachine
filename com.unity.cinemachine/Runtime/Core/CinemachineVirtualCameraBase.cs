@@ -502,8 +502,8 @@ namespace Unity.Cinemachine
         {
             var vcams = Resources.FindObjectsOfTypeAll(
                 typeof(CinemachineVirtualCameraBase)) as CinemachineVirtualCameraBase[];
-            foreach (var vcam in vcams)
-                vcam.LookAtTargetChanged = vcam.FollowTargetChanged = true;
+            for (int i = 0; i < vcams.Length; ++i)
+                vcams[i].LookAtTargetChanged = vcams[i].FollowTargetChanged = true;
         }
 #endif
 
@@ -705,8 +705,8 @@ namespace Unity.Cinemachine
 #else
                 var vcams = FindObjectsOfType<CinemachineVirtualCameraBase>(true);
 #endif
-                foreach (var vcam in vcams)
-                    vcam.InvalidateCachedTargets();
+                for (int i = 0; i < vcams.Length; ++i)
+                    vcams[i].InvalidateCachedTargets();
             }
         }
 #endif

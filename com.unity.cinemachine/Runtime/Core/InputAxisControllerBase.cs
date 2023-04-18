@@ -123,8 +123,9 @@ namespace Unity.Cinemachine
 
             // Rebuild the controller list, recycling existing ones to preserve the settings
             List<InputAxisControllerBase<T>.Controller> newControllers = new();
-            foreach (var t in m_AxisOwners)
+            for (int j = 0; j < m_AxisOwners.Count; ++j)
             {
+                var t = m_AxisOwners[j];
                 var startIndex = m_Axes.Count;
                 t.GetInputAxes(m_Axes);
                 for (int i = startIndex; i < m_Axes.Count; ++i)
