@@ -35,6 +35,7 @@ namespace Unity.Cinemachine
     [Serializable]
     internal class InputAxisControllerManager<T> where T : IInputAxisReader, new ()
     {
+        [NonReorderable]
         public List<InputAxisControllerBase<T>.Controller> Controllers = new ();
 
         /// Axes are dynamically discovered by querying behaviours implementing <see cref="IInputAxisOwner"/>

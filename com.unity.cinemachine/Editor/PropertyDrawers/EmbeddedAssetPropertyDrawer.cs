@@ -8,6 +8,7 @@ using System.Reflection;
 namespace Unity.Cinemachine.Editor
 {
     // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AddAssetSelectorWithPresets
+    // Currently only used by CinemachineImpulseDefinition editor
 
     [CustomPropertyDrawer(typeof(CinemachineEmbeddedAssetPropertyAttribute))]
     class EmbeddedAssetPropertyDrawer : PropertyDrawer
@@ -20,7 +21,7 @@ namespace Unity.Cinemachine.Editor
 
         bool WarnIfNull => attribute is CinemachineEmbeddedAssetPropertyAttribute attr && attr.WarnIfNull;
 
-        float HeaderHeight { get { return EditorGUIUtility.singleLineHeight * 1.5f; } }
+        float HeaderHeight => EditorGUIUtility.singleLineHeight * 1.5f; 
         float DrawHeader(Rect rect, string text)
         {
             float delta = HeaderHeight - EditorGUIUtility.singleLineHeight;

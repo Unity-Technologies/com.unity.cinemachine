@@ -4,7 +4,6 @@ using UnityEngine;
 #if CINEMACHINE_UNITY_INPUTSYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
-using System.Linq;
 #endif
 
 namespace Unity.Cinemachine
@@ -179,8 +178,14 @@ namespace Unity.Cinemachine
                         m_CachedAction.Enable();
 
                     // local function to wrap the lambda which otherwise causes a tiny gc
-                    InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) => 
-                        user.actions.First(x => x.id == aRef.action.id);
+                    static InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) 
+                    {
+                        var iter = user.actions.GetEnumerator();
+                        while (iter.MoveNext())
+                            if (iter.Current.id == aRef.action.id)
+                                return iter.Current;
+                        return null;
+                    }
                 }
 
                 // Update enabled status

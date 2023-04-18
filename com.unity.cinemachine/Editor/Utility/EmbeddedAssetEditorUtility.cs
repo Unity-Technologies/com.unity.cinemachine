@@ -5,7 +5,6 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
 using Object = UnityEngine.Object;
 
 namespace Unity.Cinemachine.Editor
@@ -229,9 +228,14 @@ namespace Unity.Cinemachine.Editor
             static List<Type> GetAssetTypes(Type baseType)
             {
                 // GML todo: optimize with TypeCache
-                return ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => baseType.IsAssignableFrom(t) && !t.IsAbstract 
-                        && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToList();
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var list = new List<Type>();
+                var iter = allTypes.GetEnumerator();
+                while (iter.MoveNext())
+                    list.Add(iter.Current);
+                return list;
             }
 
             // Local function
