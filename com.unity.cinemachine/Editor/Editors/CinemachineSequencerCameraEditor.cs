@@ -93,7 +93,7 @@ namespace Unity.Cinemachine.Editor
             {
                 var floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
                 
-                e1.style.marginLeft = isHeader ? InspectorUtility.SingleLineHeight : 0;
+                e1.style.marginLeft = isHeader ? 2 * InspectorUtility.SingleLineHeight - 3 : 0;
                 e1.style.flexBasis = floatFieldWidth + InspectorUtility.SingleLineHeight; 
                 e1.style.flexGrow = 1;
                 
