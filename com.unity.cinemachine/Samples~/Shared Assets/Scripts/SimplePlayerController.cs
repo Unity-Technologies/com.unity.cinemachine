@@ -36,6 +36,9 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("This event is sent when the player lands after a jump.")]
         public UnityEvent Landed = new ();
         
+        [Tooltip("Override the main camera. Useful for split screen games.")]
+        public Camera CameraOverride;
+
         public void EnableLockCursor(bool enable) => LockCursor = enable;
 
         /// Report the available input axes to the input axis controller.
