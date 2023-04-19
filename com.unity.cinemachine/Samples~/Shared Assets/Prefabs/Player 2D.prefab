@@ -36,7 +36,7 @@ Transform:
   m_Children:
   - {fileID: 2474673035909645045}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &3690201544760606824
 Rigidbody2D:
@@ -125,6 +125,7 @@ MonoBehaviour:
   Landed:
     m_PersistentCalls:
       m_Calls: []
+  PlayerGeometry: {fileID: 2474673035909645045}
 --- !u!114 &1278834370067618843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ScanRecursively: 1
+  ScanRecursively: 0
   SuppressInputWhileBlending: 1
   m_ControllerManager:
     Controllers:
@@ -258,8 +259,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.03761244, y: 0.7289507}
-  m_Size: {x: 0.35985565, y: 0.43979895}
+  m_Offset: {x: 0.015564799, y: 0.72890985}
+  m_Size: {x: 0.37782025, y: 0.37782025}
   m_Direction: 0
 --- !u!61 &3080082640309192527
 BoxCollider2D:
