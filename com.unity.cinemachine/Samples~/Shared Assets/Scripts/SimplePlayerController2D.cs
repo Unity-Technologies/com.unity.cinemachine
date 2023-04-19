@@ -34,13 +34,9 @@ namespace Unity.Cinemachine.Samples
             {
                 // Read the input from the user
                 m_IsSprinting = Sprint.Value > 0.5f;
-                var desiredVel = new Vector2(MoveX.Value * (m_IsSprinting ? SprintSpeed : Speed), 0);
-                if (!IsJumping && Mathf.Max(MoveZ.Value, Jump.Value) > 0.01f)
-                {
-                    desiredVel.y = m_IsSprinting ? SprintJumpSpeed : JumpSpeed;
+                vel.x = MoveX.Value * (m_IsSprinting ? SprintSpeed : Speed);
+                if (m_IsGrounded && Mathf.Max(MoveZ.Value, Jump.Value) > 0.01f)
                     vel.y = m_IsSprinting ? SprintJumpSpeed : JumpSpeed;
-                }
-                vel.x = desiredVel.x;
             }
 
             // Rotate the player to face movement direction
