@@ -162,6 +162,9 @@ namespace Unity.Cinemachine.Editor
             });
             list.BindProperty(property);
 
+            // Delay to work around a bug in ListView (UUM-33402)
+            list.OnInitialGeometry(() => list.reorderable = false);
+
             var isEmptyMessage = ux.AddChild(new HelpBox(
                 "No applicable components found.  Must have one of: "
                     + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 

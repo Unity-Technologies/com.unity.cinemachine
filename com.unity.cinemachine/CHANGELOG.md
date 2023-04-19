@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New 2D platformer sample showing custom camera manager.
 
 ### Changed
+- Minimum Unity version is now 2022.2.15f1.
 - All namespaces changed from "Cinemachine" to "Unity.Cinemachine".
 - "Cinemachine.Utility" namespace folded into to "Unity.Cinemachine".
 - CinemachineBlendListCamera has been renamed to CinemachineSequencerCamera.
