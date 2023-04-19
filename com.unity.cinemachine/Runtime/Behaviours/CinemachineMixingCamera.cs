@@ -231,7 +231,7 @@ namespace Unity.Cinemachine
                 }
             }
             m_LiveChildPercent = totalWeight > 0.001f ? (highestWeight * 100 / totalWeight) : 0;
-            SetLiveChild(liveChild, worldUp, deltaTime, null);
+            SetLiveChild(liveChild, worldUp, deltaTime);
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_CameraState, deltaTime);
             PreviousStateIsValid = true;
         }

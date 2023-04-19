@@ -5,25 +5,17 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class SimplePlayerController : MonoBehaviour, IInputAxisOwner
+    public abstract class SimplePlayerControllerBase : MonoBehaviour, IInputAxisOwner
     {
         public float Speed = 1f;
         public float SprintSpeed = 4;
         public float JumpSpeed = 4;
         public float SprintJumpSpeed = 6;
     
-        public float Damping = 0.5f;
-
-        public enum ForwardModes { Camera, Player, World };
-        public ForwardModes InputForward = ForwardModes.Camera;
-        public enum UpModes { Player, World };
-        public UpModes UpMode = UpModes.World;
-
-        public bool Strafe = false;
         public bool LockCursor = false;
 
         public Action PreUpdate;
-        public Action PostUpdate;
+        public Action<Vector3, float> PostUpdate;
         public Action StartJump;
         public Action EndJump;
 
@@ -46,25 +38,6 @@ namespace Unity.Cinemachine.Samples
         
         [Tooltip("Override the main camera. Useful for split screen games.")]
         public Camera CameraOverride;
-        
-        Vector3 m_CurrentVelocityXZ;
-        Vector3 m_LastInput;
-        float m_CurrentVelocityY;
-        bool m_IsSprinting;
-        bool m_IsJumping;
-        CharacterController m_Controller; // optional
-
-        // Get velocity relative to player transform
-        public Vector3 GetPlayerVelocity()
-        {
-            var vel = Quaternion.Inverse(transform.rotation) * m_CurrentVelocityXZ;
-            vel.y = m_CurrentVelocityY;
-            return vel;
-        }
-
-        public bool IsSprinting => m_IsSprinting;
-        public bool IsJumping => m_IsJumping;
-        public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
 
         public void EnableLockCursor(bool enable) => LockCursor = enable;
 
@@ -79,11 +52,33 @@ namespace Unity.Cinemachine.Samples
             axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
             axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
         }
+    }
 
-        void Start()
-        {
-            TryGetComponent(out m_Controller);
-        }
+    public class SimplePlayerController : SimplePlayerControllerBase
+    {
+        public float Damping = 0.5f;
+        public bool Strafe = false;
+
+        public enum ForwardModes { Camera, Player, World };
+        public ForwardModes InputForward = ForwardModes.Camera;
+        public enum UpModes { Player, World };
+        public UpModes UpMode = UpModes.World;
+
+        [Tooltip("Override the main camera. Useful for split screen games.")]
+        public Camera CameraOverride;
+        
+        Vector3 m_CurrentVelocityXZ;
+        Vector3 m_LastInput;
+        float m_CurrentVelocityY;
+        bool m_IsSprinting;
+        bool m_IsJumping;
+        CharacterController m_Controller; // optional
+
+        public bool IsSprinting => m_IsSprinting;
+        public bool IsJumping => m_IsJumping;
+        public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
+
+        void Start() => TryGetComponent(out m_Controller);
 
         private void OnEnable()
         {
@@ -140,7 +135,13 @@ namespace Unity.Cinemachine.Samples
                 transform.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
             }
 
-            PostUpdate?.Invoke();
+            if (PostUpdate != null)
+            {
+                // Get local-space velocity
+                var vel = Quaternion.Inverse(transform.rotation) * m_CurrentVelocityXZ;
+                vel.y = m_CurrentVelocityY;
+                PostUpdate(vel, m_IsSprinting ? JumpSpeed / SprintJumpSpeed : 1);
+            }
         }
 
         Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
@@ -167,7 +168,7 @@ namespace Unity.Cinemachine.Samples
 
         bool ProcessJump()
         {
-            const float kGravity = -9.8f;
+            const float kGravity = -10;
             bool justLanded = false;
             m_CurrentVelocityY += kGravity * Time.deltaTime;
             if (!m_IsJumping && Jump.Value > 0.01f)
@@ -230,9 +231,9 @@ namespace Unity.Cinemachine.Samples
 
         float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
         {
-            float hExtraHeight = 2;
-            if (Physics.Raycast(pos + up * hExtraHeight, -up, out var hit, max + hExtraHeight, LayerMask.GetMask("Default")))
-                return hit.distance - hExtraHeight; 
+            float kExtraHeight = 2;
+            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, max + kExtraHeight, LayerMask.GetMask("Default")))
+                return hit.distance - kExtraHeight; 
             return max + 1;
         }
     }

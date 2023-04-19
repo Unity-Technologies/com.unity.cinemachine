@@ -48,13 +48,14 @@ namespace Unity.Cinemachine.Editor
                     Gizmos.DrawLine(pos, pos + forwardFeelerVector * distance);
 
                     // Show the avoidance path, for debugging
-                    List<List<Vector3>> debugPaths = collider.DebugPaths;
-                    foreach (var path in debugPaths)
+                    for (int i = 0; i < collider.DebugPaths.Count; ++i)
                     {
+                        var path = collider.DebugPaths[i];
                         Gizmos.color = CinemachineDeoccluderPrefs.CameraPathColor.Value;
                         Vector3 p0 = vcam.State.ReferenceLookAt;
-                        foreach (var p in path)
+                        for (int j = 0; j < path.Count; ++j)
                         {
+                            var p = path[j];
                             Gizmos.DrawLine(p0, p);
                             p0 = p;
                         }

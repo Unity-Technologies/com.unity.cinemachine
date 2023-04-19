@@ -21,6 +21,12 @@
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "14.0.0",
+            "define": "CINEMACHINE_HDRP"
+        }
+    ],
     "noEngineReferences": false
 }

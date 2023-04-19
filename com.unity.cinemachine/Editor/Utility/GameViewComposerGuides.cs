@@ -114,7 +114,7 @@ namespace Unity.Cinemachine.Editor
 
         // Call this from inspector's OnDisable()
         public void OnDisable() => m_EventCatcher.OnDisable();
-
+        
         Rect GetCameraRect(Camera outputCamera, LensSettings lens)
         {
             Rect cameraRect = outputCamera.pixelRect;

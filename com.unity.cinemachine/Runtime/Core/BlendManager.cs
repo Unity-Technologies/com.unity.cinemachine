@@ -93,10 +93,9 @@ namespace Unity.Cinemachine
         /// or part of a current blend, either directly or indirectly because its parents are live.
         /// </summary>
         /// <param name="vcam">The camera to test whether it is live</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
         /// <returns>True if the camera is live (directly or indirectly)
         /// or part of a blend in progress.</returns>
-        public bool IsLive(ICinemachineCamera cam, bool dominantChildOnly = false) => m_CurrentLiveCameras.Uses(cam);
+        public bool IsLive(ICinemachineCamera cam) => m_CurrentLiveCameras.Uses(cam);
 
         /// <summary>Get the current state, representing the active camera and blend state.</summary>
         public CameraState CameraState => m_CurrentLiveCameras.State;

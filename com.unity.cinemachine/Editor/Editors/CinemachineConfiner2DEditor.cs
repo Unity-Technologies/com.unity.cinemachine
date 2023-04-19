@@ -110,16 +110,18 @@ namespace Unity.Cinemachine.Editor
 
             // Draw input confiner
             Gizmos.color = color;
-            foreach (var path in originalPath )
+            for (int i = 0; i < originalPath.Count; ++i)
             {
+                var path = originalPath[i];
                 for (var index = 0; index < path.Count; index++)
                     Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
             }
 
             // Draw confiner for current camera size
             Gizmos.color = colorDimmed;
-            foreach (var path in s_CurrentPathCache)
+            for (int i = 0; i < s_CurrentPathCache.Count; ++i)
             {
+                var path = s_CurrentPathCache[i];
                 for (var index = 0; index < path.Count; index++)
                     Gizmos.DrawLine(path[index], path[(index + 1) % path.Count]);
             }

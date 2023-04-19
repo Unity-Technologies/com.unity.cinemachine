@@ -74,9 +74,11 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         public static T[] FindAllBehavioursInScene<T>() where T : MonoBehaviour
         {
-            List<T> objectsInScene = new List<T>();
-            foreach (T b in Resources.FindObjectsOfTypeAll<T>())
+            List<T> objectsInScene = new ();
+            var allObjects = Resources.FindObjectsOfTypeAll<T>();
+            for (int i = 0; i < allObjects.Length; ++i)
             {
+                var b = allObjects[i];
                 if (b == null || b.gameObject == null)
                     continue;   // object was deleted
                 GameObject go = b.gameObject;
@@ -364,8 +366,8 @@ namespace Unity.Cinemachine.Editor
         static bool FilterField(string fullName, FieldInfo fieldInfo)
         {
             var attrs = fieldInfo.GetCustomAttributes(false);
-            foreach (var attr in attrs)
-                if (attr.GetType().Name.Equals("NoSaveDuringPlayAttribute"))
+            for (int i = 0; i < attrs.Length; ++i)
+                if (attrs[i].GetType().Name.Equals("NoSaveDuringPlayAttribute"))
                     return false;
             return true;
         }
@@ -374,8 +376,8 @@ namespace Unity.Cinemachine.Editor
         public static bool HasSaveDuringPlay(MonoBehaviour b)
         {
             var attrs = b.GetType().GetCustomAttributes(true);
-            foreach (var attr in attrs)
-                if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
+            for (int i = 0; i < attrs.Length; ++i)
+                if (attrs[i].GetType().Name.Equals("SaveDuringPlayAttribute"))
                     return true;
             return false;
         }
@@ -499,7 +501,7 @@ namespace Unity.Cinemachine.Editor
                     case PlayModeStateChange.ExitingPlayMode:
                         SaveAllInterestingStates();
                         break;
-                    case PlayModeStateChange.EnteredEditMode when sSavedStates != null:
+                    case PlayModeStateChange.EnteredEditMode when s_SavedStates != null:
                         RestoreAllInterestingStates();
                         break;
                 }
@@ -518,9 +520,10 @@ namespace Unity.Cinemachine.Editor
         static HashSet<GameObject> FindInterestingObjects()
         {
             var objects = new HashSet<GameObject>();
-            MonoBehaviour[] everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
-            foreach (var b in everything)
+            var everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
+            for (int i = 0; i < everything.Length; ++i)
             {
+                var b = everything[i];
                 if (!objects.Contains(b.gameObject) && ObjectStateSaver.HasSaveDuringPlay(b))
                 {
                     //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
@@ -530,33 +533,34 @@ namespace Unity.Cinemachine.Editor
             return objects;
         }
 
-        static List<ObjectStateSaver> sSavedStates = null;
+        static List<ObjectStateSaver> s_SavedStates = null;
 
         static void SaveAllInterestingStates()
         {
             //Debug.Log("Exiting play mode: Saving state for all interesting objects");
-            if (OnHotSave != null)
-                OnHotSave();
+            OnHotSave?.Invoke();
 
-            sSavedStates = new List<ObjectStateSaver>();
+            s_SavedStates = new List<ObjectStateSaver>();
             var objects = FindInterestingObjects();
-            foreach (var obj in objects)
+            var iter = objects.GetEnumerator();
+            while (iter.MoveNext())
             {
                 var saver = new ObjectStateSaver();
-                saver.CollectFieldValues(obj);
-                sSavedStates.Add(saver);
+                saver.CollectFieldValues(iter.Current);
+                s_SavedStates.Add(saver);
             }
-            if (sSavedStates.Count == 0)
-                sSavedStates = null;
+            if (s_SavedStates.Count == 0)
+                s_SavedStates = null;
         }
 
         static void RestoreAllInterestingStates()
         {
             //Debug.Log("Updating state for all interesting objects");
             bool dirty = false;
-            GameObject[] roots = ObjectTreeUtil.FindAllRootObjectsInScene();
-            foreach (ObjectStateSaver saver in sSavedStates)
+            var roots = ObjectTreeUtil.FindAllRootObjectsInScene();
+            for (int i = 0; i < s_SavedStates.Count; ++i)
             {
+                var saver = s_SavedStates[i];
                 GameObject go = saver.FindSavedGameObject(roots);
                 if (go != null)
                 {
@@ -571,7 +575,7 @@ namespace Unity.Cinemachine.Editor
             }
             if (dirty)
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-            sSavedStates = null;
+            s_SavedStates = null;
         }
     }
 }
