@@ -82,8 +82,8 @@ namespace Unity.Cinemachine.Editor
 
         void DestroySubeditors()
         {
-            foreach (var e in m_Subeditors)
-                e.Dispose();
+            for (int i = 0; i < m_Subeditors.Count; ++i)
+                m_Subeditors[i].Dispose();
             m_Subeditors.Clear();
         }
 
@@ -191,8 +191,8 @@ namespace Unity.Cinemachine.Editor
                     m_Subeditors.Add(new Subeditor(vcam.transform));
                     for (int i = 0; i < m_ComponentsCache.Count; ++i)
                         m_Subeditors.Add(new Subeditor(m_ComponentsCache[i]));
-                    foreach (var e in m_Subeditors)
-                        m_ParentElement.Add(e.Foldout);
+                    for (int i = 0; i < m_Subeditors.Count; ++i)
+                        m_ParentElement.Add(m_Subeditors[i].Foldout);
                 }
             }
         }

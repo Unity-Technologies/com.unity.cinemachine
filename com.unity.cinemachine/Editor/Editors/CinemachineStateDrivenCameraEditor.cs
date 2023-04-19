@@ -112,8 +112,10 @@ namespace Unity.Cinemachine.Editor
 
             // Create the parent map in the target
             List<CinemachineStateDrivenCamera.ParentHash> parents = new();
-            foreach (var i in collector.StateParentLookup)
-                parents.Add(new CinemachineStateDrivenCamera.ParentHash { Hash = i.Key, HashOfParent = i.Value });
+            var iter = collector.StateParentLookup.GetEnumerator();
+            while (iter.MoveNext())
+                parents.Add(new CinemachineStateDrivenCamera.ParentHash 
+                    { Hash = iter.Current.Key, HashOfParent = iter.Current.Value });
             Target.HashOfParent = parents.ToArray();
         }
 
@@ -147,10 +149,10 @@ namespace Unity.Cinemachine.Editor
             void CollectStatesFromFSM(
                 AnimatorStateMachine fsm, string hashPrefix, int parentHash, string displayPrefix)
             {
-                ChildAnimatorState[] states = fsm.states;
+                var states = fsm.states;
                 for (int i = 0; i < states.Length; i++)
                 {
-                    AnimatorState state = states[i].state;
+                    var state = states[i].state;
                     int hash = AddState(Animator.StringToHash(hashPrefix + state.name),
                         parentHash, displayPrefix + state.name);
 
@@ -160,16 +162,17 @@ namespace Unity.Cinemachine.Editor
                     if (clips.Count > 1)
                     {
                         string substatePrefix = displayPrefix + state.name + ".";
-                        foreach (AnimationClip c in clips)
+                        for (int j = 0; j < clips.Count; ++j)
                             AddState(
-                                CinemachineStateDrivenCamera.CreateFakeHash(hash, c),
-                                hash, substatePrefix + c.name);
+                                CinemachineStateDrivenCamera.CreateFakeHash(hash, clips[j]),
+                                hash, substatePrefix + clips[j].name);
                     }
                 }
 
-                ChildAnimatorStateMachine[] fsmChildren = fsm.stateMachines;
-                foreach (var child in fsmChildren)
+                var fsmChildren = fsm.stateMachines;
+                for (int i = 0; i < fsmChildren.Length; ++i)
                 {
+                    var child = fsmChildren[i];
                     string name = hashPrefix + child.stateMachine.name;
                     string displayName = displayPrefix + child.stateMachine.name;
                     int hash = AddState(Animator.StringToHash(name), parentHash, displayName);
@@ -187,8 +190,8 @@ namespace Unity.Cinemachine.Editor
                 if (tree != null)
                 {
                     var children = tree.children;
-                    foreach (var child in children)
-                        clips.AddRange(CollectClips(child.motion));
+                    for (int i = 0; i < children.Length; ++i)
+                        clips.AddRange(CollectClips(children[i].motion));
                 }
                 return clips;
             }
@@ -219,8 +222,9 @@ namespace Unity.Cinemachine.Editor
             m_CameraIndexLookup = new();
             vcams.Add("(none)");
             var children = Target.ChildCameras;
-            foreach (var c in children)
+            for (int i = 0; i < children.Count; ++i)
             {
+                var c = children[i];
                 m_CameraIndexLookup[c] = vcams.Count;
                 vcams.Add(c.Name);
             }

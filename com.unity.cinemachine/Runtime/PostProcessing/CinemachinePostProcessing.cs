@@ -93,14 +93,11 @@ namespace Unity.Cinemachine
             public void CreateProfileCopy(PostProcessProfile source)
             {
                 DestroyProfileCopy();
-                PostProcessProfile profile = ScriptableObject.CreateInstance<PostProcessProfile>();
-                if (source != null)
+                var profile = ScriptableObject.CreateInstance<PostProcessProfile>();
+                for (int i = 0; source != null && i < source.settings.Count; ++i)
                 {
-                    foreach (var item in source.settings)
-                    {
-                        var itemCopy = Instantiate(item);
-                        profile.settings.Add(itemCopy);
-                    }
+                    var itemCopy = Instantiate(source.settings[i]);
+                    profile.settings.Add(itemCopy);
                 }
                 ProfileCopy = profile;
             }

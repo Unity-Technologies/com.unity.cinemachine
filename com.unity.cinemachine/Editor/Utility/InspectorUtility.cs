@@ -174,12 +174,13 @@ namespace Unity.Cinemachine.Editor
                 var info = new DirectoryInfo(path);
                 path += "/";
                 var fileInfo = info.GetFiles();
-                foreach (var file in fileInfo)
+                for (int i = 0; i < fileInfo.Length; ++i)
                 {
+                    var file = fileInfo[i];
                     if (file.Extension != ".asset")
                         continue;
-                    string name = path + file.Name;
-                    ScriptableObject a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
+                    var name = path + file.Name;
+                    var a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
                     if (a != null)
                         assets.Add(a);
                 }
@@ -413,10 +414,11 @@ namespace Unity.Cinemachine.Editor
                         && typeof(MonoBehaviour).IsAssignableFrom(t)
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var s = string.Empty;
-                foreach (var t in allSources)
+                var iter = allSources.GetEnumerator();
+                while (iter.MoveNext())
                 {
                     var sep = (s.Length == 0) ? string.Empty : ", ";
-                    s += sep + t.Name;
+                    s += sep + iter.Current.Name;
                 }
                 if (s.Length == 0)
                     s = s_NoneString;

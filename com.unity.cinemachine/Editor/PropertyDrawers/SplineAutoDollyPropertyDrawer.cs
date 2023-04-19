@@ -34,9 +34,9 @@ namespace Unity.Cinemachine.Editor
                 if (index != GetImplementationIndex(property))
                 {
                     var targets = property.serializedObject.targetObjects;
-                    foreach (var t in targets)
+                    for (int i = 0; i < targets.Length; ++i)
                     {
-                        var o = new SerializedObject(t);
+                        var o = new SerializedObject(targets[i]);
                         var p2 = o.FindProperty(property.propertyPath);
                         p2.managedReferenceValue = (index == 0) 
                             ? null : Activator.CreateInstance(AutoDollyMenuItems.s_AllItems[index]);

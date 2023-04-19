@@ -200,6 +200,7 @@ namespace Unity.Cinemachine
         void OnEnable()
         {
             m_BlendManager.OnEnable();
+            m_BlendManager.LookupBlendDelegate = LookupBlend;
 
             s_ActiveBrains.Add(this);
 #if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
@@ -516,8 +517,7 @@ namespace Unity.Cinemachine
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                m_BlendManager.UpdateRootFrame(
-                    TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime);
 
             m_BlendManager.ComputeCurrentBlend();
 
@@ -568,8 +568,7 @@ namespace Unity.Cinemachine
             // Choose the active vcam and apply it to the Unity camera
             if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
             {
-                m_BlendManager.UpdateRootFrame(
-                    TopCameraFromPriorityQueue(), DefaultWorldUp, Time.fixedDeltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), DefaultWorldUp, Time.fixedDeltaTime);
                 ProcessActiveCamera(Time.fixedDeltaTime);
             }
         }
