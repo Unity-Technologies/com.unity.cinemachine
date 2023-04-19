@@ -41,8 +41,7 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(EmbeddedAssetEditorUtility.EmbeddedAssetInspector<CinemachineBlenderSettings>(
-                serializedObject.FindProperty(() => Target.CustomBlends), null));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
 
             ux.ContinuousUpdate(() =>
             {

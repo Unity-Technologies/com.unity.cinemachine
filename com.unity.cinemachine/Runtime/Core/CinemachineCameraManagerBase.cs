@@ -47,6 +47,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("This is the asset which contains custom settings for specific child blends")]
         [FormerlySerializedAs("m_CustomBlends")]
+        [EmbeddedBlenderSettingsProperty]
         public CinemachineBlenderSettings CustomBlends = null;
 
         List<CinemachineVirtualCameraBase> m_ChildCameras;
@@ -100,6 +101,18 @@ namespace Unity.Cinemachine
             { 
                 UpdateCameraCache(); 
                 return m_ChildCameras; 
+            }
+        }
+
+        /// <inheritdoc />
+        public override bool PreviousStateIsValid 
+        { 
+            get => base.PreviousStateIsValid;
+            set 
+            {
+                base.PreviousStateIsValid = value;
+                for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
+                    m_ChildCameras[i].PreviousStateIsValid = value;
             }
         }
 

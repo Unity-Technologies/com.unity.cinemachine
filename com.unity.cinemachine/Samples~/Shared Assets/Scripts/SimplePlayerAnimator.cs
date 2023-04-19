@@ -24,7 +24,7 @@ namespace Unity.Cinemachine.Samples
         public float JumpAnimationScale = 0.65f;
 
         Animator m_Animator;
-        SimplePlayerController m_Controller;
+        SimplePlayerControllerBase m_Controller;
         Vector3 m_PreviousPosition; // used if m_Controller == null or disabled
         bool m_WasWalking;
         bool m_WasRunning;
@@ -34,17 +34,13 @@ namespace Unity.Cinemachine.Samples
         {
             m_PreviousPosition = transform.position;
             TryGetComponent(out m_Animator);
-            if (TryGetComponent(out m_Controller))
+            m_Controller = GetComponentInParent<SimplePlayerControllerBase>();
+            if (m_Controller != null)
             {
                 // Install our callbacks to handle jump and animation based on velocity
                 m_Controller.StartJump += () => m_Animator.SetTrigger("Jump");
                 m_Controller.EndJump += () => m_Animator.SetTrigger("Land");
-                m_Controller.PostUpdate += () =>
-                {
-                    UpdateAnimation(m_Controller.GetPlayerVelocity());
-                    m_Animator.SetFloat("JumpScale", JumpAnimationScale * (m_Controller.IsSprinting 
-                        ? m_Controller.JumpSpeed / m_Controller.SprintJumpSpeed : 1));
-                };
+                m_Controller.PostUpdate += (vel, jumpAnimationScale) => UpdateAnimation(vel, jumpAnimationScale);
             }
         }
         
@@ -60,12 +56,12 @@ namespace Unity.Cinemachine.Samples
                 var pos = transform.position;
                 var vel = Quaternion.Inverse(transform.rotation) * (pos - m_PreviousPosition) / Time.deltaTime;
                 m_PreviousPosition = pos;
-                UpdateAnimation(vel);
+                UpdateAnimation(vel, 1);
             }
         }
         
         // Set animation params for current velocity
-        void UpdateAnimation(Vector3 vel)
+        void UpdateAnimation(Vector3 vel, float jumpAnimationScale)
         {
             vel.y = 0; // we don't consider vertical movement
             var speed = vel.magnitude;
@@ -92,6 +88,7 @@ namespace Unity.Cinemachine.Samples
             m_Animator.SetFloat("MotionScale", motionScale);
             m_Animator.SetBool("Walking", isWalking);
             m_Animator.SetBool("Running", isRunning);
+            m_Animator.SetFloat("JumpScale", JumpAnimationScale * jumpAnimationScale);
         }
     }
 }

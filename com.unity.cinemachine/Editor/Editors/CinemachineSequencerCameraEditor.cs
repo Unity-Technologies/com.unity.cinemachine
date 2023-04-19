@@ -85,11 +85,9 @@ namespace Unity.Cinemachine.Editor
 
                 var def = new CinemachineSequencerCamera.Instruction();
                 var element = instructions.GetArrayElementAtIndex(index);
-                ((BindableElement)row).BindProperty(element);
 
                 var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
                 var vcamSel = row.AddChild(new PopupField<Object>());
-                vcamSel.BindProperty(vcamSelProp);
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.TrackAnyUserActivity(() => vcamSel.choices = Target.ChildCameras.Cast<Object>().ToList());
@@ -101,6 +99,9 @@ namespace Unity.Cinemachine.Editor
                 hold.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
                     
                 FormatInstructionElement(vcamSel, blend, hold);
+
+                vcamSel.BindProperty(vcamSelProp); // must bind at the end
+                ((BindableElement)row).BindProperty(element);
             };
 
             // Local function

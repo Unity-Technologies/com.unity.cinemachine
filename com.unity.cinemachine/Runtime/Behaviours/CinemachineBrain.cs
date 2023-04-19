@@ -150,6 +150,7 @@ namespace Unity.Cinemachine
         [Tooltip("This is the asset that contains custom settings for blends between "
             + "specific virtual cameras in your scene")]
         [FormerlySerializedAs("m_CustomBlends")]
+        [EmbeddedBlenderSettingsProperty]
         public CinemachineBlenderSettings CustomBlends = null;
 
         Camera m_OutputCamera = null; // never use directly - use accessor
@@ -457,6 +458,13 @@ namespace Unity.Cinemachine
         /// </summary>
         public ICinemachineCamera ActiveVirtualCamera 
             => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
+
+        /// <summary>
+        /// Call this to reset the current active camera, causing the brain to choose a new 
+        /// one without blending.  It is useful, for example,
+        /// when you want to restart a game level.
+        /// </summary>
+        public void ResetState() => m_BlendManager.ResetRootFrame();
 
         /// <summary>
         /// Is there a blend in progress?

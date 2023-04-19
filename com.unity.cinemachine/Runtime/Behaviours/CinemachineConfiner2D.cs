@@ -110,9 +110,25 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public OversizeWindowSettings OversizeWindow;
 
+        class VcamExtraState : VcamExtraStateBase
+        {
+            public ConfinerOven.BakedSolution BakedSolution;
+            
+            public Vector3 PreviousDisplacement;
+            public Vector3 DampedDisplacement;
+            public Vector3 PreviousCameraPosition;
+            
+            public float FrustumHeight;
+        };
+
+        List<VcamExtraState> m_ExtraStateCache;
+        ShapeCache m_ShapeCache;
+        
         [SerializeField, HideInInspector, FormerlySerializedAs("m_MaxWindowSize")]
         float m_LegacyMaxWindowSize = -2; // -2 means there's no legacy upgrade to do
 
+        const float k_CornerAngleThreshold = 10f;
+        
         void OnValidate()
         {
             const float maxComputationTimePerFrameInSeconds = 1f / 120f;
@@ -136,7 +152,7 @@ namespace Unity.Cinemachine
         void Reset()
         {
             Damping = 0.5f;
-            SlowingDistance = 0;
+            SlowingDistance = 5;
             OversizeWindow = new ();
         }
 
@@ -192,12 +208,14 @@ namespace Unity.Cinemachine
         /// It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and
         /// blend between them instead of changing one Confiner2D's input bounding shape and calling this over and over.
         /// </remarks>
-        public void InvalidateBoundingShapeCache() => m_ShapeCache.Invalidate();
+        public void InvalidateBoundingShapeCache()
+        {
+            m_ShapeCache.Invalidate();
+            InvalidateLensCache();
+        }
 
         [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
         public void InvalidateCache() => InvalidateBoundingShapeCache();
-
-        const float k_CornerAngleThreshold = 10f;
         
         /// <summary>
         /// Callback to do the camera confining
@@ -310,20 +328,6 @@ namespace Unity.Cinemachine
             return Mathf.Abs(frustumHeight);
         }
 
-        class VcamExtraState : VcamExtraStateBase
-        {
-            public ConfinerOven.BakedSolution BakedSolution;
-            
-            public Vector3 PreviousDisplacement;
-            public Vector3 DampedDisplacement;
-            public Vector3 PreviousCameraPosition;
-            
-            public float FrustumHeight;
-        };
-
-        List<VcamExtraState> m_ExtraStateCache;
-        ShapeCache m_ShapeCache;
-
         /// <summary>
         /// ShapeCache: contains all states that dependent only on the settings in the confiner.
         /// </summary>
@@ -367,7 +371,9 @@ namespace Unity.Cinemachine
             /// <param name="confinerStateChanged">True, if the baked confiner state has changed.
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
-            public bool ValidateCache(Collider2D boundingShape2D, OversizeWindowSettings oversize, float aspectRatio, 
+            public bool ValidateCache(
+                Collider2D boundingShape2D, 
+                OversizeWindowSettings oversize, float aspectRatio, 
                 out bool confinerStateChanged)
             {
                 confinerStateChanged = false;

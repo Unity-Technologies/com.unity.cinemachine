@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEngine;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -70,6 +71,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() => 
             {
+                var brain = CinemachineCore.FindPotentialTargetBrain(Target);
+                Target.InternalUpdateCameraState(brain == null ? Vector3.up : brain.DefaultWorldUp, -1);
                 bool haveDefault = Target.Target.TrackingTarget != Target.Follow;
                 defaultTargetLabel.SetVisible(haveDefault);
                 if (haveDefault)
