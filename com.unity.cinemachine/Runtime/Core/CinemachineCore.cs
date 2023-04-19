@@ -300,5 +300,19 @@ namespace Unity.Cinemachine
             for (int i = 0; i < numVcams; ++i)
                 GetVirtualCamera(i).OnTargetObjectWarped(target, positionDelta);
         }
+
+        /// <summary>Call this to notify all virtual cameras to forget state from the previous frame.
+        /// This is essentially a reset of all the Cinemachine cameras.  It is useful, for example,
+        /// when you want to restart a game level.
+        /// </summary>
+        public static void ResetCameraState()
+        {
+            var numVcams = CameraUpdateManager.VirtualCameraCount;
+            for (int i = 0; i < numVcams; ++i)
+                GetVirtualCamera(i).PreviousStateIsValid = false;
+            int numBrains = CinemachineBrain.ActiveBrainCount;
+            for (int i = 0; i < numBrains; ++i)
+                CinemachineBrain.GetActiveBrain(i).ResetState();
+        }
     }
 }

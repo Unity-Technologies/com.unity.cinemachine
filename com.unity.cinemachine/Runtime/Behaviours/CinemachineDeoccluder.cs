@@ -295,13 +295,15 @@ namespace Unity.Cinemachine
         {
             get
             {
-                List<List<Vector3>> list = new List<List<Vector3>>();
-
+                List<List<Vector3>> list = new ();
                 m_extraStateCache ??= new();
                 GetAllExtraStates(m_extraStateCache);
-                foreach (var e in m_extraStateCache)
+                for (int i = 0; i < m_extraStateCache.Count; ++i)
+                {
+                    var e = m_extraStateCache[i];
                     if (e.DebugResolutionPath != null && e.DebugResolutionPath.Count > 0)
                         list.Add(e.DebugResolutionPath);
+                }
                 return list;
             }
         }

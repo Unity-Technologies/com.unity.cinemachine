@@ -5,7 +5,6 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
 using Object = UnityEngine.Object;
 
 namespace Unity.Cinemachine.Editor
@@ -158,10 +157,10 @@ namespace Unity.Cinemachine.Editor
                         return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
                 );
-                int i = 0;
-                foreach (var a in presetAssets)
+                for (int i = 0; i < presetAssets.Count; ++i)
                 {
-                    evt.menu.AppendAction(presetNames[i++], 
+                    var a = presetAssets[i];
+                    evt.menu.AppendAction(presetNames[i], 
                         (action) => 
                         {
                             property.objectReferenceValue = a;
@@ -190,8 +189,9 @@ namespace Unity.Cinemachine.Editor
                         return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
                 );
-                foreach (var t in assetTypes)
+                for (int i = 0; i < assetTypes.Count; ++i)
                 {
+                    var t = assetTypes[i];
                     evt.menu.AppendAction("New " + InspectorUtility.NicifyClassName(t), 
                         (action) => 
                         {
@@ -229,9 +229,14 @@ namespace Unity.Cinemachine.Editor
             static List<Type> GetAssetTypes(Type baseType)
             {
                 // GML todo: optimize with TypeCache
-                return ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => baseType.IsAssignableFrom(t) && !t.IsAbstract 
-                        && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToList();
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var list = new List<Type>();
+                var iter = allTypes.GetEnumerator();
+                while (iter.MoveNext())
+                    list.Add(iter.Current);
+                return list;
             }
 
             // Local function
@@ -243,10 +248,10 @@ namespace Unity.Cinemachine.Editor
 
                 if (!string.IsNullOrEmpty(presetPath))
                 {
-                    foreach (var t in assetTypes)
-                        InspectorUtility.AddAssetsFromPackageSubDirectory(t, presetAssets, presetPath);
-                    foreach (var n in presetAssets)
-                        presetNames.Add("Presets/" + n.name);
+                    for (int i = 0; i < assetTypes.Count; ++i)
+                        InspectorUtility.AddAssetsFromPackageSubDirectory(assetTypes[i], presetAssets, presetPath);
+                    for (int i = 0; i < presetAssets.Count; ++i)
+                        presetNames.Add("Presets/" + presetAssets[i].name);
                 }
                 return presetAssets;
             }

@@ -59,8 +59,8 @@ namespace Unity.Cinemachine
             System.Array.Sort(extensions, (x, y) => 
                 UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(y)) 
                     - UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(x)));
-            foreach (var e in extensions)
-                e.ConnectToVcam(true);
+            for (int i = 0; i < extensions.Length; ++i)
+                extensions[i].ConnectToVcam(true);
         }
 #endif
         internal void EnsureStarted() => ConnectToVcam(true);
@@ -169,8 +169,11 @@ namespace Unity.Cinemachine
         {
             list.Clear();
             if (m_ExtraState != null)
-                foreach (var v in m_ExtraState)
-                    list.Add(v.Value as T);
+            {
+                var iter = m_ExtraState.GetEnumerator();
+                while (iter.MoveNext())
+                    list.Add(iter.Current.Value as T);
+            }
         }
     }
 }

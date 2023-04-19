@@ -152,8 +152,7 @@ namespace Unity.Cinemachine.Editor
 
         void RefreshEffectListEditor(PostProcessProfile asset)
         {
-            if (m_EffectList == null)
-                m_EffectList = new EffectListEditor(this);
+            m_EffectList ??= new EffectListEditor(this);
             m_EffectList.Clear();
             if (asset != null)
                 m_EffectList.Init(asset, new SerializedObject(asset));
@@ -176,8 +175,9 @@ namespace Unity.Cinemachine.Editor
             asset.settings.Clear();
             AssetDatabase.CreateAsset(asset, path);
 
-            foreach (var item in origin.settings)
+            for (int i = 0; i < origin.settings.Count; ++i)
             {
+                var item = origin.settings[i];
                 var itemCopy = UnityEngine.Object.Instantiate(item);
                 itemCopy.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;
                 itemCopy.name = item.name;
