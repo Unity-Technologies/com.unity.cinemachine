@@ -100,14 +100,11 @@ namespace Unity.Cinemachine
             {
                 DestroyProfileCopy();
                 VolumeProfile profile = ScriptableObject.CreateInstance<VolumeProfile>();
-                if (source != null)
+                for (int i = 0; source != null && i < source.components.Count; ++i)
                 {
-                    foreach (var item in source.components)
-                    {
-                        var itemCopy = Instantiate(item);
-                        profile.components.Add(itemCopy);
-                        profile.isDirty = true;
-                    }
+                    var itemCopy = Instantiate(source.components[i]);
+                    profile.components.Add(itemCopy);
+                    profile.isDirty = true;
                 }
                 ProfileCopy = profile;
             }

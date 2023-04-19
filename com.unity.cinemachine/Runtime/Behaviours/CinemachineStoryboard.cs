@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-#if CINEMACHINE_UGUI
+﻿#if CINEMACHINE_UGUI
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
@@ -410,22 +410,21 @@ namespace Unity.Cinemachine
                 if (s_CanvasesAndTheirOwners != null)
                 {
                     List<UnityEngine.Object> toDestroy = null;
-                    foreach (var v in s_CanvasesAndTheirOwners)
+                    var iter = s_CanvasesAndTheirOwners.GetEnumerator();
+                    while (iter.MoveNext())
                     {
+                        var v = iter.Current;
                         if (v.Value == null)
                         {
-                            if (toDestroy == null)
-                                toDestroy = new List<UnityEngine.Object>();
+                            toDestroy ??= new List<UnityEngine.Object>();
                             toDestroy.Add(v.Key);
                         }
                     }
-                    if (toDestroy != null)
+                    for (int i = 0; toDestroy != null && i < toDestroy.Count; ++i)
                     {
-                        foreach (var o in toDestroy)
-                        {
-                            RemoveCanvas(o);
-                            RuntimeUtility.DestroyObject(o);
-                        }
+                        var o = toDestroy[i];
+                        RemoveCanvas(o);
+                        RuntimeUtility.DestroyObject(o);
                     }
                 }
             }
@@ -436,24 +435,11 @@ namespace Unity.Cinemachine
             }
             public static void AddCanvas(UnityEngine.Object canvas, UnityEngine.Object owner)
             {
-                if (s_CanvasesAndTheirOwners == null)
-                    s_CanvasesAndTheirOwners = new Dictionary<UnityEngine.Object, UnityEngine.Object>();
+                s_CanvasesAndTheirOwners ??= new ();
                 s_CanvasesAndTheirOwners.Add(canvas, owner);
             }
         }
 #endif
     }
 }
-#else
-// We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
-namespace Unity.Cinemachine
-{
-    /// <summary>
-    /// An add-on module for CinemachineCamera that places an image in screen space
-    /// over the camera's output.
-    /// </summary>
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachineStoryboard : MonoBehaviour {}
-}
 #endif
-

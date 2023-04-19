@@ -191,9 +191,9 @@ namespace Unity.Cinemachine.Editor
                 availableCameras.Clear();
                 availableCameras.Add(string.Empty);
                 availableCameras.Add(CinemachineBlenderSettings.kBlendFromAnyCameraLabel);
-                foreach (var c in allCameras)
-                    if (c != null && !availableCameras.Contains(c.Name))
-                        availableCameras.Add(c.Name);
+                for (int i = 0; i < allCameras.Count; ++i)
+                    if (allCameras[i] != null && !availableCameras.Contains(allCameras[i].Name))
+                        availableCameras.Add(allCameras[i].Name);
                 list.RefreshItems();  // rebuild the list
             });
 

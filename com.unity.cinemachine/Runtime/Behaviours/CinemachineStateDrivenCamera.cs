@@ -173,9 +173,8 @@ namespace Unity.Cinemachine
 
             // Create the parent lookup
             m_StateParentLookup = new Dictionary<int, int>();
-            if (HashOfParent != null)
-                foreach (var i in HashOfParent)
-                    m_StateParentLookup[i.Hash] = i.HashOfParent;
+            for (int i = 0; HashOfParent != null && i < HashOfParent.Length; ++i)
+                m_StateParentLookup[HashOfParent[i].Hash] = HashOfParent[i].HashOfParent;
 
             // Zap the cached current instructions
             m_HashCache = null;

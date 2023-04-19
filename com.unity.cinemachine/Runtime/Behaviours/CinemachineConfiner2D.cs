@@ -170,8 +170,9 @@ namespace Unity.Cinemachine
         {
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
-            foreach (var extra in m_ExtraStateCache)
+            for (int i = 0; i < m_ExtraStateCache.Count; ++i)
             {
+                var extra = m_ExtraStateCache[i];
                 if (extra.Vcam != null)
                 {
                     extra.BakedSolution = null;
@@ -509,9 +510,12 @@ namespace Unity.Cinemachine
             currentPath.Clear();
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
-            foreach (var e in m_ExtraStateCache)
+            for (int i = 0; i < m_ExtraStateCache.Count; ++i)
+            {
+                var e = m_ExtraStateCache[i];
                 if (e.Vcam != null && e.BakedSolution != null)
                     currentPath.AddRange(e.BakedSolution.GetBakedPath());
+            }
             return originalPath != null;
         }
 
@@ -532,8 +536,9 @@ namespace Unity.Cinemachine
             
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
-            foreach (var extra in m_ExtraStateCache)
+            for (int i = 0; i < m_ExtraStateCache.Count; ++i)
             {
+                var extra = m_ExtraStateCache[i];
                 if (extra.Vcam != null && extra.BakedSolution != null)
                 {
                     var solution = extra.BakedSolution.m_Solution;
@@ -550,8 +555,9 @@ namespace Unity.Cinemachine
         {
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
-            foreach (var extra in m_ExtraStateCache)
+            for (int i = 0; i < m_ExtraStateCache.Count; ++i)
             {
+                var extra = m_ExtraStateCache[i];
                 if (extra.Vcam != null)
                 {
                     var state = extra.Vcam.State;

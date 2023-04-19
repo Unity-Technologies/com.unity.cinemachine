@@ -27,8 +27,10 @@ namespace Unity.Cinemachine.Samples
         {
             // iterate through each target in the targetGroup
             var floor = Floor.position.y;
-            foreach (var target in m_TargetGroup.Targets)
+            for (int i = 0; i < m_TargetGroup.Targets.Count; ++i)
             {
+                var target = m_TargetGroup.Targets[i];
+
                 // calculate the distance between target and the Floor along the Y axis
                 var distanceBelow = floor - target.Object.position.y;
 

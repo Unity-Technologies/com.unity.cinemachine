@@ -70,6 +70,7 @@ namespace Unity.Cinemachine
         {
             base.OnEnable();
             m_BlendManager.OnEnable();
+            m_BlendManager.LookupBlendDelegate = LookupBlend;
             InvalidateCameraCache();
         }
 
@@ -170,7 +171,7 @@ namespace Unity.Cinemachine
                 best.gameObject.SetActive(true);
                 best.UpdateCameraState(worldUp, deltaTime);
             }
-            SetLiveChild(best, worldUp, deltaTime, LookupBlend);
+            SetLiveChild(best, worldUp, deltaTime);
 
             // Special case to handle being called from OnTransitionFromCamera() - GML todo: fix this
             if (m_TransitioningFrom != null && !IsBlending && LiveChild != null)
@@ -196,7 +197,9 @@ namespace Unity.Cinemachine
         /// <param name="incoming">The camera we're blending to.</param>
         /// <returns>The blend to use for this camera transition.</returns>
         protected virtual CinemachineBlendDefinition LookupBlend(ICinemachineCamera outgoing, ICinemachineCamera incoming)
-            => CinemachineBlenderSettings.LookupBlend(outgoing, incoming, DefaultBlend, CustomBlends, this);
+        {
+            return CinemachineBlenderSettings.LookupBlend(outgoing, incoming, DefaultBlend, CustomBlends, this);
+        }
             
         /// <summary>
         /// Choose the appropriate current camera from among the ChildCameras, based on current state.
@@ -215,8 +218,8 @@ namespace Unity.Cinemachine
         public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
         {
             UpdateCameraCache();
-            foreach (var vcam in m_ChildCameras)
-                vcam.OnTargetObjectWarped(target, positionDelta);
+            for (int i = 0; i < m_ChildCameras.Count; ++i)
+                m_ChildCameras[i].OnTargetObjectWarped(target, positionDelta);
             base.OnTargetObjectWarped(target, positionDelta);
         }
 
@@ -228,8 +231,8 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             UpdateCameraCache();
-            foreach (var vcam in m_ChildCameras)
-                vcam.ForceCameraPosition(pos, rot);
+            for (int i = 0; i < m_ChildCameras.Count; ++i)
+                m_ChildCameras[i].ForceCameraPosition(pos, rot);
             base.ForceCameraPosition(pos, rot);
         }
 
@@ -278,12 +281,10 @@ namespace Unity.Cinemachine
         /// <param name="activeCamera">Current active camera</param>
         /// <param name="worldUp">Current world up</param>
         /// <param name="deltaTime">Current deltaTime applicable for this frame</param>
-        /// <param name="lookupBlend">Delegate to use to find a blend definition, when a blend is being created</param>
         protected void SetLiveChild(
-            ICinemachineCamera activeCamera, Vector3 worldUp, float deltaTime,
-            CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
+            ICinemachineCamera activeCamera, Vector3 worldUp, float deltaTime)
         {
-            m_BlendManager.UpdateRootFrame(activeCamera, worldUp, deltaTime, lookupBlend);
+            m_BlendManager.UpdateRootFrame(activeCamera, worldUp, deltaTime);
             m_BlendManager.ComputeCurrentBlend();
             m_BlendManager.ProcessActiveCamera(this, worldUp, deltaTime);
         }

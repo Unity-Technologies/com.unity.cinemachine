@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
-using System.Linq;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -86,10 +85,12 @@ namespace Unity.Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (actionName.Length != 0)
                     {
-                        var asset = ScriptableObjectUtility.kPackageRoot 
+                        var assetPath = ScriptableObjectUtility.kPackageRoot 
                             + "/Runtime/Input/CinemachineDefaultInputActions.inputactions";
-                        controller.Input.InputAction = (UnityEngine.InputSystem.InputActionReference)
-                            AssetDatabase.LoadAllAssetsAtPath(asset).FirstOrDefault(x => x.name == actionName);
+                        var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+                        for (int i = 0; controller.Input.InputAction == null && i < assets.Length; ++i)
+                            if (assets[i].name == actionName)
+                                controller.Input.InputAction = (UnityEngine.InputSystem.InputActionReference)assets[i];
                     }
                     controller.Input.Gain = invertY ? -1 : 1;
 #endif
