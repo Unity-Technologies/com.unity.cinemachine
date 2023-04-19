@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 8899812594330443549}
   - component: {fileID: 1150526723863172992}
   m_Layer: 0
-  m_Name: PlayerWithRig
+  m_Name: PlayerWithCameraRig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -51,9 +51,9 @@
       "path": "Samples~/Old Samples from CM2"
     },
     {
-      "displayName": "Input System",
+      "displayName": "Input System Samples",
       "description": "Sample scenes illustrating various ways to use Cinemachine with the input system.",
-      "path": "Samples~/Input System"
+      "path": "Samples~/Input System Samples"
     }
   ]
 }

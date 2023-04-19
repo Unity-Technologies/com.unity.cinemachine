@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Samples
     // This class receives input from a PlayerInput component and disptaches it
     // to the appropriate Cinemachine InputAxis.  The playerInput component should
     // be on the same GameObject, or specified in the PlayerInput field.
-    class PlayerInputHandler : InputAxisControllerBase<PlayerInputHandler.Reader>
+    class CustomInputHandler : InputAxisControllerBase<CustomInputHandler.Reader>
     {
         [Header("Input Source Override")]
         public PlayerInput PlayerInput;

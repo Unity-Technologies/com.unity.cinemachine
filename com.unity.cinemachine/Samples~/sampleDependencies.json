@@ -24,7 +24,7 @@
       ]
     },
     {
-      "Path": "Input System",
+      "Path": "Input System Samples",
       "AssetDependencies": [
         "Shared Assets"
       ],
