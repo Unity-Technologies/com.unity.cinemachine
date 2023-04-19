@@ -10,14 +10,6 @@ namespace Unity.Cinemachine.Editor
         {
         }
 
-        public Camera camera
-        {
-            get
-            {
-                return null;
-            }
-        }
-
         public float fieldOfView
         {
             get => target.Lens.FieldOfView;
@@ -76,11 +68,6 @@ namespace Unity.Cinemachine.Editor
         public Vector2 lensShift => target.Lens.PhysicalProperties.LensShift;
 
         public Camera.GateFitMode gateFit => target.Lens.PhysicalProperties.GateFit;
-
-        public override bool IsAvailable()
-        {
-            return true;
-        }
     }
 }
 #endif
