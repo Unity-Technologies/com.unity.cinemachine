@@ -23,7 +23,7 @@ public class PlatformerCamera2D : CinemachineCameraManagerBase
     [Space]
     public float FallingSpeedThreshold = 0.1f;
 
-    // The cameras in these fields must be GameObject childen of the manager camera.
+    // The cameras in these fields must be GameObject children of the manager camera.
     [Header("State Cameras")]
     [ChildCameraProperty] public CinemachineVirtualCameraBase RightCamera;
     [ChildCameraProperty] public CinemachineVirtualCameraBase LeftCamera;

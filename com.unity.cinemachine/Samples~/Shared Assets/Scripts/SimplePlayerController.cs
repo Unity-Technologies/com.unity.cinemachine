@@ -64,9 +64,6 @@ namespace Unity.Cinemachine.Samples
         public enum UpModes { Player, World };
         public UpModes UpMode = UpModes.World;
 
-        [Tooltip("Override the main camera. Useful for split screen games.")]
-        public Camera CameraOverride;
-        
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
         float m_CurrentVelocityY;
