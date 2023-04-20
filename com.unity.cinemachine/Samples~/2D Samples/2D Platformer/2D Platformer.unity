@@ -507,7 +507,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234952069}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.543061, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -14.536392, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -692,7 +692,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289220589}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.543061, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -14.536392, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13448,7 +13448,7 @@ GameObject:
   - component: {fileID: 1074941660}
   - component: {fileID: 1074941662}
   m_Layer: 0
-  m_Name: 2D Camera
+  m_Name: Platformer Camera 2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14112,7 +14112,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620057287}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.543061, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -14.536392, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14375,7 +14375,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719199625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.89387, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -14.900539, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14562,7 +14562,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.3245964, y: 5.6241198, z: -10}
+  m_LocalPosition: {x: -3.3179302, y: 5.6241198, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

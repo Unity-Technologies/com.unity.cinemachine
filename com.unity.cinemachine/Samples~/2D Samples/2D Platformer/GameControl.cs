@@ -1,23 +1,25 @@
-using Unity.Cinemachine;
 using UnityEngine;
 
-public class GameControl : MonoBehaviour
+namespace Unity.Cinemachine.Samples
 {
-    public CinemachineVirtualCameraBase InitialCamera;
-    public Transform Player;
-    public Vector3 StartPosition;
-
-    public void RestartGame()
+    public class GameControl : MonoBehaviour
     {
-        // Move the plyer to its start position
-        Player.transform.SetLocalPositionAndRotation(StartPosition, Quaternion.identity);
+        public CinemachineVirtualCameraBase InitialCamera;
+        public Transform Player;
+        public Vector3 StartPosition;
 
-        // Reset the camera state, to cancel damping
-        CinemachineCore.ResetCameraState();
+        public void RestartGame()
+        {
+            // Move the plyer to its start position
+            Player.transform.SetLocalPositionAndRotation(StartPosition, Quaternion.identity);
 
-        // Activate the initial camera, deactivate the rest
-        for (int i = 0; i < CinemachineCore.VirtualCameraCount; ++i)
-            CinemachineCore.GetVirtualCamera(i).gameObject.SetActive(
-                CinemachineCore.GetVirtualCamera(i) == InitialCamera);
+            // Reset the camera state, to cancel damping
+            CinemachineCore.ResetCameraState();
+
+            // Activate the initial camera, deactivate the rest
+            for (int i = 0; i < CinemachineCore.VirtualCameraCount; ++i)
+                CinemachineCore.GetVirtualCamera(i).gameObject.SetActive(
+                    CinemachineCore.GetVirtualCamera(i) == InitialCamera);
+        }
     }
 }
