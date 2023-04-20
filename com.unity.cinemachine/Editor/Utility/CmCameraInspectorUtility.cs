@@ -145,9 +145,8 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
-            if (otherProperties != null)
-                foreach (var p in otherProperties)
-                    ux.Add(new PropertyField(p));
+            for (int i = 0; otherProperties != null && i < otherProperties.Count; ++i)
+                ux.Add(new PropertyField(otherProperties[i]));
         }
 
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>
@@ -319,8 +318,10 @@ namespace Unity.Cinemachine.Editor
                     && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                     && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
-                foreach (var t in allTypes)
+                var iter = allTypes.GetEnumerator();
+                while (iter.MoveNext())
                 {
+                    var t = iter.Current;
                     var stage = (int)t.GetCustomAttribute<CameraPipelineAttribute>().Stage;
                     s_StageData[stage].Types.Add(t);
                     s_StageData[stage].Choices.Add(InspectorUtility.NicifyClassName(t));
@@ -335,8 +336,10 @@ namespace Unity.Cinemachine.Editor
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                             (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t) 
                                 && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
-                foreach (Type t in allExtensions)
+                var iter2 = allExtensions.GetEnumerator();
+                while (iter2.MoveNext())
                 {
+                    var t = iter2.Current;
                     s_ExtentionTypes.Add(t);
                     s_ExtentionNames.Add(t.Name);
                 }
@@ -541,7 +544,8 @@ namespace Unity.Cinemachine.Editor
                 var selectedCam = (selected >= 0 && selected < list.itemsSource.Count) 
                     ? list.itemsSource[selected] as CinemachineVirtualCameraBase : null;
                 var name = selectedCam != null ? selectedCam.Name : "Child";
-                foreach (var index in added)
+                var iter = added.GetEnumerator();
+                while (iter.MoveNext())
                     CinemachineMenu.CreatePassiveCmCamera(name, vcam.gameObject);
                 Selection.activeObject = vcam;
                 vcam.InvalidateCameraCache();
@@ -549,9 +553,10 @@ namespace Unity.Cinemachine.Editor
 
             list.itemsRemoved += (removed) =>
             {
-                foreach (var index in removed)
+                var iter = removed.GetEnumerator();
+                while (iter.MoveNext())
                 {
-                    var child = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                    var child = list.itemsSource[iter.Current] as CinemachineVirtualCameraBase;
                     if (child != null)
                         Undo.DestroyObjectImmediate(child.gameObject);
                 }
@@ -560,6 +565,8 @@ namespace Unity.Cinemachine.Editor
 
             container.TrackAnyUserActivity(() =>
             {
+                if (editor == null || editor.target == null)
+                    return; // object deleted
                 var isMultiSelect = editor.targets.Length > 1;
                 helpBox.SetVisible(isMultiSelect);
                 container.SetVisible(!isMultiSelect);

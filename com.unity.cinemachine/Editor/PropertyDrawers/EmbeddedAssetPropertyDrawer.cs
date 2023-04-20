@@ -8,6 +8,7 @@ using System.Reflection;
 namespace Unity.Cinemachine.Editor
 {
     // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AddAssetSelectorWithPresets
+    // Currently only used by CinemachineImpulseDefinition editor
 
     [CustomPropertyDrawer(typeof(CinemachineEmbeddedAssetPropertyAttribute))]
     class EmbeddedAssetPropertyDrawer : PropertyDrawer
@@ -20,7 +21,7 @@ namespace Unity.Cinemachine.Editor
 
         bool WarnIfNull => attribute is CinemachineEmbeddedAssetPropertyAttribute attr && attr.WarnIfNull;
 
-        float HeaderHeight { get { return EditorGUIUtility.singleLineHeight * 1.5f; } }
+        float HeaderHeight => EditorGUIUtility.singleLineHeight * 1.5f; 
         float DrawHeader(Rect rect, string text)
         {
             float delta = HeaderHeight - EditorGUIUtility.singleLineHeight;
@@ -170,9 +171,9 @@ namespace Unity.Cinemachine.Editor
                     InspectorUtility.AddAssetsFromPackageSubDirectory(
                         mAssetTypes[i], mAssetPresets, "Presets/Noise");
             }
-            List<GUIContent> presetNameList = new List<GUIContent>();
-            foreach (var n in mAssetPresets)
-                presetNameList.Add(new GUIContent("Presets/" + n.name));
+            List<GUIContent> presetNameList = new ();
+            for (int i = 0; i < mAssetPresets.Count; ++i)
+                presetNameList.Add(new GUIContent("Presets/" + mAssetPresets[i].name));
             mAssetPresetNames = presetNameList.ToArray();
         }
 
@@ -222,18 +223,20 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 RebuildPresetList();
-                int i = 0;
-                foreach (var a in mAssetPresets)
+                int index = 0;
+                for (int i = 0; i < mAssetPresets.Count; ++i)
                 {
-                    menu.AddItem(mAssetPresetNames[i++], false, () =>
+                    var a = mAssetPresets[i];
+                    menu.AddItem(mAssetPresetNames[index++], false, () =>
                         {
                             property.objectReferenceValue = a;
                             property.serializedObject.ApplyModifiedProperties();
                         });
                 }
 
-                foreach (var t in mAssetTypes)
+                for (int i = 0; i < mAssetTypes.Length; ++i)
                 {
+                    var t = mAssetTypes[i];
                     menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t)), false, () =>
                         {
                             string title = "Create New " + t.Name + " asset";

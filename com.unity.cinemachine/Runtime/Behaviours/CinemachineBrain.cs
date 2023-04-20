@@ -150,6 +150,7 @@ namespace Unity.Cinemachine
         [Tooltip("This is the asset that contains custom settings for blends between "
             + "specific virtual cameras in your scene")]
         [FormerlySerializedAs("m_CustomBlends")]
+        [EmbeddedBlenderSettingsProperty]
         public CinemachineBlenderSettings CustomBlends = null;
 
         Camera m_OutputCamera = null; // never use directly - use accessor
@@ -199,6 +200,7 @@ namespace Unity.Cinemachine
         void OnEnable()
         {
             m_BlendManager.OnEnable();
+            m_BlendManager.LookupBlendDelegate = LookupBlend;
 
             s_ActiveBrains.Add(this);
 #if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
@@ -459,6 +461,13 @@ namespace Unity.Cinemachine
             => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
 
         /// <summary>
+        /// Call this to reset the current active camera, causing the brain to choose a new 
+        /// one without blending.  It is useful, for example,
+        /// when you want to restart a game level.
+        /// </summary>
+        public void ResetState() => m_BlendManager.ResetRootFrame();
+
+        /// <summary>
         /// Is there a blend in progress?
         /// </summary>
         public bool IsBlending => m_BlendManager.IsBlending;
@@ -509,8 +518,7 @@ namespace Unity.Cinemachine
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                m_BlendManager.UpdateRootFrame(
-                    TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime);
 
             m_BlendManager.ComputeCurrentBlend();
 
@@ -561,8 +569,7 @@ namespace Unity.Cinemachine
             // Choose the active vcam and apply it to the Unity camera
             if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
             {
-                m_BlendManager.UpdateRootFrame(
-                    TopCameraFromPriorityQueue(), DefaultWorldUp, Time.fixedDeltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), DefaultWorldUp, Time.fixedDeltaTime);
                 ProcessActiveCamera(Time.fixedDeltaTime);
             }
         }

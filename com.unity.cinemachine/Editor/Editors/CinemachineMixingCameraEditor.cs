@@ -52,6 +52,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() =>
             {
+                if (Target == null)
+                    return; // object deleted
                 var children = Target.ChildCameras;
                 int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
                 noChildrenHelp.SetVisible(numCameras == 0);
