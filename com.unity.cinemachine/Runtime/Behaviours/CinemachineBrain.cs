@@ -342,9 +342,10 @@ namespace Unity.Cinemachine
 
         /// <inheritdoc />
         public int SetCameraOverride(
-            int overrideId,
+            int overrideId, int priority,
             ICinemachineCamera camA, ICinemachineCamera camB,
-            float weightB, float deltaTime) => m_BlendManager.SetCameraOverride(overrideId, camA, camB, weightB, deltaTime);
+            float weightB, float deltaTime) 
+                => m_BlendManager.SetCameraOverride(overrideId, priority, camA, camB, weightB, deltaTime);
 
         /// <inheritdoc />
         public void ReleaseCameraOverride(int overrideId) => m_BlendManager.ReleaseCameraOverride(overrideId);
