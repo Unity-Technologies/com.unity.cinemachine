@@ -118,10 +118,7 @@ namespace Unity.Cinemachine.Editor
 
                     // Refresh the game view if solo and not playing
                     if (isSolo && !Application.isPlaying)
-                    {
-                        target.InternalUpdateCameraState(Vector3.up, -1);
                         InspectorUtility.RepaintGameView();
-                    }
                 });
             });
 
