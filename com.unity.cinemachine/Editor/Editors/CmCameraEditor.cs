@@ -71,6 +71,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() => 
             {
+                if (Target == null)
+                    return; // object deleted
                 var brain = CinemachineCore.FindPotentialTargetBrain(Target);
                 Target.InternalUpdateCameraState(brain == null ? Vector3.up : brain.DefaultWorldUp, -1);
                 bool haveDefault = Target.Target.TrackingTarget != Target.Follow;

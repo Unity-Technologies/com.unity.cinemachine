@@ -48,6 +48,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() =>
             {
+                if (Target == null)
+                    return; // object deleted
                 m_EvaluatorState = GetEvaluatorState();
                 switch (m_EvaluatorState)
                 {

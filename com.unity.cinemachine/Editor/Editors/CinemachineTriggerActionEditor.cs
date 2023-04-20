@@ -58,6 +58,8 @@ namespace Unity.Cinemachine.Editor
 
             foldout.TrackAnyUserActivity(() =>
             {
+                if (Target == null)
+                    return; // object deleted
                 var targetObject = targetProp.objectReferenceValue;
                 var action = (CinemachineTriggerAction.ActionSettings.ActionModes)actionProp.intValue;
 

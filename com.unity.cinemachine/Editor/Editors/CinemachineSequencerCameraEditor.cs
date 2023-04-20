@@ -68,6 +68,8 @@ namespace Unity.Cinemachine.Editor
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.TrackAnyUserActivity(() => 
                 {
+                    if (Target == null)
+                        return; // object deleted
                     vcamSel.choices ??= new();
                     vcamSel.choices.Clear();
                     var children = Target.ChildCameras;
@@ -110,6 +112,8 @@ namespace Unity.Cinemachine.Editor
 
             container.TrackAnyUserActivity(() =>
             {
+                if (Target == null)
+                    return; // object deleted
                 var isMultiSelect = targets.Length > 1;
                 multiSelectMsg.SetVisible(isMultiSelect);
                 container.SetVisible(!isMultiSelect);

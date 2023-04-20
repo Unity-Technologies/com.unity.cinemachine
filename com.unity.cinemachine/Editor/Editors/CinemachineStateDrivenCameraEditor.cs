@@ -56,6 +56,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() =>
             {
+                if (Target == null)
+                    return; // object deleted
                 UpdateTargetStates();
                 layerSel.choices = m_LayerNames;
                 layerSel.SetValueWithoutNotify(m_LayerNames[layerProp.intValue]);

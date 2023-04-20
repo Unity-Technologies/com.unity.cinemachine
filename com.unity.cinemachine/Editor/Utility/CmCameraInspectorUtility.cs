@@ -565,6 +565,8 @@ namespace Unity.Cinemachine.Editor
 
             container.TrackAnyUserActivity(() =>
             {
+                if (editor == null || editor.target == null)
+                    return; // object deleted
                 var isMultiSelect = editor.targets.Length > 1;
                 helpBox.SetVisible(isMultiSelect);
                 container.SetVisible(!isMultiSelect);
