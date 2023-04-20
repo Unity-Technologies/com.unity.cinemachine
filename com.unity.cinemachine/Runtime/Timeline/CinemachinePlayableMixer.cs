@@ -8,8 +8,10 @@ namespace Unity.Cinemachine
 {
     internal sealed class CinemachinePlayableMixer : PlayableBehaviour
     {
-        public delegate PlayableDirector MasterDirectorDelegate();
+        /// <summary>The priority of the track.  Higher numbers override lower ones.</summary>
+        public int Priority;
 
+        public delegate PlayableDirector MasterDirectorDelegate();
         public static MasterDirectorDelegate GetMasterPlayableDirector;
 
         // The brain that this track controls
@@ -31,7 +33,7 @@ namespace Unity.Cinemachine
             }
             List<ClipObjects> CachedObjects;
 
-            static List<CinemachineVirtualCameraBase> scratch = new List<CinemachineVirtualCameraBase>();
+            static readonly List<CinemachineVirtualCameraBase> s_ScratchList = new();
 
             public void Init(Playable playable)
             {
@@ -52,11 +54,11 @@ namespace Unity.Cinemachine
                         cs.Cameras.Add(new List<CinemachineVirtualCameraBase>());
 
                         // Add all child cameras
-                        scratch.Clear();
-                        mainVcam.GetComponentsInChildren(scratch);
-                        for (int j = 0; j < scratch.Count; ++j)
+                        s_ScratchList.Clear();
+                        mainVcam.GetComponentsInChildren(s_ScratchList);
+                        for (int j = 0; j < s_ScratchList.Count; ++j)
                         {
-                            var vcam = scratch[j];
+                            var vcam = s_ScratchList[j];
 
                             int nestLevel = 0;
                             for (var p = vcam.ParentCamera; 
@@ -253,7 +255,7 @@ namespace Unity.Cinemachine
 
             // Override the Cinemachine brain with our results
             m_BrainOverrideId = m_BrainOverrideStack.SetCameraOverride(
-                m_BrainOverrideId, camA, camB, weightB, GetDeltaTime(info.deltaTime));
+                m_BrainOverrideId, Priority, camA, camB, weightB, GetDeltaTime(info.deltaTime));
 
 #if UNITY_EDITOR
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)

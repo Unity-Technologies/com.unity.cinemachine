@@ -20,6 +20,9 @@ namespace Unity.Cinemachine
         /// Use that id for subsequent calls.  Don't forget to
         /// call ReleaseCameraOverride after all overriding is finished, to
         /// free the OverrideStack resources.</param>
+        /// <param name="priority">The priority to assign to the override.  Higher priorities take 
+        /// precedence over lower ones.  This is not connected to the Priority field in the 
+        /// individual CinemachineCameras, but the function is analogous.</param>
         /// <param name="camA">The camera to set, corresponding to weight=0.</param>
         /// <param name="camB">The camera to set, corresponding to weight=1.</param>
         /// <param name="weightB">The blend weight.  0=camA, 1=camB.</param>
@@ -29,6 +32,7 @@ namespace Unity.Cinemachine
         /// after all overriding is finished, to free the OverrideStack resources.</returns>
         int SetCameraOverride(
             int overrideId,
+            int priority,
             ICinemachineCamera camA, ICinemachineCamera camB,
             float weightB, float deltaTime);
 
@@ -57,7 +61,8 @@ namespace Unity.Cinemachine
 
         class StackFrame : BlendSourceVirtualCamera
         {
-            public int id;
+            public int Id;
+            public int Priority;
             public readonly CinemachineBlend Source = new (null, null, null, 1, 0);
             public float DeltaTimeOverride;
 
@@ -108,13 +113,14 @@ namespace Unity.Cinemachine
         /// <inheritdoc />
         public int SetCameraOverride(
             int overrideId,
+            int priority,
             ICinemachineCamera camA, ICinemachineCamera camB,
             float weightB, float deltaTime)
         {
             if (overrideId < 0)
                 overrideId = m_NextFrameId++;
 
-            var frame = m_FrameStack[FindFrame(overrideId)];
+            var frame = m_FrameStack[FindFrame(overrideId, priority)];
             frame.DeltaTimeOverride = deltaTime;
             frame.Source.CamA = camA;
             frame.Source.CamB = camB;
@@ -131,15 +137,20 @@ namespace Unity.Cinemachine
             return overrideId;
             
             // local function to get the frame index corresponding to the ID
-            int FindFrame(int withId)
+            int FindFrame(int withId, int priority)
             {
                 int count = m_FrameStack.Count;
-                for (int i = count - 1; i > 0; --i)
-                    if (m_FrameStack[i].id == withId)
-                        return i;
+                int index;
+                for (index = count - 1; index > 0; --index)
+                    if (m_FrameStack[index].Id == withId)
+                        return index;
+
                 // Not found - add it
-                m_FrameStack.Add(new StackFrame { id = withId });
-                return m_FrameStack.Count - 1;
+                for (index = 1; index < count; ++index)
+                    if (m_FrameStack[index].Priority > priority)
+                        break;
+                m_FrameStack.Insert(index, new StackFrame { Id = withId, Priority = priority });
+                return index;
             }
         }
 
@@ -148,7 +159,7 @@ namespace Unity.Cinemachine
         {
             for (int i = m_FrameStack.Count - 1; i > 0; --i)
             {
-                if (m_FrameStack[i].id == overrideId)
+                if (m_FrameStack[i].Id == overrideId)
                 {
                     m_FrameStack.RemoveAt(i);
                     return;
@@ -174,6 +185,10 @@ namespace Unity.Cinemachine
         /// <summary>Has OnEnable been called?</summary>
         public bool IsInitialized => m_FrameStack.Count > 0;
 
+        /// <summary>This holds the function that performs a blend lookup.
+        /// This is used to find a blend definition, when a blend is being created.</summary>
+        public CinemachineBlendDefinition.LookupBlendDelegate LookupBlendDelegate { get; set; }
+
         /// <summary>Clear the state of the root frame: no current camera, no blend.</summary>
         public void ResetRootFrame()
         {
@@ -192,11 +207,10 @@ namespace Unity.Cinemachine
         /// Call this every frame with the current active camera of the root frame.
         /// </summary>
         /// <param name="activeCamera">Current active camera (pre-override)</param>
+        /// <param name="up">Current world up</param>
         /// <param name="deltaTime">How much time has elapsed, for computing blends</param>
-        /// <param name="lookupBlend">Delegate to use to find a blend definition, when a blend is being created</param>
         public void UpdateRootFrame(
-            ICinemachineCamera activeCamera, float deltaTime, 
-            CinemachineBlendDefinition.LookupBlendDelegate lookupBlend)
+            ICinemachineCamera activeCamera, Vector3 up, float deltaTime)
         {
             // Make sure there is a first stack frame
             if (m_FrameStack.Count == 0)
@@ -210,11 +224,11 @@ namespace Unity.Cinemachine
                 bool backingOutOfBlend = false;
 
                 // Do we need to create a game-play blend?
-                if (lookupBlend != null && activeCamera != null && activeCamera.IsValid
+                if (LookupBlendDelegate != null && activeCamera != null && activeCamera.IsValid
                     && outgoingCamera != null && outgoingCamera.IsValid && deltaTime >= 0)
                 {
                     // Create a blend (curve will be null if a cut)
-                    var blendDef = lookupBlend(outgoingCamera, activeCamera);
+                    var blendDef = LookupBlendDelegate(outgoingCamera, activeCamera);
                     if (blendDef.BlendCurve != null && blendDef.BlendTime > kEpsilon)
                     {
                         // Are we backing out of a blend-in-progress?
@@ -278,6 +292,7 @@ namespace Unity.Cinemachine
                     frame.Blend.TimeInBlend = 0;
                 }
             }
+            frame.UpdateCameraState(up, deltaTime);
         }
 
         /// <summary>

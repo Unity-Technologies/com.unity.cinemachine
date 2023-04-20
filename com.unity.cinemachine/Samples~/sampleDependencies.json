@@ -24,6 +24,15 @@
       ]
     },
     {
+      "Path": "Input System Samples",
+      "AssetDependencies": [
+        "Shared Assets"
+      ],
+      "PackageDependencies": [
+        "com.unity.inputsystem"
+      ]
+    },
+    {
       "Path": "Old Samples from CM2",
       "AssetDependencies": [],
       "PackageDependencies": []

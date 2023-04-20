@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -116,15 +115,21 @@ namespace Unity.Cinemachine.Editor
                     (Type t) => typeof(IInputAxisController).IsAssignableFrom(t) && !t.IsAbstract 
                         && typeof(MonoBehaviour).IsAssignableFrom(t)
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
-                s_AllAxisControllerTypes = allTypes.ToList();
+                s_AllAxisControllerTypes = new();
+                var iter = allTypes.GetEnumerator();
+                while (iter.MoveNext())
+                    s_AllAxisControllerTypes.Add(iter.Current);
             }
             ContextualMenuManipulator menu = null;
             if (s_AllAxisControllerTypes.Count > 1)
             {
                 menu = new ContextualMenuManipulator((evt) => 
                 {
-                    foreach (var t in s_AllAxisControllerTypes)
+                    for (int i = 0; i < s_AllAxisControllerTypes.Count; ++i)
+                    {
+                        var t = s_AllAxisControllerTypes[i];
                         evt.menu.AppendAction(ObjectNames.NicifyVariableName(t.Name), (action) => AddController(t));
+                    }
                 });
             }
 

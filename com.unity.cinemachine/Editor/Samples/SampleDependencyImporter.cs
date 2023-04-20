@@ -93,7 +93,7 @@ namespace Unity.Cinemachine.Editor
                                 AssetDatabase.Refresh();
                                 var uniqueFolders = new HashSet<string>(sharedDestinations.Concat(localDestinations));
                                 ConvertMaterials(uniqueFolders);
-                                FixPrefabs(uniqueFolders, m_PackageInfo);
+                                FixAssets(uniqueFolders, m_PackageInfo);
                             }
                             
                             // Import common amd sample specific package dependencies
@@ -211,35 +211,49 @@ namespace Unity.Cinemachine.Editor
 #endif
         }
         
-        static void FixPrefabs(IEnumerable<string> folders, PackageInfo packageInfo)
+        static void FixAssets(IEnumerable<string> folders, PackageInfo packageInfo)
         {
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            foreach (var folder in folders)
+            {
+                var inputSystemFixPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/InputSystem~/");
+                ReplaceAssets(inputSystemFixPath, folder);
+            }
+#endif
 #if CINEMACHINE_HDRP
             foreach (var folder in folders)
             {
-                var hdrpPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/HDRP~/");
-                var hdrpDir = new DirectoryInfo(hdrpPath);
-                var prefabPath = folder + "/Prefabs/";
+                var hdrpFixPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/HDRP~/");
+                ReplaceAssets(hdrpFixPath, folder);
+            }
+#endif
+            // local function
+            static void ReplaceAssets(string fixPath, string prefabFolder)
+            {
+                var fixDirectory = new DirectoryInfo(fixPath);
+                var prefabPath = prefabFolder + "/Prefabs/";
                 var prefabDir = new DirectoryInfo(prefabPath);
-                if (!hdrpDir.Exists || !prefabDir.Exists)
-                    continue;
+                if (!fixDirectory.Exists || !prefabDir.Exists)
+                    return;
                 
-                var hdrpPrefabs = hdrpDir.GetFiles("*.prefab");
-                foreach (var hdrpPrefabFile in hdrpPrefabs)
+                // fix prefab assets
+                var fixPrefabs = fixDirectory.GetFiles("*.prefab");
+                foreach (var prefab in fixPrefabs)
                 {
-                    var builtinPrefabPath = prefabPath + hdrpPrefabFile.Name;
-                    if (File.Exists(builtinPrefabPath))
+                    var brokenPrefab = prefabPath + prefab.Name;
+                    if (File.Exists(brokenPrefab))
                     {
-                        var hdrpPrefabContents = PrefabUtility.LoadPrefabContents(hdrpPath + hdrpPrefabFile.Name);
-                        PrefabUtility.SaveAsPrefabAsset(hdrpPrefabContents, builtinPrefabPath);
-                        PrefabUtility.UnloadPrefabContents(hdrpPrefabContents);
+                        var fixedPrefabContents = PrefabUtility.LoadPrefabContents(fixPath + prefab.Name);
+                        PrefabUtility.SaveAsPrefabAsset(fixedPrefabContents, brokenPrefab);
+                        PrefabUtility.UnloadPrefabContents(fixedPrefabContents);
                     }
                 }
 
-                var assets = hdrpDir.GetFiles("*.asset*"); // assets and their meta files
+                // fix other assets
+                var assets = fixDirectory.GetFiles("*.asset*"); // assets and their meta files
                 foreach (var asset in assets)
-                    asset.CopyTo(folder + "/" + asset.Name);
+                    asset.CopyTo(prefabFolder + "/" + asset.Name);
             }
-#endif
         }
 
         

@@ -150,6 +150,7 @@ namespace Unity.Cinemachine
         [Tooltip("This is the asset that contains custom settings for blends between "
             + "specific virtual cameras in your scene")]
         [FormerlySerializedAs("m_CustomBlends")]
+        [EmbeddedBlenderSettingsProperty]
         public CinemachineBlenderSettings CustomBlends = null;
 
         Camera m_OutputCamera = null; // never use directly - use accessor
@@ -162,6 +163,10 @@ namespace Unity.Cinemachine
         static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
 
+#if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
+        DebugText m_DebugText;
+#endif
+        
         void OnValidate()
         {
             DefaultBlend.Time = Mathf.Max(0, DefaultBlend.Time);
@@ -195,10 +200,13 @@ namespace Unity.Cinemachine
         void OnEnable()
         {
             m_BlendManager.OnEnable();
+            m_BlendManager.LookupBlendDelegate = LookupBlend;
 
             s_ActiveBrains.Add(this);
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
+#endif
 
             // We check in after the physics system has had a chance to move things
             m_PhysicsCoroutine = StartCoroutine(AfterPhysics());
@@ -212,7 +220,11 @@ namespace Unity.Cinemachine
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneUnloaded -= OnSceneUnloaded;
 
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            m_DebugText?.Dispose();
+            m_DebugText = null;
+#endif
             s_ActiveBrains.Remove(this);
 
             m_BlendManager.OnDisable();
@@ -269,42 +281,71 @@ namespace Unity.Cinemachine
             if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
                 CinemachineDebug.OnGUIHandlers(this);
         }
-#endif
 
+    #if CINEMACHINE_UIELEMENTS
         void OnGuiHandler(CinemachineBrain brain)
         {
-#if CINEMACHINE_UNITY_IMGUI
-            if (ShowDebugText && brain == this)
+            if (!ShowDebugText)
             {
-                // Show the active camera and blend
-                var sb = CinemachineDebug.SBFromPool();
-                Color color = GUI.color;
-                sb.Length = 0;
-                sb.Append("CM ");
-                sb.Append(gameObject.name);
-                sb.Append(": ");
-                if (CinemachineCore.SoloCamera != null)
+                if (m_DebugText != null)
                 {
-                    sb.Append("SOLO ");
-                    GUI.color = CinemachineCore.SoloGUIColor();
+                    m_DebugText.Dispose();
+                    m_DebugText = null;
                 }
-                sb.Append(Description);
-                string text = sb.ToString();
-                Rect r = CinemachineDebug.GetScreenPos(OutputCamera, text, GUI.skin.box);
-                GUI.Label(r, text, GUI.skin.box);
-                GUI.color = color;
-                CinemachineDebug.ReturnToPool(sb);
+                return;
             }
-#endif
+            if (ActiveVirtualCamera == null || brain != this)
+                return;
+
+            m_DebugText ??= new DebugText(OutputCamera);
+
+            // Show the active camera and blend
+            var sb = CinemachineDebug.SBFromPool();
+            sb.Length = 0;
+            sb.Append("CM ");
+            sb.Append(gameObject.name);
+            sb.Append(": ");
+            if (CinemachineCore.SoloCamera != null)
+            {
+                sb.Append("SOLO ");
+                m_DebugText.SetTextColor(CinemachineCore.SoloGUIColor());
+            }
+            else
+                m_DebugText.RestoreOriginalTextColor();
+
+            if (IsBlending)
+                sb.Append(ActiveBlend.Description);
+            else
+            {
+                var vcam = ActiveVirtualCamera;
+                if (vcam == null)
+                    sb.Append("(none)");
+                else
+                {
+                    sb.Append(vcam.Name);
+                    var desc = vcam.Description;
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        sb.Append(" ");
+                        sb.Append(desc);
+                    }
+                }
+            }
+            
+            m_DebugText.SetText(sb.ToString());
+            CinemachineDebug.ReturnToPool(sb);
         }
+    #endif
+#endif
 
         // ============ ICameraOverrideStack implementation ================
 
         /// <inheritdoc />
         public int SetCameraOverride(
-            int overrideId,
+            int overrideId, int priority,
             ICinemachineCamera camA, ICinemachineCamera camB,
-            float weightB, float deltaTime) => m_BlendManager.SetCameraOverride(overrideId, camA, camB, weightB, deltaTime);
+            float weightB, float deltaTime) 
+                => m_BlendManager.SetCameraOverride(overrideId, priority, camA, camB, weightB, deltaTime);
 
         /// <inheritdoc />
         public void ReleaseCameraOverride(int overrideId) => m_BlendManager.ReleaseCameraOverride(overrideId);
@@ -354,7 +395,7 @@ namespace Unity.Cinemachine
         /// <inheritdoc />
         public bool IsLiveChild(ICinemachineCamera cam, bool dominantChildOnly = false)
         {
-            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam, dominantChildOnly))
+            if (CinemachineCore.SoloCamera == cam || m_BlendManager.IsLive(cam))
                 return true;
 
             // Walk up the parents
@@ -420,6 +461,13 @@ namespace Unity.Cinemachine
             => CinemachineCore.SoloCamera ?? m_BlendManager.ActiveVirtualCamera;
 
         /// <summary>
+        /// Call this to reset the current active camera, causing the brain to choose a new 
+        /// one without blending.  It is useful, for example,
+        /// when you want to restart a game level.
+        /// </summary>
+        public void ResetState() => m_BlendManager.ResetRootFrame();
+
+        /// <summary>
         /// Is there a blend in progress?
         /// </summary>
         public bool IsBlending => m_BlendManager.IsBlending;
@@ -470,7 +518,7 @@ namespace Unity.Cinemachine
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), deltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime);
 
             m_BlendManager.ComputeCurrentBlend();
 
@@ -521,7 +569,7 @@ namespace Unity.Cinemachine
             // Choose the active vcam and apply it to the Unity camera
             if (BlendUpdateMethod == BrainUpdateMethods.FixedUpdate)
             {
-                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), Time.fixedDeltaTime, LookupBlend);
+                m_BlendManager.UpdateRootFrame(TopCameraFromPriorityQueue(), DefaultWorldUp, Time.fixedDeltaTime);
                 ProcessActiveCamera(Time.fixedDeltaTime);
             }
         }

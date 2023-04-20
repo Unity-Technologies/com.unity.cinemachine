@@ -75,11 +75,6 @@
             "define": "CINEMACHINE_UNITY_ANIMATION"
         },
         {
-            "name": "com.unity.modules.imgui",
-            "expression": "1.0.0",
-            "define": "CINEMACHINE_UNITY_IMGUI"
-        },
-        {
             "name": "com.unity.inputsystem",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"

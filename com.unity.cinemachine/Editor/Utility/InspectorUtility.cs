@@ -174,12 +174,13 @@ namespace Unity.Cinemachine.Editor
                 var info = new DirectoryInfo(path);
                 path += "/";
                 var fileInfo = info.GetFiles();
-                foreach (var file in fileInfo)
+                for (int i = 0; i < fileInfo.Length; ++i)
                 {
+                    var file = fileInfo[i];
                     if (file.Extension != ".asset")
                         continue;
-                    string name = path + file.Name;
-                    ScriptableObject a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
+                    var name = path + file.Name;
+                    var a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
                     if (a != null)
                         assets.Add(a);
                 }
@@ -413,10 +414,11 @@ namespace Unity.Cinemachine.Editor
                         && typeof(MonoBehaviour).IsAssignableFrom(t)
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var s = string.Empty;
-                foreach (var t in allSources)
+                var iter = allSources.GetEnumerator();
+                while (iter.MoveNext())
                 {
                     var sep = (s.Length == 0) ? string.Empty : ", ";
-                    s += sep + t.Name;
+                    s += sep + iter.Current.Name;
                 }
                 if (s.Length == 0)
                     s = s_NoneString;
@@ -567,6 +569,7 @@ namespace Unity.Cinemachine.Editor
                 style = 
                 { 
                     flexGrow = 0,
+                    flexBasis = SingleLineHeight,
                     backgroundImage = (StyleBackground)EditorGUIUtility.IconContent(icon).image,
                     width = SingleLineHeight, height = SingleLineHeight,
                     alignSelf = Align.Center
@@ -581,8 +584,10 @@ namespace Unity.Cinemachine.Editor
         {
             var button = new Button { tooltip = tooltip, style = 
             {
+                flexGrow = 0,
+                flexBasis = SingleLineHeight,
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
                 paddingRight = 0, borderRightWidth = 0, marginRight = 0
             }};
@@ -602,8 +607,10 @@ namespace Unity.Cinemachine.Editor
         {
             var button = new Button { tooltip = tooltip, style = 
             {
+                flexGrow = 0,
+                flexBasis = SingleLineHeight,
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
-                width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
+                width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
                 paddingRight = 0, borderRightWidth = 0, marginRight = 0
             }};
@@ -658,6 +665,11 @@ namespace Unity.Cinemachine.Editor
             /// </summary>
             public float DivisionOffset = 0;
 
+            /// <summary>
+            /// Set this to zero the left margin, useful for foldouts that control the margin themselves.
+            /// </summary>
+            public bool KillLeftMargin;
+
             public LeftRightRow()
             {
                 // This is to peek at the resolved label width
@@ -672,6 +684,8 @@ namespace Unity.Cinemachine.Editor
 
                 hack.Label.RegisterCallback<GeometryChangedEvent>((_) => 
                 {
+                    if (KillLeftMargin)
+                        hack.style.marginLeft = 0;
                     Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset;
                     row.style.marginLeft = hack.resolvedStyle.marginLeft;
                 });
@@ -697,8 +711,7 @@ namespace Unity.Cinemachine.Editor
 
                 // There are 2 modes for this element: foldout closed and foldout open.
                 // When closed, we cheat the layout system, and to implement this we do a switcheroo
-                var closedContainer = AddChild(this, new LeftRightRow() { style = { flexGrow = 1 }});
-                closedContainer.OnInitialGeometry(() => closedContainer.Q<Toggle>().style.marginLeft = 0);
+                var closedContainer = AddChild(this, new LeftRightRow() { KillLeftMargin = true, style = { flexGrow = 1 }});
 
                 var closedFoldout = new Foldout { text = foldout.text, tooltip = foldout.tooltip, value = false };
                 ClosedFoldout = closedFoldout;
