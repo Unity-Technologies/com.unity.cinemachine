@@ -227,6 +227,8 @@ namespace Unity.Cinemachine.Editor
                 ReplaceAssets(hdrpFixPath, folder);
             }
 #endif
+            
+#if CINEMACHINE_HDRP || CINEMACHINE_UNITY_INPUTSYSTEM
             // local function
             static void ReplaceAssets(string fixPath, string prefabFolder)
             {
@@ -254,6 +256,7 @@ namespace Unity.Cinemachine.Editor
                 foreach (var asset in assets)
                     asset.CopyTo(prefabFolder + "/" + asset.Name);
             }
+#endif
         }
 
         
