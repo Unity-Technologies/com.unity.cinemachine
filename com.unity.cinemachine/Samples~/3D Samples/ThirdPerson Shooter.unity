@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028353, g: 0.22571383, b: 0.30692253, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -1630,25 +1633,26 @@ PrefabInstance:
         to jump, Shift to sprint.  Mouse left click to fire projectiles. The mouse
         rotates the Player Aiming Core object, which controls the player direction
         and aim. The camera is dirven by that: for this style of controller, there
-        is no direct independent control of the camera direction.\r\n\r\nThe camera
-        is managed by a StateDrivenCamera, which activates a special RoadieRun camera
-        when the player is sprinting.\r\n\r\nNormally, the Third Person Aim Camera
-        is active.  This camera has handheld noise, but it does not affect aiming
-        accuracy. Try aiming at objects in the scene and observe that the aim point
-        is steady, even while the camera is moving slightly.\r\n\r\nThe crosshair
-        indicates where the player is aiming.  The red dot indicates the actual hit
-        location if a ray would be fired from the Player Aiming Core.  When the crosshair
-        and the red dot do not align, this means there is an object between the player
-        and the aim point indicated by the crosshair. The crosshair is pulled apart
-        to indicate this.\r\n\r\nWhen the player fires a shot, the camera gets a
-        slight recoil.  This is achieved with a CinemachineImpulseSource added to
-        the Player Aiming Core, and it is triggered by a Fire event. The camera reacts
-        to the impulse because it has a CinemachineImpulseListener.\r\n\r\nWhen sprinting,
-        the RoadieRun Camera is active.  This camera takes away the crosshair from
-        the player, shifts position, widens the Field of View, and adds a more intense
-        noise. \r\n\r\nThe enemies will target the player when the player moves close
+        is no direct independent control of the camera direction.\n\nThe camera is
+        managed by a StateDrivenCamera, which activates a special RoadieRun camera
+        when the player is sprinting.\n\nNormally, the Third Person Aim Camera is
+        active.  This camera has handheld noise, but it does not affect aiming accuracy.
+        Try aiming at objects in the scene and observe that the aim point is steady,
+        even while the camera is moving slightly.\n\nThe crosshair indicates where
+        the player is aiming.  The red dot indicates the actual hit location if a
+        ray would be fired from the Player Aiming Core.  When the crosshair and the
+        red dot do not align, this means there is an object between the player and
+        the aim point indicated by the crosshair. The crosshair is pulled apart to
+        indicate this.\n\nWhen the player fires a shot, the camera gets a slight
+        recoil.  This is achieved with a CinemachineImpulseSource added to the Player
+        Aiming Core, and it is triggered by a Fire event. The camera reacts to the
+        impulse because it has a CinemachineImpulseListener.\n\nWhen sprinting, the
+        RoadieRun Camera is active.  This camera takes away the crosshair from the
+        player, shifts position, widens the Field of View, and adds a more intense
+        noise. \n\nThe enemies will target the player when the player moves close
         to them. To visualize the trigger zone, you can enable the Mesh Renderers
-        on the enemies'  ProximityTrigger child objects."
+        on the enemies'  ProximityTrigger child objects.\n\nThe cursor will be locked
+        upon closing the help window. To unlock, press the Escape key."
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: VisibleAtStart
@@ -1753,6 +1757,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1722462837}
+    - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1722462838}
   m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1 &1722462836 stripped
 GameObject:
@@ -1782,7 +1789,7 @@ MonoBehaviour:
     OnClick:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2076565717059590911}
+        - m_Target: {fileID: 1722462838}
           m_TargetAssemblyTypeName: SwapShoulders, Assembly-CSharp
           m_MethodName: Swap
           m_Mode: 1
@@ -1794,6 +1801,43 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - Name: Lock Cursor
+    IsToggle:
+      Enabled: 0
+      Value: 0
+      OnValueChanged:
+        m_PersistentCalls:
+          m_Calls: []
+    OnClick:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1802572052}
+          m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.SimplePlayerControllerBase,
+            Assembly-CSharp
+          m_MethodName: EnableLockCursor
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+--- !u!114 &1722462838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722462836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ffbcba0a55c544a181ba9b409a505fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CinemachineCameraGameObject: {fileID: 2076565717059590909}
+  PlayerController: {fileID: 1802572052}
 --- !u!1001 &1768537927
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3038,13 +3082,13 @@ MonoBehaviour:
     Camera: {fileID: 334051334}
     ActivateAfter: 0
     MinDuration: 0
-  - FullHash: -827840423
+  - FullHash: 1965258778
     Camera: {fileID: 2076565716644322337}
-    ActivateAfter: 0
+    ActivateAfter: 0.4
     MinDuration: 0
   - FullHash: -203094115
     Camera: {fileID: 2076565716644322337}
-    ActivateAfter: 0
+    ActivateAfter: 0.4
     MinDuration: 0
   HashOfParent:
   - Hash: 1432961145
@@ -3101,7 +3145,6 @@ GameObject:
   - component: {fileID: 2076565717059590787}
   - component: {fileID: 2076565717059590786}
   - component: {fileID: 2076565717059590910}
-  - component: {fileID: 2076565717059590911}
   m_Layer: 0
   m_Name: CM StateDrivenCamera
   m_TagString: Untagged
@@ -3132,19 +3175,6 @@ MonoBehaviour:
     FrequencyGain: 1
     Duration: 2
     m_NoiseOffsets: {x: 91.07791, y: 147.45389, z: -126.58536}
---- !u!114 &2076565717059590911
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2076565717059590909}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ffbcba0a55c544a181ba9b409a505fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SwapAll: 0
 --- !u!1001 &3691321984223930902
 PrefabInstance:
   m_ObjectHideFlags: 0

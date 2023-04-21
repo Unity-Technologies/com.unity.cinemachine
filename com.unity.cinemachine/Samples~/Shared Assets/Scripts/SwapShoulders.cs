@@ -1,27 +1,23 @@
 using Unity.Cinemachine;
+using Unity.Cinemachine.Samples;
 using UnityEngine;
 
 public class SwapShoulders : MonoBehaviour
 {
-    CinemachineThirdPersonFollow[] m_ThirdPersonFollows;
-    void Start()
-    {
-        m_ThirdPersonFollows = GetComponentsInChildren<CinemachineThirdPersonFollow>(true);
-    }
+    public GameObject CinemachineCameraGameObject;
+    public SimplePlayerControllerBase PlayerController;
 
-    public bool SwapAll = false;
     void Update()
     {
-        if (SwapAll)
-        {
-            SwapAll = false;
-            Swap();
-        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+            PlayerController.EnableLockCursor(false);
     }
 
     public void Swap()
     {
-        for (var i = 0; i < m_ThirdPersonFollows.Length; i++)
-            m_ThirdPersonFollows[i].CameraSide = Mathf.Abs(m_ThirdPersonFollows[i].CameraSide - 1);
+        var thirdPersonFollows = 
+            CinemachineCameraGameObject.GetComponentsInChildren<CinemachineThirdPersonFollow>(true);
+        foreach (var tpf in thirdPersonFollows)
+            tpf.CameraSide = Mathf.Abs(tpf.CameraSide - 1);
     }
 }
