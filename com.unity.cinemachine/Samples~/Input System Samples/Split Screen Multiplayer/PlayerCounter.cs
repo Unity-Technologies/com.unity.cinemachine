@@ -1,16 +1,19 @@
 using UnityEngine;
 
-public class PlayerCounter : MonoBehaviour
+namespace Unity.Cinemachine.Samples
 {
-    public static int PlayerCount;
-    
-    public void PlayerJoined()
+    public class PlayerCounter : MonoBehaviour
     {
-        PlayerCount++;
-    }
+        public static int PlayerCount;
 
-    public void PlayerLeft()
-    {
-        PlayerCount--;
+        public void PlayerJoined()
+        {
+            PlayerCount++;
+        }
+
+        public void PlayerLeft()
+        {
+            PlayerCount--;
+        }
     }
 }
