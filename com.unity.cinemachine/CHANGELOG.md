@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Samples UI works with both built-in Input System.
 - Timeline: Added Track Priority field in CinemachineTrack to control track precedence when tracks are contained in nested timelines.
 - New 2D platformer sample showing custom camera manager.
+- ThirdPerson Shooter sample scene now has an option to swap shoulders.
 
 ### Changed
 - Minimum Unity version is now 2022.2.15f1.
