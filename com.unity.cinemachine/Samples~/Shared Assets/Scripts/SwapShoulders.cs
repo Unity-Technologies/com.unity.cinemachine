@@ -1,23 +1,31 @@
-using Unity.Cinemachine;
-using Unity.Cinemachine.Samples;
 using UnityEngine;
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+using UnityEngine.InputSystem;
+#endif
 
-public class SwapShoulders : MonoBehaviour
+namespace Unity.Cinemachine.Samples
 {
-    public GameObject CinemachineCameraGameObject;
-    public SimplePlayerControllerBase PlayerController;
-
-    void Update()
+    public class SwapShoulders : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            PlayerController.EnableLockCursor(false);
-    }
+        public GameObject CinemachineCameraGameObject;
+        public SimplePlayerControllerBase PlayerController;
 
-    public void Swap()
-    {
-        var thirdPersonFollows = 
-            CinemachineCameraGameObject.GetComponentsInChildren<CinemachineThirdPersonFollow>(true);
-        foreach (var tpf in thirdPersonFollows)
-            tpf.CameraSide = Mathf.Abs(tpf.CameraSide - 1);
+        void Update()
+        {
+#if CINEMACHINE_UNITY_INPUTSYSTEM
+            if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+#else
+            if (Input.GetKeyDown(KeyCode.Escape))
+#endif
+                PlayerController.EnableLockCursor(false);
+        }
+
+        public void Swap()
+        {
+            var thirdPersonFollows =
+                CinemachineCameraGameObject.GetComponentsInChildren<CinemachineThirdPersonFollow>(true);
+            foreach (var tpf in thirdPersonFollows)
+                tpf.CameraSide = Mathf.Abs(tpf.CameraSide - 1);
+        }
     }
 }
