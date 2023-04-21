@@ -124,6 +124,8 @@ namespace Unity.Cinemachine.Editor
 
             void TrackFlags(SerializedProperty prop)
             {
+                if (prop.serializedObject == null)
+                    return; // object deleted
                 var flags = prop.intValue;
                 var rangeDisabled = (flags & (int)InputAxis.RestrictionFlags.RangeIsDriven) != 0;
                 centerField.SetEnabled(!rangeDisabled);

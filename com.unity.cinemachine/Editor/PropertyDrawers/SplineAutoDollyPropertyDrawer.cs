@@ -48,6 +48,8 @@ namespace Unity.Cinemachine.Editor
             Update();
             ux.TrackPropertyValue(property, (p) => 
             {
+                if (p.serializedObject == null)
+                    return; // object deleted
                 Update();
                 ux.Bind(p.serializedObject); // Bind is not automatic after the the initial creation
             });

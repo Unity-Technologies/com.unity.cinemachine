@@ -52,9 +52,11 @@ namespace Unity.Cinemachine.Editor
 
             row.TrackPropertyWithInitialCallback(property, (p) =>
             {
+                if (p.serializedObject == null)
+                    return;
                 // Is the axis name valid?
                 var nameError = string.Empty;
-                var nameValue = property.stringValue;
+                var nameValue = p.stringValue;
                 if (nameValue.Length > 0)
                     try { CinemachineCore.GetInputAxis(nameValue); }
                     catch (ArgumentException e) { nameError = e.Message; }

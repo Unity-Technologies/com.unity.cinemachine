@@ -170,11 +170,13 @@ namespace Unity.Cinemachine.Editor
                     + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 
                 HelpBoxMessageType.Warning));
             list.TrackPropertyWithInitialCallback(
-                property, (p) => isEmptyMessage.SetVisible(p.arraySize == 0));
+                property, (p) => isEmptyMessage.SetVisible(p.serializedObject != null && p.arraySize == 0));
 
             // Synchronize the controller list
             ux.TrackAnyUserActivity(() =>
             {
+                if (property.serializedObject == null)
+                    return; // object deleted
                 var targets = property.serializedObject.targetObjects;
                 for (int i = 0; i < targets.Length; ++i)
                 {
