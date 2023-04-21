@@ -1760,6 +1760,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1722462838}
+    - targetCorrespondingSourceObject: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1722462839}
   m_SourcePrefab: {fileID: 100100000, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
 --- !u!1 &1722462836 stripped
 GameObject:
@@ -1837,6 +1840,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CinemachineCameraGameObject: {fileID: 2076565717059590909}
+--- !u!114 &1722462839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1722462836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84bbe8a9281f49f9801ffc0203bee6df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   PlayerController: {fileID: 1802572052}
 --- !u!1001 &1768537927
 PrefabInstance:
