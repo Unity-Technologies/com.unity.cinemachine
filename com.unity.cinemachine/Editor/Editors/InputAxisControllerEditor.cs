@@ -178,8 +178,7 @@ namespace Unity.Cinemachine.Editor
                 var targets = property.serializedObject.targetObjects;
                 for (int i = 0; i < targets.Length; ++i)
                 {
-                    var target = targets[i] as IInputAxisController;
-                    if (!target.ControllersAreValid())
+                    if (targets[i] is IInputAxisController target && !target.ControllersAreValid())
                     {
                         Undo.RecordObject(targets[i], "SynchronizeControllers");
                         target.SynchronizeControllers();

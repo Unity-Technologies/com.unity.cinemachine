@@ -529,7 +529,7 @@ namespace Unity.Cinemachine.Editor
 
                 warningIcon.TrackAnyUserActivity(() =>
                 {
-                    var warningText = getChildWarning == null ? string.Empty : getChildWarning(element);
+                    var warningText = (getChildWarning == null || element == null) ? string.Empty : getChildWarning(element);
                     warningIcon.tooltip = warningText;
                     warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
                 });
