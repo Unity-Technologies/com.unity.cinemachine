@@ -12,8 +12,8 @@ namespace Unity.Cinemachine.Samples
             transform.position = new Vector3(PlayerCounter.PlayerCount * 2, 2, 0);
 
             // Shift one bit per brain Count.
-            m_CinemachineBrain.ChannelMask = (OutputChannel.Channels)(1 << CinemachineBrain.ActiveBrainCount);
-            m_CinemachineCamera.OutputChannel.Value = (OutputChannel.Channels)(1 << CinemachineBrain.ActiveBrainCount);
+            m_CinemachineBrain.ChannelMask = (OutputChannel.Channels)(1 << PlayerCounter.PlayerCount);
+            m_CinemachineCamera.OutputChannel.Value = (OutputChannel.Channels)(1 << PlayerCounter.PlayerCount);
         }
     }
 }
