@@ -2419,7 +2419,7 @@ MonoBehaviour:
         InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a,
           type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Mouse X
         LegacyGain: 1
       InputValue: 0
       Driver:
@@ -2432,7 +2432,7 @@ MonoBehaviour:
         InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a,
           type: 3}
         Gain: -1
-        LegacyInput: 
+        LegacyInput: Mouse Y
         LegacyGain: 1
       InputValue: 0
       Driver:
@@ -2445,7 +2445,7 @@ MonoBehaviour:
         InputAction: {fileID: 5082991133974614888, guid: ba1679fafe8a545948be71b9557ead1a,
           type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Mouse ScrollWheel
         LegacyGain: 1
       InputValue: 0
       Driver:
