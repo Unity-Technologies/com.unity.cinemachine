@@ -27,8 +27,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 878341184440332465}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.09, z: 9.46}
+  m_LocalRotation: {x: 0.70710665, y: -0, z: -0, w: 0.70710695}
+  m_LocalPosition: {x: 0, y: 5.6860776, z: 8.847401}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -158,8 +158,7 @@ MonoBehaviour:
       Owner: {fileID: 878341184440332478}
       Enabled: 1
       Input:
-        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a,
-          type: 3}
+        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
         Gain: 1
         LegacyInput: Horizontal
         LegacyGain: 1
@@ -171,8 +170,7 @@ MonoBehaviour:
       Owner: {fileID: 878341184440332478}
       Enabled: 1
       Input:
-        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a,
-          type: 3}
+        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
         Gain: 1
         LegacyInput: Vertical
         LegacyGain: 1
@@ -184,9 +182,9 @@ MonoBehaviour:
       Owner: {fileID: 878341184440332478}
       Enabled: 1
       Input:
-        InputAction: {fileID: 0}
+        InputAction: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Fire1
         LegacyGain: 1
       InputValue: 0
       Driver:

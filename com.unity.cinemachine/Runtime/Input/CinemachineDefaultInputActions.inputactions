@@ -1,5 +1,5 @@
 {
-    "name": "CinemachineInputActions",
+    "name": "CinemachineDefaultInputActions",
     "maps": [
         {
             "name": "Player",
