@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028353, g: 0.22571383, b: 0.30692253, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 0
@@ -979,7 +982,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385349248}
-  m_LocalRotation: {x: 0.10352379, y: -4.772184e-18, z: 7.458585e-17, w: 0.994627}
+  m_LocalRotation: {x: 0.1035238, y: -0.0000000074105495, z: 7.713125e-10, w: 0.994627}
   m_LocalPosition: {x: 0.71, y: 3.0070581, z: -18.15717}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1028,41 +1031,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerIndex: -1
-  AutoEnableInputs: 1
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
-  Controllers:
-  - Name: Look Orbit X
-    Owner: {fileID: 385349256}
-    Enabled: 1
-    Input:
-      LegacyInput: Mouse X
-      LegacyGain: 200
-    InputValue: 0
-    Driver:
-      AccelTime: 0.2
-      DecelTime: 0.2
-  - Name: Look Orbit Y
-    Owner: {fileID: 385349256}
-    Enabled: 1
-    Input:
-      LegacyInput: Mouse Y
-      LegacyGain: -200
-    InputValue: 0
-    Driver:
-      AccelTime: 0.2
-      DecelTime: 0.2
-  - Name: Orbit Scale
-    Owner: {fileID: 385349256}
-    Enabled: 1
-    Input:
-      LegacyInput: Mouse ScrollWheel
-      LegacyGain: 200
-    InputValue: 0
-    Driver:
-      AccelTime: 0
-      DecelTime: 0
+  m_ControllerManager:
+    Controllers:
+    - Name: Look Orbit X
+      Owner: {fileID: 385349256}
+      Enabled: 1
+      Input:
+        InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a,
+          type: 3}
+        Gain: 1
+        LegacyInput: Mouse X
+        LegacyGain: 200
+      InputValue: 0
+      Driver:
+        AccelTime: 0.2
+        DecelTime: 0.2
+    - Name: Look Orbit Y
+      Owner: {fileID: 385349256}
+      Enabled: 1
+      Input:
+        InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a,
+          type: 3}
+        Gain: -1
+        LegacyInput: Mouse Y
+        LegacyGain: -200
+      InputValue: 0
+      Driver:
+        AccelTime: 0.2
+        DecelTime: 0.2
+    - Name: Orbit Scale
+      Owner: {fileID: 385349256}
+      Enabled: 1
+      Input:
+        InputAction: {fileID: 5082991133974614888, guid: ba1679fafe8a545948be71b9557ead1a,
+          type: 3}
+        Gain: 1
+        LegacyInput: Mouse ScrollWheel
+        LegacyGain: 200
+      InputValue: 0
+      Driver:
+        AccelTime: 0
+        DecelTime: 0
+  PlayerIndex: -1
+  AutoEnableInputs: 1
 --- !u!114 &385349256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2473,7 +2486,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.10352379, y: -4.772184e-18, z: 7.458585e-17, w: 0.994627}
+  m_LocalRotation: {x: 0.1035238, y: -0.0000000074105495, z: 7.713125e-10, w: 0.994627}
   m_LocalPosition: {x: 0.71, y: 3.0070581, z: -18.15717}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2801,11 +2814,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7949188074583248948, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1916965510}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
 --- !u!1 &1197501360
 GameObject:
@@ -4074,35 +4083,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1781798042}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1916965508 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7949188074583248948, guid: c97e1248c10cd3549b3d18c1eb1c3722,
-    type: 3}
-  m_PrefabInstance: {fileID: 1047733587}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1916965510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1916965508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Version: 3
-  m_UsePipelineSettings: 1
-  m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
-  m_LightCookieSize: {x: 1, y: 1}
-  m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
 --- !u!1 &1918054065
 GameObject:
   m_ObjectHideFlags: 0

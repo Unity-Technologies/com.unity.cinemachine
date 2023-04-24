@@ -150,45 +150,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ScanRecursively: 1
+  SuppressInputWhileBlending: 1
+  m_ControllerManager:
+    Controllers:
+    - Name: Move X
+      Owner: {fileID: 878341184440332478}
+      Enabled: 1
+      Input:
+        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a,
+          type: 3}
+        Gain: 1
+        LegacyInput: Horizontal
+        LegacyGain: 1
+      InputValue: 0
+      Driver:
+        AccelTime: 0
+        DecelTime: 0
+    - Name: Move Z
+      Owner: {fileID: 878341184440332478}
+      Enabled: 1
+      Input:
+        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a,
+          type: 3}
+        Gain: 1
+        LegacyInput: Vertical
+        LegacyGain: 1
+      InputValue: 0
+      Driver:
+        AccelTime: 0
+        DecelTime: 0
+    - Name: Brake
+      Owner: {fileID: 878341184440332478}
+      Enabled: 1
+      Input:
+        InputAction: {fileID: 0}
+        Gain: 1
+        LegacyInput: 
+        LegacyGain: 1
+      InputValue: 0
+      Driver:
+        AccelTime: 0
+        DecelTime: 0
   PlayerIndex: -1
   AutoEnableInputs: 1
-  Controllers:
-  - Name: Move X
-    Owner: {fileID: 878341184440332478}
-    Enabled: 1
-    Input:
-      InputAction: {fileID: -1680190386980627800, guid: cb572737576f6df4182085d6bbea2294, type: 3}
-      Gain: 1
-      LegacyInput: Horizontal
-      LegacyGain: 1
-    InputValue: 0
-    Driver:
-      AccelTime: 0
-      DecelTime: 0
-  - Name: Move Z
-    Owner: {fileID: 878341184440332478}
-    Enabled: 1
-    Input:
-      InputAction: {fileID: -1680190386980627800, guid: cb572737576f6df4182085d6bbea2294, type: 3}
-      Gain: 1
-      LegacyInput: Vertical
-      LegacyGain: 1
-    InputValue: 0
-    Driver:
-      AccelTime: 0
-      DecelTime: 0
-  - Name: Brake
-    Owner: {fileID: 878341184440332478}
-    Enabled: 1
-    Input:
-      InputAction: {fileID: -8322308610609176083, guid: cb572737576f6df4182085d6bbea2294, type: 3}
-      Gain: 1
-      LegacyInput: Jump
-      LegacyGain: 1
-    InputValue: 0
-    Driver:
-      AccelTime: 0
-      DecelTime: 0
 --- !u!1 &1570214454009041785
 GameObject:
   m_ObjectHideFlags: 0
