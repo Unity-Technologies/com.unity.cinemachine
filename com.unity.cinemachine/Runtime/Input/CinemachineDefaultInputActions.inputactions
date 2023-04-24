@@ -1,5 +1,5 @@
 {
-    "name": "CinemachineDefaultInputActions",
+    "name": "CinemachineInputActions",
     "maps": [
         {
             "name": "Player",
@@ -33,18 +33,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Jump",
-                    "type": "PassThrough",
-                    "id": "27857b20-6329-4f2f-a46e-e2366d97ecfb",
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "93d26ed5-4740-48fb-9572-b809482de450",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Sprint",
-                    "type": "PassThrough",
-                    "id": "f849f26a-7026-4c49-a7e7-903b88a8bba5",
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "2eeac458-9774-44ec-9abf-4fe5ffd9a9e0",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -53,11 +53,20 @@
                 {
                     "name": "Zoom",
                     "type": "Value",
-                    "id": "e5fdbf56-3077-4f3b-b518-63b3469d51f0",
-                    "expectedControlType": "",
+                    "id": "e36b5f92-3364-439f-84bd-ed85338f5e03",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Aim",
+                    "type": "Button",
+                    "id": "fab4bb95-853e-427a-a81e-1d5331916686",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -176,7 +185,7 @@
                     "id": "c1f7a91b-d0fd-4a62-997e-7fb9b69bf235",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=-100,y=100)",
                     "groups": ";Gamepad",
                     "action": "Look",
                     "isComposite": false,
@@ -187,8 +196,8 @@
                     "id": "8c8e490b-c610-4785-884f-f04217b23ca4",
                     "path": "<Pointer>/delta",
                     "interactions": "",
-                    "processors": "DeltaTimeScale,ScaleVector2(x=0.2,y=0.2)",
-                    "groups": "Keyboard&Mouse",
+                    "processors": "DeltaTimeScale,ScaleVector2(x=0.1,y=0.1)",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -217,29 +226,29 @@
                 },
                 {
                     "name": "",
-                    "id": "7ff81d6d-1de1-4539-99d8-4a73f01337b4",
-                    "path": "<Mouse>/scroll/y",
+                    "id": "0412843f-06f6-4e3f-9ace-3462c38ac815",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=0.005,y=0.005)",
+                    "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Zoom",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "450c9c2e-d11f-439c-87bb-24ba91561af1",
-                    "path": "<Gamepad>/dpad/y",
+                    "id": "01de1e85-d62d-4bc4-a22c-0da4e1e34950",
+                    "path": "<XInputController>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Zoom",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "a18d4c18-3061-41d4-b321-42cbde847d49",
+                    "id": "ed13f639-a3f0-464d-a876-fd6f8f14252f",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
@@ -250,7 +259,7 @@
                 },
                 {
                     "name": "",
-                    "id": "af9d34bb-c8ca-469f-8bf0-765bcdb91ad5",
+                    "id": "d71216f1-e88b-443b-9dd8-d93a9e10c3d8",
                     "path": "<XInputController>/buttonNorth",
                     "interactions": "",
                     "processors": "",
@@ -261,23 +270,45 @@
                 },
                 {
                     "name": "",
-                    "id": "036798b9-dd6c-4ea2-9ee4-162d1dcb2bdb",
-                    "path": "<Keyboard>/shift",
+                    "id": "643cea24-fe45-41e1-8c40-d547b89ab7f6",
+                    "path": "<Mouse>/scroll",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Sprint",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "8097f812-a767-4ea6-b522-aa39e385a3bd",
-                    "path": "<XInputController>/buttonSouth",
+                    "id": "f6727f7b-6bea-4b31-9fdc-ed4b40380d43",
+                    "path": "<XInputController>/dpad",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Sprint",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bb878abc-08e8-4939-95f3-721af6ca606d",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0286b8ef-ab94-478c-bc0c-31fab5de5496",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -307,39 +338,6 @@
             "devices": [
                 {
                     "devicePath": "<Gamepad>",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "Touch",
-            "bindingGroup": "Touch",
-            "devices": [
-                {
-                    "devicePath": "<Touchscreen>",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "Joystick",
-            "bindingGroup": "Joystick",
-            "devices": [
-                {
-                    "devicePath": "<Joystick>",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "XR",
-            "bindingGroup": "XR",
-            "devices": [
-                {
-                    "devicePath": "<XRController>",
                     "isOptional": false,
                     "isOR": false
                 }
