@@ -507,7 +507,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234952069}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.536392, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -14.495788, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -692,7 +692,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 289220589}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.536392, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -14.495788, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -895,18 +895,16 @@ PrefabInstance:
         the player, and hold shift to sprint and jump higher.
 
 
-
         It includes
-        a custom camera manager (2D Camera), which selects from its child cameras
-        based on game state.  It also features a Boss room with its own camera which
-        is activated while the player is in the room.  This is done with a CinemachineTriggerAction
-        behaviour on the room trigger.
+        a custom camera manager (Platformer Camera 2D), which selects from its child
+        cameras based on game state.  It also features a Boss room with its own camera
+        which is activated while the player is in the room.  This is done with a
+        CinemachineTriggerAction behaviour on the room trigger.
 
 
-
-        The Boss Camera frames the entire
-        room regardless of aspect ratio by using a CinemachineTargetGroup holding
-        invisible objects in the room corners.
+        The Boss
+        Camera frames the entire room regardless of aspect ratio by using a CinemachineTargetGroup
+        holding invisible objects in the room corners.
 
 '
       objectReference: {fileID: 0}
@@ -13650,6 +13648,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2294858455320007780, guid: 644483867df6df74a8a80c26422ed3c5, type: 3}
   m_PrefabInstance: {fileID: 2918453537036953489}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1320069495 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2662089159087876488, guid: 644483867df6df74a8a80c26422ed3c5, type: 3}
+  m_PrefabInstance: {fileID: 2918453537036953489}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a88ade7667a42594ba2c435a7d3b2307, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1324661891
 GameObject:
   m_ObjectHideFlags: 0
@@ -14112,7 +14121,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1620057287}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.536392, y: 5.6132784, z: -9.80871}
+  m_LocalPosition: {x: -14.495788, y: 5.6132784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14225,7 +14234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InitialCamera: {fileID: 1074941660}
-  Player: {fileID: 1229351973}
+  Player: {fileID: 1320069495}
   StartPosition: {x: -3.5, y: 4.41, z: 0}
 --- !u!4 &1649289742
 Transform:
@@ -14375,7 +14384,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719199625}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.900539, y: 7.0932784, z: -9.80871}
+  m_LocalPosition: {x: -14.941144, y: 7.0932784, z: -9.80871}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14562,7 +14571,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7726835707821803386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.3179302, y: 5.6241198, z: -10}
+  m_LocalPosition: {x: -3.2773187, y: 5.6241198, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

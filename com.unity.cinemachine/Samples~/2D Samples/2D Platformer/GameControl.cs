@@ -5,13 +5,14 @@ namespace Unity.Cinemachine.Samples
     public class GameControl : MonoBehaviour
     {
         public CinemachineVirtualCameraBase InitialCamera;
-        public Transform Player;
+        public SimplePlayerController2D Player;
         public Vector3 StartPosition;
 
         public void RestartGame()
         {
             // Move the plyer to its start position
-            Player.transform.SetLocalPositionAndRotation(StartPosition, Quaternion.identity);
+            Player.transform.position = StartPosition;
+            Player.PlayerGeometry.rotation = Quaternion.Euler(0, 90, 0);
 
             // Reset the camera state, to cancel damping
             CinemachineCore.ResetCameraState();

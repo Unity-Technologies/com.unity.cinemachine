@@ -179,14 +179,14 @@ PrefabInstance:
       propertyPath: HelpText
       value: "This scene shows a global impulse listener on the main camera, and
         impulse listeners on a large population of cubes.\n\nWhen you press the Invoke
-        Impulse button in the top left corner, it calls the GenerateImpulse function
-        of the CinemachineImpulseSource found on the Epicenter object. This method
-        can also be called from the inspector of CinemachineImpulseSource. The impulse
-        is generated at the epicenter's location.  \n\nBecause of the propagation
-        speed of the impulse signal, the effect of the impulse visibly travels in
-        a wave through the cubes.\n\nAn impulse is also invoked when the player jumps,
-        thanks to another CinemachineImpulseSource behaviour on the player.\n\nUse
-        WASD to travel through the scene, and the spacebar to jump."
+        Impulse button in the top left corner or make the player jump, it calls the
+        GenerateImpulse function of the CinemachineImpulseSource found on the Epicenter
+        object. This method can also be called from the inspector of CinemachineImpulseSource.
+        The impulse is generated at the epicenter's location.  \n\nBecause of the
+        propagation speed of the impulse signal, the effect of the impulse visibly
+        travels in a wave through the cubes.\n\nAn impulse is also invoked when the
+        player jumps, thanks to another CinemachineImpulseSource behaviour on the
+        player.\n\nUse WASD to travel through the scene, and the spacebar to jump."
       objectReference: {fileID: 0}
     - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: m_Name
