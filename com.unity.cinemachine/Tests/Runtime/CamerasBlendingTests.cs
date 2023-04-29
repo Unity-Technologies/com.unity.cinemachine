@@ -153,7 +153,7 @@ namespace Unity.Cinemachine.Tests
             yield return UpdateCinemachine();
             
             // finish blend
-            while (CurrentTime - startTime < k_BlendingTime * 0.1f)
+            while (CurrentTime - startTime < k_BlendingTime * 0.2f)
             {
                 Assert.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Target));
                 Assert.That(m_Brain.IsBlending, Is.True);
