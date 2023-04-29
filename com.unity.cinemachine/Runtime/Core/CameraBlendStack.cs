@@ -55,11 +55,11 @@ namespace Unity.Cinemachine
     /// <summary>
     /// Implements an overridable stack of blend states.
     /// </summary>
-    internal class CameraBlendStack : ICameraOverrideStack
+    class CameraBlendStack : ICameraOverrideStack
     {
         const float kEpsilon = UnityVectorExtensions.Epsilon;
 
-        class StackFrame : BlendSourceVirtualCamera
+        class StackFrame : NestedBlendSource
         {
             public int Id;
             public int Priority;
@@ -67,8 +67,7 @@ namespace Unity.Cinemachine
             public float DeltaTimeOverride;
 
             // If blending in from a snapshot, this holds the source state
-            readonly StaticStateVirtualCamera m_Snapshot = new (CameraState.Default, string.Empty);
-            ICinemachineCamera m_SnapshotSource;
+            readonly SnapshotBlendSource m_Snapshot = new ();
             float m_SnapshotBlendWeight;
 
             public StackFrame() : base(new (null, null, null, 0, 0)) {}
@@ -81,17 +80,15 @@ namespace Unity.Cinemachine
                 if (cam == null || (cam.State.BlendHint & CameraState.BlendHints.FreezeWhenBlendingOut) == 0)
                 {
                     // No snapshot required - reset it
-                    m_SnapshotSource = null;
+                    m_Snapshot.TakeSnapshot(null);
                     return cam;
                 }
                 // A snapshot is needed
-                if (m_SnapshotSource != cam || m_SnapshotBlendWeight > weight)
+                if (m_Snapshot.Source != cam || m_SnapshotBlendWeight > weight)
                 {
                     // At this point we're pretty sure this is a new blend,
                     // so we take a new snapshot of the camera state
-                    m_Snapshot.Name = cam.Name;
-                    m_Snapshot.State = cam.State;
-                    m_SnapshotSource = cam;
+                    m_Snapshot.TakeSnapshot(cam);
                     m_SnapshotBlendWeight = weight;
                 }
                 // Use the most recent snapshot
@@ -259,6 +256,8 @@ namespace Unity.Cinemachine
                         && frame.Blend.Uses(activeCamera))
                         snapshot = true;
 
+                    var nbs = frame.Blend.CamA as NestedBlendSource;
+
                     // Special case: if backing out of a blend-in-progress
                     // with the same blend in reverse, adjust the blend time
                     // to cancel out the progress made in the opposite direction
@@ -266,12 +265,20 @@ namespace Unity.Cinemachine
                     {
                         snapshot = true; // always use a snapshot for this to prevent pops
                         duration = frame.Blend.TimeInBlend;
+                        if (nbs != null)
+                            duration += nbs.Blend.Duration - nbs.Blend.TimeInBlend;
+                        else if (frame.Blend.CamA is SnapshotBlendSource sbs)
+                            duration += sbs.RemainingTimeInBlend;
                     }
+
+                    // Avoid nesting too deeply
+                    if (!snapshot && nbs != null && nbs.Blend.CamA is NestedBlendSource nbs2)
+                        nbs2.Blend.CamA = new SnapshotBlendSource(nbs2.Blend.CamA);
 
                     // Chain to existing blend
                     frame.Blend.CamA = snapshot 
-                        ? new StaticStateVirtualCamera(frame.Blend.State, outgoingCamera.Name)
-                        : new BlendSourceVirtualCamera(new CinemachineBlend(frame.Blend));
+                        ? new SnapshotBlendSource(frame, frame.Blend.Duration - frame.Blend.TimeInBlend)
+                        : new NestedBlendSource(new CinemachineBlend(frame.Blend));
                 }
                 frame.Blend.CamB = activeCamera;
                 frame.Blend.BlendCurve = frame.Source.BlendCurve;
@@ -280,19 +287,27 @@ namespace Unity.Cinemachine
             }
 
             // Advance the working blend
-            if (frame.Blend.CamA != null)
+            AdvanceBlend(frame.Blend, deltaTime);
+            frame.UpdateCameraState(up, deltaTime);
+
+            // local function
+            static void AdvanceBlend(CinemachineBlend blend, float deltaTime)
             {
-                frame.Blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : frame.Blend.Duration;
-                if (frame.Blend.IsComplete)
+                if (blend.CamA != null)
                 {
-                    // No more blend
-                    frame.Blend.CamA = null;
-                    frame.Blend.BlendCurve = null;
-                    frame.Blend.Duration = 0;
-                    frame.Blend.TimeInBlend = 0;
+                    blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : blend.Duration;
+                    if (blend.IsComplete)
+                    {
+                        // No more blend
+                        blend.CamA = null;
+                        blend.BlendCurve = null;
+                        blend.Duration = 0;
+                        blend.TimeInBlend = 0;
+                    }
+                    else if (blend.CamA is NestedBlendSource bs)
+                        AdvanceBlend(bs.Blend, deltaTime);
                 }
             }
-            frame.UpdateCameraState(up, deltaTime);
         }
 
         /// <summary>
@@ -364,6 +379,38 @@ namespace Unity.Cinemachine
                     return frame.DeltaTimeOverride;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Static source for blending. It's not really a virtual camera, but takes
+        /// a CameraState and exposes it as a virtual camera for the purposes of blending.
+        /// </summary>
+        class SnapshotBlendSource : ICinemachineCamera
+        {
+            CameraState m_State;
+            public ICinemachineCamera Source { get; private set; }
+            public float RemainingTimeInBlend { get; set; }
+
+            public SnapshotBlendSource(ICinemachineCamera source = null, float remainingTimeInBlend = 0)
+            {
+                TakeSnapshot(source);
+                RemainingTimeInBlend = remainingTimeInBlend;
+            }
+
+            public string Name => Source == null ? "(null)" : Source.Name;
+            public string Description => "snapshot";
+            public CameraState State => m_State;
+            public bool IsValid => Source != null;
+            public ICinemachineMixer ParentCamera => null;
+            public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
+            public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
+
+            public void TakeSnapshot(ICinemachineCamera source)
+            {
+                Source = source;
+                m_State = source != null ? source.State : CameraState.Default; 
+                m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
+            }
         }
     }
 }

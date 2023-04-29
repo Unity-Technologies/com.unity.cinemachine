@@ -78,9 +78,9 @@ namespace Unity.Cinemachine
                 return false;
             if (cam == CamA || cam == CamB)
                 return true;
-            if (CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
+            if (CamA is NestedBlendSource b && b.Blend.Uses(cam))
                 return true;
-            b = CamB as BlendSourceVirtualCamera;
+            b = CamB as NestedBlendSource;
             return b != null && b.Blend.Uses(cam);
         }
 
@@ -272,44 +272,13 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// Static source for blending. It's not really a virtual camera, but takes
-    /// a CameraState and exposes it as a virtual camera for the purposes of blending.
-    /// </summary>
-    internal class StaticStateVirtualCamera : ICinemachineCamera
-    {
-        string m_Name;
-        CameraState m_State;
-
-        public StaticStateVirtualCamera(CameraState state, string name) 
-        {
-            m_State = state;
-            m_Name = name;
-        }
-        public string Name { get => m_Name; set => m_Name = value; }
-        public string Description => "snapshot";
-        public CameraState State 
-        {
-            get => m_State; 
-            set 
-            {
-                m_State = value; 
-                m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
-            }
-        }
-        public bool IsValid => true;
-        public ICinemachineMixer ParentCamera => null;
-        public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
-    }
-
-    /// <summary>
     /// Blend result source for blending.   This exposes a CinemachineBlend object
     /// as an ersatz virtual camera for the purposes of blending.  This achieves the purpose
     /// of blending the result oif a blend.
     /// </summary>
-    internal class BlendSourceVirtualCamera : ICinemachineCamera
+    class NestedBlendSource : ICinemachineCamera
     {
-        public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
+        public NestedBlendSource(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
 
         public string Name => (Blend == null || Blend.CamB == null)? "(null)" : Blend.CamB.Name;
