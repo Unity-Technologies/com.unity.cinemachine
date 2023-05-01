@@ -127,8 +127,8 @@ namespace Unity.Cinemachine
         
         /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
-        /// A handler can either return the default blend, or a new blend specific to
-        /// current conditions.
+        /// A handler can either return the default blend, or a new blend definition 
+        /// specific to current conditions.
         /// </summary>
         /// <param name="fromVcam">The outgoing virtual camera</param>
         /// <param name="toVcam">Yhe incoming virtual camera</param>
@@ -149,6 +149,22 @@ namespace Unity.Cinemachine
         /// </summary>
         public static GetBlendOverrideDelegate GetBlendOverride;
 
+        /// <summary>
+        /// Delegate for replacing a standard CinemachineBlend with a custom blender class.
+        /// Return a new instance of a custom blender, or null to use the default blender.
+        /// </summary>
+        /// <param name="fromCam">The outgoing camera</param>
+        /// <param name="toCam">The incoming camera</param>
+        /// <returns>A new instance of a custom blender, or null to use the default blender</returns>
+        public delegate CinemachineBlend.IBlender GetCustomBlenderDelegate(
+            ICinemachineCamera fromCam, ICinemachineCamera toCam);
+
+        /// <summary>
+        /// Delegate for replacing a standard CinemachineBlend with a custom blender class.
+        /// Returns a new instance of a custom blender, or null to use the default blender.
+        /// </summary>
+        public static GetCustomBlenderDelegate GetCustomBlender;
+
         /// <summary>An event with ICinemachineMixer and ICinemachineCamera parameters.</summary>
         [Serializable]
         public class CameraEvent : UnityEvent<ICinemachineMixer, ICinemachineCamera> {}
@@ -160,6 +176,19 @@ namespace Unity.Cinemachine
         /// <summary>This event will fire after a brain updates its Camera</summary>
         public static BrainEvent CameraUpdatedEvent = new ();
 
+        /// <summary>This is sent with BlendEvent</summary>
+        public struct BlendEventParams
+        {
+            /// <summary>The context in which this blend is ocurring</summary>
+            public ICinemachineMixer Origin;
+            /// <summary>The blend that in question</summary>
+            public CinemachineBlend Blend;
+        }
+
+        /// <summary>An Event with BlendEventParams as parameter.</summary>
+        [Serializable]
+        public class BlendEvent : UnityEvent<BlendEventParams> {}
+
         /// <summary>This event will fire when the current camera changes, 
         /// at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
@@ -167,6 +196,10 @@ namespace Unity.Cinemachine
         /// <summary>This event will fire immediately after a camera that is 
         /// live in some context stops being live.</summary>
         public static CameraEvent CameraDeactivatedEvent = new ();
+
+        /// <summary>This event will fire when a blend is created.  
+        /// Handler can modify the settings of the blend (but not the cameras).</summary>
+        public static BlendEvent BlendCreatedEvent = new ();
 
         /// <summary>This event will fire when the current camera completes a blend-in.</summary>
         public static CameraEvent BlendFinishedEvent = new ();

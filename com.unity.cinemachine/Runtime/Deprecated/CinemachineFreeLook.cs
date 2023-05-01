@@ -722,8 +722,8 @@ namespace Unity.Cinemachine
                 }
 
                 // Create the blend objects
-                mBlendA = new CinemachineBlend(m_Rigs[1], m_Rigs[0], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
-                mBlendB = new CinemachineBlend(m_Rigs[2], m_Rigs[1], AnimationCurve.Linear(0, 0, 1, 1), 1, 0);
+                mBlendA = new CinemachineBlend { CamA = m_Rigs[1], CamB = m_Rigs[0], BlendCurve = AnimationCurve.Linear(0, 0, 1, 1), Duration = 1 };
+                mBlendB = new CinemachineBlend { CamA = m_Rigs[2], CamB = m_Rigs[1], BlendCurve = AnimationCurve.Linear(0, 0, 1, 1), Duration = 1 };
 
                 return true;
             }

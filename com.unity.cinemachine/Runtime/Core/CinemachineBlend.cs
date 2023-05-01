@@ -9,6 +9,21 @@ namespace Unity.Cinemachine
     /// </summary>
     public class CinemachineBlend
     {
+        /// <summary>
+        /// Interface for implementing custom CameraState blending algorithm
+        /// </summary>
+        public interface IBlender
+        {
+            /// <summary>
+            /// Interpolate a camera state between the two cameras being blended.
+            /// </summary>
+            /// <param name="CamA">The first camera</param>
+            /// <param name="CamB">The second camera</param>
+            /// <param name="t">Range 0...1 where 0 is CamA state and 1 is CamB state</param>
+            /// <returns>The interpolated state.</returns>
+            CameraState GetIntermediateState(ICinemachineCamera CamA, ICinemachineCamera CamB, float t);
+        }
+
         /// <summary>First camera in the blend</summary>
         public ICinemachineCamera CamA;
 
@@ -35,6 +50,12 @@ namespace Unity.Cinemachine
                 return Mathf.Clamp01(BlendCurve.Evaluate(TimeInBlend / Duration));
             }
         }
+
+        /// <summary>
+        /// If non-null, the custom blender will be used to blend camera state.  
+        /// If null, then CameraState.Lerp will be used.
+        /// </summary>
+        public IBlender CustomBlender { get; set; }
 
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
         public bool IsValid => (CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid);
@@ -84,26 +105,6 @@ namespace Unity.Cinemachine
             return b != null && b.Blend.Uses(cam);
         }
 
-        /// <summary>Construct a blend</summary>
-        /// <param name="a">First camera</param>
-        /// <param name="b">Second camera</param>
-        /// <param name="curve">Blend curve</param>
-        /// <param name="duration">Duration of the blend, in seconds</param>
-        /// <param name="t">Current time in blend, relative to the start of the blend</param>
-        public CinemachineBlend(
-            ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, float duration, float t)
-        {
-            CamA = a;
-            CamB = b;
-            BlendCurve = curve;
-            TimeInBlend = t;
-            Duration = duration;
-        }
-
-        /// <summary>Construct a blend</summary>
-        /// <param name="src">Copy fields from this blend</param>
-        public CinemachineBlend(CinemachineBlend src) => CopyFrom(src);
-
         /// <summary>Copy contents of a blend</summary>
         /// <param name="src">Copy fields from this blend</param>
         public void CopyFrom(CinemachineBlend src)
@@ -113,6 +114,18 @@ namespace Unity.Cinemachine
             BlendCurve = src.BlendCurve;
             TimeInBlend = src.TimeInBlend;
             Duration = src.Duration;
+            CustomBlender = src.CustomBlender;
+        }
+
+        /// <summary>
+        /// Clears all fields except CamB.  This effectively cuts to the end of the blend
+        /// </summary>
+        public void ClearBlend()
+        {
+            CamA = null;
+            BlendCurve = null;
+            TimeInBlend = Duration = 0;
+            CustomBlender = null;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
@@ -142,6 +155,9 @@ namespace Unity.Cinemachine
                 }
                 if (CamB == null || !CamB.IsValid)
                     return CamA.State;
+
+                if (CustomBlender != null)
+                    return CustomBlender.GetIntermediateState(CamA, CamB, BlendWeight);
                 return CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
             }
         }

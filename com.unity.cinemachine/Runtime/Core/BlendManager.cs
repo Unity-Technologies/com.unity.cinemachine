@@ -10,11 +10,11 @@ namespace Unity.Cinemachine
     /// </summary>
     class BlendManager : CameraBlendStack
     {
-        // Current Brain State - result of all frames.  Blend camB is "current" camera always
-        CinemachineBlend m_CurrentLiveCameras = new (null, null, null, 0, 0);
+        // Current blend State - result of all frames.  Blend camB is "current" camera always
+        CinemachineBlend m_CurrentLiveCameras = new ();
 
-        // Current cameras last frame, used for computing deltas
-        CinemachineBlend m_PreviousLiveCameras = new (null, null, null, 0, 0);
+        // Blend state last frame, used for computing deltas
+        CinemachineBlend m_PreviousLiveCameras = new ();
 
         // This is to control GC allocs when generating camera deactivated events
         List<ICinemachineCamera> m_CameraCache = new();

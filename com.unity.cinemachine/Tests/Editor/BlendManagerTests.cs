@@ -32,30 +32,34 @@ namespace Unity.Cinemachine.Tests.Editor
 
         int m_ActivatedEventCount;
         int m_DeactivatedEventCount;
+        int m_BlendCreatedCount;
         int m_BlendFinishedCount;
 
         void ActivatedEventHandler(ICinemachineCamera.ActivationEventParams evt) => ++m_ActivatedEventCount;
         void DeactivateEventHandler(ICinemachineMixer mixer, ICinemachineCamera cam) => ++m_DeactivatedEventCount;
+        void BlendCreatedEventHandler(CinemachineCore.BlendEventParams evt) => ++m_BlendCreatedCount;
         void BlendFinishedEventHandler(ICinemachineMixer mixer, ICinemachineCamera cam) => ++m_BlendFinishedCount;
 
         [SetUp] public void Setup() 
         { 
             CinemachineCore.CameraActivatedEvent.AddListener(ActivatedEventHandler);
             CinemachineCore.CameraDeactivatedEvent.AddListener(DeactivateEventHandler);
+            CinemachineCore.BlendCreatedEvent.AddListener(BlendCreatedEventHandler);
             CinemachineCore.BlendFinishedEvent.AddListener(BlendFinishedEventHandler);
         }
         [TearDown] public void TearDown() 
         { 
             CinemachineCore.CameraActivatedEvent.RemoveListener(ActivatedEventHandler);
             CinemachineCore.CameraDeactivatedEvent.RemoveListener(DeactivateEventHandler);
+            CinemachineCore.BlendCreatedEvent.RemoveListener(BlendCreatedEventHandler);
             CinemachineCore.BlendFinishedEvent.RemoveListener(BlendFinishedEventHandler);
         }
 
-        void ResetCounters() => m_ActivatedEventCount = m_DeactivatedEventCount = m_BlendFinishedCount = 0;
+        void ResetCounters() => m_ActivatedEventCount = m_DeactivatedEventCount = m_BlendCreatedCount = m_BlendFinishedCount = 0;
 
         void ProcessFrame(ICinemachineCamera cam, float deltaTime)
         {
-            m_BlendManager.UpdateRootFrame(cam, Vector3.up, deltaTime);
+            m_BlendManager.UpdateRootFrame(m_Mixer, cam, Vector3.up, deltaTime);
             m_BlendManager.ComputeCurrentBlend();
             m_BlendManager.ProcessActiveCamera(m_Mixer, Vector3.up, deltaTime);
         }
@@ -74,11 +78,13 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.AreEqual(1, m_ActivatedEventCount);
             Assert.AreEqual(0, m_DeactivatedEventCount);
             Assert.AreEqual(0, m_BlendFinishedCount);
+            Assert.AreEqual(0, m_BlendCreatedCount);
             Assert.That(m_BlendManager.IsBlending, Is.False);
 
             ProcessFrame(m_Cam1, 0.1f);
             Assert.AreEqual(1, m_ActivatedEventCount);
             Assert.AreEqual(0, m_DeactivatedEventCount);
+            Assert.AreEqual(0, m_BlendCreatedCount);
             Assert.AreEqual(0, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.False);
 
@@ -86,18 +92,21 @@ namespace Unity.Cinemachine.Tests.Editor
             ProcessFrame(m_Cam2, 0.1f);
             Assert.AreEqual(2, m_ActivatedEventCount);
             Assert.AreEqual(0, m_DeactivatedEventCount);
+            Assert.AreEqual(1, m_BlendCreatedCount);
             Assert.AreEqual(0, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.True);
 
             ProcessFrame(m_Cam2, 0.5f);
             Assert.AreEqual(2, m_ActivatedEventCount);
             Assert.AreEqual(0, m_DeactivatedEventCount);
+            Assert.AreEqual(1, m_BlendCreatedCount);
             Assert.AreEqual(0, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.True);
 
             ProcessFrame(m_Cam2, 0.5f);
             Assert.AreEqual(2, m_ActivatedEventCount);
             Assert.AreEqual(1, m_DeactivatedEventCount);
+            Assert.AreEqual(1, m_BlendCreatedCount);
             Assert.AreEqual(1, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.False);
         }

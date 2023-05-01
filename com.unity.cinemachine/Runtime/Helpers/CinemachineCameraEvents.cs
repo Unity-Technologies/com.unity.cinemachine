@@ -28,12 +28,20 @@ namespace Unity.Cinemachine
         public CinemachineCore.CameraEvent CameraDeactivatedEvent = new ();
 
         /// <summary>
+        /// This event will fire whenever a blend is created that involves this camera.  
+        /// The handler can modify any settings in the blend, except the cameras themselves.
+        /// </summary>
+        [Tooltip("This event will fire whenever a blend is created that involves this camera.  "
+            + "The handler can modify any settings in the blend, except the cameras themselves.")]
+        public CinemachineCore.BlendEvent BlendCreatedEvent = new ();
+
+        /// <summary>
         /// This event will fire whenever a virtual camera finishes blending in.  
         /// It will not fire if the blend length is zero.
         /// </summary>
         [Tooltip("This event will fire whenever a virtual camera finishes blending in.  "
             + "It will not fire if the blend length is zero.")]
-        public CinemachineCore.CameraEvent CameraBlendFinishedEvent = new ();
+        public CinemachineCore.CameraEvent BlendFinishedEvent = new ();
         
         CinemachineVirtualCameraBase m_Vcam;
 
@@ -44,6 +52,7 @@ namespace Unity.Cinemachine
             {
                 CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
                 CinemachineCore.CameraDeactivatedEvent.AddListener(OnCameraDeactivated);
+                CinemachineCore.BlendCreatedEvent.AddListener(OnBlendCreated);
                 CinemachineCore.BlendFinishedEvent.AddListener(OnBlendFinished);
             }
         }
@@ -52,6 +61,7 @@ namespace Unity.Cinemachine
         {
             CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
             CinemachineCore.CameraDeactivatedEvent.RemoveListener(OnCameraDeactivated);
+            CinemachineCore.BlendCreatedEvent.RemoveListener(OnBlendCreated);
             CinemachineCore.BlendFinishedEvent.RemoveListener(OnBlendFinished);
         }
 
@@ -61,10 +71,16 @@ namespace Unity.Cinemachine
                 CameraActivatedEvent.Invoke(evt.Origin, evt.IncomingCamera);
         }
 
+        void OnBlendCreated(CinemachineCore.BlendEventParams evt)
+        {
+            if (evt.Blend.CamA == (ICinemachineCamera)m_Vcam || evt.Blend.CamB == (ICinemachineCamera)m_Vcam)
+                BlendCreatedEvent.Invoke(evt);
+        }
+
         void OnBlendFinished(ICinemachineMixer mixer, ICinemachineCamera cam)
         {
             if (cam == (ICinemachineCamera)m_Vcam)
-                CameraBlendFinishedEvent.Invoke(mixer, cam);
+                BlendFinishedEvent.Invoke(mixer, cam);
         }
 
         void OnCameraDeactivated(ICinemachineMixer mixer, ICinemachineCamera cam)
