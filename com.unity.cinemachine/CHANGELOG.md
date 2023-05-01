@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [unreleased]
 
 ### Changed
-- Improve handling of nested blends
+- Improve handling of nested blends.
 
 - ### Added
-- Added CinemachineCore.GetCustomBlender
+- Added CinemachineCore.GetCustomBlender and BlendCreatedEvent to allow custom blend behaviour.
 
 
 ## [3.0.0-pre.5] - 2023-04-25
