@@ -198,7 +198,12 @@ namespace Unity.Cinemachine
         public static CameraEvent CameraDeactivatedEvent = new ();
 
         /// <summary>This event will fire when a blend is created.  
-        /// Handler can modify the settings of the blend (but not the cameras).</summary>
+        /// Handler can modify the settings of the blend (but not the cameras).
+        /// 
+        /// Note: BlendCreatedEvents are NOT sent for timeline blends, as those are expected 
+        /// to be controlled 100% by timeline. To modify the blend algorithm for timeline blends, 
+        /// you can install a handler for CinemachineCore.GetCustomBlender.
+        /// </summary>
         public static BlendEvent BlendCreatedEvent = new ();
 
         /// <summary>This event will fire when the current camera completes a blend-in.</summary>
