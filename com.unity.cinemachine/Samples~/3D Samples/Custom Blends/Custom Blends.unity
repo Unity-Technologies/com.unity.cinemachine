@@ -500,7 +500,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 970848196}
-  m_LocalRotation: {x: -3e-45, y: 1e-45, z: 0, w: 1}
+  m_LocalRotation: {x: 1e-45, y: 1e-45, z: -0, w: 1}
   m_LocalPosition: {x: 30, y: 1, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -623,7 +623,7 @@ MonoBehaviour:
         - m_Target: {fileID: 1990246958}
           m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.BlendStyleManager,
             Assembly-CSharp
-          m_MethodName: SetDefaultBlend
+          m_MethodName: DefaultBlend
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -646,7 +646,7 @@ MonoBehaviour:
         - m_Target: {fileID: 1990246958}
           m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.BlendStyleManager,
             Assembly-CSharp
-          m_MethodName: SetCustomBlend1
+          m_MethodName: CustomBlend
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

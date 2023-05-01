@@ -4,7 +4,7 @@ namespace Unity.Cinemachine.Samples
 {
     public class BlendStyleManager : MonoBehaviour
     {
-        class LookAtFirstBlender : CinemachineBlend.IBlender
+        class EarlyLookBlender : CinemachineBlend.IBlender
         {
             // This method is free to blend the states any way it likes.
             // In this case, we do a default blend then override the rotation to make
@@ -19,20 +19,19 @@ namespace Unity.Cinemachine.Samples
                 stateB.BlendHint &= ~CameraState.BlendHints.CylindricalPositionBlend;
                 var state = CameraState.Lerp(stateA, stateB, t);
 
-                // Override the rotation blend: look directly at the new target at the beginning
-                const float kThreshold = 0.1f;
-                var rotB = Quaternion.LookRotation(stateB.ReferenceLookAt - state.RawPosition, state.ReferenceUp);
-                t = Bias(Mathf.Lerp(0, 1, t / kThreshold), 0.9f);
-                state.RawOrientation = Quaternion.Slerp(stateA.RawOrientation, rotB, t);
+                // Override the rotation blend: look directly at the new target
+                // at the start of the blend
+                const float kFinishRotatingAt = 0.2f;
+                var rotB = Quaternion.LookRotation(
+                    stateB.ReferenceLookAt - state.RawPosition, state.ReferenceUp);
+                state.RawOrientation = Quaternion.Slerp(
+                    stateA.RawOrientation, rotB, Damper.Damp(1, kFinishRotatingAt, t));
 
                 return state;
             }
-
-            static float Bias(float t, float b) 
-                => (Mathf.Clamp(t, 0, 1) / ((((1f/Mathf.Clamp(b, 0, 1)) - 2f) * (1f - t)) + 1f));
         }
 
-        LookAtFirstBlender m_CustomBlender = new ();
+        EarlyLookBlender m_CustomBlender = new ();
 
         bool m_UseCustomBlend;
 
@@ -43,13 +42,13 @@ namespace Unity.Cinemachine.Samples
                 evt.Blend.CustomBlender = m_CustomBlender;
         }
 
-        public void SetDefaultBlend()
+        public void DefaultBlend()
         {
             m_UseCustomBlend = false;
             ChangeCamera();
         }
 
-        public void SetCustomBlend1()
+        public void CustomBlend()
         {
             m_UseCustomBlend = true;
             ChangeCamera();
