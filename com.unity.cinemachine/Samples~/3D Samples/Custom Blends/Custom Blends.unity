@@ -194,7 +194,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3521509573382385251, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_Name
-      value: Player (1)
+      value: Green Player
       objectReference: {fileID: 0}
     - target: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_RootOrder
@@ -373,7 +373,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 614925373}
-  m_LocalRotation: {x: -3e-45, y: 1e-45, z: 0, w: 1}
+  m_LocalRotation: {x: 1e-45, y: 1e-45, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -394,7 +394,7 @@ GameObject:
   - component: {fileID: 970848198}
   - component: {fileID: 970848197}
   m_Layer: 0
-  m_Name: CinemachineCamera (1)
+  m_Name: CinemachineCamera Green
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -562,21 +562,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: HelpText
-      value: 'This scene shows how to customize the camera blending algorithm.  Use
-        WASD to move the players.
-
-        
-
-        The main camera has a custom
-        BlendStyleManager script that listens for BlendCreated events and assigns
-        a custom blend object to the blend in cases where a custom blend is desired
-        - that is, when the uses presses the <i>Custom Blend</i> button.
+      value: 'This scene shows how to customize the camera blending algorithm.  There
+        are two players, each with a follow camera.  Use WASD to move the players.
 
         
 
         The
-        CinemachineBrainEvents script is used to listen for the event.  It is attached
-        to the main camera.
+        main camera has a custom BlendStyleManager script that listens for BlendCreated
+        events and assigns a custom blender to the blend in cases where a custom
+        blend is desired - that is, when the user presses the <i>Custom Blend</i>
+        button.
+
+        
+
+        The CinemachineBrainEvents script is used to
+        listen for the event.  It is attached to the main camera.
 
 '
       objectReference: {fileID: 0}
@@ -809,7 +809,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1990246953}
-  m_LocalRotation: {x: -3e-45, y: 1e-45, z: 0, w: 1}
+  m_LocalRotation: {x: 1e-45, y: 1e-45, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
