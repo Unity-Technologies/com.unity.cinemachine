@@ -296,8 +296,17 @@ namespace Unity.Cinemachine
     {
         public NestedBlendSource(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
+        string m_Name;
 
-        public string Name => (Blend == null || Blend.CamB == null)? "(null)" : Blend.CamB.Name;
+        public string Name 
+        { 
+            get
+            {
+                // Cache the name only if name is requested
+                m_Name ??= (Blend == null || Blend.CamB == null)? "(null)" : "mid-blend to " + Blend.CamB.Name;
+                return m_Name;
+            }
+        }
         public string Description => Blend == null ? "(null)" : Blend.Description;
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
