@@ -1,6 +1,7 @@
 #if UNITY_2023_2_OR_NEWER
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -10,64 +11,64 @@ namespace Unity.Cinemachine.Editor
         {
         }
 
-        public float fieldOfView
+        public float FieldOfView
         {
-            get => target.Lens.FieldOfView;
+            get => Target.Lens.FieldOfView;
             set
             {
-                var currentLens = target.Lens;
+                var currentLens = Target.Lens;
                 currentLens.FieldOfView = value;
-                target.Lens = currentLens;
+                Target.Lens = currentLens;
             }
         }
 
-        public float focalLength
+        public float FocalLength
         {
             get
             {
-                return Camera.FieldOfViewToFocalLength(target.Lens.FieldOfView, target.Lens.PhysicalProperties.SensorSize.y);
+                return Camera.FieldOfViewToFocalLength(Target.Lens.FieldOfView, Target.Lens.PhysicalProperties.SensorSize.y);
             }
             set
             {
-                var currentLens = target.Lens;
-                currentLens.FieldOfView = Camera.FocalLengthToFieldOfView(value, target.Lens.PhysicalProperties.SensorSize.y);
-                target.Lens = currentLens;
+                var currentLens = Target.Lens;
+                currentLens.FieldOfView = Camera.FocalLengthToFieldOfView(value, Target.Lens.PhysicalProperties.SensorSize.y);
+                Target.Lens = currentLens;
             }
         }
 
-        public bool orthographic
+        public bool Orthographic
         {
-            get => target.Lens.Orthographic;
+            get => Target.Lens.Orthographic;
             set
             {
-                var currentLens = target.Lens;
+                var currentLens = Target.Lens;
                 currentLens.ModeOverride = (value) ? LensSettings.OverrideModes.Orthographic : LensSettings.OverrideModes.None;
-                target.Lens = currentLens;
+                Target.Lens = currentLens;
             }
         }
 
-        public float orthographicSize
+        public float OrthographicSize
         {
-            get => target.Lens.OrthographicSize;
+            get => Target.Lens.OrthographicSize;
             set
             {
-                var currentLens = target.Lens;
+                var currentLens = Target.Lens;
                 currentLens.OrthographicSize = value;
-                target.Lens = currentLens;
+                Target.Lens = currentLens;
             }
         }
 
-        public float nearClipPlane => target.Lens.NearClipPlane;
+        public float NearClipPlane => Target.Lens.NearClipPlane;
 
-        public float farClipPlane => target.Lens.FarClipPlane;
+        public float FarClipPlane => Target.Lens.FarClipPlane;
 
-        public bool usePhysicalProperties => target.Lens.IsPhysicalCamera;
+        public bool UsePhysicalProperties => Target.Lens.IsPhysicalCamera;
 
-        public Vector2 sensorSize => target.Lens.PhysicalProperties.SensorSize;
+        public Vector2 SensorSize => Target.Lens.PhysicalProperties.SensorSize;
 
-        public Vector2 lensShift => target.Lens.PhysicalProperties.LensShift;
+        public Vector2 LensShift => Target.Lens.PhysicalProperties.LensShift;
 
-        public Camera.GateFitMode gateFit => target.Lens.PhysicalProperties.GateFit;
+        public Camera.GateFitMode GateFit => Target.Lens.PhysicalProperties.GateFit;
     }
 }
 #endif
