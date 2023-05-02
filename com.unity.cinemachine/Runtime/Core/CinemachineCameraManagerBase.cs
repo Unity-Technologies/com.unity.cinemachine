@@ -59,7 +59,7 @@ namespace Unity.Cinemachine
         protected virtual void Reset()
         {
             Priority = default;
-            OutputChannel = OutputChannel.Default;
+            OutputChannel = OutputChannels.Default;
             DefaultTarget = default;
             InvalidateCameraCache();
         }

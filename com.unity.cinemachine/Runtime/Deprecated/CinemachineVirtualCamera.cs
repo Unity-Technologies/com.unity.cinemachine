@@ -219,7 +219,7 @@ namespace Unity.Cinemachine
             DestroyPipeline();
             UpdateComponentPipeline();
             Priority = new ();
-            OutputChannel = OutputChannel.Default;
+            OutputChannel = OutputChannels.Default;
         }
 
         /// <summary>

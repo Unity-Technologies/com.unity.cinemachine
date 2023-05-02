@@ -13,7 +13,7 @@ namespace Unity.Cinemachine
     /// as CinemachineCamera, or meta-cameras such as
     /// CinemachineClearShot or CinemachineBlendListCamera.
     ///
-    /// A CinemachineVirtualCameraBase exposes a OutputChannel property.  When the behaviour is
+    /// A CinemachineVirtualCameraBase exposes an OutputChannel property.  When the behaviour is
     /// enabled in the game, the Virtual Camera is automatically placed in a queue
     /// maintained by the static CinemachineCore singleton.
     /// The queue is sorted by priority.  When a Unity camera is equipped with a
@@ -49,14 +49,13 @@ namespace Unity.Cinemachine
         public PrioritySettings Priority = new ();
 
         /// <summary>
-        /// The output channel behaves like Unity layers.  Use it to filter the output of CinemachineCameras
+        /// The output channel functions like Unity layers.  Use it to filter the output of CinemachineCameras
         /// to different CinemachineBrains, for instance in a multi-screen environemnt.
         /// </summary>
         [NoSaveDuringPlay]
-        [Tooltip("The output channel behaves like Unity layers.  Use it to filter the output of CinemachineCameras "
+        [Tooltip("The output channel functions like Unity layers.  Use it to filter the output of CinemachineCameras "
             + "to different CinemachineBrains, for instance in a multi-screen environemnt.")]
-        [EnabledProperty(toggleText: "(using default)")]
-        public OutputChannel OutputChannel = OutputChannel.Default;
+        public OutputChannels OutputChannel = OutputChannels.Default;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>

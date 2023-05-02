@@ -206,7 +206,7 @@ namespace Unity.Cinemachine
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
             var showIt = enabled && ShowImage && CinemachineCore.IsLive(ComponentOwner);
-            var channel = (uint)ComponentOwner.OutputChannel.Value;
+            var channel = (uint)ComponentOwner.OutputChannel;
             if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
             var ci = LocateMyCanvas(brain, showIt);
@@ -371,7 +371,7 @@ namespace Unity.Cinemachine
                 if (src != null && src.ComponentOwner != null) // in case it was deleted
                 {
                     bool showIt = true;
-                    var channel = (uint)src.ComponentOwner.OutputChannel.Value;
+                    var channel = (uint)src.ComponentOwner.OutputChannel;
                     if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                         showIt = false;
                     var ci = src.LocateMyCanvas(brain, showIt);

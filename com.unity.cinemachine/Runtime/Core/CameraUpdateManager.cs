@@ -113,7 +113,7 @@ namespace Unity.Cinemachine
                         || CinemachineCore.IsLive(vcam))
                     {
                         // Skip this vcam if it's not on the channel mask
-                        if (((uint)vcam.OutputChannel.Value & channelMask) != 0)
+                        if (((uint)vcam.OutputChannel & channelMask) != 0)
                             UpdateVirtualCamera(vcam, worldUp, deltaTime);
                     }
                     else if (currentRoundRobin == null

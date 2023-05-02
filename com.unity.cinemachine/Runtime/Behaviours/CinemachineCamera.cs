@@ -77,7 +77,7 @@ namespace Unity.Cinemachine
         void Reset()
         {
             Priority = new();
-            OutputChannel = OutputChannel.Default;
+            OutputChannel = OutputChannels.Default;
             Target = default;
             Lens = LensSettings.Default;
         }

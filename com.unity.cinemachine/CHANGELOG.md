@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Improved handling of nested blends.
+- CinemachineChannels can now be named via the CinemachineChannelNames asset.  OutputChannel struct has been removed.
 
 
 ## [3.0.0-pre.5] - 2023-04-25

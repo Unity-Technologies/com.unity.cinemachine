@@ -311,7 +311,7 @@ namespace Unity.Cinemachine
                         return b;
                 }
                 // If it's not live anywhere, then where might it become live?
-                var channel = (uint)vcam.OutputChannel.Value;
+                var channel = (uint)vcam.OutputChannel;
                 for (int i = 0; i < numBrains; ++i)
                 {
                     var b = CinemachineBrain.GetActiveBrain(i);
