@@ -224,6 +224,8 @@ namespace Cinemachine
                 Vector3 fwd = EvaluateTangent(pos);
                 if (!fwd.AlmostZero())
                     result = Quaternion.LookRotation(fwd) * RollAroundForward(roll);
+                
+                result = Quaternion.Inverse(transform.rotation) * result;
             }
             return result;
         }
