@@ -7,7 +7,7 @@ using System;
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(OutputChannels))]
-    class CinemachineChannelNamesPropertyDrawer : PropertyDrawer
+    class OutputChannelsPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {

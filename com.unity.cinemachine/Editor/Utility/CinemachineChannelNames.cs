@@ -5,9 +5,8 @@ using UnityEditor;
 namespace Unity.Cinemachine.Editor
 {
     /// <summary>
-    ///  This class contains setting for the Impulse system.  Specifically, it holds
-    ///  the Impulse Channel definitions.  These work like Unity Layers, you can
-    ///  define and name them, and create masks to filter only the layers you want.
+    ///  This class contains names for Cinemachine Channels.  These work like Unity Layers, you can
+    ///  define and name them, and create masks to filter only the channels you want.
     /// </summary>
     [Serializable]
     public class CinemachineChannelNames : ScriptableObject 
