@@ -25,7 +25,6 @@ namespace Unity.Cinemachine.Samples
 
         void FixedUpdate()
         {
-            Cursor.lockState = LockCursor ? CursorLockMode.Locked : CursorLockMode.None;
             PreUpdate?.Invoke();
             var vel = m_Rigidbody2D.velocity;
 
