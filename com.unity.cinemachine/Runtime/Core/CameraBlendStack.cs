@@ -63,11 +63,12 @@ namespace Unity.Cinemachine
         {
             public int Id;
             public int Priority;
-            public readonly CinemachineBlend Source = new (null, null, null, 1, 0);
+            public readonly CinemachineBlend Source = new (null, null, null, 0, 0);
             public float DeltaTimeOverride;
 
             // If blending in from a snapshot, this holds the source state
             readonly SnapshotBlendSource m_Snapshot = new ();
+            ICinemachineCamera m_SnapshotSource;
             float m_SnapshotBlendWeight;
 
             public StackFrame() : base(new (null, null, null, 0, 0)) {}
@@ -84,11 +85,12 @@ namespace Unity.Cinemachine
                     return cam;
                 }
                 // A snapshot is needed
-                if (m_Snapshot.Source != cam || m_SnapshotBlendWeight > weight)
+                if (m_SnapshotSource != cam || m_SnapshotBlendWeight > weight)
                 {
                     // At this point we're pretty sure this is a new blend,
                     // so we take a new snapshot of the camera state
                     m_Snapshot.TakeSnapshot(cam);
+                    m_SnapshotSource = cam;
                     m_SnapshotBlendWeight = weight;
                 }
                 // Use the most recent snapshot
@@ -388,7 +390,8 @@ namespace Unity.Cinemachine
         class SnapshotBlendSource : ICinemachineCamera
         {
             CameraState m_State;
-            public ICinemachineCamera Source { get; private set; }
+            string m_Name;
+
             public float RemainingTimeInBlend { get; set; }
 
             public SnapshotBlendSource(ICinemachineCamera source = null, float remainingTimeInBlend = 0)
@@ -397,19 +400,19 @@ namespace Unity.Cinemachine
                 RemainingTimeInBlend = remainingTimeInBlend;
             }
 
-            public string Name => Source == null ? "(null)" : Source.Name;
-            public string Description => "snapshot";
+            public string Name => m_Name;
+            public string Description => Name;
             public CameraState State => m_State;
-            public bool IsValid => Source != null;
+            public bool IsValid => true;
             public ICinemachineMixer ParentCamera => null;
             public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
             public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
 
             public void TakeSnapshot(ICinemachineCamera source)
             {
-                Source = source;
                 m_State = source != null ? source.State : CameraState.Default; 
                 m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
+                m_Name ??= source == null ? "(null)" : "*" + source.Name;
             }
         }
     }
