@@ -297,7 +297,7 @@ namespace Unity.Cinemachine
         protected void SetLiveChild(
             ICinemachineCamera activeCamera, Vector3 worldUp, float deltaTime)
         {
-            m_BlendManager.UpdateRootFrame(activeCamera, worldUp, deltaTime);
+            m_BlendManager.UpdateRootFrame(this, activeCamera, worldUp, deltaTime);
             m_BlendManager.ComputeCurrentBlend();
             m_BlendManager.ProcessActiveCamera(this, worldUp, deltaTime);
         }

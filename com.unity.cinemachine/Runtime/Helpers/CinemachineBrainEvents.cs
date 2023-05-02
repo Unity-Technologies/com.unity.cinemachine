@@ -29,12 +29,22 @@ namespace Unity.Cinemachine
         public CinemachineCore.CameraEvent CameraDeactivatedEvent = new ();
 
         /// <summary>
+        /// This event will fire whenever a blend is created in the root frame of this Brain.  
+        /// The handler can modify any settings in the blend, except the cameras themselves.
+        /// Note: timeline tracks will not generate these events.
+        /// </summary>
+        [Tooltip("This event will fire whenever a blend is created in the root frame of this Brain.  "
+            + "The handler can modify any settings in the blend, except the cameras themselves.  "
+            + "Note: timeline tracks will not generate these events.")]
+        public CinemachineCore.BlendEvent BlendCreatedEvent = new ();
+
+        /// <summary>
         /// This event will fire whenever a virtual camera finishes blending in.  
         /// It will not fire if the blend length is zero.
         /// </summary>
         [Tooltip("This event will fire whenever a virtual camera finishes blending in.  "
             + "It will not fire if the blend length is zero.")]
-        public CinemachineCore.CameraEvent CameraBlendFinishedEvent = new ();
+        public CinemachineCore.CameraEvent BlendFinishedEvent = new ();
 
         /// <summary>
         /// This event is fired when there is a camera cut.  A camera cut is a camera 
@@ -58,6 +68,7 @@ namespace Unity.Cinemachine
             {
                 CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
                 CinemachineCore.CameraDeactivatedEvent.AddListener(OnCameraDeactivated);
+                CinemachineCore.BlendCreatedEvent.AddListener(OnBlendCreated);
                 CinemachineCore.BlendFinishedEvent.AddListener(OnBlendFinished);
                 CinemachineCore.CameraUpdatedEvent.AddListener(OnCameraUpdated);
             }
@@ -67,6 +78,7 @@ namespace Unity.Cinemachine
         {
             CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
             CinemachineCore.CameraDeactivatedEvent.RemoveListener(OnCameraDeactivated);
+            CinemachineCore.BlendCreatedEvent.RemoveListener(OnBlendCreated);
             CinemachineCore.BlendFinishedEvent.RemoveListener(OnBlendFinished);
             CinemachineCore.CameraUpdatedEvent.RemoveListener(OnCameraUpdated);
         }
@@ -87,10 +99,16 @@ namespace Unity.Cinemachine
                 CameraDeactivatedEvent.Invoke(mixer, cam);
         }
 
+        void OnBlendCreated(CinemachineCore.BlendEventParams evt)
+        {
+            if (evt.Origin == m_Mixer)
+                BlendCreatedEvent.Invoke(evt);
+        }
+
         void OnBlendFinished(ICinemachineMixer mixer, ICinemachineCamera cam)
         {
             if (mixer == m_Mixer)
-                CameraBlendFinishedEvent.Invoke(m_Mixer, cam);
+                BlendFinishedEvent.Invoke(m_Mixer, cam);
         }
 
         void OnCameraUpdated(CinemachineBrain brain)

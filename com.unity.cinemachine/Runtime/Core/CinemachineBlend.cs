@@ -9,6 +9,21 @@ namespace Unity.Cinemachine
     /// </summary>
     public class CinemachineBlend
     {
+        /// <summary>
+        /// Interface for implementing custom CameraState blending algorithm
+        /// </summary>
+        public interface IBlender
+        {
+            /// <summary>
+            /// Interpolate a camera state between the two cameras being blended.
+            /// </summary>
+            /// <param name="CamA">The first camera</param>
+            /// <param name="CamB">The second camera</param>
+            /// <param name="t">Range 0...1 where 0 is CamA state and 1 is CamB state</param>
+            /// <returns>The interpolated state.</returns>
+            CameraState GetIntermediateState(ICinemachineCamera CamA, ICinemachineCamera CamB, float t);
+        }
+
         /// <summary>First camera in the blend</summary>
         public ICinemachineCamera CamA;
 
@@ -35,6 +50,12 @@ namespace Unity.Cinemachine
                 return Mathf.Clamp01(BlendCurve.Evaluate(TimeInBlend / Duration));
             }
         }
+
+        /// <summary>
+        /// If non-null, the custom blender will be used to blend camera state.  
+        /// If null, then CameraState.Lerp will be used.
+        /// </summary>
+        public IBlender CustomBlender { get; set; }
 
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
         public bool IsValid => (CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid);
@@ -78,31 +99,11 @@ namespace Unity.Cinemachine
                 return false;
             if (cam == CamA || cam == CamB)
                 return true;
-            if (CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
+            if (CamA is NestedBlendSource b && b.Blend.Uses(cam))
                 return true;
-            b = CamB as BlendSourceVirtualCamera;
+            b = CamB as NestedBlendSource;
             return b != null && b.Blend.Uses(cam);
         }
-
-        /// <summary>Construct a blend</summary>
-        /// <param name="a">First camera</param>
-        /// <param name="b">Second camera</param>
-        /// <param name="curve">Blend curve</param>
-        /// <param name="duration">Duration of the blend, in seconds</param>
-        /// <param name="t">Current time in blend, relative to the start of the blend</param>
-        public CinemachineBlend(
-            ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, float duration, float t)
-        {
-            CamA = a;
-            CamB = b;
-            BlendCurve = curve;
-            TimeInBlend = t;
-            Duration = duration;
-        }
-
-        /// <summary>Construct a blend</summary>
-        /// <param name="src">Copy fields from this blend</param>
-        public CinemachineBlend(CinemachineBlend src) => CopyFrom(src);
 
         /// <summary>Copy contents of a blend</summary>
         /// <param name="src">Copy fields from this blend</param>
@@ -113,6 +114,18 @@ namespace Unity.Cinemachine
             BlendCurve = src.BlendCurve;
             TimeInBlend = src.TimeInBlend;
             Duration = src.Duration;
+            CustomBlender = src.CustomBlender;
+        }
+
+        /// <summary>
+        /// Clears all fields except CamB.  This effectively cuts to the end of the blend
+        /// </summary>
+        public void ClearBlend()
+        {
+            CamA = null;
+            BlendCurve = null;
+            TimeInBlend = Duration = 0;
+            CustomBlender = null;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
@@ -142,6 +155,9 @@ namespace Unity.Cinemachine
                 }
                 if (CamB == null || !CamB.IsValid)
                     return CamA.State;
+
+                if (CustomBlender != null)
+                    return CustomBlender.GetIntermediateState(CamA, CamB, BlendWeight);
                 return CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
             }
         }
@@ -272,47 +288,25 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// Static source for blending. It's not really a virtual camera, but takes
-    /// a CameraState and exposes it as a virtual camera for the purposes of blending.
-    /// </summary>
-    internal class StaticStateVirtualCamera : ICinemachineCamera
-    {
-        string m_Name;
-        CameraState m_State;
-
-        public StaticStateVirtualCamera(CameraState state, string name) 
-        {
-            m_State = state;
-            m_Name = name;
-        }
-        public string Name { get => m_Name; set => m_Name = value; }
-        public string Description => "snapshot";
-        public CameraState State 
-        {
-            get => m_State; 
-            set 
-            {
-                m_State = value; 
-                m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
-            }
-        }
-        public bool IsValid => true;
-        public ICinemachineMixer ParentCamera => null;
-        public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
-    }
-
-    /// <summary>
     /// Blend result source for blending.   This exposes a CinemachineBlend object
     /// as an ersatz virtual camera for the purposes of blending.  This achieves the purpose
     /// of blending the result oif a blend.
     /// </summary>
-    internal class BlendSourceVirtualCamera : ICinemachineCamera
+    class NestedBlendSource : ICinemachineCamera
     {
-        public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
+        public NestedBlendSource(CinemachineBlend blend) { Blend = blend; }
         public CinemachineBlend Blend { get; set; }
+        string m_Name;
 
-        public string Name => (Blend == null || Blend.CamB == null)? "(null)" : Blend.CamB.Name;
+        public string Name 
+        { 
+            get
+            {
+                // Cache the name only if name is requested
+                m_Name ??= (Blend == null || Blend.CamB == null)? "(null)" : "mid-blend to " + Blend.CamB.Name;
+                return m_Name;
+            }
+        }
         public string Description => Blend == null ? "(null)" : Blend.Description;
         public CameraState State { get; private set; }
         public bool IsValid => Blend != null && Blend.IsValid; 
