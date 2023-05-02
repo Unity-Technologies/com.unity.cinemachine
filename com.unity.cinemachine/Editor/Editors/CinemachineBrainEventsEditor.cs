@@ -21,7 +21,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDeactivatedEvent)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraBlendFinishedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendCreatedEvent)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendFinishedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
             var brainEvent = ux.AddChild(
                 new PropertyField(serializedObject.FindProperty(() => Target.BrainUpdatedEvent)));

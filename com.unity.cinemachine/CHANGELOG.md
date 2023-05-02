@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - ThirdPerson Shooter sample scene now has an option to swap shoulders.
+- Added CinemachineCore.GetCustomBlender and BlendCreatedEvent to allow custom blend behaviour.
+- New Custom Blends sample scene illustrating how to customize the blend algorithm
 
 ### Changed
-- Improve handling of nested blends
+- Improved handling of nested blends.
 
 
 ## [3.0.0-pre.5] - 2023-04-25
