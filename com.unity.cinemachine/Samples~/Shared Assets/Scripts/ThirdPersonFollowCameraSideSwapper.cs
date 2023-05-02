@@ -1,55 +1,44 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class ThirdPersonFollowCameraSideSwapper : CinemachineExtension
+    public class ThirdPersonFollowCameraSideSwapper : MonoBehaviour
     {
-        [Tooltip("The rate of damping.  " +
-            "This is the time it would take to reduce the original amount to a negligible percentage.")]
+        [Tooltip("How long the shoulder swp will take")]
         public float Damping;
         
-        CinemachineThirdPersonFollow[] m_ThirdPersonFollows;
-        float[] m_CameraOppositeSide;
+        List<CinemachineThirdPersonFollow> m_ThirdPersonFollows = new();
+        float m_SwapDirection;
 
-        protected override void OnEnable()
+        void OnEnable()
         {
-            m_ThirdPersonFollows = GetComponentsInChildren<CinemachineThirdPersonFollow>(true);
-            m_CameraOppositeSide = new float[m_ThirdPersonFollows.Length];
-            for (var i = 0; i < m_ThirdPersonFollows.Length; i++)
-                m_CameraOppositeSide[i] = m_ThirdPersonFollows[i].CameraSide;
+            GetComponentsInChildren(true, m_ThirdPersonFollows);
         }
 
-        bool m_StartSwap;
-        bool m_AllDone;
-        protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+        void Update()
         {
-            if (stage == CinemachineCore.Stage.Body)
+            bool allDone = true;
+            if (m_SwapDirection != 0)
             {
-                if (m_StartSwap)
-                {
-                    for (var i = 0; i < m_ThirdPersonFollows.Length; i++)
-                        m_CameraOppositeSide[i] = Mathf.Abs(m_CameraOppositeSide[i] - 1); // change direction of swap
-                    
-                    m_StartSwap = false;
-                    m_AllDone = false;
-                }
-                if (m_AllDone)
-                    return;
-                
-                m_AllDone = true;
-                var dt = Time.deltaTime;
-                for (var i = 0; i < m_ThirdPersonFollows.Length; i++)
+                float swapTarget = m_SwapDirection > 0 ? 1 : 0;
+                for (int i = 0; i < m_ThirdPersonFollows.Count; ++i)
                 {
                     m_ThirdPersonFollows[i].CameraSide +=
-                        Damper.Damp(m_CameraOppositeSide[i] - m_ThirdPersonFollows[i].CameraSide, Damping, dt);
-                
-                    if (Math.Abs(m_ThirdPersonFollows[i].CameraSide - m_CameraOppositeSide[i]) > UnityVectorExtensions.Epsilon)
-                        m_AllDone = false;
+                        Damper.Damp(swapTarget - m_ThirdPersonFollows[i].CameraSide, Damping, Time.deltaTime);
+                    if (Mathf.Abs(m_ThirdPersonFollows[i].CameraSide - swapTarget) > UnityVectorExtensions.Epsilon)
+                        allDone = false;
                 }
             }
+            if (allDone)
+                m_SwapDirection = 0;
         }
 
-        public void Swap() => m_StartSwap = true;
+        public void Swap()
+        {
+            m_SwapDirection *= -1;
+            for (int i = 0; m_SwapDirection == 0 && i < m_ThirdPersonFollows.Count; ++i)
+                m_SwapDirection = m_ThirdPersonFollows[i].CameraSide > 0.5f ? -1 : 1;
+        }
     }
 }

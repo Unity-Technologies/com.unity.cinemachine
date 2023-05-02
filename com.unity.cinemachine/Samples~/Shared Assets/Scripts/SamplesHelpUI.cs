@@ -75,9 +75,8 @@ namespace Unity.Cinemachine.Samples
             if (m_HelpBox != null)
                 m_HelpBox.visible = false;
             
+            VisibleAtStart = false;
             OnHelpDismissed.Invoke();
         }
-
-        
     }
 }
