@@ -11,8 +11,6 @@ namespace Unity.Cinemachine.Samples
         public float SprintSpeed = 4;
         public float JumpSpeed = 4;
         public float SprintJumpSpeed = 6;
-    
-        public bool LockCursor = false;
 
         public Action PreUpdate;
         public Action<Vector3, float> PostUpdate;
@@ -35,8 +33,6 @@ namespace Unity.Cinemachine.Samples
         [Header("Events")]
         [Tooltip("This event is sent when the player lands after a jump.")]
         public UnityEvent Landed = new ();
-        
-        public void EnableLockCursor(bool enable) => LockCursor = enable;
 
         /// Report the available input axes to the input axis controller.
         /// We use the Input Axis Controller because it works with both the Input package
@@ -86,8 +82,6 @@ namespace Unity.Cinemachine.Samples
 
         void Update()
         {
-            Cursor.lockState = LockCursor ? CursorLockMode.Locked : CursorLockMode.None;
-
             PreUpdate?.Invoke();
 
             // Process Jump and gravity
