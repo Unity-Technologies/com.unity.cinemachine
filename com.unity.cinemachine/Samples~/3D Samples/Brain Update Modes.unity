@@ -253,9 +253,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 1
-    m_Value: 4
+  OutputChannel: 4
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -332,9 +330,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 1
-    m_Value: 8
+  OutputChannel: 8
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -643,7 +639,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300810983}
-  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1075,9 +1071,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 1
-    m_Value: 8
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -1247,7 +1241,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1839922277}
-  m_LocalRotation: {x: 0.1337192, y: -0.694348, z: 0.13371919, w: 0.6943481}
+  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1318,9 +1312,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 1
-    m_Value: 8
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -1393,6 +1385,8 @@ GameObject:
   - component: {fileID: 1967210317}
   - component: {fileID: 1967210316}
   - component: {fileID: 1967210315}
+  - component: {fileID: 1967210320}
+  - component: {fileID: 1967210319}
   m_Layer: 0
   m_Name: Tracking Blue Car
   m_TagString: Untagged
@@ -1463,9 +1457,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 1
-    m_Value: 2
+  OutputChannel: 2
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -1508,6 +1500,65 @@ Transform:
   m_Father: {fileID: 1904777082}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1967210319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967210314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ApplyAfter: 2
+  ChannelMask: -1
+  Gain: 1
+  Use2DDistance: 0
+  UseCameraSpace: 1
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    AmplitudeGain: 1
+    FrequencyGain: 1
+    Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!114 &1967210320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967210314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe43d662878a7c43bcd44d43c9e2094, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 1
+  IgnoreTag: Untagged
+  TransparentLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  MinimumDistanceFromTarget: 0.2
+  AvoidObstacles:
+    Enabled: 1
+    DistanceLimit: 0
+    MinimumOcclusionTime: 0
+    CameraRadius: 0.1
+    Strategy: 0
+    MaximumEffort: 4
+    SmoothingTime: 0
+    Damping: 0.2
+    DampingWhenOccluded: 0
+  ShotQualityEvaluation:
+    Enabled: 0
+    OptimalDistance: 10
+    NearLimit: 5
+    FarLimit: 30
+    MaxQualityBoost: 0.2
 --- !u!1001 &1570214456050329275
 PrefabInstance:
   m_ObjectHideFlags: 0

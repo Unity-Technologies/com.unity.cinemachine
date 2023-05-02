@@ -259,7 +259,7 @@ namespace Unity.Cinemachine
             DestroyRigs();
             UpdateRigCache();
             Priority = new ();
-            OutputChannel = OutputChannel.Default;
+            OutputChannel = OutputChannels.Default;
         }
 
         /// <summary>Set this to force the next update to ignore deltaTime and reset itself</summary>

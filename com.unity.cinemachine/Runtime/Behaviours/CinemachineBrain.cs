@@ -74,7 +74,7 @@ namespace Unity.Cinemachine
             + "any of the channels selected.  CinemachineCameras that do not output to one of these "
             + "channels will be ignored.  Use this in situations where multiple CinemachineBrains are "
             + "needed (for example, Split-screen).")]
-        public OutputChannel.Channels ChannelMask = (OutputChannel.Channels)(-1);  // default is Everything
+        public OutputChannels ChannelMask = (OutputChannels)(-1);  // default is Everything
 
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -180,7 +180,7 @@ namespace Unity.Cinemachine
             ShowCameraFrustum = true;
             IgnoreTimeScale = false;
             WorldUpOverride = null;
-            ChannelMask = (OutputChannel.Channels)(-1);
+            ChannelMask = (OutputChannels)(-1);
             UpdateMethod = UpdateMethods.SmartUpdate;
             BlendUpdateMethod = BrainUpdateMethods.LateUpdate;
             LensModeOverride = new LensModeOverrideSettings { DefaultMode = LensSettings.OverrideModes.Perspective };
@@ -486,7 +486,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The camera to check</param>
         /// <returns></returns>
         public bool IsValidChannel(CinemachineVirtualCameraBase vcam) 
-            => vcam != null && ((uint)vcam.OutputChannel.Value & (uint)ChannelMask) != 0;
+            => vcam != null && ((uint)vcam.OutputChannel & (uint)ChannelMask) != 0;
 
         /// <summary>
         /// Checks if the vcam is live as part of an outgoing blend.  
