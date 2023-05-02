@@ -31,7 +31,7 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.0.0-pre.4",
+    "com.unity.splines": "2.0.0",
     "com.unity.test-framework": "1.1.33"
   },
   "samples": [
@@ -44,11 +44,6 @@
       "displayName": "3D Samples",
       "description": "Sample scenes illustrating various ways to use Cinemachine in a 3D setting",
       "path": "Samples~/3D Samples"
-    },
-    {
-      "displayName": "Old Samples from CM2",
-      "description": "Samples made with CM 2.X, using obsolete API",
-      "path": "Samples~/Old Samples from CM2"
     },
     {
       "displayName": "Input System Samples",
