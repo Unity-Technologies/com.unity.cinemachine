@@ -8,7 +8,7 @@ namespace Unity.Cinemachine
     /// It takes care of looking up BlendDefinitions when blends need to be created,
     /// and it generates ActivationEvents for camweras when necessary.
     /// </summary>
-    internal class BlendManager : CameraBlendStack
+    class BlendManager : CameraBlendStack
     {
         // Current Brain State - result of all frames.  Blend camB is "current" camera always
         CinemachineBlend m_CurrentLiveCameras = new (null, null, null, 0, 0);
@@ -25,7 +25,7 @@ namespace Unity.Cinemachine
         static ICinemachineCamera DeepCamBFromBlend(CinemachineBlend blend)
         {
             var cam = blend?.CamB;
-            while (cam is BlendSourceVirtualCamera bs)
+            while (cam is NestedBlendSource bs)
                 cam = bs.Blend.CamB;
             if (cam != null && cam.IsValid)
                 return cam;
@@ -82,7 +82,7 @@ namespace Unity.Cinemachine
             {
                 if (cam == m_CurrentLiveCameras.CamA)
                     return true;
-                if (m_CurrentLiveCameras.CamA is BlendSourceVirtualCamera b && b.Blend.Uses(cam))
+                if (m_CurrentLiveCameras.CamA is NestedBlendSource b && b.Blend.Uses(cam))
                     return true;
             }
             return false;
@@ -175,12 +175,12 @@ namespace Unity.Cinemachine
             // local method - find all the live cameras in a blend
             static void CollectLiveCameras(CinemachineBlend blend, ref List<ICinemachineCamera> cams)
             {
-                if (blend.CamA is BlendSourceVirtualCamera a && a.Blend != null)
+                if (blend.CamA is NestedBlendSource a && a.Blend != null)
                     CollectLiveCameras(a.Blend, ref cams);
                 else if (blend.CamA != null)
                     cams.Add(blend.CamA);
 
-                if (blend.CamB is BlendSourceVirtualCamera b && b.Blend != null)
+                if (blend.CamB is NestedBlendSource b && b.Blend != null)
                     CollectLiveCameras(b.Blend, ref cams);
                 else if (blend.CamB != null)
                     cams.Add(blend.CamB);
