@@ -90,6 +90,8 @@ namespace Unity.Cinemachine.Editor
             contents.TrackPropertyValue(styleProp, OnStyleChanged);
             void OnStyleChanged(SerializedProperty p)
             {
+                if (p.serializedObject == null)
+                    return; // object deleted
                 curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Styles.Custom);
                 timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Styles.Cut);
             }

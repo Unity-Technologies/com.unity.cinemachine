@@ -80,6 +80,8 @@ namespace Unity.Cinemachine.Editor
             // Local function
             void OnAssetChanged(SerializedProperty sProp, EmbeddedEditorContext eContext)
             {
+                if (sProp.serializedObject == null)
+                    return; // object deleted
                 sProp.serializedObject.ApplyModifiedProperties();
 
                 var target = sProp.objectReferenceValue;
@@ -208,6 +210,8 @@ namespace Unity.Cinemachine.Editor
 
             row.TrackPropertyWithInitialCallback(property, (p) =>
             {
+                if (p.serializedObject == null)
+                    return; // object deleted
                 var target = p.objectReferenceValue as ScriptableObject;
                 warningIcon?.SetVisible(target == null);
 

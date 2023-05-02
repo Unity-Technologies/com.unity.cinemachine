@@ -809,7 +809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowDebugText: 0
+  ShowDebugText: 1
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
@@ -1071,11 +1071,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: HelpText
-      value: "This scene shows a split screen local multiplayer game.\n\nPlayer 1
-        controls the car with WASD.\nPlayer 2 controls the car with the mouse.\n\nEach
-        camera has a CinemachineBrain with a different mask channel. Player 1 is
-        on  channel 1 and player 2 on channel 2. The Viewport property of the Camera
-        component is changed to place each Camera on the game view.\r"
+      value: 'This scene demonstrates the CinemachineMixingCamea, which is a continuous
+        blend of multiple CinemachineCameras.
+
+
+        In this case, there is one
+        camera for slow speeds, and another camera for high speeds.  The dynamic
+        camera blend reflects the current speed of the car.
+
+
+        When the car
+        goes over the jump, a special camera is activated, thanks to the CinemachineTriggerAction
+        script of the trigger region arount the stunt.
+
+
+        Use WASD to move
+        the car.'
       objectReference: {fileID: 0}
     - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: m_Name
