@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
-using System.Linq.Expressions;
 using System;
 using Unity.Cinemachine.Editor;
 
@@ -328,3 +328,4 @@ namespace Unity.Cinemachine
         }
     }
 }
+#endif

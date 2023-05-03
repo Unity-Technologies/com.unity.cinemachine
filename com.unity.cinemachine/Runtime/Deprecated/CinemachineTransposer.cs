@@ -1,3 +1,4 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using System;
 using Unity.Cinemachine.TargetTracking;
@@ -213,3 +214,4 @@ namespace Unity.Cinemachine
         }
     }
 }
+#endif

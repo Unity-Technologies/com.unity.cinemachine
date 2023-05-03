@@ -1,8 +1,8 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
@@ -924,3 +924,4 @@ namespace Unity.Cinemachine
         }
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using System;
 using UnityEngine;
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -157,3 +158,4 @@ namespace Unity.Cinemachine
         }
     }
 }
+#endif

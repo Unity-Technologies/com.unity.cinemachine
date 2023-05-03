@@ -1,6 +1,6 @@
-﻿using System;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -634,3 +634,4 @@ namespace Unity.Cinemachine
         }
     }
 }
+#endif

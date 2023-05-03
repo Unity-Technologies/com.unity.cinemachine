@@ -1,3 +1,4 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -84,3 +85,4 @@ namespace Unity.Cinemachine.Tests.Editor
 #pragma warning restore CS0618
     }
 }
+#endif
