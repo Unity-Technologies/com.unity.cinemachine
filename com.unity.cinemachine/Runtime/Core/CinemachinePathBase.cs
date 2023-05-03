@@ -63,13 +63,13 @@ namespace Cinemachine
         /// <returns>World-space position of the point along at path at pos</returns>
         public virtual Vector3 EvaluatePosition(float pos) => transform.TransformPoint(EvaluateLocalPosition(pos));
 
-        /// <summary>Get the tangent of the curve at a point along the path.</summary>
+        /// <summary>Get the world-space tangent of the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
         public virtual  Vector3 EvaluateTangent(float pos) => transform.TransformDirection(EvaluateLocalTangent(pos));
 
-        /// <summary>Get the orientation the curve at a point along the path.</summary>
+        /// <summary>Get the world-space orientation the curve at a point along the path.</summary>
         /// <param name="pos">Postion along the path.  Need not be standardized.</param>
         /// <returns>World-space orientation of the path</returns>
         public virtual Quaternion EvaluateOrientation(float pos) => transform.rotation * EvaluateLocalOrientation(pos);

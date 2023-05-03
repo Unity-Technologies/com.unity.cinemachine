@@ -161,9 +161,9 @@ namespace Cinemachine
             return pos;
         }
 
-        /// <summary>Get a worldspace position of a point along the path</summary>
+        /// <summary>Get a space position of a point along the path</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
-        /// <returns>World-space position of the point along at path at pos</returns>
+        /// <returns>Local position of the point along at path at pos</returns>
         public override Vector3 EvaluateLocalPosition(float pos)
         {
             var result = Vector3.zero;
@@ -183,7 +183,7 @@ namespace Cinemachine
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
-        /// <returns>World-space direction of the path tangent.
+        /// <returns>Local direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
         public override Vector3 EvaluateLocalTangent(float pos)
         {
@@ -203,7 +203,7 @@ namespace Cinemachine
 
         /// <summary>Get the orientation the curve at a point along the path.</summary>
         /// <param name="pos">Position along the path.  Need not be normalized.</param>
-        /// <returns>World-space orientation of the path, as defined by tangent, up, and roll.</returns>
+        /// <returns>Local orientation of the path, as defined by tangent, up, and roll.</returns>
         public override Quaternion EvaluateLocalOrientation(float pos)
         {
             var result = Quaternion.identity;
