@@ -221,11 +221,9 @@ namespace Cinemachine
                         m_ControlPoints2[indexA].roll, m_Waypoints[indexB].roll);
                 }
 
-                Vector3 fwd = EvaluateTangent(pos);
+                Vector3 fwd = EvaluateLocalTangent(pos);
                 if (!fwd.AlmostZero())
                     result = Quaternion.LookRotation(fwd) * RollAroundForward(roll);
-                
-                result = Quaternion.Inverse(transform.rotation) * result;
             }
             return result;
         }
