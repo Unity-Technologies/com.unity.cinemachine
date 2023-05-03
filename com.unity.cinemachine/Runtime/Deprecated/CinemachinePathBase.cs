@@ -75,13 +75,13 @@ namespace Unity.Cinemachine
         /// <returns>World-space orientation of the path</returns>
         public virtual Quaternion EvaluateOrientation(float pos) => transform.rotation * EvaluateLocalOrientation(pos);
 
-        /// <summary>Get a worldspace position of a point along the path</summary>
-        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
+        /// <summary>Get a local-space position of a point along the path</summary>
+        /// <param name="pos">Position along the path.  Need not be standardized.</param>
         /// <returns>Local-space position of the point along at path at pos</returns>
         public abstract Vector3 EvaluateLocalPosition(float pos);
 
         /// <summary>Get the tangent of the curve at a point along the path.</summary>
-        /// <param name="pos">Postion along the path.  Need not be standardized.</param>
+        /// <param name="pos">Position along the path.  Need not be standardized.</param>
         /// <returns>Local-space direction of the path tangent.
         /// Length of the vector represents the tangent strength</returns>
         public abstract Vector3 EvaluateLocalTangent(float pos);
