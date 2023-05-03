@@ -1,3 +1,4 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEditor;
 
 namespace Unity.Cinemachine.Editor
@@ -15,3 +16,4 @@ namespace Unity.Cinemachine.Editor
         }
     }
 }
+#endif

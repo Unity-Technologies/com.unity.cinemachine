@@ -1,3 +1,4 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 #if CINEMACHINE_PHYSICS
 using UnityEngine;
 using System.Collections.Generic;
@@ -812,4 +813,5 @@ namespace Unity.Cinemachine
         }
     }
 }
+#endif
 #endif

@@ -1,3 +1,4 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 #if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
 
 using UnityEngine;
@@ -348,4 +349,5 @@ namespace Unity.Cinemachine
 #endif
     }
 }
+#endif
 #endif

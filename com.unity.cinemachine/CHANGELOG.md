@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 ### Added
+- Added the option of defining CINEMACHINE_NO_CM2_SUPPORT, to lighten the package by removing CM2 support.
 
 - ThirdPerson Shooter sample scene now has an option to swap shoulders.
 - Added CinemachineCore.GetCustomBlender and BlendCreatedEvent to allow custom blend behaviour.

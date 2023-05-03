@@ -1,3 +1,4 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 #pragma warning disable CS0618 // obsolete warnings
 
 using System;
@@ -266,3 +267,4 @@ namespace Unity.Cinemachine.Editor
         };
     }
 }
+#endif

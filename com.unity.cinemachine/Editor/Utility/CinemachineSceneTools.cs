@@ -452,6 +452,8 @@ namespace Unity.Cinemachine.Editor
             Handles.color = originalColor;
         }
 
+
+#if !CINEMACHINE_NO_CM2_SUPPORT
         /// <summary>
         /// Draws Orbit handles (e.g. for freelook)
         /// </summary>
@@ -484,6 +486,7 @@ namespace Unity.Cinemachine.Editor
             Handles.color = originalColor;
             return draggedRig;
         }
+#endif
 
         /// <summary>
         /// Draws Orbit handles for OrbitalFollow
