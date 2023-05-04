@@ -11,6 +11,8 @@ namespace Unity.Cinemachine
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = UnityVectorExtensions.Epsilon;
 
+        CinemachineVirtualCameraBase m_VcamOwner;
+
         /// <summary>Get the associated CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase VirtualCamera
         {
@@ -18,15 +20,13 @@ namespace Unity.Cinemachine
             {
                 if (m_VcamOwner == null)
                     TryGetComponent(out m_VcamOwner);
-
-                // GML todo: remove this
+#if !CINEMACHINE_NO_CM2_SUPPORT
                 if (m_VcamOwner == null && transform.parent != null)
                     transform.parent.TryGetComponent(out m_VcamOwner);
-
+#endif
                 return m_VcamOwner;
             }
         }
-        CinemachineVirtualCameraBase m_VcamOwner;
 
         /// <summary>
         /// Standard OnEnable call.  Derived classes should call the base class implementation.
