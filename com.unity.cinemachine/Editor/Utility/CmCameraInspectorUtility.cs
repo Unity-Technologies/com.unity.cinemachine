@@ -304,8 +304,8 @@ namespace Unity.Cinemachine.Editor
                         Name = stage == CinemachineCore.Stage.Body ? "Position Control" 
                             : stage == CinemachineCore.Stage.Aim ? "Rotation Control"
                             : ObjectNames.NicifyVariableName(stage.ToString()),
-                        Types = new List<Type>() { null }, // first item is "none"
-                        Choices = new List<string>() { "none" }
+                        Types = new List<Type>() { null }, // first item is "None"
+                        Choices = new List<string>() { "None" }
                     };
                 }
 
