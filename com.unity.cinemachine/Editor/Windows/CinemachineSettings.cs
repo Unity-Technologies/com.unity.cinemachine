@@ -125,8 +125,12 @@ namespace Unity.Cinemachine.Editor
 
                     if (CinemachineCorePrefs.ShowBrainIconInHierarchy.Value && instance.TryGetComponent<CinemachineBrain>(out _))
                     {
-                        var texRect = new Rect(r.xMax - r.height, r.yMin, r.height, r.height);
-                        GUI.DrawTexture(texRect, CinemachineLogoTexture, ScaleMode.ScaleAndCrop);
+                        var tex = CinemachineLogoTexture;
+                        if (tex != null)
+                        {
+                            var texRect = new Rect(r.xMax - r.height, r.yMin, r.height, r.height);
+                            GUI.DrawTexture(texRect, tex, ScaleMode.ScaleAndCrop);
+                        }
                     }
                 };
         }
