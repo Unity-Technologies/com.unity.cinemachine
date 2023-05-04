@@ -7,55 +7,67 @@ For more complex input configurations like supporting multiple devices, you will
 To read values from a `PlayerInput` with a `behaviour` set to `InvokeCSharpEvents`, you need to create a custom `InputAxisController` that subscribes to `onActionTriggered`. The example below shows how to receive and wire those inputs accordingly. Add this script to your `CinemachineCamera` and assign the `PlayerInput` field.
 
 ```cs
-class PlayerInputReceiver : InputAxisControllerBase<PlayerInputReceiver.SimpleReader>
+using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using Unity.Cinemachine;
+
+// This class receives input from a PlayerInput component and disptaches it
+// to the appropriate Cinemachine InputAxis.  The playerInput component should
+// be on the same GameObject, or specified in the PlayerInput field.
+class CustomInputHandler : InputAxisControllerBase<CustomInputHandler.Reader>
 {
-    [SerializeField]
-    PlayerInput m_PlayerInput;
+    [Header("Input Source Override")]
+    public PlayerInput PlayerInput;
 
     void Awake()
     {
-        // Call back when the PlayerInput receives an Input.
-        m_PlayerInput.onActionTriggered += OnActionTriggered;
+        // When the PlayerInput receives an input, send it to all the controllers
+        if (PlayerInput == null)
+            TryGetComponent(out PlayerInput);
+        if (PlayerInput == null)
+            Debug.LogError("Cannot find PlayerInput component");
+        else
+        {
+            PlayerInput.notificationBehavior = PlayerNotifications.InvokeCSharpEvents;
+            PlayerInput.onActionTriggered += (value) =>
+            {
+                for (var i = 0; i < Controllers.Count; i++)
+                    Controllers[i].Input.ProcessInput(value.action);
+            };
+        }
     }
-    
+
+    // We process user input on the Update clock
     void Update()
     {
         if (Application.isPlaying)
             UpdateControllers();
     }
 
-    public void OnActionTriggered(InputAction.CallbackContext value)
-    {
-        // Sends the Input to all the controllers.
-        for (var i = 0; i < Controllers.Count; i ++)
-        {
-            Controllers[i].Input.SetValue(value.action);
-        }
-    }
-    
+    // Controllers will be instances of this class.
     [Serializable]
-    public class SimpleReader : IInputAxisReader
+    public class Reader : IInputAxisReader
     {
-        // Assumes the action is a Vector2 for simplicity but can be changed for a float.
-        Vector2 m_Value;
-        [SerializeField]
-        InputActionReference m_Input;
-        [SerializeField]
-        float m_Gain = 1;
-    
-        public void SetValue(InputAction action)
+        public InputActionReference Input;
+        Vector2 m_Value; // the cached value of the input
+
+        public void ProcessInput(InputAction action)
         {
-            // If the input referenced in the inspector matches the updated one update the value.
-            if (m_Input!= null && m_Input.action.id == action.id)
-                m_Value = action.ReadValue<Vector2>();
+            // If it's my action then cache the new value
+            if (Input != null && Input.action.id == action.id)
+            {
+                if (action.expectedControlType == "Vector2")
+                    m_Value = action.ReadValue<Vector2>();
+                else
+                    m_Value.x = m_Value.y = action.ReadValue<float>();
+            }
         }
 
-        public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
+        // IInputAxisReader interface: Called by the framework to read the input value
+        public float GetValue(UnityEngine.Object context, IInputAxisOwner.AxisDescriptor.Hints hint)
         {
-            if(hint == IInputAxisOwner.AxisDescriptor.Hints.X)
-                return m_Value.x * m_Gain;
-        
-            return m_Value.y * m_Gain;
+            return (hint == IInputAxisOwner.AxisDescriptor.Hints.Y ? m_Value.y : m_Value.x);
         }
     }
 }
