@@ -4,19 +4,17 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Fixed
+## [3.0.0-pre.6] - 2023-05-04
 
 ### Added
-- Added the option of defining CINEMACHINE_NO_CM2_SUPPORT, to lighten the package by removing CM2 support.
-- ThirdPerson Shooter sample scene now has an option to swap shoulders.
 - Added CinemachineCore.GetCustomBlender and BlendCreatedEvent to allow custom blend behaviour.
 - New Custom Blends sample scene illustrating how to customize the blend algorithm.
+- CinemachineChannels can now be named via the CinemachineChannelNames asset.  OutputChannel struct has been removed.
+- Added the option of defining CINEMACHINE_NO_CM2_SUPPORT, to lighten the package by removing legacy CM2 support.
+- ThirdPerson Shooter sample scene now has an option to swap shoulders.
 
 ### Changed
 - Improved handling of nested blends.
-- CinemachineChannels can now be named via the CinemachineChannelNames asset.  OutputChannel struct has been removed.
 
 
 ## [3.0.0-pre.5] - 2023-04-25
