@@ -4,22 +4,21 @@ using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineBrainEvents))]
+    [CustomEditor(typeof(CinemachineCameraManagerEvents))]
     [CanEditMultipleObjects]
-    class CinemachineBrainEventsEditor : UnityEditor.Editor
+    class CinemachineCameraManagerEventsEditor : UnityEditor.Editor
     {
-        CinemachineBrainEvents Target => target as CinemachineBrainEvents;
+        CinemachineCameraManagerEvents Target => target as CinemachineCameraManagerEvents;
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Brain)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraManager)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDeactivatedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendCreatedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendFinishedEvent)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
-            ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.BrainUpdatedEvent)));
             return ux;
         }
     }

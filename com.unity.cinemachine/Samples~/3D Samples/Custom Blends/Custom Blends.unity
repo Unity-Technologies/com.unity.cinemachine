@@ -184,6 +184,94 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c97e1248c10cd3549b3d18c1eb1c3722, type: 3}
+--- !u!1 &486393343
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 486393344}
+  - component: {fileID: 486393346}
+  - component: {fileID: 486393345}
+  m_Layer: 0
+  m_Name: Blend Style Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &486393344
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486393343}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.632949, y: 3.0888271, z: -0.0033988953}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &486393345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486393343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16eca234a25d87f4e9a54ac550e684e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &486393346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486393343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a510488cc26384ea9c0600441770b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraActivatedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  CameraDeactivatedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  BlendCreatedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 486393345}
+        m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.BlendStyleManager, Assembly-CSharp
+        m_MethodName: OnBlendCreated
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  BlendFinishedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  CameraCutEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  Brain: {fileID: 1990246957}
+  BrainUpdatedEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &493586491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -336,9 +424,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 0
   m_LegacyPriority: 10
@@ -373,7 +459,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 614925373}
-  m_LocalRotation: {x: 1e-45, y: 1e-45, z: -0, w: 1}
+  m_LocalRotation: {x: -3e-45, y: 1e-45, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -463,9 +549,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 0
   m_LegacyPriority: 10
@@ -565,18 +649,16 @@ PrefabInstance:
       value: 'This scene shows how to customize the camera blending algorithm.  There
         are two players, each with a follow camera.  Use WASD to move the players.
 
-        
 
         The
-        main camera has a custom BlendStyleManager script that listens for BlendCreated
+        Blend Style Manager object has a custom script that listens for BlendCreated
         events and assigns a custom blender to the blend in cases where a custom
         blend is desired - that is, when the user presses the <i>Custom Blend</i>
         button.
 
-        
 
-        The CinemachineBrainEvents script is used to
-        listen for the event.  It is attached to the main camera.
+        The CinemachineBrainEvents script is used to listen for
+        the event.
 
 '
       objectReference: {fileID: 0}
@@ -620,7 +702,7 @@ MonoBehaviour:
     OnClick:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1990246958}
+        - m_Target: {fileID: 486393345}
           m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.BlendStyleManager,
             Assembly-CSharp
           m_MethodName: DefaultBlend
@@ -643,7 +725,7 @@ MonoBehaviour:
     OnClick:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1990246958}
+        - m_Target: {fileID: 486393345}
           m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.BlendStyleManager,
             Assembly-CSharp
           m_MethodName: CustomBlend
@@ -734,8 +816,6 @@ GameObject:
   - component: {fileID: 1990246955}
   - component: {fileID: 1990246954}
   - component: {fileID: 1990246957}
-  - component: {fileID: 1990246959}
-  - component: {fileID: 1990246958}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -809,7 +889,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1990246953}
-  m_LocalRotation: {x: 1e-45, y: 1e-45, z: 0, w: 1}
+  m_LocalRotation: {x: -3e-45, y: 1e-45, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -849,57 +929,3 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
---- !u!114 &1990246958
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1990246953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16eca234a25d87f4e9a54ac550e684e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1990246959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1990246953}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33a510488cc26384ea9c0600441770b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CameraActivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraDeactivatedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  BlendCreatedEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1990246958}
-        m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.BlendStyleManager, Assembly-CSharp
-        m_MethodName: OnBlendCreated
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  BlendFinishedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  CameraCutEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  BrainUpdatedEvent:
-    m_PersistentCalls:
-      m_Calls: []

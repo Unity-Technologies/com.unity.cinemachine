@@ -3,117 +3,52 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This component will generate mixer-specific events.
-    /// Add it to a a GameObject that has a CinemachineBrain or another ICinemachineMixer, 
-    /// such as a CinemachineCameraManager.
+    /// This component will generate CinemachineBrain-specific events.
     /// </summary>
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Brain Events")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrainEvents.html")]
-    public class CinemachineBrainEvents : MonoBehaviour
+    public class CinemachineBrainEvents : CinemachineMixerEventsBase
     {
         /// <summary>
-        /// This event will fire whenever a virtual camera goes live.  
-        /// If a blend is involved, it will be fired at the start of the blend.
+        /// This is the CinemachineBrain emitting the events.  If null and the current
+        /// GameObject has a CinemachineBrain component, that component will be used.
         /// </summary>
-        [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is "
-            + "involved, then the event will fire on the first frame of the blend.")]
-        public CinemachineCore.CameraEvent CameraActivatedEvent = new ();
-
-        /// <summary>
-        /// This event will fire whenever a virtual stops being live.  
-        /// If a blend is involved, then the event will fire after the last frame of the blend.
-        /// </summary>
-        [Tooltip("This event will fire whenever a virtual stops being live.  If a blend is "
-            + "involved, then the event will fire after the last frame of the blend.")]
-        public CinemachineCore.CameraEvent CameraDeactivatedEvent = new ();
-
-        /// <summary>
-        /// This event will fire whenever a blend is created in the root frame of this Brain.  
-        /// The handler can modify any settings in the blend, except the cameras themselves.
-        /// Note: timeline tracks will not generate these events.
-        /// </summary>
-        [Tooltip("This event will fire whenever a blend is created in the root frame of this Brain.  "
-            + "The handler can modify any settings in the blend, except the cameras themselves.  "
-            + "Note: timeline tracks will not generate these events.")]
-        public CinemachineCore.BlendEvent BlendCreatedEvent = new ();
-
-        /// <summary>
-        /// This event will fire whenever a virtual camera finishes blending in.  
-        /// It will not fire if the blend length is zero.
-        /// </summary>
-        [Tooltip("This event will fire whenever a virtual camera finishes blending in.  "
-            + "It will not fire if the blend length is zero.")]
-        public CinemachineCore.CameraEvent BlendFinishedEvent = new ();
-
-        /// <summary>
-        /// This event is fired when there is a camera cut.  A camera cut is a camera 
-        /// activation with a zero-length blend.  
-        /// </summary>
-        [Tooltip("This event is fired when there is a camera cut.  A camera cut is a camera "
-            + "activation with a zero-length blend.")]
-        public CinemachineCore.CameraEvent CameraCutEvent = new ();
+        [Tooltip("This is the CinemachineBrain emitting the events.  If null and the current "
+            + "GameObject has a CinemachineBrain component, that component will be used.")]
+        public CinemachineBrain Brain;
 
         /// <summary>This event will fire after the brain updates its Camera.
         /// This evenet will only fire if this component is attached to a CinemachineBrain.</summary>
         [Tooltip("This event will fire after the brain updates its Camera.")]
         public CinemachineCore.BrainEvent BrainUpdatedEvent = new ();
 
-        ICinemachineMixer m_Mixer;
+        /// <summary>
+        /// Get the object being monitored.  This is the object that will generate the events.
+        /// </summary>
+        /// <returns>The ICinemachineMixer object that is the origin of the events.</returns>
+        protected override ICinemachineMixer GetMixer() => Brain;
 
         void OnEnable()
         {
-            TryGetComponent(out m_Mixer);
-            if (m_Mixer != null)
+            if (Brain == null)
+                TryGetComponent(out Brain);
+            if (Brain != null)
             {
-                CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
-                CinemachineCore.CameraDeactivatedEvent.AddListener(OnCameraDeactivated);
-                CinemachineCore.BlendCreatedEvent.AddListener(OnBlendCreated);
-                CinemachineCore.BlendFinishedEvent.AddListener(OnBlendFinished);
+                InstallHandlers(Brain);
                 CinemachineCore.CameraUpdatedEvent.AddListener(OnCameraUpdated);
             }
         }
 
         void OnDisable()
         {
-            CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
-            CinemachineCore.CameraDeactivatedEvent.RemoveListener(OnCameraDeactivated);
-            CinemachineCore.BlendCreatedEvent.RemoveListener(OnBlendCreated);
-            CinemachineCore.BlendFinishedEvent.RemoveListener(OnBlendFinished);
+            UninstallHandlers();
             CinemachineCore.CameraUpdatedEvent.RemoveListener(OnCameraUpdated);
-        }
-
-        void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt)
-        {
-            if (evt.Origin == m_Mixer)
-            {
-                CameraActivatedEvent.Invoke(m_Mixer, evt.IncomingCamera);
-                if (evt.IsCut)
-                    CameraCutEvent.Invoke(m_Mixer, evt.IncomingCamera);
-            }
-        }
-
-        void OnCameraDeactivated(ICinemachineMixer mixer, ICinemachineCamera cam)
-        {
-            if (mixer == m_Mixer)
-                CameraDeactivatedEvent.Invoke(mixer, cam);
-        }
-
-        void OnBlendCreated(CinemachineCore.BlendEventParams evt)
-        {
-            if (evt.Origin == m_Mixer)
-                BlendCreatedEvent.Invoke(evt);
-        }
-
-        void OnBlendFinished(ICinemachineMixer mixer, ICinemachineCamera cam)
-        {
-            if (mixer == m_Mixer)
-                BlendFinishedEvent.Invoke(m_Mixer, cam);
         }
 
         void OnCameraUpdated(CinemachineBrain brain)
         {
-            if ((ICinemachineMixer)brain == m_Mixer)
+            if (brain == Brain)
                 BrainUpdatedEvent.Invoke(brain);
         }
     }

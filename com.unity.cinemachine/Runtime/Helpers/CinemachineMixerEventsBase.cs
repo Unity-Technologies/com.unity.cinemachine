@@ -3,29 +3,18 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This component will generate camera-specific activation and deactivation events.
-    /// Add it to a Cinemachine Camera.
+    /// This is a base class for components that will generate mixer-specific events.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Helpers/Cinemachine Camera Events")]
     [SaveDuringPlay]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineCameraEvents.html")]
-    public class CinemachineCameraEvents : MonoBehaviour
+    public abstract class CinemachineMixerEventsBase : MonoBehaviour
     {
         /// <summary>
-        /// This is the object whose events are being monitored.  If null and the current
-        /// GameObject has a CinemachineVirtualCameraBase component, that component will be used.
-        /// </summary>
-        [Tooltip("This is the object whose events are being monitored.  If null and the current "
-            + "GameObject has a CinemachineVirtualCameraBase component, that component will be used.")]
-        public CinemachineVirtualCameraBase EventTarget;
-
-        /// <summary>
-        /// This is the object emitting the events.  
+        /// This event will fire whenever a virtual camera goes live.  
         /// If a blend is involved, it will be fired at the start of the blend.
         /// </summary>
         [Space]
-        [Tooltip("This event will fire whenever a virtual camera becomes active in the context of a mixer.  "
-            + "If a blend is involved, then the event will fire on the first frame of the blend.")]
+        [Tooltip("This event will fire whenever a virtual camera goes live.  If a blend is "
+            + "involved, then the event will fire on the first frame of the blend.")]
         public CinemachineCore.CameraEvent CameraActivatedEvent = new ();
 
         /// <summary>
@@ -37,11 +26,13 @@ namespace Unity.Cinemachine
         public CinemachineCore.CameraEvent CameraDeactivatedEvent = new ();
 
         /// <summary>
-        /// This event will fire whenever a blend is created that involves this camera.  
+        /// This event will fire whenever a blend is created in the root frame of this Brain.  
         /// The handler can modify any settings in the blend, except the cameras themselves.
+        /// Note: timeline tracks will not generate these events.
         /// </summary>
-        [Tooltip("This event will fire whenever a blend is created that involves this camera.  "
-            + "The handler can modify any settings in the blend, except the cameras themselves.")]
+        [Tooltip("This event will fire whenever a blend is created in the root frame of this Brain.  "
+            + "The handler can modify any settings in the blend, except the cameras themselves.  "
+            + "Note: timeline tracks will not generate these events.")]
         public CinemachineCore.BlendEvent BlendCreatedEvent = new ();
 
         /// <summary>
@@ -51,12 +42,25 @@ namespace Unity.Cinemachine
         [Tooltip("This event will fire whenever a virtual camera finishes blending in.  "
             + "It will not fire if the blend length is zero.")]
         public CinemachineCore.CameraEvent BlendFinishedEvent = new ();
-        
-        void OnEnable()
+
+        /// <summary>
+        /// This event is fired when there is a camera cut.  A camera cut is a camera 
+        /// activation with a zero-length blend.  
+        /// </summary>
+        [Tooltip("This event is fired when there is a camera cut.  A camera cut is a camera "
+            + "activation with a zero-length blend.")]
+        public CinemachineCore.CameraEvent CameraCutEvent = new ();
+
+        /// <summary>
+        /// Get the object being monitored.  This is the object that will generate the events.
+        /// </summary>
+        /// <returns>The ICinemachineMixer object that is the origin of the events.</returns>
+        protected abstract ICinemachineMixer GetMixer();
+
+        /// <summary>Install the event handlers.  Call this from OnEnable().</summary>
+        protected void InstallHandlers(ICinemachineMixer mixer)
         {
-            if (EventTarget == null)
-                TryGetComponent(out EventTarget);
-            if (EventTarget != null)
+            if (mixer != null)
             {
                 CinemachineCore.CameraActivatedEvent.AddListener(OnCameraActivated);
                 CinemachineCore.CameraDeactivatedEvent.AddListener(OnCameraDeactivated);
@@ -65,7 +69,8 @@ namespace Unity.Cinemachine
             }
         }
 
-        void OnDisable()
+        /// <summary>Uninstall the event handlers.  Call the from OnDisable().</summary>
+        protected void UninstallHandlers()
         {
             CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraActivated);
             CinemachineCore.CameraDeactivatedEvent.RemoveListener(OnCameraDeactivated);
@@ -75,26 +80,31 @@ namespace Unity.Cinemachine
 
         void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt)
         {
-            if (evt.IncomingCamera == (ICinemachineCamera)EventTarget)
-                CameraActivatedEvent.Invoke(evt.Origin, evt.IncomingCamera);
+            var mixer = GetMixer();
+            if (evt.Origin == mixer)
+            {
+                CameraActivatedEvent.Invoke(mixer, evt.IncomingCamera);
+                if (evt.IsCut)
+                    CameraCutEvent.Invoke(mixer, evt.IncomingCamera);
+            }
+        }
+
+        void OnCameraDeactivated(ICinemachineMixer mixer, ICinemachineCamera cam)
+        {
+            if (mixer == GetMixer())
+                CameraDeactivatedEvent.Invoke(mixer, cam);
         }
 
         void OnBlendCreated(CinemachineCore.BlendEventParams evt)
         {
-            if (evt.Blend.CamA == (ICinemachineCamera)EventTarget || evt.Blend.CamB == (ICinemachineCamera)EventTarget)
+            if (evt.Origin == GetMixer())
                 BlendCreatedEvent.Invoke(evt);
         }
 
         void OnBlendFinished(ICinemachineMixer mixer, ICinemachineCamera cam)
         {
-            if (cam == (ICinemachineCamera)EventTarget)
+            if (mixer == GetMixer())
                 BlendFinishedEvent.Invoke(mixer, cam);
-        }
-
-        void OnCameraDeactivated(ICinemachineMixer mixer, ICinemachineCamera cam)
-        {
-            if (cam == (ICinemachineCamera)EventTarget)
-                CameraActivatedEvent.Invoke(mixer, cam);
         }
     }
 }

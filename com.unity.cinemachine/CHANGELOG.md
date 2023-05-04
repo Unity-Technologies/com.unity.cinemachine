@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineCore.GetCustomBlender and BlendCreatedEvent to allow custom blend behaviour.
 - New Custom Blends sample scene illustrating how to customize the blend algorithm.
 - CinemachineChannels can now be named via the CinemachineChannelNames asset.  OutputChannel struct has been removed.
+- Added CinemachineCameraManagerEvents behaviour.
 - Added the option of defining CINEMACHINE_NO_CM2_SUPPORT, to lighten the package by removing legacy CM2 support.
 - ThirdPerson Shooter sample scene now has an option to swap shoulders.
 
 ### Changed
 - Improved handling of nested blends.
+- CinemachineCameraEvents and CinemachineBrainEvents and CnemachineCameraManagerEvents can be added to any GameObject, not only to the target objects.
 
 
 ## [3.0.0-pre.5] - 2023-04-25
