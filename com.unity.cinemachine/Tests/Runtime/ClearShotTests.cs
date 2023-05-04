@@ -28,6 +28,7 @@ namespace Unity.Cinemachine.Tests
             m_ClearShot = clearShotHolder.GetComponent<CinemachineClearShot>();
             m_ClearShot.LookAt = m_Character.transform;
             var clearShotCollider = clearShotHolder.GetComponent<CinemachineDeoccluder>();
+            clearShotCollider.ShotQualityEvaluation.Enabled = true;
             clearShotCollider.MinimumDistanceFromTarget = 0.1f;
 
             // a stationary vcam1 with a hard lookat
