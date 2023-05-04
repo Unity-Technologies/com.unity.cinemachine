@@ -72,7 +72,7 @@ namespace Unity.Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
-            const string kGizmoFileName = ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
+            const string kGizmoFileName = CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
 
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)

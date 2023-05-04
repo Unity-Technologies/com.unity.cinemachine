@@ -85,7 +85,7 @@ namespace Unity.Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (actionName.Length != 0)
                     {
-                        var assetPath = ScriptableObjectUtility.kPackageRoot 
+                        var assetPath = CinemachineCore.kPackageRoot 
                             + "/Runtime/Input/CinemachineDefaultInputActions.inputactions";
                         var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
                         for (int i = 0; controller.Input.InputAction == null && i < assets.Length; ++i)

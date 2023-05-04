@@ -138,7 +138,7 @@ namespace Unity.Cinemachine.Editor
             {
                 if (s_CinemachineLogoTexture == null)
                     s_CinemachineLogoTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                        $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/Icons/CmCamera@256.png");
+                        $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/Icons/CmCamera@256.png");
                 if (s_CinemachineLogoTexture != null)
                     s_CinemachineLogoTexture.hideFlags = HideFlags.DontSaveInEditor;
                 return s_CinemachineLogoTexture;

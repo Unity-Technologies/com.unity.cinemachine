@@ -170,7 +170,7 @@ namespace Unity.Cinemachine.Editor
         {
             try
             {
-                path = ScriptableObjectUtility.kPackageRoot + "/" + path;
+                path = CinemachineCore.kPackageRoot + "/" + path;
                 var info = new DirectoryInfo(path);
                 path += "/";
                 var fileInfo = info.GetFiles();
@@ -217,34 +217,6 @@ namespace Unity.Cinemachine.Editor
 
             EditorApplication.QueuePlayerLoopUpdate();
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-        }
-
-        /// <summary>
-        /// Try to get the name of the owning virtual camera object.  If none then use
-        /// the object's name
-        /// </summary>
-        /// <param name="property"></param>
-        /// <returns></returns>
-        // GML TODO: get rid of this
-        public static string GetVirtualCameraObjectName(SerializedProperty property)
-        {
-            // A little hacky here, as we favour virtual cameras...
-            var obj = property.serializedObject.targetObject;
-            GameObject go = obj as GameObject;
-            if (go == null)
-            {
-                var component = obj as Component;
-                if (component != null)
-                    go = component.gameObject;
-            }
-            if (go != null)
-            {
-                var vcam = go.GetComponentInParent<CinemachineVirtualCameraBase>();
-                if (vcam != null)
-                    return vcam.Name;
-                return go.name;
-            }
-            return obj.name;
         }
 
         public static float PropertyHeightOfChidren(SerializedProperty property)

@@ -10,11 +10,6 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     class ScriptableObjectUtility
     {
-        /// <summary>
-        /// The root directory where Cinemachine is installed
-        /// </summary>
-        public const string kPackageRoot = "Packages/com.unity.cinemachine";
-
         /// <summary>Create a scriptable object asset</summary>
         /// <typeparam name="T">The type of asset to create</typeparam>
         /// <param name="assetPath">The full path and filename of the asset to create</param>

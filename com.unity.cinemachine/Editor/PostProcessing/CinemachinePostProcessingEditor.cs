@@ -25,7 +25,7 @@ namespace Unity.Cinemachine.Editor
         void OnEnable()
         {
             Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(
-                $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/PostProcessLayer.png");
+                $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/PostProcessLayer.png");
 
             m_FocusTracking = serializedObject.FindProperty(() => Target.FocusTracking);
             m_Profile = serializedObject.FindProperty(() => Target.Profile);

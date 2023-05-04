@@ -26,8 +26,7 @@ namespace Unity.Cinemachine
             {
                 s_UIDocument = uiDocumentHolder.AddComponent<UIDocument>();
                 
-                // GML todo: move ScriptableObjectUtility.kPackageRoot to CinemachineCore and use that instead of hardcoded string
-                const string path = "Packages/com.unity.cinemachine/Runtime/Debug/";
+                const string path = CinemachineCore.kPackageRoot + "/Runtime/Debug/";
                 s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
             }
 

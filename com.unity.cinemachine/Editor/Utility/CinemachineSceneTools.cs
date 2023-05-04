@@ -94,7 +94,7 @@ namespace Unity.Cinemachine.Editor
             normal =
             {
                 background = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                    $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/SceneToolsLabelBackground.png"),
+                    $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/SceneToolsLabelBackground.png"),
                 textColor = Handles.selectedColor,
             },
             fontStyle = FontStyle.Bold,

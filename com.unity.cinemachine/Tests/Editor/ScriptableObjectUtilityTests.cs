@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using Unity.Cinemachine.Editor;
 using System.IO;
 
 namespace Unity.Cinemachine.Tests.Editor
@@ -10,7 +9,7 @@ namespace Unity.Cinemachine.Tests.Editor
         [Test]
         public void CinemachineInstallPathIsValid()
         {
-            var pathToCmLogo = Path.Combine(ScriptableObjectUtility.kPackageRoot + 
+            var pathToCmLogo = Path.Combine(CinemachineCore.kPackageRoot + 
                 "/Editor/EditorResources/Icons/CmCamera@256.png");
             Assert.That(File.Exists(pathToCmLogo));
         }
@@ -18,7 +17,7 @@ namespace Unity.Cinemachine.Tests.Editor
         [Test]
         public void CinemachineInstallRelativePathIsValid()
         {
-            var relativePathToCmLogo = Path.Combine(ScriptableObjectUtility.kPackageRoot + 
+            var relativePathToCmLogo = Path.Combine(CinemachineCore.kPackageRoot + 
                 "/Editor/EditorResources/Icons/CmCamera@256.png");
             var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));

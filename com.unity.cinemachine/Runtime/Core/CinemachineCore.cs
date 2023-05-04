@@ -24,6 +24,11 @@ namespace Unity.Cinemachine
         internal const int kStreamingVersion = 20230301;
 
         /// <summary>
+        /// The root directory where Cinemachine is installed
+        /// </summary>
+        public const string kPackageRoot = "Packages/com.unity.cinemachine";
+
+        /// <summary>
         /// Unit-test support:
         /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
         /// Usage is for InputAxis in manual update mode, for deterministic behaviour.

@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Editor
                     // Import the asset from the package
                     var shaderAssetPath = $"Assets/{k_ComputeShaderName}.compute";
                     FileUtil.CopyFileOrDirectory(
-                        $"{ScriptableObjectUtility.kPackageRoot}/Runtime/PostProcessing/HDRP Resources~/{k_ComputeShaderName}.compute",
+                        $"{CinemachineCore.kPackageRoot}/Runtime/PostProcessing/HDRP Resources~/{k_ComputeShaderName}.compute",
                         shaderAssetPath);
                     AssetDatabase.ImportAsset(shaderAssetPath);
                     shader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderAssetPath);
