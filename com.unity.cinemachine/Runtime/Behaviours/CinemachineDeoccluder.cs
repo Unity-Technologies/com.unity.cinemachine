@@ -427,29 +427,32 @@ namespace Unity.Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.TargetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);
 
-                // GML these values are an initial arbitrary attempt at rating quality
-                if (extra.TargetObscured)
-                    state.ShotQuality *= 0.2f;
-                if (!extra.PreviousDisplacement.AlmostZero())
-                    state.ShotQuality *= 0.8f;
-
-                float nearnessBoost = 0;
-                if (ShotQualityEvaluation.Enabled && ShotQualityEvaluation.OptimalDistance > 0 && state.HasLookAt())
+                if (ShotQualityEvaluation.Enabled && state.HasLookAt())
                 {
-                    var distance = Vector3.Magnitude(state.ReferenceLookAt - state.GetFinalPosition());
-                    if (distance <= ShotQualityEvaluation.OptimalDistance)
+                    // GML these values are an initial arbitrary attempt at rating quality
+                    if (extra.TargetObscured)
+                        state.ShotQuality *= 0.2f;
+                    if (!extra.PreviousDisplacement.AlmostZero())
+                        state.ShotQuality *= 0.8f;
+
+                    float nearnessBoost = 0;
+                    if (ShotQualityEvaluation.OptimalDistance > 0)
                     {
-                        if (distance >= ShotQualityEvaluation.NearLimit)
-                            nearnessBoost = ShotQualityEvaluation.MaxQualityBoost * (distance - ShotQualityEvaluation.NearLimit)
-                                / (ShotQualityEvaluation.OptimalDistance - ShotQualityEvaluation.NearLimit);
+                        var distance = Vector3.Magnitude(state.ReferenceLookAt - state.GetFinalPosition());
+                        if (distance <= ShotQualityEvaluation.OptimalDistance)
+                        {
+                            if (distance >= ShotQualityEvaluation.NearLimit)
+                                nearnessBoost = ShotQualityEvaluation.MaxQualityBoost * (distance - ShotQualityEvaluation.NearLimit)
+                                    / (ShotQualityEvaluation.OptimalDistance - ShotQualityEvaluation.NearLimit);
+                        }
+                        else
+                        {
+                            distance -= ShotQualityEvaluation.OptimalDistance;
+                            if (distance < ShotQualityEvaluation.FarLimit)
+                                nearnessBoost = ShotQualityEvaluation.MaxQualityBoost * (1f - (distance / ShotQualityEvaluation.FarLimit));
+                        }
+                        state.ShotQuality *= (1f + nearnessBoost);
                     }
-                    else
-                    {
-                        distance -= ShotQualityEvaluation.OptimalDistance;
-                        if (distance < ShotQualityEvaluation.FarLimit)
-                            nearnessBoost = ShotQualityEvaluation.MaxQualityBoost * (1f - (distance / ShotQualityEvaluation.FarLimit));
-                    }
-                    state.ShotQuality *= (1f + nearnessBoost);
                 }
             }
         }
