@@ -58,6 +58,7 @@ namespace Unity.Cinemachine
         protected abstract ICinemachineMixer GetMixer();
 
         /// <summary>Install the event handlers.  Call this from OnEnable().</summary>
+        /// <param name="mixer">The mixer object to monitor.</param>
         protected void InstallHandlers(ICinemachineMixer mixer)
         {
             if (mixer != null)
