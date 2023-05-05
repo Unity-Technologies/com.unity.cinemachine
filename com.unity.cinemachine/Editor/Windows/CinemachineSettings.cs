@@ -520,10 +520,14 @@ namespace Cinemachine.Editor
                 return;
             }
 
-            if (instance.GetComponent<CinemachineBrain>() != null)
+            if (instance.TryGetComponent(out CinemachineBrain _))
             {
-                Rect texRect = new Rect(selectionRect.xMax - selectionRect.height, selectionRect.yMin, selectionRect.height, selectionRect.height);
-                GUI.DrawTexture(texRect, CinemachineLogoTexture, ScaleMode.ScaleAndCrop);
+                var tex = CinemachineLogoTexture;
+                if (tex != null)
+                {
+                    var texRect = new Rect(selectionRect.xMax - selectionRect.height, selectionRect.yMin, selectionRect.height, selectionRect.height);
+                    GUI.DrawTexture(texRect, tex, ScaleMode.ScaleAndCrop);
+                }
             }
         }
 
