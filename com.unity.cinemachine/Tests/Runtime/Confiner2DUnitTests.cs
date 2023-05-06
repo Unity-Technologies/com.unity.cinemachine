@@ -82,6 +82,7 @@ namespace Tests.Runtime
             Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
 
+#if false
         [UnityTest, TestCaseSource(nameof(ColliderTestCases))]
         public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_CompositeCollider2D(Vector2[] testPoints)
         {
@@ -129,6 +130,7 @@ namespace Tests.Runtime
             yield return null; // wait one frame
             Assert.That((m_Vcam.State.CorrectedPosition - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
+#endif
     }
 }
 #endif

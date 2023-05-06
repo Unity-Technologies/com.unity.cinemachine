@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.9.6] - 2023-05-05
+## [2.9.7] - 2023-05-06
 - Bugfix: AxisState was not respecting timescale == 0.
 - Bugfix: Very occasional axis drift in SimpleFollow when viewing angle is +-90 degrees.
 - URP: add temporal effects reset on camera cut for URP 14.0.4 and up.
