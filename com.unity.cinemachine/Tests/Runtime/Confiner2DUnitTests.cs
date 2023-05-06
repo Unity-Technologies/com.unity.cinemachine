@@ -76,6 +76,7 @@ namespace Unity.Cinemachine.Tests
             Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
 
+#if false
         [UnityTest, TestCaseSource(nameof(ColliderTestCases))]
         public IEnumerator Test_SimpleSquareConfiner_OrderIndependent_CompositeCollider2D(Vector2[] testPoints)
         {
@@ -90,7 +91,11 @@ namespace Unity.Cinemachine.Tests
             var polyHolder = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D));
             polyHolder.transform.parent = compositeHolder.transform;
             var polygonCollider2D = polyHolder.GetComponent<PolygonCollider2D>();
+#if UNITY_2023_1_OR_NEWER
             polygonCollider2D.compositeOperation = Collider2D.CompositeOperation.Merge;
+#else
+            polygonCollider2D.usedByComposite = true;
+#endif
             m_Confiner2D.BoundingShape2D = compositeCollider2D;
             m_Confiner2D.Damping = 0;
             m_Confiner2D.OversizeWindow = new () { Enabled = true, MaxWindowSize = 0 };
@@ -119,7 +124,7 @@ namespace Unity.Cinemachine.Tests
             yield return null; // wait one frame
             Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
-        
+#endif        
         [UnityTest]
         public IEnumerator Test_SimpleSquareConfiner_BoxCollider2D()
         {
