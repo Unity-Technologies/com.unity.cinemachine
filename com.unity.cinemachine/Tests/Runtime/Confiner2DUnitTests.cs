@@ -90,7 +90,7 @@ namespace Unity.Cinemachine.Tests
             var polyHolder = CreateGameObject("PolygonCollider2DHolder", typeof(PolygonCollider2D));
             polyHolder.transform.parent = compositeHolder.transform;
             var polygonCollider2D = polyHolder.GetComponent<PolygonCollider2D>();
-            polygonCollider2D.compositeOperation = Collider2D.CompositeOperation.Merge;
+            polygonCollider2D.usedByComposite = true;
             m_Confiner2D.BoundingShape2D = compositeCollider2D;
             m_Confiner2D.Damping = 0;
             m_Confiner2D.OversizeWindow = new () { Enabled = true, MaxWindowSize = 0 };
