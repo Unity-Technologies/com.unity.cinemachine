@@ -386,6 +386,8 @@ namespace Unity.Cinemachine
         public static Quaternion ApplyCameraRotation(
             this Quaternion orient, Vector2 rot, Vector3 worldUp)
         {
+            if (rot.sqrMagnitude < 0.0001f)
+                return orient;
             Quaternion q = Quaternion.AngleAxis(rot.x, Vector3.right);
             return (Quaternion.AngleAxis(rot.y, worldUp) * orient) * q;
         }
