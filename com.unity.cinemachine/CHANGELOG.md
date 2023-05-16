@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.0.0-pre.8] - unreleased
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
+- Bugfix: Deceleration at the end of axis range was too aggressive.
 
 
 ## [3.0.0-pre.7] - 2023-05-04

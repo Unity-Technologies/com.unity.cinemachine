@@ -354,14 +354,13 @@ namespace Unity.Cinemachine
                     m_CurrentSpeed += Damper.Damp(inputValue - m_CurrentSpeed, dampTime, deltaTime);
 
                     // Decelerate to the end points of the range if not wrapping
-                    float range = axis.Range.y - axis.Range.x;
-                    if (!axis.Wrap && DecelTime > k_Epsilon && range > k_Epsilon)
+                    if (!axis.Wrap && DecelTime > k_Epsilon && Mathf.Abs(m_CurrentSpeed) > k_Epsilon)
                     {
                         var v0 = axis.ClampValue(axis.Value);
-                        var v = axis.ClampValue(v0 + m_CurrentSpeed * deltaTime);
-                        var d = (m_CurrentSpeed > 0) ? axis.Range.y - v : v - axis.Range.x;
-                        if (d < (0.1f * range) && Mathf.Abs(m_CurrentSpeed) > k_Epsilon)
-                            m_CurrentSpeed = Damper.Damp(v - v0, DecelTime, deltaTime) / deltaTime;
+                        var d = (m_CurrentSpeed > 0) ? axis.Range.y - v0 : v0 - axis.Range.x;
+                        var maxSpeed = 0.1f + 4 * d / DecelTime;
+                        if (Mathf.Abs(m_CurrentSpeed) > Mathf.Abs(maxSpeed))
+                            m_CurrentSpeed = maxSpeed * Mathf.Sign(m_CurrentSpeed);
                     }
                 }
                 axis.Value = axis.ClampValue(axis.Value + m_CurrentSpeed * deltaTime);
