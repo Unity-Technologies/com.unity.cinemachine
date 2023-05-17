@@ -60,11 +60,11 @@ namespace Unity.Cinemachine.Tests
             var sphereRadius = 1f;
             
             // check ray cast hit
-            Assert.True(RuntimeUtility.SphereCastIgnoreTag(Vector3.zero, sphereRadius, direction, out var hitInfo, rayLength, m_LayerMask, string.Empty));
+            Assert.True(RuntimeUtility.SphereCastIgnoreTag(new Ray(Vector3.zero, direction), sphereRadius, out var hitInfo, rayLength, m_LayerMask, string.Empty));
             Assert.That(hitInfo.distance, Is.EqualTo(boxPosition.z - (m_BoxCollider.size.z / 2f) - sphereRadius));
             
             // check that ray cast did not hit anything, because it ignores the box's tag
-            Assert.False(RuntimeUtility.SphereCastIgnoreTag(Vector3.zero, sphereRadius, direction, out hitInfo, rayLength, m_LayerMask, k_BoxTag));
+            Assert.False(RuntimeUtility.SphereCastIgnoreTag(new Ray(Vector3.zero, direction), sphereRadius, out hitInfo, rayLength, m_LayerMask, k_BoxTag));
         }
     }
 }
