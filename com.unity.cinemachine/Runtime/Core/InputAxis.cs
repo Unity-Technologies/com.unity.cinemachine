@@ -338,7 +338,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Apply the input value to the axis value</summary>
         /// <param name="axis">The InputAxisValue to update</param>
-        /// <param name="inputValue">Parameter for controlling the behaviour of the axis</param>
+        /// <param name="inputValue">The input value to apply to the axis value.</param>
         /// <param name="deltaTime">current deltaTime</param>
         public void ProcessInput(ref InputAxis axis, float inputValue, float deltaTime)
         {
