@@ -509,26 +509,13 @@ namespace Unity.Cinemachine
                     rayLength += k_PrecisionSlush;
                     if (rayLength > Epsilon)
                     {
-                        if (AvoidObstacles.Strategy == ObstacleAvoidance.ResolutionStrategy.PullCameraForward 
-                            && AvoidObstacles.CameraRadius >= Epsilon)
+                        if (RuntimeUtility.SphereCastIgnoreTag(
+                                new Ray(lookAtPos + dir * AvoidObstacles.CameraRadius, dir), 
+                                AvoidObstacles.CameraRadius, out hitInfo, 
+                                rayLength - AvoidObstacles.CameraRadius, layerMask, IgnoreTag))
                         {
-                            if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos + dir * AvoidObstacles.CameraRadius, 
-                                    AvoidObstacles.CameraRadius, dir, out hitInfo, 
-                                    rayLength - AvoidObstacles.CameraRadius, layerMask, IgnoreTag))
-                            {
-                                var desiredResult = hitInfo.point + hitInfo.normal * AvoidObstacles.CameraRadius;
-                                displacement = desiredResult - cameraPos;
-                            }
-                        }
-                        else
-                        {
-                            if (RuntimeUtility.RaycastIgnoreTag(
-                                    ray, out hitInfo, rayLength, layerMask, IgnoreTag))
-                            {
-                                // Pull camera forward in front of obstacle
-                                float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
-                                displacement = ray.GetPoint(adjustment) - cameraPos;
-                            }
+                            var p = hitInfo.point + hitInfo.normal * (AvoidObstacles.CameraRadius + k_PrecisionSlush);
+                            displacement = p - cameraPos;
                         }
                     }
                 }
@@ -556,8 +543,9 @@ namespace Unity.Cinemachine
             float clampedDistance = ClampRayToBounds(ray, distance, obstacle.collider.bounds);
             distance = Mathf.Min(distance, clampedDistance + k_PrecisionSlush);
 
-            if (RuntimeUtility.RaycastIgnoreTag(
-                ray, out var hitInfo, distance, CollideAgainst & ~TransparentLayers, IgnoreTag))
+            if (RuntimeUtility.SphereCastIgnoreTag(
+                ray, AvoidObstacles.CameraRadius, out var hitInfo, distance, 
+                CollideAgainst & ~TransparentLayers, IgnoreTag))
             {
                 // We hit something.  Stop there and take a step along that wall.
                 var adjustment = hitInfo.distance - k_PrecisionSlush;
@@ -577,8 +565,8 @@ namespace Unity.Cinemachine
             // First check if we can still see the target.  If not, abort
             dir = pos - lookAtPos;
             var d = dir.magnitude;
-            if (d < Epsilon || RuntimeUtility.RaycastIgnoreTag(
-                    new Ray(lookAtPos, dir), out _, d - k_PrecisionSlush, 
+            if (d < Epsilon || RuntimeUtility.SphereCastIgnoreTag(
+                    new Ray(lookAtPos, dir), AvoidObstacles.CameraRadius, out _, d - k_PrecisionSlush, 
                         CollideAgainst & ~TransparentLayers, IgnoreTag))
                 return currentPos;
 
@@ -588,8 +576,9 @@ namespace Unity.Cinemachine
             distance = GetPushBackDistance(ray, startPlane, targetDistance, lookAtPos);
             if (distance > Epsilon)
             {
-                if (!RuntimeUtility.RaycastIgnoreTag(
-                    ray, out hitInfo, distance, CollideAgainst & ~TransparentLayers, IgnoreTag))
+                if (!RuntimeUtility.SphereCastIgnoreTag(
+                    ray, AvoidObstacles.CameraRadius, out hitInfo, distance, 
+                    CollideAgainst & ~TransparentLayers, IgnoreTag))
                 {
                     pos = ray.GetPoint(distance); // no obstacles - all good
                     extra.AddPointToDebugPath(pos);
@@ -754,7 +743,8 @@ namespace Unity.Cinemachine
                 // OverlapSphereNonAlloc won't catch those.
                 float d = distance - MinimumDistanceFromTarget;
                 Vector3 targetPos = lookAtPos + dir * MinimumDistanceFromTarget;
-                if (RuntimeUtility.RaycastIgnoreTag(new Ray(targetPos, dir), 
+                if (RuntimeUtility.SphereCastIgnoreTag(
+                    new Ray(targetPos, dir), AvoidObstacles.CameraRadius,
                     out hitInfo, d, CollideAgainst, IgnoreTag))
                 {
                     // Only count it if there's an incoming collision but not an outgoing one
@@ -822,7 +812,8 @@ namespace Unity.Cinemachine
                 if (distance < Mathf.Max(MinimumDistanceFromTarget, Epsilon))
                     return true;
                 var ray = new Ray(pos, dir.normalized);
-                if (RuntimeUtility.RaycastIgnoreTag(ray, out _,
+                if (RuntimeUtility.SphereCastIgnoreTag(
+                        ray, AvoidObstacles.CameraRadius, out _,
                         distance - MinimumDistanceFromTarget,
                         CollideAgainst & ~TransparentLayers, IgnoreTag))
                     return true;

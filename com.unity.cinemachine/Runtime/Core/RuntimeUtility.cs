@@ -86,19 +86,24 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Perform a sphere cast, but pass through objects with a given tag
         /// </summary>
-        /// <param name="rayStart">Start of the ray</param>
+        /// <param name="ray">The ray to cast - this will be the center of the spherecast.</param>
         /// <param name="radius">Radius of the sphere cast</param>
-        /// <param name="dir">Normalized direction of the ray</param>
         /// <param name="hitInfo">Results go here</param>
         /// <param name="rayLength">Length of the ray</param>
         /// <param name="layerMask">Layers to include</param>
         /// <param name="ignoreTag">Tag to ignore</param>
         /// <returns>True if something is hit.  Results in hitInfo.</returns>
         public static bool SphereCastIgnoreTag(
-            Vector3 rayStart, float radius, Vector3 dir, 
+            Ray ray, float radius, 
             out RaycastHit hitInfo, float rayLength, 
             int layerMask, in string ignoreTag)
         {
+            if (radius < UnityVectorExtensions.Epsilon)
+                return RaycastIgnoreTag(ray, out hitInfo, rayLength, layerMask, ignoreTag);
+
+            Vector3 rayStart = ray.origin;
+            Vector3 dir = ray.direction;
+
             int closestHit = -1;
             int numPenetrations = 0;
             float penetrationDistanceSum = 0;

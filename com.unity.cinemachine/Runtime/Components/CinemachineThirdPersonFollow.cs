@@ -333,7 +333,7 @@ namespace Unity.Cinemachine
             float desiredCorrection = 0;
 
             if (RuntimeUtility.SphereCastIgnoreTag(
-                root, cameraRadius, dir, out RaycastHit hitInfo, 
+                new Ray(root, dir), cameraRadius, out RaycastHit hitInfo, 
                 len, AvoidObstacles.CollisionFilter, AvoidObstacles.IgnoreTag))
             {
                 var desiredResult = hitInfo.point + hitInfo.normal * cameraRadius;
