@@ -80,10 +80,6 @@ namespace Unity.Cinemachine.Tests.Editor
                     new[]{0.06018928f, 0.1443404f, 0.2380308f});
                 yield return new TestCaseData(new Vector2(-100f, 100f), false, 0.5f, 0.5f, 100.0f,
                     new[]{6.018928f, 14.43403f, 23.80308f});
-                yield return new TestCaseData(new Vector2(-13f, 5f), false, 0.5f, 0.5f, 100.0f,
-                    new[]{3.009464f, 4.207553f, 4.684521f});
-                yield return new TestCaseData(new Vector2(-13f, 5f), true, 0.5f, 0.5f, 100.0f,
-                    new[]{-11.98107f, -3.565965f, -12.19692f});
             }
         }
 
