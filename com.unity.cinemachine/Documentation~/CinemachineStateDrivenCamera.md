@@ -1,14 +1,16 @@
 # Cinemachine State-Driven Camera
 
-The __Cinemachine State-Driven Camera__ component activates a child CinemachineCamera when an animation target changes states. For example, consider your avatar’s local-motion system and orbit camera. Your game feels more alive to the player when the camera shakes more as your avatar runs. When the avatar walks, blend for example to a CinemachineCamera with more damping.
+The __Cinemachine State-Driven Camera__ component allows you to associate CinemachineCameras with animation states.  When the state becomes active, the associated CinemachineCamera will also activate.  This allows you to define specific camera settings and behaviours for specific anmation states.  For example, you could have one camera for the Walk state, another for the Run state.  The state-Driven camera will blend between those cameras when the animation target changes states.
 
 ![State-Driven camera with three child CinemachineCameras (red)](images/CinemachineStateDrivenChildren.png)
 
 The animation target for a State-Driven Camera is a GameObject with an [Animator](https://docs.unity3d.com/Manual/class-Animator.html) component controlled by an [Animator Controller](https://docs.unity3d.com/Manual/class-AnimatorController.html).
 
-Assign normal __Tracking Targets__ to each child CinemachineCamera. If a child CinemachineCamera has no __Tracking Target__, a State-Driven camera can provide its own as a fallback.
+Assign normal __Tracking Targets__ to each child CinemachineCamera. If a child CinemachineCamera has no __Tracking Target__, the State-Driven camera can provide its own as a fallback.
 
-State-Driven Camera has a list that assigns child CinemachineCameras to animation states. You can define default and custom blends between the State-Driven children.
+State-Driven Camera has a list that assigns child CinemachineCameras to animation states. You can define default and custom blends between the State-Driven children.  You don't need to define cameras for all the states.  If you define a camera for the default state, it will be used for any state that doesn't have a specific camera defined.
+
+If multiple cameras are defined for any given state, the State-Driven camera will choose the one with the highest priority.  If multiple cameras for the same state have the same priority, the State-Driven camera will choose the one that appears earliest in the list.
 
 In the Inspector, the State-Driven camera lists its CinemachineCamera children. Use this list to add and delete child CinemachineCameras, and assign priorities.
 
