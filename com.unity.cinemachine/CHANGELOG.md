@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-pre.8] - unreleased
+## [Unreleased]
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
 - Deoccluder accommodates camera radius in all modes.
