@@ -87,12 +87,12 @@ namespace Unity.Cinemachine
         [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
         float m_ActivationTime = 0;
-        Instruction m_ActiveInstruction;
+        int m_ActiveInstructionIndex;
         float m_PendingActivationTime = 0;
-        Instruction m_PendingInstruction;
-        Dictionary<int, int> m_InstructionDictionary;
+        int m_PendingInstructionIndex;
+        Dictionary<int, List<int>> m_InstructionDictionary;
         Dictionary<int, int> m_StateParentLookup;
-        readonly List<AnimatorClipInfo>  m_clipInfoList = new ();
+        readonly List<AnimatorClipInfo> m_ClipInfoList = new ();
 
         /// <inheritdoc />
         protected override void Reset()
@@ -160,7 +160,7 @@ namespace Unity.Cinemachine
         internal void ValidateInstructions()
         {
             Instructions ??= Array.Empty<Instruction>();
-            m_InstructionDictionary = new Dictionary<int, int>();
+            m_InstructionDictionary = new Dictionary<int, List<int>>();
             for (int i = 0; i < Instructions.Length; ++i)
             {
                 if (Instructions[i].Camera != null
@@ -168,7 +168,12 @@ namespace Unity.Cinemachine
                 {
                     Instructions[i].Camera = null;
                 }
-                m_InstructionDictionary[Instructions[i].FullHash] = i;
+                if (!m_InstructionDictionary.TryGetValue(Instructions[i].FullHash, out var list))
+                {
+                    list = new List<int>();
+                    m_InstructionDictionary[Instructions[i].FullHash] = list;
+                }
+                list.Add(i);
             }
 
             // Create the parent lookup
@@ -194,101 +199,107 @@ namespace Unity.Cinemachine
                 m_ActivationTime = 0;
                 return null;
             }
-            var defaultCam = children[0];
+            var fallbackCam = children[0];
             if (AnimatedTarget == null || !AnimatedTarget.gameObject.activeSelf
                 || AnimatedTarget.runtimeAnimatorController == null
                 || LayerIndex < 0 || !AnimatedTarget.hasBoundPlayables
                 || LayerIndex >= AnimatedTarget.layerCount)
             {
                 m_ActivationTime = 0;
-                return defaultCam;
+                return fallbackCam;
             }
 
-            // Get the current state
+            // quick sanity check, in case number of instructions changed
+            if (m_ActiveInstructionIndex < 0 || m_ActiveInstructionIndex >= Instructions.Length)
+            {
+                m_ActiveInstructionIndex = 0;
+                m_ActivationTime = 0;
+            }
+            if (!PreviousStateIsValid || m_PendingInstructionIndex < 0 || m_PendingInstructionIndex >= Instructions.Length)
+            {
+                m_PendingInstructionIndex = 0;
+                m_PendingActivationTime = 0;
+            }
+
+            // Get the current animation state
             int hash;
             if (AnimatedTarget.IsInTransition(LayerIndex))
             {
                 // Force "current" state to be the state we're transitioning to
                 var info = AnimatedTarget.GetNextAnimatorStateInfo(LayerIndex);
-                AnimatedTarget.GetNextAnimatorClipInfo(LayerIndex, m_clipInfoList);
-                hash = GetClipHash(info.fullPathHash, m_clipInfoList);
+                AnimatedTarget.GetNextAnimatorClipInfo(LayerIndex, m_ClipInfoList);
+                hash = GetClipHash(info.fullPathHash, m_ClipInfoList);
             }
             else
             {
                 var info = AnimatedTarget.GetCurrentAnimatorStateInfo(LayerIndex);
-                AnimatedTarget.GetCurrentAnimatorClipInfo(LayerIndex, m_clipInfoList);
-                hash = GetClipHash(info.fullPathHash, m_clipInfoList);
+                AnimatedTarget.GetCurrentAnimatorClipInfo(LayerIndex, m_ClipInfoList);
+                hash = GetClipHash(info.fullPathHash, m_ClipInfoList);
             }
 
-            // If we don't have an instruction for this state, find a suitable default
+            // If we don't have an instruction for this state, find a suitable default state
             while (hash != 0 && !m_InstructionDictionary.ContainsKey(hash))
                 hash = m_StateParentLookup.ContainsKey(hash) ? m_StateParentLookup[hash] : 0;
 
-            var now = CinemachineCore.CurrentTime;
-            if (m_ActivationTime != 0)
+            // Get the highest-priority active camera from the instruction list
+            int newInstrIndex = -1;
+            if (m_InstructionDictionary.ContainsKey(hash))
             {
-                // Is it active now?
-                if (m_ActiveInstruction.FullHash == hash)
-                {
-                    // Yes, cancel any pending
-                    m_PendingActivationTime = 0;
-                    return m_ActiveInstruction.Camera;
-                }
+                var instrList = m_InstructionDictionary[hash];
 
-                // Is it pending?
-                if (PreviousStateIsValid)
+                // Find the instruction whose camera is active and has the highest priority
+                int bestPriority = int.MinValue;
+                for (int i = 0; i < instrList.Count; ++i)
                 {
-                    if (m_PendingActivationTime != 0 && m_PendingInstruction.FullHash == hash)
+                    var index = instrList[i];
+                    var cam = Instructions[index].Camera;
+                    if (cam != null && cam.isActiveAndEnabled && cam.Priority.Value > bestPriority)
                     {
-                        // Has it been pending long enough, and are we allowed to switch away
-                        // from the active action?
-                        if ((now - m_PendingActivationTime) > m_PendingInstruction.ActivateAfter
-                            && ((now - m_ActivationTime) > m_ActiveInstruction.MinDuration
-                                || m_PendingInstruction.Camera.Priority.Value > m_ActiveInstruction.Camera.Priority.Value))
-                        {
-                            // Yes, activate it now
-                            m_ActiveInstruction = m_PendingInstruction;
-                            m_ActivationTime = now;
-                            m_PendingActivationTime = 0;
-                        }
-                        return m_ActiveInstruction.Camera;
+                        newInstrIndex = index;
+                        bestPriority = cam.Priority.Value;
                     }
                 }
             }
-            // Neither active nor pending.
-            m_PendingActivationTime = 0; // cancel the pending, if any
 
-            if (!m_InstructionDictionary.ContainsKey(hash))
+            // Process it.  If no new camera is desired, we just ignore this state
+            var now = CinemachineCore.CurrentTime;
+            if (newInstrIndex >= 0)
             {
-                // No defaults set, we just ignore this state
-                if (m_ActivationTime != 0)
-                    return m_ActiveInstruction.Camera;
-                return defaultCam;
-            }
-
-            // Can we activate it now?
-            var newInstr = Instructions[m_InstructionDictionary[hash]];
-            if (newInstr.Camera == null)
-                newInstr.Camera = defaultCam;
-            if (PreviousStateIsValid && m_ActivationTime > 0)
-            {
-                if (newInstr.ActivateAfter > 0
-                    || ((now - m_ActivationTime) < m_ActiveInstruction.MinDuration
-                        && newInstr.Camera.Priority.Value
-                        <= m_ActiveInstruction.Camera.Priority.Value))
+                // If it's neither active nor pending, we must take action
+                if (m_ActivationTime == 0)
                 {
-                    // Too early - make it pending
-                    m_PendingInstruction = newInstr;
+                    // No current camera, actibvate immediately
+                    m_ActiveInstructionIndex = newInstrIndex;
+                    m_ActivationTime = now;
+                    m_PendingActivationTime = 0;
+                }
+                else if (m_ActiveInstructionIndex != newInstrIndex
+                    && (m_PendingActivationTime == 0 || m_PendingInstructionIndex != newInstrIndex))
+                {
+                    // Make it pending
+                    m_PendingInstructionIndex = newInstrIndex;
                     m_PendingActivationTime = now;
-                    if (m_ActivationTime != 0)
-                        return m_ActiveInstruction.Camera;
-                    return defaultCam;
                 }
             }
-            // Activate now
-            m_ActiveInstruction = newInstr;
-            m_ActivationTime = now;
-            return m_ActiveInstruction.Camera;
+
+            // Process the pending instruction
+            if (m_PendingActivationTime != 0)
+            {
+                // Has it been pending long enough, and are we allowed to switch away
+                // from the active action?
+                if ((now - m_PendingActivationTime) > Instructions[m_PendingInstructionIndex].ActivateAfter
+                    && (now - m_ActivationTime) > Instructions[m_PendingInstructionIndex].MinDuration)
+                {
+                    // Yes, activate it now
+                    m_ActiveInstructionIndex = m_PendingInstructionIndex;
+                    m_ActivationTime = now;
+                    m_PendingActivationTime = 0;
+                }
+            }
+            
+            if (m_ActivationTime != 0)
+                return Instructions[m_ActiveInstructionIndex].Camera;
+            return fallbackCam;
         }
 
         int GetClipHash(int hash, List<AnimatorClipInfo> clips)
