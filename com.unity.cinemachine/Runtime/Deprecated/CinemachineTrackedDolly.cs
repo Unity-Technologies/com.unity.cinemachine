@@ -331,7 +331,7 @@ namespace Unity.Cinemachine
             c.Damping.Enabled = true;
             c.Damping.Position = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.Damping.Angular = Mathf.Max(m_YawDamping, Mathf.Max(m_RollDamping, m_PitchDamping));
-            c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp; // enum values match
+            c.CameraRotation = (CinemachineSplineDolly.RotationMode)m_CameraUp; // enum values match
             c.AutomaticDolly.Enabled = m_AutoDolly.m_Enabled;
             if (m_AutoDolly.m_Enabled)
             {

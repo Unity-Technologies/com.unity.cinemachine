@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using UnityEngine.Splines;
+using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
@@ -50,13 +51,14 @@ namespace Unity.Cinemachine
             + "to the spline, Y is up, and Z is parallel to the spline.")]
         public Vector3 SplineOffset = Vector3.zero;
 
-        /// <summary>How to set the virtual camera's Up vector.  This will affect the screen composition.</summary>
-        [Tooltip("How to set the virtual camera's Up vector.  This will affect the screen composition, because "
+        /// <summary>How to set the camera's rotation and Up.  This will affect the screen composition.</summary>
+        [Tooltip("How to set the camera's rotation and Up.  This will affect the screen composition, because "
             + "the camera Aim behaviours will always try to respect the Up direction.")]
-        public CameraUpMode CameraUp = CameraUpMode.Default;
+        [FormerlySerializedAs("CameraUp")]
+        public RotationMode CameraRotation = RotationMode.Default;
         
         /// <summary>Different ways to set the camera's up vector</summary>
-        public enum CameraUpMode
+        public enum RotationMode
         {
             /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
             Default,
@@ -101,10 +103,10 @@ namespace Unity.Cinemachine
             public Vector3 Position;
 
             /// <summary>How aggressively the camera tries to maintain the desired rotation.
-            /// This is only used if the Camera Up is not Default.</summary>
+            /// This is only used if Camera Rotation is not Default.</summary>
             [RangeSlider(0f, 20f)]
             [Tooltip("How aggressively the camera tries to maintain the desired rotation.  "
-                + "This is only used if the Camera Up is not Default.")]
+                + "This is only used if Camera Rotation is not Default.")]
             public float Angular;
         }
 
@@ -144,7 +146,7 @@ namespace Unity.Cinemachine
             CameraPosition = 0;
             PositionUnits = PathIndexUnit.Normalized;
             SplineOffset = Vector3.zero;
-            CameraUp = CameraUpMode.Default;
+            CameraRotation = RotationMode.Default;
             Damping = default;
             AutomaticDolly.Method = null;
         }
@@ -252,24 +254,24 @@ namespace Unity.Cinemachine
             m_PreviousRotation = newRot;
             curState.RawOrientation = newRot;
 
-            if (CameraUp != CameraUpMode.Default)
+            if (CameraRotation != RotationMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
         Quaternion GetCameraRotationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
         {
-            switch (CameraUp)
+            switch (CameraRotation)
             {
                 default:
-                case CameraUpMode.Default: break;
-                case CameraUpMode.Spline: return splineOrientation;
-                case CameraUpMode.SplineNoRoll:
+                case RotationMode.Default: break;
+                case RotationMode.Spline: return splineOrientation;
+                case RotationMode.SplineNoRoll:
                     return Quaternion.LookRotation(splineOrientation * Vector3.forward, up);
-                case CameraUpMode.FollowTarget:
+                case RotationMode.FollowTarget:
                     if (FollowTarget != null)
                         return FollowTargetRotation;
                     break;
-                case CameraUpMode.FollowTargetNoRoll:
+                case RotationMode.FollowTargetNoRoll:
                     if (FollowTarget != null)
                         return Quaternion.LookRotation(FollowTargetRotation * Vector3.forward, up);
                     break;
