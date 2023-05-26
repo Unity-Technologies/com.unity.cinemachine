@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
                 { style = { flexGrow = 2, flexBasis = 0 }});
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraUp)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRotation)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticDolly)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
 

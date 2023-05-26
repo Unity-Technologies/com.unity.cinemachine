@@ -29,7 +29,7 @@ namespace Unity.Cinemachine.Tests
             m_CmCam.Follow = CreatePrimitive(PrimitiveType.Cube).transform;
             m_Dolly = m_CmCam.gameObject.AddComponent<CinemachineSplineDolly>();
             m_Dolly.Spline = m_SplineContainer;
-            m_Dolly.CameraUp = CinemachineSplineDolly.CameraUpMode.Default;
+            m_Dolly.CameraRotation = CinemachineSplineDolly.RotationMode.Default;
             m_Dolly.Damping.Enabled = false;
         }
         
