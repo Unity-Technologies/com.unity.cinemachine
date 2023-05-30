@@ -11,6 +11,23 @@ namespace Unity.Cinemachine.Editor
         {
         }
 
+        public override Quaternion Rotation
+        {
+            get => base.Rotation;
+            set
+            {
+                base.Rotation = value;
+                Target.InternalUpdateCameraState(Vector3.up, 0f);
+            }
+        }
+
+        public override Vector3 Position { get => base.Position; set
+            {
+                base.Position = value;
+                Target.InternalUpdateCameraState(Vector3.up, 0f);
+            }
+        }
+
         public float FieldOfView
         {
             get => Target.Lens.FieldOfView;
@@ -69,6 +86,12 @@ namespace Unity.Cinemachine.Editor
         public Vector2 LensShift => Target.Lens.PhysicalProperties.LensShift;
 
         public Camera.GateFitMode GateFit => Target.Lens.PhysicalProperties.GateFit;
+
+        // TODO: Surface text message through a Label to the user to tell when a constraint is being changed.
+        //public override VisualElement CreateVisualElement()
+        //{
+        //    return new VisualElement();
+        //}
     }
 }
 #endif
