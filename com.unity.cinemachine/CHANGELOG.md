@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
+- Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing rotational flickering.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineCameraEvents and CinemachineBrainEvents behaviours for event processing.
 - Added BlendFinished and CameraDeactivated events.
 - Add split screen sample for the input system.
-- Samples UI works with both built-in Input System.
+- Samples UI works with both legacy input and Input package.
 - Timeline: Added Track Priority field in CinemachineTrack to control track precedence when tracks are contained in nested timelines.
 - New 2D platformer sample showing custom camera manager.
 
