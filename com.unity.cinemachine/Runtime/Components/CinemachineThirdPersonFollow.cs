@@ -114,6 +114,9 @@ namespace Unity.Cinemachine
         /// <summary>If enabled, camera will be pulled in front of occluding obstacles.</summary>
         [FoldoutWithEnabledButton]
         public ObstacleSettings AvoidObstacles = ObstacleSettings.Default;
+
+        /// <summary>The current obstacle that is being avoided.</summary>
+        public Collider CurrentObstacle { get; set; }
 #endif
 
         // State info
@@ -258,6 +261,7 @@ namespace Unity.Cinemachine
             var camPos = hand - (targetForward * (CameraDistance - m_DampingCorrection.z));
 
 #if CINEMACHINE_PHYSICS
+            CurrentObstacle = null;
             if (AvoidObstacles.Enabled)
             {
                 // Check if hand is colliding with something, if yes, then move the hand 
@@ -336,6 +340,7 @@ namespace Unity.Cinemachine
                 new Ray(root, dir), cameraRadius, out RaycastHit hitInfo, 
                 len, AvoidObstacles.CollisionFilter, AvoidObstacles.IgnoreTag))
             {
+                CurrentObstacle = hitInfo.collider;
                 var desiredResult = hitInfo.point + hitInfo.normal * cameraRadius;
                 desiredCorrection = (desiredResult - tip).magnitude;
             }
