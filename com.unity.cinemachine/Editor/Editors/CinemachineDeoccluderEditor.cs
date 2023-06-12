@@ -13,6 +13,7 @@ namespace Unity.Cinemachine.Editor
     class CinemachineDeoccluderEditor : UnityEditor.Editor
     {
         CinemachineDeoccluder Target => target as CinemachineDeoccluder;
+        static List<List<Vector3>> s_pathsCache;
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -48,9 +49,11 @@ namespace Unity.Cinemachine.Editor
                     Gizmos.DrawLine(pos, pos + forwardFeelerVector * distance);
 
                     // Show the avoidance path, for debugging
-                    for (int i = 0; i < collider.DebugPaths.Count; ++i)
+                    s_pathsCache ??= new ();
+                    collider.DebugCollisionPaths(s_pathsCache, null);
+                    for (int i = 0; i < s_pathsCache.Count; ++i)
                     {
-                        var path = collider.DebugPaths[i];
+                        var path = s_pathsCache[i];
                         Gizmos.color = CinemachineDeoccluderPrefs.CameraPathColor.Value;
                         Vector3 p0 = vcam.State.ReferenceLookAt;
                         for (int j = 0; j < path.Count; ++j)

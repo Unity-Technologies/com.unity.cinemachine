@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
 - Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
+- Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 
 
 ## [3.0.0-pre.7] - 2023-05-04
