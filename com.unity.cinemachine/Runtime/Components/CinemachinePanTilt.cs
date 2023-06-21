@@ -137,8 +137,8 @@ namespace Unity.Cinemachine
             m_PreviousCameraRotation = rot;
             
             var gotInput = PanAxis.TrackValueChange() | TiltAxis.TrackValueChange();
-            PanAxis.DoRecentering(deltaTime, gotInput);
-            TiltAxis.DoRecentering(deltaTime, gotInput);
+            PanAxis.UpdateRecentering(deltaTime, gotInput);
+            TiltAxis.UpdateRecentering(deltaTime, gotInput);
         }
 
         /// <summary>

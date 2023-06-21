@@ -33,6 +33,11 @@ If you attach an input controller to the CinemachineCamera, then the player can 
 | __Radius__ || In Sphere mode, this defines the radius of the surface sphere |
 | __Top__, __Center__, __Bottom__ || In ThreeRing mode, these define the height and radius of the 3 orbit rings that are used to create the orbit surface. These values are relative to the target's origin. |
 | __Spline Curvature__ || In ThreeRing mode, this defines the tautness of the line that connects the 3 orbits. This line determines the final shape of the surface. |
+| __Recentering Target__ || Defines the reference frame for horizontal recentering.  The axis center will be dynamically updated to be behind the selected object. |
+||_Axis Center_|Static reference frame.  Axis center value is not dynamically updated.|
+||_Parent Object_|Axis center is dynamically adjusted to be behind the parent object's forward.|
+||_Tracking Target_|Axis center is dynamically adjusted to be behind the Tracking Target's forward.|
+||_LookAt Target_|Axis center is dynamically adjusted to be behind the LookAt Target's forward.|
 | __Horizontal Axis__ || Horizontal positioning (rotation about the Y axis) of the camera on the surface. Value is in degrees, and Range defines the allowable value limits. If Wrap is checked, the value wraps around when it crosses the edge of its range. You can define a Center position here, which can be used if recentering logic is enabled in the axis driver. |
 | __Vertical Axis__ || Vertical positioning (rotation about the X axis) of the camera on the surface.  Value is in degrees in Sphere mode, but is in arbitrary units in ThreeRing mode. Range defines the allowable value limits. If Wrap is checked, the value wraps around when it crosses the edge of its range. You can define a Center position here, which can be used if recentering logic is enabled in the axis driver. |
 | __Radial Axis__ || Controls the camera distance from the target by scaling the orbits. Value is a scalar multiplier of the orbit heights and radii. Range defines the allowable value limits. If Wrap is checked, the value wraps around when it crosses the edge of its range. You can define a Center position here, which can be used if recentering logic is enabled in the axis driver. |

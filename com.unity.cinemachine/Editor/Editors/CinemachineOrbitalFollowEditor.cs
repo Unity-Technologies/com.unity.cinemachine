@@ -35,6 +35,18 @@ namespace Unity.Cinemachine.Editor
             var m_Radius = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Radius)));
             var m_Orbits = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Orbits)));
 
+            var row = ux.AddChild(InspectorUtility.PropertyRow(
+                serializedObject.FindProperty(() => Target.RecenteringTarget), out _));
+
+            var recenteringInactive = row.Contents.AddChild(new Label(" (inactive)") 
+            { 
+                tooltip = "Horizontal recentering is currently inactive, so the recentering target will be ignored.",
+                style = { alignSelf = Align.Center }
+            });
+            var recenteringProp = serializedObject.FindProperty(() => Target.HorizontalAxis).FindPropertyRelative(
+                "Recentering").FindPropertyRelative("Enabled");
+
+
             ux.AddSpace();
             this.AddInputControllerHelp(ux, "Orbital Follow has no input axis controller behaviour.");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.HorizontalAxis)));
@@ -47,6 +59,8 @@ namespace Unity.Cinemachine.Editor
                 m_Radius.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.Sphere);
                 m_Orbits.SetVisible(mode == CinemachineOrbitalFollow.OrbitStyles.ThreeRing);
             });
+
+            ux.TrackPropertyWithInitialCallback(recenteringProp, (p) => recenteringInactive.SetVisible(!p.boolValue));
             return ux;
         }
 

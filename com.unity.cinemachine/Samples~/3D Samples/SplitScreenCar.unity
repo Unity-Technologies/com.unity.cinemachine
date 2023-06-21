@@ -231,7 +231,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 435228071}
-  m_LocalRotation: {x: 0.04894337, y: -0.84074587, z: 0.0771053, w: 0.5336719}
+  m_LocalRotation: {x: 0.048943356, y: -0.84074587, z: 0.077105284, w: 0.5336719}
   m_LocalPosition: {x: 1.121963, y: 2.1499999, z: 12.315761}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -356,7 +356,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 491555735}
-  m_LocalRotation: {x: 0.04894337, y: -0.84074587, z: 0.0771053, w: 0.5336719}
+  m_LocalRotation: {x: 0.048943356, y: -0.84074587, z: 0.077105284, w: 0.5336719}
   m_LocalPosition: {x: 1.121963, y: 2.1499999, z: 12.315761}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -495,7 +495,7 @@ PrefabInstance:
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.InputAction
       value: 
-      objectReference: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+      objectReference: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.LegacyInput
       value: Mouse X
@@ -503,7 +503,7 @@ PrefabInstance:
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.InputAction
       value: 
-      objectReference: {fileID: 1120369429361536294, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+      objectReference: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.LegacyInput
       value: Fire1
@@ -511,7 +511,7 @@ PrefabInstance:
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.InputAction
       value: 
-      objectReference: {fileID: -1608118824973676762, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+      objectReference: {fileID: -1608118824973676762, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.LegacyInput
       value: Fire2
@@ -630,7 +630,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1254209701}
-  m_LocalRotation: {x: -0.036060497, y: 0.91490656, z: -0.08390659, w: -0.39319897}
+  m_LocalRotation: {x: -0.036060482, y: 0.91490656, z: -0.08390658, w: -0.39319885}
   m_LocalPosition: {x: 4.8683195, y: 2.1499999, z: 14.077745}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -917,7 +917,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1967210314}
-  m_LocalRotation: {x: -0.036060497, y: 0.91490656, z: -0.08390659, w: -0.39319897}
+  m_LocalRotation: {x: -0.036060482, y: 0.91490656, z: -0.08390658, w: -0.39319885}
   m_LocalPosition: {x: 4.8683195, y: 2.1499999, z: 14.077745}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -981,6 +981,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RedCar
       objectReference: {fileID: 0}
+    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.InputAction
+      value: 
+      objectReference: {fileID: 6539296782897260151, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -48,6 +48,31 @@ namespace Unity.Cinemachine
         [HideFoldout]
         public Cinemachine3OrbitRig.Settings Orbits = Cinemachine3OrbitRig.Settings.Default;
 
+        /// <summary>Defines the reference frame in which horizontal recentering is done.</summary>
+        public enum ReferenceFrames
+        {
+            /// <summary>Static reference frame.  Axis center value is not dynamically updated.</summary>
+            AxisCenter,
+
+            /// <summary>Axis center is dynamically adjusted to be behind the parent 
+            /// object's forward.</summary>
+            ParentObject,
+
+            /// <summary>Axis center is dynamically adjusted to be behind the 
+            /// Tracking Target's forward.</summary>
+            TrackingTarget,
+
+            /// <summary>Axis center is dynamically adjusted to be behind the 
+            /// LookAt Target's forward.</summary>
+            LookAtTarget
+        }
+
+        /// <summary>Defines the reference frame for horizontal recentering.  The axis center 
+        /// will be dynamically updated to be behind the selected object.</summary>
+        [Tooltip("Defines the reference frame for horizontal recentering.  The axis center "
+            + "will be dynamically updated to be behind the selected object.")]
+        public ReferenceFrames RecenteringTarget = ReferenceFrames.TrackingTarget;
+
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
@@ -87,6 +112,8 @@ namespace Unity.Cinemachine
             HorizontalAxis.Validate();
             VerticalAxis.Validate();
             RadialAxis.Validate();
+
+            HorizontalAxis.Restrictions &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
         }
 
         void Reset()
@@ -357,15 +384,11 @@ namespace Unity.Cinemachine
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (TrackerSettings.BindingMode != BindingMode.LazyFollow)
-                HorizontalAxis.Restrictions 
-                    &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
-            else
-            {
-                HorizontalAxis.Value = 0;
-                HorizontalAxis.Restrictions 
-                    |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
-            }
+
+            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
+            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
+                HorizontalAxis.SetValueAndLastValue(0);
+
             m_TargetTracker.TrackTarget(
                 this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                 out Vector3 pos, out Quaternion orient);
@@ -389,10 +412,41 @@ namespace Unity.Cinemachine
             }
             m_PreviousOffset = offset;
 
-            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
-            HorizontalAxis.DoRecentering(deltaTime, gotInput);
-            VerticalAxis.DoRecentering(deltaTime, gotInput);
-            RadialAxis.DoRecentering(deltaTime, gotInput);
+            if (HorizontalAxis.Recentering.Enabled)
+                UpdateHorizontalCenter(orient);
+
+            HorizontalAxis.UpdateRecentering(deltaTime, gotInput);
+            VerticalAxis.UpdateRecentering(deltaTime, gotInput);
+            RadialAxis.UpdateRecentering(deltaTime, gotInput);
+        }
+
+        void UpdateHorizontalCenter(Quaternion referenceOrientation) 
+        {
+            // Get the recentering target's forward vector
+            var fwd = Vector3.forward;
+            switch (RecenteringTarget)
+            {
+                case ReferenceFrames.AxisCenter: 
+                    if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
+                        HorizontalAxis.Center = 0;
+                    return;
+                case ReferenceFrames.ParentObject: 
+                    if (transform.parent != null)
+                        fwd = transform.parent.forward;
+                    break;
+                case ReferenceFrames.TrackingTarget:
+                    if (FollowTarget != null)
+                        fwd = FollowTarget.forward;
+                    break;
+                case ReferenceFrames.LookAtTarget:
+                    if (LookAtTarget != null)
+                        fwd = LookAtTarget.forward;
+                    break;
+            }
+            // Align the axis center to be behind fwd
+            var up = referenceOrientation * Vector3.up;
+            fwd.ProjectOntoPlane(up);
+            HorizontalAxis.Center = -Vector3.SignedAngle(fwd, referenceOrientation * Vector3.forward, up);
         }
 
         /// For the inspector

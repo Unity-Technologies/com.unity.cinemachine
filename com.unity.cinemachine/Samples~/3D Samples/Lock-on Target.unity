@@ -319,7 +319,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 737942603}
-  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492477, z: -8.1628766e-11, w: 0.99927956}
+  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492599, z: -8.1629224e-11, w: 0.99927956}
   m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -362,9 +362,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -399,7 +397,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838339814}
-  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492477, z: -8.1628766e-11, w: 0.99927956}
+  m_LocalRotation: {x: 0.037952796, y: 0.0000000021492599, z: -8.1629224e-11, w: 0.99927956}
   m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -456,7 +454,7 @@ MonoBehaviour:
       Owner: {fileID: 838339822}
       Enabled: 1
       Input:
-        InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Mouse X
         LegacyGain: 200
@@ -468,7 +466,7 @@ MonoBehaviour:
       Owner: {fileID: 838339822}
       Enabled: 1
       Input:
-        InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: -1
         LegacyInput: Mouse Y
         LegacyGain: -200
@@ -480,7 +478,7 @@ MonoBehaviour:
       Owner: {fileID: 838339822}
       Enabled: 1
       Input:
-        InputAction: {fileID: 5082991133974614888, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: 5082991133974614888, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Mouse ScrollWheel
         LegacyGain: 200
@@ -521,6 +519,7 @@ MonoBehaviour:
       Radius: 2
       Height: 0.1
     SplineCurvature: 0.5
+  RecenteringTarget: 2
   HorizontalAxis:
     Value: 0
     Center: 0
@@ -585,9 +584,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -622,7 +619,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1106812490}
-  m_LocalRotation: {x: 0.018435879, y: -0.00000001809565, z: 3.3366593e-10, w: 0.99983007}
+  m_LocalRotation: {x: 0.018435882, y: -0.000000018095653, z: 3.3366604e-10, w: 0.99983007}
   m_LocalPosition: {x: 0, y: 2.75, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
