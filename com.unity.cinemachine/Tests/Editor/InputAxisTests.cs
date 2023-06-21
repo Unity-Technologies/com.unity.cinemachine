@@ -124,19 +124,19 @@ namespace Unity.Cinemachine.Tests.Editor
 
             // Should not recenter
             axis.Recentering.Enabled = false;
-            axis.DoRecentering(k_DeltaTime, false);
+            axis.UpdateRecentering(k_DeltaTime, false);
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, value);
 
             // Should not recenter
             axis.Recentering.Enabled = true;
-            axis.DoRecentering(k_DeltaTime, true); // cancel recentering
+            axis.UpdateRecentering(k_DeltaTime, true); // cancel recentering
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(axis.Value, value);
 
             // Recenter now
             var distance = Mathf.Abs(axis.Value - axis.Center);
             for (float t = 0; t < axis.Recentering.Time; t += k_DeltaTime)
             {
-                axis.DoRecentering(k_DeltaTime, false);
+                axis.UpdateRecentering(k_DeltaTime, false);
                 var d = Mathf.Abs(axis.Value - axis.Center);
                 UnityEngine.Assertions.Assert.IsTrue(d < distance);
                 distance = d;

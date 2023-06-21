@@ -981,7 +981,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385349248}
-  m_LocalRotation: {x: 0.10352379, y: -4.772184e-18, z: 7.458585e-17, w: 0.994627}
+  m_LocalRotation: {x: 0.10352379, y: 3.0236938e-18, z: -3.147152e-19, w: 0.994627}
   m_LocalPosition: {x: 0.71, y: 3.0070581, z: -18.15717}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1038,7 +1038,7 @@ MonoBehaviour:
       Owner: {fileID: 385349256}
       Enabled: 1
       Input:
-        InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Mouse X
         LegacyGain: 200
@@ -1050,7 +1050,7 @@ MonoBehaviour:
       Owner: {fileID: 385349256}
       Enabled: 1
       Input:
-        InputAction: {fileID: -5630151704836100654, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: -1
         LegacyInput: Mouse Y
         LegacyGain: -200
@@ -1062,7 +1062,7 @@ MonoBehaviour:
       Owner: {fileID: 385349256}
       Enabled: 1
       Input:
-        InputAction: {fileID: 5082991133974614888, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: 5082991133974614888, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Mouse ScrollWheel
         LegacyGain: 200
@@ -1103,6 +1103,7 @@ MonoBehaviour:
       Radius: 2.5
       Height: 0.1
     SplineCurvature: 0.5
+  RecenteringTarget: 2
   HorizontalAxis:
     Value: 0
     Center: 0
@@ -1148,9 +1149,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -2482,7 +2481,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.10352379, y: -4.772184e-18, z: 7.458585e-17, w: 0.994627}
+  m_LocalRotation: {x: 0.10352379, y: 3.0236938e-18, z: -3.147152e-19, w: 0.994627}
   m_LocalPosition: {x: 0.71, y: 3.0070581, z: -18.15717}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
