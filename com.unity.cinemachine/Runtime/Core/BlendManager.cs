@@ -153,10 +153,16 @@ namespace Unity.Cinemachine
                 else
                 {
                     // Generate ActivationEvents
+                    var eventOutgoing = outgoingCamera;
+                    if (IsBlending)
+                    {
+                        eventOutgoing = new NestedBlendSource(ActiveBlend);
+                        eventOutgoing.UpdateCameraState(up, deltaTime);
+                    }
                     var evt = new ICinemachineCamera.ActivationEventParams
                     {
                         Origin = mixer,
-                        OutgoingCamera = outgoingCamera,
+                        OutgoingCamera = eventOutgoing,
                         IncomingCamera = incomingCamera,
                         IsCut = !IsBlending || !IsLive(outgoingCamera),
                         WorldUp = up,

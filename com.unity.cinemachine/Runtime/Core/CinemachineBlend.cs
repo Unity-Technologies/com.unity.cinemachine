@@ -292,12 +292,18 @@ namespace Unity.Cinemachine
     /// as an ersatz virtual camera for the purposes of blending.  This achieves the purpose
     /// of blending the result oif a blend.
     /// </summary>
-    class NestedBlendSource : ICinemachineCamera
+    public class NestedBlendSource : ICinemachineCamera
     {
-        public NestedBlendSource(CinemachineBlend blend) { Blend = blend; }
-        public CinemachineBlend Blend { get; set; }
         string m_Name;
 
+        /// <summary>Contructor to wrap a CinemachineBlend object</summary>
+        /// <param name="blend">The blend to wrap.</param>
+        public NestedBlendSource(CinemachineBlend blend) { Blend = blend; }
+
+        /// <summary>The CinemachineBlend object being wrapped.</summary>
+        public CinemachineBlend Blend { get; internal set; }
+
+        /// <inheritdoc />
         public string Name 
         { 
             get
@@ -307,10 +313,15 @@ namespace Unity.Cinemachine
                 return m_Name;
             }
         }
+        /// <inheritdoc />
         public string Description => Blend == null ? "(null)" : Blend.Description;
+        /// <inheritdoc />
         public CameraState State { get; private set; }
+        /// <inheritdoc />
         public bool IsValid => Blend != null && Blend.IsValid; 
+        /// <inheritdoc />
         public ICinemachineMixer ParentCamera => null;
+        /// <inheritdoc />
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (Blend != null)
@@ -319,6 +330,7 @@ namespace Unity.Cinemachine
                 State = Blend.State;
             }
         }
+        /// <inheritdoc />
         public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
     }
 }

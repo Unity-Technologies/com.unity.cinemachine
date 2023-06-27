@@ -226,7 +226,7 @@ namespace Unity.Cinemachine
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 var state = fromCam.State;
-                ForceCameraPosition(state.RawPosition, state.RawOrientation);
+                ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());
                 return true;
             }
             return false;
@@ -380,7 +380,9 @@ namespace Unity.Cinemachine
             if (!IsValid)
                 return;
 
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera))
+            // Force a reset if enabled, but don't be too aggressive about it,
+            // because maybe we've just inherited a position
+            if (deltaTime < 0)// || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
