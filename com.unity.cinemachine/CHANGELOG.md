@@ -4,8 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.9.8] - unreleased
+## [2.9.8] - 2023-09-09
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
+- Bugfix: CinemachineCollider was causing a pop when OnTargetObjectWarped was called.
 
 
 ## [2.9.7] - 2023-05-06
