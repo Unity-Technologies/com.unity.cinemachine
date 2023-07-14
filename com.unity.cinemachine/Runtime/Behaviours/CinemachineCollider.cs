@@ -263,7 +263,22 @@ namespace Cinemachine
             return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
         }
         
-          /// <summary>
+        /// <summary>This is called to notify the extension that a target got warped,
+        /// so that the extension can update its internal state to make the camera
+        /// also warp seamlessy.  Base class implementation does nothing.</summary>
+        /// <param name="target">The object that was warped</param>
+        /// <param name="positionDelta">The amount the target's position changed</param>
+        public override void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
+        {
+            var states = GetAllExtraStates<VcamExtraState>();
+            for (int i = 0; i < states.Count; ++i)
+            {
+                var extra = states[i];
+                extra.previousCameraPosition += positionDelta;
+            }
+        }
+
+        /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>
