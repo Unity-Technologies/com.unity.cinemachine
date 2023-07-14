@@ -459,12 +459,24 @@ namespace Cinemachine
                     rayLength += k_PrecisionSlush;
                     if (rayLength > Epsilon)
                     {
-                        if (RuntimeUtility.RaycastIgnoreTag(
-                            ray, out hitInfo, rayLength, layerMask, m_IgnoreTag))
+                        if (m_Strategy == ResolutionStrategy.PullCameraForward && m_CameraRadius >= Epsilon)
                         {
-                            // Pull camera forward in front of obstacle
-                            float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
-                            displacement = ray.GetPoint(adjustment) - cameraPos;
+                            if (RuntimeUtility.SphereCastIgnoreTag(lookAtPos + dir * m_CameraRadius, 
+                                m_CameraRadius, dir, out hitInfo, 
+                                rayLength - m_CameraRadius, layerMask, m_IgnoreTag))
+                            {
+                                var desiredResult = hitInfo.point + hitInfo.normal * m_CameraRadius;
+                                displacement = desiredResult - cameraPos;
+                            }
+                        }
+                        else
+                        {
+                            if (RuntimeUtility.RaycastIgnoreTag(ray, out hitInfo, rayLength, layerMask, m_IgnoreTag))
+                            {
+                                // Pull camera forward in front of obstacle
+                                float adjustment = Mathf.Max(0, hitInfo.distance - k_PrecisionSlush);
+                                displacement = ray.GetPoint(adjustment) - cameraPos;
+                            }
                         }
                     }
                 }
