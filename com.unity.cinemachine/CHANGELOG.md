@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
 - Bugfix: Orbital recentering should not be forced when transitioning to a camera.
 - Bugfix: InheritPosition takes the actual camera position, so it works consistently if transitioning mid-blend.
+- Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.

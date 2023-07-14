@@ -329,6 +329,14 @@ namespace Unity.Cinemachine
                 : 0; 
         }
         
+        /// <inheritdoc />
+        public override void OnTargetObjectWarped(
+            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
+        {
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            extra.PreviousCameraPosition += positionDelta;
+        }
+        
         /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
