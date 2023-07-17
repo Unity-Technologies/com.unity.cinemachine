@@ -214,12 +214,14 @@ namespace Unity.Cinemachine
 
         static void OnCameraCut(ICinemachineCamera.ActivationEventParams evt)
         {
+            if (!evt.IsCut)
+                return;
+
             var brain = evt.Origin as CinemachineBrain;
-            //Debug.Log($"Camera cut to {brain?.ActiveVirtualCamera.Name}");
+            var cam = brain == null ? null : brain.OutputCamera;
 
 #if CINEMACHINE_HDRP
             // Reset temporal effects
-            var cam = brain?.OutputCamera;
             if (cam != null)
             {
                 HDCamera hdCam = HDCamera.GetOrCreate(cam);
@@ -229,7 +231,6 @@ namespace Unity.Cinemachine
             }
 #elif CINEMACHINE_URP
             // Reset temporal effects
-            var cam = brain?.OutputCamera;
             if (cam != null && cam.TryGetComponent<UniversalAdditionalCameraData>(out var data))
                 data.resetHistory = true;
 #endif

@@ -164,7 +164,7 @@ namespace Unity.Cinemachine
                         Origin = mixer,
                         OutgoingCamera = eventOutgoing,
                         IncomingCamera = incomingCamera,
-                        IsCut = !IsBlending || !IsLive(outgoingCamera),
+                        IsCut = !IsBlending,// does not work with snapshots: || !IsLive(outgoingCamera),
                         WorldUp = up,
                         DeltaTime = deltaTime
                     };
