@@ -522,6 +522,43 @@ namespace Cinemachine
             }
             m_prevRotation = localToWorld;
 
+            // Adjust lens for group framing
+            if (isGroupFraming)
+            {
+                if (isOrthographic)
+                {
+                    targetHeight = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
+
+                    // Apply Damping
+                    if (previousStateIsValid)
+                        targetHeight = m_prevFOV + VirtualCamera.DetachedFollowTargetDamp(
+                            targetHeight - m_prevFOV, m_ZDamping, deltaTime);
+                    m_prevFOV = targetHeight;
+
+                    lens.OrthographicSize = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
+                    curState.Lens = lens;
+                }
+                else if (m_AdjustmentMode != AdjustmentMode.DollyOnly)
+                {
+                    var localTarget = Quaternion.Inverse(curState.RawOrientation)
+                        * (followTargetPosition - curState.RawPosition);
+                    float nearBoundsDistance = localTarget.z;
+                    float targetFOV = 179;
+                    if (nearBoundsDistance > Epsilon)
+                        targetFOV = 2f * Mathf.Atan(targetHeight / (2 * nearBoundsDistance)) * Mathf.Rad2Deg;
+                    targetFOV = Mathf.Clamp(targetFOV, m_MinimumFOV, m_MaximumFOV);
+
+                    // ApplyDamping
+                    if (previousStateIsValid)
+                        targetFOV = m_prevFOV + VirtualCamera.DetachedFollowTargetDamp(
+                            targetFOV - m_prevFOV, m_ZDamping, deltaTime);
+                    m_prevFOV = targetFOV;
+
+                    lens.FieldOfView = targetFOV;
+                    curState.Lens = lens;
+                }
+            }
+
             // Work in camera-local space
             Vector3 camPosWorld = m_PreviousCameraPosition;
             Quaternion worldToLocal = Quaternion.Inverse(localToWorld);
@@ -571,43 +608,6 @@ namespace Cinemachine
             }
             curState.RawPosition = localToWorld * (cameraPos + cameraOffset);
             m_PreviousCameraPosition = curState.RawPosition;
-
-            // Adjust lens for group framing
-            if (isGroupFraming)
-            {
-                if (isOrthographic)
-                {
-                    targetHeight = Mathf.Clamp(targetHeight / 2, m_MinimumOrthoSize, m_MaximumOrthoSize);
-
-                    // Apply Damping
-                    if (previousStateIsValid)
-                        targetHeight = m_prevFOV + VirtualCamera.DetachedFollowTargetDamp(
-                            targetHeight - m_prevFOV, m_ZDamping, deltaTime);
-                    m_prevFOV = targetHeight;
-
-                    lens.OrthographicSize = Mathf.Clamp(targetHeight, m_MinimumOrthoSize, m_MaximumOrthoSize);
-                    curState.Lens = lens;
-                }
-                else if (m_AdjustmentMode != AdjustmentMode.DollyOnly)
-                {
-                    var localTarget = Quaternion.Inverse(curState.RawOrientation)
-                        * (followTargetPosition - curState.RawPosition);
-                    float nearBoundsDistance = localTarget.z;
-                    float targetFOV = 179;
-                    if (nearBoundsDistance > Epsilon)
-                        targetFOV = 2f * Mathf.Atan(targetHeight / (2 * nearBoundsDistance)) * Mathf.Rad2Deg;
-                    targetFOV = Mathf.Clamp(targetFOV, m_MinimumFOV, m_MaximumFOV);
-
-                    // ApplyDamping
-                    if (previousStateIsValid)
-                        targetFOV = m_prevFOV + VirtualCamera.DetachedFollowTargetDamp(
-                            targetFOV - m_prevFOV, m_ZDamping, deltaTime);
-                    m_prevFOV = targetFOV;
-
-                    lens.FieldOfView = targetFOV;
-                    curState.Lens = lens;
-                }
-            }
             m_InheritingPosition = false;
         }
 
