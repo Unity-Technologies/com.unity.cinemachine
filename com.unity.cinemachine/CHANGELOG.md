@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: InheritPosition takes the actual camera position, so it works consistently if transitioning mid-blend.
 - Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: Spurious camera cut events were being issued, especially in HDRP.
+- Bugfix: Mull reference exceptions when inspector is hidden behind another tab.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
