@@ -419,9 +419,12 @@ namespace Unity.Cinemachine.Editor
         public static void TrackAnyUserActivity(
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
-            UserDidSomething += callback;
-            owner.OnInitialGeometry(callback); 
-            owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
+            owner.RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                UserDidSomething += callback;
+                owner.OnInitialGeometry(callback); 
+                owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
+            });
         }
 
         /// <summary>
