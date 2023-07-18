@@ -434,9 +434,12 @@ namespace Unity.Cinemachine.Editor
         public static void ContinuousUpdate(
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
-            owner.OnInitialGeometry(callback); 
-            EditorApplication.update += callback;
-            owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
+            owner.RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                owner.OnInitialGeometry(callback); 
+                EditorApplication.update += callback;
+                owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
+            });
         }
         
         /// <summary>
