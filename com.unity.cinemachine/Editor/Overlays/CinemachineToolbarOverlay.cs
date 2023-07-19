@@ -139,6 +139,7 @@ namespace Cinemachine.Editor
             };
     }
 
+#if false // We disable this tool window, because it has only one thing in it, which isn't so useful and is a bit confusing tbh
     /// <summary>
     /// To add your custom tools (EditorToolbarElement) to the Cinemachine Tool Settings toolbar,
     /// set CinemachineToolSettingsOverlay.customToolbarItems with your custom tools' IDs.
@@ -244,6 +245,8 @@ namespace Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
+#endif
+
 #else
     /// <summary>
     /// To display a CinemachineExclusiveEditorToolbarToggle in the Cinemachine Toolbar.
@@ -254,7 +257,7 @@ namespace Cinemachine.Editor
     {
         public CinemachineToolbarOverlay()
             : base(
-                FreelookRigSelection.id,
+                //FreelookRigSelection.id,
                 FoVTool.id,
                 FarNearClipTool.id,
                 FollowOffsetTool.id,
@@ -357,6 +360,7 @@ namespace Cinemachine.Editor
         }
     }
     
+#if false
     [EditorToolbarElement(id, typeof(SceneView))]
     class FreelookRigSelection : EditorToolbarDropdown
     {
@@ -417,6 +421,8 @@ namespace Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
+#endif
+
 #endif
 }
 #endif

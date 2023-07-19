@@ -38,7 +38,7 @@ namespace Cinemachine
             CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FreelookRigSelection));
+            //CinemachineSceneToolUtility.RegisterTool(typeof(FreelookRigSelection));
 #endif
         }
         
@@ -54,7 +54,7 @@ namespace Cinemachine
             CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FreelookRigSelection));
+            //CinemachineSceneToolUtility.UnregisterTool(typeof(FreelookRigSelection));
 #endif
         }
 
@@ -191,7 +191,7 @@ namespace Cinemachine
             }
 #if UNITY_2021_2_OR_NEWER
             // Push current selection to the rig selection tool
-            FreelookRigSelection.SelectedRig = rigIndex;
+            //FreelookRigSelection.SelectedRig = rigIndex;
 #endif
         }
 
