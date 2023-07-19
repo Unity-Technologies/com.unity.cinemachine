@@ -14,13 +14,13 @@ namespace Unity.Cinemachine.Editor
         void OnEnable()
         {
             CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
+            //CinemachineSceneToolUtility.RegisterTool(typeof(OrbitalFollowOrbitSelection));
         }
         
         void OnDisable()
         {
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
+            //CinemachineSceneToolUtility.UnregisterTool(typeof(OrbitalFollowOrbitSelection));
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -46,7 +46,6 @@ namespace Unity.Cinemachine.Editor
             var recenteringProp = serializedObject.FindProperty(() => Target.HorizontalAxis).FindPropertyRelative(
                 "Recentering").FindPropertyRelative("Enabled");
 
-
             ux.AddSpace();
             this.AddInputControllerHelp(ux, "Orbital Follow has no input axis controller behaviour.");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.HorizontalAxis)));
@@ -64,6 +63,7 @@ namespace Unity.Cinemachine.Editor
             return ux;
         }
 
+#if false // We disable the tool settings window, because it has only one thing in it, which isn't so useful and is a bit confusing tbh
         static GUIContent[] s_OrbitNames = 
         {
             new GUIContent("Top"), 
@@ -71,7 +71,7 @@ namespace Unity.Cinemachine.Editor
             new GUIContent("Bottom")
         };
         internal static GUIContent[] orbitNames => s_OrbitNames;
-
+#endif
         bool m_UpdateCache = true;
         float m_VerticalAxisCache;
 

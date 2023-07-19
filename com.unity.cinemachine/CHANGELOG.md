@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
 - Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
+- Removed CinemachineToolSettings overlay.
 
 
 ## [3.0.0-pre.7] - 2023-05-04
