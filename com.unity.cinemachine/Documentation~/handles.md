@@ -47,16 +47,3 @@ This starts from where the camera is placed. You can drag the points to increase
 ![tracked-object-offset](images/tracked-object-offset.png)
 
 For more information on the Tracked object offset property, see [Composer properties](CinemachineAimComposer.md).
-
-## Cinemachine tool settings
-
-Cinemachine tool settings are automatically displayed when a Free Look camera is selected. These settings allow you to adjust the position of the three separate camera rigs: **Top**, **Middle**, and **Bottom**.
-
-![overlays-menu](images/overlays-menu.png)
-
-For more information, see [Cinemachine Free Look Camera](CinemachineFreeLook.md).
-
-To deactivate the Cinemachine tool settings for a Free Look camera:
-
-1. Right-click on the **Scene** tab in the Scene view.
-2. Select **Overlays** and then **Cinemachine tools** from the pop-up menu.
