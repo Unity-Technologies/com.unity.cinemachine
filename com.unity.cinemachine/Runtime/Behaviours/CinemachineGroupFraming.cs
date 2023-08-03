@@ -43,6 +43,12 @@ namespace Unity.Cinemachine
             + "rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a heavier "
             + "more slowly responding camera.")]
         public float Damping = 2f;
+
+        /// <summary>
+        /// Offset from screen center at which to place the group center.  X is left/right, Y is up/down.
+        /// </summary>
+        [Tooltip("Offset from screen center at which to place the group center.  X is left/right, Y is up/down")]
+        public Vector2 FramingOffset = Vector2.zero;
         
         /// <summary>How to adjust the camera to get the desired framing size</summary>
         public enum SizeAdjustmentModes
@@ -111,6 +117,7 @@ namespace Unity.Cinemachine
             LateralAdjustment = LateralAdjustmentModes.ChangePosition;
             FramingSize = 0.8f;
             Damping = 2;
+            FramingOffset = Vector2.zero;
             DollyRange = new Vector2(-100, 100);
             FovRange = new Vector2(1, 100);
             OrthoSizeRange = new Vector2(1, 1000);
@@ -185,18 +192,22 @@ namespace Unity.Cinemachine
             var camPos = GroupBounds.center; 
             camPos.z = 0; // don't change the camera's distance from the group
 
-            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
-            state.RawPosition += state.RawOrientation * extra.PosAdjustment;
-            
             // Ortho size adjustment
-            var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, state.Lens.Aspect) * 0.5f;
+            var lens = state.Lens;
+            var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, lens.Aspect) * 0.5f;
             targetHeight = Mathf.Clamp(targetHeight, OrthoSizeRange.x, OrthoSizeRange.y);
 
-            var lens = state.Lens;
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+
             var deltaFov = targetHeight - lens.OrthographicSize;
             extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
             lens.OrthographicSize += extra.FovAdjustment;
             state.Lens = lens;
+
+            // Apply framing offset
+            state.PositionCorrection -= state.RawOrientation * new Vector3(
+                lens.OrthographicSize * lens.Aspect * FramingOffset.x, lens.OrthographicSize * FramingOffset.y, 0);
         }
 
         void PerspectiveFraming(
@@ -249,6 +260,20 @@ namespace Unity.Cinemachine
             var deltaPos = Quaternion.Inverse(state.RawOrientation) * (camPos - state.RawPosition);
             extra.PosAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.PosAdjustment, damping, deltaTime);
             state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+
+            // Apply framing offset
+            if (moveCamera)
+            {
+                var h = Mathf.Tan(Mathf.Deg2Rad * lens.FieldOfView * 0.5f) * GroupBounds.center.z;
+                state.PositionCorrection -= state.RawOrientation * new Vector3(
+                    h * lens.Aspect * FramingOffset.x, h * FramingOffset.y, 0);
+            }
+            else
+            {
+                state.OrientationCorrection = state.OrientationCorrection.ApplyCameraRotation(new Vector2(
+                    lens.FieldOfView * lens.Aspect * FramingOffset.y * 0.5f, 
+                    lens.FieldOfView * FramingOffset.x * -0.5f), Quaternion.Inverse(state.GetFinalOrientation()) * state.ReferenceUp);
+            }
         }
 
         void AdjustSize(
