@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: Spurious camera cut events were being issued, especially in HDRP.
 - Bugfix: Mull reference exceptions when inspector is hidden behind another tab.
+- Bugfix: Group Framing inspector was displaying incorrect warning when LookAt target is a group.
+- Group Framing: Added a setting to control framing offset, allowing groups to be not centered on the screen.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.

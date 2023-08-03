@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
 
         const string k_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
         const string k_NeedLookAt = "A LookAt Tracking Target is required in the CinemachineCamera.";
-        const string k_NeedGroup = "The Tracking Target in the CinemachineCamera must be a Target Group.";
+        const string k_NeedGroup = "The Tracking or LookAt Target in the CinemachineCamera must be a Target Group.";
         const string k_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
         const string k_AddCamera = "Add\nCinemachineCamera";
 
@@ -61,7 +61,7 @@ namespace Unity.Cinemachine.Editor
                         {
                             case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
                             case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                            case RequiredTargets.Group: noTarget |= c.FollowTargetAsGroup == null; break;
+                            case RequiredTargets.Group: noTarget |= c.FollowTargetAsGroup == null && c.LookAtTargetAsGroup == null; break;
                         }
                     }
                     else if (targets[i] is CinemachineExtension x)
@@ -71,7 +71,8 @@ namespace Unity.Cinemachine.Editor
                         {
                             case RequiredTargets.Tracking: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
                             case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
-                            case RequiredTargets.Group: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
+                            case RequiredTargets.Group: noTarget |= noCamera 
+                                || (x.ComponentOwner.FollowTargetAsGroup == null && x.ComponentOwner.LookAtTargetAsGroup == null); break;
                         }
                     }
                     else if (targets[i] is MonoBehaviour b)
