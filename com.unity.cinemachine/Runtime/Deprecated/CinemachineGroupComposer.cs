@@ -146,7 +146,7 @@ namespace Unity.Cinemachine
         {
             // Can't do anything without a group to look at
             ICinemachineTargetGroup group = LookAtTargetAsGroup;
-            if (group == null)
+            if (group == null || !group.IsValid)
             {
                 base.MutateCameraState(ref curState, deltaTime);
                 return;

@@ -56,23 +56,32 @@ namespace Unity.Cinemachine.Editor
                 {
                     if (targets[i] is CinemachineComponentBase c)
                     {
-                        noCamera |= c.VirtualCamera == null || c.VirtualCamera is CinemachineCameraManagerBase;
+                        var vcam = c.VirtualCamera;
+                        noCamera |= vcam == null || vcam is CinemachineCameraManagerBase;
+                        if (vcam != null)
+                            vcam.UpdateTargetCache();
                         switch (requiredTargets)
                         {
                             case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
                             case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                            case RequiredTargets.Group: noTarget |= c.FollowTargetAsGroup == null && c.LookAtTargetAsGroup == null; break;
+                            case RequiredTargets.Group: noTarget |= 
+                                (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
+                                && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
                         }
                     }
                     else if (targets[i] is CinemachineExtension x)
                     {
-                        noCamera |= x.ComponentOwner == null;
+                        var vcam = x.ComponentOwner;
+                        noCamera |= vcam == null;
+                        if (vcam != null)
+                            vcam.UpdateTargetCache();
                         switch (requiredTargets)
                         {
-                            case RequiredTargets.Tracking: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
-                            case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
+                            case RequiredTargets.Tracking: noTarget |= noCamera || vcam.Follow == null; break;
+                            case RequiredTargets.LookAt: noTarget |= noCamera || vcam.LookAt == null; break;
                             case RequiredTargets.Group: noTarget |= noCamera 
-                                || (x.ComponentOwner.FollowTargetAsGroup == null && x.ComponentOwner.LookAtTargetAsGroup == null); break;
+                                || ((vcam.FollowTargetAsGroup == null || !vcam.FollowTargetAsGroup.IsValid)
+                                    && (vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid)); break;
                         }
                     }
                     else if (targets[i] is MonoBehaviour b)
@@ -175,39 +184,49 @@ namespace Unity.Cinemachine.Editor
             };
         }
             
-
-        public static void OnGUI_DrawOnscreenTargetMarker(
-            ICinemachineTargetGroup group, Vector3 worldPoint, 
-            Quaternion vcamRotation, Camera camera)
+        public static void OnGUI_DrawOnscreenTargetMarker(Vector3 worldPoint, Camera camera)
         {
             var c = camera.WorldToScreenPoint(worldPoint);
             c.y = Screen.height - c.y;
+            if (c.z > 0)
+            {
+                var oldColor = GUI.color;
+                var r = new Rect(c, Vector2.zero).Inflated(Vector2.one * CinemachineComposerPrefs.TargetSize.Value);
+                GUI.color = new Color(0, 0, 0, CinemachineComposerPrefs.OverlayOpacity.Value);
+                GUI.DrawTexture(r.Inflated(new Vector2(1, 1)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                var color = CinemachineComposerPrefs.TargetColour.Value;
+                GUI.color = color;
+                GUI.DrawTexture(r, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                GUI.color = oldColor;
+            }
+        }
+
+        public static void OnGUI_DrawOnscreenGroupSizeMarker(
+            Bounds groupBounds, Matrix4x4 cameraViewMatrix, Camera camera)
+        {
+            var c = groupBounds.center; c.z -= groupBounds.extents.z; groupBounds.center = c;
+            var e = groupBounds.extents; e.z = 0; groupBounds.extents = e;
+                
+            c = camera.WorldToScreenPoint(cameraViewMatrix.MultiplyPoint3x4(c));
             if (c.z < 0)
                 return;
+            e = camera.WorldToScreenPoint(cameraViewMatrix.MultiplyPoint3x4(groupBounds.center + e));
+            var groupSize = new Vector2(Mathf.Abs(e.x - c.x), Mathf.Abs(e.y - c.y));
 
-            var oldColor = GUI.color;
-            float radius = 0;
-            if (group != null)
-            {
-                var p2 = camera.WorldToScreenPoint(
-                    worldPoint + vcamRotation * new Vector3(group.Sphere.radius, 0, 0));
-                radius = Mathf.Abs(p2.x - c.x);
-            }
-            var r = new Rect(c, Vector2.zero).Inflated(Vector2.one * CinemachineComposerPrefs.TargetSize.Value);
-            GUI.color = new Color(0, 0, 0, CinemachineComposerPrefs.OverlayOpacity.Value);
-            GUI.DrawTexture(r.Inflated(new Vector2(1, 1)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
-            var color = CinemachineComposerPrefs.TargetColour.Value;
-            GUI.color = color;
-            GUI.DrawTexture(r, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+            var radius = Mathf.Max(groupSize.x, groupSize.y);
             if (radius > CinemachineComposerPrefs.TargetSize.Value)
             {
-                color.a = Mathf.Lerp(1f, CinemachineComposerPrefs.OverlayOpacity.Value, (radius - 10f) / 50f);
+                var oldColor = GUI.color;
+                var color = CinemachineComposerPrefs.TargetColour.Value;
+                color.a = Mathf.Lerp(1f, CinemachineComposerPrefs.OverlayOpacity.Value, (radius - 10f) / 100f);
                 GUI.color = color;
-                GUI.DrawTexture(r.Inflated(new Vector2(radius, radius)),
-                    GetTargetMarkerTex(), ScaleMode.StretchToFill);
+                c.y = camera.pixelHeight - c.y;
+                var r = new Rect(c, Vector2.zero).Inflated(groupSize);
+                GUI.DrawTexture(r, GetTargetMarkerTex(), ScaleMode.StretchToFill);
+                GUI.color = oldColor;
             }
-            GUI.color = oldColor;
         }
+
 
         static Texture2D s_TargetMarkerTex = null;
         static Texture2D GetTargetMarkerTex()
@@ -249,22 +268,32 @@ namespace Unity.Cinemachine.Editor
             {
                 if (targets[i] is CinemachineComponentBase c)
                 {
-                    noCamera |= c.VirtualCamera == null || c.VirtualCamera is CinemachineCameraManagerBase;
+                    var vcam = c.VirtualCamera;
+                    noCamera |= vcam == null || vcam is CinemachineCameraManagerBase;
+                    if (vcam != null)
+                        vcam.UpdateTargetCache();
                     switch (requiredTargets)
                     {
                         case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
                         case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                        case RequiredTargets.Group: noTarget |= c.FollowTargetAsGroup == null; break;
+                        case RequiredTargets.Group: noTarget |= 
+                            (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
+                            && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
                     }
                 }
                 else if (targets[i] is CinemachineExtension x)
                 {
-                    noCamera |= x.ComponentOwner == null;
+                    var vcam = x.ComponentOwner;
+                    noCamera |= vcam == null;
+                    if (vcam != null)
+                        vcam.UpdateTargetCache();
                     switch (requiredTargets)
                     {
-                        case RequiredTargets.Tracking: noTarget |= noCamera || x.ComponentOwner.Follow == null; break;
-                        case RequiredTargets.LookAt: noTarget |= noCamera || x.ComponentOwner.LookAt == null; break;
-                        case RequiredTargets.Group: noTarget |= noCamera || x.ComponentOwner.FollowTargetAsGroup == null; break;
+                        case RequiredTargets.Tracking: noTarget |= noCamera || vcam.Follow == null; break;
+                        case RequiredTargets.LookAt: noTarget |= noCamera || vcam.LookAt == null; break;
+                        case RequiredTargets.Group: noTarget |= noCamera 
+                            || ((vcam.FollowTargetAsGroup == null || !vcam.FollowTargetAsGroup.IsValid)
+                             && (vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid)); break;
                     }
                 }
             }

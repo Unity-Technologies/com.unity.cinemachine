@@ -78,7 +78,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     var ft = go.GetComponent<CinemachineFramingTransposer>();
                     ft.UpgradeToCm3(go.GetComponent<CinemachinePositionComposer>());
-                    if (ft.FollowTargetAsGroup != null 
+                    if (ft.FollowTargetAsGroup != null && ft.FollowTargetAsGroup.IsValid
                         && ft.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None
                         && !go.TryGetComponent<CinemachineGroupFraming>(out var _))
                     {

@@ -398,7 +398,7 @@ namespace Unity.Cinemachine
     {
         /// <summary>Inflate a rect</summary>
         /// <param name="r"></param>
-        /// <param name="delta">x and y are added/subtracted fto/from the edges of
+        /// <param name="delta">x and y are added/subtracted to/from the edges of
         /// the rect, inflating it in all directions</param>
         /// <returns>The inflated rect</returns>
         public static Rect Inflated(this Rect r, Vector2 delta)
