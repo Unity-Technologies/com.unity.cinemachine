@@ -12,14 +12,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: Spurious camera cut events were being issued, especially in HDRP.
 - Bugfix: Mull reference exceptions when inspector is hidden behind another tab.
-- Bugfix: Group Framing inspector was displaying incorrect warning when LookAt target is a group.
-- Group Framing: Added a setting to control framing offset, allowing groups to be not centered on the screen.
-- Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow
+- Bugfix: GroupFraming inspector was displaying incorrect warning when LookAt target is a group.
+- Bugfix: GroupFraming displays more accurate group size indicator in the game view.
+- Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
+- Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
 - Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
 - Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
+- Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
 - Removed CinemachineToolSettings overlay.
 
 

@@ -725,7 +725,7 @@ namespace Unity.Cinemachine
         /// targets and update the target cache.  This is needed for tracking
         /// when a target object changes.
         /// </summary>
-        protected void UpdateTargetCache()
+        public void UpdateTargetCache()
         {
             var target = ResolveFollow(Follow);
             FollowTargetChanged = target != m_CachedFollowTarget;

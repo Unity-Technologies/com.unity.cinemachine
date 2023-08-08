@@ -12,6 +12,11 @@ namespace Unity.Cinemachine
     public interface ICinemachineTargetGroup
     {
         /// <summary>
+        /// Returns true if object has not been deleted.
+        /// </summary>
+        bool IsValid { get; }
+
+        /// <summary>
         /// Get the MonoBehaviour's Transform
         /// </summary>
         Transform Transform { get; }
@@ -192,6 +197,9 @@ namespace Unity.Cinemachine
         /// Get the MonoBehaviour's Transform
         /// </summary>
         public Transform Transform => transform;
+
+        /// <inheritdoc />
+        public bool IsValid => this != null;
 
         /// <summary>The axis-aligned bounding box of the group, computed using the
         /// targets positions and radii</summary>

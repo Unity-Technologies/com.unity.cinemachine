@@ -20,7 +20,6 @@ For this to work, the CinemachineCamera's Tracking Target must be a CinemachineT
 | | _Change Position_ | Camera is moved horizontally and vertically until the desired framing is achieved. |
 | | _Change Rotation_ | Camera is rotated to achieve the desired framing. |
 | __Framing Size__ || The screen-space bounding box that the targets should occupy. Use 1 to fill the whole screen, 0.5 to fill half the screen, and so on. |
-| __Framing Offset__ || How to offset the group's bounding shape on the screen, so that the group is not necessarily presented at screen center.  0 is screen center, 1 and -1 are the edges of the screen. |
 | __Damping__ || How gradually to make the framing adjustment. A larger number gives a slower response, smaller numbers a snappier one. |
 | __Dolly Range__ || The allowable range that the camera may be moved in order to achieve the desired framing. A negative distance is towards the target, and a positive distance is away from the target. |
 | __FOV Range__ || If adjusting FOV, it will be clamped to this range.  |
