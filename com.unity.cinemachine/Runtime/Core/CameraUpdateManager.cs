@@ -194,7 +194,7 @@ namespace Unity.Cinemachine
                     deltaTime *= frameDelta; // try to catch up if multiple frames
             }
 
-//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + CurrentUpdateFilter + ", deltaTime = " + deltaTime);
+//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + s_CurrentUpdateFilter + ", deltaTime = " + deltaTime);
             vcam.InternalUpdateCameraState(worldUp, deltaTime);
             status.lastUpdateFrame = Time.frameCount;
             status.lastUpdateFixedFrame = s_FixedFrameCount;
