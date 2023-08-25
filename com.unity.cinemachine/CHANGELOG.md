@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 - Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
 - Removed CinemachineToolSettings overlay.
+- New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 
 
 ## [3.0.0-pre.7] - 2023-05-04

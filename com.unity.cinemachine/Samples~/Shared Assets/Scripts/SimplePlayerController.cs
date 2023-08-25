@@ -70,6 +70,7 @@ namespace Unity.Cinemachine.Samples
         public bool IsSprinting => m_IsSprinting;
         public bool IsJumping => m_IsJumping;
         public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
+        public Camera Camera => CameraOverride == null ? Camera.main : CameraOverride;
 
         void Start() => TryGetComponent(out m_Controller);
 
@@ -143,7 +144,7 @@ namespace Unity.Cinemachine.Samples
             var up = UpDirection;
             var fwd = InputForward switch
             {
-                ForwardModes.Camera => CameraOverride == null? Camera.main.transform.forward : CameraOverride.transform.forward,
+                ForwardModes.Camera => Camera.transform.forward,
                 ForwardModes.Player => transform.forward,
                 _ => Vector3.forward,
             };
