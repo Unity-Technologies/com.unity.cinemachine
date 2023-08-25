@@ -165,11 +165,12 @@ namespace Unity.Cinemachine
         public float ClampValue(float v)
         {
             float r = Range.y - Range.x;
+            if (!Wrap || r < UnityVectorExtensions.Epsilon)
+                return Mathf.Clamp(v, Range.x, Range.y);
+
             var v1 = (v - Range.x) % r;
             v1 += v1 < 0 ? r : 0;
-            v1 += Range.x;
-            v1 = (Wrap && r > UnityVectorExtensions.Epsilon) ? v1 : v;
-            return Mathf.Clamp(v1, Range.x, Range.y);
+            return v1 + Range.x;
         }
 
         /// <summary>Clamp and scale the value to range 0...1, taking wrap into account</summary>

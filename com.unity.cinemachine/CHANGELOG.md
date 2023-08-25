@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: GroupFraming displays more accurate group size indicator in the game view.
 - Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
+- Improved OrbitalFollow's ForceCameraPosition algorithm.
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
 - Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.

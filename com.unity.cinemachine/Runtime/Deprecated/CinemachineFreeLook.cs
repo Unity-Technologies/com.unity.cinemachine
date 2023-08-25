@@ -484,9 +484,9 @@ namespace Unity.Cinemachine
 
         float SteepestDescent(Vector3 cameraOffset)
         {
-            const int maxIteration = 10;
-            const float epsilon = 0.00005f;
-            var x = InitialGuess(cameraOffset);
+            const int maxIteration = 5;
+            const float epsilon = 0.005f;
+            var x = InitialGuess();
             for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
@@ -503,6 +503,7 @@ namespace Unity.Cinemachine
                 var point = GetLocalPositionForCameraFromInput(input);
                 return Mathf.Abs(UnityVectorExtensions.SignedAngle(cameraOffset, point, Vector3.right));
             }
+
             // approximating derivative using symmetric difference quotient (finite diff)
             float SlopeOfAngleFunction(float input)
             {
@@ -510,20 +511,30 @@ namespace Unity.Cinemachine
                 var angleAfter = AngleFunction(input + epsilon);
                 return (angleAfter - angleBehind) / (2f * epsilon);
             }
-            // initial guess based on closest line (approximating spline) to point 
-            float InitialGuess(Vector3 cameraPosInRigSpace)
+
+            float InitialGuess()
             {
                 UpdateCachedSpline();
-                var pb = m_CachedKnots[1]; // point at the bottom of spline
-                var pm = m_CachedKnots[2]; // point in the middle of spline
-                var pt = m_CachedKnots[3]; // point at the top of spline
-                var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
-                var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
-                var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
-                var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
 
-                // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
-                return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2);
+                const float step = 1.0f / 10;
+                float best = 0.5f;
+                float bestAngle = AngleFunction(best);
+                for (int j = 0; j <= 5; ++j)
+                {
+                    var t = j * step;
+                    ChooseBestAngle(0.5f + t);
+                    ChooseBestAngle(0.5f - t);
+                    void ChooseBestAngle(float x)
+                    {
+                        var a = AngleFunction(x);
+                        if (a < bestAngle)
+                        {
+                            bestAngle = a;
+                            best = x;
+                        }
+                    }
+                }
+                return best;
             }
         }
 

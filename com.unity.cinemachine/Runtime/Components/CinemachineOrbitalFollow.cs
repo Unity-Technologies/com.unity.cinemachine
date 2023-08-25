@@ -262,8 +262,9 @@ namespace Unity.Cinemachine
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             var localDir = Quaternion.Inverse(orient) * dir;
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow ? 0 : r.x);
-            HorizontalAxis.Value = HorizontalAxis.ClampValue(r.y);
+            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow 
+                ? 0 : UnityVectorExtensions.NormalizeAngle(r.x));
+            HorizontalAxis.Value = HorizontalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.y));
             RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
         }
 
@@ -308,9 +309,9 @@ namespace Unity.Cinemachine
                 // local functions
                 float SteepestDescent(Vector3 cameraOffset)
                 {
-                    const int maxIteration = 10;
-                    const float epsilon = 0.00005f;
-                    var x = InitialGuess(cameraOffset);
+                    const int maxIteration = 5;
+                    const float epsilon = 0.005f;
+                    var x = InitialGuess();
                     for (var i = 0; i < maxIteration; ++i)
                     {
                         var angle = AngleFunction(x);
@@ -336,22 +337,30 @@ namespace Unity.Cinemachine
                         return (angleAfter - angleBehind) / (2f * epsilon);
                     }
 
-                    // initial guess based on closest line (approximating spline) to point 
-                    float InitialGuess(Vector3 cameraPosInRigSpace)
+                    float InitialGuess()
                     {
                         if (m_OrbitCache.SettingsChanged(Orbits))
                             m_OrbitCache.UpdateOrbitCache(Orbits);
-                        
-                        var pb = m_OrbitCache.SplineValue(0f); // point at the bottom of spline
-                        var pm = m_OrbitCache.SplineValue(0.5f); // point in the middle of spline
-                        var pt = m_OrbitCache.SplineValue(1f); // point at the top of spline
-                        var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
-                        var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
-                        var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
-                        var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
 
-                        // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
-                        return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2); // represents mid to top
+                        const float step = 1.0f / 10;
+                        float best = 0.5f;
+                        float bestAngle = AngleFunction(best);
+                        for (int j = 0; j <= 5; ++j)
+                        {
+                            var t = j * step;
+                            ChooseBestAngle(0.5f + t);
+                            ChooseBestAngle(0.5f - t);
+                            void ChooseBestAngle(float x)
+                            {
+                                var a = AngleFunction(x);
+                                if (a < bestAngle)
+                                {
+                                    bestAngle = a;
+                                    best = x;
+                                }
+                            }
+                        }
+                        return best;
                     }
                 }
                 
