@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This is a custom camera manager that selectes between an aiming camera child and a 
+    /// This is a custom camera manager that selects between an aiming camera child and a 
     /// non-aiming camera child, depending on the value of some user input.
     /// 
     /// The Aiming child is expected to have ThirdPersonFollow and ThirdPersonAim components,
