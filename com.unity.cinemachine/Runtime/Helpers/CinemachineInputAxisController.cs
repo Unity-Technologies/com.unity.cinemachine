@@ -135,6 +135,9 @@ namespace Unity.Cinemachine
                 + "Controls the input power.  Set it to a negative value to invert the input")]
             public float LegacyGain = 1;
 #endif
+            /// <summary>Apply a delta time to the received input value.</summary>
+            [Tooltip("Apply a delta time to the input value. Set true for controller joysticks and false for mouse.")]
+            public bool DeltaTimeInput;
 
             /// <inheritdoc />
             public float GetValue(
@@ -146,14 +149,18 @@ namespace Unity.Cinemachine
                 if (InputAction != null)
                 {
                     if (context is CinemachineInputAxisController c)
-                        inputValue = ResolveAndReadInputAction(c, hint) * Gain;
+                        inputValue = DeltaTimeInput ? 
+                            ResolveAndReadInputAction(c, hint) * Time.deltaTime * Gain : 
+                            ResolveAndReadInputAction(c, hint) * Gain;
                 }
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
                 if (inputValue == 0 && !string.IsNullOrEmpty(LegacyInput))
                 {
-                    try { inputValue = CinemachineCore.GetInputAxis(LegacyInput) * LegacyGain; }
+                    try { inputValue = DeltaTimeInput ? 
+                        CinemachineCore.GetInputAxis(LegacyInput) * Time.deltaTime * LegacyGain : 
+                        CinemachineCore.GetInputAxis(LegacyInput) * LegacyGain; }
                     catch (ArgumentException) {}
                     //catch (ArgumentException e) { Debug.LogError(e.ToString()); }
                 }
