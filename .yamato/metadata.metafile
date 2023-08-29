@@ -24,7 +24,7 @@ all_tests:
      - "UPMCI_PROMOTION: 0"
   - name: promotion_tests
     editors: [2022.2, trunk]
-    args: --type promotion-audit --platform playmode
+    args: --type promotion-audit --platform editmode
     variables:
       - "UPMCI_PROMOTION: 1"
 
