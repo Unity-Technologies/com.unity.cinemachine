@@ -1,6 +1,7 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineDollyCart))]
@@ -10,8 +11,9 @@ namespace Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CinemachineSplineCart");
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineSplineCart");
             DrawRemainingPropertiesInInspector();
         }
     }
 }
+#endif

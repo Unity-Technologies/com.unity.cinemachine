@@ -3,76 +3,76 @@
 Using Cinemachine requires a new way of thinking about working with cameras. For example, you might have invested heavily in carefully scripted camera behaviors. However, Cinemachine can give the same results, if not better, in less time.
 
 
-## CmCameras
+## Cinemachine Cameras
 
-Cinemachine does not create new cameras. Instead, it directs a single Unity camera for multiple shots. You compose these shots with __CmCameras__ (also referred to sometimes as _Virtual Cameras_).  CmCameras move and rotate the Unity camera and control its settings.
+Cinemachine does not create new cameras. Instead, it directs a single Unity camera for multiple shots. You compose these shots with __CinemachineCameras__ (also referred to sometimes as _Virtual Cameras_).  CinemachineCameras move and rotate the Unity camera and control its settings.
 
-The CmCameras are separate GameObjects from the Unity Camera, and behave independently. They are not nested within each other. For example, a Scene might look like this:
+The CinemachineCameras are separate GameObjects from the Unity Camera, and behave independently. They are not nested within each other. For example, a Scene might look like this:
 
-![A Scene containing a Unity camera with Cinemachine Brain (blue) and multiple CmCameras (red)](images/CinemachineSceneHierarchy.png)
+![A Scene containing a Unity camera with Cinemachine Brain (blue) and multiple CinemachineCameras (red)](images/CinemachineSceneHierarchy.png)
 
-The main tasks that the CmCamera does for you:
+The main tasks that the CinemachineCamera does for you:
 
 * Positions the Unity camera in the Scene.
 * Aims the Unity camera at something.
 * Adds procedural noise to the Unity camera. Noise simulates things like hand-held effects or vehicle shakes.
 
-Cinemachine encourages you to create many CmCameras. The CmCamera is designed to consume little processing power. If your Scene is performance-sensitive, deactivate all but the essential CmCameras at any given moment for best performance.
+Cinemachine encourages you to create many CinemachineCameras. The CinemachineCamera is designed to consume little processing power. If your Scene is performance-sensitive, deactivate all but the essential CinemachineCameras at any given moment for best performance.
 
-It is recommended that you use a single CmCamera for a single shot. Take advantage of this to create dramatic or subtle cuts or blends. Examples:
+It is recommended that you use a single CinemachineCamera for a single shot. Take advantage of this to create dramatic or subtle cuts or blends. Examples:
 
-* For a cutscene where two characters exchange dialog, use three CmCameras: one camera for a mid-shot of both characters, and separate CmCameras for a close-up of each character. Use Timeline to synchronize audio with the CmCameras.
+* For a cutscene where two characters exchange dialog, use three CinemachineCameras: one camera for a mid-shot of both characters, and separate CinemachineCameras for a close-up of each character. Use Timeline to synchronize audio with the CinemachineCameras.
 
-* Duplicate an existing CmCamera so that both CmCameras are in the same position in the Scene. For the second CmCamera, change the FOV or composition. When a player enters a trigger volume, Cinemachine blends from the first to the second CmCamera to emphasize a change in action.
+* Duplicate an existing CinemachineCamera so that both CinemachineCameras are in the same position in the Scene. For the second CinemachineCamera, change the FOV or composition. When a player enters a trigger volume, Cinemachine blends from the first to the second CinemachineCamera to emphasize a change in action.
 
-One CmCamera has control of the Unity camera at any point in time. This is the __live__ CmCamera. The exception to this rule is when a blend occurs from one CmCamera to the next. During the blend, both CmCameras are live.
+One CinemachineCamera has control of the Unity camera at any point in time. This is the __live__ CinemachineCamera. The exception to this rule is when a blend occurs from one CinemachineCamera to the next. During the blend, both CinemachineCameras are live.
 
 ## Cinemachine Brain
 
-The Cinemachine Brain is a component in the Unity Camera itself. The Cinemachine Brain monitors all active CmCameras in the Scene. To specify the next live CmCamera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired CmCamera's game object. Cinemachine Brain then chooses the most recently activated CmCamera with the same or higher priority as the live CmCamera. It performs a cut or blend between the previous and new CmCameras.
+The Cinemachine Brain is a component in the Unity Camera itself. The Cinemachine Brain monitors all active CinemachineCameras in the Scene. To specify the next live CinemachineCamera, you [activate or deactivate](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) the desired CinemachineCamera's game object. Cinemachine Brain then chooses the most recently activated CinemachineCamera with the same or higher priority as the live CinemachineCamera. It performs a cut or blend between the previous and new CinemachineCameras.
 
 **Tip**: Use Cinemachine Brain to respond to dynamic game events in real time. It allows your game logic to control the camera by manipulating priorities. This is particularly useful for live gameplay, where action isn’t always predictable. Use [Timeline](CinemachineTimeline.md) to choreograph cameras in predictable situations, like cutscenes. Timeline overrides the Cinemachine Brain priority system to give you precise, to-the-frame camera control.
 
 ## Positioning and Aiming
 
-Use the [__Position Control__ properties](CinemachineVirtualCameraBody.md) in a CmCamera to specify how to move it in the Scene. Use the [__Rotation Control__ properties](CinemachineVirtualCameraAim.md) to specify how to aim it.
+Use the [__Position Control__ properties](CinemachineVirtualCameraBody.md) in a CinemachineCamera to specify how to move it in the Scene. Use the [__Rotation Control__ properties](CinemachineVirtualCameraAim.md) to specify how to aim it.
 
-By default, a CmCamera has a single Tracking Target, which is used for two purposes:
+By default, a CinemachineCamera has a single Tracking Target, which is used for two purposes:
 
-* It specifies a GameObject for the CmCamera to move with (position control).
+* It specifies a GameObject for the CinemachineCamera to move with (position control).
 * It specifies the LookAt target, that is the GameObject to aim at (rotation control).
 
-If you want to use two different GameObjects for these purposes, that is done by enabling the Separate LookAt Target option in the CmCamera's inspector: 
+If you want to use two different GameObjects for these purposes, that is done by enabling the Separate LookAt Target option in the CinemachineCamera's inspector: 
 
 ![Enabling Separate LookAt target](images/SeparateLookAtTarget.png)
 ![Enabling Separate LookAt target](images/SeparateLookAtTarget2.png)
 
 Cinemachine includes a variety of procedural algorithms to control positioning and aiming. Each algorithm solves a specific problem, and exposes properties to customize the algorithm for your specific needs. Cinemachine implements these algorithms as `CinemachineComponent` objects. Use the `CinemachineComponentBase` class to implement a custom moving or aiming behavior.
 
-The __Position Control__ properties offer the following procedural algorithms for moving the CmCamera in a Scene:
+The __Position Control__ properties offer the following procedural algorithms for moving the CinemachineCamera in a Scene:
 
 * __Tracking__: Move in a fixed relationship to the __Tracking__ target, with optional damping.
 * __Position Composer__: Move in a fixed screen-space relationship to the __Tracking__ target, with optional damping.
 * __Orbital Follow__: Move in a variable relationship to the __Tracking__ target, optionally controlled by player input.
 * __Spline Dolly__: Move along a predefined Spline path.
 * __Hard Lock to Target__: Use the same position and as the __Tracking__ target.
-* __3rd Person Follow__: Place the camera on a configurable rigid rig attached to the __Tracking__ target.  The rig rotates with the target.  This is useful for TPS and POV cameras.
-* __Do Nothing__: Do not procedurally move the CmCamera.  Position is controlled directly by the CmCamera's transform, which can be controlled by a custom script.
+* __Third Person Follow__: Place the camera on a configurable rigid rig attached to the __Tracking__ target.  The rig rotates with the target.  This is useful for TPS and POV cameras.
+* __Do Nothing__: Do not procedurally move the CinemachineCamera.  Position is controlled directly by the CinemachineCamera's transform, which can be controlled by a custom script.
 
-The __Rotation Control__ properties offer the following procedural algorithms for rotating a CmCamera to face the __Look At__ target:
+The __Rotation Control__ properties offer the following procedural algorithms for rotating a CinemachineCamera to face the __Look At__ target:
 
 * __Rotation Composer__: Keep the __Look At__ target in the camera frame, with compositional constraints.
-* __Pan Tilt__: Rotate the CmCamera based on the user’s input.
+* __Pan Tilt__: Rotate the CinemachineCamera based on the user’s input.
 * __Same As Follow Target__: Set the camera’s rotation to the rotation of the __Tracking__ target.
 * __Hard Look At__: Keep the __Look At__ target in the center of the camera frame.
-* __Do Nothing__: Do not procedurally rotate the CmCamera.  Rotation is controlled directly by the CmCamera's transform, which can be controlled by a custom script.
+* __Do Nothing__: Do not procedurally rotate the CinemachineCamera.  Rotation is controlled directly by the CinemachineCamera's transform, which can be controlled by a custom script.
 
 
 ## Composing a shot
 
 The [__Position Composer__](CinemachinePositionComposer.md) and [__Rotation Composer__](CinemachineRotationComposer.md) algorithms define areas in the camera frame for you to compose a shot:
 
-* __Dead zone__: The area of the frame in which Cinemachine keeps the target. The target can move within this region and the CmCamera will not adjust to reframe it until the target leaves the dead zone.
+* __Dead zone__: The area of the frame in which Cinemachine keeps the target. The target can move within this region and the CinemachineCamera will not adjust to reframe it until the target leaves the dead zone.
 
 * __Soft zone__: If the target enters this region of the frame, the camera will adjust to put it back in the dead zone. It will do this slowly or quickly, according to the time specified in the Damping settings.
 

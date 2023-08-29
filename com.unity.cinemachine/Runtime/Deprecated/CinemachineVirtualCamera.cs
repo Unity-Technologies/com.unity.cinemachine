@@ -1,15 +1,15 @@
-﻿using System;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This is a deprecated component.  Use CmCamera instead.
+    /// This is a deprecated component.  Use CinemachineCamera instead.
     /// </summary>
-    [Obsolete("CinemachineVirtualCamera is deprecated. Use CmCamera instead.")]
+    [Obsolete("CinemachineVirtualCamera is deprecated. Use CinemachineCamera instead.")]
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
@@ -40,15 +40,22 @@ namespace Cinemachine
 
         /// <summary>Specifies the LensSettings of this Virtual Camera.
         /// These settings will be transferred to the Unity camera when the vcam is live.</summary>
-        [FormerlySerializedAs("m_LensAttributes")]
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
             + "mirrors the Unity Camera's lens settings, and will be used to drive the "
             + "Unity camera when the vcam is active.")]
-        public LensSettings m_Lens = LensSettings.Default;
+        public LensSettings Lens = LensSettings.Default;
 
-        /// <summary> Collection of parameters that influence how this virtual camera transitions from
-        /// other virtual cameras </summary>
-        public TransitionParams Transitions;
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// make an arbitrary choice.</summary>
+        [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
+            + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+            + "make an arbitrary choice.")]
+        public CinemachineCore.BlendHints BlendHint;
+
+        /// <summary>This event fires when a transition occurs.</summary>
+        [Tooltip("This event fires when a transition occurs")]
+        public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
         
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
@@ -65,35 +72,41 @@ namespace Cinemachine
             [FormerlySerializedAs("m_PositionBlending")]
             public int m_BlendHint;
             public bool m_InheritPosition;
-            public CinemachineBrain.VcamActivatedEvent m_OnCameraLive;
+            public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLive;
         }
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
-        internal protected override void LegacyUpgradeMayBeCalledFromThread(int streamedVersion)
+        [FormerlySerializedAs("m_LensAttributes")]
+        [FormerlySerializedAs("m_Lens")]
+        LegacyLensSettings m_LegacyLens;
+
+        internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {
-            base.LegacyUpgradeMayBeCalledFromThread(streamedVersion);
+            base.PerformLegacyUpgrade(streamedVersion);
             if (streamedVersion < 20221011)
             {
                 if (m_LegacyTransitions.m_BlendHint != 0)
                 {
                     if (m_LegacyTransitions.m_BlendHint == 3)
-                        Transitions.BlendHint = BlendHint.ScreenSpaceAimWhenTargetsDiffer;
+                        BlendHint = CinemachineCore.BlendHints.ScreenSpaceAimWhenTargetsDiffer;
                     else
-                        Transitions.BlendHint = (BlendHint)m_LegacyTransitions.m_BlendHint;
+                        BlendHint = (CinemachineCore.BlendHints)m_LegacyTransitions.m_BlendHint;
                     m_LegacyTransitions.m_BlendHint = 0;
                 }
                 if (m_LegacyTransitions.m_InheritPosition)
                 {
-                    Transitions.BlendHint |= BlendHint.InheritPosition;
+                    BlendHint |= CinemachineCore.BlendHints.InheritPosition;
                     m_LegacyTransitions.m_InheritPosition = false;
                 }
                 if (m_LegacyTransitions.m_OnCameraLive != null)
                 {
-                    Transitions.Events.OnCameraLive = m_LegacyTransitions.m_OnCameraLive;
+                    m_OnCameraLiveEvent = m_LegacyTransitions.m_OnCameraLive;
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
+            if (streamedVersion < 20230301)
+                Lens = m_LegacyLens.ToLensSettings();
         }
         // ===============================================================
         
@@ -128,11 +141,6 @@ namespace Cinemachine
             set { m_Follow = value; }
         }
 
-        
-        /// <summary>Returns the TransitionParams settings</summary>
-        /// <returns>The TransitionParams settings</returns>
-        public override TransitionParams GetTransitionParams() => Transitions;
-
         /// <summary>
         /// Query components and extensions for the maximum damping time.
         /// </summary>
@@ -162,7 +170,7 @@ namespace Cinemachine
 
             // Update the state by invoking the component pipeline
             m_State = CalculateNewState(worldUp, deltaTime);
-            ApplyPositionBlendMethod(ref m_State, Transitions.BlendHint);
+            m_State.BlendHint = (CameraState.BlendHints)BlendHint;
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -178,7 +186,7 @@ namespace Cinemachine
         override protected void OnEnable()
         {
             base.OnEnable();
-            m_State = PullStateFromVirtualCamera(Vector3.up, ref m_Lens);
+            m_State = PullStateFromVirtualCamera(Vector3.up, ref Lens);
             InvalidateComponentPipeline();
         }
 
@@ -195,17 +203,10 @@ namespace Cinemachine
             base.OnDestroy();
         }
 
-        // This prevents the sensor size from dirtying the scene in the event of aspect ratio change
-        internal override void OnBeforeSerialize()
-        {
-            if (!m_Lens.IsPhysicalCamera) 
-                m_Lens.SensorSize = Vector2.one;
-        }
-
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected void OnValidate()
         {
-            m_Lens.Validate();
+            Lens.Validate();
         }
 
         void OnTransformChildrenChanged()
@@ -217,7 +218,8 @@ namespace Cinemachine
         {
             DestroyPipeline();
             UpdateComponentPipeline();
-            PriorityAndChannel = OutputChannel.Default;
+            Priority = new ();
+            OutputChannel = OutputChannels.Default;
         }
 
         /// <summary>
@@ -469,7 +471,7 @@ namespace Cinemachine
             LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_Lens);
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref Lens);
 
             Transform lookAtTarget = LookAt;
             if (lookAtTarget != mCachedLookAtTarget)
@@ -496,7 +498,6 @@ namespace Cinemachine
             // Then components
             if (m_ComponentPipeline == null)
             {
-                state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                 for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                     InvokePostPipelineStageCallback(this, stage, ref state, deltaTime);
             }
@@ -526,8 +527,6 @@ namespace Cinemachine
 
                     if (stage == CinemachineCore.Stage.Aim)
                     {
-                        if (c == null)
-                            state.BlendHint |= CameraState.BlendHintValue.IgnoreLookAtTarget;
                         // If we have saved a Body for after Aim, do it now
                         if (postAimBody != null)
                         {
@@ -569,8 +568,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = true;
-            transform.position = pos;
-            transform.rotation = rot;
+            transform.SetPositionAndRotation(pos, rot);
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
@@ -596,16 +594,17 @@ namespace Cinemachine
             InvokeOnTransitionInExtensions(fromCam, worldUp, deltaTime);
             bool forceUpdate = false;
 
-            if (Transitions.InheritPosition && fromCam != null
-                 && !CinemachineCore.Instance.IsLiveInBlend(this))
+            if (fromCam != null
+                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && !CinemachineCore.IsLiveInBlend(this))
+            {
                 ForceCameraPosition(fromCam.State.GetFinalPosition(), fromCam.State.GetFinalOrientation());
-
+            }
             UpdateComponentPipeline(); // avoid GetComponentPipeline() here because of GC
             if (m_ComponentPipeline != null)
             {
                 for (int i = 0; i < m_ComponentPipeline.Length; ++i)
-                    if (m_ComponentPipeline[i].OnTransitionFromCamera(
-                            fromCam, worldUp, deltaTime, ref Transitions))
+                    if (m_ComponentPipeline[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime))
                         forceUpdate = true;
             }
             if (forceUpdate)
@@ -615,13 +614,11 @@ namespace Cinemachine
             }
             else
                 UpdateCameraState(worldUp, deltaTime);
-            if (Transitions.Events.OnCameraLive != null)
-                Transitions.Events.OnCameraLive.Invoke(this, fromCam);
+            m_OnCameraLiveEvent?.Invoke(this, fromCam);
         }
         
-        /// <summary>
-        /// Returns true, when the vcam has an extension or components that require input.
-        /// </summary>
+        /// <summary>Tells whether this vcam requires input.</summary>
+        /// <returns>Returns true, when the vcam has an extension or components that require input.</returns>
         bool AxisState.IRequiresInput.RequiresInput() 
         {
             if (Extensions != null)
@@ -637,3 +634,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

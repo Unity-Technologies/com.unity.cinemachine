@@ -1,13 +1,12 @@
 ﻿using System;
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
-    /// An extension for Cinemachine Virtual Camera which post-processes
-    /// the final position of the virtual camera.  It listens for CinemachineImpulse
+    /// An extension for CinemachineCamera which post-processes
+    /// the final position of the camera.  It listens for CinemachineImpulse
     /// signals on the specified channels, and moves the camera in response to them.
     /// </summary>
     [SaveDuringPlay]
@@ -69,7 +68,6 @@ namespace Cinemachine
             /// Secondary shake that will be triggered by the primary impulse
             /// </summary>
             [Tooltip("Secondary shake that will be triggered by the primary impulse.")]
-            [NoiseSettingsProperty]
             public NoiseSettings m_SecondaryNoise;
 
             /// <summary>
@@ -120,7 +118,7 @@ namespace Cinemachine
             /// <param name="impulsePos">The input impulse signal at this time</param>
             /// <param name="pos">output reaction position delta</param>
             /// <param name="rot">output reaction rotation delta</param>
-            /// <returns>True if thewre is a reaction effect, false otherwise</returns>
+            /// <returns>True if there is a reaction effect, false otherwise</returns>
             public bool GetReaction(
                 float deltaTime, Vector3 impulsePos, 
                 out Vector3 pos, out Quaternion rot)
@@ -150,7 +148,7 @@ namespace Cinemachine
                     m_CurrentTime += deltaTime * FrequencyGain;
 
                 // Adjust the envelope height and duration of the secondary noise, 
-                // acording to the strength of the incoming signal
+                // according to the strength of the incoming signal
                 m_CurrentAmount = Mathf.Max(m_CurrentAmount, Mathf.Sqrt(sqrMag));
                 m_CurrentDamping = Mathf.Max(m_CurrentDamping, Mathf.Max(1, Mathf.Sqrt(m_CurrentAmount)) * Duration);
 

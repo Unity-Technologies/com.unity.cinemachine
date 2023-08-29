@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using UnityEngine;
 using UnityEditor;
 using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using System.Reflection;
 using System.Linq;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineVirtualCamera))]
@@ -19,12 +19,11 @@ namespace Cinemachine.Editor
         static void AdoptGameViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
-            var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
             if (brain != null)
             {
-                vcam.m_Lens = brain.CurrentCameraState.Lens;
-                vcam.transform.position = brain.transform.position;
-                vcam.transform.rotation = brain.transform.rotation;
+                vcam.Lens = brain.State.Lens;
+                vcam.transform.SetPositionAndRotation(brain.transform.position, brain.transform.rotation);
             }
         }
 
@@ -32,7 +31,7 @@ namespace Cinemachine.Editor
         static void AdoptSceneViewCameraSettings(MenuCommand command)
         {
             var vcam = command.context as CinemachineVirtualCamera;
-            vcam.m_Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
+            vcam.Lens = CinemachineMenu.MatchSceneViewCamera(vcam.transform);
         }
         
         /// <summary>Get the property names to exclude in the inspector.  
@@ -126,13 +125,13 @@ namespace Cinemachine.Editor
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(vcam, 
-                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
-                    vcam.m_Lens, IsHorizontalFOVUsed());
+                    new SerializedObject(vcam).FindProperty(() => vcam.Lens), 
+                    vcam.Lens, IsHorizontalFOVUsed());
             }
             else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(vcam, 
-                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens));
+                    new SerializedObject(vcam).FindProperty(() => vcam.Lens));
             }
             Handles.color = originalColor;
         }
@@ -149,25 +148,35 @@ namespace Cinemachine.Editor
                 return;
             }
             BeginInspector();
-            DrawHeaderInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.m_Lens));
+            DrawNonExcludedHeaderInInspector();
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Priority));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.OutputChannel));
+            DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Lens));
             DrawRemainingPropertiesInInspector();
             m_PipelineSet.OnInspectorGUI(!IsPropertyExcluded("Header"));
-            DrawExtensionsWidgetInInspector();
+            DrawNonExcludedExtensionsWidgetInInspector();
         }
 
-        void DrawHeaderInInspector()
+        void DrawNonExcludedHeaderInInspector()
         {
             if (!IsPropertyExcluded("Header"))
             {
-                UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CmCamera");
+                UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
                 DrawInputProviderButtonInInspector();
                 ExcludeProperty("Header");
+            }
+        }
+        
+        protected void DrawNonExcludedExtensionsWidgetInInspector()
+        {
+            if (!IsPropertyExcluded("Extensions"))
+            {
+                DrawExtensionsWidgetInInspector();
+                ExcludeProperty("Extensions");
             }
         }
         
@@ -294,18 +303,14 @@ namespace Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineVirtualCamera))]
-        internal static void DrawVirtualCameraGizmos(CinemachineVirtualCamera vcam, GizmoType selectionType)
+        static void DrawVirtualCameraGizmos(CinemachineVirtualCamera vcam, GizmoType selectionType)
         {
             var pipeline = vcam.GetComponentPipeline();
             if (pipeline != null)
             {
                 foreach (var c in pipeline)
                 {
-                    if (c == null)
-                        continue;
-
-                    MethodInfo method;
-                    if (CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out method))
+                    if (c != null && CollectGizmoDrawers.m_GizmoDrawers.TryGetValue(c.GetType(), out var method))
                     {
                         if (method != null)
                             method.Invoke(null, new object[] {c, selectionType});
@@ -315,3 +320,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

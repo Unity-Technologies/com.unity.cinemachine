@@ -1,7 +1,6 @@
-﻿using Cinemachine.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cinemachine Camera that adjusts the framing if the tracking
@@ -79,7 +78,7 @@ namespace Cinemachine
         [MinMaxRangeSlider(1, 179)]
         public Vector2 FovRange = new Vector2(1, 100);
 
-        /// <summary>Allowable range for the camera to move.  0 is the undollied position.  
+        /// <summary>Allowable range for the camera to move. 0 is the undollied position.  
         /// Negative values move the camera closer to the target.</summary>
         [Tooltip("Allowable range for the camera to move.  0 is the undollied position.  "
             + "Negative values move the camera closer to the target.")]
@@ -123,7 +122,7 @@ namespace Cinemachine
         /// <summary>For editor visualization of the calculated bounding box of the group</summary>
         internal Matrix4x4 GroupBoundsMatrix;
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public Vector3 PosAdjustment;
             public Vector2 RotAdjustment;
@@ -158,15 +157,16 @@ namespace Cinemachine
             // We ignore the noise effect anyway, so it doesn't hurt.
             if (stage != CinemachineCore.Stage.Noise)
                 return;
-
-            var group = vcam.FollowTargetAsGroup;
-            if (group == null || group.Sphere.radius < k_MinimumGroupSize)
+            
+            var group = vcam.LookAtTargetAsGroup;
+            group ??= vcam.FollowTargetAsGroup;
+            if (group == null || !group.IsValid)
                 return;
 
             var extra = GetExtraState<VcamExtraState>(vcam);
             if (!vcam.PreviousStateIsValid)
                 extra.Reset();
-            
+
             if (state.Lens.Orthographic)
                 OrthoFraming(vcam, group, extra, ref state, deltaTime);
             else
@@ -185,14 +185,14 @@ namespace Cinemachine
             var camPos = GroupBounds.center; 
             camPos.z = 0; // don't change the camera's distance from the group
 
-            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
-            state.RawPosition += state.RawOrientation * extra.PosAdjustment;
-            
             // Ortho size adjustment
-            var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, state.Lens.Aspect) * 0.5f;
+            var lens = state.Lens;
+            var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, lens.Aspect) * 0.5f;
             targetHeight = Mathf.Clamp(targetHeight, OrthoSizeRange.x, OrthoSizeRange.y);
 
-            var lens = state.Lens;
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+
             var deltaFov = targetHeight - lens.OrthographicSize;
             extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
             lens.OrthographicSize += extra.FovAdjustment;

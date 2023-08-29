@@ -1,12 +1,12 @@
-﻿using UnityEngine;
-#if CINEMACHINE_UGUI
+﻿#if CINEMACHINE_UGUI
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Virtual Camera that places an image in screen space
+    /// An add-on module for CinemachineCamera that places an image in screen space
     /// over the camera's output.
     /// </summary>
     [SaveDuringPlay]
@@ -145,7 +145,7 @@ namespace Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             // Apply to this vcam only, not the children
-            if (vcam != VirtualCamera || stage != CinemachineCore.Stage.Finalize)
+            if (vcam != ComponentOwner || stage != CinemachineCore.Stage.Finalize)
                 return;
 
             UpdateRenderCanvas();
@@ -153,7 +153,7 @@ namespace Cinemachine
             if (ShowImage)
                 state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item { Custom = this, Weight = 1});
             if (MuteCamera)
-                state.BlendHint |= CameraState.BlendHintValue.NoTransform | CameraState.BlendHintValue.NoLens;
+                state.BlendHint |= CameraState.BlendHints.NoTransform | CameraState.BlendHints.NoLens;
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace Cinemachine
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
-            var showIt = enabled && ShowImage && CinemachineCore.Instance.IsLive(VirtualCamera);
-            var channel = (uint)VirtualCamera.GetChannel();
+            var showIt = enabled && ShowImage && CinemachineCore.IsLive(ComponentOwner);
+            var channel = (uint)ComponentOwner.OutputChannel;
             if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                 showIt = false;
             var ci = LocateMyCanvas(brain, showIt);
@@ -275,10 +275,10 @@ namespace Cinemachine
 
         void DestroyCanvas()
         {
-            int numBrains = CinemachineCore.Instance.BrainCount;
+            int numBrains = CinemachineBrain.ActiveBrainCount;
             for (int i = 0; i < numBrains; ++i)
             {
-                var parent = CinemachineCore.Instance.GetActiveBrain(i);
+                var parent = CinemachineBrain.GetActiveBrain(i);
                 int numChildren = parent.transform.childCount;
                 for (int j = numChildren - 1; j >= 0; --j)
                 {
@@ -362,16 +362,16 @@ namespace Cinemachine
 
         static void StaticBlendingHandler(CinemachineBrain brain)
         {
-            var state = brain.CurrentCameraState;
+            var state = brain.State;
             int numBlendables = state.GetNumCustomBlendables();
             for (int i = 0; i < numBlendables; ++i)
             {
                 var b = state.GetCustomBlendable(i);
                 var src = b.Custom as CinemachineStoryboard;
-                if (src != null && src.VirtualCamera != null) // in case it was deleted
+                if (src != null && src.ComponentOwner != null) // in case it was deleted
                 {
                     bool showIt = true;
-                    var channel = (uint)src.VirtualCamera.GetChannel();
+                    var channel = (uint)src.ComponentOwner.OutputChannel;
                     if (s_StoryboardGlobalMute || ((uint)brain.ChannelMask & channel) == 0)
                         showIt = false;
                     var ci = src.LocateMyCanvas(brain, showIt);
@@ -410,22 +410,21 @@ namespace Cinemachine
                 if (s_CanvasesAndTheirOwners != null)
                 {
                     List<UnityEngine.Object> toDestroy = null;
-                    foreach (var v in s_CanvasesAndTheirOwners)
+                    var iter = s_CanvasesAndTheirOwners.GetEnumerator();
+                    while (iter.MoveNext())
                     {
+                        var v = iter.Current;
                         if (v.Value == null)
                         {
-                            if (toDestroy == null)
-                                toDestroy = new List<UnityEngine.Object>();
+                            toDestroy ??= new List<UnityEngine.Object>();
                             toDestroy.Add(v.Key);
                         }
                     }
-                    if (toDestroy != null)
+                    for (int i = 0; toDestroy != null && i < toDestroy.Count; ++i)
                     {
-                        foreach (var o in toDestroy)
-                        {
-                            RemoveCanvas(o);
-                            RuntimeUtility.DestroyObject(o);
-                        }
+                        var o = toDestroy[i];
+                        RemoveCanvas(o);
+                        RuntimeUtility.DestroyObject(o);
                     }
                 }
             }
@@ -436,20 +435,11 @@ namespace Cinemachine
             }
             public static void AddCanvas(UnityEngine.Object canvas, UnityEngine.Object owner)
             {
-                if (s_CanvasesAndTheirOwners == null)
-                    s_CanvasesAndTheirOwners = new Dictionary<UnityEngine.Object, UnityEngine.Object>();
+                s_CanvasesAndTheirOwners ??= new ();
                 s_CanvasesAndTheirOwners.Add(canvas, owner);
             }
         }
 #endif
     }
 }
-#else
-// We need this dummy MonoBehaviour for Unity to properly recognize this script asset.
-namespace Cinemachine
-{
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachineStoryboard : MonoBehaviour {}
-}
 #endif
-

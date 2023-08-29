@@ -1,9 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineSplineDolly instead.
@@ -331,10 +331,11 @@ namespace Cinemachine
             c.Damping.Enabled = true;
             c.Damping.Position = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
             c.Damping.Angular = Mathf.Max(m_YawDamping, Mathf.Max(m_RollDamping, m_PitchDamping));
-            c.CameraUp = (CinemachineSplineDolly.CameraUpMode)m_CameraUp; // enum values match
+            c.CameraRotation = (CinemachineSplineDolly.RotationMode)m_CameraUp; // enum values match
+            c.AutomaticDolly.Enabled = m_AutoDolly.m_Enabled;
             if (m_AutoDolly.m_Enabled)
             {
-                c.AutomaticDolly = new SplineAutoDolly.NearestPointToTarget
+                c.AutomaticDolly.Method = new SplineAutoDolly.NearestPointToTarget
                 {
                     PositionOffset = m_AutoDolly.m_PositionOffset,
                     SearchResolution = m_AutoDolly.m_SearchResolution,
@@ -356,3 +357,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

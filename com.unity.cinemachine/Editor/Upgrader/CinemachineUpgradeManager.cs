@@ -1,10 +1,11 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 // #define DEBUG_HELPERS
 #pragma warning disable CS0618 // suppress obsolete warnings
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cinemachine.Utility;
+using System.Threading;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -14,7 +15,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
 #endif
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Upgrades cm2 to cm3
@@ -29,9 +30,9 @@ namespace Cinemachine.Editor
 
         // This gets set to help with more informative warning messages about objects
         string m_CurrentSceneOrPrefab;
+        const string k_ProgressBarTitle = "Upgrade Progress";
 
         /// <summary>
-        /// GML Temporary helper method for testing.
         /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
         /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
@@ -52,8 +53,7 @@ namespace Cinemachine.Editor
         }
 
         /// <summary>
-        /// GML Temporary helper method for testing.
-        /// Upgrades the input gameObject.  Referenced objects (e.g. paths) may also get upgraded.
+        /// Upgrades all the gameObjects in the current scene.  
         /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
         /// </summary>
@@ -67,17 +67,22 @@ namespace Cinemachine.Editor
                 + "Upgrade scene?",
                 "Upgrade", "Cancel"))
             {
-                var manager = new CinemachineUpgradeManager();
+                Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
+                var manager = new CinemachineUpgradeManager(false);
                 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradable = manager.GetUpgradables(
                     rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 var upgradedObjects = new HashSet<GameObject>();
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scene...", 0.5f);
                 manager.UpgradeNonPrefabs(upgradable, upgradedObjects, null);
-                manager.UpgradeObjectReferences(rootObjects);
+                UpgradeObjectReferences(rootObjects);
 
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1f);
                 foreach (var go in upgradedObjects)
                     manager.m_ObjectUpgrader.DeleteObsoleteComponents(go);
+                EditorUtility.ClearProgressBar();
             }
         }
 
@@ -94,7 +99,7 @@ namespace Cinemachine.Editor
                 + "some objects might not be fully converted.\n\n"
                 + "Any custom scripts in your project that reference the Cinemachine API will not be "
                 + "automatically upgraded, and you may have to alter them manually.  "
-                + "Please see the upgrade guide <here>.\n\n"
+                + "Please see the upgrade guide in the user manual.\n\n"
                 + "NOTE: Undo is not supported for this operation.  You are strongly "
                 + "advised to make a full backup of the project before proceeding.\n\n"
                 + "If you prefer, you can cancel this operation and use the package manager to revert "
@@ -102,16 +107,59 @@ namespace Cinemachine.Editor
                 + "Upgrade project?",
                 "I made a backup, go ahead", "Cancel"))
             {
-                var manager = new CinemachineUpgradeManager();
-
+                Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
+                var originalScenePath = EditorSceneManager.GetActiveScene().path;
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
+                var manager = new CinemachineUpgradeManager(true);
                 manager.PrepareUpgrades(out var conversionLinksPerScene, out var timelineRenames);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.1f);
                 manager.UpgradePrefabAssets(true);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.3f);
                 manager.UpgradeReferencablePrefabInstances(conversionLinksPerScene);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Prefabs...", 0.6f);
                 manager.UpgradePrefabAssets(false);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Upgrading Scenes...", 0.8f);
                 manager.UpgradeRemaining(conversionLinksPerScene, timelineRenames);
+                EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Cleaning up...", 1);
                 manager.CleanupPrefabAssets();
+                EditorUtility.ClearProgressBar();
+                EditorSceneManager.OpenScene(originalScenePath); // re-open scene where the user was before upgrading
             }
         }
+
+        /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public static bool ObjectsUsePrefabs(UnityEngine.Object[] objects)
+        {
+            for (int i = 0; i < objects.Length; ++i)
+            {
+                var go = objects[i] as GameObject;
+                if (go == null)
+                {
+                    var b = objects[i] as MonoBehaviour;
+                    if (b != null)
+                        go = b.gameObject;
+                }
+                if (go != null && PrefabUtility.IsPartOfAnyPrefab(go))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>Returns true if any of the objects are prefab instances or prefabs.</summary>
+        /// <param name="objects"></param>
+        /// <returns></returns>
+        public static bool CurrentSceneUsesPrefabs()
+        {
+            var manager = new CinemachineUpgradeManager(false);
+            var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var rootObjects = scene.GetRootGameObjects();
+            var upgradable = manager.GetUpgradables(
+                rootObjects, manager.m_ObjectUpgrader.RootUpgradeComponentTypes, true).ToArray();
+            return ObjectsUsePrefabs(upgradable);
+        }
+
         
         /// <summary>
         /// For each scene:
@@ -345,6 +393,8 @@ namespace Cinemachine.Editor
                 
                 foreach (var c in components)
                 {
+                    if (c == null)
+                        continue; // ignore
                     if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
                         continue; // is a backup copy
 
@@ -362,9 +412,8 @@ namespace Cinemachine.Editor
             m_CurrentSceneOrPrefab = string.Empty;
         }
 
-        void UpgradeObjectReferences(GameObject[] rootObjects)
+        static void UpgradeObjectReferences(GameObject[] rootObjects)
         {
-            var map = m_ObjectUpgrader.ClassUpgradeMap;
             foreach (var go in rootObjects) 
             {
                 if (go == null)
@@ -372,13 +421,9 @@ namespace Cinemachine.Editor
                 
                 ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
                 {
-                    var oldType = oldValue.GetType();
-                    if (map.ContainsKey(oldType))
-                    {
-                        var newType = map[oldType];
-                        if (expectedType.IsAssignableFrom(newType))
-                            return oldValue.GetComponent(newType) as MonoBehaviour;
-                    }
+                    var newType = UpgradeObjectToCm3.GetBehaviorReferenceUpgradeType(oldValue);
+                    if (expectedType.IsAssignableFrom(newType))
+                        return oldValue.GetComponent(newType) as MonoBehaviour;
                     return oldValue;
                 });
             }
@@ -443,7 +488,7 @@ namespace Cinemachine.Editor
                 SynchronizeComponents(prefabInstance, convertedCopy, m_ObjectUpgrader.ObsoleteComponentTypesToDelete);
 #if CINEMACHINE_TIMELINE
                 if (timelineManager != null)
-                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CmCamera>(), conversionLink);
+                    timelineManager.UpdateTimelineReference(prefabInstance.GetComponent<CinemachineCamera>(), conversionLink);
 #endif
 
                 // Restore original scene state (prefab instance name, delete converted copies)
@@ -550,11 +595,12 @@ namespace Cinemachine.Editor
 #endif
         }
 
-        CinemachineUpgradeManager()
+        CinemachineUpgradeManager(bool initPrefabManager)
         {
             m_ObjectUpgrader = new UpgradeObjectToCm3();
             m_SceneManager = new SceneManager();
-            m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
+            if (initPrefabManager) 
+                m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
         }
 
         Scene OpenScene(int sceneIndex)
@@ -594,7 +640,7 @@ namespace Cinemachine.Editor
             // Patch the timeline shots
             if (timelineManager != null && oldComponent != null)
             {
-                var newComponent = go.GetComponent<CmCamera>();
+                var newComponent = go.GetComponent<CinemachineCamera>();
                 if (oldComponent != newComponent)
                     timelineManager.UpdateTimelineReference(oldComponent, newComponent);
             }
@@ -646,7 +692,7 @@ namespace Cinemachine.Editor
         // Hack: ignore nested rigs of a freeLook (GML todo: how to remove this?)
         static bool IsHiddenFreeLookRig(Component c)
         {
-            return !(c is CinemachineFreeLook) && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
+            return c is not CinemachineFreeLook && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
         }
         
         class SceneManager
@@ -903,3 +949,4 @@ namespace Cinemachine.Editor
     }
 }
 #pragma warning restore CS0618
+#endif

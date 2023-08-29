@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(TargetTracking.TrackerSettings))]
     class TrackerSettingsPropertyDrawer : PropertyDrawer
@@ -30,9 +30,11 @@ namespace Cinemachine.Editor
             ux.TrackPropertyValue(modeProp, TrackBindingMode);
             void TrackBindingMode(SerializedProperty modeProp)
             {
+                if (modeProp.serializedObject == null)
+                    return; // object deleted
                 var mode = (TargetTracking.BindingMode)modeProp.intValue;
                 bool hideRot = mode == TargetTracking.BindingMode.WorldSpace 
-                    || mode == TargetTracking.BindingMode.SimpleFollowWithWorldUp;
+                    || mode == TargetTracking.BindingMode.LazyFollow;
                 rotDampingContainer.SetVisible(!hideRot);
             }
 
@@ -40,6 +42,8 @@ namespace Cinemachine.Editor
             ux.TrackPropertyValue(rotModeProp, TrackRotDampingMode);
             void TrackRotDampingMode(SerializedProperty modeProp)
             {
+                if (modeProp.serializedObject == null)
+                    return; // object deleted
                 var mode = (TargetTracking.AngularDampingMode)modeProp.intValue;
                 quatDampingField.SetVisible(mode == TargetTracking.AngularDampingMode.Quaternion);
                 rotDampingField.SetVisible(mode == TargetTracking.AngularDampingMode.Euler);

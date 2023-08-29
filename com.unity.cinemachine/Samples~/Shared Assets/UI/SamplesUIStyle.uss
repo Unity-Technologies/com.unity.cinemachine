@@ -1,0 +1,83 @@
+Box {
+    background-color: rgba(196, 196, 196, 0.5);
+    margin: 5px;
+    border-width: 0;
+}
+
+#TogglesAndButtons {
+    align-self: flex-start;
+    position: absolute;
+    top: 12px;
+}
+
+.dynamicButton {
+    background-color: rgb(196, 196, 196);
+    align-self: stretch;
+    -unity-font-style: bold;
+}
+
+.dynamicToggle {
+    flex-direction: row-reverse;
+    align-self: flex-start;
+    -unity-font-style: bold;
+}
+
+#HelpButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px;
+    margin: 2px;
+    -unity-font-style: bold;
+    display: flex;
+    visibility: hidden;
+}
+
+#HelpTextBox {
+    visibility: hidden;
+    position: absolute;
+    top: 5%;
+    bottom: auto;
+    left: 10%;
+    right: 10%;
+    max-height: 80%;
+    justify-content: space-between;
+}
+
+#HelpTextBox__Title {
+    -unity-text-align: middle-center;
+    color: rgb(196, 196, 196);
+    background-color: black;
+    margin-left: 5px;
+    margin-right: 5px;
+    -unity-font-style: bold;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#HelpTextBox__ScrollView {
+    margin: 5px;
+    background-color: rgba(38, 38, 38, 0.8);
+}
+
+#HelpTextBox__ScrollView__Label {
+    flex-wrap: wrap;
+    color: white;
+    white-space: normal;
+    -unity-font-style: normal;
+    margin: 5px;
+    padding: 5px;
+}
+
+#HelpTextBox__CloseButton {
+    margin-bottom: 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding: 8px;
+    color: rgb(196, 196, 196);
+    border-radius: 4px;
+    border-width: 1px;
+    align-self: center;
+    background-color: black;
+    -unity-font-style: bold;
+}

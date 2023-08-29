@@ -1,8 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineOrbitalTransposer))]
@@ -14,7 +15,7 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            if (Target.m_HeadingIsSlave)
+            if (Target.m_HeadingIsDriven)
             {
                 excluded.Add(FieldPath(x => x.m_BindingMode));
                 excluded.Add(FieldPath(x => x.m_Heading));
@@ -56,7 +57,7 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case TargetTracking.BindingMode.SimpleFollowWithWorldUp:
+                case TargetTracking.BindingMode.LazyFollow:
                     excluded.Add(FieldPath(x => x.m_XDamping));
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
@@ -86,7 +87,7 @@ namespace Cinemachine.Editor
                     "Orbital Transposer requires a Follow target.",
                     MessageType.Warning);
             Target.m_XAxis.ValueRangeLocked
-                = (Target.m_BindingMode == TargetTracking.BindingMode.SimpleFollowWithWorldUp);
+                = (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow);
             DrawRemainingPropertiesInInspector();
         }
         
@@ -96,7 +97,7 @@ namespace Cinemachine.Editor
             if (target.IsValid && !target.HideOffsetInInspector)
             {
                 Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.Instance.IsLive(target.VirtualCamera)
+                Gizmos.color = CinemachineCore.IsLive(target.VirtualCamera)
                     ? CinemachineCorePrefs.ActiveGizmoColour.Value
                     : CinemachineCorePrefs.InactiveGizmoColour.Value;
 
@@ -130,3 +131,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

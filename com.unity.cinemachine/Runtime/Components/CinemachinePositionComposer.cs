@@ -1,7 +1,7 @@
-using Cinemachine.Utility;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a Cinemachine Component in the Body section of the component pipeline.
@@ -37,7 +37,8 @@ namespace Cinemachine
             + "The camera will attempt to frame the point which is the target's position plus "
             + "this offset.  Use it to correct for cases when the target's origin is not the "
             + "point of interest for the camera.")]
-        public Vector3 TrackedObjectOffset;
+        [FormerlySerializedAs("TrackedObjectOffset")]
+        public Vector3 TargetOffset;
 
         /// <summary>This setting will instruct the composer to adjust its target offset based
         /// on the motion of the target.  The composer will look at a point where it estimates
@@ -67,11 +68,7 @@ namespace Cinemachine
 
         /// <summary>Settings for screen-space composition</summary>
         [HideFoldout]
-        public ScreenComposerSettings Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
-
-        /// <summary>If enabled, then then soft zone will be unlimited in size</summary>
-        [Tooltip("If enabled, then then soft zone will be unlimited in size.")]
-        public bool UnlimitedSoftZone = false;
+        public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
 
         /// <summary>Force target to center of screen when this camera activates.  
         /// If false, will clamp target to the edges of the dead zone</summary>
@@ -83,21 +80,19 @@ namespace Cinemachine
 
         /// <summary>State information for damping</summary>
         Vector3 m_PreviousCameraPosition = Vector3.zero;
-        internal PositionPredictor m_Predictor = new PositionPredictor();
-        float m_prevFOV; // State for frame damping
+        internal PositionPredictor m_Predictor = new PositionPredictor(); // internal for tests
         Quaternion m_prevRotation;
 
         bool m_InheritingPosition;
 
         void Reset()
         {
-            TrackedObjectOffset = Vector3.zero;
+            TargetOffset = Vector3.zero;
             Lookahead = new LookaheadSettings();
             Damping = Vector3.one;
             CameraDistance = 10;
-            Composition = new ScreenComposerSettings { SoftZoneSize = new Vector2(0.8f, 0.8f) };
+            Composition = ScreenComposerSettings.Default;
             DeadZoneDepth = 0;
-            UnlimitedSoftZone = false;
             CenterOnActivate = true;
         }
 
@@ -129,56 +124,16 @@ namespace Cinemachine
             set => CameraDistance = value;
         }
         
-        /// <summary>Internal API for the inspector editor</summary>
-        internal Rect SoftGuideRect
-        {
-            get => new Rect(
-                    Composition.ScreenPosition - Composition.DeadZoneSize / 2 + new Vector2(0.5f, 0.5f),
-                    Composition.DeadZoneSize);
-            set
-            {
-                Composition.DeadZoneSize = new Vector2(Mathf.Clamp(value.width, 0, 2), Mathf.Clamp(value.height, 0, 2));
-                Composition.ScreenPosition = new Vector2(
-                    Mathf.Clamp(value.x - 0.5f + Composition.DeadZoneSize.x / 2, -1.5f,  1.5f), 
-                    Mathf.Clamp(value.y - 0.5f + Composition.DeadZoneSize.y / 2, -1.5f,  1.5f));
-                Composition.SoftZoneSize = new Vector2(
-                    Mathf.Max(Composition.SoftZoneSize.x, Composition.DeadZoneSize.x),
-                    Mathf.Max(Composition.SoftZoneSize.y, Composition.DeadZoneSize.y));
-            }
-        }
-
-        /// <summary>Internal API for the inspector editor</summary>
-        internal Rect HardGuideRect
-        {
-            get
-            {
-                Rect r = new Rect(
-                    Composition.ScreenPosition - Composition.SoftZoneSize / 2 + new Vector2(0.5f, 0.5f),
-                    Composition.SoftZoneSize);
-                r.position += new Vector2(
-                    Composition.Bias.x * (Composition.SoftZoneSize.x - Composition.DeadZoneSize.x),
-                    Composition.Bias.y * (Composition.SoftZoneSize.y - Composition.DeadZoneSize.y));
-                return r;
-            }
-            set
-            {
-                Composition.SoftZoneSize.x = Mathf.Clamp(value.width, 0, 2f);
-                Composition.SoftZoneSize.y = Mathf.Clamp(value.height, 0, 2f);
-                Composition.DeadZoneSize.x = Mathf.Min(Composition.DeadZoneSize.x, Composition.SoftZoneSize.x);
-                Composition.DeadZoneSize.y = Mathf.Min(Composition.DeadZoneSize.y, Composition.SoftZoneSize.y);
-            }
-        }
-
         /// <summary>True if component is enabled and has a valid Follow target</summary>
-        public override bool IsValid { get { return enabled && FollowTarget != null; } }
+        public override bool IsValid => enabled && FollowTarget != null;
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Body stage</summary>
-        public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
+        public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
-        /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
+        /// <summary>FramingTransposer algorithm takes camera orientation as input, 
         /// so even though it is a Body component, it must apply after Aim</summary>
-        public override bool BodyAppliesAfterAim { get { return true; } }
+        public override bool BodyAppliesAfterAim => true;
 
         /// <summary>Internal API for inspector</summary>
         internal Vector3 TrackedPoint { get; private set; }
@@ -201,8 +156,8 @@ namespace Cinemachine
         /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
@@ -221,14 +176,13 @@ namespace Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            if (fromCam != null && transitionParams.InheritPosition
-                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+            if (fromCam != null 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
                 m_prevRotation = fromCam.State.RawOrientation;
@@ -241,7 +195,7 @@ namespace Cinemachine
         // Convert from screen coords to normalized orthographic distance coords
         private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
         {
-            Rect r = new Rect();
+            var r = new Rect();
             r.yMax = 2 * orthoSize * ((1f-rScreen.yMin) - 0.5f);
             r.yMin = 2 * orthoSize * ((1f-rScreen.yMax) - 0.5f);
             r.xMin = 2 * orthoSize * aspect * (rScreen.xMin - 0.5f);
@@ -252,7 +206,7 @@ namespace Cinemachine
         private Vector3 OrthoOffsetToScreenBounds(Vector3 targetPos2D, Rect screenRect)
         {
             // Bring it to the edge of screenRect, if outside.  Leave it alone if inside.
-            Vector3 delta = Vector3.zero;
+            var delta = Vector3.zero;
             if (targetPos2D.x < screenRect.xMin)
                 delta.x += targetPos2D.x - screenRect.xMin;
             if (targetPos2D.x > screenRect.xMax)
@@ -269,15 +223,14 @@ namespace Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            LensSettings lens = curState.Lens;
-            Vector3 followTargetPosition = FollowTargetPosition + (FollowTargetRotation * TrackedObjectOffset);
+            var lens = curState.Lens;
+            var followTargetPosition = FollowTargetPosition + (FollowTargetRotation * TargetOffset);
             bool previousStateIsValid = deltaTime >= 0 && VirtualCamera.PreviousStateIsValid;
             if (!previousStateIsValid || VirtualCamera.FollowTargetChanged)
                 m_Predictor.Reset();
             if (!previousStateIsValid)
             {
                 m_PreviousCameraPosition = curState.RawPosition;
-                m_prevFOV = lens.Orthographic ? lens.OrthographicSize : lens.FieldOfView;
                 m_prevRotation = curState.RawOrientation;
                 if (!m_InheritingPosition && CenterOnActivate)
                 {
@@ -297,14 +250,12 @@ namespace Cinemachine
             if (Lookahead.Enabled && Lookahead.Time > Epsilon)
             {
                 m_Predictor.Smoothing = Lookahead.Smoothing;
-                m_Predictor.AddPosition(followTargetPosition, deltaTime, Lookahead.Time);
+                m_Predictor.AddPosition(followTargetPosition, deltaTime);
                 var delta = m_Predictor.PredictPositionDelta(Lookahead.Time);
                 if (Lookahead.IgnoreY)
                     delta = delta.ProjectOntoPlane(curState.ReferenceUp);
-                var p = followTargetPosition + delta;
-                TrackedPoint = p;
+                TrackedPoint = followTargetPosition + delta;
             }
-
             if (!curState.HasLookAt())
                 curState.ReferenceLookAt = followTargetPosition;
 
@@ -318,14 +269,14 @@ namespace Cinemachine
             m_prevRotation = localToWorld;
 
             // Work in camera-local space
-            Vector3 camPosWorld = m_PreviousCameraPosition;
-            Quaternion worldToLocal = Quaternion.Inverse(localToWorld);
-            Vector3 cameraPos = worldToLocal * camPosWorld;
-            Vector3 targetPos = (worldToLocal * TrackedPoint) - cameraPos;
-            Vector3 lookAtPos = targetPos;
+            var camPosWorld = m_PreviousCameraPosition;
+            var worldToLocal = Quaternion.Inverse(localToWorld);
+            var cameraPos = worldToLocal * camPosWorld;
+            var targetPos = (worldToLocal * TrackedPoint) - cameraPos;
+            var lookAtPos = targetPos;
 
             // Move along camera z
-            Vector3 cameraOffset = Vector3.zero;
+            var cameraOffset = Vector3.zero;
             float cameraMin = Mathf.Max(kMinimumCameraDistance, CameraDistance - DeadZoneDepth/2);
             float cameraMax = Mathf.Max(cameraMin, CameraDistance + DeadZoneDepth/2);
             float targetZ = Mathf.Min(targetPos.z, lookAtPos.z);
@@ -338,11 +289,11 @@ namespace Cinemachine
             float screenSize = lens.Orthographic 
                 ? lens.OrthographicSize 
                 : Mathf.Tan(0.5f * verticalFOV * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
-            Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, lens.Aspect);
+            var softGuideOrtho = ScreenToOrtho(Composition.DeadZoneRect, screenSize, lens.Aspect);
             if (!previousStateIsValid)
             {
                 // No damping or hard bounds, just snap to central bounds, skipping the soft zone
-                Rect rect = softGuideOrtho;
+                var rect = softGuideOrtho;
                 if (CenterOnActivate && !m_InheritingPosition)
                     rect = new Rect(rect.center, Vector2.zero); // Force to center
                 cameraOffset += OrthoOffsetToScreenBounds(targetPos, rect);
@@ -354,10 +305,10 @@ namespace Cinemachine
                 cameraOffset = VirtualCamera.DetachedFollowTargetDamp(cameraOffset, Damping, deltaTime);
 
                 // Make sure the real target (not the lookahead one) is still in the frame
-                if (!UnlimitedSoftZone 
+                if (Composition.HardLimits.Enabled 
                     && (deltaTime < 0 || VirtualCamera.FollowTargetAttachment > 1 - Epsilon))
                 {
-                    Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, lens.Aspect);
+                    var hardGuideOrtho = ScreenToOrtho(Composition.HardLimitsRect, screenSize, lens.Aspect);
                     var realTargetPos = (worldToLocal * followTargetPosition) - cameraPos;
                     cameraOffset += OrthoOffsetToScreenBounds(
                         realTargetPos - cameraOffset, hardGuideOrtho);

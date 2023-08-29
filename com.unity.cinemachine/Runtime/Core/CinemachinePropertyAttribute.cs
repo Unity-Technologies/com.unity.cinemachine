@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Property applied to legacy input axis name specification.  Used for custom drawing in the inspector.
@@ -12,22 +13,44 @@ namespace Cinemachine
     /// </summary>
     public sealed class HideFoldoutAttribute : PropertyAttribute {}
     
+    /// <summary>Hide this property if a component of a given type is not present</summary>
+    public sealed class HideIfNoComponentAttribute : PropertyAttribute 
+    {
+        /// <summary>The name of the field controlling the enabled state</summary>
+        public Type ComponentType; 
+
+        /// <summary>Constructor</summary>
+        /// <param name="type">Type of the component to check for</param>
+        public HideIfNoComponentAttribute(Type type) => ComponentType = type; 
+    }
+
     /// <summary>
     /// Draw a foldout with an Enabled toggle that shadows a field inside the foldout
     /// </summary>
-    public sealed class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
+    public class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
     { 
         /// <summary>The name of the field controlling the enabled state</summary>
         public string EnabledPropertyName; 
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
+        /// <summary>Constructor</summary>
         /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
         public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled") 
-        { 
-            EnabledPropertyName = enabledProperty; 
-        }
+            => EnabledPropertyName = enabledProperty; 
+    }
+
+    /// <summary>
+    /// Draw a FoldoutWithEnabledButtonAttribute on a single line
+    /// </summary>
+    public sealed class EnabledPropertyAttribute : FoldoutWithEnabledButtonAttribute 
+    { 
+        /// <summary>Text to display to the right of the toggle button when disabled</summary>
+        public string ToggleDisabledText;
+
+        /// <summary>Constructor</summary>
+        /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
+        /// <param name="toggleText">Text to display to the right of the toggle button</param>
+        public EnabledPropertyAttribute(string enabledProperty = "Enabled", string toggleText = "") 
+            : base(enabledProperty) => ToggleDisabledText = toggleText;
     }
 
     /// <summary>
@@ -64,25 +87,18 @@ namespace Cinemachine
     /// Property applied to LensSetting properties.  
     /// Will cause the property drawer to hide the ModeOverride setting.
     /// </summary>
-    public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute { }
+    public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute {}
 
-    /// <summary>
-    /// Property applied to Vcam Target fields.  Used for custom drawing in the inspector.
-    /// </summary>
-    public sealed class VcamTargetPropertyAttribute : PropertyAttribute { }
-
+    /// <summary>Property to display a SensorSize field</summary>
+    public sealed class SensorSizePropertyAttribute : PropertyAttribute {}
+    
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
-    
-    /// <summary>Property should be treated as enum flags.</summary>
-    public sealed class EnumMaskPropertyAttribute : PropertyAttribute {}
-    
-    /// <summary>Property field is a NoiseSettings asset.</summary>
-    public sealed class NoiseSettingsPropertyAttribute : PropertyAttribute {}    
     
     /// <summary>
     /// Used for custom drawing in the inspector.  Inspector will show a foldout with the asset contents
     /// </summary>
+    /// GML TODO: delete this attribute
     public sealed class CinemachineEmbeddedAssetPropertyAttribute : PropertyAttribute 
     {
         /// <summary>If true, inspector will display a warning if the embedded asset is null</summary>
@@ -90,10 +106,7 @@ namespace Cinemachine
 
         /// <summary>Standard constructor</summary>
         /// <param name="warnIfNull">If true, inspector will display a warning if the embedded asset is null</param>
-        public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false)
-        {
-            WarnIfNull = warnIfNull;
-        }
+        public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false) { WarnIfNull = warnIfNull; }
     }
     
     /// <summary>
@@ -101,11 +114,6 @@ namespace Cinemachine
     /// Used for custom drawing in the inspector.
     /// </summary>
     public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
-
-    /// <summary>
-    /// Draw an AutoDolly selector widget
-    /// </summary>
-    public sealed class AutoDollySelectorAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Attribute used by camera pipeline authoring components to indicate
@@ -120,4 +128,15 @@ namespace Cinemachine
         /// <param name="stage">The stage in the Camera Pipeline in which to position this component</param>
         public CameraPipelineAttribute(CinemachineCore.Stage stage) { Stage = stage; }
     }
+
+    /// <summary>
+    /// Attribute applied to a CinemachineVirtualCameraBase property to produce
+    /// a child camera selector in the inspectoe.
+    /// </summary>
+    public sealed class ChildCameraPropertyAttribute : PropertyAttribute {}
+
+    /// <summary>
+    /// Draws BlenderSettings asset embedded within the inspector.
+    /// </summary>
+    public sealed class EmbeddedBlenderSettingsPropertyAttribute : PropertyAttribute {}
 }

@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Inspector for CinemachineBrain
@@ -14,40 +14,22 @@ namespace Cinemachine.Editor
     {
         CinemachineBrain Target => target as CinemachineBrain;
 
-        EmbeddeAssetEditor<CinemachineBlenderSettings> m_BlendsEditor;
-        ObjectField m_LiveCamera;
-        TextField m_LiveBlend;
-        bool m_EventsExpanded = false;
-
-        void OnEnable()
-        {
-            m_BlendsEditor = new EmbeddeAssetEditor<CinemachineBlenderSettings>();
-            EditorApplication.update += UpdateVisibility;
-        }
-
-        void OnDisable()
-        {
-            if (m_BlendsEditor != null)
-                m_BlendsEditor.OnDisable();
-            EditorApplication.update -= UpdateVisibility;
-        }
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
 
             // Show the active camera and blend
-            var row = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            var row = ux.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.Add(new Label("Live Camera")
                 { tooltip = "The Cm Camera that is currently active", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            m_LiveCamera = row.Right.AddChild(new ObjectField("") 
+            var liveCamera = row.Right.AddChild(new ObjectField("") 
                 { objectType = typeof(CinemachineVirtualCameraBase), style = { flexGrow = 1 }});
             row.SetEnabled(false);
 
-            row = ux.AddChild(new InspectorUtility.LeftRightContainer());
+            row = ux.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.Add(new Label("Live Blend")
                 { tooltip = "The state of currently active blend, if any", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            m_LiveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
+            var liveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
             row.SetEnabled(false);
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowDebugText)));
@@ -59,33 +41,17 @@ namespace Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(m_BlendsEditor.CreateInspectorGUI(
-                serializedObject.FindProperty(() => Target.CustomBlends),
-                "Create New Blender Asset", Target.gameObject.name + " Blends", "asset", string.Empty));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
 
-            var foldout = ux.AddChild(new Foldout 
-            { 
-                text = "Events", 
-                tooltip = "Add handlers for these events, if desired", 
-                value = m_EventsExpanded 
-            });
-            foldout.RegisterValueChangedCallback((evt) => 
+            ux.ContinuousUpdate(() =>
             {
-                m_EventsExpanded = evt.newValue;
-                evt.StopPropagation();
+                if (target == null || liveCamera == null)
+                    return;
+                liveCamera.value = Target.ActiveVirtualCamera as CinemachineVirtualCameraBase;
+                liveBlend.value = Target.ActiveBlend != null ? Target.ActiveBlend.Description : string.Empty;
             });
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraCutEvent)));
-            foldout.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraActivatedEvent)));
 
             return ux;
-        }
-
-        void UpdateVisibility()
-        {
-            if (Target == null || m_LiveCamera == null)
-                return;
-            m_LiveCamera.value = Target.ActiveVirtualCamera as CinemachineVirtualCameraBase;
-            m_LiveBlend.value = Target.ActiveBlend != null ? Target.ActiveBlend.Description : string.Empty;
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected, typeof(CinemachineBrain))]
@@ -106,7 +72,7 @@ namespace Cinemachine.Editor
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineVirtualCameraBase))]
         public static void DrawVirtualCameraBaseGizmos(CinemachineVirtualCameraBase vcam, GizmoType selectionType)
         {
-            const string kGizmoFileName = ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
+            const string kGizmoFileName = CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
 
             // Don't draw gizmos on hidden stuff
             if ((vcam.gameObject.hideFlags & (HideFlags.HideInHierarchy | HideFlags.HideInInspector)) != 0)
@@ -121,7 +87,7 @@ namespace Cinemachine.Editor
             DrawCameraFrustumGizmo(
                 state.Lens,
                 Matrix4x4.TRS(state.GetFinalPosition(), state.GetFinalOrientation().normalized, Vector3.one),
-                CinemachineCore.Instance.IsLive(vcam)
+                CinemachineCore.IsLive(vcam)
                     ? CinemachineCorePrefs.ActiveGizmoColour.Value
                     : CinemachineCorePrefs.InactiveGizmoColour.Value);
         }

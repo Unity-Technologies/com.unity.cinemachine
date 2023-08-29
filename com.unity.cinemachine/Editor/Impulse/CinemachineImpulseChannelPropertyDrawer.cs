@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(CinemachineImpulseChannelPropertyAttribute))]
     class CinemachineImpulseChannelPropertyDrawer : PropertyDrawer

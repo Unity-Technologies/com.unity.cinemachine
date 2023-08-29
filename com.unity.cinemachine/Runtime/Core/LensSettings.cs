@@ -1,13 +1,7 @@
 using UnityEngine;
 using System;
 
-#if CINEMACHINE_HDRP
-    using UnityEngine.Rendering.HighDefinition;
-#elif CINEMACHINE_LWRP_7_3_1
-    using UnityEngine.Rendering.Universal;
-#endif
-
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Describes the FOV and clip planes for a camera.  This generally mirrors the Unity Camera's
@@ -16,15 +10,14 @@ namespace Cinemachine
     [Serializable]
     public struct LensSettings
     {
-        /// <summary>Default Lens Settings</summary>
-        public static LensSettings Default = new LensSettings(40f, 10f, 0.1f, 5000f, 0);
-
         /// <summary>
-        /// This is the camera view in degrees. For cinematic people, a 50mm lens
-        /// on a super-35mm sensor would equal a 19.6 degree FOV
+        /// This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the
+        /// associated camera has its FOV axis setting set to Horizontal, in which case display will 
+        /// be in horizontal degress.  Internally, it is always vertical degrees.  
+        /// For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV.
         /// </summary>
         [RangeSlider(1f, 179f)]
-        [Tooltip("This is the camera view in degrees. Display will be in vertical degress, unless the "
+        [Tooltip("This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the "
             + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
             + "be in horizontal degress.  Internally, it is always vertical degrees.  "
             + "For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
@@ -60,7 +53,7 @@ namespace Cinemachine
         public float Dutch;
 
         /// <summary>
-        /// This enum controls how the Camera seetings are driven.  Some settings
+        /// This enum controls how the Camera settings are driven.  Some settings
         /// can be pulled from the main camera, or pushed to it, depending on these values.
         /// </summary>
         public enum OverrideModes
@@ -87,83 +80,140 @@ namespace Cinemachine
             + "component through this setting will remain after the Virtual Camera deactivation.")]
         public OverrideModes ModeOverride;
 
+        /// <summary>These are settings that are used only if IsPhysicalCamera is true.</summary>
+        [Serializable]
+        [Tooltip("These are settings that are used only if IsPhysicalCamera is true")]
+        public struct PhysicalSettings
+        {
+            /// <summary>How the image is fitted to the sensor if the aspect ratios differ</summary>
+            [Tooltip("How the image is fitted to the sensor if the aspect ratios differ")]
+            public Camera.GateFitMode GateFit;
+
+            /// <summary>This is the actual size of the image sensor (in mm).</summary>
+            [SensorSizeProperty]
+            [Tooltip("This is the actual size of the image sensor (in mm)")]
+            public Vector2 SensorSize;
+
+            /// <summary>Position of the gate relative to the film back</summary>
+            [Tooltip("Position of the gate relative to the film back")]
+            public Vector2 LensShift;
+
+            /// <summary>Distance from the camera lens at which focus is sharpest.  
+            /// The Depth of Field Volume override uses this value if you set FocusDistanceMode to Camera</summary>
+            [Tooltip("Distance from the camera lens at which focus is sharpest.  The Depth of Field Volume "
+                + "override uses this value if you set FocusDistanceMode to Camera")]
+            public float FocusDistance;
+
+            /// <summary>The sensor sensitivity (ISO)</summary>
+            [Tooltip("The sensor sensitivity (ISO)")]
+            public int Iso;
+
+            /// <summary>The exposure time, in seconds</summary>
+            [Tooltip("The exposure time, in seconds")]
+            public float ShutterSpeed;
+
+            /// <summary>The aperture number, in f-stop</summary>
+            [Tooltip("The aperture number, in f-stop")]
+            [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
+            public float Aperture;
+
+            /// <summary>The number of diaphragm blades</summary>
+            [Tooltip("The number of diaphragm blades")]
+            [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
+            public int BladeCount;
+
+            /// <summary>Maps an aperture range to blade curvature</summary>
+            [Tooltip("Maps an aperture range to blade curvature")]
+            [MinMaxRangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
+            public Vector2 Curvature;
+
+            /// <summary>The strength of the "cat-eye" effect on bokeh (optical vignetting)</summary>
+            [Tooltip("The strength of the \"cat-eye\" effect on bokeh (optical vignetting)")]
+            [RangeSlider(0, 1)]
+            public float BarrelClipping;
+
+            /// <summary>Stretches the sensor to simulate an anamorphic look.  Positive values distort 
+            /// the camera vertically, negative values distore the camera horizontally</summary>
+            [Tooltip("Stretches the sensor to simulate an anamorphic look.  Positive values distort the "
+                + "camera vertically, negative values distort the camera horizontally")]
+            [RangeSlider(-1, 1)]
+            public float Anamorphism;
+        }
+
+        /// <summary>
+        /// The physical settings of the lens, valid only when camera is set to Physical mode.
+        /// </summary>
+        public PhysicalSettings PhysicalProperties;
+
+        bool m_OrthoFromCamera;
+        bool m_PhysicalFromCamera;
+        float m_AspectFromCamera;
+
+#if UNITY_EDITOR
+        // Needed for knowing how to display FOV (horizontal or vertical)
+        // This should really be a global Unity setting, but for now there is no better way than this!
+        Camera m_SourceCamera;
+        internal bool UseHorizontalFOV
+        {
+            get
+            {
+                if (m_SourceCamera == null)
+                    return false;
+                var p = new UnityEditor.SerializedObject(m_SourceCamera).FindProperty("m_FOVAxisMode");
+                return p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal;
+            }
+        }
+#endif
+
         /// <summary>
         /// This is set every frame by the virtual camera, based on the value found in the
         /// currently associated Unity camera.
         /// Do not set this property.  Instead, use the ModeOverride field to set orthographic mode.
         /// </summary>
-        public bool Orthographic 
-        { 
-            get => ModeOverride == OverrideModes.Orthographic || ModeOverride == OverrideModes.None && m_OrthoFromCamera;
-
-            /// Obsolete: do not use
-            private set { m_OrthoFromCamera = value; ModeOverride = value 
-                ? OverrideModes.Orthographic : OverrideModes.Perspective; } 
-        }
-
-        /// <summary>
-        /// For physical cameras, this is the actual size of the image sensor (in mm); it is used to 
-        /// convert between focal length and field of view.  For nonphysical cameras, it is the aspect ratio.
-        /// </summary>
-        public Vector2 SensorSize
-        { 
-            get { return m_SensorSize; } 
-            set { m_SensorSize = value; } 
-        }
-
-        /// <summary>
-        /// Sensor aspect, not screen aspect.  For nonphysical cameras, this is the same thing.
-        /// </summary>
-        public float Aspect { get { return SensorSize.y == 0 ? 1f : (SensorSize.x / SensorSize.y); } }
+        public bool Orthographic => ModeOverride == OverrideModes.Orthographic 
+            || (ModeOverride == OverrideModes.None && m_OrthoFromCamera);
 
         /// <summary>
         /// This property will be true if the camera mode is set, either directly or 
         /// indirectly, to Physical Camera
         /// Do not set this property.  Instead, use the ModeOverride field to set physical mode.
         /// </summary>
-        public bool IsPhysicalCamera 
-        { 
-            get { return ModeOverride == OverrideModes.Physical 
-                || ModeOverride == OverrideModes.None && m_PhysicalFromCamera; } 
+        public bool IsPhysicalCamera => ModeOverride == OverrideModes.Physical 
+            || (ModeOverride == OverrideModes.None && m_PhysicalFromCamera);
+                
+        /// <summary>
+        /// For physical cameras, this is the Sensor aspect.  
+        /// For nonphysical cameras, this is the screen aspect pulled from the camera, if any.
+        /// </summary>
+        public float Aspect => IsPhysicalCamera 
+            ? PhysicalProperties.SensorSize.x / PhysicalProperties.SensorSize.y : m_AspectFromCamera;
 
-            /// Obsolete: do not use
-            set { m_PhysicalFromCamera = value; ModeOverride = value 
-                ? OverrideModes.Physical : OverrideModes.Perspective; } 
-        }
+        /// <summary>Default Lens Settings</summary>
+        public static LensSettings Default => new ()
+        {
+            FieldOfView = 40f,
+            OrthographicSize = 10f,
+            NearClipPlane = 0.1f,
+            FarClipPlane = 5000f,
+            Dutch = 0,
+            ModeOverride = OverrideModes.None,
 
-#if UNITY_EDITOR
-        internal bool UseHorizontalFOV { get; private set; }
-#endif
-
-        /// <summary>For physical cameras only: position of the gate relative to 
-        /// the film back</summary>
-        public Vector2 LensShift;
-
-        /// <summary>For physical cameras only: how the image is fitted to the sensor 
-        /// if the aspect ratios differ</summary>
-        public Camera.GateFitMode GateFit;
-
-        [SerializeField] Vector2 m_SensorSize;
-
-        bool m_OrthoFromCamera;
-        bool m_PhysicalFromCamera;
-
-
-#if CINEMACHINE_HDRP
-        public int Iso;
-        public float ShutterSpeed;
-        [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
-        public float Aperture;
-        public float FocusDistance;
-        [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
-        public int BladeCount;
-        [MinMaxRangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
-        public Vector2 Curvature;
-        [RangeSlider(0, 1)]
-        public float BarrelClipping;
-        [RangeSlider(-1, 1)]
-        public float Anamorphism;
-#endif
+            PhysicalProperties = new ()
+            {
+                SensorSize = new Vector2(21.946f, 16.002f),
+                GateFit = Camera.GateFitMode.Horizontal,
+                FocusDistance = 10,
+                LensShift = Vector2.zero,
+                Iso = 200,
+                ShutterSpeed = 0.005f,
+                Aperture = 16,
+                BladeCount = 5,
+                Curvature = new Vector2(2, 11),
+                BarrelClipping = 0.25f,
+                Anamorphism = 0,
+            },
+            m_AspectFromCamera = 1
+        };
 
         /// <summary>
         /// Creates a new LensSettings, copying the values from the
@@ -177,114 +227,65 @@ namespace Cinemachine
             LensSettings lens = Default;
             if (fromCamera != null)
             {
+                lens.PullInheritedPropertiesFromCamera(fromCamera);
+
                 lens.FieldOfView = fromCamera.fieldOfView;
                 lens.OrthographicSize = fromCamera.orthographicSize;
                 lens.NearClipPlane = fromCamera.nearClipPlane;
                 lens.FarClipPlane = fromCamera.farClipPlane;
-                lens.LensShift = fromCamera.lensShift;
-                lens.GateFit = fromCamera.gateFit;
-                lens.SnapshotCameraReadOnlyProperties(fromCamera);
 
-#if CINEMACHINE_HDRP
                 if (lens.IsPhysicalCamera)
                 {
-                    lens.Iso = fromCamera.iso;
-                    lens.ShutterSpeed = fromCamera.shutterSpeed;
-                    lens.Aperture = fromCamera.aperture;
-                    lens.BladeCount = fromCamera.bladeCount;
-                    lens.Curvature = fromCamera.curvature;
-                    lens.BarrelClipping = fromCamera.barrelClipping;
-                    lens.Anamorphism = fromCamera.anamorphism;
+                    lens.FieldOfView = Camera.FocalLengthToFieldOfView(
+                        Mathf.Max(0.01f, fromCamera.focalLength), fromCamera.sensorSize.y);
+                    lens.PhysicalProperties.SensorSize = fromCamera.sensorSize;
+                    lens.PhysicalProperties.LensShift = fromCamera.lensShift;
+                    lens.PhysicalProperties.GateFit = fromCamera.gateFit;
+                    lens.PhysicalProperties.FocusDistance = fromCamera.focusDistance;
+                    lens.PhysicalProperties.Iso = fromCamera.iso;
+                    lens.PhysicalProperties.ShutterSpeed = fromCamera.shutterSpeed;
+                    lens.PhysicalProperties.Aperture = fromCamera.aperture;
+                    lens.PhysicalProperties.BladeCount = fromCamera.bladeCount;
+                    lens.PhysicalProperties.Curvature = fromCamera.curvature;
+                    lens.PhysicalProperties.BarrelClipping = fromCamera.barrelClipping;
+                    lens.PhysicalProperties.Anamorphism = fromCamera.anamorphism;
                 }
-#endif
             }
             return lens;
         }
 
         /// <summary>
-        /// Snapshot the properties that are read-only in the Camera
+        /// In the event that there is no camera mode override, camera mode is driven
+        /// by the Camera's state.
         /// </summary>
         /// <param name="camera">The Camera from which we will take the info</param>
-        public void SnapshotCameraReadOnlyProperties(Camera camera)
-        {
-            m_OrthoFromCamera = false;
-            m_PhysicalFromCamera = false;
-            UseHorizontalFOV = false;
-            if (camera != null && ModeOverride == OverrideModes.None)
-            {
-                m_OrthoFromCamera = camera.orthographic;
-                m_PhysicalFromCamera = camera.usePhysicalProperties;
-                m_SensorSize = camera.sensorSize;
-                GateFit = camera.gateFit;
-            }
-            if (IsPhysicalCamera)
-            {
-                // If uninitialized, do an initial pull from the camera
-                if (camera != null && m_SensorSize == Vector2.zero)
-                {
-                    m_SensorSize = camera.sensorSize;
-                    GateFit = camera.gateFit;
-                }
-            }
-            else
-            {
-                if (camera != null)
-                    m_SensorSize = new Vector2(camera.aspect, 1f);
-                LensShift = Vector2.zero;
-            }
-#if UNITY_EDITOR
-            // This should really be a global setting, but for now there is no better way than this!
-            var p = new UnityEditor.SerializedObject(camera).FindProperty("m_FOVAxisMode");
-            UseHorizontalFOV = (p != null && p.intValue == (int)Camera.FieldOfViewAxis.Horizontal);
-#endif
-        }
-
-        /// <summary>
-        /// Snapshot the properties that are read-only in the Camera
-        /// </summary>
-        /// <param name="lens">The LensSettings from which we will take the info</param>
-        public void SnapshotCameraReadOnlyProperties(ref LensSettings lens)
+        public void PullInheritedPropertiesFromCamera(Camera camera)
         {
             if (ModeOverride == OverrideModes.None)
             {
-                m_OrthoFromCamera = lens.Orthographic;
-                m_SensorSize = lens.m_SensorSize;
-                m_PhysicalFromCamera = lens.IsPhysicalCamera;
+                m_OrthoFromCamera = camera.orthographic;
+                m_PhysicalFromCamera = camera.usePhysicalProperties;
             }
-            if (!IsPhysicalCamera)
-                LensShift = Vector2.zero;
+            m_AspectFromCamera = camera.aspect;
+#if UNITY_EDITOR
+            m_SourceCamera = camera; // hack because of missing Unity API to get horizontal or vertical fov mode
+#endif
         }
 
         /// <summary>
-        /// Explicit constructor for this LensSettings
+        /// Copy the properties controlled by camera mode.  If ModeOverride is None, then
+        /// some internal state information must be transferred.
         /// </summary>
-        /// <param name="verticalFOV">The Vertical field of view</param>
-        /// <param name="orthographicSize">If orthographic, this is the half-height of the screen</param>
-        /// <param name="nearClip">The near clip plane</param>
-        /// <param name="farClip">The far clip plane</param>
-        /// <param name="dutch">Camera roll, in degrees.  This is applied at the end
-        /// after shot composition.</param>
-        public LensSettings(
-            float verticalFOV, float orthographicSize,
-            float nearClip, float farClip, float dutch) : this()
+        /// <param name="fromLens">The LensSettings from which we will take the info</param>
+        public void CopyCameraMode(ref LensSettings fromLens)
         {
-            FieldOfView = verticalFOV;
-            OrthographicSize = orthographicSize;
-            NearClipPlane = nearClip;
-            FarClipPlane = farClip;
-            Dutch = dutch;
-            m_SensorSize = Vector2.one;
-            GateFit = Camera.GateFitMode.Horizontal;
-
-#if CINEMACHINE_HDRP
-            Iso = 200;
-            ShutterSpeed = 0.005f;
-            Aperture = 16;
-            BladeCount = 5;
-            Curvature = new Vector2(2, 11);
-            BarrelClipping = 0.25f;
-            Anamorphism = 0;
-#endif
+            ModeOverride = fromLens.ModeOverride;
+            if (ModeOverride == OverrideModes.None)
+            {
+                m_OrthoFromCamera = fromLens.Orthographic;
+                m_PhysicalFromCamera = fromLens.IsPhysicalCamera;
+            }
+            m_AspectFromCamera = fromLens.m_AspectFromCamera;
         }
 
         /// <summary>
@@ -307,15 +308,15 @@ namespace Cinemachine
             else
             {
                 var blendedLens = lensB; 
-                blendedLens.Lerp(lensA, t);
+                blendedLens.Lerp(lensA, 1 - t);
                 return blendedLens;
             }
         }
 
         /// <summary>
-        /// Lerp the lerpable values.  Nonlerpable values remain intact.
+        /// Lerp the interpolatable values. Values that can't be interpolated remain intact.
         /// </summary>
-        /// <param name="lensB">The lens containing the values to compine with this one</param>
+        /// <param name="lensB">The lens containing the values to combine with this one</param>
         /// <param name="t">The weight of LensB's values.</param>
         public void Lerp(in LensSettings lensB, float t)
         {
@@ -324,18 +325,16 @@ namespace Cinemachine
             FieldOfView = Mathf.Lerp(FieldOfView, lensB.FieldOfView, t);
             OrthographicSize = Mathf.Lerp(OrthographicSize, lensB.OrthographicSize, t);
             Dutch = Mathf.Lerp(Dutch, lensB.Dutch, t);
-            m_SensorSize = Vector2.Lerp(m_SensorSize, lensB.m_SensorSize, t);
-            LensShift = Vector2.Lerp(LensShift, lensB.LensShift, t);
-
-#if CINEMACHINE_HDRP
-            Iso = Mathf.RoundToInt(Mathf.Lerp((float)Iso, (float)lensB.Iso, t));
-            ShutterSpeed = Mathf.Lerp(ShutterSpeed, lensB.ShutterSpeed, t);
-            Aperture = Mathf.Lerp(Aperture, lensB.Aperture, t);
-            BladeCount = Mathf.RoundToInt(Mathf.Lerp(BladeCount, lensB.BladeCount, t));;
-            Curvature = Vector2.Lerp(Curvature, lensB.Curvature, t);
-            BarrelClipping = Mathf.Lerp(BarrelClipping, lensB.BarrelClipping, t);
-            Anamorphism = Mathf.Lerp(Anamorphism, lensB.Anamorphism, t);
-#endif
+            PhysicalProperties.SensorSize = Vector2.Lerp(PhysicalProperties.SensorSize, lensB.PhysicalProperties.SensorSize, t);
+            PhysicalProperties.LensShift = Vector2.Lerp(PhysicalProperties.LensShift, lensB.PhysicalProperties.LensShift, t);
+            PhysicalProperties.FocusDistance = Mathf.Lerp(PhysicalProperties.FocusDistance, lensB.PhysicalProperties.FocusDistance, t);
+            PhysicalProperties.Iso = Mathf.RoundToInt(Mathf.Lerp((float)PhysicalProperties.Iso, (float)lensB.PhysicalProperties.Iso, t));
+            PhysicalProperties.ShutterSpeed = Mathf.Lerp(PhysicalProperties.ShutterSpeed, lensB.PhysicalProperties.ShutterSpeed, t);
+            PhysicalProperties.Aperture = Mathf.Lerp(PhysicalProperties.Aperture, lensB.PhysicalProperties.Aperture, t);
+            PhysicalProperties.BladeCount = Mathf.RoundToInt(Mathf.Lerp(PhysicalProperties.BladeCount, lensB.PhysicalProperties.BladeCount, t));;
+            PhysicalProperties.Curvature = Vector2.Lerp(PhysicalProperties.Curvature, lensB.PhysicalProperties.Curvature, t);
+            PhysicalProperties.BarrelClipping = Mathf.Lerp(PhysicalProperties.BarrelClipping, lensB.PhysicalProperties.BarrelClipping, t);
+            PhysicalProperties.Anamorphism = Mathf.Lerp(PhysicalProperties.Anamorphism, lensB.PhysicalProperties.Anamorphism, t);
         }
 
         /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
@@ -343,24 +342,25 @@ namespace Cinemachine
         {
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
             FieldOfView = Mathf.Clamp(FieldOfView, 0.01f, 179f);
-            m_SensorSize.x = Mathf.Max(m_SensorSize.x, 0.1f);
-            m_SensorSize.y = Mathf.Max(m_SensorSize.y, 0.1f);
-#if CINEMACHINE_HDRP
-            ShutterSpeed = Mathf.Max(0, ShutterSpeed);
-            Aperture = Mathf.Clamp(Aperture, Camera.kMinAperture, Camera.kMaxAperture);
-            BladeCount = Mathf.Clamp(BladeCount, Camera.kMinBladeCount, Camera.kMaxBladeCount);
-            BarrelClipping = Mathf.Clamp01(BarrelClipping);
-            Curvature.x = Mathf.Clamp(Curvature.x, Camera.kMinAperture, Camera.kMaxAperture);
-            Curvature.y = Mathf.Clamp(Curvature.y, Curvature.x, Camera.kMaxAperture);
-            Anamorphism = Mathf.Clamp(Anamorphism, -1, 1);
-#endif
+            PhysicalProperties.SensorSize.x = Mathf.Max(PhysicalProperties.SensorSize.x, 0.1f);
+            PhysicalProperties.SensorSize.y = Mathf.Max(PhysicalProperties.SensorSize.y, 0.1f);
+            PhysicalProperties.FocusDistance = Mathf.Max(PhysicalProperties.FocusDistance, 0.01f);
+            if (m_AspectFromCamera == 0)
+                m_AspectFromCamera = 1;
+            PhysicalProperties.ShutterSpeed = Mathf.Max(0, PhysicalProperties.ShutterSpeed);
+            PhysicalProperties.Aperture = Mathf.Clamp(PhysicalProperties.Aperture, Camera.kMinAperture, Camera.kMaxAperture);
+            PhysicalProperties.BladeCount = Mathf.Clamp(PhysicalProperties.BladeCount, Camera.kMinBladeCount, Camera.kMaxBladeCount);
+            PhysicalProperties.BarrelClipping = Mathf.Clamp01(PhysicalProperties.BarrelClipping);
+            PhysicalProperties.Curvature.x = Mathf.Clamp(PhysicalProperties.Curvature.x, Camera.kMinAperture, Camera.kMaxAperture);
+            PhysicalProperties.Curvature.y = Mathf.Clamp(PhysicalProperties.Curvature.y, PhysicalProperties.Curvature.x, Camera.kMaxAperture);
+            PhysicalProperties.Anamorphism = Mathf.Clamp(PhysicalProperties.Anamorphism, -1, 1);
         }
 
         /// <summary>
         /// Compare two lens settings objects for approximate equality
         /// </summary>
         /// <param name="a">First LensSettings</param>
-        /// <param name="b">Second Lens Settigs</param>
+        /// <param name="b">Second Lens Settings</param>
         /// <returns>True if the two lenses are approximately equal</returns>
         public static bool AreEqual(ref LensSettings a, ref LensSettings b)
         {
@@ -369,22 +369,21 @@ namespace Cinemachine
                 && Mathf.Approximately(a.OrthographicSize, b.OrthographicSize)
                 && Mathf.Approximately(a.FieldOfView, b.FieldOfView)
                 && Mathf.Approximately(a.Dutch, b.Dutch)
-                && Mathf.Approximately(a.LensShift.x, b.LensShift.x)
-                && Mathf.Approximately(a.LensShift.y, b.LensShift.y)
+                && Mathf.Approximately(a.PhysicalProperties.LensShift.x, b.PhysicalProperties.LensShift.x)
+                && Mathf.Approximately(a.PhysicalProperties.LensShift.y, b.PhysicalProperties.LensShift.y)
 
-                && Mathf.Approximately(a.SensorSize.x, b.SensorSize.x)
-                && Mathf.Approximately(a.SensorSize.y, b.SensorSize.y)
-                && a.GateFit == b.GateFit
-#if CINEMACHINE_HDRP
-                && Mathf.Approximately(a.Iso, b.Iso)
-                && Mathf.Approximately(a.ShutterSpeed, b.ShutterSpeed)
-                && Mathf.Approximately(a.Aperture, b.Aperture)
-                && a.BladeCount == b.BladeCount
-                && Mathf.Approximately(a.Curvature.x, b.Curvature.x)
-                && Mathf.Approximately(a.Curvature.y, b.Curvature.y)
-                && Mathf.Approximately(a.BarrelClipping, b.BarrelClipping)
-                && Mathf.Approximately(a.Anamorphism, b.Anamorphism)
-#endif
+                && Mathf.Approximately(a.PhysicalProperties.SensorSize.x, b.PhysicalProperties.SensorSize.x)
+                && Mathf.Approximately(a.PhysicalProperties.SensorSize.y, b.PhysicalProperties.SensorSize.y)
+                && a.PhysicalProperties.GateFit == b.PhysicalProperties.GateFit
+                && Mathf.Approximately(a.PhysicalProperties.FocusDistance, b.PhysicalProperties.FocusDistance)
+                && Mathf.Approximately(a.PhysicalProperties.Iso, b.PhysicalProperties.Iso)
+                && Mathf.Approximately(a.PhysicalProperties.ShutterSpeed, b.PhysicalProperties.ShutterSpeed)
+                && Mathf.Approximately(a.PhysicalProperties.Aperture, b.PhysicalProperties.Aperture)
+                && a.PhysicalProperties.BladeCount == b.PhysicalProperties.BladeCount
+                && Mathf.Approximately(a.PhysicalProperties.Curvature.x, b.PhysicalProperties.Curvature.x)
+                && Mathf.Approximately(a.PhysicalProperties.Curvature.y, b.PhysicalProperties.Curvature.y)
+                && Mathf.Approximately(a.PhysicalProperties.BarrelClipping, b.PhysicalProperties.BarrelClipping)
+                && Mathf.Approximately(a.PhysicalProperties.Anamorphism, b.PhysicalProperties.Anamorphism)
                 ;
         }
     }

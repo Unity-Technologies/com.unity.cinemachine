@@ -1,7 +1,8 @@
-﻿using System;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is an add-on behaviour that globally maps the touch control 
@@ -46,3 +47,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

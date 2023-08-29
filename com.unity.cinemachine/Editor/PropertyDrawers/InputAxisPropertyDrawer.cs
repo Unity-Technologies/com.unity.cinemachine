@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(InputAxis))]
     class InputAxisWithNamePropertyDrawer : PropertyDrawer
@@ -35,12 +35,21 @@ namespace Cinemachine.Editor
                 EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Center));
 
                 rect.y += height + EditorGUIUtility.standardVerticalSpacing;
-                InspectorUtility.MultiPropertyOnLine(
-                    rect, null,
-                    new [] {
-                            property.FindPropertyRelative(() => def.Range),
-                            property.FindPropertyRelative(() => def.Wrap)}, 
-                    new [] { GUIContent.none, null });
+                if ((flags & (int)InputAxis.RestrictionFlags.Momentary) != 0)
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Range));
+                else
+                {
+                    InspectorUtility.MultiPropertyOnLine(
+                        rect, null,
+                        new [] {
+                                property.FindPropertyRelative(() => def.Range),
+                                property.FindPropertyRelative(() => def.Wrap)}, 
+                        new [] { GUIContent.none, null });
+                }
+
+                rect.y += height + EditorGUIUtility.standardVerticalSpacing;
+                if ((flags & (int)(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.Momentary)) == 0)
+                    EditorGUI.PropertyField(rect, property.FindPropertyRelative(() => def.Recentering));
 
                 GUI.enabled = enabled;
                 --EditorGUI.indentLevel;
@@ -69,7 +78,12 @@ namespace Cinemachine.Editor
             var lineHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             var height = lineHeight;
             if (property != null && property.isExpanded)
+            {
                 height += 3 * lineHeight;
+                var flags = property.FindPropertyRelative(() => def.Restrictions).intValue;
+                if ((flags & (int)(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.Momentary)) == 0)
+                    height += EditorGUI.GetPropertyHeight(property.FindPropertyRelative(() => def.Recentering));
+            }
             return height - EditorGUIUtility.standardVerticalSpacing;
         }
 
@@ -79,9 +93,12 @@ namespace Cinemachine.Editor
             var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
             foldout.RegisterValueChangedCallback((evt) => 
             {
-                property.isExpanded = evt.newValue;
-                property.serializedObject.ApplyModifiedProperties();
-                evt.StopPropagation();
+                if (evt.target == foldout)
+                {
+                    property.isExpanded = evt.newValue;
+                    property.serializedObject.ApplyModifiedProperties();
+                    evt.StopPropagation();
+                }
             });
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
@@ -95,10 +112,11 @@ namespace Cinemachine.Editor
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
             rangeContainer.Add(new PropertyField(property.FindPropertyRelative(() => def.Range)) { style = { flexGrow = 1 }});
             var wrapProp = property.FindPropertyRelative(() => def.Wrap);
-            rangeContainer.Add(new PropertyField(wrapProp, "") 
+            var wrap = rangeContainer.AddChild(new PropertyField(wrapProp, "") 
                 { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5 }});
-            rangeContainer.Add(new Label(wrapProp.displayName) 
+            var wrapLabel = rangeContainer.AddChild(new Label(wrapProp.displayName) 
                 { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
+            var recentering = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
 
             var flagsProp = property.FindPropertyRelative(() => def.Restrictions);
             TrackFlags(flagsProp);
@@ -106,10 +124,15 @@ namespace Cinemachine.Editor
 
             void TrackFlags(SerializedProperty prop)
             {
+                if (prop.serializedObject == null)
+                    return; // object deleted
                 var flags = prop.intValue;
                 var rangeDisabled = (flags & (int)InputAxis.RestrictionFlags.RangeIsDriven) != 0;
                 centerField.SetEnabled(!rangeDisabled);
                 rangeContainer.SetEnabled(!rangeDisabled);
+                recentering.SetVisible((flags & (int)(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.Momentary)) == 0);
+                wrap.SetVisible((flags & (int)InputAxis.RestrictionFlags.Momentary) == 0);
+                wrapLabel.SetVisible((flags & (int)InputAxis.RestrictionFlags.Momentary) == 0);
             }
 
             return ux;

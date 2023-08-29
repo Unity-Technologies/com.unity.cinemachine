@@ -1,9 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using System;
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachinePositionComposer instead.
@@ -355,14 +355,13 @@ namespace Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            if (fromCam != null && transitionParams.InheritPosition
-                 && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+            if (fromCam != null 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
                 m_prevRotation = fromCam.State.RawOrientation;
@@ -440,7 +439,7 @@ namespace Cinemachine
 
             // Compute group bounds and adjust follow target for group framing
             ICinemachineTargetGroup group = FollowTargetAsGroup;
-            bool isGroupFraming = group != null && m_GroupFramingMode != FramingMode.None && !group.IsEmpty;
+            bool isGroupFraming = group != null && group.IsValid && m_GroupFramingMode != FramingMode.None && !group.IsEmpty;
             if (isGroupFraming)
                 followTargetPosition = ComputeGroupBounds(group, ref curState);
 
@@ -448,7 +447,7 @@ namespace Cinemachine
             if (m_LookaheadTime > Epsilon)
             {
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(followTargetPosition, deltaTime, m_LookaheadTime);
+                m_Predictor.AddPosition(followTargetPosition, deltaTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
                     delta = delta.ProjectOntoPlane(curState.ReferenceUp);
@@ -662,9 +661,36 @@ namespace Cinemachine
         }
 
         // Helper to upgrade to CM3
+        internal ScreenComposerSettings Composition
+        {
+            get => new ()
+            {
+                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
+                DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
+                HardLimits = new ()
+                {
+                    Enabled = !m_UnlimitedSoftZone,
+                    Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
+                    Offset = new Vector2(m_BiasX, m_BiasY) * 2
+                }
+            };
+            set
+            {
+                m_ScreenX = value.ScreenPosition.x + 0.5f;
+                m_ScreenY = value.ScreenPosition.y + 0.5f;
+                m_DeadZoneWidth = value.DeadZone.Size.x;
+                m_DeadZoneHeight = value.DeadZone.Size.y;
+                m_SoftZoneWidth = value.HardLimits.Size.x;
+                m_SoftZoneHeight = value.HardLimits.Size.y;
+                m_BiasX = value.HardLimits.Offset.x / 2;
+                m_BiasY = value.HardLimits.Offset.y / 2;
+            }
+        }
+
+        // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachinePositionComposer c)
         {
-            c.TrackedObjectOffset = m_TrackedObjectOffset;
+            c.TargetOffset = m_TrackedObjectOffset;
             c.Lookahead = new LookaheadSettings
             {
                 Enabled = m_LookaheadTime > 0,
@@ -675,17 +701,9 @@ namespace Cinemachine
             c.CameraDistance = m_CameraDistance;
             c.DeadZoneDepth = m_DeadZoneDepth;
             c.Damping = new Vector3(m_XDamping, m_YDamping, m_ZDamping);
-            c.Composition = new ScreenComposerSettings
-            {
-                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
-                DeadZoneSize = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight),
-                SoftZoneSize = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-                Bias = new Vector2(m_BiasX, m_BiasY)
-            };
-            c.UnlimitedSoftZone = m_UnlimitedSoftZone;
+            c.Composition = Composition;
             c.CenterOnActivate = m_CenterOnActivate;
         }
-
 
         // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineGroupFraming c)
@@ -701,3 +719,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

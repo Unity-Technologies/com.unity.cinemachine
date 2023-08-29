@@ -1,8 +1,7 @@
 using System;
-using Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine.TargetTracking
+namespace Unity.Cinemachine.TargetTracking
 {
     /// <summary>
     /// The coordinate space to use when interpreting the offset from the target
@@ -32,7 +31,7 @@ namespace Cinemachine.TargetTracking
         /// <summary>Camera will be bound to the Follow target using a world space offset.</summary>
         WorldSpace = 4,
         /// <summary>Offsets will be calculated relative to the target, using Camera-local axes</summary>
-        SimpleFollowWithWorldUp = 5
+        LazyFollow = 5
     }
 
     /// <summary>How to calculate the angular damping for the target orientation</summary>
@@ -141,7 +140,7 @@ namespace Cinemachine.TargetTracking
         /// <returns>The damping settings applicable for this binding mode</returns>
         internal static Vector3 GetEffectivePositionDamping(this TrackerSettings s)
         {
-            return s.BindingMode == BindingMode.SimpleFollowWithWorldUp 
+            return s.BindingMode == BindingMode.LazyFollow 
                 ? new Vector3(0, s.PositionDamping.y, s.PositionDamping.z) : s.PositionDamping;
         }
 
@@ -160,7 +159,7 @@ namespace Cinemachine.TargetTracking
                 case BindingMode.LockToTargetWithWorldUp:
                     return new Vector3(0, s.RotationDamping.y, 0);
                 case BindingMode.WorldSpace:
-                case BindingMode.SimpleFollowWithWorldUp:
+                case BindingMode.LazyFollow:
                     return Vector3.zero;
                 default:
                     return s.RotationDamping;
@@ -236,7 +235,7 @@ namespace Cinemachine.TargetTracking
                         return Quaternion.LookRotation(targetOrientation * Vector3.forward, worldUp);
                     case BindingMode.LockToTarget:
                         return targetOrientation;
-                    case BindingMode.SimpleFollowWithWorldUp:
+                    case BindingMode.LazyFollow:
                     {
                         Vector3 fwd = (component.FollowTargetPosition - component.VcamState.RawPosition).ProjectOntoPlane(worldUp);
                         if (fwd.AlmostZero())
@@ -254,7 +253,7 @@ namespace Cinemachine.TargetTracking
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">Current camera up</param>
         /// <param name="desiredCameraOffset">Where we want to put the camera relative to the follow target</param>
-        /// <param name="settings">Ttracker settings</param>
+        /// <param name="settings">Tracker settings</param>
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
         public void TrackTarget(
@@ -276,16 +275,16 @@ namespace Cinemachine.TargetTracking
                     dampedOrientation = Quaternion.Slerp(
                         PreviousReferenceOrientation, targetOrientation, t);
                 }
-                else
+                else if (settings.BindingMode != BindingMode.LazyFollow)
                 {
                     var relative = (Quaternion.Inverse(PreviousReferenceOrientation)
                         * targetOrientation).eulerAngles;
                     for (int i = 0; i < 3; ++i)
                     {
+                        if (relative[i] > 180)
+                            relative[i] -= 360;
                         if (Mathf.Abs(relative[i]) < 0.01f) // correct for precision drift
                             relative[i] = 0;
-                        else if (relative[i] > 180)
-                            relative[i] -= 360;
                     }
                     relative = component.VirtualCamera.DetachedFollowTargetDamp(
                         relative, settings.GetEffectiveRotationDamping(), deltaTime);
@@ -380,8 +379,8 @@ namespace Cinemachine.TargetTracking
         /// </summary>
         /// <param name="component">The component caller</param>
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
-        /// <param name="pos">Worldspace position to take</param>
-        /// <param name="rot">Worldspace orientation to take</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
         /// <param name="cameraOffsetLocalSpace">Camera offset from target in local space (relative to ReferenceOrientation)</param>
         public void ForceCameraPosition(
             CinemachineComponentBase component, 
@@ -390,7 +389,7 @@ namespace Cinemachine.TargetTracking
             Vector3 cameraOffsetLocalSpace)
         {
             // Infer target pos from camera
-            var targetRot = bindingMode == BindingMode.SimpleFollowWithWorldUp 
+            var targetRot = bindingMode == BindingMode.LazyFollow 
                 ? rot : GetReferenceOrientation(component, bindingMode, component.VirtualCamera.State.ReferenceUp);
             PreviousTargetPosition = pos - targetRot * cameraOffsetLocalSpace;
         }

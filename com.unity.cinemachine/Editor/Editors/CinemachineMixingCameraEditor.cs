@@ -1,69 +1,74 @@
 using UnityEditor;
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineMixingCamera))]
-    class CinemachineMixingCameraEditor : CinemachineVirtualCameraBaseEditor<CinemachineMixingCamera>
+    class CinemachineMixingCameraEditor : UnityEditor.Editor
     {
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        CinemachineMixingCamera Target => target as CinemachineMixingCamera;
+
+        static string WeightPropertyName(int i) => "Weight" + i;
+
+        public override VisualElement CreateInspectorGUI()
         {
-            base.GetExcludedPropertiesInInspector(excluded);
+            var ux = new VisualElement();
+
+            this.AddCameraStatus(ux);
+            this.AddTransitionsSection(ux);
+
+            ux.AddHeader("Global Settings");
+            this.AddGlobalControls(ux);
+
+            ux.AddSpace();
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
+
+            ux.AddHeader("Child Camera Weights");
+            List<PropertyField> weights = new ();
             for (int i = 0; i < CinemachineMixingCamera.MaxCameras; ++i)
-                excluded.Add(WeightPropertyName(i));
-        }
+                weights.Add(ux.AddChild(new PropertyField(serializedObject.FindProperty(WeightPropertyName(i)))));
 
-        static string WeightPropertyName(int i) { return "Weight" + i; }
+            var noChildrenHelp = ux.AddChild(new HelpBox("There are no CinemachineCamera children", HelpBoxMessageType.Warning));
+            var noWeightHelp = ux.AddChild(new HelpBox("No input channels are active", HelpBoxMessageType.Warning));
 
-        public override void OnInspectorGUI()
-        {
-            BeginInspector();
-            DrawCameraStatusInInspector();
-            DrawGlobalControlsInInspector();
-            DrawRemainingPropertiesInInspector();
-
-            float totalWeight = 0;
-            var children = Target.ChildCameras;
-            int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
-            for (int i = 0; i < numCameras; ++i)
-                if (children[i].isActiveAndEnabled)
-                    totalWeight += Target.GetWeight(i);
-
-            if (numCameras == 0)
-                EditorGUILayout.HelpBox("There are no CmCamera children", MessageType.Warning);
-            else 
+            var container = ux.AddChild(new VisualElement());
+            container.AddHeader("Mix Result");
+            container.Add(new IMGUIContainer(() =>
             {
-                EditorGUILayout.Separator();
-                EditorGUILayout.LabelField("Child Camera Weights", EditorStyles.boldLabel);
+                float totalWeight = 0;
+                var children = Target.ChildCameras;
+                int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
                 for (int i = 0; i < numCameras; ++i)
-                {
-                    SerializedProperty prop = serializedObject.FindProperty(WeightPropertyName(i));
-                    if (prop != null)
-                        EditorGUILayout.PropertyField(prop, new GUIContent(children[i].Name));
-                }
-                serializedObject.ApplyModifiedProperties();
-
-                if (totalWeight <= UnityVectorExtensions.Epsilon)
-                    EditorGUILayout.HelpBox("No input channels are active", MessageType.Warning);
-
-                if (children.Count > numCameras)
-                    EditorGUILayout.HelpBox(
-                        "There are " + children.Count 
-                        + " child cameras.  A maximum of " + numCameras + " is supported.", 
-                        MessageType.Warning);
-
-                // Camera proportion indicator
-                EditorGUILayout.Separator();
-                EditorGUILayout.LabelField("Mix Result", EditorStyles.boldLabel);
+                    if (children[i].isActiveAndEnabled)
+                        totalWeight += Target.GetWeight(i);
                 DrawProportionIndicator(children, numCameras, totalWeight);
-            }
+            }));
 
-            // Extensions
-            DrawExtensionsWidgetInInspector();
+            ux.AddSpace();
+            this.AddExtensionsDropdown(ux);
+
+            ux.TrackAnyUserActivity(() =>
+            {
+                if (Target == null)
+                    return; // object deleted
+                var children = Target.ChildCameras;
+                int numCameras = Mathf.Min(CinemachineMixingCamera.MaxCameras, children.Count);
+                noChildrenHelp.SetVisible(numCameras == 0);
+                float totalWeight = 0;
+                for (int i = 0; totalWeight == 0 && i < numCameras; ++i)
+                    if (children[i].isActiveAndEnabled)
+                        totalWeight += Target.GetWeight(i);
+                noWeightHelp.SetVisible(numCameras > 0 && totalWeight == 0);
+                container.SetVisible(totalWeight > 0);
+
+                for (int i = 0; i < weights.Count; ++i)
+                    weights[i].SetVisible(i < numCameras);
+            });
+
+            return ux;
         }
 
         void DrawProportionIndicator(
@@ -71,7 +76,7 @@ namespace Cinemachine.Editor
         {
             GUIStyle style = EditorStyles.centeredGreyMiniLabel;
             Color bkg = new Color(0.27f, 0.27f, 0.27f); // ack! no better way than this?
-            Color fg = Color.Lerp(CinemachineBrain.GetSoloGUIColor(), bkg, 0.8f);
+            Color fg = Color.Lerp(CinemachineCore.SoloGUIColor(), bkg, 0.8f);
             float totalHeight = (style.lineHeight + style.margin.vertical) * numCameras;
             Rect r = EditorGUILayout.GetControlRect(true, totalHeight);
             r.height /= numCameras; r.height -= 1;

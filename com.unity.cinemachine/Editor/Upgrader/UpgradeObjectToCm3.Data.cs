@@ -1,11 +1,11 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 #pragma warning disable CS0618 // obsolete warnings
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.Splines;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     partial class UpgradeObjectToCm3
     {
@@ -18,7 +18,12 @@ namespace Cinemachine.Editor
             typeof(CinemachinePath),
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
-
+#if CINEMACHINE_PHYSICS
+            typeof(CinemachineCollider),
+#endif
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+            typeof(CinemachineConfiner),
+#endif
             // FreeLook before vcam because we want to delete the vcam child rigs and not convert them
             typeof(CinemachineFreeLook),
             typeof(CinemachineVirtualCamera),
@@ -62,18 +67,25 @@ namespace Cinemachine.Editor
             typeof(CinemachineSmoothPath),
             typeof(CinemachineDollyCart),
             typeof(CinemachinePipeline),
+            typeof(Cinemachine3rdPersonFollow),
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
+#endif
+#if CINEMACHINE_PHYSICS
+            typeof(CinemachineCollider),
+#endif
+#if CINEMACHINE_PHYSICS || CINEMACHINE_PHYSICS_2D
+            typeof(CinemachineConfiner),
 #endif
         };
         
         /// <summary>
         /// Maps class upgrades.
         /// </summary>
-        public readonly Dictionary<Type, Type> ClassUpgradeMap = new()
+        public static readonly Dictionary<Type, Type> ClassUpgradeMap = new()
         {
-            { typeof(CinemachineVirtualCamera), typeof(CmCamera) },
-            { typeof(CinemachineFreeLook), typeof(CmCamera) },
+            { typeof(CinemachineVirtualCamera), typeof(CinemachineCamera) },
+            { typeof(CinemachineFreeLook), typeof(CinemachineCamera) },
             { typeof(CinemachineComposer), typeof(CinemachineRotationComposer) },
             { typeof(CinemachineGroupComposer), typeof(CinemachineRotationComposer) },
             { typeof(CinemachineTransposer), typeof(CinemachineFollow) },
@@ -84,6 +96,10 @@ namespace Cinemachine.Editor
             { typeof(CinemachinePath), typeof(SplineContainer) },
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
+            { typeof(Cinemachine3rdPersonFollow), typeof(CinemachineThirdPersonFollow) },
+#if CINEMACHINE_PHYSICS
+            { typeof(CinemachineCollider), typeof(CinemachineDeoccluder) },
+#endif
         };
         
         /// <summary>
@@ -106,12 +122,12 @@ namespace Cinemachine.Editor
                     { "ZDamping", new("Damping.z", typeof(CinemachinePositionComposer)) },
                     { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachinePositionComposer)) },
                     { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachinePositionComposer)) },
-                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachinePositionComposer)) },
-                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachinePositionComposer)) },
-                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachinePositionComposer)) },
-                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachinePositionComposer)) },
-                    { "BiasX", new("Composition.Bias.x", typeof(CinemachinePositionComposer)) },
-                    { "BiasY", new("Composition.Bias.y", typeof(CinemachinePositionComposer)) },
+                    { "DeadZoneWidth", new("Composition.DeadZone.Size.x", typeof(CinemachinePositionComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZone.Size.y", typeof(CinemachinePositionComposer)) },
+                    { "SoftZoneWidth", new("Composition.HardLimits.Size.x", typeof(CinemachinePositionComposer)) },
+                    { "SoftZoneHeight", new("Composition.HardLimits.Size.y", typeof(CinemachinePositionComposer)) },
+                    { "BiasX", new("Composition.HardLimits.Offset.x", typeof(CinemachinePositionComposer)) },
+                    { "BiasY", new("Composition.HardLimits.Offset.y", typeof(CinemachinePositionComposer)) },
                     { "GroupFramingSize", new("FramingSize", typeof(CinemachineGroupFraming)) },
                     { "FrameDamping", new("Damping", typeof(CinemachineGroupFraming)) },
                     { "MinimumFOV", new("FovRange.x", typeof(CinemachineGroupFraming)) },
@@ -133,9 +149,9 @@ namespace Cinemachine.Editor
                     { "BindingMode", new("TrackerSettings.BindingMode", typeof(CinemachineOrbitalFollow)) },
                     { "AngularDampingMode", new("TrackerSettings.AngularDampingMode", typeof(CinemachineOrbitalFollow)) },
                     { "AngularDamping", new("TrackerSettings.QuaternionDamping", typeof(CinemachineOrbitalFollow)) },
-                    { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "ZAxis.Value", new("managedReferences[RadialAxis].Value", typeof(CinemachineOrbitalFollow)) }
+                    { "XAxis.Value", new("HorizontalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "YAxis.Value", new("VerticalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "ZAxis.Value", new("RadialAxis.Value", typeof(CinemachineOrbitalFollow)) }
                 }
             },
             {
@@ -174,12 +190,12 @@ namespace Cinemachine.Editor
                     { "VerticalDamping", new("Damping.y", typeof(CinemachineRotationComposer)) },
                     { "ScreenX", new("Composition.ScreenPosition.x", typeof(CinemachineRotationComposer)) },
                     { "ScreenY", new("Composition.ScreenPosition.y", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneWidth", new("Composition.DeadZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
-                    { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "BiasX", new("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
-                    { "BiasY", new("Composition.Bias.y", typeof(CinemachineRotationComposer)) }
+                    { "DeadZoneWidth", new("Composition.DeadZone.Size.x", typeof(CinemachineRotationComposer)) },
+                    { "DeadZoneHeight", new("Composition.DeadZone.Size.y", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneWidth", new("Composition.HardLimits.Size.x", typeof(CinemachineRotationComposer)) },
+                    { "SoftZoneHeight", new("Composition.HardLimits.Size.y", typeof(CinemachineRotationComposer)) },
+                    { "BiasX", new("Composition.HardLimits.Offset.x", typeof(CinemachineRotationComposer)) },
+                    { "BiasY", new("Composition.HardLimits.Offset.y", typeof(CinemachineRotationComposer)) }
                 }
             },
             {
@@ -196,8 +212,8 @@ namespace Cinemachine.Editor
                     { "DeadZoneHeight", new("Composition.DeadZoneSize.y", typeof(CinemachineRotationComposer)) },
                     { "SoftZoneWidth", new("Composition.SoftZoneSize.x", typeof(CinemachineRotationComposer)) },
                     { "SoftZoneHeight", new("Composition.SoftZoneSize.y", typeof(CinemachineRotationComposer)) },
-                    { "BiasX", new("Composition.Bias.x", typeof(CinemachineRotationComposer)) },
-                    { "BiasY", new("Composition.Bias.y", typeof(CinemachineRotationComposer)) },
+                    { "BiasX", new("Composition.Offset.x", typeof(CinemachineRotationComposer)) },
+                    { "BiasY", new("Composition.Offset.y", typeof(CinemachineRotationComposer)) },
                     { "GroupFramingSize", new("FramingSize", typeof(CinemachineGroupFraming)) },
                     { "FrameDamping", new("Damping", typeof(CinemachineGroupFraming)) },
                     { "MinimumFOV", new("FovRange.x", typeof(CinemachineGroupFraming)) },
@@ -210,17 +226,45 @@ namespace Cinemachine.Editor
             {
                 typeof(CinemachinePOV), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "HorizontalAxis.Value", new("managedReferences[PanAxis].Value", typeof(CinemachinePanTilt)) },
-                    { "VerticalAxis.Value", new("managedReferences[TiltAxis].Value", typeof(CinemachinePanTilt)) }
+                    { "HorizontalAxis.Value", new("PanAxis.Value", typeof(CinemachinePanTilt)) },
+                    { "VerticalAxis.Value", new("TiltAxis.Value", typeof(CinemachinePanTilt)) }
                 }
             },
             {
                 typeof(CinemachineFreeLook), new Dictionary<string, Tuple<string, Type>>
                 {
-                    { "XAxis.Value", new("managedReferences[HorizontalAxis].Value", typeof(CinemachineOrbitalFollow)) },
-                    { "YAxis.Value", new("managedReferences[VerticalAxis].Value", typeof(CinemachineOrbitalFollow)) },
+                    { "XAxis.Value", new("HorizontalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "YAxis.Value", new("VerticalAxis.Value", typeof(CinemachineOrbitalFollow)) },
                 }
-            }
+            },
+            {
+                typeof(Cinemachine3rdPersonFollow), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "CameraCollisionFilter", new("AvoidObstacles.CollisionFilter", typeof(CinemachineThirdPersonFollow)) },
+                    { "IgnoreTag", new("AvoidObstacles.IgnoreTag", typeof(CinemachineThirdPersonFollow)) },
+                    { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingIntoCollision", new("AvoidObstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
+                    { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                }
+            },
+#if CINEMACHINE_PHYSICS
+            {
+                typeof(CinemachineCollider), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "AvoidObstacles", new("AvoidObstacles.Enabled", typeof(CinemachineDeoccluder)) },
+                    { "DistanceLimit", new("AvoidObstacles.DistanceLimit", typeof(CinemachineDeoccluder)) },
+                    { "MinimumOcclusionTime", new("AvoidObstacles.MinimumOcclusionTime", typeof(CinemachineDeoccluder)) },
+                    { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineDeoccluder)) },
+                    { "Strategy", new("AvoidObstacles.Strategy", typeof(CinemachineDeoccluder)) },
+                    { "MaximumEffort", new("AvoidObstacles.MaximumEffort", typeof(CinemachineDeoccluder)) },
+                    { "SmoothingTime", new("AvoidObstacles.SmoothingTime", typeof(CinemachineDeoccluder)) },
+                    { "Damping", new("AvoidObstacles.Damping", typeof(CinemachineDeoccluder)) },
+                    { "DampingWhenOccluded", new("AvoidObstacles.DampingWhenOccluded", typeof(CinemachineDeoccluder)) },
+                    { "OptimalTargetDistance", new("ShotQualityEvaluation.OptimalDistance", typeof(CinemachineDeoccluder)) },
+                }
+            },
+#endif
         };
     }
 }
+#endif

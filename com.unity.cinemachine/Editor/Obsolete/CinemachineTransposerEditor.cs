@@ -1,7 +1,8 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineTransposer))]
@@ -46,7 +47,7 @@ namespace Cinemachine.Editor
                     excluded.Add(FieldPath(x => x.m_AngularDamping));
                     excluded.Add(FieldPath(x => x.m_AngularDampingMode));
                     break;
-                case TargetTracking.BindingMode.SimpleFollowWithWorldUp:
+                case TargetTracking.BindingMode.LazyFollow:
                     excluded.Add(FieldPath(x => x.m_XDamping));
                     excluded.Add(FieldPath(x => x.m_PitchDamping));
                     excluded.Add(FieldPath(x => x.m_YawDamping));
@@ -103,3 +104,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

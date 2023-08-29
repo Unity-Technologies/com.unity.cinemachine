@@ -1,8 +1,7 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// The output of the Cinemachine engine for a specific virtual camera.  The information
@@ -11,10 +10,10 @@ namespace Cinemachine
     /// 
     /// Raw values are what the Cinemachine behaviours generate.  The correction channel
     /// holds perturbations to the raw values - e.g. noise or smoothing, or obstacle
-    /// avoidance corrections.  Coirrections are not considered when making time-based
+    /// avoidance corrections.  Corrections are not considered when making time-based
     /// calculations such as damping.
     /// 
-    /// The Final position and orientation is the comination of the raw values and
+    /// The Final position and orientation is the combination of the raw values and
     /// their corrections.
     /// </summary>
     public struct CameraState
@@ -51,11 +50,11 @@ namespace Cinemachine
         /// </summary>
         public Quaternion RawOrientation;
 
-        /// <summary>This is a way for the Body component to bypass aim damping,
+        /// <summary>This is a way for the Body component to set a bypass hint for aim damping,
         /// useful for when the body needs to rotate its point of view, but does not
-        /// want interference from the aim damping.  The value is the camera
-        /// rotation, in Euler degrees.</summary>
-        public Vector3 PositionDampingBypass;
+        /// want interference from the aim damping.  The value is the amount that the camera
+        /// has been rotated, in world coords.</summary>
+        public Quaternion RotationDampingBypass;
 
         /// <summary>
         /// Subjective estimation of how "good" the shot is.
@@ -78,36 +77,42 @@ namespace Cinemachine
         public Quaternion OrientationCorrection;
 
         /// <summary>
-        /// These hints can be or'ed toether to influence how blending is done, and how state
+        /// These hints can be or'ed together to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
-        public enum BlendHintValue
+        public enum BlendHints
         {
             /// <summary>Normal state blending</summary>
             Nothing = 0,
+            /// <summary>Spherical blend about the LookAt target (if any)</summary>
+            SphericalPositionBlend = CinemachineCore.BlendHints.SphericalPosition,
+            /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
+            CylindricalPositionBlend = CinemachineCore.BlendHints.CylindricalPosition,
+            /// <summary>Radial blend when the LookAt target changes(if any)</summary>
+            ScreenSpaceAimWhenTargetsDiffer = CinemachineCore.BlendHints.ScreenSpaceAimWhenTargetsDiffer,
+            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
+            /// as the current position of the outgoing Camera</summary>
+            InheritPosition = CinemachineCore.BlendHints.InheritPosition,
+            /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
+            IgnoreLookAtTarget = CinemachineCore.BlendHints.IgnoreTarget,
+            /// <summary>When blending out from this camera, use a snapshot of its outgoing state instead of a live state</summary>
+            FreezeWhenBlendingOut = CinemachineCore.BlendHints.FreezeWhenBlendingOut,
+
             /// <summary>This state does not affect the camera position</summary>
-            NoPosition = 1,
+            NoPosition = 1 << 16,
             /// <summary>This state does not affect the camera rotation</summary>
-            NoOrientation = 2,
+            NoOrientation = 2 << 16,
             /// <summary>Combination of NoPosition and NoOrientation</summary>
             NoTransform = NoPosition | NoOrientation,
-            /// <summary>Spherical blend about the LookAt target (if any)</summary>
-            SphericalPositionBlend = 4,
-            /// <summary>Cylindrical blend about the LookAt target (if any)</summary>
-            CylindricalPositionBlend = 8,
-            /// <summary>Radial blend when the LookAt target changes(if any)</summary>
-            RadialAimBlend = 16,
-            /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
-            IgnoreLookAtTarget = 32,
             /// <summary>This state does not affect the lens</summary>
-            NoLens = 64,
+            NoLens = 4 << 16,
         }
 
         /// <summary>
-        /// These hints can be or'ed toether to influence how blending is done, and how state
+        /// These hints can be or'ed together to influence how blending is done, and how state
         /// is applied to the camera
         /// </summary>
-        public BlendHintValue BlendHint;
+        public BlendHints BlendHint;
 
         /// <summary>
         /// State with default values
@@ -122,8 +127,8 @@ namespace Cinemachine
             ShotQuality = 1,
             PositionCorrection = Vector3.zero,
             OrientationCorrection = Quaternion.identity,
-            PositionDampingBypass = Vector3.zero,
-            BlendHint = BlendHintValue.Nothing
+            RotationDampingBypass = Quaternion.identity,
+            BlendHint = BlendHints.Nothing
         };
 
         /// <summary>
@@ -164,7 +169,7 @@ namespace Cinemachine
         /// their weights blend along with the camera weights.  For efficiency, a fixed number of slots
         /// are provided, plus a (more expensive) overflow list.
         /// The base system manages but otherwise ignores this data - it is intended for 
-        /// extension modules.</summary>
+        /// extension modules.
         /// </summary>
         internal CustomBlendableItems CustomBlendables;
 
@@ -210,25 +215,27 @@ namespace Cinemachine
             t = Mathf.Clamp01(t);
             float adjustedT = t;
 
-            CameraState state = new CameraState();
+            CameraState state = new ();
 
             // Combine the blend hints intelligently
-            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoPosition) != 0)
-                state.BlendHint |= BlendHintValue.NoPosition;
-            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoOrientation) != 0)
-                state.BlendHint |= BlendHintValue.NoOrientation;
-            if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoLens) != 0)
-                state.BlendHint |= BlendHintValue.NoLens;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.SphericalPositionBlend) != 0)
-                state.BlendHint |= BlendHintValue.SphericalPositionBlend;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.CylindricalPositionBlend) != 0)
-                state.BlendHint |= BlendHintValue.CylindricalPositionBlend;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoPosition) != 0)
+                state.BlendHint |= BlendHints.NoPosition;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoOrientation) != 0)
+                state.BlendHint |= BlendHints.NoOrientation;
+            if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoLens) != 0)
+                state.BlendHint |= BlendHints.NoLens;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.SphericalPositionBlend) != 0)
+                state.BlendHint |= BlendHints.SphericalPositionBlend;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.CylindricalPositionBlend) != 0)
+                state.BlendHint |= BlendHints.CylindricalPositionBlend;
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.FreezeWhenBlendingOut) != 0)
+                state.BlendHint |= BlendHints.FreezeWhenBlendingOut;
 
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0)
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoLens) == 0)
                 state.Lens = LensSettings.Lerp(stateA.Lens, stateB.Lens, t);
-            else if (((stateA.BlendHint & stateB.BlendHint) & BlendHintValue.NoLens) == 0)
+            else if (((stateA.BlendHint & stateB.BlendHint) & BlendHints.NoLens) == 0)
             {
-                if ((stateA.BlendHint & BlendHintValue.NoLens) != 0)
+                if ((stateA.BlendHint & BlendHints.NoLens) != 0)
                     state.Lens = stateB.Lens;
                 else
                     state.Lens = stateA.Lens;
@@ -256,7 +263,7 @@ namespace Cinemachine
                 // Re-interpolate FOV to preserve target composition, if possible
                 float fovA = stateA.Lens.FieldOfView;
                 float fovB = stateB.Lens.FieldOfView;
-                if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoLens) == 0
+                if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoLens) == 0
                     && !state.Lens.Orthographic && !Mathf.Approximately(fovA, fovB))
                 {
                     LensSettings lens = state.Lens;
@@ -270,8 +277,7 @@ namespace Cinemachine
                     adjustedT = Mathf.Abs((lens.FieldOfView - fovA) / (fovB - fovA));
                 }
                 // Linear interpolation of lookAt target point
-                state.ReferenceLookAt = Vector3.Lerp(
-                        stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
+                state.ReferenceLookAt = Vector3.Lerp(stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
             }
             
             // Raw position
@@ -285,7 +291,7 @@ namespace Cinemachine
 
             // Interpolate the LookAt in Screen Space if requested
             if (state.HasLookAt() 
-                && ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.RadialAimBlend) != 0)
+                && ((stateA.BlendHint | stateB.BlendHint) & BlendHints.ScreenSpaceAimWhenTargetsDiffer) != 0)
             {
                 state.ReferenceLookAt = state.RawPosition + Vector3.Slerp(
                         stateA.ReferenceLookAt - state.RawPosition, 
@@ -294,10 +300,10 @@ namespace Cinemachine
 
             // Clever orientation interpolation
             Quaternion newOrient = state.RawOrientation;
-            if (((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.NoOrientation) == 0)
+            if (((stateA.BlendHint | stateB.BlendHint) & BlendHints.NoOrientation) == 0)
             {
                 Vector3 dirTarget = Vector3.zero;
-                if (state.HasLookAt())//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.RadialAimBlend) == 0)
+                if (state.HasLookAt())//&& ((stateA.BlendHint | stateB.BlendHint) & BlendHints.ScreenSpaceAimWhenTargetsDiffer) == 0)
                 {
                     // If orientations are different, use LookAt to blend them
                     float angle = Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation);
@@ -306,7 +312,7 @@ namespace Cinemachine
                 }
                 
                 if (dirTarget.AlmostZero() 
-                    || ((stateA.BlendHint | stateB.BlendHint) & BlendHintValue.IgnoreLookAtTarget) != 0)
+                    || ((stateA.BlendHint | stateB.BlendHint) & BlendHints.IgnoreLookAtTarget) != 0)
                 {
                     // Don't know what we're looking at - can only slerp
                     newOrient = Quaternion.Slerp(stateA.RawOrientation, stateB.RawOrientation, t);
@@ -369,29 +375,29 @@ namespace Cinemachine
         }
 
         static Vector3 ApplyPosBlendHint(
-            Vector3 posA, BlendHintValue hintA, 
-            Vector3 posB, BlendHintValue hintB, 
+            Vector3 posA, BlendHints hintA, 
+            Vector3 posB, BlendHints hintB, 
             Vector3 original, Vector3 blended)
         {
-            if (((hintA | hintB) & BlendHintValue.NoPosition) == 0)
+            if (((hintA | hintB) & BlendHints.NoPosition) == 0)
                 return blended;
-            if (((hintA & hintB) & BlendHintValue.NoPosition) != 0)
+            if (((hintA & hintB) & BlendHints.NoPosition) != 0)
                 return original;
-            if ((hintA & BlendHintValue.NoPosition) != 0)
+            if ((hintA & BlendHints.NoPosition) != 0)
                 return posB;
             return posA;
         }
 
         static Quaternion ApplyRotBlendHint(
-            Quaternion rotA, BlendHintValue hintA, 
-            Quaternion rotB, BlendHintValue hintB, 
+            Quaternion rotA, BlendHints hintA, 
+            Quaternion rotB, BlendHints hintB, 
             Quaternion original, Quaternion blended)
         {
-            if (((hintA | hintB) & BlendHintValue.NoOrientation) == 0)
+            if (((hintA | hintB) & BlendHints.NoOrientation) == 0)
                 return blended;
-            if (((hintA & hintB) & BlendHintValue.NoOrientation) != 0)
+            if (((hintA & hintB) & BlendHints.NoOrientation) != 0)
                 return original;
-            if ((hintA & BlendHintValue.NoOrientation) != 0)
+            if ((hintA & BlendHints.NoOrientation) != 0)
                 return rotB;
             return rotA;
         }
@@ -400,13 +406,13 @@ namespace Cinemachine
             Vector3 posA, Vector3 pivotA,
             Vector3 posB, Vector3 pivotB,
             float t,
-            BlendHintValue blendHint, Vector3 up)
+            BlendHints blendHint, Vector3 up)
         {
         #pragma warning disable 1718 // comparison made to same variable
             if (pivotA == pivotA && pivotB == pivotB) // check for NaN
         #pragma warning restore 1718
             {
-                if ((blendHint & BlendHintValue.CylindricalPositionBlend) != 0)
+                if ((blendHint & BlendHints.CylindricalPositionBlend) != 0)
                 {
                     // Cylindrical interpolation about pivot
                     var a = Vector3.ProjectOnPlane(posA - pivotA, up);
@@ -415,7 +421,7 @@ namespace Cinemachine
                     posA = (posA - a) + c;
                     posB = (posB - b) + c;
                 }
-                else if ((blendHint & BlendHintValue.SphericalPositionBlend) != 0)
+                else if ((blendHint & BlendHints.SphericalPositionBlend) != 0)
                 {
                     // Spherical interpolation about pivot
                     var c = Vector3.Slerp(posA - pivotA, posB - pivotB, t);
@@ -433,31 +439,31 @@ namespace Cinemachine
     /// </summary>
     public static class CameraStateExtensions
     {
-        /// <summary>
-        /// Returns true if this state has a valid ReferenceLookAt value.
-        /// </summary>
         #pragma warning disable 1718 // comparison made to same variable
+        /// <summary>Returns true if this state has a valid ReferenceLookAt value.</summary>
+        /// <param name="s">State to check.</param>
+        /// <returns>True, if state has a valid ReferenceLookAt value. False, otherwise.</returns>
         public static bool HasLookAt(this CameraState s) => s.ReferenceLookAt == s.ReferenceLookAt; // will be false if NaN
         #pragma warning restore 1718
 
-        /// <summary>
-        /// Position with correction applied.
-        /// </summary>
+        /// <summary>Position with correction applied.</summary>
+        /// <param name="s">State to check.</param>
+        /// <returns>Position with correction applied.</returns>
         public static Vector3 GetCorrectedPosition(this CameraState s) => s.RawPosition + s.PositionCorrection;
 
-        /// <summary>
-        /// Orientation with correction applied.
-        /// </summary>
+        /// <summary>Orientation with correction applied.</summary>
+        /// <param name="s">State to check.</param>
+        /// <returns>Orientation with correction applied.</returns>
         public static Quaternion GetCorrectedOrientation(this CameraState s) => s.RawOrientation * s.OrientationCorrection;
 
-        /// <summary>
-        /// Position with correction applied.  This is what the final camera gets.
-        /// </summary>
+        /// <summary>Position with correction applied.  This is what the final camera gets.</summary>
+        /// <param name="s">State to check.</param>
+        /// <returns>Position with correction applied.</returns>
         public static Vector3 GetFinalPosition(this CameraState s) => s.RawPosition + s.PositionCorrection;
 
-        /// <summary>
-        /// Orientation with correction and dutch applied.  This is what the final camera gets.
-        /// </summary>
+        /// <summary>Orientation with correction and dutch applied.  This is what the final camera gets.</summary>
+        /// <param name="s">State to check</param>
+        /// <returns>Orientation with correction and dutch applied.</returns>
         public static Quaternion GetFinalOrientation(this CameraState s)
         {
             if (Mathf.Abs(s.Lens.Dutch) > UnityVectorExtensions.Epsilon)
@@ -466,12 +472,14 @@ namespace Cinemachine
         }
 
         /// <summary>Get the number of custom blendable items that have been added to this CameraState</summary>
+        /// <param name="s">State to check.</param>
         /// <returns>The number of custom blendable items added.</returns>
         public static int GetNumCustomBlendables(this CameraState s) => s.CustomBlendables.NumItems;
 
         /// <summary>Get a custom blendable that will be applied to the camera.  
         /// The base system manages but otherwise ignores this data - it is intended for 
         /// extension modules</summary>
+        /// <param name="s">State to check.</param>
         /// <param name="index">Which one to get.  Must be in range [0...NumCustomBlendables)</param>
         /// <returns>The custom blendable at the specified index.</returns>
         public static CameraState.CustomBlendableItems.Item GetCustomBlendable(this CameraState s, int index)
@@ -492,7 +500,9 @@ namespace Cinemachine
             }
         }
 
+        
         /// <summary>Returns the index of the custom blendable that is associated with the input.</summary>
+        /// <param name="s">State to check.</param>
         /// <param name="custom">The object with which the returned custom blendable index is associated.</param>
         /// <returns>The index of the custom blendable that is associated with the input.</returns>
         public static int FindCustomBlendable(this CameraState s, Object custom)

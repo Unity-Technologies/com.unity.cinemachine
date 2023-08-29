@@ -1,39 +1,50 @@
+#if UNITY_EDITOR // AssetDatabase.LoadMainAssetAtPath
+#if CINEMACHINE_UNITY_ANIMATION
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine.TestTools;
 
-using Cinemachine;
+using Unity.Cinemachine;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
-#if CINEMACHINE_UNITY_ANIMATION
     [TestFixture]
     public class StateDrivenCameraTests : CinemachineRuntimeFixtureBase
     {
-        private CinemachineStateDrivenCamera m_StateDrivenCamera;
-        private Animator m_Animator;
-        private CmCamera m_Vcam1, m_Vcam2;
+        CinemachineStateDrivenCamera m_StateDrivenCamera;
+        Animator m_Animator;
+        CinemachineCamera m_Vcam1, m_Vcam2;
 
         [SetUp]
         public override void SetUp()
         {
-            CreateGameObject("Camera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
 
             // Create a minimal character controller
             var character = CreateGameObject("Character", typeof(Animator));
-            var controller = AssetDatabase.LoadMainAssetAtPath("Packages/com.unity.cinemachine/Tests/Runtime/TestController.controller") as AnimatorController;
+            AnimatorController controller = null;
+            foreach (var asset in AssetDatabase.FindAssets("t:AnimatorController TestController"))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(asset);
+                controller = AssetDatabase.LoadMainAssetAtPath(path) as AnimatorController;
+            }
+
+            if (controller == null)
+            {
+                throw new ArgumentNullException("controller", "FindAssets did not find the TestController in the project.");
+            }
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
             // Create a state-driven camera with two vcams 
             var stateDrivenCamera = CreateGameObject("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
             stateDrivenCamera.AnimatedTarget = character.GetComponent<Animator>();
 
-            var vcam1 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
-            var vcam2 = CreateGameObject("Vcam1", typeof(CmCamera)).GetComponent<CmCamera>();
+            var vcam1 = CreateGameObject("Vcam1", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
+            var vcam2 = CreateGameObject("Vcam1", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             vcam1.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
             vcam2.gameObject.transform.SetParent(stateDrivenCamera.gameObject.transform);
 
@@ -44,12 +55,10 @@ namespace Tests.Runtime
                 new CinemachineStateDrivenCamera.Instruction() {FullHash = controller.layers[0].stateMachine.states[1].GetHashCode(), Camera = vcam2}
             };
 
-            this.m_StateDrivenCamera = stateDrivenCamera;
+            m_StateDrivenCamera = stateDrivenCamera;
             m_Animator = character.GetComponent<Animator>();
-            this.m_Vcam1 = vcam1;
-            this.m_Vcam2 = vcam2;
-
-            base.SetUp();
+            m_Vcam1 = vcam1;
+            m_Vcam2 = vcam2;
         }
 
         [UnityTest]
@@ -72,5 +81,6 @@ namespace Tests.Runtime
             Assert.That(m_StateDrivenCamera.LiveChild.Name, Is.EqualTo(m_Vcam1.Name));
         }
     }
-#endif
 }
+#endif
+#endif

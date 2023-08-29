@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using UnityEngine;
 using System;
-using Cinemachine.Utility;
-using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineRotationComposer instead.
@@ -151,7 +150,7 @@ namespace Cinemachine
             {
                 var resetLookahead = VirtualCamera.LookAtTargetChanged || !VirtualCamera.PreviousStateIsValid;
                 m_Predictor.Smoothing = m_LookaheadSmoothing;
-                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime, m_LookaheadTime);
+                m_Predictor.AddPosition(pos, resetLookahead ? -1 : deltaTime);
                 var delta = m_Predictor.PredictPositionDelta(m_LookaheadTime);
                 if (m_LookaheadIgnoreY)
                     delta = delta.ProjectOntoPlane(up);
@@ -271,7 +270,7 @@ namespace Cinemachine
                         m_CameraOrientationPrevFrame * Vector3.forward, curState.ReferenceUp);
                 else
                 {
-                    dir = Quaternion.Euler(curState.PositionDampingBypass) * dir;
+                    dir = curState.RotationDampingBypass * dir;
                     rigOrientation = Quaternion.LookRotation(dir, curState.ReferenceUp);
                     rigOrientation = rigOrientation.ApplyCameraRotation(
                         -m_ScreenOffsetPrevFrame, curState.ReferenceUp);
@@ -507,9 +506,36 @@ namespace Cinemachine
         }
 
         // Helper to upgrade to CM3
+        internal ScreenComposerSettings Composition
+        {
+            get => new ()
+            {
+                ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
+                DeadZone = new () { Enabled = true, Size = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight) },
+                HardLimits = new ()
+                {
+                    Enabled = true,
+                    Size = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
+                    Offset = new Vector2(m_BiasX, m_BiasY) * 2
+                }
+            };
+            set
+            {
+                m_ScreenX = value.ScreenPosition.x + 0.5f;
+                m_ScreenY = value.ScreenPosition.y + 0.5f;
+                m_DeadZoneWidth = value.DeadZone.Size.x;
+                m_DeadZoneHeight = value.DeadZone.Size.y;
+                m_SoftZoneWidth = value.HardLimits.Size.x;
+                m_SoftZoneHeight = value.HardLimits.Size.y;
+                m_BiasX = value.HardLimits.Offset.x / 2;
+                m_BiasY = value.HardLimits.Offset.y / 2;
+            }
+        }
+
+        // Helper to upgrade to CM3
         internal void UpgradeToCm3(CinemachineRotationComposer c)
         {
-            c.TrackedObjectOffset = m_TrackedObjectOffset;
+            c.TargetOffset = m_TrackedObjectOffset;
             c.Lookahead = new LookaheadSettings
             {
                 Enabled = m_LookaheadTime > 0,
@@ -518,17 +544,9 @@ namespace Cinemachine
                 IgnoreY = m_LookaheadIgnoreY
             };
             c.Damping = new Vector2(m_HorizontalDamping, m_VerticalDamping);
-            c.Composition = GetScreenComposerSettings();
+            c.Composition = Composition;
             c.CenterOnActivate = m_CenterOnActivate;
         }
-
-        // Helper to upgrade to CM3
-        internal ScreenComposerSettings GetScreenComposerSettings() => new ()
-        {
-            ScreenPosition = new Vector2(m_ScreenX, m_ScreenY) - new Vector2(0.5f, 0.5f),
-            DeadZoneSize = new Vector2(m_DeadZoneWidth, m_DeadZoneHeight),
-            SoftZoneSize = new Vector2(m_SoftZoneWidth, m_SoftZoneHeight),
-            Bias = new Vector2(m_BiasX, m_BiasY)
-        };
     }
 }
+#endif

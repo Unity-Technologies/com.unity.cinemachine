@@ -1,10 +1,10 @@
 {
   "name": "com.unity.cinemachine",
   "displayName": "Cinemachine",
-  "version": "3.0.0-pre.2",
+  "version": "3.0.0-pre.7",
   "unity": "2022.2",
-  "unityRelease": "0b8",
-  "description": "Smart camera tools for passionate creators. \n\nNew starting from 2.7.1: Are you looking for the Cinemachine menu? It has moved to the GameObject menu.\n\nIMPORTANT NOTE: If you are upgrading from the legacy Asset Store version of Cinemachine, delete the Cinemachine asset from your project BEFORE installing this version from the Package Manager.",
+  "unityRelease": "16f1",
+  "description": "Smart camera tools for passionate creators. \n\nCinemachine 3.0 is a newer and better version of Cinemachine, but upgrading an existing project from 2.X will likely require some effort.  If you're considering upgrading an older project, please see our upgrade guide in the user manual.",
   "keywords": [
     "camera",
     "follow",
@@ -31,19 +31,24 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.0.0-pre.4",
+    "com.unity.splines": "2.0.0",
     "com.unity.test-framework": "1.1.33"
   },
   "samples": [
     {
-      "displayName": "Sample Scenes",
-      "description": "Sample scenes illustrating various ways to use Cinemachine",
-      "path": "Samples~/Sample Scenes"
+      "displayName": "2D Samples",
+      "description": "Sample scenes illustrating various ways to use Cinemachine in a 2D setting",
+      "path": "Samples~/2D Samples"
     },
     {
-      "displayName": "Old Samples from CM2",
-      "description": "Samples made with CM 2.X, using obsolete API",
-      "path": "Samples~/Old Samples from CM2"
+      "displayName": "3D Samples",
+      "description": "Sample scenes illustrating various ways to use Cinemachine in a 3D setting",
+      "path": "Samples~/3D Samples"
+    },
+    {
+      "displayName": "Input System Samples",
+      "description": "Sample scenes illustrating various ways to use Cinemachine with the input system.",
+      "path": "Samples~/Input System Samples"
     }
   ]
 }

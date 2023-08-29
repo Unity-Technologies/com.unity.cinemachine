@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
 using UnityEngine.Splines;
+using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A Cinemachine Camera Body component that constrains camera motion to a Spline.
@@ -45,19 +45,20 @@ namespace Cinemachine
             + "interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit PositionUnits = PathIndexUnit.Normalized;
 
-        /// <summary>Where to put the camera relative to the spline postion.  X is perpendicular 
+        /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
         [Tooltip("Where to put the camera relative to the spline position.  X is perpendicular "
             + "to the spline, Y is up, and Z is parallel to the spline.")]
         public Vector3 SplineOffset = Vector3.zero;
 
-        /// <summary>How to set the virtual camera's Up vector.  This will affect the screen composition.</summary>
-        [Tooltip("How to set the virtual camera's Up vector.  This will affect the screen composition, because "
+        /// <summary>How to set the camera's rotation and Up.  This will affect the screen composition.</summary>
+        [Tooltip("How to set the camera's rotation and Up.  This will affect the screen composition, because "
             + "the camera Aim behaviours will always try to respect the Up direction.")]
-        public CameraUpMode CameraUp = CameraUpMode.Default;
+        [FormerlySerializedAs("CameraUp")]
+        public RotationMode CameraRotation = RotationMode.Default;
         
         /// <summary>Different ways to set the camera's up vector</summary>
-        public enum CameraUpMode
+        public enum RotationMode
         {
             /// <summary>Leave the camera's up vector alone.  It will be set according to the Brain's WorldUp.</summary>
             Default,
@@ -102,10 +103,10 @@ namespace Cinemachine
             public Vector3 Position;
 
             /// <summary>How aggressively the camera tries to maintain the desired rotation.
-            /// This is only used if the Camera Up is not Default.</summary>
+            /// This is only used if Camera Rotation is not Default.</summary>
             [RangeSlider(0f, 20f)]
             [Tooltip("How aggressively the camera tries to maintain the desired rotation.  "
-                + "This is only used if the Camera Up is not Default.")]
+                + "This is only used if Camera Rotation is not Default.")]
             public float Angular;
         }
 
@@ -116,11 +117,11 @@ namespace Cinemachine
             + "move gradually towards the desired spline position")]
         public DampingSettings Damping;
         
-        /// <summary>Controls how automatic dollying occurs</summary>
-        [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
-        [SerializeReference] [NoSaveDuringPlay]
-        [AutoDollySelector]
-        public SplineAutoDolly.ISplineAutoDolly AutomaticDolly;
+        /// <summary>Controls how automatic dolly occurs</summary>
+        [NoSaveDuringPlay]
+        [FoldoutWithEnabledButton]
+        [Tooltip("Controls how automatic dolly occurs.  A tracking target may be necessary to use this feature.")]
+        public SplineAutoDolly AutomaticDolly;
 
         // State info for damping
         float m_PreviousSplinePosition;
@@ -135,8 +136,8 @@ namespace Cinemachine
             Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
             Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
             Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
-            if (AutomaticDolly != null)
-                AutomaticDolly.Validate();
+            if (AutomaticDolly.Method != null)
+                AutomaticDolly.Method.Validate();
         }
 
         void Reset()
@@ -145,15 +146,18 @@ namespace Cinemachine
             CameraPosition = 0;
             PositionUnits = PathIndexUnit.Normalized;
             SplineOffset = Vector3.zero;
-            CameraUp = CameraUpMode.Default;
+            CameraRotation = RotationMode.Default;
             Damping = default;
-            AutomaticDolly = null;
+            AutomaticDolly.Method = null;
         }
 
+        /// <summary>Called when the behaviour is enabled.</summary>
         protected override void OnEnable()
         {
             base.OnEnable();
             RefreshRollCache();
+            if (AutomaticDolly.Method != null)
+                AutomaticDolly.Method.Reset();
         }
 
         /// <summary>True if component is enabled and has a spline</summary>
@@ -195,8 +199,8 @@ namespace Cinemachine
             }
 
             // Invoke AutoDolly algorithm to get new desired spline position
-            if (AutomaticDolly != null)
-                splinePos = AutomaticDolly.GetSplinePosition(
+            if (AutomaticDolly.Enabled && AutomaticDolly.Method != null)
+                splinePos = AutomaticDolly.Method.GetSplinePosition(
                     this, FollowTarget, Spline, splinePos, PositionUnits, deltaTime);
 
             // Apply damping in the spline direction
@@ -250,24 +254,24 @@ namespace Cinemachine
             m_PreviousRotation = newRot;
             curState.RawOrientation = newRot;
 
-            if (CameraUp != CameraUpMode.Default)
+            if (CameraRotation != RotationMode.Default)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
         Quaternion GetCameraRotationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
         {
-            switch (CameraUp)
+            switch (CameraRotation)
             {
                 default:
-                case CameraUpMode.Default: break;
-                case CameraUpMode.Spline: return splineOrientation;
-                case CameraUpMode.SplineNoRoll:
+                case RotationMode.Default: break;
+                case RotationMode.Spline: return splineOrientation;
+                case RotationMode.SplineNoRoll:
                     return Quaternion.LookRotation(splineOrientation * Vector3.forward, up);
-                case CameraUpMode.FollowTarget:
+                case RotationMode.FollowTarget:
                     if (FollowTarget != null)
                         return FollowTargetRotation;
                     break;
-                case CameraUpMode.FollowTargetNoRoll:
+                case RotationMode.FollowTargetNoRoll:
                     if (FollowTarget != null)
                         return Quaternion.LookRotation(FollowTargetRotation * Vector3.forward, up);
                     break;

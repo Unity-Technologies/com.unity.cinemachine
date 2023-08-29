@@ -1,9 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using System;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// AxisState is deprecated.  Use InputAxis instead.
@@ -165,7 +165,7 @@ namespace Cinemachine
 
         /// <summary>
         /// This is an interface to override default querying of Unity's legacy Input system.
-        /// If a befaviour implementing this interface is attached to a Cinemachine virtual camera that 
+        /// If a befaviour implementing this interface is attached to a CinemachineCamera that 
         /// requires input, that interface will be polled for input instead of the standard Input system.
         /// </summary>
         [Obsolete("IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead")]
@@ -179,12 +179,12 @@ namespace Cinemachine
         IInputAxisProvider m_InputAxisProvider;
         int m_InputAxisIndex;
 
-        /// <summary>
-        /// IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead.
-        /// </summary>
+        /// <summary>IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead.</summary>
         [Obsolete("IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead")]
         public interface IRequiresInput 
         {
+            /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
+            /// <returns>Returns true when input is required.</returns>
             bool RequiresInput();
         }
 
@@ -221,7 +221,7 @@ namespace Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             // Cheating: we want the render frame time, not the fixed frame time
-            if (deltaTime >= 0 && m_LastUpdateTime != 0) 
+            if (deltaTime > 0 && m_LastUpdateTime != 0) 
                 deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
             
             m_LastUpdateTime = Time.realtimeSinceStartup;
@@ -309,6 +309,8 @@ namespace Cinemachine
             // Clamp our max speeds so we don't go crazy
             float maxSpeed = GetMaxSpeed();
             m_CurrentSpeed = Mathf.Clamp(m_CurrentSpeed, -maxSpeed, maxSpeed);
+            if (Mathf.Abs(m_CurrentSpeed) < Epsilon)
+                m_CurrentSpeed = 0;
 
             Value += m_CurrentSpeed * deltaTime;
             bool isOutOfRange = (Value > m_MaxValue) || (Value < m_MinValue);
@@ -437,7 +439,7 @@ namespace Cinemachine
             public void DoRecentering(ref AxisState axis, float deltaTime, float recenterTarget)
             {
                 // Cheating: we want the render frame time, not the fixed frame time
-                if (deltaTime >= 0)
+                if (deltaTime > 0)
                     deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
                 
                 m_LastUpdateTime = Time.realtimeSinceStartup;
@@ -496,3 +498,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

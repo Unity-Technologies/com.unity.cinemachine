@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
@@ -16,7 +15,7 @@ namespace Cinemachine
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePanTilt.html")]
     public class CinemachinePanTilt 
-        : CinemachineComponentBase, IInputAxisSource, IInputAxisResetSource
+        : CinemachineComponentBase, IInputAxisOwner, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>Defines the reference frame against which pan and tilt rotations are made.</summary>
@@ -43,14 +42,12 @@ namespace Cinemachine
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
             + "and represents a rotation about the Y axis.")]
-        [SerializeReference]
         public InputAxis PanAxis = DefaultPan;
 
         /// <summary>Axis representing the current vertical rotation.  Value is in degrees
         /// and represents a rotation about the right vector</summary>
         [Tooltip("Axis representing the current vertical rotation.  Value is in degrees "
             + "and represents a rotation about the X axis.")]
-        [SerializeReference]
         public InputAxis TiltAxis = DefaultTilt;
 
         Quaternion m_PreviousCameraRotation;
@@ -58,7 +55,7 @@ namespace Cinemachine
         /// <summary>
         /// Input axis controller registers here a delegate to call when the camera is reset
         /// </summary>
-        IInputAxisResetSource.ResetHandler m_ResetHandler;
+        Action m_ResetHandler;
 
         void OnValidate()
         {
@@ -75,24 +72,24 @@ namespace Cinemachine
             ReferenceFrame = ReferenceFrames.ParentObject;
         }
 
-        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0 };
-        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0 };
+        static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
+        static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
         
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
-        void IInputAxisSource.GetInputAxes(List<IInputAxisSource.AxisDescriptor> axes)
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = PanAxis, Name = "Look X (Pan)", AxisIndex = 0 });
-            axes.Add(new IInputAxisSource.AxisDescriptor { Axis = TiltAxis, Name = "Look Y (Tilt)", AxisIndex = 1 });
+            axes.Add(new () { DrivenAxis = () => ref PanAxis, Name = "Look X (Pan)", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref TiltAxis, Name = "Look Y (Tilt)", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to register</param>
-        void IInputAxisResetSource.RegisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler += handler;
+        void IInputAxisResetSource.RegisterResetHandler(Action handler) => m_ResetHandler += handler;
 
         /// <summary>Unregister a handler that will be called when input needs to be reset</summary>
         /// <param name="handler">The handler to unregister</param>
-        void IInputAxisResetSource.UnregisterResetHandler(IInputAxisResetSource.ResetHandler handler) => m_ResetHandler -= handler;
+        void IInputAxisResetSource.UnregisterResetHandler(Action handler) => m_ResetHandler -= handler;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
         {
@@ -104,7 +101,7 @@ namespace Cinemachine
         }
 
         /// <summary>Inspector checks this and displays warning if no handler</summary>
-        internal bool HasInputHandler => m_ResetHandler != null;
+        bool IInputAxisResetSource.HasResetHandler => m_ResetHandler != null;
 
         /// <summary>True if component is enabled and has a LookAt defined</summary>
         public override bool IsValid => enabled;
@@ -125,16 +122,23 @@ namespace Cinemachine
         {
             if (!IsValid)
                 return;
-            var referenceFrame = GetReferenceFrame();
+
+            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera))
+                m_ResetHandler?.Invoke();
+
+            var referenceFrame = GetReferenceFrame(curState.ReferenceUp);
             var rot = referenceFrame * Quaternion.Euler(TiltAxis.Value, PanAxis.Value, 0);
-            var up = referenceFrame * Vector3.up;
-            curState.RawOrientation = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
+            curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
-                curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousCameraRotation * Vector3.forward, 
-                    rot * Vector3.forward, curState.ReferenceUp).eulerAngles;
+                    rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
+            
+            var gotInput = PanAxis.TrackValueChange() | TiltAxis.TrackValueChange();
+            PanAxis.UpdateRecentering(deltaTime, gotInput);
+            TiltAxis.UpdateRecentering(deltaTime, gotInput);
         }
 
         /// <summary>
@@ -150,15 +154,14 @@ namespace Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            m_ResetHandler?.Invoke(); // Cancel recentering
-            if (fromCam != null && transitionParams.InheritPosition  
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+            m_ResetHandler?.Invoke(); // Cancel re-centering
+            if (fromCam != null 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0  
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
                 return true;
@@ -168,26 +171,26 @@ namespace Cinemachine
         
         void SetAxesForRotation(Quaternion targetRot)
         {
-            m_ResetHandler?.Invoke(); // Reset the axes
+            m_ResetHandler?.Invoke(); // cancel re-centering
 
-            Vector3 up = VcamState.ReferenceUp;
-            Vector3 fwd = GetReferenceFrame() * Vector3.forward;
+            var up = VcamState.ReferenceUp;
+            var fwd = GetReferenceFrame(up) * Vector3.forward;
 
             PanAxis.Value = 0;
-            Vector3 targetFwd = targetRot * Vector3.forward;
-            Vector3 a = fwd.ProjectOntoPlane(up);
-            Vector3 b = targetFwd.ProjectOntoPlane(up);
+            var targetFwd = targetRot * Vector3.forward;
+            var a = fwd.ProjectOntoPlane(up);
+            var b = targetFwd.ProjectOntoPlane(up);
             if (!a.AlmostZero() && !b.AlmostZero())
                 PanAxis.Value = Vector3.SignedAngle(a, b, up);
 
             TiltAxis.Value = 0;
             fwd = Quaternion.AngleAxis(PanAxis.Value, up) * fwd;
-            Vector3 right = Vector3.Cross(up, fwd);
+            var right = Vector3.Cross(up, fwd);
             if (!right.AlmostZero())
                 TiltAxis.Value = Vector3.SignedAngle(fwd, targetFwd, right);
         }
 
-        Quaternion GetReferenceFrame()
+        Quaternion GetReferenceFrame(Vector3 up)
         {
             Transform target = null;
             switch (ReferenceFrame)
@@ -197,7 +200,7 @@ namespace Cinemachine
                 case ReferenceFrames.LookAtTarget: target = LookAtTarget; break;
                 case ReferenceFrames.ParentObject: target = VirtualCamera.transform.parent; break;
             }
-            return (target != null) ? target.rotation : Quaternion.identity;
+            return (target != null) ? target.rotation : Quaternion.FromToRotation(Vector3.up, up);
         }
     }
 }

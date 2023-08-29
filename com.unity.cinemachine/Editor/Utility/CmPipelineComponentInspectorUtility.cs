@@ -1,176 +1,320 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Helpers for drawing CmComponentBase or CmExtension inspectors.
-    /// GML todo: make a common base class for CmComponentBase and CmExtension.
     /// </summary>
-    class CmPipelineComponentInspectorUtility
+    static class CmPipelineComponentInspectorUtility
     {
-        UnityEditor.Editor m_Editor;
+        public enum RequiredTargets { None, Tracking, LookAt, Group };
 
-        UnityEngine.Object[] Targets => m_Editor.targets;
-
-        VisualElement m_NoCameraHelp;
-        VisualElement m_NoTargetHelp;
-        RequiredTargets m_RequiredTargets;
-
-        public CmPipelineComponentInspectorUtility(UnityEditor.Editor editor) { m_Editor = editor; }
-
-        /// <summary>Call from Inspector's OnDisable</summary>
-        public void OnDisable()
-        {
-            EditorApplication.update -= UpdateState;
-        }
-
-        public enum RequiredTargets { None, Follow, LookAt, FollowGroup };
+        const string k_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
+        const string k_NeedLookAt = "A LookAt Tracking Target is required in the CinemachineCamera.";
+        const string k_NeedGroup = "The Tracking or LookAt Target in the CinemachineCamera must be a Target Group.";
+        const string k_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
+        const string k_AddCamera = "Add\nCinemachineCamera";
 
         /// <summary>
-        /// Add helpbox for CinemachineComponentBase or CinemachineExtension editors, 
-        /// prompting to solve a missing CmCamera component or a missing tracking target
+        /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
+        /// prompting to solve a missing CinemachineCamera component or a missing tracking target
         /// </summary>
-        public void AddMissingCmCameraHelpBox(
-            VisualElement ux, RequiredTargets requiredTargets = RequiredTargets.None)
+        public static void AddMissingCmCameraHelpBox(
+            this UnityEditor.Editor editor, VisualElement ux, RequiredTargets requiredTargets = RequiredTargets.None)
         {
-            EditorApplication.update -= UpdateState;
-            EditorApplication.update += UpdateState;
-            var targets = Targets;
-            m_NoCameraHelp = ux.AddChild(InspectorUtility.CreateHelpBoxWithButton(
-                "This component is intended to be used only with a CmCamera.", HelpBoxMessageType.Warning,
-                "Add\nCmCamera", () => AddCmCameraToTargets(targets)));
+            var targets = editor.targets;
+            var noCameraHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
+                k_NeedCamera, HelpBoxMessageType.Warning,
+                k_AddCamera, () => AddCmCameraToTargets(targets)));
 
-            m_RequiredTargets = requiredTargets;
-            string text = string.Empty;
+            var text = string.Empty;
             switch (requiredTargets)
             {
-                case RequiredTargets.Follow: text = "A Tracking Target is required in the CmCamera."; break;
-                case RequiredTargets.LookAt: text = "A LookAt Tracking Target is required in the CmCamera."; break;
-                case RequiredTargets.FollowGroup: text = "Tracking Target in the CmCamera must be a Target Group."; break;
-                default: break;
+                case RequiredTargets.Tracking: text = k_NeedTarget; break;
+                case RequiredTargets.LookAt: text = k_NeedLookAt; break;
+                case RequiredTargets.Group: text = k_NeedGroup; break;
             }
+            VisualElement noTargetHelp = null;
             if (text.Length > 0)
-                m_NoTargetHelp = ux.AddChild(new HelpBox(text, HelpBoxMessageType.Warning));
+                noTargetHelp = ux.AddChild(new HelpBox(text, HelpBoxMessageType.Warning));
+
+            // Update state
+            ux.TrackAnyUserActivity(() =>
+            {
+                if (editor == null || editor.target == null)
+                    return;  // target was deleted
+                
+                var noCamera = false;
+                var noTarget = false;
+                for (int i = 0; i < targets.Length && !noCamera; ++i)
+                {
+                    if (targets[i] is CinemachineComponentBase c)
+                    {
+                        var vcam = c.VirtualCamera;
+                        noCamera |= vcam == null || vcam is CinemachineCameraManagerBase;
+                        if (vcam != null)
+                            vcam.UpdateTargetCache();
+                        switch (requiredTargets)
+                        {
+                            case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
+                            case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
+                            case RequiredTargets.Group: noTarget |= 
+                                (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
+                                && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
+                        }
+                    }
+                    else if (targets[i] is CinemachineExtension x)
+                    {
+                        var vcam = x.ComponentOwner;
+                        noCamera |= vcam == null;
+                        if (vcam != null)
+                            vcam.UpdateTargetCache();
+                        switch (requiredTargets)
+                        {
+                            case RequiredTargets.Tracking: noTarget |= noCamera || vcam.Follow == null; break;
+                            case RequiredTargets.LookAt: noTarget |= noCamera || vcam.LookAt == null; break;
+                            case RequiredTargets.Group: noTarget |= noCamera 
+                                || ((vcam.FollowTargetAsGroup == null || !vcam.FollowTargetAsGroup.IsValid)
+                                    && (vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid)); break;
+                        }
+                    }
+                    else if (targets[i] is MonoBehaviour b)
+                        noCamera |= !b.TryGetComponent<CinemachineVirtualCameraBase>(out _);
+                }
+                noCameraHelp?.SetVisible(noCamera);
+                noTargetHelp?.SetVisible(noTarget && !noCamera);
+            });
         }
 
-        static void AddCmCameraToTargets(UnityEngine.Object[] targets)
+        static void AddCmCameraToTargets(Object[] targets)
         {
             for (int i = 0; i < targets.Length; ++i)
             {
-                var t = targets[i] as CinemachineComponentBase;
-                if (t != null)
+                if (targets[i] is CinemachineComponentBase c)
                 {
-                    if (t.VirtualCamera == null)
-                        Undo.AddComponent<CmCamera>(t.gameObject);
+                    if (c.VirtualCamera == null)
+                        Undo.AddComponent<CinemachineCamera>(c.gameObject);
                 }
-                else
+                else if (targets[i] is CinemachineExtension x)
                 {
-                    var x = targets[i] as CinemachineExtension;
-                    if (x != null && x.VirtualCamera == null)
-                        Undo.AddComponent<CmCamera>(x.gameObject).AddExtension(x);
+                    if (x != null && x.ComponentOwner == null)
+                        Undo.AddComponent<CinemachineCamera>(x.gameObject).AddExtension(x);
+                }
+                else if (targets[i] is MonoBehaviour b)
+                {
+                    if (!b.TryGetComponent<CinemachineVirtualCameraBase>(out _))
+                        Undo.AddComponent<CinemachineCamera>(b.gameObject);
                 }
             }
         }
 
-        public void UpdateState()
+        static List<Type> s_AllAxisControllerTypes;
+
+        public static void AddInputControllerHelp(
+            this UnityEditor.Editor editor, VisualElement ux, string text)
         {
-            if (m_Editor == null || m_Editor.target == null)
-                return;  // target was deleted
-            bool noCamera = false;
-            bool noTarget = false;
-            var targets = Targets;
-            for (int i = 0; i < targets.Length && !noCamera; ++i)
+            if (s_AllAxisControllerTypes == null)
             {
-                var t = targets[i] as CinemachineComponentBase;
-                if (t != null)
-                {
-                    noCamera |= t.VirtualCamera == null || t.VirtualCamera is CinemachineCameraManagerBase;
-                    switch (m_RequiredTargets)
-                    {
-                        case RequiredTargets.Follow: noTarget |= t.FollowTarget == null; break;
-                        case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
-                        case RequiredTargets.FollowGroup: noTarget |= t.FollowTargetAsGroup == null; break;
-                        default: break;
-                    }
-                }
-                else
-                {
-                    var x = targets[i] as CinemachineExtension;
-                    noCamera |= x.VirtualCamera == null;
-                    switch (m_RequiredTargets)
-                    {
-                        case RequiredTargets.Follow: noTarget |= noCamera || x.VirtualCamera.Follow == null; break;
-                        case RequiredTargets.LookAt: noTarget |= noCamera || x.VirtualCamera.LookAt == null; break;
-                        case RequiredTargets.FollowGroup: noTarget |= noCamera || x.VirtualCamera.FollowTargetAsGroup == null; break;
-                        default: break;
-                    }
-                    noTarget = noCamera || x.VirtualCamera.Follow == null;
-                }
+                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
+                    (Type t) => typeof(IInputAxisController).IsAssignableFrom(t) && !t.IsAbstract 
+                        && typeof(MonoBehaviour).IsAssignableFrom(t)
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                s_AllAxisControllerTypes = new();
+                var iter = allTypes.GetEnumerator();
+                while (iter.MoveNext())
+                    s_AllAxisControllerTypes.Add(iter.Current);
             }
-            if (m_NoCameraHelp != null)
-                m_NoCameraHelp.SetVisible(noCamera);
-            if (m_NoTargetHelp != null)
-                m_NoTargetHelp.SetVisible(noTarget && !noCamera);
+            ContextualMenuManipulator menu = null;
+            if (s_AllAxisControllerTypes.Count > 1)
+            {
+                menu = new ContextualMenuManipulator((evt) => 
+                {
+                    for (int i = 0; i < s_AllAxisControllerTypes.Count; ++i)
+                    {
+                        var t = s_AllAxisControllerTypes[i];
+                        evt.menu.AppendAction(ObjectNames.NicifyVariableName(t.Name), (action) => AddController(t));
+                    }
+                });
+            }
+
+            var help = ux.AddChild(InspectorUtility.HelpBoxWithButton(
+                text, HelpBoxMessageType.Info, "Add Input Controller", 
+                () => 
+                {
+                    if (s_AllAxisControllerTypes.Count == 1) 
+                        AddController(s_AllAxisControllerTypes[0]);
+                },
+                menu));
+
+            ux.TrackAnyUserActivity(() =>
+            {
+                if (editor == null)
+                    return;  // target was deleted
+                var noHandler = false;
+                for (int i = 0; i < editor.targets.Length; ++i)
+                    if (editor.targets[i] is IInputAxisResetSource src)
+                        noHandler |= !src.HasResetHandler;
+                help.SetVisible(noHandler);
+            });
+
+            // Local fucntion
+            void AddController(Type controllerType)
+            {
+                Undo.SetCurrentGroupName("Add Input Controller");
+                for (int i = 0; i < editor.targets.Length; ++i)
+                {
+                    if (editor.targets[i] is IInputAxisResetSource src && !src.HasResetHandler)
+                    {
+                        var t = editor.targets[i] as MonoBehaviour;
+                        if (!t.TryGetComponent<IInputAxisController>(out var c))
+                            Undo.AddComponent(t.gameObject, controllerType);
+                        else if (c is MonoBehaviour b && !b.enabled)
+                        {
+                            Undo.RecordObject(b, "enable controller");
+                            b.enabled = true;
+                        }
+                    }
+                }
+            };
+        }
+            
+        public static void OnGUI_DrawOnscreenTargetMarker(Vector3 worldPoint, Camera camera)
+        {
+            var c = camera.WorldToScreenPoint(worldPoint);
+            c.y = Screen.height - c.y;
+            if (c.z > 0)
+            {
+                var oldColor = GUI.color;
+                var r = new Rect(c, Vector2.zero).Inflated(Vector2.one * CinemachineComposerPrefs.TargetSize.Value);
+                GUI.color = new Color(0, 0, 0, CinemachineComposerPrefs.OverlayOpacity.Value);
+                GUI.DrawTexture(r.Inflated(new Vector2(1, 1)), Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                var color = CinemachineComposerPrefs.TargetColour.Value;
+                GUI.color = color;
+                GUI.DrawTexture(r, Texture2D.whiteTexture, ScaleMode.StretchToFill);
+                GUI.color = oldColor;
+            }
         }
 
-        /// <summary>
+        public static void OnGUI_DrawOnscreenGroupSizeMarker(
+            Bounds groupBounds, Matrix4x4 cameraViewMatrix, Camera camera)
+        {
+            var c = groupBounds.center; c.z -= groupBounds.extents.z; groupBounds.center = c;
+            var e = groupBounds.extents; e.z = 0; groupBounds.extents = e;
+                
+            c = camera.WorldToScreenPoint(cameraViewMatrix.MultiplyPoint3x4(c));
+            if (c.z < 0)
+                return;
+            e = camera.WorldToScreenPoint(cameraViewMatrix.MultiplyPoint3x4(groupBounds.center + e));
+            var groupSize = new Vector2(Mathf.Abs(e.x - c.x), Mathf.Abs(e.y - c.y));
+
+            var radius = Mathf.Max(groupSize.x, groupSize.y);
+            if (radius > CinemachineComposerPrefs.TargetSize.Value)
+            {
+                var oldColor = GUI.color;
+                var color = CinemachineComposerPrefs.TargetColour.Value;
+                color.a = Mathf.Lerp(1f, CinemachineComposerPrefs.OverlayOpacity.Value, (radius - 10f) / 100f);
+                GUI.color = color;
+                c.y = camera.pixelHeight - c.y;
+                var r = new Rect(c, Vector2.zero).Inflated(groupSize);
+                GUI.DrawTexture(r, GetTargetMarkerTex(), ScaleMode.StretchToFill);
+                GUI.color = oldColor;
+            }
+        }
+
+
+        static Texture2D s_TargetMarkerTex = null;
+        static Texture2D GetTargetMarkerTex()
+        {
+            if (s_TargetMarkerTex == null)
+            {
+                // Create a texture from scratch!
+                // Oh gawd there has to be a nicer way to do this
+                const int size = 128;
+                const float th = 1f;
+                const float radius = size / 2 - th;
+                var pix = new Color32[size * size];
+                var center = new Vector2(size-1, size-1) / 2;
+                for (int y = 0; y < size; ++y)
+                {
+                    for (int x = 0; x < size; ++x)
+                    {
+                        float d = Vector2.Distance(new Vector2(x, y), center);
+                        d = Mathf.Abs((d - radius) / th);
+                        var a = Mathf.Clamp01(1 - d);
+                        pix[y * size + x] = new Color(1, 1, 1, a);
+                    }
+                }
+                s_TargetMarkerTex = new Texture2D(size, size);
+                s_TargetMarkerTex.SetPixels32(pix);
+                s_TargetMarkerTex.Apply();
+            }
+            return s_TargetMarkerTex;
+        }
+
         /// IMGUI support - to be removed when IMGUI is gone
-        /// </summary>
         public static void IMGUI_DrawMissingCmCameraHelpBox(
-            UnityEditor.Editor editor, RequiredTargets requiredTargets = RequiredTargets.None)
+            this UnityEditor.Editor editor, RequiredTargets requiredTargets = RequiredTargets.None)
         {
             bool noCamera = false;
             bool noTarget = false;
             var targets = editor.targets;
             for (int i = 0; i < targets.Length && !noCamera; ++i)
             {
-                var t = targets[i] as CinemachineComponentBase;
-                if (t != null)
+                if (targets[i] is CinemachineComponentBase c)
                 {
-                    noCamera |= t.VirtualCamera == null || t.VirtualCamera is CinemachineCameraManagerBase;
+                    var vcam = c.VirtualCamera;
+                    noCamera |= vcam == null || vcam is CinemachineCameraManagerBase;
+                    if (vcam != null)
+                        vcam.UpdateTargetCache();
                     switch (requiredTargets)
                     {
-                        case RequiredTargets.Follow: noTarget |= t.FollowTarget == null; break;
-                        case RequiredTargets.LookAt: noTarget |= t.LookAtTarget == null; break;
-                        case RequiredTargets.FollowGroup: noTarget |= t.FollowTargetAsGroup == null; break;
-                        default: break;
+                        case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
+                        case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
+                        case RequiredTargets.Group: noTarget |= 
+                            (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
+                            && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
                     }
                 }
-                else
+                else if (targets[i] is CinemachineExtension x)
                 {
-                    var x = targets[i] as CinemachineExtension;
-                    noCamera |= x.VirtualCamera == null;
+                    var vcam = x.ComponentOwner;
+                    noCamera |= vcam == null;
+                    if (vcam != null)
+                        vcam.UpdateTargetCache();
                     switch (requiredTargets)
                     {
-                        case RequiredTargets.Follow: noTarget |= noCamera || x.VirtualCamera.Follow == null; break;
-                        case RequiredTargets.LookAt: noTarget |= noCamera || x.VirtualCamera.LookAt == null; break;
-                        case RequiredTargets.FollowGroup: noTarget |= noCamera || x.VirtualCamera.FollowTargetAsGroup == null; break;
-                        default: break;
+                        case RequiredTargets.Tracking: noTarget |= noCamera || vcam.Follow == null; break;
+                        case RequiredTargets.LookAt: noTarget |= noCamera || vcam.LookAt == null; break;
+                        case RequiredTargets.Group: noTarget |= noCamera 
+                            || ((vcam.FollowTargetAsGroup == null || !vcam.FollowTargetAsGroup.IsValid)
+                             && (vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid)); break;
                     }
-                    noTarget = noCamera || x.VirtualCamera.Follow == null;
                 }
             }
             if (noCamera)
             {
                 InspectorUtility.HelpBoxWithButton(
-                    "This component is intended to be used only with a CmCamera.", UnityEditor.MessageType.Warning,
-                    new GUIContent("Add\nCmCamera"), () => AddCmCameraToTargets(targets));
+                    k_NeedCamera, MessageType.Warning,
+                    new GUIContent(k_AddCamera), () => AddCmCameraToTargets(targets));
                 EditorGUILayout.Space();
             }
             else if (noTarget)
             {
-                string text = string.Empty;
+                var text = string.Empty;
                 switch (requiredTargets)
                 {
-                    case RequiredTargets.Follow: text = "A Tracking Target is required in the CmCamera."; break;
-                    case RequiredTargets.LookAt: text = "A LookAt Tracking Target is required in the CmCamera."; break;
-                    case RequiredTargets.FollowGroup: text = "Tracking Target in the CmCamera must be a Target Group."; break;
-                    default: break;
+                    case RequiredTargets.Tracking: text = k_NeedTarget; break;
+                    case RequiredTargets.LookAt: text = k_NeedLookAt; break;
+                    case RequiredTargets.Group: text = k_NeedGroup; break;
                 }
                 if (text.Length > 0)
-                    EditorGUILayout.HelpBox(text, UnityEditor.MessageType.Warning);
+                    EditorGUILayout.HelpBox(text, MessageType.Warning);
                 EditorGUILayout.Space();
             }
         }

@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// CinemachineMixingCamera is a "manager camera" that takes on the state of
@@ -61,10 +60,46 @@ namespace Cinemachine
         public float Weight7 = 0.5f;
 
 
-        CinemachineVirtualCameraBase m_LiveChild;
-        CinemachineBlend m_ActiveBlend;
-        CameraState m_State = CameraState.Default;
+        CameraState m_CameraState = CameraState.Default;
         Dictionary<CinemachineVirtualCameraBase, int> m_IndexMap;
+        float m_LiveChildPercent;
+
+        /// <summary>Makes sure the weights are non-negative</summary>
+        void OnValidate()
+        {
+            for (int i = 0; i < MaxCameras; ++i)
+                SetWeight(i, Mathf.Max(0, GetWeight(i)));
+        }
+
+        /// <inheritdoc />
+        protected override void Reset()
+        {
+            base.Reset();
+            for (var i = 0; i < MaxCameras; ++i)
+                SetWeight(i, i == 0 ? 1 : 0);
+        }
+        
+        /// <inheritdoc />
+        public override CameraState State => m_CameraState;
+
+        /// <inheritdoc />
+        public override string Description 
+        {
+            get
+            {
+                if (LiveChild == null)
+                    return "[(none)]";
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append("[");
+                sb.Append(LiveChild.Name);
+                sb.Append(" ");
+                sb.Append(Mathf.RoundToInt(m_LiveChildPercent));
+                sb.Append("%]");
+                var text = sb.ToString();
+                CinemachineDebug.ReturnToPool(sb);
+                return text;
+            }
+        }
 
         /// <summary>Get the weight of the child at an index.</summary>
         /// <param name="index">The child index. Only immediate CinemachineVirtualCameraBase
@@ -115,8 +150,6 @@ namespace Cinemachine
             UpdateCameraCache();
             if (m_IndexMap.TryGetValue(vcam, out var index))
                 return GetWeight(index);
-            Debug.LogError("CinemachineMixingCamera: Invalid child: "
-                + ((vcam != null) ? vcam.Name : "(null)"));
             return 0;
         }
 
@@ -133,40 +166,11 @@ namespace Cinemachine
                     + ((vcam != null) ? vcam.Name : "(null)"));
         }
 
-        /// <summary>Get the current "best" child virtual camera, that would be chosen
-        /// if the State Driven Camera were active.</summary>
-        public override ICinemachineCamera LiveChild => PreviousStateIsValid ? m_LiveChild : null;
-
-        /// <summary>
-        /// Get the current active blend in progress.  Will return null if no blend is in progress.
-        /// </summary>
-        public override CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_ActiveBlend : null;
-
-        /// <summary>The State of the current live child</summary>
-        public override CameraState State => m_State;
-
-        /// <summary>Makes sure the weights are non-negative</summary>
-        void OnValidate()
-        {
-            for (int i = 0; i < MaxCameras; ++i)
-                SetWeight(i, Mathf.Max(0, GetWeight(i)));
-        }
-
-        protected override void Reset()
-        {
-            base.Reset();
-            for (var i = 0; i < MaxCameras; ++i)
-                SetWeight(i, i == 0 ? 1 : 0);
-        }
-
-        /// <summary>Check whether the vcam a live child of this camera.</summary>
-        /// <param name="vcam">The Virtual Camera to check</param>
-        /// <param name="dominantChildOnly">If true, will only return true if this vcam is the dominant live child</param>
-        /// <returns>True if the vcam is currently actively influencing the state of this vcam</returns>
+        /// <inheritdoc />
         public override bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
         {
             if (dominantChildOnly)
-                return (ICinemachineCamera)m_LiveChild == vcam;
+                return LiveChild == vcam;
             var children = ChildCameras;
             for (int i = 0; i < MaxCameras && i < children.Count; ++i)
                 if ((ICinemachineCamera)children[i] == vcam)
@@ -174,8 +178,7 @@ namespace Cinemachine
             return false;
         }
 
-        /// <summary>Rebuild the cached list of child cameras.</summary>
-        /// <returns>True, if rebuild was needed. False, otherwise.</returns>
+        /// <inheritdoc />
         protected override bool UpdateCameraCache()
         {
             if (!base.UpdateCameraCache())
@@ -187,45 +190,27 @@ namespace Cinemachine
             return true;
         }
 
-        /// <summary>Notification that this virtual camera is going live.</summary>
-        /// <param name="fromCam">The camera being deactivated.  May be null.</param>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
+        /// <inheritdoc />
         public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
             for (int i = 0; i < MaxCameras && i < ChildCameras.Count; ++i)
-            {
-                var vcam = ChildCameras[i];
-                if (vcam.isActiveAndEnabled && GetWeight(i) > UnityVectorExtensions.Epsilon)
-                    vcam.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
-            }
-            InternalUpdateCameraState(worldUp, deltaTime);
+                ChildCameras[i].OnTransitionFromCamera(fromCam, worldUp, deltaTime);
+            base.OnTransitionFromCamera(fromCam, worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  Do not call this method.
-        /// Called by CinemachineCore at designated update time
-        /// so the vcam can position itself and track its targets.  This implementation
-        /// computes and caches the weighted blend of the tracked cameras.</summary>
-        /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
-        /// <param name="deltaTime">Delta time for time-based effects (ignore if less than 0)</param>
+        /// <inheritdoc />
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             UpdateCameraCache();
-            if (!PreviousStateIsValid)
-            {
-                m_LiveChild = null;
-                m_ActiveBlend = null;
-            }
 
+            CinemachineVirtualCameraBase liveChild = null;
             var children = ChildCameras;
-            m_LiveChild = null;
             float highestWeight = 0;
             float totalWeight = 0;
             for (var i = 0; i < MaxCameras && i < children.Count; ++i)
             {
-                CinemachineVirtualCameraBase vcam = children[i];
+                var vcam = children[i];
                 if (vcam.isActiveAndEnabled)
                 {
                     float weight = Mathf.Max(0, GetWeight(i));
@@ -233,19 +218,25 @@ namespace Cinemachine
                     {
                         totalWeight += weight;
                         if (totalWeight == weight)
-                            m_State = vcam.State;
+                            m_CameraState = vcam.State;
                         else
-                            m_State = CameraState.Lerp(m_State, vcam.State, weight / totalWeight);
+                            m_CameraState = CameraState.Lerp(m_CameraState, vcam.State, weight / totalWeight);
 
                         if (weight > highestWeight)
                         {
                             highestWeight = weight;
-                            m_LiveChild = vcam;
+                            liveChild = vcam;
                         }
                     }
                 }
             }
-            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
+            m_LiveChildPercent = totalWeight > 0.001f ? (highestWeight * 100 / totalWeight) : 0;
+            SetLiveChild(liveChild, worldUp, deltaTime);
+            InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_CameraState, deltaTime);
+            PreviousStateIsValid = true;
         }
+
+        /// <inheritdoc />
+        protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime) => null;
     }
 }

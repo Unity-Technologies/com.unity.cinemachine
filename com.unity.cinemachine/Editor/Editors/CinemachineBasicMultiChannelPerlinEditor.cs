@@ -1,37 +1,42 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineBasicMultiChannelPerlin))]
     [CanEditMultipleObjects]
-    class CinemachineBasicMultiChannelPerlinEditor : BaseEditor<CinemachineBasicMultiChannelPerlin>
+    class CinemachineBasicMultiChannelPerlinEditor : UnityEditor.Editor
     {
-        private void OnEnable()
-        {
-            NoiseSettingsPropertyDrawer.InvalidateProfileList();
-        }
+        CinemachineBasicMultiChannelPerlin Target => target as CinemachineBasicMultiChannelPerlin;
 
-        public override void OnInspectorGUI()
+        public override VisualElement CreateInspectorGUI()
         {
-            BeginInspector();
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
-            bool needWarning = false;
-            for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineBasicMultiChannelPerlin).NoiseProfile == null;
-            if (needWarning)
-                EditorGUILayout.HelpBox(
-                    "A Noise Profile is required.  You may choose from among the NoiseSettings assets defined in the project.",
-                    MessageType.Warning);
-            DrawRemainingPropertiesInInspector();
+            var ux = new VisualElement();
 
-            Rect rect = EditorGUILayout.GetControlRect(true);
-            rect.width -= EditorGUIUtility.labelWidth; rect.x += EditorGUIUtility.labelWidth;
-            if (GUI.Button(rect, "New random seed"))
+            this.AddMissingCmCameraHelpBox(ux);
+
+            var noProfile = ux.AddChild(new HelpBox(
+                "A Noise Profile is required.  You may choose from among the NoiseSettings assets defined "
+                + "in the project, or from one of the presets.", 
+                HelpBoxMessageType.Warning));
+
+            var profileProp = serializedObject.FindProperty(() => Target.NoiseProfile);
+            ux.Add(new PropertyField(profileProp));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PivotOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AmplitudeGain)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FrequencyGain)));
+
+            var row = ux.AddChild(new InspectorUtility.LeftRightRow());
+            row.Right.Add(new Button(() =>
             {
                 for (int i = 0; i < targets.Length; ++i)
                     (targets[i] as CinemachineBasicMultiChannelPerlin).ReSeed();
-            }
+            }) { text = "New random seed", style = { flexGrow = 0 }});
+
+            ux.TrackPropertyWithInitialCallback(profileProp, (p) => noProfile.SetVisible(p.objectReferenceValue == null));
+
+            return ux;
         }
     }
 }

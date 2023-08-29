@@ -1,16 +1,15 @@
-using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// A collection of helpers for UnityEngine Spline.
     /// </summary>
-    internal static class SplineContainerExtensions
+    static class SplineContainerExtensions
     {
         /// <summary>Check spline container and child spline for null</summary>
-        /// <param name="spline">spline continer to check</param>
+        /// <param name="spline">spline container to check</param>
         /// <returns>true if container holds a non-null spline</returns>
         public static bool IsValid(this SplineContainer spline) => spline != null && spline.Spline != null;
 
@@ -20,19 +19,20 @@ namespace Cinemachine
         /// <param name="spline">The spline in question</param>
         /// <param name="roll">The additional roll to apply</param>
         /// <param name="tNormalized">The normalized position on the spline</param>
-        /// <param name="position">returned point on the spline</param>
-        /// <param name="rotation">returned rotation at the point on the spline</param>
+        /// <param name="position">returned point on the spline, in spline-local coords</param>
+        /// <param name="rotation">returned rotation at the point on the spline, in spline-local coords</param>
         /// <returns>True if the spline position is valid</returns>
-        public static bool EvaluateSplineWithRoll(
+        public static bool LocalEvaluateSplineWithRoll(
             this SplineContainer spline,
             CinemachineSplineRoll roll,
             Quaternion defaultRotation,
             float tNormalized, 
             out Vector3 position, out Quaternion rotation)
         {
-            if (!spline.Evaluate(tNormalized, out var localPosition, out var localTangent, out var localUp))
+            if (spline.Spline == null || !SplineUtility.Evaluate(
+                spline.Spline, tNormalized, out var localPosition, out var localTangent, out var localUp))
             {
-                position = localPosition;
+                position = Vector3.zero;
                 rotation = Quaternion.identity;
                 return false;
             }
@@ -71,12 +71,34 @@ namespace Cinemachine
         }
 
         /// <summary>
+        /// Apply to a <see cref="SplineContainer"/>additional roll from <see cref="CinemachineSplineRoll"/>
+        /// </summary>
+        /// <param name="spline">The spline in question</param>
+        /// <param name="roll">The additional roll to apply</param>
+        /// <param name="tNormalized">The normalized position on the spline</param>
+        /// <param name="position">returned point on the spline, in world coords</param>
+        /// <param name="rotation">returned rotation at the point on the spline, in world coords</param>
+        /// <returns>True if the spline position is valid</returns>
+        public static bool EvaluateSplineWithRoll(
+            this SplineContainer spline,
+            CinemachineSplineRoll roll,
+            Quaternion defaultRotation,
+            float tNormalized, 
+            out Vector3 position, out Quaternion rotation)
+        {
+            var result = LocalEvaluateSplineWithRoll(spline, roll, defaultRotation, tNormalized, out position, out rotation);
+            position = spline.transform.TransformPoint(position);
+            rotation = rotation * spline.transform.rotation;
+            return result;
+        }
+        
+        /// <summary>
         /// Get the maximum value for the spline position.  Minimum value is always 0.
         /// </summary>
         /// <param name="spline">The spline in question</param>
         /// <param name="unit">The spline position is expressed in these units</param>
         /// <param name="splineLength">The length of the spline, in distance units.  
-        /// Passed as parameter for efficienacy because length calculation is slow.
+        /// Passed as parameter for efficiency because length calculation is slow.
         /// If a negative value is passed, length will be calculated.</param>
         /// <returns></returns>
         public static float GetMaxPosition(
@@ -102,7 +124,7 @@ namespace Cinemachine
         /// <param name="t">Spline position to sanitize</param>
         /// <param name="unit">The spline position is expressed in these units</param>
         /// <param name="splineLength">The length of the spline, in distance units.  
-        /// Passed as parameter for efficienacy because length calculation is slow.
+        /// Passed as parameter for efficiency because length calculation is slow.
         /// If a negative value is passed, length will be calculated.</param>
         /// <returns></returns>
         public static float StandardizePosition(

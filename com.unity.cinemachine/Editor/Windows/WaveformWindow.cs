@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     class WaveformWindow : EditorWindow
     {
@@ -128,10 +128,10 @@ namespace Cinemachine.Editor
             public WaveformGenerator()
             {
                 mWaveformCompute = AssetDatabase.LoadAssetAtPath<ComputeShader>(
-                        $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/CMWaveform.compute");
+                        $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/CMWaveform.compute");
                 mWaveformProperties = new MaterialPropertyBlock();
                 mWaveformMaterial = new Material(AssetDatabase.LoadAssetAtPath<Shader>(
-                    $"{ScriptableObjectUtility.kPackageRoot}/Editor/EditorResources/CMWaveform.shader"))
+                    $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/CMWaveform.shader"))
                 {
                     name = "CMWaveformMaterial",
                     hideFlags = HideFlags.DontSave

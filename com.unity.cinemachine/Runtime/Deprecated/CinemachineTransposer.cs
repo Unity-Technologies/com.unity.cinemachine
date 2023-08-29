@@ -1,8 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
-using Cinemachine.TargetTracking;
 using System;
+using Unity.Cinemachine.TargetTracking;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineOrbitalFollow instead.
@@ -118,7 +119,7 @@ namespace Cinemachine
             get
             {
                 Vector3 offset = m_FollowOffset;
-                if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
+                if (m_BindingMode == BindingMode.LazyFollow)
                 {
                     offset.x = 0;
                     offset.z = -Mathf.Abs(offset.z);
@@ -213,3 +214,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

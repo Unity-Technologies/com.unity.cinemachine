@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Cinemachine.Utility
+namespace Unity.Cinemachine
 {
     /// <summary>Extensions to the Vector3 class, used by Cinemachine</summary>
     public static class UnityVectorExtensions
@@ -42,7 +42,7 @@ namespace Cinemachine.Utility
             Vector3 s = s1 - s0;
             float len2 = Vector3.SqrMagnitude(s);
             if (len2 < Epsilon)
-                return 0; // degenrate segment
+                return 0; // degenerate segment
             return Mathf.Clamp01(Vector3.Dot(p - s0, s) / len2);
         }
 
@@ -58,20 +58,19 @@ namespace Cinemachine.Utility
             Vector2 s = s1 - s0;
             float len2 = Vector2.SqrMagnitude(s);
             if (len2 < Epsilon)
-                return 0; // degenrate segment
+                return 0; // degenerate segment
             return Mathf.Clamp01(Vector2.Dot(p - s0, s) / len2);
         }
 
         /// <summary>
-        /// Returns a non-normalized projection of the supplied vector onto a plane
-        /// as described by its normal
+        /// Returns a non-normalized projection of the supplied vector onto a plane as described by its normal
         /// </summary>
-        /// <param name="vector"></param>
+        /// <param name="vector">Vector to project.</param>
         /// <param name="planeNormal">The normal that defines the plane.  Must have a length of 1.</param>
         /// <returns>The component of the vector that lies in the plane</returns>
         public static Vector3 ProjectOntoPlane(this Vector3 vector, Vector3 planeNormal)
         {
-            return (vector - Vector3.Dot(vector, planeNormal) * planeNormal);
+            return vector - Vector3.Dot(vector, planeNormal) * planeNormal;
         }
         
         /// <summary>
@@ -100,8 +99,8 @@ namespace Cinemachine.Utility
         ///     0 = no intersection, 
         ///     1 = lines intersect, 
         ///     2 = segments intersect, 
-        ///     3 = lines are colinear, segments do not touch, 
-        ///     4 = lines are colinear, segments touch (at one or at multiple points)
+        ///     3 = lines are collinear, segments do not touch, 
+        ///     4 = lines are collinear, segments touch (at one or at multiple points)
         /// </returns>
         public static int FindIntersection(
             in Vector2 p1, in Vector2 p2, in Vector2 q1, in Vector2 q2, 
@@ -117,7 +116,7 @@ namespace Cinemachine.Utility
                 intersection = Vector2.positiveInfinity;
                 if (Mathf.Abs(pq.Cross(p)) < 0.00001f)
                 {
-                    // The lines are colinear.  Do the segments touch?
+                    // The lines are collinear.  Do the segments touch?
                     var dotPQ = Vector2.Dot(q, p);
 
                     if (dotPQ > 0 && (p1 - q2).sqrMagnitude < 0.001f)
@@ -144,16 +143,16 @@ namespace Cinemachine.Utility
                         else if (dotPQ > 0 && (p2 - q1).sqrMagnitude < 0.001f)
                             intersection = p2; // p points at start of q
 
-                        return 4;   // colinear segments touch
+                        return 4;   // collinear segments touch
                     }
 
                     dot = Vector2.Dot(p1 - q1, q);
                     if (0 <= dot && dot <= Vector2.Dot(q, q))
-                        return 4;   // colinear segments overlap
+                        return 4;   // collinear segments overlap
 
-                    return 3;   // colinear segments don't touch
+                    return 3;   // collinear segments don't touch
                 }
-                return 0; // the lines are parallel and not colinear
+                return 0; // the lines are parallel and not collinear
             }
 
             var t = pq.Cross(q) / pXq;
@@ -254,10 +253,18 @@ namespace Cinemachine.Utility
         /// <returns>Rotation between the vectors</returns>
         public static Quaternion SafeFromToRotation(Vector3 v1, Vector3 v2, Vector3 up)
         {
-            var axis = Vector3.Cross(v1, v2);
-            if (axis.AlmostZero())
-                axis = up; // in case they are pointing in opposite directions
-            return Quaternion.AngleAxis(Angle(v1, v2), axis);
+            var p1 = v1.ProjectOntoPlane(up);
+            var p2 = v2.ProjectOntoPlane(up);
+            if (p1.sqrMagnitude < Epsilon || p2.sqrMagnitude < Epsilon)
+            {
+                var axis = Vector3.Cross(v1, v2);
+                if (axis.AlmostZero())
+                    axis = up; // in case they are pointing in opposite directions
+                return Quaternion.AngleAxis(Angle(v1, v2), axis);
+            }
+            var pitchChange = Vector3.Angle(v2, up) - Vector3.Angle(v1, up);
+            return Quaternion.AngleAxis(SignedAngle(p1, p2, up), up)
+                * Quaternion.AngleAxis(pitchChange, Vector3.Cross(up, v1).normalized);
         }
 
         /// <summary>This is a slerp that mimics a camera operator's movement in that
@@ -265,7 +272,7 @@ namespace Cinemachine.Utility
         /// the up param</summary>
         /// <param name="vA">First direction</param>
         /// <param name="vB">Second direction</param>
-        /// <param name="t">Interpolation amoun t</param>
+        /// <param name="t">Interpolation amount</param>
         /// <param name="up">Defines the up direction</param>
         /// <returns>Interpolated vector</returns>
         public static Vector3 SlerpWithReferenceUp(
@@ -284,9 +291,20 @@ namespace Cinemachine.Utility
             Vector3 dir = q * Vector3.forward;
             return dir * Mathf.Lerp(dA, dB, t);
         }
+
+        /// <summary>
+        /// Put euler angle in the range of -180...180
+        /// </summary>
+        /// <param name="angle">The angle to normalize</param>
+        /// <returns>The angle expressed as a value -180...180</returns>
+        public static float NormalizeAngle(float angle)
+        {
+            angle %= 360;
+            return angle > 180 ? angle -360 : angle;
+        }
     }
 
-    /// <summary>Extensions to the Quaternion class, usen in various places by Cinemachine</summary>
+    /// <summary>Extensions to the Quaternion class, used in various places by Cinemachine</summary>
     public static class UnityQuaternionExtensions
     {
         /// <summary>This is a slerp that mimics a camera operator's movement in that
@@ -325,7 +343,7 @@ namespace Cinemachine.Utility
         /// This formulation makes it easy to interpolate without introducing spurious roll.
         /// </summary>
         /// <param name="orient"></param>
-        /// <param name="lookAtDir">The worldspace target direction in which we want to look</param>
+        /// <param name="lookAtDir">The world-space target direction in which we want to look</param>
         /// <param name="worldUp">Which way is up.  Must have a length of 1.</param>
         /// <returns>Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
         /// about local right.</returns>
@@ -379,21 +397,27 @@ namespace Cinemachine.Utility
         public static Quaternion ApplyCameraRotation(
             this Quaternion orient, Vector2 rot, Vector3 worldUp)
         {
+            if (rot.sqrMagnitude < 0.0001f)
+                return orient;
             Quaternion q = Quaternion.AngleAxis(rot.x, Vector3.right);
             return (Quaternion.AngleAxis(rot.y, worldUp) * orient) * q;
         }
     }
 
-    /// <summary>Ad-hoc xxtentions to the Rect structure, used by Cinemachine</summary>
+    /// <summary>Ad-hoc extensions to the Rect structure, used by Cinemachine</summary>
     public static class UnityRectExtensions
     {
         /// <summary>Inflate a rect</summary>
         /// <param name="r"></param>
-        /// <param name="delta">x and y are added/subtracted fto/from the edges of
+        /// <param name="delta">x and y are added/subtracted to/from the edges of
         /// the rect, inflating it in all directions</param>
         /// <returns>The inflated rect</returns>
         public static Rect Inflated(this Rect r, Vector2 delta)
         {
+            if (r.width + delta.x * 2 < 0)
+                delta.x = -r.width / 2;
+            if (r.height + delta.y * 2 < 0)
+                delta.y = -r.height / 2;
             return new Rect(
                 r.xMin - delta.x, r.yMin - delta.y,
                 r.width + delta.x * 2, r.height + delta.y * 2);

@@ -3,18 +3,13 @@ using UnityEditor;
 using System.IO;
 using System;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// This is a collection of utilities surrounding ScriptableObjects
     /// </summary>
     class ScriptableObjectUtility
     {
-        /// <summary>
-        /// The root directory where Cinemachine is installed
-        /// </summary>
-        public const string kPackageRoot = "Packages/com.unity.cinemachine";
-
         /// <summary>Create a scriptable object asset</summary>
         /// <typeparam name="T">The type of asset to create</typeparam>
         /// <param name="assetPath">The full path and filename of the asset to create</param>
@@ -52,11 +47,9 @@ namespace Cinemachine.Editor
 
             if (trimName)
             {
-                string[] standardNames = new string[] { "Asset", "Attributes", "Container" };
-                foreach (string standardName in standardNames)
-                {
-                    assetName = assetName.Replace(standardName, "");
-                }
+                var standardNames = new string[] { "Asset", "Attributes", "Container" };
+                for (int i = 0; i < standardNames.Length; ++i)
+                    assetName = assetName.Replace(standardNames[i], "");
             }
 
             if (prependFolderName)
@@ -70,7 +63,7 @@ namespace Cinemachine.Editor
 
         private static ScriptableObject Create(string className, string assetName, string folder)
         {
-            ScriptableObject asset = ScriptableObject.CreateInstance(className);
+            var asset = ScriptableObject.CreateInstance(className);
             if (asset == null)
             {
                 Debug.LogError("failed to create instance of " + className);

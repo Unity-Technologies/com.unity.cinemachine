@@ -1,8 +1,7 @@
 using UnityEngine;
-using Cinemachine.Utility;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cm Camera that adjusts
@@ -17,7 +16,7 @@ namespace Cinemachine
     public class CinemachineFollowZoom : CinemachineExtension
     {
         /// <summary>The shot width to maintain, in world units, at target distance.
-        /// FOV will be adusted as far as possible to maintain this width at the
+        /// FOV will be adjusted as far as possible to maintain this width at the
         /// target distance from the camera.</summary>
         [Tooltip("The shot width to maintain, in world units, at target distance.")]
         [FormerlySerializedAs("m_Width")]
@@ -50,7 +49,7 @@ namespace Cinemachine
             FovRange.x = Mathf.Clamp(FovRange.x, 1, FovRange.y);
         }
 
-        class VcamExtraState
+        class VcamExtraState : VcamExtraStateBase
         {
             public float m_PreviousFrameZoom = 0;
         }
@@ -71,7 +70,7 @@ namespace Cinemachine
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             var extra = GetExtraState<VcamExtraState>(vcam);
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
+            if (deltaTime < 0 || !vcam.PreviousStateIsValid)
                 extra.m_PreviousFrameZoom = state.Lens.FieldOfView;
 
             // Set the zoom after the body has been positioned, but before the aim,
@@ -90,11 +89,11 @@ namespace Cinemachine
                     targetWidth = Mathf.Clamp(targetWidth, minW, maxW);
 
                     // Apply damping
-                    if (deltaTime >= 0 && Damping > 0 && VirtualCamera.PreviousStateIsValid)
+                    if (deltaTime >= 0 && Damping > 0 && vcam.PreviousStateIsValid)
                     {
                         var currentWidth = d * 2f * Mathf.Tan(extra.m_PreviousFrameZoom * Mathf.Deg2Rad / 2f);
                         var delta = targetWidth - currentWidth;
-                        delta = VirtualCamera.DetachedLookAtTargetDamp(delta, Damping, deltaTime);
+                        delta = vcam.DetachedLookAtTargetDamp(delta, Damping, deltaTime);
                         targetWidth = currentWidth + delta;
                     }
                     fov = 2f * Mathf.Atan(targetWidth / (2 * d)) * Mathf.Rad2Deg;

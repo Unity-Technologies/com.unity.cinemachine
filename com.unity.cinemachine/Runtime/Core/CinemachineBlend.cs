@@ -1,15 +1,29 @@
-using Cinemachine.Utility;
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
-    /// Describes a blend between 2 Cinemachine Virtual Cameras, and holds the
-    /// current state of the blend.
+    /// Describes a blend between 2 CinemachineCameras, and holds the current state of the blend.
     /// </summary>
     public class CinemachineBlend
     {
+        /// <summary>
+        /// Interface for implementing custom CameraState blending algorithm
+        /// </summary>
+        public interface IBlender
+        {
+            /// <summary>
+            /// Interpolate a camera state between the two cameras being blended.
+            /// </summary>
+            /// <param name="CamA">The first camera</param>
+            /// <param name="CamB">The second camera</param>
+            /// <param name="t">Range 0...1 where 0 is CamA state and 1 is CamB state</param>
+            /// <returns>The interpolated state.</returns>
+            CameraState GetIntermediateState(ICinemachineCamera CamA, ICinemachineCamera CamB, float t);
+        }
+
         /// <summary>First camera in the blend</summary>
         public ICinemachineCamera CamA;
 
@@ -37,8 +51,14 @@ namespace Cinemachine
             }
         }
 
+        /// <summary>
+        /// If non-null, the custom blender will be used to blend camera state.  
+        /// If null, then CameraState.Lerp will be used.
+        /// </summary>
+        public IBlender CustomBlender { get; set; }
+
         /// <summary>Validity test for the blend.  True if either camera is defined.</summary>
-        public bool IsValid => ((CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid));
+        public bool IsValid => (CamA != null && CamA.IsValid) || (CamB != null && CamB.IsValid);
 
         /// <summary>Duration in seconds of the blend.</summary>
         public float Duration;
@@ -52,60 +72,60 @@ namespace Cinemachine
         {
             get
             {
-                var sb = CinemachineDebug.SBFromPool();
                 if (CamB == null || !CamB.IsValid)
-                    sb.Append("(none)");
-                else
-                {
-                    sb.Append("[");
-                    sb.Append(CamB.Name);
-                    sb.Append("]");
-                }
+                    return "(none)";
+
+                var sb = CinemachineDebug.SBFromPool();
+                sb.Append(CamB.Name);
                 sb.Append(" ");
                 sb.Append((int)(BlendWeight * 100f));
                 sb.Append("% from ");
                 if (CamA == null || !CamA.IsValid)
                     sb.Append("(none)");
                 else
-                {
-                    sb.Append("[");
                     sb.Append(CamA.Name);
-                    sb.Append("]");
-                }
                 string text = sb.ToString();
                 CinemachineDebug.ReturnToPool(sb);
                 return text;
             }
         }
 
-        /// <summary>Does the blend use a specific Cinemachine Virtual Camera?</summary>
+        /// <summary>Does the blend use a specific CinemachineCamera?</summary>
         /// <param name="cam">The camera to test</param>
         /// <returns>True if the camera is involved in the blend</returns>
         public bool Uses(ICinemachineCamera cam)
         {
+            if (cam == null)
+                return false;
             if (cam == CamA || cam == CamB)
                 return true;
-            var b = CamA as BlendSourceVirtualCamera;
-            if (b != null && b.Blend.Uses(cam))
+            if (CamA is NestedBlendSource b && b.Blend.Uses(cam))
                 return true;
-            b = CamB as BlendSourceVirtualCamera;
+            b = CamB as NestedBlendSource;
             return b != null && b.Blend.Uses(cam);
         }
 
-        /// <summary>Construct a blend</summary>
-        /// <param name="a">First camera</param>
-        /// <param name="b">Second camera</param>
-        /// <param name="curve">Blend curve</param>
-        /// <param name="duration">Duration of the blend, in seconds</param>
-        /// <param name="t">Current time in blend, relative to the start of the blend</param>
-        public CinemachineBlend(
-            ICinemachineCamera a, ICinemachineCamera b, AnimationCurve curve, float duration, float t)
+        /// <summary>Copy contents of a blend</summary>
+        /// <param name="src">Copy fields from this blend</param>
+        public void CopyFrom(CinemachineBlend src)
         {
-            CamA = a;
-            CamB = b;
-            BlendCurve = curve;
-            TimeInBlend = t;
-            Duration = duration;
+            CamA = src.CamA;
+            CamB = src.CamB;
+            BlendCurve = src.BlendCurve;
+            TimeInBlend = src.TimeInBlend;
+            Duration = src.Duration;
+            CustomBlender = src.CustomBlender;
+        }
+
+        /// <summary>
+        /// Clears all fields except CamB.  This effectively cuts to the end of the blend
+        /// </summary>
+        public void ClearBlend()
+        {
+            CamA = null;
+            BlendCurve = null;
+            TimeInBlend = Duration = 0;
+            CustomBlender = null;
         }
 
         /// <summary>Make sure the source cameras get updated.</summary>
@@ -135,6 +155,9 @@ namespace Cinemachine
                 }
                 if (CamB == null || !CamB.IsValid)
                     return CamA.State;
+
+                if (CustomBlender != null)
+                    return CustomBlender.GetIntermediateState(CamA, CamB, BlendWeight);
                 return CameraState.Lerp(CamA.State, CamB.State, BlendWeight);
             }
         }
@@ -145,8 +168,17 @@ namespace Cinemachine
     [Serializable]
     public struct CinemachineBlendDefinition
     {
+        /// <summary>
+        /// Delegate for finding a blend definition to use when blending between 2 cameras.
+        /// </summary>
+        /// <param name="fromKey">The outgoing camera</param>
+        /// <param name="toKey">The incoming camera</param>
+        /// <returns>An appropriate blend definition,.  Must not be null.</returns>
+        public delegate CinemachineBlendDefinition LookupBlendDelegate(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming);
+
         /// <summary>Supported predefined shapes for the blend curve.</summary>
-        public enum Style
+        public enum Styles
         {
             /// <summary>Zero-length blend</summary>
             Cut,
@@ -168,67 +200,70 @@ namespace Cinemachine
 
         /// <summary>The shape of the blend curve.</summary>
         [Tooltip("Shape of the blend curve")]
-        public Style m_Style;
+        [FormerlySerializedAs("m_Style")]
+        public Styles Style;
 
         /// <summary>The duration (in seconds) of the blend, if not a cut.  
         /// If style is a cut, then this value is ignored.</summary>
         [Tooltip("Duration of the blend, in seconds")]
-        public float m_Time;
+        [FormerlySerializedAs("m_Time")]
+        public float Time;
 
         /// <summary>
         /// Get the duration of the blend, in seconds.  Will return 0 if blend style is a cut.
         /// </summary>
-        public float BlendTime { get { return m_Style == Style.Cut ? 0 : m_Time; } }
+        public float BlendTime => Style == Styles.Cut ? 0 : Time; 
 
         /// <summary>Constructor</summary>
         /// <param name="style">The shape of the blend curve.</param>
         /// <param name="time">The duration (in seconds) of the blend</param>
-        public CinemachineBlendDefinition(Style style, float time)
+        public CinemachineBlendDefinition(Styles style, float time)
         {
-            m_Style = style;
-            m_Time = time;
-            m_CustomCurve = null;
+            Style = style;
+            Time = time;
+            CustomCurve = null;
         }
 
         /// <summary>
         /// A user-defined AnimationCurve, used only if style is Custom.
         /// Curve MUST be normalized, i.e. time range [0...1], value range [0...1].
         /// </summary>
-        public AnimationCurve m_CustomCurve;
+        [FormerlySerializedAs("m_CustomCurve")]
+        public AnimationCurve CustomCurve;
 
-        static AnimationCurve[] sStandardCurves;
+        static AnimationCurve[] s_StandardCurves;
         void CreateStandardCurves()
         {
-            sStandardCurves = new AnimationCurve[(int)Style.Custom];
+            s_StandardCurves = new AnimationCurve[(int)Styles.Custom];
 
-            sStandardCurves[(int)Style.Cut] = null;
-            sStandardCurves[(int)Style.EaseInOut] = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
+            s_StandardCurves[(int)Styles.Cut] = null;
+            s_StandardCurves[(int)Styles.EaseInOut] = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
 
-            sStandardCurves[(int)Style.EaseIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            Keyframe[] keys = sStandardCurves[(int)Style.EaseIn].keys;
+            s_StandardCurves[(int)Styles.EaseIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            Keyframe[] keys = s_StandardCurves[(int)Styles.EaseIn].keys;
             keys[0].outTangent = 1.4f;
             keys[1].inTangent = 0;
-            sStandardCurves[(int)Style.EaseIn].keys = keys;
+            s_StandardCurves[(int)Styles.EaseIn].keys = keys;
 
-            sStandardCurves[(int)Style.EaseOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            keys = sStandardCurves[(int)Style.EaseOut].keys;
+            s_StandardCurves[(int)Styles.EaseOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = s_StandardCurves[(int)Styles.EaseOut].keys;
             keys[0].outTangent = 0;
             keys[1].inTangent = 1.4f;
-            sStandardCurves[(int)Style.EaseOut].keys = keys;
+            s_StandardCurves[(int)Styles.EaseOut].keys = keys;
 
-            sStandardCurves[(int)Style.HardIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            keys = sStandardCurves[(int)Style.HardIn].keys;
+            s_StandardCurves[(int)Styles.HardIn] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = s_StandardCurves[(int)Styles.HardIn].keys;
             keys[0].outTangent = 0;
             keys[1].inTangent = 3f;
-            sStandardCurves[(int)Style.HardIn].keys = keys;
+            s_StandardCurves[(int)Styles.HardIn].keys = keys;
 
-            sStandardCurves[(int)Style.HardOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
-            keys = sStandardCurves[(int)Style.HardOut].keys;
+            s_StandardCurves[(int)Styles.HardOut] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            keys = s_StandardCurves[(int)Styles.HardOut].keys;
             keys[0].outTangent = 3f;
             keys[1].inTangent = 0;
-            sStandardCurves[(int)Style.HardOut].keys = keys;
+            s_StandardCurves[(int)Styles.HardOut].keys = keys;
 
-            sStandardCurves[(int)Style.Linear] = AnimationCurve.Linear(0f, 0f, 1, 1f);
+            s_StandardCurves[(int)Styles.Linear] = AnimationCurve.Linear(0f, 0f, 1, 1f);
         }
 
         /// <summary>
@@ -240,40 +275,16 @@ namespace Cinemachine
         {
             get
             {
-                if (m_Style == Style.Custom)
+                if (Style == Styles.Custom)
                 {
-                    if (m_CustomCurve == null)
-                        m_CustomCurve = AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
-                    return m_CustomCurve;
+                    CustomCurve ??= AnimationCurve.EaseInOut(0f, 0f, 1, 1f);
+                    return CustomCurve;
                 }
-                if (sStandardCurves == null)
+                if (s_StandardCurves == null)
                     CreateStandardCurves();
-                return sStandardCurves[(int)m_Style];
+                return s_StandardCurves[(int)Style];
             }
         }
-    }
-
-    /// <summary>
-    /// Point source for blending. It's not really a virtual camera, but takes
-    /// a CameraState and exposes it as a virtual camera for the purposes of blending.
-    /// </summary>
-    internal class StaticPointVirtualCamera : ICinemachineCamera
-    {
-        public StaticPointVirtualCamera(CameraState state, string name) { State = state; Name = name; }
-        public void SetState(CameraState state) { State = state; }
-
-        public string Name { get; private set; }
-        public string Description { get { return ""; }}
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
-        public CameraState State { get; private set; }
-        public bool IsValid { get { return true; } }
-        public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false) { return false; }
-        public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
     }
 
     /// <summary>
@@ -281,21 +292,36 @@ namespace Cinemachine
     /// as an ersatz virtual camera for the purposes of blending.  This achieves the purpose
     /// of blending the result oif a blend.
     /// </summary>
-    internal class BlendSourceVirtualCamera : ICinemachineCamera
+    public class NestedBlendSource : ICinemachineCamera
     {
-        public BlendSourceVirtualCamera(CinemachineBlend blend) { Blend = blend; }
-        public CinemachineBlend Blend { get; set; }
+        string m_Name;
 
-        public string Name { get { return "Mid-blend"; }}
-        public string Description { get { return Blend == null ? "(null)" : Blend.Description; }}
-        public Transform LookAt { get; set; }
-        public Transform Follow { get; set; }
+        /// <summary>Contructor to wrap a CinemachineBlend object</summary>
+        /// <param name="blend">The blend to wrap.</param>
+        public NestedBlendSource(CinemachineBlend blend) { Blend = blend; }
+
+        /// <summary>The CinemachineBlend object being wrapped.</summary>
+        public CinemachineBlend Blend { get; internal set; }
+
+        /// <inheritdoc />
+        public string Name 
+        { 
+            get
+            {
+                // Cache the name only if name is requested
+                m_Name ??= (Blend == null || Blend.CamB == null)? "(null)" : "mid-blend to " + Blend.CamB.Name;
+                return m_Name;
+            }
+        }
+        /// <inheritdoc />
+        public string Description => Blend == null ? "(null)" : Blend.Description;
+        /// <inheritdoc />
         public CameraState State { get; private set; }
-        public bool IsValid { get { return Blend != null && Blend.IsValid; } }
-        public ICinemachineCamera ParentCamera { get { return null; } }
-        public bool IsLiveChild(ICinemachineCamera vcam, bool dominantChildOnly = false)
-            { return Blend != null && (vcam == Blend.CamA || vcam == Blend.CamB); }
-        public CameraState CalculateNewState(float deltaTime) { return State; }
+        /// <inheritdoc />
+        public bool IsValid => Blend != null && Blend.IsValid; 
+        /// <inheritdoc />
+        public ICinemachineMixer ParentCamera => null;
+        /// <inheritdoc />
         public void UpdateCameraState(Vector3 worldUp, float deltaTime)
         {
             if (Blend != null)
@@ -304,8 +330,7 @@ namespace Cinemachine
                 State = Blend.State;
             }
         }
-        public void InternalUpdateCameraState(Vector3 worldUp, float deltaTime) {}
-        public void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime) {}
-        public void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
+        /// <inheritdoc />
+        public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
     }
 }

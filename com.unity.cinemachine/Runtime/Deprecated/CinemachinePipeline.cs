@@ -1,7 +1,8 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component. 
@@ -12,3 +13,4 @@ namespace Cinemachine
     {
     }
 }
+#endif

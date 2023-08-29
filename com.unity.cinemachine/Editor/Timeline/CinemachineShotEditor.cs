@@ -2,25 +2,27 @@
 
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using System.Collections.Generic;
-using UnityEditor.Timeline;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineShot))]
-    sealed class CinemachineShotEditor : BaseEditor<CinemachineShot>
+    class CinemachineShotEditor : UnityEditor.Editor
     {
+        CinemachineShot Target => target as CinemachineShot;
+
         [InitializeOnLoad]
-        public class SyncCacheEnabledSetting
+        class SyncCacheEnabledSetting
         {
             static SyncCacheEnabledSetting() => TargetPositionCache.UseCache = CinemachineTimelinePrefs.UseScrubbingCache.Value;
         }
 
         public static CinemachineVirtualCameraBase CreatePassiveVcamFromSceneView()
         {
-            var vcam = CinemachineMenu.CreatePassiveCmCamera("CmCamera", null, false);
+            var vcam = CinemachineMenu.CreatePassiveCmCamera("CinemachineCamera", null, false);
             vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
-
 #if false 
             // GML this is too bold.  What if timeline is a child of something moving?
             // also, SetActive(false) prevents the animator from being able to animate the object
@@ -32,31 +34,181 @@ namespace Cinemachine.Editor
             return vcam;
         }
 
-        readonly GUIContent s_CmCameraLabel = new GUIContent("CmCamera", "The Cinemachine camera to use for this shot");
-        readonly GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
+#if CINEMACHINE_TIMELINE_1_8_2
+        VisualElement m_ParentElement;
+        VisualElement m_CreateButton;
+        CinemachineVirtualCameraBase m_CachedReferenceObject;
+        readonly List<MonoBehaviour> m_ComponentsCache = new ();
+        readonly List<Subeditor> m_Subeditors = new ();
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
+        class Subeditor
         {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => x.VirtualCamera));
+            // Keep track of which component types are expanded
+            static Dictionary<System.Type, bool> s_EditorExpanded = new ();
+
+            UnityEditor.Editor m_Editor;
+            
+            public Object Target { get; private set; }
+            public Foldout Foldout { get; private set; }
+
+            public Subeditor(Object target)
+            {
+                Target = target;
+                CreateCachedEditor(target, null, ref m_Editor);
+
+                // Wrap editor in a foldout
+                var type = target.GetType();
+                s_EditorExpanded.TryGetValue(type, out var expanded);
+                Foldout = new Foldout { text = type.Name, value = expanded, style = { marginTop = 4, marginLeft = 0 }};
+                Foldout.AddToClassList("clip-inspector-custom-properties__foldout"); // make it pretty
+                Foldout.Add(new InspectorElement(m_Editor) { style = { paddingLeft = 0, paddingRight = 0 }});
+                Foldout.RegisterValueChangedCallback((evt) => 
+                {
+                    if (evt.target == Foldout)
+                        s_EditorExpanded[type] = evt.newValue;
+                });
+                Foldout.contentContainer.style.marginLeft = 0; // kill the indent
+            }
+
+            public void Dispose()
+            {
+                Foldout.parent?.Remove(Foldout);
+                DestroyImmediate(m_Editor);
+                Foldout = null;
+                m_Editor = null;
+                Target = null;
+            }
         }
 
-        void OnDisable()
+        void DestroySubeditors()
         {
-            DestroyComponentEditors();
+            for (int i = 0; i < m_Subeditors.Count; ++i)
+                m_Subeditors[i].Dispose();
+            m_Subeditors.Clear();
         }
 
-        void OnDestroy()
+        void OnDisable() => DestroySubeditors();
+
+        public override VisualElement CreateInspectorGUI()
         {
-            DestroyComponentEditors();
+            m_ParentElement = new VisualElement();
+
+            // Auto-create shots
+            var toggle = m_ParentElement.AddChild(new Toggle(CinemachineTimelinePrefs.s_AutoCreateLabel.text) 
+            { 
+                tooltip = CinemachineTimelinePrefs.s_AutoCreateLabel.tooltip,
+                value = CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value
+            });
+            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+            toggle.RegisterValueChangedCallback((evt) => CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value = evt.newValue);
+
+            // Cached scrubbing
+            var row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
+            row.Left.AddChild(new Label(CinemachineTimelinePrefs.s_ScrubbingCacheLabel.text) 
+            { 
+                tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip, 
+                style = { alignSelf = Align.Center, flexGrow = 1 }
+            });
+            var cacheToggle = row.Right.AddChild(new Toggle 
+            { 
+                tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip,
+                value = CinemachineTimelinePrefs.UseScrubbingCache.Value,
+                style = { flexGrow = 0, marginRight = 5 }
+            });
+            row.Right.Add(new Label { text = "(experimental)", style = { flexGrow = 1, alignSelf = Align.Center } });
+            var clearCacheButton = row.Right.AddChild(new Button 
+            {
+                text = "Clear",
+                style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5 }
+            });
+            clearCacheButton.RegisterCallback<ClickEvent>((evt) => TargetPositionCache.ClearCache());
+            clearCacheButton.SetEnabled(CinemachineTimelinePrefs.UseScrubbingCache.Value);
+            cacheToggle.RegisterValueChangedCallback((evt) => 
+            {
+                CinemachineTimelinePrefs.UseScrubbingCache.Value = evt.newValue;
+                clearCacheButton.SetEnabled(evt.newValue);
+            });
+
+            // Camera Reference - we do it in IMGUI until the ExposedReference UITK bugs are fixed
+            m_ParentElement.AddSpace();
+            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
+            row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
+            row.Left.AddChild(new Label("Cinemachine Camera") 
+            { 
+                tooltip = "The Cinemachine camera to use for this shot", 
+                style = { alignSelf = Align.Center, flexGrow = 1 }
+            });
+            row.Right.Add(new IMGUIContainer(() =>
+            {
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(vcamProperty, GUIContent.none);
+                if (EditorGUI.EndChangeCheck())
+                    serializedObject.ApplyModifiedProperties();
+            }) { style = { flexGrow = 1, marginBottom = 2 }} );
+            m_CreateButton = row.Right.AddChild(new Button(() => 
+            {
+                vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
+                vcamProperty.serializedObject.ApplyModifiedProperties();
+            })
+            {
+                text = "Create",
+                tooltip = "Create a passive Cinemachine camera matching the scene view",
+                style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5 }
+            });
+
+            // Display name
+            m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
+            m_ParentElement.AddSpace();
+
+            // Component editors
+            m_ParentElement.TrackAnyUserActivity(UpdateComponentEditors);
+
+            return m_ParentElement;
         }
+
+        void UpdateComponentEditors()
+        {
+            if (m_ParentElement == null || serializedObject == null)
+                return;
+
+            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
+            m_CreateButton.SetVisible(vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
+            var vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
+
+            m_ComponentsCache.Clear();
+            if (vcam != null)
+                vcam.GetComponents(m_ComponentsCache);
+
+            bool dirty = m_CachedReferenceObject != vcam || m_Subeditors.Count != m_ComponentsCache.Count + 1;
+            for (int i = 0; !dirty && i < m_ComponentsCache.Count; ++i)
+                dirty = m_Subeditors[i + 1].Target != m_ComponentsCache[i];
+            if (dirty)
+            {
+                DestroySubeditors();
+                m_CachedReferenceObject = vcam;
+                if (vcam != null)
+                {
+                    m_Subeditors.Add(new Subeditor(vcam.transform));
+                    for (int i = 0; i < m_ComponentsCache.Count; ++i)
+                        m_Subeditors.Add(new Subeditor(m_ComponentsCache[i]));
+                    for (int i = 0; i < m_Subeditors.Count; ++i)
+                        m_ParentElement.Add(m_Subeditors[i].Foldout);
+                }
+            }
+        }
+
+
+#else // IMGUI VERSION - used for older Timeline versions
+        readonly GUIContent s_CmCameraLabel = new ("CinemachineCamera", "The Cinemachine camera to use for this shot");
+        readonly GUIContent m_ClearText = new ("Clear", "Clear the target position scrubbing cache");
+
+        void OnDisable() => DestroyComponentEditors();
+        void OnDestroy() => DestroyComponentEditors();
 
         public override void OnInspectorGUI()
         {
-            BeginInspector();
-            SerializedProperty vcamProperty = FindProperty(x => x.VirtualCamera);
+            serializedObject.Update();
+
             EditorGUI.indentLevel = 0; // otherwise subeditor layouts get screwed up
 
             CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value = EditorGUILayout.Toggle(
@@ -83,6 +235,7 @@ namespace Cinemachine.Editor
             GUI.enabled = true;
 
             EditorGUILayout.Space();
+            var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
             CinemachineVirtualCameraBase vcam
                 = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
             if (vcam != null)
@@ -106,8 +259,11 @@ namespace Cinemachine.Editor
             }
 
             EditorGUI.BeginChangeCheck();
-            DrawRemainingPropertiesInInspector();
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DisplayName));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
+            EditorGUI.BeginChangeCheck();
             if (vcam != null)
                 DrawSubeditors(vcam);
 
@@ -116,7 +272,7 @@ namespace Cinemachine.Editor
             // this prevents flicker on post processing updates
             if (EditorGUI.EndChangeCheck())
             {
-                TimelineEditor.Refresh(RefreshReason.SceneNeedsUpdate);
+                UnityEditor.Timeline.TimelineEditor.Refresh(UnityEditor.Timeline.RefreshReason.SceneNeedsUpdate);
                 GUI.changed = false;
             }
         }
@@ -181,12 +337,13 @@ namespace Cinemachine.Editor
                 for (int i = 0; i < m_editors.Length; ++i)
                 {
                     if (m_editors[i] != null)
-                        UnityEngine.Object.DestroyImmediate(m_editors[i]);
+                        Object.DestroyImmediate(m_editors[i]);
                     m_editors[i] = null;
                 }
                 m_editors = null;
             }
         }
+#endif
     }
 }
 #endif

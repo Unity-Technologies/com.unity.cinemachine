@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomTimelineEditor(typeof(CinemachineShot))]
     class CinemachineShotClipEditor : ClipEditor
@@ -14,16 +14,12 @@ namespace Cinemachine.Editor
         [InitializeOnLoad]
         class EditorInitialize 
         { 
-            static EditorInitialize() { CinemachineMixer.GetMasterPlayableDirector = GetMasterDirector; } 
+            static EditorInitialize() { CinemachinePlayableMixer.GetMasterPlayableDirector = GetMasterDirector; } 
             static PlayableDirector GetMasterDirector() { return TimelineEditor.masterDirector; }
         }
         public delegate double TimelineGlobalToLocalTimeDelegate(double globalTime);
         public static TimelineGlobalToLocalTimeDelegate TimelineGlobalToLocalTime = DefaultTimeConversion;
-    #if CINEMACHINE_TIMELINE_1_5_0
         static double DefaultTimeConversion(double time) { return TimelineEditor.GetInspectedTimeFromMasterTime(time); }
-    #else
-        static double DefaultTimeConversion(double time) { return time; }
-    #endif
 
         public override ClipDrawOptions GetClipOptions(TimelineClip clip)
         {

@@ -3,11 +3,13 @@ using UnityEngine;
 using UnityEditorInternal;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(NoiseSettings))]
-    class NoiseSettingsEditor : BaseEditor<NoiseSettings>
+    class NoiseSettingsEditor : UnityEditor.Editor
     {
+        NoiseSettings Target => target as NoiseSettings;
+
         private const float vSpace = 2;
         private const float hSpace = 3;
 
@@ -47,25 +49,16 @@ namespace Cinemachine.Editor
             mNoiseOffset = 0;
         }
 
-        /// <summary>Get the property names to exclude in the inspector.</summary>
-        /// <param name="excluded">Add the names to this list</param>
-        protected override void GetExcludedPropertiesInInspector(List<string> excluded)
-        {
-            base.GetExcludedPropertiesInInspector(excluded);
-            excluded.Add(FieldPath(x => Target.PositionNoise));
-            excluded.Add(FieldPath(x => Target.OrientationNoise));
-        }
-
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             if (mPosChannels == null)
                 mPosChannels = SetupReorderableLists(
                     serializedObject.FindProperty(() => Target.PositionNoise), mPoslabels);
             if (mRotChannels == null)
                 mRotChannels = SetupReorderableLists(
                     serializedObject.FindProperty(() => Target.OrientationNoise), mRotlabels);
-
-            BeginInspector();
 
             Rect r = EditorGUILayout.GetControlRect();
             mPreviewTime = EditorGUI.Slider(r, "Preview Time", mPreviewTime, 0.01f, 10f);

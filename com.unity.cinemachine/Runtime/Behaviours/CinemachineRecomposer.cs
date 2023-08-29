@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cm Camera that adds a final tweak to the camera
-    /// comnposition.  It is intended for use in a Timeline context, where you want to hand-adjust
+    /// composition.  It is intended for use in a Timeline context, where you want to hand-adjust
     /// the output of procedural or recorded camera aiming.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Recomposer")]

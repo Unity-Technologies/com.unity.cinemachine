@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     static class CinemachineCorePrefs
     {
@@ -49,7 +49,7 @@ namespace Cinemachine.Editor
                 ShowInGameGuides.Value = EditorGUILayout.Toggle(s_ShowInGameGuidesLabel, ShowInGameGuides.Value);
                 DraggableComposerGuides.Value = EditorGUILayout.Toggle(k_DraggableGuidesLabel, DraggableComposerGuides.Value);
                 ShowBrainIconInHierarchy.Value = EditorGUILayout.Toggle(k_ShowBrainIconsLabel, ShowBrainIconInHierarchy.Value);
-                SaveDuringPlay.SaveDuringPlay.Enabled = EditorGUILayout.Toggle(s_SaveDuringPlayLabel, SaveDuringPlay.SaveDuringPlay.Enabled);
+                SaveDuringPlay.Enabled = EditorGUILayout.Toggle(s_SaveDuringPlayLabel, SaveDuringPlay.Enabled);
 #if CINEMACHINE_UGUI
                 StoryboardGlobalMute.Value = EditorGUILayout.Toggle(s_StoryboardGlobalMuteLabel, StoryboardGlobalMute.Value);
 #endif

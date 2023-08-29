@@ -1,31 +1,27 @@
 using UnityEngine;
 using UnityEditor;
 using System;
-using Cinemachine.Utility;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
+    // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AddAssetSelectorWithPresets
+    // Currently only used by CinemachineImpulseDefinition editor
+
     [CustomPropertyDrawer(typeof(CinemachineEmbeddedAssetPropertyAttribute))]
     class EmbeddedAssetPropertyDrawer : PropertyDrawer
     {
         const float vSpace = 2;
         const float kIndentAmount = 15;
         const float kBoxMargin = 3;
-        float HelpBoxHeight { get { return EditorGUIUtility.singleLineHeight * 2.5f; } }
-        bool mExpanded = false;
+        float HelpBoxHeight => EditorGUIUtility.singleLineHeight * 2.5f;
+        bool m_Expanded = false;
 
-        bool WarnIfNull
-        {
-            get
-            {
-                var attr = attribute as CinemachineEmbeddedAssetPropertyAttribute;
-                return attr == null ? false : attr.WarnIfNull;
-            }
-        }
+        bool WarnIfNull => attribute is CinemachineEmbeddedAssetPropertyAttribute attr && attr.WarnIfNull;
 
-        float HeaderHeight { get { return EditorGUIUtility.singleLineHeight * 1.5f; } }
+        float HeaderHeight => EditorGUIUtility.singleLineHeight * 1.5f; 
         float DrawHeader(Rect rect, string text)
         {
             float delta = HeaderHeight - EditorGUIUtility.singleLineHeight;
@@ -56,7 +52,7 @@ namespace Cinemachine.Editor
             bool hasCustomEditor = AssetHasCustomEditor(property);
             float height = base.GetPropertyHeight(property, label);
             height += + 2 * (kBoxMargin + vSpace);
-            if (mExpanded && !hasCustomEditor)
+            if (m_Expanded && !hasCustomEditor)
             {
                 height += HelpBoxHeight + kBoxMargin;
                 ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
@@ -98,8 +94,8 @@ namespace Cinemachine.Editor
             ScriptableObject asset = property.objectReferenceValue as ScriptableObject;
             if (asset != null && !hasCustomEditor)
             {
-                mExpanded = EditorGUI.Foldout(rect, mExpanded, GUIContent.none, true);
-                if (mExpanded)
+                m_Expanded = EditorGUI.Foldout(rect, m_Expanded, GUIContent.none, true);
+                if (m_Expanded)
                 {
                     rect.y += rect.height + kBoxMargin + vSpace;
                     rect.x += kIndentAmount + kBoxMargin;
@@ -175,9 +171,9 @@ namespace Cinemachine.Editor
                     InspectorUtility.AddAssetsFromPackageSubDirectory(
                         mAssetTypes[i], mAssetPresets, "Presets/Noise");
             }
-            List<GUIContent> presetNameList = new List<GUIContent>();
-            foreach (var n in mAssetPresets)
-                presetNameList.Add(new GUIContent("Presets/" + n.name));
+            List<GUIContent> presetNameList = new ();
+            for (int i = 0; i < mAssetPresets.Count; ++i)
+                presetNameList.Add(new GUIContent("Presets/" + mAssetPresets[i].name));
             mAssetPresetNames = presetNameList.ToArray();
         }
 
@@ -188,7 +184,8 @@ namespace Cinemachine.Editor
             Type type = EmbeddedAssetType(property);
             if (mAssetTypes == null)
                 mAssetTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => type.IsAssignableFrom(t) && !t.IsAbstract).ToArray();
+                    (Type t) => type.IsAssignableFrom(t) && !t.IsAbstract 
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToArray();
 
             float iconSize = r.height + 4;
             r.width -= iconSize;
@@ -226,18 +223,20 @@ namespace Cinemachine.Editor
                 }
 
                 RebuildPresetList();
-                int i = 0;
-                foreach (var a in mAssetPresets)
+                int index = 0;
+                for (int i = 0; i < mAssetPresets.Count; ++i)
                 {
-                    menu.AddItem(mAssetPresetNames[i++], false, () =>
+                    var a = mAssetPresets[i];
+                    menu.AddItem(mAssetPresetNames[index++], false, () =>
                         {
                             property.objectReferenceValue = a;
                             property.serializedObject.ApplyModifiedProperties();
                         });
                 }
 
-                foreach (var t in mAssetTypes)
+                for (int i = 0; i < mAssetTypes.Length; ++i)
                 {
+                    var t = mAssetTypes[i];
                     menu.AddItem(new GUIContent("New " + InspectorUtility.NicifyClassName(t)), false, () =>
                         {
                             string title = "Create New " + t.Name + " asset";

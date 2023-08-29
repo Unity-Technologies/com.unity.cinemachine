@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Asset that defines the rules for blending between Virtual Cameras.
@@ -12,19 +12,18 @@ namespace Cinemachine
     public sealed class CinemachineBlenderSettings : ScriptableObject
     {
         /// <summary>
-        /// Container specifying how two specific Cinemachine Virtual Cameras
-        /// blend together.
+        /// Container specifying how two specific CinemachineCameras blend together.
         /// </summary>
         [Serializable]
         public struct CustomBlend
         {
-            /// <summary>When blending from this camera</summary>
-            [Tooltip("When blending from this camera")]
+            /// <summary>When blending from a camera with this name</summary>
+            [Tooltip("When blending from a camera with this name")]
             [FormerlySerializedAs("m_From")]
             public string From;
 
-            /// <summary>When blending to this camera</summary>
-            [Tooltip("When blending to this camera")]
+            /// <summary>When blending to a camera with this name</summary>
+            [Tooltip("When blending to a camera with this name")]
             [FormerlySerializedAs("m_To")]
             public string To;
 
@@ -38,7 +37,7 @@ namespace Cinemachine
         [FormerlySerializedAs("m_CustomBlends")]
         public CustomBlend[] CustomBlends = null;
 
-        /// <summary>Internal API for the inspector editopr: a label to represent any camera</summary>
+        /// <summary>Internal API for the inspector editor: a label to represent any camera</summary>
         internal const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
 
         /// <summary>
@@ -101,6 +100,40 @@ namespace Cinemachine
                 return meToAny;
 
             return defaultBlend;
+        }
+
+        /// <summary>
+        /// Find a blend curve for blending from one ICinemachineCamera to another.
+        /// If there is a specific blend defined for these cameras it will be used, otherwise
+        /// a default blend will be created, which could be a cut.
+        /// 
+        /// CinemachineCore.GetBlendOverride will be called at the end, so that the
+        /// client may override the choice of blend.
+        /// </summary>
+        /// <param name="outgoing">The camera we're blending from.</param>
+        /// <param name="incoming">The camera we're blending to.</param>
+        /// <param name="defaultBlend">Blend to return if no custom blend found.</param>
+        /// <param name="customBlends">The custom blends asset to search, or null.</param>
+        /// <param name="owner">The object that is requesting the blend, for 
+        /// GetBlendOverride callback context.</param>
+        /// <returns>The blend to use for this camera transition.</returns>
+        public static CinemachineBlendDefinition LookupBlend(
+            ICinemachineCamera outgoing, ICinemachineCamera incoming,
+            CinemachineBlendDefinition defaultBlend,
+            CinemachineBlenderSettings customBlends,
+            UnityEngine.Object owner)
+        {
+            // Get the blend curve that's most appropriate for these cameras
+            CinemachineBlendDefinition blend = defaultBlend;
+            if (customBlends != null)
+            {
+                string fromCameraName = (outgoing != null) ? outgoing.Name : string.Empty;
+                string toCameraName = (incoming != null) ? incoming.Name : string.Empty;
+                blend = customBlends.GetBlendForVirtualCameras(fromCameraName, toCameraName, blend);
+            }
+            if (CinemachineCore.GetBlendOverride != null)
+                blend = CinemachineCore.GetBlendOverride(outgoing, incoming, blend, owner);
+            return blend;
         }
     }
 }

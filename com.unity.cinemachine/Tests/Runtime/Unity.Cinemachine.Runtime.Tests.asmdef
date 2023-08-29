@@ -1,0 +1,57 @@
+{
+    "name": "Unity.Cinemachine.Runtime.Tests",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.Splines",
+        "Unity.Mathematics",
+        "Unity.Cinemachine",
+        "Unity.Cinemachine.Editor",
+        "Unity.Cinemachine.Shared.Tests"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.physics2d",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_PHYSICS_2D"
+        },
+        {
+            "name": "com.unity.modules.physics",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_PHYSICS"
+        },
+        {
+            "name": "com.unity.modules.animation",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_ANIMATION"
+        },
+        {
+            "name": "com.unity.splines",
+            "expression": "1.0.0",
+            "define": "CINEMACHINE_UNITY_SPLINES"
+        },
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.0.0-pre.1",
+            "define": "CINEMACHINE_V3_OR_HIGHER"
+        },
+        {
+            "name": "com.unity.render-pipelines.high-definition",
+            "expression": "14.0.0",
+            "define": "CINEMACHINE_HDRP"
+        }
+    ],
+    "noEngineReferences": false
+}

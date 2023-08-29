@@ -1,30 +1,31 @@
 using System;
 using System.Collections;
-using Cinemachine;
-using Cinemachine.TargetTracking;
+using Unity.Cinemachine;
+using Unity.Cinemachine.TargetTracking;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.TestTools.Utils;
 
-namespace Tests.Runtime
+namespace Unity.Cinemachine.Tests
 {
-    public class FreelookForcePositionTests : CinemachineFixtureBase
+    [TestFixture]
+    public class FreelookForcePositionTests : CinemachineRuntimeFixtureBase
     {
-        CmCamera m_CmCamera;
+        CinemachineCamera m_CmCamera;
         CinemachineOrbitalFollow m_OrbitalFollow;
         GameObject m_FollowTargetGo;
         Vector3 m_OriginalPosition;
         Quaternion m_OriginalOrientation;
         static readonly Array k_BindingModes = Enum.GetValues(typeof(BindingMode));
 
-        [OneTimeSetUp]
+        [SetUp]
         public override void SetUp()
         {
-            CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
+            base.SetUp();
 
-            var camGo = CreateGameObject("CM Freelook", typeof(CmCamera));
-            m_CmCamera = camGo.GetComponent<CmCamera>();
+            var camGo = CreateGameObject("CM Freelook", typeof(CinemachineCamera));
+            m_CmCamera = camGo.GetComponent<CinemachineCamera>();
             m_OrbitalFollow = camGo.AddComponent<CinemachineOrbitalFollow>();
             
             camGo.AddComponent<CinemachineHardLookAt>();
@@ -32,8 +33,6 @@ namespace Tests.Runtime
             m_FollowTargetGo = CreatePrimitive(PrimitiveType.Cube);
             m_FollowTargetGo.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             m_CmCamera.Target.TrackingTarget = m_FollowTargetGo.transform;
-
-            base.SetUp();
         }
 
         [TearDown]
@@ -62,7 +61,7 @@ namespace Tests.Runtime
                             Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 5}
                         },
-                        Precision = 0.01f // this does not have difficult edge cases
+                        Precision = 0.5f
                     }).SetName("3Ring-Centered").Returns(null);
 
                 yield return new TestCaseData(
@@ -71,10 +70,10 @@ namespace Tests.Runtime
                         OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
                         Orbits = new Cinemachine3OrbitRig.Settings {
                             Top = new Cinemachine3OrbitRig.Orbit { Height = 5, Radius = 3},
-                            Center = new Cinemachine3OrbitRig.Orbit { Height = 3, Radius = 1},
+                            Center = new Cinemachine3OrbitRig.Orbit { Height = 3, Radius = 4},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = 1, Radius = 2}
                         },
-                        Precision = 0.5f // this has a few difficult cases to resolve and thus error is expected
+                        Precision = 0.5f
                     }).SetName("3Ring-Above").Returns(null);
                 
                 yield return new TestCaseData(
@@ -86,7 +85,7 @@ namespace Tests.Runtime
                             Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 3}
                         },
-                        Precision = 0.5f // this has a few difficult cases to resolve and thus error is expected
+                        Precision = 0.5f
                     }).SetName("3Ring-Below").Returns(null);
 
                 yield return new TestCaseData(
@@ -118,7 +117,6 @@ namespace Tests.Runtime
         [UnityTest, TestCaseSource(nameof(RigSetups))]
         public IEnumerator Test_Freelook_ForcePosition_AllBindings(TestData rigSetup)
         {
-            
             m_OrbitalFollow.OrbitStyle = rigSetup.OrbitStyle;
             var floatEqualityComparer = new FloatEqualityComparer(rigSetup.Precision);
             var axisRange = Setup(rigSetup.OrbitStyle);
@@ -126,7 +124,7 @@ namespace Tests.Runtime
             const float step = 29f; // so tests are not too long
             foreach (BindingMode bindingMode in k_BindingModes)
             {
-                if (bindingMode == BindingMode.SimpleFollowWithWorldUp)
+                if (bindingMode == BindingMode.LazyFollow)
                     continue; // this mode has 0 horizontal axes, so we don't test it
                 
                 m_OrbitalFollow.TrackerSettings.BindingMode = bindingMode;

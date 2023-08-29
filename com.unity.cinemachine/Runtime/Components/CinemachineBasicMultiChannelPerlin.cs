@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// As a part of the Cinemachine Pipeline implementing the Noise stage, this
@@ -29,7 +29,6 @@ namespace Cinemachine
             + "there to make a characteristic noise profile.  Make your own or just use one of the many presets.")]
         [FormerlySerializedAs("m_Definition")]
         [FormerlySerializedAs("m_NoiseProfile")]
-        [NoiseSettingsProperty]
         public NoiseSettings NoiseProfile;
 
         /// <summary>
@@ -62,7 +61,7 @@ namespace Cinemachine
         }
 
         /// <summary>True if the component is valid, i.e. it has a noise definition and is enabled.</summary>
-        public override bool IsValid { get { return enabled && NoiseProfile != null; } }
+        public override bool IsValid { get => enabled && NoiseProfile != null; }
 
         /// <summary>Get the Cinemachine Pipeline stage that this component implements.
         /// Always returns the Noise stage</summary>

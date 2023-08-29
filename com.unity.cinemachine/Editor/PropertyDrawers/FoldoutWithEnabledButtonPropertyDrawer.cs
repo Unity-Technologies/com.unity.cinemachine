@@ -3,7 +3,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(FoldoutWithEnabledButtonAttribute))]
     class FoldoutWithEnabledButtonPropertyDrawer : PropertyDrawer
@@ -27,29 +27,93 @@ namespace Cinemachine.Editor
             if (enabledProp == null)
                 return new PropertyField(property);
 
-            var ux = new VisualElement();
-            ux.Add(new PropertyField(enabledProp, property.displayName) { tooltip = property.tooltip });
-            // GML todo: fix the indenting
-            var children = ux.AddChild(new VisualElement() { style = { marginLeft = InspectorUtility.SingleLineHeight }});
+            // Don't set the text of the Foldout as this will set the Toggle.text,
+            // which is on the right side of the checkbox
+            var foldout = new Foldout(); // { style = { marginTop = 2 }}; // GML this hack would compensate for the current uneven line spacing
+            const string kToggleClassName = "unity-foldout__toggle";
+            var foldoutToggle = foldout.Q<Toggle>(className: kToggleClassName);
 
+            // This is to counter the auto-adding of the "unity-foldout__toggle--inspector" class that
+            // adds -12px margin-left. Not ideal. I raised this as an issue.
+            foldoutToggle.style.marginLeft = 3;
+
+            // This does the magic nested alignment if this Foldout is inside another Foldout
+            foldoutToggle.AddToClassList(Toggle.alignedFieldUssClassName);
+
+            // Change from arrow to checkbox
+            foldoutToggle.RemoveFromClassList(kToggleClassName);
+
+            // Bind toggle to the enabled property while displaying the main property text
+            foldoutToggle.label = property.displayName;
+            foldoutToggle.tooltip = property.tooltip;
+            foldoutToggle.BindProperty(enabledProp);
+
+            // Add children
             var childProperty = property.Copy();
             var endProperty = childProperty.GetEndProperty();
             childProperty.NextVisible(true);
             while (!SerializedProperty.EqualContents(childProperty, endProperty))
             {
                 if (!SerializedProperty.EqualContents(childProperty, enabledProp))
-                    children.Add(new PropertyField(childProperty));
+                    foldout.Add(new PropertyField(childProperty));
                 childProperty.NextVisible(false);
             }
+            return foldout;
+        }
+    }
 
-            TrackEnabled(enabledProp);
-            ux.TrackPropertyValue(enabledProp, TrackEnabled);
 
-            void TrackEnabled(SerializedProperty p)
+    [CustomPropertyDrawer(typeof(EnabledPropertyAttribute))]
+    class EnabledPropertyPropertyDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
+        {
+            var a = (EnabledPropertyAttribute)attribute;
+            InspectorUtility.EnabledFoldoutSingleLine(rect, property, a.EnabledPropertyName, a.ToggleDisabledText);
+        }
+
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var a = (EnabledPropertyAttribute)attribute;
+            var enabledProp = property.FindPropertyRelative(a.EnabledPropertyName);
+
+            // Use the first child field found
+            var childProperty = property.Copy();
+            var endProperty = childProperty.GetEndProperty();
+            childProperty.NextVisible(true);
+            while (!SerializedProperty.EqualContents(childProperty, endProperty))
             {
-                children.SetVisible(p.boolValue);
+                if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                    break;
+                childProperty.NextVisible(false);
             }
-            return ux;
+            if (SerializedProperty.EqualContents(childProperty, endProperty))
+                childProperty = null;
+            if (enabledProp == null || childProperty == null)
+                return new PropertyField(property);
+
+            var row = new InspectorUtility.LabeledRow(preferredLabel, childProperty.tooltip);
+            var toggle = row.Contents.AddChild(new Toggle("") 
+                { style = { flexGrow = 0, marginTop = 2, marginLeft = 0, alignSelf = Align.Center }});
+            toggle.BindProperty(enabledProp);
+
+            Label disabledText = null;
+            if (!string.IsNullOrEmpty(a.ToggleDisabledText))
+                disabledText = row.Contents.AddChild(new Label(a.ToggleDisabledText)
+                    { style = { flexGrow = 0, flexBasis = 0, marginLeft = 8, alignSelf = Align.Center, opacity = 0.5f }});
+
+            var childField = row.Contents.AddChild(new PropertyField(childProperty, "") 
+                { style = { flexGrow = 1, marginTop = -1, marginLeft = 5, marginBottom = -1 }});
+            row.Label.AddPropertyDragger(childProperty, childField);
+            childField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+
+            row.TrackPropertyWithInitialCallback(enabledProp, (p) => 
+            {
+                childField?.SetVisible(p.boolValue);
+                disabledText?.SetVisible(!p.boolValue);
+            });
+
+            return row;
         }
     }
 }

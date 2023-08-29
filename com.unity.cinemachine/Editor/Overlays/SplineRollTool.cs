@@ -5,7 +5,7 @@ using UnityEditor.Splines;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
     sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
@@ -22,7 +22,7 @@ namespace Cinemachine.Editor
             m_IconContent = new GUIContent
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png"),
+                    CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png"),
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };
@@ -123,18 +123,17 @@ namespace Cinemachine.Editor
                 drawMatrix = Handles.matrix * drawMatrix;
                 using (new Handles.DrawingScope(drawMatrix)) // use draw matrix, so we work in local space
                 {
-                    var handleRotationLocalSpace = Quaternion.Euler(0, rollData, 0);
-                    var handleRotationGlobalSpace = m_DefaultHandleOrientation * handleRotationLocalSpace;
-                    
+                    var handleLocalRotation = Quaternion.Euler(0, rollData, 0);
+                    var handleWorldRotation = m_DefaultHandleOrientation * handleLocalRotation;
+
                     var handleSize = Mathf.Max(
                         HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth.Value);
-                    using (new Handles.DrawingScope(m_RollInUse ? Handles.selectedColor : Handles.color))
-                    {
-                        Handles.ArrowHandleCap(
-                            -1, Vector3.zero, handleRotationGlobalSpace, handleSize, EventType.Repaint);
+                    if (Event.current.type == EventType.Repaint) {
+                        using (new Handles.DrawingScope(m_RollInUse ? Handles.selectedColor : Handles.color)) 
+                            Handles.ArrowHandleCap(-1, Vector3.zero, handleWorldRotation, handleSize, EventType.Repaint);
                     }
-
-                    var newHandleRotationGlobalSpace = Handles.Disc(controlID, handleRotationGlobalSpace,
+                    
+                    var newHandleRotationGlobalSpace = Handles.Disc(controlID, handleWorldRotation,
                         Vector3.zero, Vector3.forward, handleSize, false, 0);
                     if (GUIUtility.hotControl == controlID)
                     {
@@ -143,7 +142,7 @@ namespace Cinemachine.Editor
                         // But we want to be able to rotate through these ranges, and not get stuck. We can detect when to
                         // move between ranges: when the roll delta is big. e.g. 359 -> 1 (358), instead of 1 -> 2 (1)
                         var newHandleRotationLocalSpace = m_DefaultHandleOrientationInverse * newHandleRotationGlobalSpace;
-                        var deltaRoll = newHandleRotationLocalSpace.eulerAngles.y - handleRotationLocalSpace.eulerAngles.y;
+                        var deltaRoll = newHandleRotationLocalSpace.eulerAngles.y - handleLocalRotation.eulerAngles.y;
                         if (deltaRoll > 180)
                             deltaRoll -= 360; // Roll down one range
                         else if (deltaRoll < -180) 

@@ -1,6 +1,7 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachinePOV))]
@@ -14,3 +15,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

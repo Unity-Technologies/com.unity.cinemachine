@@ -4,17 +4,34 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Cinemachine.Utility;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
+    [InitializeOnLoad]
     static class InspectorUtility
     {
+        /// <summary>
+        /// Callback that happens whenever something undoable happens, either with 
+        /// objects or with selection.  This is a good way to track user activity.
+        /// </summary>
+        public static EditorApplication.CallbackFunction UserDidSomething;
+
+        static InspectorUtility()
+        {
+            ObjectChangeEvents.changesPublished -= OnUserDidSomethingStream;
+            ObjectChangeEvents.changesPublished += OnUserDidSomethingStream;
+            Selection.selectionChanged -= OnUserDidSomething;
+            Selection.selectionChanged += OnUserDidSomething;
+
+            static void OnUserDidSomething() => UserDidSomething?.Invoke();
+            static void OnUserDidSomethingStream(ref ObjectChangeEventStream stream) => UserDidSomething?.Invoke();
+        }
+        
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
         /// cause the property's displayName to be used as a label.  For no label at all,
@@ -153,16 +170,17 @@ namespace Cinemachine.Editor
         {
             try
             {
-                path = ScriptableObjectUtility.kPackageRoot + "/" + path;
+                path = CinemachineCore.kPackageRoot + "/" + path;
                 var info = new DirectoryInfo(path);
                 path += "/";
                 var fileInfo = info.GetFiles();
-                foreach (var file in fileInfo)
+                for (int i = 0; i < fileInfo.Length; ++i)
                 {
+                    var file = fileInfo[i];
                     if (file.Extension != ".asset")
                         continue;
-                    string name = path + file.Name;
-                    ScriptableObject a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
+                    var name = path + file.Name;
+                    var a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
                     if (a != null)
                         assets.Add(a);
                 }
@@ -199,34 +217,6 @@ namespace Cinemachine.Editor
 
             EditorApplication.QueuePlayerLoopUpdate();
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-        }
-
-        /// <summary>
-        /// Try to get the name of the owning virtual camera object.  If none then use
-        /// the object's name
-        /// </summary>
-        /// <param name="property"></param>
-        /// <returns></returns>
-        // GML TODO: get rid of this
-        public static string GetVirtualCameraObjectName(SerializedProperty property)
-        {
-            // A little hacky here, as we favour virtual cameras...
-            var obj = property.serializedObject.targetObject;
-            GameObject go = obj as GameObject;
-            if (go == null)
-            {
-                var component = obj as Component;
-                if (component != null)
-                    go = component.gameObject;
-            }
-            if (go != null)
-            {
-                var vcam = go.GetComponentInParent<CinemachineVirtualCameraBase>();
-                if (vcam != null)
-                    return vcam.Name;
-                return go.name;
-            }
-            return obj.name;
         }
 
         public static float PropertyHeightOfChidren(SerializedProperty property)
@@ -307,10 +297,8 @@ namespace Cinemachine.Editor
                 return property.isExpanded;
             }
             rect.height = EditorGUIUtility.singleLineHeight;
-            if (label == null)
-                label = new GUIContent(property.displayName, enabledProp.tooltip);
+            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
             EditorGUI.PropertyField(rect, enabledProp, label);
-            rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             if (enabledProp.boolValue)
             {
                 ++EditorGUI.indentLevel;
@@ -321,13 +309,65 @@ namespace Cinemachine.Editor
                 {
                     if (!SerializedProperty.EqualContents(childProperty, enabledProp))
                     {
+                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
                         rect.height = EditorGUI.GetPropertyHeight(childProperty);
                         EditorGUI.PropertyField(rect, childProperty, true);
-                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
                     }
                     childProperty.NextVisible(false);
                 }
                 --EditorGUI.indentLevel;
+            }
+            return enabledProp.boolValue;
+        }
+
+        public static bool EnabledFoldoutSingleLine(
+            Rect rect, SerializedProperty property,
+            string enabledPropertyName, string disabledToggleLabel,
+            GUIContent label = null)
+        {
+            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
+            if (enabledProp == null)
+            {
+                EditorGUI.PropertyField(rect, property, true);
+                rect.x += EditorGUIUtility.labelWidth;
+                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
+                return property.isExpanded;
+            }
+            rect.height = EditorGUIUtility.singleLineHeight;
+            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
+            EditorGUI.PropertyField(rect, enabledProp, label);
+            if (!enabledProp.boolValue)
+            {
+                if (!string.IsNullOrEmpty(disabledToggleLabel))
+                {
+                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
+                    var r = rect; r.x += w; r.width -= w;
+                    var oldColor = GUI.color;
+                    GUI.color = new (oldColor.r, oldColor.g, oldColor.g, 0.5f);
+                    EditorGUI.LabelField(r, disabledToggleLabel);
+                    GUI.color = oldColor;
+                }
+            }
+            else
+            {
+                rect.width -= EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+                rect.x += EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
+
+                var childProperty = property.Copy();
+                var endProperty = childProperty.GetEndProperty();
+                childProperty.NextVisible(true);
+                while (!SerializedProperty.EqualContents(childProperty, endProperty))
+                {
+                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
+                    {
+                        var oldWidth = EditorGUIUtility.labelWidth;
+                        EditorGUIUtility.labelWidth = 6; // for dragging
+                        EditorGUI.PropertyField(rect, childProperty, new GUIContent(" "));
+                        EditorGUIUtility.labelWidth = oldWidth;
+                        break; // Draw only the first property
+                    }
+                    childProperty.NextVisible(false);
+                }
             }
             return enabledProp.boolValue;
         }
@@ -337,16 +377,20 @@ namespace Cinemachine.Editor
 
         public static string GetAssignableBehaviourNames(Type inputType)
         {
+            if (inputType == null)
+                return "(none)";
             if (!s_AssignableTypes.ContainsKey(inputType))
             {
                 var allSources = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                     (Type t) => inputType.IsAssignableFrom(t) && !t.IsAbstract 
-                        && typeof(MonoBehaviour).IsAssignableFrom(t));
+                        && typeof(MonoBehaviour).IsAssignableFrom(t)
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var s = string.Empty;
-                foreach (var t in allSources)
+                var iter = allSources.GetEnumerator();
+                while (iter.MoveNext())
                 {
                     var sep = (s.Length == 0) ? string.Empty : ", ";
-                    s += sep + t.Name;
+                    s += sep + iter.Current.Name;
                 }
                 if (s.Length == 0)
                     s = s_NoneString;
@@ -354,7 +398,6 @@ namespace Cinemachine.Editor
             }
             return s_AssignableTypes[inputType];
         }
-
 
         ///==============================================================================================
         ///==============================================================================================
@@ -370,6 +413,80 @@ namespace Cinemachine.Editor
         public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
 
         /// <summary>
+        /// Convenience extension for UserDidSomething callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void TrackAnyUserActivity(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                UserDidSomething += callback;
+                owner.OnInitialGeometry(callback); 
+                owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
+            });
+        }
+
+        /// <summary>
+        /// Convenience extension for EditorApplication.update callbacks, making it easier to use lambdas.
+        /// Cleans itself up when the owner is undisplayed.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void ContinuousUpdate(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.RegisterCallback<AttachToPanelEvent>(_ =>
+            {
+                owner.OnInitialGeometry(callback); 
+                EditorApplication.update += callback;
+                owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
+            });
+        }
+        
+        /// <summary>
+        /// Convenience extension to get a callback after initial geometry creation, making it easier to use lambdas.
+        /// Callback will only be called once.  Works in inspectors and PropertyDrawers.
+        /// </summary>
+        public static void OnInitialGeometry(
+            this VisualElement owner, EditorApplication.CallbackFunction callback)
+        {
+            owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            void OnGeometryChanged(GeometryChangedEvent _)
+            {
+                owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
+                callback();
+            }
+        }
+        
+        /// <summary>
+        /// Convenience extension to track a property value change plus an initial callback at creation time.  
+        /// This simplifies logic for the caller, allowing use of lambda callback.
+        /// </summary>
+        public static void TrackPropertyWithInitialCallback(
+            this VisualElement owner, SerializedProperty property, Action<SerializedProperty> callback)
+        {
+            owner.OnInitialGeometry(() => callback(property));
+            owner.TrackPropertyValue(property, callback);
+        }
+        
+        /// <summary>Control the visibility of a widget</summary>
+        /// <param name="e">The widget</param>
+        /// <param name="show">Whether it should be visible</param>
+        public static void SetVisible(this VisualElement e, bool show) 
+            => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
+
+        /// <summary>Is the widgte visible?</summary>
+        /// <param name="e">The widget</param>
+        /// <returns>True if visible</returns>
+        public static bool IsVisible(this VisualElement e) => e.style.display != DisplayStyle.None;
+
+        /// <summary>Convenience method: calls e.Add(child) and returns child./// </summary>
+        public static T AddChild<T>(this VisualElement e, T child) where T : VisualElement
+        {
+            e.Add(child);
+            return child;
+        }
+
+        /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>
         /// <param name="ux">Container in which to put the header</param>
@@ -378,12 +495,11 @@ namespace Cinemachine.Editor
         public static void AddHeader(this VisualElement ux, string text, string tooltip = "")
         {
             var verticalPad = SingleLineHeight / 2;
-            var row = new LabeledContainer($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} });
+            var row = ux.AddChild(new LabeledRow($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} }));
             row.focusable = false;
-            row.labelElement.style.flexGrow = 1;
-            row.labelElement.style.paddingTop = verticalPad;
-            row.labelElement.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
-            ux.Add(row);
+            row.Label.style.flexGrow = 1;
+            row.Label.style.paddingTop = verticalPad;
+            row.Label.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
         }
 
         /// <summary>
@@ -396,31 +512,120 @@ namespace Cinemachine.Editor
         }
         
         /// <summary>
-        /// This is a hack to get proper layout.  There seems to be no sanctioned way to 
-        /// get the current inspector label width.
+        /// Add a property dragger to a float or int label, so that dragging it changes the property value.
         /// </summary>
-        public class LabeledContainer : BaseField<bool> // bool is just a dummy because it has to be something
+        public static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
+        {
+            if (p.propertyType == SerializedPropertyType.Float 
+                || p.propertyType == SerializedPropertyType.Integer)
+            {
+                label.AddToClassList("unity-base-field__label--with-dragger");
+                label.OnInitialGeometry(() =>
+                {
+                    if (p.propertyType == SerializedPropertyType.Float)
+                        new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                    else if (p.propertyType == SerializedPropertyType.Integer)
+                        new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                });
+            }
+        }
+        
+        /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="iconType">The little picture: error, warning, or info</param>
+        public static Label MiniHelpIcon(string tooltip, HelpBoxMessageType iconType = HelpBoxMessageType.Warning)
+        {
+            string icon = iconType switch
+            {
+                HelpBoxMessageType.Warning => "console.warnicon.sml",
+                HelpBoxMessageType.Error => "console.erroricon.sml",
+                _ => "console.infoicon.sml",
+            };
+            return new Label 
+            { 
+                tooltip = tooltip,
+                style = 
+                { 
+                    flexGrow = 0,
+                    flexBasis = SingleLineHeight,
+                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent(icon).image,
+                    width = SingleLineHeight, height = SingleLineHeight,
+                    alignSelf = Align.Center
+                }
+            };
+        }
+
+        /// <summary>A small popup context menu, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="contextMenu">The context menu to show when the button is pressed</param>
+        public static Button MiniPopupButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
+        {
+            var button = new Button { tooltip = tooltip, style = 
+            {
+                flexGrow = 0,
+                flexBasis = SingleLineHeight,
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
+                width = SingleLineHeight, height = SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }};
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
+            return button;
+        }
+
+        /// <summary>A small dropdown context menu, suitable for embedding in an inspector row</summary>
+        /// <param name="tooltip">The tooltip text</param>
+        /// <param name="contextMenu">The context menu to show when the button is pressed</param>
+        public static Button MiniDropdownButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
+        {
+            var button = new Button { tooltip = tooltip, style = 
+            {
+                flexGrow = 0,
+                flexBasis = SingleLineHeight,
+                backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
+                width = SingleLineHeight, height = SingleLineHeight,
+                alignSelf = Align.Center,
+                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+            }};
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
+            return button;
+        }
+
+        /// <summary>
+        /// This is a hack to get proper layout within th inspector.
+        /// There seems to be no sanctioned way to get the current inspector label width.
+        /// This creates a row with a properly-sized label in front of it.
+        /// </summary>
+        public class LabeledRow : BaseField<bool> // bool is just a dummy because it has to be something
         {
             public Label Label => labelElement;
-            public VisualElement Input { get; }
+            public VisualElement Contents { get; }
 
-            public LabeledContainer(string label, string tooltip = "") : this (label, tooltip, new VisualElement()) 
+            public LabeledRow(string label, string tooltip = "") 
+                : this (label, tooltip, new VisualElement()) 
             {
-                Input.style.flexDirection = FlexDirection.Row;
+                style.flexDirection = FlexDirection.Row;
+                style.flexGrow = 1;
+                Contents.style.flexDirection = FlexDirection.Row;
+                Contents.style.flexGrow = 1;
             }
 
-            public LabeledContainer(string label, string tooltip, VisualElement input) : base(label, input)
+            public LabeledRow(string label, string tooltip, VisualElement contents) : base(label, contents)
             {
-                Input = input;
+                Contents = contents;
                 AddToClassList(alignedFieldUssClassName);
                 this.tooltip = tooltip;
                 Label.tooltip = tooltip;
-            }
-
-            public T AddInput<T>(T input) where T : VisualElement
-            {
-                Input.Add(input);
-                return input;
             }
         }
 
@@ -428,36 +633,45 @@ namespace Cinemachine.Editor
         /// This is an inspector container with 2 side-by-side rows. The Left row's width is 
         /// locked to the inspector field label size, for proper alignment.
         /// </summary>
-        public class LeftRightContainer : VisualElement
+        public class LeftRightRow : VisualElement
         {
             public VisualElement Left;
             public VisualElement Right;
-
-            public static float kLeftMarginHack = 3;
 
             /// <summary>
             /// Set this to offset the Left/Right division from the inspector's Label/Content line
             /// </summary>
             public float DivisionOffset = 0;
 
-            public LeftRightContainer()
+            /// <summary>
+            /// Set this to zero the left margin, useful for foldouts that control the margin themselves.
+            /// </summary>
+            public bool KillLeftMargin;
+
+            public LeftRightRow()
             {
                 // This is to peek at the resolved label width
-                var hack = AddChild(this,  new LabeledContainer(" ") { style = { height = 1, marginTop = -2 }});
+                var hack = AddChild(this,  new LabeledRow(" ") { style = { height = 1, marginTop = -2 }});
 
                 var row = AddChild(this, new VisualElement 
                     { style = { flexDirection = FlexDirection.Row }});
                 Left = row.AddChild(new VisualElement 
-                    { style = { flexDirection = FlexDirection.Row, flexGrow = 0, marginLeft = kLeftMarginHack }});
+                    { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
                 Right = row.AddChild(new VisualElement 
                     { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
 
-                hack.Label.RegisterCallback<GeometryChangedEvent>(
-                    (evt) => Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset);
+                hack.Label.RegisterCallback<GeometryChangedEvent>((_) => 
+                {
+                    if (KillLeftMargin)
+                        hack.style.marginLeft = 0;
+                    Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset;
+                    row.style.marginLeft = hack.resolvedStyle.marginLeft;
+                });
             }
         }
 
-        /// <summary>A foldout that displays an overlay in the right-hand column when closed</summary>
+        /// <summary>A foldout that displays an overlay in the right-hand column when closed.
+        /// The overlay can optionally have a label of its own (use with caution).</summary>
         public class FoldoutWithOverlay : VisualElement
         {
             public readonly Foldout OpenFoldout;
@@ -471,11 +685,11 @@ namespace Cinemachine.Editor
                 Overlay = overlay;
                 OverlayLabel = overlayLabel;
 
+                Add(foldout);
+
                 // There are 2 modes for this element: foldout closed and foldout open.
                 // When closed, we cheat the layout system, and to implement this we do a switcheroo
-                var closedContainer = AddChild(this, new LeftRightContainer() 
-                    { style = { flexGrow = 1, marginLeft = -LeftRightContainer.kLeftMarginHack }});
-                Add(foldout);
+                var closedContainer = AddChild(this, new LeftRightRow() { KillLeftMargin = true, style = { flexGrow = 1 }});
 
                 var closedFoldout = new Foldout { text = foldout.text, tooltip = foldout.tooltip, value = false };
                 ClosedFoldout = closedFoldout;
@@ -486,41 +700,50 @@ namespace Cinemachine.Editor
 
                 // Outdent the label
                 if (overlayLabel != null)
-                {
-                    closedContainer.Right.RegisterCallback<GeometryChangedEvent>(
-                        (evt) => closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
-                }
+                    closedContainer.Right.OnInitialGeometry(() =>
+                        closedContainer.Right.style.marginLeft = -overlayLabel.resolvedStyle.width);
 
                 // Swap the open and closed foldouts when the foldout is opened or closed
-                closedContainer.SetVisible(!foldout.value);
+                foldout.SetVisible(foldout.value);
                 closedFoldout.RegisterValueChangedCallback((evt) =>
                 {
-                    if (evt.newValue)
+                    if (evt.target == closedFoldout)
                     {
-                        closedContainer.SetVisible(false);
-                        foldout.SetVisible(true);
-                        foldout.value = true;
-                        closedFoldout.SetValueWithoutNotify(false);
-                        foldout.Focus(); // GML why doesn't this work?
+                        if (evt.newValue && evt.target == closedFoldout)
+                        {
+                            closedContainer.SetVisible(false);
+                            foldout.SetVisible(true);
+                            foldout.value = true;
+                            closedFoldout.SetValueWithoutNotify(false);
+                            //foldout.Focus(); // GML why doesn't this work?
+                        }
                         evt.StopPropagation();
                     }
                 });
-                foldout.SetVisible(foldout.value);
+
+                closedContainer.SetVisible(!foldout.value);
                 foldout.RegisterValueChangedCallback((evt) =>
                 {
-                    if (!evt.newValue)
+                    if (evt.target == foldout)
                     {
-                        closedContainer.SetVisible(true);
-                        foldout.SetVisible(false);
-                        closedFoldout.SetValueWithoutNotify(false);
-                        foldout.value = false;
-                        closedFoldout.Focus(); // GML why doesn't this work?
+                        if (!evt.newValue)
+                        {
+                            closedContainer.SetVisible(true);
+                            foldout.SetVisible(false);
+                            closedFoldout.SetValueWithoutNotify(false);
+                            foldout.value = false;
+                            //closedFoldout.Focus(); // GML why doesn't this work?
+                        }
                         evt.StopPropagation();
                     }
                 });
             }
         }
 
+        /// <summary>
+        /// A property field with a minimally-sized label that does not respect inspector sizing.
+        /// Suitable for embedding in a row within the right-hand side of the inspector.
+        /// </summary>
         public class CompactPropertyField : VisualElement
         {
             public Label Label;
@@ -531,68 +754,51 @@ namespace Cinemachine.Editor
             public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
-                if (label.Length != 0)
+                if (!string.IsNullOrEmpty(label))
                     Label = AddChild(this, new Label(label) 
-                        { tooltip = property.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
-                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 0 } });
+                        { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 if (Label != null)
-                    Label.AddPropertyDragger(property, Field);
+                    AddPropertyDragger(Label, property, Field);
             }
         }
 
-        public static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
+        /// <summary>
+        /// A row containing a property field.  Suitable for adding widgets nest to the property field.
+        /// </summary>
+        public static LabeledRow PropertyRow(
+            SerializedProperty property, out PropertyField propertyField, string label = null)
         {
-            if (p.propertyType == SerializedPropertyType.Float 
-                || p.propertyType == SerializedPropertyType.Integer)
+            var row = new LabeledRow(label ?? property.displayName, property.tooltip);
+            var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
+                { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
+            AddPropertyDragger(row.Label, property, propertyField);
+
+            // Kill any left margin that gets inserted into the property field
+            field.OnInitialGeometry(() => 
             {
-                label.RegisterCallback<GeometryChangedEvent>(AddDragger);
-                label.AddToClassList("unity-base-field__label--with-dragger");
-            }
-
-            void AddDragger(GeometryChangedEvent evt) 
-            {
-                label.UnregisterCallback<GeometryChangedEvent>(AddDragger);
-
-                if (p.propertyType == SerializedPropertyType.Float)
-                    new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                else if (p.propertyType == SerializedPropertyType.Integer)
-                    new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
-            }
-        }
-
-        public static LeftRightContainer CreatePropertyRow(
-            SerializedProperty property, out VisualElement propertyField)
-        {
-            var row = new LeftRightContainer();
-
-            var label = row.Left.AddChild(new Label(property.displayName) 
-                { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
-            propertyField = row.Right.AddChild(new PropertyField(property, "") 
-                { tooltip = property.tooltip, style = { flexGrow = 1, flexBasis = 0 }});
-            AddPropertyDragger(label, property, propertyField);
-
+                var children = field.Children().GetEnumerator();
+                if (children.MoveNext())
+                    children.Current.style.marginLeft = 0;
+                children.Dispose();
+            });
             return row;
         }
 
-        public static VisualElement CreateHelpBoxWithButton(
+        public static VisualElement HelpBoxWithButton(
             string message, HelpBoxMessageType messageType, 
-            string buttonText, Action onClicked)
+            string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new HelpBox(message, messageType) { style = { flexGrow = 1 }});
-            row.Add(new Button(onClicked) { text = buttonText, style = { marginLeft = 0 }});
+            var button = row.AddChild(new Button(onClicked) { text = buttonText, style = { marginLeft = 0 }});
+            if (contextMenu != null)
+            {
+                contextMenu.activators.Clear();
+                contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+                button.AddManipulator(contextMenu);
+            }
             return row;
-        }
-
-        public static void SetVisible(this VisualElement e, bool show) 
-            => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
-
-        public static bool IsVisible(this VisualElement e) => e.style.display != DisplayStyle.None;
-
-        public static T AddChild<T>(this VisualElement e, T child) where T : VisualElement
-        {
-            e.Add(child);
-            return child;
         }
     }
 }

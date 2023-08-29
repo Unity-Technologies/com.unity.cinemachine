@@ -1,8 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomPropertyDrawer(typeof(AxisState))]
@@ -128,3 +129,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

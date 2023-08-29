@@ -1,8 +1,8 @@
-﻿using System;
-using Cinemachine.Utility;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using System;
 using UnityEngine;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachinePanTilt instead.
@@ -95,6 +95,8 @@ namespace Cinemachine
             UpdateInputAxisProvider();
         }
         
+        /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
+        /// <returns>Returns true when input is required.</returns>
         bool AxisState.IRequiresInput.RequiresInput() => true;
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace Cinemachine
                 return;
 
             // Only read joystick when game is playing
-            if (deltaTime >= 0 && (!VirtualCamera.PreviousStateIsValid || !CinemachineCore.Instance.IsLive(VirtualCamera)))
+            if (deltaTime >= 0 && (!VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)))
                 deltaTime = -1;
             if (deltaTime >= 0)
             {
@@ -145,19 +147,16 @@ namespace Cinemachine
             // If we have a transform parent, then apply POV in the local space of the parent
             Quaternion rot = Quaternion.Euler(m_VerticalAxis.Value, m_HorizontalAxis.Value, 0);
             Transform parent = VirtualCamera.transform.parent;
-            var up = Vector3.up;
             if (parent != null)
-            {
                 rot = parent.rotation * rot;
-                up = parent.up;
-            }
-            rot = Quaternion.FromToRotation(curState.ReferenceUp, up) * rot;
+            else
+                rot = Quaternion.FromToRotation(Vector3.up, curState.ReferenceUp) * rot;
             curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
-                curState.PositionDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousCameraRotation * Vector3.forward, 
-                    rot * Vector3.forward, curState.ReferenceUp).eulerAngles;
+                    rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
         }
 
@@ -208,18 +207,17 @@ namespace Cinemachine
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
         /// <param name="worldUp">Default world Up, set by the CinemachineBrain</param>
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
-        /// <param name="transitionParams">Transition settings for this vcam</param>
         /// <returns>True if the vcam should do an internal update as a result of this call</returns>
         public override bool OnTransitionFromCamera(
-            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime,
-            ref CinemachineVirtualCameraBase.TransitionParams transitionParams)
+            ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             m_HorizontalRecentering.DoRecentering(ref m_HorizontalAxis, -1, 0);
             m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, -1, 0);
             m_HorizontalRecentering.CancelRecentering();
             m_VerticalRecentering.CancelRecentering();
-            if (fromCam != null && transitionParams.InheritPosition  
-                && !CinemachineCore.Instance.IsLiveInBlend(VirtualCamera))
+            if (fromCam != null 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
                 return true;
@@ -255,10 +253,25 @@ namespace Cinemachine
         internal void UpgradeToCm3(CinemachinePanTilt c)
         {
             c.ReferenceFrame = CinemachinePanTilt.ReferenceFrames.ParentObject;
+
             c.PanAxis.Range = new Vector2(m_HorizontalAxis.m_MinValue, m_HorizontalAxis.m_MaxValue);
             c.PanAxis.Center = 0;
+            c.PanAxis.Recentering = new () 
+            { 
+                Enabled = m_HorizontalRecentering.m_enabled, 
+                Time = m_HorizontalRecentering.m_RecenteringTime, 
+                Wait = m_HorizontalRecentering.m_WaitTime 
+            };
+
             c.TiltAxis.Range = new Vector2(m_VerticalAxis.m_MinValue, m_VerticalAxis.m_MaxValue);
             c.TiltAxis.Center = 0;
+            c.TiltAxis.Recentering = new () 
+            { 
+                Enabled = m_VerticalRecentering.m_enabled, 
+                Time = m_VerticalRecentering.m_RecenteringTime, 
+                Wait = m_VerticalRecentering.m_WaitTime 
+            };
         }
     }
 }
+#endif

@@ -1,11 +1,11 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEditor;
 using UnityEngine;
-using Cinemachine.Utility;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [Obsolete]
     [CustomEditor(typeof(CinemachineGroupComposer))]
@@ -24,7 +24,7 @@ namespace Cinemachine.Editor
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(MyTarget.VirtualCamera);
+            CinemachineBrain brain = CinemachineCore.FindPotentialTargetBrain(MyTarget.VirtualCamera);
             var ortho = brain != null && brain.OutputCamera.orthographic;
             if (ortho)
             {
@@ -60,7 +60,7 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            if (MyTarget.IsValid && MyTarget.LookAtTargetAsGroup == null)
+            if (MyTarget.IsValid && (MyTarget.LookAtTargetAsGroup == null || !MyTarget.LookAtTargetAsGroup.IsValid))
                 EditorGUILayout.HelpBox(
                     "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup",
                     MessageType.Info);
@@ -72,7 +72,7 @@ namespace Cinemachine.Editor
         static void DrawGroupComposerGizmos(CinemachineGroupComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.LookAtTargetAsGroup != null)
+            if (target.LookAtTargetAsGroup != null && target.LookAtTargetAsGroup.IsValid)
             {
                 Matrix4x4 m = Gizmos.matrix;
                 Bounds b = target.LastBounds;
@@ -95,3 +95,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

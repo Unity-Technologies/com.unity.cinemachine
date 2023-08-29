@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Samples/Cinemachine/3.0.0-pre.5/Shared%20Assets/UI/SamplesUIStyle.uss?fileID=7433441132597879392&amp;guid=f5bb9549a4a38408d98f1dc629a432df&amp;type=3#SamplesUIStyle" />
+    <ui:Button name="HelpButton" focusable="false" text="Help" />
+    <ui:Box name="TogglesAndButtons" focusable="false" />
+    <ui:Box name="HelpTextBox" focusable="false">
+        <ui:Label name="HelpTextBox__Title" focusable="false" />
+        <ui:ScrollView name="HelpTextBox__ScrollView" focusable="false">
+            <ui:Label name="HelpTextBox__ScrollView__Label" focusable="false" tabindex="-1" text="Label" display-tooltip-when-elided="false"  />
+        </ui:ScrollView>
+        <ui:Button name="HelpTextBox__CloseButton" focusable="false" text="Close" />
+    </ui:Box>
+</ui:UXML>

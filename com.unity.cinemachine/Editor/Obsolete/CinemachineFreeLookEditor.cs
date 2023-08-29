@@ -1,15 +1,16 @@
-﻿using UnityEngine;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using UnityEngine;
 using UnityEditor;
-using Cinemachine.Editor;
 using System.Collections.Generic;
-using Cinemachine.Utility;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
+using System;
+using Unity.Cinemachine.Editor;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
-    [System.Obsolete]
+    [Obsolete]
     [CustomEditor(typeof(CinemachineFreeLook))]
     [CanEditMultipleObjects]
     class CinemachineFreeLookEditor : CinemachineVirtualCameraBaseEditor<CinemachineFreeLook>
@@ -21,8 +22,8 @@ namespace Cinemachine
             base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_Orbits));
             if (!Target.m_CommonLens)
-                excluded.Add(FieldPath(x => x.m_Lens));
-            if (Target.m_BindingMode == TargetTracking.BindingMode.SimpleFollowWithWorldUp)
+                excluded.Add(FieldPath(x => x.Lens));
+            if (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow)
             {
                 excluded.Add(FieldPath(x => x.m_Heading));
                 excluded.Add(FieldPath(x => x.m_RecenterToTargetHeading));
@@ -66,24 +67,25 @@ namespace Cinemachine
             }
             
             Target.m_XAxis.ValueRangeLocked
-                = (Target.m_BindingMode == TargetTracking.BindingMode.SimpleFollowWithWorldUp);
+                = (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow);
 
             // Ordinary properties
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Upgrade to CmCamera");
+            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
-            DrawPropertyInInspector(FindProperty(x => x.PriorityAndChannel));
-            DrawTargetsInInspector(FindProperty(x => x.m_Follow), FindProperty(x => x.m_LookAt));
-            DrawPropertyInInspector(FindProperty(x => x.StandbyUpdate));
-            DrawPropertyInInspector(FindProperty(x => x.m_CommonLens));
-            DrawPropertyInInspector(FindProperty(x => x.m_Lens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Priority));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.OutputChannel));
+            DrawTargetsInInspector(serializedObject.FindProperty(() => Target.m_Follow), serializedObject.FindProperty(() => Target.m_LookAt));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.StandbyUpdate));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.m_CommonLens));
+            DrawPropertyInInspector(serializedObject.FindProperty(() => Target.Lens));
             DrawRemainingPropertiesInInspector();
 
             // Orbits
             EditorGUI.BeginChangeCheck();
-            SerializedProperty orbits = FindProperty(x => x.m_Orbits);
+            SerializedProperty orbits = serializedObject.FindProperty(() => Target.m_Orbits);
             for (int i = 0; i < CinemachineFreeLook.RigNames.Length; ++i)
             {
                 Rect rect = EditorGUILayout.GetControlRect(true);
@@ -133,13 +135,13 @@ namespace Cinemachine
             if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
             {
                 CinemachineSceneToolHelpers.FovToolHandle(freelook, 
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Lens), 
-                    freelook.m_Lens, IsHorizontalFOVUsed());
+                    new SerializedObject(freelook).FindProperty(() => freelook.Lens), 
+                    freelook.Lens, IsHorizontalFOVUsed());
             }
             else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
             {
                 CinemachineSceneToolHelpers.NearFarClipHandle(freelook, 
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Lens));
+                    new SerializedObject(freelook).FindProperty(() => freelook.Lens));
             }
             else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
@@ -278,7 +280,7 @@ namespace Cinemachine
             CinemachineBrainEditor.DrawVirtualCameraBaseGizmos(vcam, selectionType);
 
             Color originalGizmoColour = Gizmos.color;
-            bool isActiveVirtualCam = CinemachineCore.Instance.IsLive(vcam);
+            bool isActiveVirtualCam = CinemachineCore.IsLive(vcam);
             Gizmos.color = isActiveVirtualCam
                 ? CinemachineCorePrefs.ActiveGizmoColour.Value
                 : CinemachineCorePrefs.InactiveGizmoColour.Value;
@@ -326,3 +328,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

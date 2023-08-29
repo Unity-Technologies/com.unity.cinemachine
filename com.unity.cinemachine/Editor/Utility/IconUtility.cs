@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>
     /// Useful class for setting script icons in one go, instead of setting them by hand one by one
@@ -19,11 +19,11 @@ namespace Cinemachine.Editor
             return s_IconCache[path];
         }
 
-        /// <summary>Checks if CmCamera script has the correct icon or not.</summary>
+        /// <summary>Checks if CinemachineCamera script has the correct icon or not.</summary>
         /// <returns>True, when icons don't match. False, otherwise.</returns>
         public static bool DoIconsNeedToBeUpdated()
         {
-            var cmCameraPath = ScriptableObjectUtility.kPackageRoot + "/Runtime/Behaviours/CmCamera.cs";
+            var cmCameraPath = CinemachineCore.kPackageRoot + "/Runtime/Behaviours/CinemachineCamera.cs";
             var monoImporter = AssetImporter.GetAtPath(cmCameraPath) as MonoImporter;
             if (monoImporter == null)
                 return false;
@@ -62,7 +62,7 @@ namespace Cinemachine.Editor
             static List<string> GetAllCinemachineRuntimeScripts()
             {
                 var cmRuntimeScripts = new List<string>();
-                var directories = Directory.GetDirectories(ScriptableObjectUtility.kPackageRoot + "/Runtime");
+                var directories = Directory.GetDirectories(CinemachineCore.kPackageRoot + "/Runtime");
                 foreach (var directory in directories)
                     cmRuntimeScripts.AddRange(Directory.GetFiles(directory, "*.cs"));
                 
@@ -76,13 +76,13 @@ namespace Cinemachine.Editor
             if (scriptClass == null)
                 return string.Empty;
             if (scriptClass.IsSubclassOf(typeof(CinemachineExtension)))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png";
+                return CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png";
             if (scriptClass.IsSubclassOf(typeof(CinemachineComponentBase)))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png";
+                return CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png";
             if (scriptClass == typeof(CinemachineSplineRoll) || scriptClass == typeof(CinemachineSplineCart))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png";
+                return CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png";
             if (scriptClass.IsSubclassOf(typeof(CinemachineVirtualCameraBase)) || scriptClass == typeof(CinemachineBrain))
-                return ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
+                return CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png";
             return string.Empty;
         }
 
@@ -115,10 +115,10 @@ namespace Cinemachine.Editor
             {
                 return new[] 
                 { 
-                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png",
-                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png",
-                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png",
-                    ScriptableObjectUtility.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png"
+                    CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png",
+                    CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png",
+                    CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png",
+                    CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png"
                 };
             }
         }

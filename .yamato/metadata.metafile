@@ -38,14 +38,26 @@ all_testprojects:
     - name: HDRP
       path: Projects/HDRP
       editors: [2022.2, trunk]
+    - name: URPInputSystem
+      path: Projects/URPInputSystem
+      editors: [2022.2, trunk]
+    - name: StandaloneInputSystem
+      path: Projects/StandaloneInputSystem
+      editors: [2022.2, trunk]
+    - name: HDRPInputSystem
+      path: Projects/HDRPInputSystem
+      editors: [2022.2, trunk]
 
 all_configurations:
   ci:
     test_names: [isolation_tests]
     platform_names: [ubuntu]
+  nightly:
+    test_names: [isolation_tests, promotion_tests]
+    platform_names: [windows, ubuntu, macos]
   publish:
     test_names: [vetting_tests]
-    platform_names: [windows, macOS, ubuntu]
+    platform_names: [windows]
   promote:
     test_names: [promotion_tests, vetting_tests]
     platform_names: [windows]

@@ -1,7 +1,8 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomPropertyDrawer(typeof(CinemachineOrbitalTransposer.Heading))]
@@ -54,3 +55,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif

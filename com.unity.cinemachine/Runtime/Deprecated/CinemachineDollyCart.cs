@@ -1,8 +1,9 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use CinemachineSplineCart instead.
@@ -87,10 +88,12 @@ namespace Cinemachine
                 case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
                 case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
             }
-            c.AutomaticDolly = new SplineAutoDolly.FixedSpeed { Speed = m_Speed };
+            c.AutomaticDolly.Enabled = true;
+            c.AutomaticDolly.Method = new SplineAutoDolly.FixedSpeed { Speed = m_Speed };
             c.SplinePosition = m_Position;
             if (m_Path != null)
                 c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
         }
     }
 }
+#endif

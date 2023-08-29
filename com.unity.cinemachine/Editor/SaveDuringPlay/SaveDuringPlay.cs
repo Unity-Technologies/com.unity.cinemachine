@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Cinemachine.SaveDuringPlay
+namespace Unity.Cinemachine.Editor
 {
     /// <summary>A collection of tools for finding objects</summary>
     static class ObjectTreeUtil
@@ -74,9 +74,11 @@ namespace Cinemachine.SaveDuringPlay
         /// </summary>
         public static T[] FindAllBehavioursInScene<T>() where T : MonoBehaviour
         {
-            List<T> objectsInScene = new List<T>();
-            foreach (T b in Resources.FindObjectsOfTypeAll<T>())
+            List<T> objectsInScene = new ();
+            var allObjects = Resources.FindObjectsOfTypeAll<T>();
+            for (int i = 0; i < allObjects.Length; ++i)
             {
+                var b = allObjects[i];
                 if (b == null || b.gameObject == null)
                     continue;   // object was deleted
                 GameObject go = b.gameObject;
@@ -179,13 +181,9 @@ namespace Cinemachine.SaveDuringPlay
                         var newLength = (int)length;
                         var currentLength = list.Count;
                         for (int i = 0; i < currentLength - newLength; ++i)
-                        {
                             list.RemoveAt(currentLength - i - 1); // make list shorter if needed
-                        }
                         for (int i = 0;  i < newLength - currentLength; ++i)
-                        {
                             list.Add(GetValue(type.GetGenericArguments()[0])); // make list longer if needed
-                        }
                         doneSomething = true;
                     }
 
@@ -203,9 +201,9 @@ namespace Cinemachine.SaveDuringPlay
                     if (doneSomething)
                         obj = list;
                 }
-                else
+                else if (!typeof(UnityEngine.Object).IsAssignableFrom(obj.GetType()))
                 {
-                    // Check if it's a complex type
+                    // Check if it's a complex type (but don't follow UnityEngine.Object references)
                     FieldInfo[] fields = obj.GetType().GetFields(kBindingFlags);
                     if (fields.Length > 0)
                     {
@@ -368,8 +366,8 @@ namespace Cinemachine.SaveDuringPlay
         static bool FilterField(string fullName, FieldInfo fieldInfo)
         {
             var attrs = fieldInfo.GetCustomAttributes(false);
-            foreach (var attr in attrs)
-                if (attr.GetType().Name.Equals("NoSaveDuringPlayAttribute"))
+            for (int i = 0; i < attrs.Length; ++i)
+                if (attrs[i].GetType().Name.Equals("NoSaveDuringPlayAttribute"))
                     return false;
             return true;
         }
@@ -378,8 +376,8 @@ namespace Cinemachine.SaveDuringPlay
         public static bool HasSaveDuringPlay(MonoBehaviour b)
         {
             var attrs = b.GetType().GetCustomAttributes(true);
-            foreach (var attr in attrs)
-                if (attr.GetType().Name.Equals("SaveDuringPlayAttribute"))
+            for (int i = 0; i < attrs.Length; ++i)
+                if (attrs[i].GetType().Name.Equals("SaveDuringPlayAttribute"))
                     return true;
             return false;
         }
@@ -490,15 +488,9 @@ namespace Cinemachine.SaveDuringPlay
         static SaveDuringPlay()
         {
             // Install our callbacks
-#if UNITY_2017_2_OR_NEWER
             EditorApplication.playModeStateChanged += OnPlayStateChanged;
-#else
-            EditorApplication.update += OnEditorUpdate;
-            EditorApplication.playmodeStateChanged += OnPlayStateChanged;
-#endif
         }
 
-#if UNITY_2017_2_OR_NEWER
         static void OnPlayStateChanged(PlayModeStateChange pmsc)
         {
             if (Enabled)
@@ -509,41 +501,12 @@ namespace Cinemachine.SaveDuringPlay
                     case PlayModeStateChange.ExitingPlayMode:
                         SaveAllInterestingStates();
                         break;
-                    case PlayModeStateChange.EnteredEditMode when sSavedStates != null:
+                    case PlayModeStateChange.EnteredEditMode when s_SavedStates != null:
                         RestoreAllInterestingStates();
                         break;
                 }
             }
         }
-#else
-        static void OnPlayStateChanged()
-        {
-            // If exiting playmode, collect the state of all interesting objects
-            if (Enabled)
-            {
-                if (!EditorApplication.isPlayingOrWillChangePlaymode && EditorApplication.isPlaying)
-                    SaveAllInterestingStates();
-            }
-        }
-
-        static float sWaitStartTime = 0;
-        static void OnEditorUpdate()
-        {
-            if (Enabled && sSavedStates != null && !Application.isPlaying)
-            {
-                // Wait a bit for things to settle before applying the saved state
-                const float WaitTime = 1f; // GML todo: is there a better way to do this?
-                float time = Time.realtimeSinceStartup;
-                if (sWaitStartTime == 0)
-                    sWaitStartTime = time;
-                else if (time - sWaitStartTime > WaitTime)
-                {
-                    RestoreAllInterestingStates();
-                    sWaitStartTime = 0;
-                }
-            }
-        }
-#endif
 
         /// <summary>
         /// If you need to get notified before state is collected for hotsave, this is the place
@@ -557,9 +520,10 @@ namespace Cinemachine.SaveDuringPlay
         static HashSet<GameObject> FindInterestingObjects()
         {
             var objects = new HashSet<GameObject>();
-            MonoBehaviour[] everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
-            foreach (var b in everything)
+            var everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
+            for (int i = 0; i < everything.Length; ++i)
             {
+                var b = everything[i];
                 if (!objects.Contains(b.gameObject) && ObjectStateSaver.HasSaveDuringPlay(b))
                 {
                     //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
@@ -569,33 +533,34 @@ namespace Cinemachine.SaveDuringPlay
             return objects;
         }
 
-        static List<ObjectStateSaver> sSavedStates = null;
+        static List<ObjectStateSaver> s_SavedStates = null;
 
         static void SaveAllInterestingStates()
         {
             //Debug.Log("Exiting play mode: Saving state for all interesting objects");
-            if (OnHotSave != null)
-                OnHotSave();
+            OnHotSave?.Invoke();
 
-            sSavedStates = new List<ObjectStateSaver>();
+            s_SavedStates = new List<ObjectStateSaver>();
             var objects = FindInterestingObjects();
-            foreach (var obj in objects)
+            var iter = objects.GetEnumerator();
+            while (iter.MoveNext())
             {
                 var saver = new ObjectStateSaver();
-                saver.CollectFieldValues(obj);
-                sSavedStates.Add(saver);
+                saver.CollectFieldValues(iter.Current);
+                s_SavedStates.Add(saver);
             }
-            if (sSavedStates.Count == 0)
-                sSavedStates = null;
+            if (s_SavedStates.Count == 0)
+                s_SavedStates = null;
         }
 
         static void RestoreAllInterestingStates()
         {
             //Debug.Log("Updating state for all interesting objects");
             bool dirty = false;
-            GameObject[] roots = ObjectTreeUtil.FindAllRootObjectsInScene();
-            foreach (ObjectStateSaver saver in sSavedStates)
+            var roots = ObjectTreeUtil.FindAllRootObjectsInScene();
+            for (int i = 0; i < s_SavedStates.Count; ++i)
             {
+                var saver = s_SavedStates[i];
                 GameObject go = saver.FindSavedGameObject(roots);
                 if (go != null)
                 {
@@ -610,7 +575,7 @@ namespace Cinemachine.SaveDuringPlay
             }
             if (dirty)
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-            sSavedStates = null;
+            s_SavedStates = null;
         }
     }
 }

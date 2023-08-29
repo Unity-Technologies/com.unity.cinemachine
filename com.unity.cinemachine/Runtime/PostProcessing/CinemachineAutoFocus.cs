@@ -1,32 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
-using Cinemachine.Utility;
 
 #if CINEMACHINE_HDRP
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
-#if !CINEMACHINE_HDRP
     /// <summary>
-    /// This behaviour will drive the CmCamera Lens's FocusDistance setting.
-    /// It can be used to hold focus onto a specific object, or to auto-detect what is in front
-    /// of the camera and focus on that.
+    /// This behaviour will drive the Camera focusDistance property. It can be used to hold focus onto 
+    /// a specific object, or (in HDRP) to auto-detect what is in front of the camera and focus on that.
+    ///
+    /// Camera.focusDistance is only available in physical mode, and appropriate processing
+    /// must be installed for it to have any visible effect.
     /// 
-    /// This component is only available in HDRP projects.
-    /// </summary>
-    [AddComponentMenu("")] // Hide in menu
-    public class CinemachineAutoFocus : MonoBehaviour {}
-#else
-    /// <summary>
-    /// This behaviour will drive the CmCamera Lens's FocusDistance setting.
-    /// It can be used to hold focus onto a specific object, or to auto-detect what is in front
-    /// of the camera and focus on that.
-    /// 
-    /// This component is only available in HDRP projects, and cannot be dynamically added at runtime.  
-    /// It must be added in the editor.
+    /// This component's ScreenCenter mode is only available in HDRP projects, and in this mode 
+    /// the component cannot be dynamically added at runtime; it must be added in the editor.
     /// </summary>
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Auto Focus")]
@@ -48,15 +38,15 @@ namespace Cinemachine
             CustomTarget,
             /// <summary>Focus offset is relative to the camera</summary>
             Camera,
-            /// <summary>Focus will be on whatever is located in the depth buffer 
+            /// <summary>HDRP only: Focus will be on whatever is located in the depth buffer. 
             /// at the center of the screen</summary>
             ScreenCenter
         };
 
-        /// <summary>The camera's focus distance will be set to the distance from the selected 
-        /// target to the camera.  The Focus Offset field will then modify that distance</summary>
-        [Tooltip("The camera's focus distance will be set to the distance from the selected "
-            + "target to the camera.  The Focus Offset field will then modify that distance.")]
+        /// <summary>The camera's focus distance will be set to the distance from the camera to
+        /// the selected target.  The Focus Offset field will then modify that distance.</summary>
+        [Tooltip("The camera's focus distance will be set to the distance from the camera to "
+            + "the selected target.  The Focus Offset field will then modify that distance.")]
         public FocusTrackingMode FocusTarget;
 
         /// <summary>The target to use if Focus Target is set to Custom Target</summary>
@@ -74,6 +64,7 @@ namespace Cinemachine
         [Tooltip("The value corresponds approximately to the time the focus will take to adjust to the new value.")]
         public float Damping;
 
+#if CINEMACHINE_HDRP
         /// <summary>
         /// Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.  
         /// It's recommended to keep this quite small.  Default value is 0.02.
@@ -85,27 +76,35 @@ namespace Cinemachine
 
         CustomPassVolume m_CustomPassVolume;
 
-        /// <summary>Serialized so that the compute shader is include in the build</summary>
+        /// <summary>Serialized so that the compute shader is included in the build.</summary>
         [SerializeField]
         ComputeShader m_ComputeShader;
 
+        void OnDisable()
+        {
+            ReleaseFocusVolume();
+        }
+#endif
+
+        class VcamExtraState : VcamExtraStateBase
+        {
+            public float CurrentFocusDistance;
+        }
+        
         void Reset()
         {
             Damping = 0.2f;
             FocusTarget = FocusTrackingMode.None;
             CustomTarget = null;
             FocusDepthOffset = 0;
+#if CINEMACHINE_HDRP
             AutoDetectionRadius = 0.02f;
+#endif
         }
 
         void OnValidate()
         {
             Damping = Mathf.Max(0, Damping);
-        }
-
-        void OnDisable()
-        {
-            ReleaseFocusVolume();
         }
 
         /// <summary>Apply PostProcessing effects</summary>
@@ -117,9 +116,10 @@ namespace Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            if (FocusTarget != FocusTrackingMode.ScreenCenter || !CinemachineCore.Instance.IsLive(vcam))
+#if CINEMACHINE_HDRP
+            if (FocusTarget != FocusTrackingMode.ScreenCenter || !CinemachineCore.IsLive(vcam))
                 ReleaseFocusVolume();
-
+#endif
             // Set the focus after the camera has been fully positioned
             if (stage == CinemachineCore.Stage.Finalize && FocusTarget != FocusTrackingMode.None)
             {
@@ -131,39 +131,40 @@ namespace Cinemachine
                     default: 
                         break;
                     case FocusTrackingMode.LookAtTarget: 
-                        focusDistance = (state.GetFinalPosition() - state.ReferenceLookAt).magnitude; 
+                        if (state.HasLookAt())
+                            focusDistance =  (state.GetFinalPosition() - state.ReferenceLookAt).magnitude;
+                        else 
+                            focusTarget = vcam.LookAt; // probably null, but doesn't hurt
                         break;
                     case FocusTrackingMode.FollowTarget: 
-                        focusTarget = VirtualCamera.Follow; 
+                        focusTarget = vcam.Follow; 
                         break;
                     case FocusTrackingMode.CustomTarget: 
                         focusTarget = CustomTarget; 
                         break;
+#if CINEMACHINE_HDRP
                     case FocusTrackingMode.ScreenCenter:
                         focusDistance = FetchAutoFocusDistance(vcam, extra);
                         if (focusDistance < 0)
                             return; // not available, abort
                         break;
+#endif
                 }
                 if (focusTarget != null)
                     focusDistance += (state.GetFinalPosition() - focusTarget.position).magnitude;
 
-                focusDistance = Mathf.Max(0, focusDistance + FocusDepthOffset);
+                focusDistance = Mathf.Max(0.1f, focusDistance + FocusDepthOffset);
 
                 // Apply damping
                 if (deltaTime >= 0 && vcam.PreviousStateIsValid)
                     focusDistance = extra.CurrentFocusDistance + Damper.Damp(
                         focusDistance - extra.CurrentFocusDistance, Damping, deltaTime);
                 extra.CurrentFocusDistance = focusDistance;
-                state.Lens.FocusDistance = focusDistance;
+                state.Lens.PhysicalProperties.FocusDistance = focusDistance;
             }
         }
 
-        class VcamExtraState
-        {
-            public float CurrentFocusDistance;
-        }
-
+#if CINEMACHINE_HDRP
         float FetchAutoFocusDistance(CinemachineVirtualCameraBase vcam, VcamExtraState extra)
         {
             var volume = GetFocusVolume(vcam);
@@ -199,7 +200,7 @@ namespace Cinemachine
             }
             if (m_CustomPassVolume == null)
             {
-                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(vcam);
+                var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
                 var cam = brain == null ? null : brain.OutputCamera;
                 if (cam != null)
                 {
@@ -226,8 +227,9 @@ namespace Cinemachine
                         m_CustomPassVolume.isGlobal = true;
                         m_CustomPassVolume.injectionPoint = CustomPassInjectionPoint.AfterOpaqueDepthAndNormal;
                         m_CustomPassVolume.targetCamera = cam;
+#if UNITY_EDITOR
                         m_CustomPassVolume.runInEditMode = true;
-
+#endif
                         var pass = m_CustomPassVolume.AddPassOfType<FocusDistance>() as FocusDistance;
                         pass.ComputeShader = m_ComputeShader;
                         pass.PushToCamera = false;
@@ -264,6 +266,6 @@ namespace Cinemachine
             }
             m_CustomPassVolume = null;
         }
-    }
 #endif
+    }
 }

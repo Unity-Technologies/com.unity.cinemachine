@@ -1,8 +1,8 @@
-﻿using System;
+﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+using System;
 using UnityEngine;
-using Cinemachine.Utility;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is a deprecated component.  Use InputAxis instead.
@@ -38,9 +38,9 @@ namespace Cinemachine
     }
 
     /// <summary>
-    /// This is a deprecated component.  Use InputAxisDriver instead.
+    /// This is a deprecated component.  Use DefaultInputAxisDriver instead.
     /// </summary>
-    [Obsolete("CinemachineInputAxisDriver has been deprecated. Use InputAxisDriver instead.")]
+    [Obsolete("CinemachineInputAxisDriver has been deprecated. Use DefaultInputAxisDriver instead.")]
     [Serializable]
     public struct CinemachineInputAxisDriver
     {
@@ -153,3 +153,4 @@ namespace Cinemachine
         }
     }
 }
+#endif

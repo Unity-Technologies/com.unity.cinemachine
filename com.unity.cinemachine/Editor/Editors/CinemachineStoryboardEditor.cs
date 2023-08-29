@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [InitializeOnLoad]
     static class CinemachineStoryboardMute
@@ -15,8 +15,10 @@ namespace Cinemachine.Editor
 
     [CustomEditor(typeof(CinemachineStoryboard))]
     [CanEditMultipleObjects]
-    class CinemachineStoryboardEditor : BaseEditor<CinemachineStoryboard>
+    class CinemachineStoryboardEditor : UnityEditor.Editor
     {
+        CinemachineStoryboard Target => target as CinemachineStoryboard;
+
         const float k_FastWaveformUpdateInterval = 0.1f;
         float m_LastSplitScreenEventTime = 0;
         static bool s_AdvancedFoldout;
@@ -28,12 +30,13 @@ namespace Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             float now = Time.realtimeSinceStartup;
             if (now - m_LastSplitScreenEventTime > k_FastWaveformUpdateInterval * 5)
                 WaveformWindow.SetDefaultUpdateInterval();
 
-            BeginInspector();
-            CmPipelineComponentInspectorUtility.IMGUI_DrawMissingCmCameraHelpBox(this);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
 
             CinemachineCorePrefs.StoryboardGlobalMute.Value = EditorGUILayout.Toggle(
                 CinemachineCorePrefs.s_StoryboardGlobalMuteLabel, CinemachineCorePrefs.StoryboardGlobalMute.Value);
@@ -43,22 +46,22 @@ namespace Cinemachine.Editor
             {
                 float width = rect.width;
                 rect.width = EditorGUIUtility.labelWidth + rect.height;
-                EditorGUI.PropertyField(rect, FindProperty(x => x.ShowImage));
+                EditorGUI.PropertyField(rect, serializedObject.FindProperty(() => Target.ShowImage));
 
                 rect.x += rect.width; rect.width = width - rect.width;
-                EditorGUI.PropertyField(rect, FindProperty(x => x.Image), GUIContent.none);
+                EditorGUI.PropertyField(rect, serializedObject.FindProperty(() => Target.Image), GUIContent.none);
 
-                EditorGUILayout.PropertyField(FindProperty(x => x.Aspect));
-                EditorGUILayout.PropertyField(FindProperty(x => x.Alpha));
-                EditorGUILayout.PropertyField(FindProperty(x => x.Center));
-                EditorGUILayout.PropertyField(FindProperty(x => x.Rotation));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Aspect));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Alpha));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Center));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Rotation));
 
                 rect = EditorGUILayout.GetControlRect(true);
                 EditorGUI.LabelField(rect, "Scale");
                 rect.x += EditorGUIUtility.labelWidth; rect.width -= EditorGUIUtility.labelWidth;
                 rect.width /= 3;
                 serializedObject.SetIsDifferentCacheDirty(); // prop.hasMultipleDifferentValues always results in false if the SO isn't refreshed here
-                var prop = FindProperty(x => x.SyncScale);
+                var prop = serializedObject.FindProperty(() => Target.SyncScale);
                 var syncHasDifferentValues = prop.hasMultipleDifferentValues;
                 GUIContent syncLabel = new GUIContent("Sync", prop.tooltip);
                 EditorGUI.showMixedValue = syncHasDifferentValues;
@@ -67,7 +70,7 @@ namespace Cinemachine.Editor
                 rect.x += rect.width;
                 if (prop.boolValue || targets.Length > 1 && syncHasDifferentValues)
                 {
-                    prop = FindProperty(x => x.Scale);
+                    prop = serializedObject.FindProperty(() => Target.Scale);
                     float[] values = new float[1] { prop.vector2Value.x };
                     EditorGUI.showMixedValue = prop.hasMultipleDifferentValues;
                     EditorGUI.MultiFloatField(rect, new GUIContent[1] { new GUIContent("X") }, values);
@@ -77,19 +80,19 @@ namespace Cinemachine.Editor
                 else
                 {
                     rect.width *= 2;
-                    prop = FindProperty(x => x.Scale);
+                    prop = serializedObject.FindProperty(() => Target.Scale);
                     EditorGUI.showMixedValue = prop.hasMultipleDifferentValues;
                     EditorGUI.PropertyField(rect, prop, GUIContent.none);
                     EditorGUI.showMixedValue = false;
                 }
-                EditorGUILayout.PropertyField(FindProperty(x => x.MuteCamera));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.MuteCamera));
             }
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
 
             EditorGUILayout.Space();
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(FindProperty(x => x.SplitView));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.SplitView));
             if (EditorGUI.EndChangeCheck())
             {
                 m_LastSplitScreenEventTime = now;
@@ -111,12 +114,12 @@ namespace Cinemachine.Editor
                 ++EditorGUI.indentLevel;
                 
                 EditorGUI.BeginChangeCheck();
-                var renderModeProperty = FindProperty(x => x.RenderMode);
+                var renderModeProperty = serializedObject.FindProperty(() => Target.RenderMode);
                 EditorGUILayout.PropertyField(renderModeProperty);
-                EditorGUILayout.PropertyField(FindProperty(x => x.SortingOrder));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.SortingOrder));
                 if (renderModeProperty.enumValueIndex == (int) RenderMode.ScreenSpaceCamera)
                 {
-                    EditorGUILayout.PropertyField(FindProperty(x => x.PlaneDistance));
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.PlaneDistance));
                 }
                 if (EditorGUI.EndChangeCheck())
                 {

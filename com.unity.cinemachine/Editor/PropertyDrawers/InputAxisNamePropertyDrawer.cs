@@ -1,10 +1,11 @@
+#if ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(InputAxisNamePropertyAttribute))]
     class InputAxisNamePropertyDrawer : PropertyDrawer
@@ -15,10 +16,12 @@ namespace Cinemachine.Editor
 
             // Is the axis name valid?
             var nameError = string.Empty;
+
             var nameValue = property.stringValue;
             if (nameValue.Length > 0)
                 try { CinemachineCore.GetInputAxis(nameValue); }
                 catch (ArgumentException e) { nameError = e.Message; }
+
 
             // Show an error icon if there's a problem
             if (nameError.Length > 0)
@@ -39,25 +42,29 @@ namespace Cinemachine.Editor
                 EditorGUIUtility.labelWidth = oldLabelWidth;
             }
         }
-#if false  // GML incomplete code.  This is not working yet in UITK - stay in IMGUI for now
+
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            row.Add(new PropertyField(property, "") { style = { flexGrow = 1 }});
-            var error = new Label 
-            { 
-                style = 
-                { 
-                    flexGrow = 0,
-                    backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("console.erroricon.sml").image,
-                    width = InspectorUtility.SingleLineHeight, height = InspectorUtility.SingleLineHeight,
-                    alignSelf = Align.Center,
-                    paddingRight = 0, borderRightWidth = 0, marginRight = 0
-                }
-            };
-            row.Add(error);
+            var row = InspectorUtility.PropertyRow(property, out _, preferredLabel);
+            var error = row.Contents.AddChild(InspectorUtility.MiniHelpIcon(
+                "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes", 
+                HelpBoxMessageType.Error));
+
+            row.TrackPropertyWithInitialCallback(property, (p) =>
+            {
+                if (p.serializedObject == null)
+                    return;
+                // Is the axis name valid?
+                var nameError = string.Empty;
+                var nameValue = p.stringValue;
+                if (nameValue.Length > 0)
+                    try { CinemachineCore.GetInputAxis(nameValue); }
+                    catch (ArgumentException e) { nameError = e.Message; }
+                error.SetVisible(!string.IsNullOrEmpty(nameError));
+            });
+
             return row;
         }
-#endif
     }
 }
+#endif

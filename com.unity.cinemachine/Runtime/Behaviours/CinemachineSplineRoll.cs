@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
-namespace Cinemachine
+namespace Unity.Cinemachine
 {
     /// <summary>
     /// Extension that can be added to a SplineContainer or a vcam that uses a SplineContainer, for example a vcam
@@ -33,7 +33,7 @@ namespace Cinemachine
         {
             get 
             { 
-                // In case behavour was reparented in the editor, we check every time
+                // In case behaviour was re-parented in the editor, we check every time
                 TryGetComponent(out SplineContainer container);
                 if (container != null)
                     return container;

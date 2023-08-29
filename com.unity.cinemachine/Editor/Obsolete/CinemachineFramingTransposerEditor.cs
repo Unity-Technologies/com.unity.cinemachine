@@ -1,17 +1,16 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using UnityEditor;
-using Cinemachine.Utility;
 using System.Collections.Generic;
 
-namespace Cinemachine.Editor
+namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
     [CustomEditor(typeof(CinemachineFramingTransposer))]
     [CanEditMultipleObjects]
     class CinemachineFramingTransposerEditor : BaseEditor<CinemachineFramingTransposer>
     {
-        CinemachineScreenComposerGuides m_ScreenGuideEditor;
-        GameViewEventCatcher m_GameViewEventCatcher;
+        GameViewComposerGuides m_GameViewGuides = new();
 
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
@@ -26,7 +25,7 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_BiasY));
             }
             ICinemachineTargetGroup group = Target.FollowTargetAsGroup;
-            if (group == null || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
+            if (group == null || !group.IsValid || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
             {
                 excluded.Add(FieldPath(x => x.m_GroupFramingSize));
                 excluded.Add(FieldPath(x => x.m_AdjustmentMode));
@@ -38,12 +37,12 @@ namespace Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_MaximumFOV));
                 excluded.Add(FieldPath(x => x.m_MinimumOrthoSize));
                 excluded.Add(FieldPath(x => x.m_MaximumOrthoSize));
-                if (group == null)
+                if (group == null || !group.IsValid)
                     excluded.Add(FieldPath(x => x.m_GroupFramingMode));
             }
             else
             {
-                CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
+                CinemachineBrain brain = CinemachineCore.FindPotentialTargetBrain(Target.VirtualCamera);
                 bool ortho = brain != null ? brain.OutputCamera.orthographic : false;
                 if (ortho)
                 {
@@ -80,18 +79,13 @@ namespace Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
-            m_ScreenGuideEditor = new CinemachineScreenComposerGuides();
-            m_ScreenGuideEditor.GetHardGuide = () => { return Target.HardGuideRect; };
-            m_ScreenGuideEditor.GetSoftGuide = () => { return Target.SoftGuideRect; };
-            m_ScreenGuideEditor.SetHardGuide = (Rect r) => { Target.HardGuideRect = r; };
-            m_ScreenGuideEditor.SetSoftGuide = (Rect r) => { Target.SoftGuideRect = r; };
-            m_ScreenGuideEditor.Target = () => { return serializedObject; };
+            m_GameViewGuides.GetComposition = () => Target.Composition;
+            m_GameViewGuides.SetComposition = (s) => Target.Composition = s;
+            m_GameViewGuides.Target = () => { return serializedObject; };
+            m_GameViewGuides.OnEnable();
 
-            m_GameViewEventCatcher = new GameViewEventCatcher();
-            m_GameViewEventCatcher.OnEnable();
-
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
-            CinemachineDebug.OnGUIHandlers += OnGUI;
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
+            CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
@@ -101,8 +95,8 @@ namespace Cinemachine.Editor
 
         protected virtual void OnDisable()
         {
-            m_GameViewEventCatcher.OnDisable();
-            CinemachineDebug.OnGUIHandlers -= OnGUI;
+            m_GameViewGuides.OnDisable();
+            CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
 
@@ -122,16 +116,11 @@ namespace Cinemachine.Editor
                         + "Change Body to Do Nothing if you don't want a Follow target.",
                     MessageType.Warning);
 
-            // First snapshot some settings
-            Rect oldHard = Target.HardGuideRect;
-            Rect oldSoft = Target.SoftGuideRect;
-
             // Draw the properties
             DrawRemainingPropertiesInInspector();
-            m_ScreenGuideEditor.SetNewBounds(oldHard, oldSoft, Target.HardGuideRect, Target.SoftGuideRect);
         }
         
-        protected virtual void OnGUI()
+        protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             // Draw the camera guides
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -141,45 +130,28 @@ namespace Cinemachine.Editor
             if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
-            CinemachineBrain brain = CinemachineCore.Instance.FindPotentialTargetBrain(Target.VirtualCamera);
-            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineCore.Instance.BrainCount > 1))
+            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
                 return;
 
-            bool isLive = targets.Length <= 1 && brain.IsLive(Target.VirtualCamera, true);
+            var vcam = Target.VirtualCamera;
+            if (!brain.IsValidChannel(vcam))
+                return;
 
             // Screen guides
-            m_ScreenGuideEditor.OnGUI_DrawGuides(isLive, brain.OutputCamera, Target.VcamState.Lens, !Target.m_UnlimitedSoftZone);
-
+            bool isLive = targets.Length <= 1 && brain.IsLiveChild(vcam, true);
+            m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
+            
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
-            {
-                Vector3 targetScreenPosition = brain.OutputCamera.WorldToScreenPoint(Target.TrackedPoint);
-                if (targetScreenPosition.z > 0)
-                {
-                    targetScreenPosition.y = Screen.height - targetScreenPosition.y;
-
-                    GUI.color = CinemachineComposerPrefs.TargetColour.Value;
-                    Rect r = new Rect(targetScreenPosition, Vector2.zero);
-                    float size = (CinemachineComposerPrefs.TargetSize.Value
-                        + CinemachineScreenComposerGuides.kGuideBarWidthPx) / 2;
-                    GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
-                    size -= CinemachineScreenComposerGuides.kGuideBarWidthPx;
-                    if (size > 0)
-                    {
-                        Vector4 overlayOpacityScalar
-                            = new Vector4(1f, 1f, 1f, CinemachineComposerPrefs.OverlayOpacity.Value);
-                        GUI.color = Color.black * overlayOpacityScalar;
-                        GUI.DrawTexture(r.Inflated(new Vector2(size, size)), Texture2D.whiteTexture);
-                    }
-                }
-            }
+                CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
+                    Target.TrackedPoint, brain.OutputCamera);
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineFramingTransposer))]
         private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.FollowTargetAsGroup != null
+            if (target.FollowTargetAsGroup != null && target.FollowTargetAsGroup.IsValid
                 && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
             {
                 Matrix4x4 m = Gizmos.matrix;
@@ -257,3 +229,4 @@ namespace Cinemachine.Editor
         }
     }
 }
+#endif
