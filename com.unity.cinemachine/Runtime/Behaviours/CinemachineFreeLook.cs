@@ -485,13 +485,14 @@ namespace Cinemachine
                     var t = j * step;
                     ChooseBestAngle(0.5f + t);
                     ChooseBestAngle(0.5f - t);
-                    void ChooseBestAngle(float x)
+
+                    void ChooseBestAngle(float referenceAngle)
                     {
-                        var a = AngleFunction(x);
+                        var a = AngleFunction(referenceAngle);
                         if (a < bestAngle)
                         {
                             bestAngle = a;
-                            best = x;
+                            best = referenceAngle;
                         }
                     }
                 }
