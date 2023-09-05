@@ -448,8 +448,8 @@ namespace Cinemachine
         float SteepestDescent(Vector3 cameraOffset)
         {
             const int maxIteration = 10;
-            const float epsilon = 0.00005f;
-            var x = InitialGuess(cameraOffset);
+            const float epsilon = 0.005f;
+            var x = InitialGuess();
             for (var i = 0; i < maxIteration; ++i)
             {
                 var angle = AngleFunction(x);
