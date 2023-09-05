@@ -424,9 +424,9 @@ namespace Unity.Cinemachine
                     cameraPos = state.GetCorrectedPosition();
 
                     // Adjust the damping bypass to account for the displacement
-                    if (vcam.PreviousStateIsValid)
+                    if (vcam.PreviousStateIsValid && state.HasLookAt())
                     {
-                        var dir0 = extra.PreviousCameraPosition - referenceLookAt;
+                        var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
                         var dir1 = cameraPos - state.ReferenceLookAt;
                         if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
                             state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
