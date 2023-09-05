@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: GroupFraming inspector was displaying incorrect warning when LookAt target is a group.
 - Bugfix: GroupFraming displays more accurate group size indicator in the game view.
 - Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
+- Regression fix: CinemachineCollider generated NaN positions if no target was set.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
 - Improved OrbitalFollow's ForceCameraPosition algorithm.
 - Deoccluder accommodates camera radius in all modes.
