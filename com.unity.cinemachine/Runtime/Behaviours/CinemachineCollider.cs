@@ -322,7 +322,7 @@ namespace Cinemachine
 
                     // Apply distance smoothing - this can artificially hold the camera closer
                     // to the target for a while, to reduce popping in and out on bumpy objects
-                    if (m_SmoothingTime > Epsilon)
+                    if (m_SmoothingTime > Epsilon && state.HasLookAt)
                     {
                         Vector3 pos = initialCamPos + displacement;
                         Vector3 dir = pos - state.ReferenceLookAt;
@@ -342,7 +342,8 @@ namespace Cinemachine
 
                     // Apply additional correction due to camera radius
                     var cameraPos = initialCamPos + displacement;
-                    displacement += RespectCameraRadius(cameraPos, state.HasLookAt ? state.ReferenceLookAt : cameraPos);
+                    var lookAt = state.HasLookAt ? state.ReferenceLookAt : cameraPos;
+                    displacement += RespectCameraRadius(cameraPos, lookAt);
 
                     // Apply damping
                     float dampTime = m_DampingWhenOccluded;
@@ -364,7 +365,7 @@ namespace Cinemachine
                             }
 
                             var prevDisplacement = bodyAfterAim ? extra.previousDisplacement
-                                : state.ReferenceLookAt + dampingBypass * extra.previousCameraOffset - initialCamPos;
+                                : lookAt + dampingBypass * extra.previousCameraOffset - initialCamPos;
                             displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
                         }
                     }
@@ -381,7 +382,7 @@ namespace Cinemachine
                                 dir0, dir1, state.ReferenceUp).eulerAngles;
                     }
                     extra.previousDisplacement = displacement;
-                    extra.previousCameraOffset = cameraPos - state.ReferenceLookAt;
+                    extra.previousCameraOffset = cameraPos - lookAt;
                     extra.previousCameraPosition = cameraPos;
                     extra.previousDampTime = dampTime;
                 }
