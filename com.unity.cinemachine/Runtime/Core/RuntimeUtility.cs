@@ -180,6 +180,7 @@ namespace Unity.Cinemachine
 
         static SphereCollider s_ScratchCollider;
         static GameObject s_ScratchColliderGameObject;
+        static int s_ScratchColliderRefCount;
 
         internal static SphereCollider GetScratchCollider()
         {
@@ -195,20 +196,24 @@ namespace Unity.Cinemachine
                 rb.detectCollisions = false;
                 rb.isKinematic = true;
             }
+            ++s_ScratchColliderRefCount;
             return s_ScratchCollider;
         }
 
         internal static void DestroyScratchCollider()
         {
-            if (s_ScratchColliderGameObject != null)
+            if (--s_ScratchColliderRefCount == 0)
             {
-                s_ScratchColliderGameObject.SetActive(false);
-                DestroyObject(s_ScratchColliderGameObject.GetComponent<Rigidbody>());
+                if (s_ScratchColliderGameObject != null)
+                {
+                    s_ScratchColliderGameObject.SetActive(false);
+                    DestroyObject(s_ScratchColliderGameObject.GetComponent<Rigidbody>());
+                }
+                DestroyObject(s_ScratchCollider);
+                DestroyObject(s_ScratchColliderGameObject);
+                s_ScratchColliderGameObject = null;
+                s_ScratchCollider = null;
             }
-            DestroyObject(s_ScratchCollider);
-            DestroyObject(s_ScratchColliderGameObject);
-            s_ScratchColliderGameObject = null;
-            s_ScratchCollider = null;
         }
 #endif
 

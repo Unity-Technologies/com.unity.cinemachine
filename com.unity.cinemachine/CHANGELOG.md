@@ -24,7 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 - Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
-- Addedd CinemacineDecollider to decollide the camera without necessarily preserving the line of sight to the target.
+- Added CinemachineDecollider to decollide the camera without necessarily preserving the line of sight to the target.
+- Added CinemachineTerrainDecollider to put the camera on top of terrains.
 - Removed CinemachineToolSettings overlay.
 - New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 

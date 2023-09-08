@@ -418,8 +418,9 @@ namespace Unity.Cinemachine
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
-                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                    m_PreviousOffset, offset, curState.ReferenceUp);
+                curState.RotationDampingBypass = curState.RotationDampingBypass
+                    * UnityVectorExtensions.SafeFromToRotation(
+                        m_PreviousOffset, offset, curState.ReferenceUp);
             }
             m_PreviousOffset = offset;
 

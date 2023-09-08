@@ -40,7 +40,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Range(0, 2)]
         [Tooltip("Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long")]
-        public float SmoothingTime = 0.2f;
+        public float SmoothingTime = 0f;
 
         /// <summary>
         /// How gradually the camera returns to its normal position after having been corrected.
@@ -64,7 +64,7 @@ namespace Unity.Cinemachine
             CollideAgainst = 1;
             MinimumDistanceFromTarget = 0.2f;
             CameraRadius = 0.1f; 
-            SmoothingTime = 0.2f;
+            SmoothingTime = 0;
             Damping = 0.2f;
         }
         
@@ -88,7 +88,6 @@ namespace Unity.Cinemachine
             public Vector3 PreviousDisplacement;
             public Vector3 PreviousCameraOffset;
             public Vector3 PreviousCameraPosition;
-            public float OcclusionStartTime;
 
             float m_SmoothedDistance;
             float m_SmoothedTime;
@@ -207,8 +206,8 @@ namespace Unity.Cinemachine
                     var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
                     var dir1 = cameraPos - state.ReferenceLookAt;
                     if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
-                        state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                            dir0, dir1, state.ReferenceUp);
+                        state.RotationDampingBypass = state.RotationDampingBypass 
+                            * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, state.ReferenceUp);
                 }
                 extra.PreviousDisplacement = displacement;
                 extra.PreviousCameraOffset = cameraPos - lookAt;
