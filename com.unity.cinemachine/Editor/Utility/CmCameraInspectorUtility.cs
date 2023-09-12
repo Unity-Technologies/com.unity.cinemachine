@@ -234,34 +234,48 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Draw the Extensions dropdown in the inspector</summary>
         public static void AddExtensionsDropdown(this UnityEditor.Editor editor, VisualElement ux)
         {
-            var targets = editor.targets;
-            var dropdown = new DropdownField
+            var row = new InspectorUtility.LabeledRow(
+                "Add Extension", "Extensions are behaviours that inject themselves into "
+                + "the Cinemachine pipeline to alter the camera's behaviour.");
+
+            var menu = new ContextualMenuManipulator((evt) => 
             {
-                name = "extensions selector",
-                label = "Add Extension",
-                choices = PipelineStageMenu.s_ExtentionNames,
-                index = 0,
-            };
-            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
-            dropdown.RegisterValueChangedCallback(evt => 
-            {
-                Type extType = PipelineStageMenu.s_ExtentionTypes[GetTypeIndexFromSelection(evt.newValue)];
-                for (int i = 0; i < targets.Length; i++)
+                for (int i = 0; i < PipelineStageMenu.s_ExtensionTypes.Count; ++i)
                 {
-                    var targetGO = (targets[i] as CinemachineVirtualCameraBase).gameObject;
-                    if (targetGO != null && targetGO.GetComponent(extType) == null)
-                        Undo.AddComponent(targetGO, extType);
-                }
-            
-                static int GetTypeIndexFromSelection(string selection)
-                {
-                    for (var j = 0; j < PipelineStageMenu.s_ExtentionNames.Count; ++j)
-                        if (PipelineStageMenu.s_ExtentionNames[j].Equals(selection))
-                            return j;
-                    return 0;
+                    var type = PipelineStageMenu.s_ExtensionTypes[i];
+                    if (type == null)
+                        continue;
+                    var name = PipelineStageMenu.s_ExtensionNames[i];
+                    evt.menu.AppendAction(name, 
+                        (action) => 
+                        {
+                            var target = editor.target as CinemachineVirtualCameraBase;
+                            Undo.AddComponent(target.gameObject, type);
+                        }, 
+                        (status) => 
+                        {
+                            var target = editor.target as CinemachineVirtualCameraBase;
+                            var disable = target == null || target.GetComponent(type) != null;
+                            return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
+                        }
+                    );
                 }
             });
-            ux.Add(dropdown);
+            var button = row.Contents.AddChild(new Button 
+            { 
+                text = "(select)", 
+                style = 
+                { 
+                    flexGrow = 1, marginRight = 0, marginLeft = 3, 
+                    paddingTop = 0, paddingBottom = 0, paddingLeft = 1,
+                    height = InspectorUtility.SingleLineHeight + 2, 
+                    unityTextAlign = TextAnchor.MiddleLeft
+                }
+            });
+            menu.activators.Clear();
+            menu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
+            button.AddManipulator(menu);
+            ux.Add(row);
         }
         
         [InitializeOnLoad]
@@ -278,8 +292,8 @@ namespace Unity.Cinemachine.Editor
             public static StageData[] s_StageData = null;
             
             // Extensions
-            public static List<Type> s_ExtentionTypes;
-            public static List<string> s_ExtentionNames;
+            public static List<Type> s_ExtensionTypes;
+            public static List<string> s_ExtensionNames;
 
             public static int GetSelectedComponent(int stage, CinemachineComponentBase component)
             {
@@ -325,10 +339,10 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 // Populate the extension list
-                s_ExtentionTypes = new List<Type>();
-                s_ExtentionNames = new List<string>();
-                s_ExtentionTypes.Add(null);
-                s_ExtentionNames.Add("(select)");
+                s_ExtensionTypes = new List<Type>();
+                s_ExtensionNames = new List<string>();
+                s_ExtensionTypes.Add(null);
+                s_ExtensionNames.Add("(select)");
                 var allExtensions
                     = ReflectionHelpers.GetTypesInAllDependentAssemblies(
                             (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t) 
@@ -337,8 +351,8 @@ namespace Unity.Cinemachine.Editor
                 while (iter2.MoveNext())
                 {
                     var t = iter2.Current;
-                    s_ExtentionTypes.Add(t);
-                    s_ExtentionNames.Add(t.Name);
+                    s_ExtensionTypes.Add(t);
+                    s_ExtensionNames.Add(t.Name);
                 }
             }
         }

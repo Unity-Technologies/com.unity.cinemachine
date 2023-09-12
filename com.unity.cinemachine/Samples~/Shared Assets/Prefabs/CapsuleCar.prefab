@@ -158,7 +158,7 @@ MonoBehaviour:
       Owner: {fileID: 878341184440332478}
       Enabled: 1
       Input:
-        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: -1680190386980627800, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Horizontal
         LegacyGain: 1
@@ -170,7 +170,7 @@ MonoBehaviour:
       Owner: {fileID: 878341184440332478}
       Enabled: 1
       Input:
-        InputAction: {fileID: -1680190386980627800, guid: ba1679fafe8a545948be71b9557ead1a, type: 3}
+        InputAction: {fileID: -1680190386980627800, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Vertical
         LegacyGain: 1
@@ -182,7 +182,7 @@ MonoBehaviour:
       Owner: {fileID: 878341184440332478}
       Enabled: 1
       Input:
-        InputAction: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+        InputAction: {fileID: 6539296782897260151, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Fire1
         LegacyGain: 1

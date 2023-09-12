@@ -291,6 +291,17 @@ namespace Unity.Cinemachine
             Vector3 dir = q * Vector3.forward;
             return dir * Mathf.Lerp(dA, dB, t);
         }
+
+        /// <summary>
+        /// Put euler angle in the range of -180...180
+        /// </summary>
+        /// <param name="angle">The angle to normalize</param>
+        /// <returns>The angle expressed as a value -180...180</returns>
+        public static float NormalizeAngle(float angle)
+        {
+            angle %= 360;
+            return angle > 180 ? angle -360 : angle;
+        }
     }
 
     /// <summary>Extensions to the Quaternion class, used in various places by Cinemachine</summary>
@@ -398,7 +409,7 @@ namespace Unity.Cinemachine
     {
         /// <summary>Inflate a rect</summary>
         /// <param name="r"></param>
-        /// <param name="delta">x and y are added/subtracted fto/from the edges of
+        /// <param name="delta">x and y are added/subtracted to/from the edges of
         /// the rect, inflating it in all directions</param>
         /// <returns>The inflated rect</returns>
         public static Rect Inflated(this Rect r, Vector2 delta)

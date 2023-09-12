@@ -74,7 +74,8 @@ namespace Unity.Cinemachine.Editor
                 if (Target == null)
                     return; // object deleted
                 var brain = CinemachineCore.FindPotentialTargetBrain(Target);
-                Target.InternalUpdateCameraState(brain == null ? Vector3.up : brain.DefaultWorldUp, -1);
+                var deltaTime = Application.isPlaying ? Time.deltaTime : -1;
+                Target.InternalUpdateCameraState(brain == null ? Vector3.up : brain.DefaultWorldUp, deltaTime);
                 bool haveDefault = Target.Target.TrackingTarget != Target.Follow;
                 defaultTargetLabel.SetVisible(haveDefault);
                 if (haveDefault)

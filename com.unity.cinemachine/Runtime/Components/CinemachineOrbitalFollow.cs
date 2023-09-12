@@ -48,6 +48,31 @@ namespace Unity.Cinemachine
         [HideFoldout]
         public Cinemachine3OrbitRig.Settings Orbits = Cinemachine3OrbitRig.Settings.Default;
 
+        /// <summary>Defines the reference frame in which horizontal recentering is done.</summary>
+        public enum ReferenceFrames
+        {
+            /// <summary>Static reference frame.  Axis center value is not dynamically updated.</summary>
+            AxisCenter,
+
+            /// <summary>Axis center is dynamically adjusted to be behind the parent 
+            /// object's forward.</summary>
+            ParentObject,
+
+            /// <summary>Axis center is dynamically adjusted to be behind the 
+            /// Tracking Target's forward.</summary>
+            TrackingTarget,
+
+            /// <summary>Axis center is dynamically adjusted to be behind the 
+            /// LookAt Target's forward.</summary>
+            LookAtTarget
+        }
+
+        /// <summary>Defines the reference frame for horizontal recentering.  The axis center 
+        /// will be dynamically updated to be behind the selected object.</summary>
+        [Tooltip("Defines the reference frame for horizontal recentering.  The axis center "
+            + "will be dynamically updated to be behind the selected object.")]
+        public ReferenceFrames RecenteringTarget = ReferenceFrames.TrackingTarget;
+
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
@@ -87,6 +112,8 @@ namespace Unity.Cinemachine
             HorizontalAxis.Validate();
             VerticalAxis.Validate();
             RadialAxis.Validate();
+
+            HorizontalAxis.Restrictions &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
         }
 
         void Reset()
@@ -199,7 +226,7 @@ namespace Unity.Cinemachine
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 var state = fromCam.State;
-                ForceCameraPosition(state.RawPosition, state.RawOrientation);
+                ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());
                 return true;
             }
             return false;
@@ -235,8 +262,9 @@ namespace Unity.Cinemachine
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             var localDir = Quaternion.Inverse(orient) * dir;
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow ? 0 : r.x);
-            HorizontalAxis.Value = HorizontalAxis.ClampValue(r.y);
+            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow 
+                ? 0 : UnityVectorExtensions.NormalizeAngle(r.x));
+            HorizontalAxis.Value = HorizontalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.y));
             RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
         }
 
@@ -281,9 +309,9 @@ namespace Unity.Cinemachine
                 // local functions
                 float SteepestDescent(Vector3 cameraOffset)
                 {
-                    const int maxIteration = 10;
-                    const float epsilon = 0.00005f;
-                    var x = InitialGuess(cameraOffset);
+                    const int maxIteration = 5;
+                    const float epsilon = 0.005f;
+                    var x = InitialGuess();
                     for (var i = 0; i < maxIteration; ++i)
                     {
                         var angle = AngleFunction(x);
@@ -309,22 +337,30 @@ namespace Unity.Cinemachine
                         return (angleAfter - angleBehind) / (2f * epsilon);
                     }
 
-                    // initial guess based on closest line (approximating spline) to point 
-                    float InitialGuess(Vector3 cameraPosInRigSpace)
+                    float InitialGuess()
                     {
                         if (m_OrbitCache.SettingsChanged(Orbits))
                             m_OrbitCache.UpdateOrbitCache(Orbits);
-                        
-                        var pb = m_OrbitCache.SplineValue(0f); // point at the bottom of spline
-                        var pm = m_OrbitCache.SplineValue(0.5f); // point in the middle of spline
-                        var pt = m_OrbitCache.SplineValue(1f); // point at the top of spline
-                        var t1 = cameraPosInRigSpace.ClosestPointOnSegment(pb, pm);
-                        var d1 = Vector3.SqrMagnitude(Vector3.Lerp(pb, pm, t1) - cameraPosInRigSpace);
-                        var t2 = cameraPosInRigSpace.ClosestPointOnSegment(pm, pt);
-                        var d2 = Vector3.SqrMagnitude(Vector3.Lerp(pm, pt, t2) - cameraPosInRigSpace);
 
-                        // [0,0.5] represent bottom to mid, and [0.5,1] represents mid to top
-                        return d1 < d2 ? Mathf.Lerp(0f, 0.5f, t1) : Mathf.Lerp(0.5f, 1f, t2); // represents mid to top
+                        const float step = 1.0f / 10;
+                        float best = 0.5f;
+                        float bestAngle = AngleFunction(best);
+                        for (int j = 0; j <= 5; ++j)
+                        {
+                            var t = j * step;
+                            ChooseBestAngle(0.5f + t);
+                            ChooseBestAngle(0.5f - t);
+                            void ChooseBestAngle(float x)
+                            {
+                                var a = AngleFunction(x);
+                                if (a < bestAngle)
+                                {
+                                    bestAngle = a;
+                                    best = x;
+                                }
+                            }
+                        }
+                        return best;
                     }
                 }
                 
@@ -353,19 +389,17 @@ namespace Unity.Cinemachine
             if (!IsValid)
                 return;
 
-            if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera))
+            // Force a reset if enabled, but don't be too aggressive about it,
+            // because maybe we've just inherited a position
+            if (deltaTime < 0)// || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)
                 m_ResetHandler?.Invoke();
 
             Vector3 offset = GetCameraPoint();
-            if (TrackerSettings.BindingMode != BindingMode.LazyFollow)
-                HorizontalAxis.Restrictions 
-                    &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
-            else
-            {
-                HorizontalAxis.Value = 0;
-                HorizontalAxis.Restrictions 
-                    |= InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven;
-            }
+
+            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
+            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
+                HorizontalAxis.SetValueAndLastValue(0);
+
             m_TargetTracker.TrackTarget(
                 this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
                 out Vector3 pos, out Quaternion orient);
@@ -389,10 +423,41 @@ namespace Unity.Cinemachine
             }
             m_PreviousOffset = offset;
 
-            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
-            HorizontalAxis.DoRecentering(deltaTime, gotInput);
-            VerticalAxis.DoRecentering(deltaTime, gotInput);
-            RadialAxis.DoRecentering(deltaTime, gotInput);
+            if (HorizontalAxis.Recentering.Enabled)
+                UpdateHorizontalCenter(orient);
+
+            HorizontalAxis.UpdateRecentering(deltaTime, gotInput);
+            VerticalAxis.UpdateRecentering(deltaTime, gotInput);
+            RadialAxis.UpdateRecentering(deltaTime, gotInput);
+        }
+
+        void UpdateHorizontalCenter(Quaternion referenceOrientation) 
+        {
+            // Get the recentering target's forward vector
+            var fwd = Vector3.forward;
+            switch (RecenteringTarget)
+            {
+                case ReferenceFrames.AxisCenter: 
+                    if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
+                        HorizontalAxis.Center = 0;
+                    return;
+                case ReferenceFrames.ParentObject: 
+                    if (transform.parent != null)
+                        fwd = transform.parent.forward;
+                    break;
+                case ReferenceFrames.TrackingTarget:
+                    if (FollowTarget != null)
+                        fwd = FollowTarget.forward;
+                    break;
+                case ReferenceFrames.LookAtTarget:
+                    if (LookAtTarget != null)
+                        fwd = LookAtTarget.forward;
+                    break;
+            }
+            // Align the axis center to be behind fwd
+            var up = referenceOrientation * Vector3.up;
+            fwd.ProjectOntoPlane(up);
+            HorizontalAxis.Center = -Vector3.SignedAngle(fwd, referenceOrientation * Vector3.forward, up);
         }
 
         /// For the inspector

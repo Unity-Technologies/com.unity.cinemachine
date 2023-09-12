@@ -74,11 +74,8 @@ namespace Unity.Cinemachine.Editor
 
             // Draw an on-screen gizmo for the target
             if (Target.LookAtTarget != null && isLive)
-            {
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
-                    Target.LookAtTargetAsGroup, Target.TrackedPoint, 
-                    vcam.State.GetFinalOrientation(), brain.OutputCamera);
-            }
+                    Target.TrackedPoint, brain.OutputCamera);
         }
 
         void OnSceneGUI()

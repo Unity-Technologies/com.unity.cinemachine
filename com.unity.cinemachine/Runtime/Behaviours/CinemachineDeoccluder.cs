@@ -173,6 +173,7 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public QualityEvaluation ShotQualityEvaluation = QualityEvaluation.Default;
 
+        List<VcamExtraState> m_extraStateCache;
 
         /// <summary>See whether an object is blocking the camera's view of the target</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
@@ -246,16 +247,18 @@ namespace Unity.Cinemachine
             public bool TargetObscured;
             public float OcclusionStartTime;
             public List<Vector3> DebugResolutionPath;
+            public List<Collider> OccludingObjects;
             public Vector3 PreviousCameraOffset;
             public Vector3 PreviousCameraPosition;
             public float PreviousDampTime;
 
-            public void AddPointToDebugPath(Vector3 p)
+            public void AddPointToDebugPath(Vector3 p, Collider c)
             {
 #if UNITY_EDITOR
-                if (DebugResolutionPath == null)
-                    DebugResolutionPath = new List<Vector3>();
+                DebugResolutionPath ??= new ();
                 DebugResolutionPath.Add(p);
+                OccludingObjects ??= new ();
+                OccludingObjects.Add(c);
 #endif
             }
 
@@ -288,23 +291,30 @@ namespace Unity.Cinemachine
             }
         };
 
-        List<VcamExtraState> m_extraStateCache;
-
-        /// <summary>Inspector API for debugging collision resolution path</summary>
-        internal List<List<Vector3>> DebugPaths
+        /// <summary>Debug API for discovering which objects are occluding the camera,
+        /// and the path taken by the camera to ist deoccluded position.  Note that
+        /// this information is only collected while running in the editor.  In the build, the
+        /// return values will always be empty.  This is for performance reasons.</summary>
+        /// <param name="paths">A container to hold lists of points representing the camera path.  
+        /// There will be one path per CinemachineCamera influenced by this deoccluder.
+        /// This parameter may be null.</param>
+        /// <param name="obstacles">A container to hold lists of Colliders representing the obstacles encountered.  
+        /// There will be one list per CinemachineCamera influenced by this deoccluder.
+        /// This parameter may be null.</param>
+        public void DebugCollisionPaths(List<List<Vector3>> paths, List<List<Collider>> obstacles)
         {
-            get
+            paths?.Clear();
+            obstacles?.Clear();
+            m_extraStateCache ??= new();
+            GetAllExtraStates(m_extraStateCache);
+            for (int i = 0; i < m_extraStateCache.Count; ++i)
             {
-                List<List<Vector3>> list = new ();
-                m_extraStateCache ??= new();
-                GetAllExtraStates(m_extraStateCache);
-                for (int i = 0; i < m_extraStateCache.Count; ++i)
+                var e = m_extraStateCache[i];
+                if (e.DebugResolutionPath != null && e.DebugResolutionPath.Count > 0)
                 {
-                    var e = m_extraStateCache[i];
-                    if (e.DebugResolutionPath != null && e.DebugResolutionPath.Count > 0)
-                        list.Add(e.DebugResolutionPath);
+                    paths?.Add(e.DebugResolutionPath);
+                    obstacles?.Add(e.OccludingObjects);
                 }
-                return list;
             }
         }
 
@@ -317,6 +327,14 @@ namespace Unity.Cinemachine
             return AvoidObstacles.Enabled 
                 ? Mathf.Max(AvoidObstacles.Damping, Mathf.Max(AvoidObstacles.DampingWhenOccluded, AvoidObstacles.SmoothingTime)) 
                 : 0; 
+        }
+        
+        /// <inheritdoc />
+        public override void OnTargetObjectWarped(
+            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
+        {
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            extra.PreviousCameraPosition += positionDelta;
         }
         
         /// <summary>
@@ -406,9 +424,9 @@ namespace Unity.Cinemachine
                     cameraPos = state.GetCorrectedPosition();
 
                     // Adjust the damping bypass to account for the displacement
-                    if (vcam.PreviousStateIsValid)
+                    if (vcam.PreviousStateIsValid && state.HasLookAt())
                     {
-                        var dir0 = extra.PreviousCameraPosition - referenceLookAt;
+                        var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
                         var dir1 = cameraPos - state.ReferenceLookAt;
                         if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
                             state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
@@ -471,7 +489,7 @@ namespace Unity.Cinemachine
                 var pos = cameraPos + displacement;
                 if (hitInfo.collider != null)
                 {
-                    extra.AddPointToDebugPath(pos);
+                    extra.AddPointToDebugPath(pos, hitInfo.collider);
                     if (AvoidObstacles.Strategy != ObstacleAvoidance.ResolutionStrategy.PullCameraForward)
                     {
                         Vector3 targetToCamera = cameraPos - lookAtPos;
@@ -550,7 +568,7 @@ namespace Unity.Cinemachine
                 // We hit something.  Stop there and take a step along that wall.
                 var adjustment = hitInfo.distance - k_PrecisionSlush;
                 pos = ray.GetPoint(adjustment);
-                extra.AddPointToDebugPath(pos);
+                extra.AddPointToDebugPath(pos, hitInfo.collider);
                 if (iterations > 1)
                     pos = PushCameraBack(
                         pos, dir, hitInfo,
@@ -572,7 +590,7 @@ namespace Unity.Cinemachine
 
             // All clear
             ray = new Ray(pos, dir);
-            extra.AddPointToDebugPath(pos);
+            extra.AddPointToDebugPath(pos, null);
             distance = GetPushBackDistance(ray, startPlane, targetDistance, lookAtPos);
             if (distance > Epsilon)
             {
@@ -581,14 +599,14 @@ namespace Unity.Cinemachine
                     CollideAgainst & ~TransparentLayers, IgnoreTag))
                 {
                     pos = ray.GetPoint(distance); // no obstacles - all good
-                    extra.AddPointToDebugPath(pos);
+                    extra.AddPointToDebugPath(pos, null);
                 }
                 else
                 {
                     // We hit something.  Stop there and maybe take a step along that wall
                     float adjustment = hitInfo.distance - k_PrecisionSlush;
                     pos = ray.GetPoint(adjustment);
-                    extra.AddPointToDebugPath(pos);
+                    extra.AddPointToDebugPath(pos, hitInfo.collider);
                     if (iterations > 1)
                         pos = PushCameraBack(
                             pos, dir, hitInfo, lookAtPos, startPlane,

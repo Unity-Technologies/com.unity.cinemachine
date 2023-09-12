@@ -7,9 +7,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing rotational flickering.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
+- Bugfix: Orbital recentering should not be forced when transitioning to a camera.
+- Bugfix: InheritPosition takes the actual camera position, so it works consistently if transitioning mid-blend.
+- Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
+- Bugfix: Spurious camera cut events were being issued, especially in HDRP.
+- Bugfix: Mull reference exceptions when inspector is hidden behind another tab.
+- Bugfix: GroupFraming inspector was displaying incorrect warning when LookAt target is a group.
+- Bugfix: GroupFraming displays more accurate group size indicator in the game view.
+- Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
+- Regression fix: CinemachineCollider generated NaN positions if no target was set.
+- Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
+- Improved OrbitalFollow's ForceCameraPosition algorithm.
 - Deoccluder accommodates camera radius in all modes.
 - StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
 - Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
+- Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
+- Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
+- Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
+- Removed CinemachineToolSettings overlay.
+- New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 
 
 ## [3.0.0-pre.7] - 2023-05-04

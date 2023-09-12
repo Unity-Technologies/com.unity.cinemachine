@@ -60,7 +60,7 @@ namespace Unity.Cinemachine.Editor
 
         public override void OnInspectorGUI()
         {
-            if (MyTarget.IsValid && MyTarget.LookAtTargetAsGroup == null)
+            if (MyTarget.IsValid && (MyTarget.LookAtTargetAsGroup == null || !MyTarget.LookAtTargetAsGroup.IsValid))
                 EditorGUILayout.HelpBox(
                     "The Framing settings will be ignored because the LookAt target is not a kind of ICinemachineTargetGroup",
                     MessageType.Info);
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine.Editor
         static void DrawGroupComposerGizmos(CinemachineGroupComposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.LookAtTargetAsGroup != null)
+            if (target.LookAtTargetAsGroup != null && target.LookAtTargetAsGroup.IsValid)
             {
                 Matrix4x4 m = Gizmos.matrix;
                 Bounds b = target.LastBounds;

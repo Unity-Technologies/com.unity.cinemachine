@@ -4,6 +4,15 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
+    /// <summary>
+    /// This object manages player shooting.  It is expected to be on the player object, 
+    /// or on a child SimplePlayerAimController object of the player.
+    /// 
+    /// If an AimTargetManager is specified, then the player will aim at that target.
+    /// Otherwise, the player will aim in the forward direction of the player object,
+    /// or of the SimplePlayerAimController object if it exists and is not decoupled
+    /// from the player rotation
+    /// </summary>
     class SimplePlayerShoot : MonoBehaviour, IInputAxisOwner
     {
         public GameObject BulletPrefab;
@@ -13,12 +22,13 @@ namespace Unity.Cinemachine.Samples
         public InputAxis Fire = InputAxis.DefaultMomentary;
         
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
-        public Transform AimTarget;
+        public AimTargetManager AimTargetManager;
 
         [Tooltip("Event that's triggered when firing.")]
         public UnityEvent FireEvent;
 
         float m_LastFireTime;
+        SimplePlayerAimController AimController;
 
         // We pool the bullets for improved performance
         readonly List<GameObject> m_BulletPool = new ();
@@ -38,6 +48,11 @@ namespace Unity.Cinemachine.Samples
             PlayerRotationTime = Mathf.Max(0, PlayerRotationTime);
         }
 
+        void Start()
+        {
+            TryGetComponent(out AimController);
+        }
+
         void Update()
         {
             var now = Time.time;
@@ -45,17 +60,24 @@ namespace Unity.Cinemachine.Samples
                 && now - m_LastFireTime > 1 / MaxBulletsPerSec
                 && Fire.Value > 0.1f;
 
-            // Face the firing direction
-            if ((fireNow || now - m_LastFireTime <= PlayerRotationTime) && TryGetComponent<SimplePlayerAimController>(out var aim))
-                aim.RecenterPlayer(PlayerRotationTime);
+            // Get the firing direction.  Special case: if there is a decoupled AimController,
+            // firing direction is character forward, not AimController forward.
+            var fwd = transform.forward;
+            bool decoupled = AimController != null 
+                && AimController.PlayerRotation == SimplePlayerAimController.CouplingMode.Decoupled;
+            if (decoupled)
+                fwd = transform.parent.forward;
+            
+            // Face the firing direction if appropriate
+            if ((fireNow || now - m_LastFireTime <= PlayerRotationTime) && AimController != null && !decoupled)
+                AimController.RecenterPlayer(PlayerRotationTime);
 
             if (fireNow)
             {
                 m_LastFireTime = now;
 
-                var fwd = transform.forward;
-                if (AimTarget is not null)
-                    fwd = (AimTarget.position - transform.position).normalized;
+                if (AimTargetManager != null)
+                    fwd = AimTargetManager.GetAimDirection(transform.position, fwd).normalized;
 
                 GameObject bullet = null;
                 for (var i = 0; bullet == null && i < m_BulletPool.Count; ++i) // Look in the pool if one is available

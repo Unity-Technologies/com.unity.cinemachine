@@ -139,6 +139,7 @@ namespace Unity.Cinemachine.Editor
             };
     }
 
+#if false // We disable this tool window, because it has only one thing in it, which isn't so useful and is a bit confusing tbh
     /// <summary>
     /// To add your custom tools (EditorToolbarElement) to the Cinemachine Tool Settings toolbar,
     /// set CinemachineToolSettingsOverlay.customToolbarItems with your custom tools' IDs.
@@ -260,4 +261,5 @@ namespace Unity.Cinemachine.Editor
             menu.DropDown(worldBound);
         }
     }
+#endif
 }

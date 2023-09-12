@@ -27,25 +27,24 @@ namespace Unity.Cinemachine.Editor
 
         public override VisualElement CreateInspectorGUI()
         {
-            var serializedTarget = new SerializedObject(Target);
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Group);
             var groupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingMode)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.FramingSize)));
-            ux.Add(new PropertyField(serializedTarget.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingMode)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingSize)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
 
             var perspectiveControls = ux.AddChild(new VisualElement());
 
-            var sizeAdjustmentProperty = serializedTarget.FindProperty(() => Target.SizeAdjustment);
+            var sizeAdjustmentProperty = serializedObject.FindProperty(() => Target.SizeAdjustment);
             perspectiveControls.Add(new PropertyField(sizeAdjustmentProperty));
-            perspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.LateralAdjustment)));
-            var fovRange = perspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.FovRange)));
-            var dollyRange = perspectiveControls.AddChild(new PropertyField(serializedTarget.FindProperty(() => Target.DollyRange)));
+            perspectiveControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.LateralAdjustment)));
+            var fovRange = perspectiveControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.FovRange)));
+            var dollyRange = perspectiveControls.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.DollyRange)));
 
             var orthoControls = ux.AddChild(new VisualElement());
-            orthoControls.Add(new PropertyField(serializedTarget.FindProperty(() => Target.OrthoSizeRange)));
+            orthoControls.Add(new PropertyField(serializedObject.FindProperty(() => Target.OrthoSizeRange)));
 
             ux.TrackPropertyValue(sizeAdjustmentProperty, (prop) =>
             {
@@ -66,7 +65,11 @@ namespace Unity.Cinemachine.Editor
                 {
                     var vcam = (targets[i] as CinemachineGroupFraming).ComponentOwner;
                     if (vcam != null)
+                    {
                         group = vcam.FollowTargetAsGroup;
+                        if (group != null && !group.IsValid)
+                            group = null;
+                    }
                 }
                 groupSizeIsZeroHelp.SetVisible(group != null && group.Sphere.radius < 0.01f);
 
@@ -87,23 +90,28 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             var vcam = Target.ComponentOwner;
-            if (!brain.IsValidChannel(vcam))
+            if (!brain.IsValidChannel(vcam) || !brain.IsLiveChild(vcam))
                 return;
 
             var group = vcam.LookAtTargetAsGroup;
-            if (group == null)
+            group ??= vcam.FollowTargetAsGroup;
+            if (group == null || !group.IsValid)
                 return;
 
             CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
-                group, group.Sphere.position, 
-                vcam.State.GetFinalOrientation(), brain.OutputCamera);
+                group.Sphere.position, brain.OutputCamera);
+            CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenGroupSizeMarker(
+                Target.GroupBounds, Target.GroupBoundsMatrix, brain.OutputCamera);
         }
         
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupFraming))]
         static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.enabled && target.ComponentOwner != null && target.ComponentOwner.FollowTargetAsGroup != null)
+            var vcam = target.ComponentOwner;
+            if (!target.enabled && vcam != null 
+                && (vcam.FollowTargetAsGroup != null && vcam.FollowTargetAsGroup.IsValid)
+                || (vcam.LookAtTargetAsGroup != null && vcam.LookAtTargetAsGroup.IsValid))
             {
                 var oldM = Gizmos.matrix;
                 var oldC = Gizmos.color;
@@ -111,7 +119,7 @@ namespace Unity.Cinemachine.Editor
                 Gizmos.matrix = target.GroupBoundsMatrix;
                 Bounds b = target.GroupBounds;
                 Gizmos.color = Color.yellow;
-                if (target.ComponentOwner.State.Lens.Orthographic)
+                if (vcam.State.Lens.Orthographic)
                     Gizmos.DrawWireCube(b.center, b.size);
                 else
                 {

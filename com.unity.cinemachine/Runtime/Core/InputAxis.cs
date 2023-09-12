@@ -165,11 +165,12 @@ namespace Unity.Cinemachine
         public float ClampValue(float v)
         {
             float r = Range.y - Range.x;
+            if (!Wrap || r < UnityVectorExtensions.Epsilon)
+                return Mathf.Clamp(v, Range.x, Range.y);
+
             var v1 = (v - Range.x) % r;
             v1 += v1 < 0 ? r : 0;
-            v1 += Range.x;
-            v1 = (Wrap && r > UnityVectorExtensions.Epsilon) ? v1 : v;
-            return Mathf.Clamp(v1, Range.x, Range.y);
+            return v1 + Range.x;
         }
 
         /// <summary>Clamp and scale the value to range 0...1, taking wrap into account</summary>
@@ -222,7 +223,7 @@ namespace Unity.Cinemachine
         RecenteringState m_RecenteringState;
 
         /// <summary>
-        /// Call this before calling DoRecentering.  Will track any value changes so that the re-centering clock
+        /// Call this before calling UpdateRecentering.  Will track any value changes so that the re-centering clock
         /// is updated properly.
         /// </summary>
         /// <returns>True if value changed.  This value can be used to cancel re-centering when multiple
@@ -239,11 +240,16 @@ namespace Unity.Cinemachine
             return false;
         }
 
+        internal void SetValueAndLastValue(float value)
+        {
+            Value = m_RecenteringState.m_LastValue = value;
+        }
+
         /// <summary>Call this to manage re-centering axis value to axis center.
         /// This assumes that TrackValueChange() has been called already this frame.</summary>
         /// <param name="deltaTime">Current deltaTime, or -1 for immediate re-centering</param>
         /// <param name="forceCancel">If true, cancel any re-centering currently in progress and reset the timer.</param>
-        public void DoRecentering(float deltaTime, bool forceCancel)
+        public void UpdateRecentering(float deltaTime, bool forceCancel)
         {
             if ((Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
                 return;
@@ -292,7 +298,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Trigger re-centering immediately, regardless of whether re-centering 
         /// is enabled or the wait time has elapsed.</summary>
-        public void RecenterNow() => m_RecenteringState.m_ForceRecenter = true;
+        public void TriggerRecentering() => m_RecenteringState.m_ForceRecenter = true;
 
         /// <summary>Cancel any current re-centering in progress, and reset the wait time</summary>
         public void CancelRecentering()

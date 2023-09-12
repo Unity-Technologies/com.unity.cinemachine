@@ -25,7 +25,7 @@ namespace Unity.Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_BiasY));
             }
             ICinemachineTargetGroup group = Target.FollowTargetAsGroup;
-            if (group == null || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
+            if (group == null || !group.IsValid || Target.m_GroupFramingMode == CinemachineFramingTransposer.FramingMode.None)
             {
                 excluded.Add(FieldPath(x => x.m_GroupFramingSize));
                 excluded.Add(FieldPath(x => x.m_AdjustmentMode));
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine.Editor
                 excluded.Add(FieldPath(x => x.m_MaximumFOV));
                 excluded.Add(FieldPath(x => x.m_MinimumOrthoSize));
                 excluded.Add(FieldPath(x => x.m_MaximumOrthoSize));
-                if (group == null)
+                if (group == null || !group.IsValid)
                     excluded.Add(FieldPath(x => x.m_GroupFramingMode));
             }
             else
@@ -143,18 +143,15 @@ namespace Unity.Cinemachine.Editor
             
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
-            {
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
-                    Target.LookAtTargetAsGroup, Target.TrackedPoint, 
-                    vcam.State.GetFinalOrientation(), brain.OutputCamera);
-            }
+                    Target.TrackedPoint, brain.OutputCamera);
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineFramingTransposer))]
         private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
-            if (target.FollowTargetAsGroup != null
+            if (target.FollowTargetAsGroup != null && target.FollowTargetAsGroup.IsValid
                 && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
             {
                 Matrix4x4 m = Gizmos.matrix;

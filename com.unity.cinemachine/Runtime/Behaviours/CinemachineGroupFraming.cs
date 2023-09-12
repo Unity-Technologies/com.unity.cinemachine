@@ -160,7 +160,7 @@ namespace Unity.Cinemachine
             
             var group = vcam.LookAtTargetAsGroup;
             group ??= vcam.FollowTargetAsGroup;
-            if (group == null)
+            if (group == null || !group.IsValid)
                 return;
 
             var extra = GetExtraState<VcamExtraState>(vcam);
@@ -185,14 +185,14 @@ namespace Unity.Cinemachine
             var camPos = GroupBounds.center; 
             camPos.z = 0; // don't change the camera's distance from the group
 
-            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
-            state.RawPosition += state.RawOrientation * extra.PosAdjustment;
-            
             // Ortho size adjustment
-            var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, state.Lens.Aspect) * 0.5f;
+            var lens = state.Lens;
+            var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, lens.Aspect) * 0.5f;
             targetHeight = Mathf.Clamp(targetHeight, OrthoSizeRange.x, OrthoSizeRange.y);
 
-            var lens = state.Lens;
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+
             var deltaFov = targetHeight - lens.OrthographicSize;
             extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
             lens.OrthographicSize += extra.FovAdjustment;

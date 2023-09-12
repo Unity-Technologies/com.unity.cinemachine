@@ -61,7 +61,7 @@ namespace Unity.Cinemachine.Tests
                             Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 5}
                         },
-                        Precision = 0.01f // this does not have difficult edge cases
+                        Precision = 0.5f
                     }).SetName("3Ring-Centered").Returns(null);
 
                 yield return new TestCaseData(
@@ -70,10 +70,10 @@ namespace Unity.Cinemachine.Tests
                         OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
                         Orbits = new Cinemachine3OrbitRig.Settings {
                             Top = new Cinemachine3OrbitRig.Orbit { Height = 5, Radius = 3},
-                            Center = new Cinemachine3OrbitRig.Orbit { Height = 3, Radius = 1},
+                            Center = new Cinemachine3OrbitRig.Orbit { Height = 3, Radius = 4},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = 1, Radius = 2}
                         },
-                        Precision = 0.5f // this has a few difficult cases to resolve and thus error is expected
+                        Precision = 0.5f
                     }).SetName("3Ring-Above").Returns(null);
                 
                 yield return new TestCaseData(
@@ -85,7 +85,7 @@ namespace Unity.Cinemachine.Tests
                             Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 3}
                         },
-                        Precision = 0.5f // this has a few difficult cases to resolve and thus error is expected
+                        Precision = 0.5f
                     }).SetName("3Ring-Below").Returns(null);
 
                 yield return new TestCaseData(

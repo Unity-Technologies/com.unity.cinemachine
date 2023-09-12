@@ -500,7 +500,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 470754142}
-  m_LocalRotation: {x: -0.0056971363, y: 0.98527575, z: -0.16756213, w: -0.03349952}
+  m_LocalRotation: {x: -0.005325681, y: 0.9870713, z: -0.15663888, w: -0.033560164}
   m_LocalPosition: {x: 2.2, y: 11.8, z: 26.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 1, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -550,11 +550,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
-    m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+    Enabled: 1
+    m_Value: 2
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 20
@@ -608,7 +606,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 591947960}
-  m_LocalRotation: {x: 0.037421178, y: -1e-45, z: -0, w: 0.9992996}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.66, y: 1, z: -19.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -647,7 +645,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0.7, z: 0}
+  TargetOffset: {x: 0, y: 1, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -677,11 +675,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
-    m_Value: 0
-  OutputChannel:
-    Enabled: 0
+    Enabled: 1
     m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -861,9 +857,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -1354,7 +1348,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 20
+  field of view: 50
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -1379,8 +1373,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1397234029}
-  m_LocalRotation: {x: -0.0080131795, y: 0.96693045, z: -0.0306169, w: -0.25306895}
-  m_LocalPosition: {x: 13.014894, y: 2.4203663, z: 9.494938}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.66, y: 1, z: -19.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1412,7 +1406,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1418606827}
-  m_LocalRotation: {x: -0.0080131795, y: 0.96693045, z: -0.0306169, w: -0.25306895}
+  m_LocalRotation: {x: -0.0036278474, y: 0.9669206, z: -0.01377354, w: -0.25467968}
   m_LocalPosition: {x: 13.014894, y: 2.4203663, z: 9.494938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1432,7 +1426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
+  TargetOffset: {x: 0, y: 1, z: 0}
   Lookahead:
     Enabled: 0
     Time: 0
@@ -1462,11 +1456,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
-    m_Value: 0
-  OutputChannel:
-    Enabled: 0
-    m_Value: 1
+    Enabled: 1
+    m_Value: 3
+  OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 30
