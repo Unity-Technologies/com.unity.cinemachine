@@ -21,7 +21,10 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        public override Vector3 Position { get => base.Position; set
+        public override Vector3 Position 
+        { 
+            get => base.Position; 
+            set
             {
                 base.Position = value;
                 Target.InternalUpdateCameraState(Vector3.up, 0f);
