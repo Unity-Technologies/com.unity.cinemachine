@@ -33,6 +33,9 @@
   "dependencies": {
     "com.unity.splines": "2.0.0"
   },
+  "relatedPackages": {
+    "com.unity.cinemachine.tests": "1.0.0"
+  },
   "samples": [
     {
       "displayName": "2D Samples",
