@@ -47,7 +47,6 @@
     "com.unity.modules.xr": "1.0.0"
   },
   "testables": [
-    "com.unity.cinemachine",
     "com.unity.cinemachine.hdrptests",
     "com.unity.cinemachine.tests"
   ]
