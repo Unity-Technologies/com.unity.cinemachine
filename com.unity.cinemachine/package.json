@@ -34,7 +34,7 @@
     "com.unity.splines": "2.0.0"
   },
   "relatedPackages": {
-    "com.unity.cinemachine.tests": "file:../../../com.unity.cinemachine.tests"
+    "com.unity.cinemachine.tests": "1.0.0"
   },
   "samples": [
     {

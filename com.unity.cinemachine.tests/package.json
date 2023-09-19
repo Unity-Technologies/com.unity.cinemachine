@@ -1,5 +1,6 @@
 {
   "name": "com.unity.cinemachine.tests",
+  "type": "tests",
   "displayName": "Cinemachine Tests",
   "version": "1.0.0",
   "unity": "2022.2",
