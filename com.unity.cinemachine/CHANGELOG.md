@@ -4,14 +4,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0-pre.8] - 2023-09-19
+
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing rotational flickering.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
 - Bugfix: Orbital recentering should not be forced when transitioning to a camera.
 - Bugfix: InheritPosition takes the actual camera position, so it works consistently if transitioning mid-blend.
 - Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: Spurious camera cut events were being issued, especially in HDRP.
-- Bugfix: Mull reference exceptions when inspector is hidden behind another tab.
+- Bugfix: Null reference exceptions when inspector is hidden behind another tab.
 - Bugfix: GroupFraming inspector was displaying incorrect warning when LookAt target is a group.
 - Bugfix: GroupFraming displays more accurate group size indicator in the game view.
 - Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
