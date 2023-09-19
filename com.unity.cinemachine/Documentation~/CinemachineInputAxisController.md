@@ -30,6 +30,7 @@ This component makes it easy to control a `CinemachineCamera` in a single player
 | __Input Value__ | The input value read during this frame |
 | __Accel Time__ | The time it takes for the input value to accelerate to a larger value |
 | __Decel Time__ | The time it takes for the input value to decelerate to a smaller value |
+| __Cancel Delta Time__ | This will cancel the built-in deltaTime compensation done by the input axis.  Enable this if the input value is inherently dependent on frame time.  For example, mouse deltas will naturally be bigger for longer frames, so in this case the default deltaTime scaling should be canceled. |
 
 ## Creating your own Input Axis Controller
 
