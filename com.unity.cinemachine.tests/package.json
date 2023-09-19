@@ -1,6 +1,7 @@
 {
   "name": "com.unity.cinemachine.tests",
   "type": "tests",
+  "version": "1.0.0",
   "displayName": "Cinemachine Tests",
   "dependencies": {
     "com.unity.test-framework": "1.1.33"
