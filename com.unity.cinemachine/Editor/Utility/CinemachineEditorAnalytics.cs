@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+#if UNITY_2023_2_OR_NEWER
+using UnityEngine.Analytics;
+#endif
 
 namespace Unity.Cinemachine.Editor
 {
@@ -11,13 +14,38 @@ namespace Unity.Cinemachine.Editor
         const int k_MaxEventsPerHour = 360;
         const int k_MaxNumberOfElements = 1000;
         const string k_VendorKey = "unity.cinemachine";
-        
+        const string k_CreateVcamEventName = "cm_create_vcam";
+        const string k_VcamsOnPlayEventName = "cm_vcams_on_play";
+
         // register an event handler when the class is initialized
         static CinemachineEditorAnalytics()
         {
             EditorApplication.playModeStateChanged += SendAnalyticsOnPlayEnter;
         }
 
+#if UNITY_2023_2_OR_NEWER
+        [AnalyticInfo(eventName: k_CreateVcamEventName, vendorKey: k_VendorKey, 
+            maxEventsPerHour:k_MaxEventsPerHour, maxNumberOfElements:k_MaxNumberOfElements)]
+        class CreateEventAnalytic : IAnalytic
+        {
+            public string vcam_created; // vcam created from Create -> Cinemachine menu
+
+            public bool TryGatherData(out IAnalytic.IData data, out Exception error)
+            {
+                error = null;
+                data = new CreateEventData { vcam_created = vcam_created};
+                return true;
+            }
+        }
+
+        [Serializable] class CreateEventData : IAnalytic.IData
+#else
+        struct CreateEventData
+#endif
+        {
+            public string vcam_created; // vcam created from Create -> Cinemachine menu
+        }
+        
         /// <summary>
         /// Send analytics event when using Create -> Cinemachine menu
         /// </summary>
@@ -27,23 +55,54 @@ namespace Unity.Cinemachine.Editor
             if (!EditorAnalytics.enabled)
                 return;
 
-            var data = new CreateEventData
-            {
-                vcam_created = name,
-            };
+#if UNITY_2023_2_OR_NEWER
+            EditorAnalytics.SendAnalytic(new CreateEventAnalytic { vcam_created = name });
+#else
+            var data = new CreateEventData { vcam_created = name };
 
             // Register our event
-            EditorAnalytics.RegisterEventWithLimit("cm_create_vcam", 
+            EditorAnalytics.RegisterEventWithLimit(k_CreateVcamEventName, 
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
-            EditorAnalytics.SendEventWithLimit("cm_create_vcam", data);
+            EditorAnalytics.SendEventWithLimit(k_CreateVcamEventName, data);
+#endif
         }
 
-        struct CreateEventData
+#if UNITY_2023_2_OR_NEWER
+        [AnalyticInfo(eventName: k_VcamsOnPlayEventName, vendorKey: k_VendorKey, 
+            maxEventsPerHour:k_MaxEventsPerHour, maxNumberOfElements:k_MaxNumberOfElements)]
+        class PlayModeEventAnalytic : IAnalytic
         {
-            public string vcam_created; // vcam created from Create -> Cinemachine menu
+            public bool TryGatherData(out IAnalytic.IData data, out Exception error)
+            {
+                error = null;
+                var projectData = new ProjectData();
+                CollectOnPlayEnterData(ref projectData);
+                data = projectData;
+                return true;
+            }
         }
+        [Serializable]
+        class ProjectData : IAnalytic.IData
+        {
+            public int brain_count;
+            public int vcam_count;
+            public int cam_count;
+            public VcamData[] vcams;
+            public float time_elapsed;
+        }
+#else
+        [Serializable]
+        struct ProjectData
+        {
+            public int brain_count;
+            public int vcam_count;
+            public int cam_count;
+            public List<VcamData> vcams;
+            public float time_elapsed;
+        }
+#endif
 
         /// <summary>
         /// Send analytics event when using entering playmode
@@ -59,8 +118,29 @@ namespace Unity.Cinemachine.Editor
             if (state != PlayModeStateChange.EnteredPlayMode)
                 return;
 
-            var startTime = Time.realtimeSinceStartup;
+#if UNITY_2023_2_OR_NEWER
+            EditorAnalytics.SendAnalytic(new PlayModeEventAnalytic());
+#else
+            var projectData = new ProjectData();
+            CollectOnPlayEnterData(ref projectData);
 
+            // Register our event
+            EditorAnalytics.RegisterEventWithLimit(k_VcamsOnPlayEventName, 
+                k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
+            
+            // Send the data to the database
+            EditorAnalytics.SendEventWithLimit(k_VcamsOnPlayEventName, projectData);
+#endif
+        }
+
+        
+        /// <summary>
+        /// Send analytics event when using entering playmode
+        /// </summary>
+        /// <param name="state">State change to detect entering playmode</param>
+        static void CollectOnPlayEnterData(ref ProjectData projectData)
+        {
+            var startTime = Time.realtimeSinceStartup;
             var vcamCount = CinemachineCore.VirtualCameraCount;
             var vcamDatas = new List<VcamData>();
 
@@ -68,27 +148,21 @@ namespace Unity.Cinemachine.Editor
             for (int i = 0; i < vcamCount; ++i)
             {
                 var vcamBase = CinemachineCore.GetVirtualCamera(i);
-                CollectData(vcamBase, i.ToString(), ref vcamDatas);
+                CollectVcamData(vcamBase, i.ToString(), ref vcamDatas);
             }
 
-            var projectData = new ProjectData
-            {
-                brain_count = CinemachineBrain.ActiveBrainCount,
-                vcam_count = CinemachineCore.VirtualCameraCount,
-                cam_count = Camera.allCamerasCount,
-                vcams = vcamDatas,
-                time_elapsed = Time.realtimeSinceStartup - startTime,
-            };
-
-            // Register our event
-            EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", 
-                k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
-            
-            // Send the data to the database
-            EditorAnalytics.SendEventWithLimit("cm_vcams_on_play", projectData);
+            projectData.brain_count = CinemachineBrain.ActiveBrainCount;
+            projectData.vcam_count = CinemachineCore.VirtualCameraCount;
+            projectData.cam_count = Camera.allCamerasCount;
+#if UNITY_2023_2_OR_NEWER
+            projectData.vcams = vcamDatas.ToArray();
+#else
+            projectData.vcams = vcamDatas;
+#endif
+            projectData.time_elapsed = Time.realtimeSinceStartup - startTime;
         }
 
-        static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
+        static void CollectVcamData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
         {
             if (vcamBase == null) 
                 return;
@@ -109,18 +183,8 @@ namespace Unity.Cinemachine.Editor
             for (var c = 1; c < vcamChildren.Length; c++)
             {
                 if (vcamChildren[c].ParentCamera == (ICinemachineCamera)vcamBase)
-                    CollectData(vcamChildren[c], id + "." + c, ref vcamDatas);
+                    CollectVcamData(vcamChildren[c], id + "." + c, ref vcamDatas);
             }
-        }
-
-        [Serializable]
-        struct ProjectData
-        {
-            public int brain_count;
-            public int vcam_count;
-            public int cam_count;
-            public List<VcamData> vcams;
-            public float time_elapsed;
         }
 
         [Serializable]
