@@ -8,7 +8,7 @@ pack:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package pack --package-path com.unity.cinemachine
+    - upm-ci project pack --project-path Projects/Standalone
   artifacts:
     packages:
       paths:
