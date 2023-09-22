@@ -4,8 +4,9 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-pre.8] - 2023-09-19
+## [3.0.0-pre.8] - 2023-09-22
 
+### Fixed
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing rotational flickering.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
 - Bugfix: Orbital recentering should not be forced when transitioning to a camera.
@@ -17,17 +18,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: GroupFraming displays more accurate group size indicator in the game view.
 - Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
 - Regression fix: CinemachineCollider generated NaN positions if no target was set.
+
+### Added
+- New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
-- Improved OrbitalFollow's ForceCameraPosition algorithm.
-- Deoccluder accommodates camera radius in all modes.
-- StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
-- Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
-- Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 - Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
 - Added option to disable deltaTime scaling in CinemachineInputAxisProvider.
+
+### Changed
+- Improved OrbitalFollow's ForceCameraPosition algorithm.
+- Deoccluder accommodates camera radius in all modes.
+- Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
+- Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
+- StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
+
+### Deprecated
 - Removed CinemachineToolSettings overlay.
-- New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 
 
 ## [3.0.0-pre.7] - 2023-05-04
