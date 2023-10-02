@@ -507,7 +507,6 @@ namespace Unity.Cinemachine.Editor
                 for (int i = row.childCount - 1; i >= 0; --i)
                     row.RemoveAt(i);
 
-                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
                 var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
                 row.AddChild(new ObjectField 
                 { 
@@ -517,6 +516,11 @@ namespace Unity.Cinemachine.Editor
                 }).SetEnabled(false);
                 if (element == null)
                     return;
+
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
+                var warningText = getChildWarning == null ? string.Empty : getChildWarning(element);
+                warningIcon.tooltip = warningText;
+                warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
 
                 var dragger = row.AddChild(new Label(" "));
                 dragger.AddToClassList("unity-base-field__label--with-dragger");
@@ -540,13 +544,6 @@ namespace Unity.Cinemachine.Editor
                 });
                 priorityField.TrackPropertyValue(priorityProp, (p) => priorityField.value = p.intValue);
                 priorityField.TrackPropertyValue(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
-
-                warningIcon.TrackAnyUserActivity(() =>
-                {
-                    var warningText = (getChildWarning == null || element == null) ? string.Empty : getChildWarning(element);
-                    warningIcon.tooltip = warningText;
-                    warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
-                });
             };
 
             list.itemsAdded += (added) =>
@@ -585,10 +582,8 @@ namespace Unity.Cinemachine.Editor
                 // Update child list
                 if (!isMultiSelect)
                 {
-                    var rebuild = list.itemsSource != vcam.ChildCameras || list.itemsSource.Count != vcam.ChildCameras.Count;
                     list.itemsSource = vcam.ChildCameras;
-                    if (rebuild)
-                        list.Rebuild();
+                    list.Rebuild();
                 }
             });
         }

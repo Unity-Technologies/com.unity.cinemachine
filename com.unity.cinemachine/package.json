@@ -1,9 +1,8 @@
 {
   "name": "com.unity.cinemachine",
   "displayName": "Cinemachine",
-  "version": "3.0.0-pre.8",
-  "unity": "2022.2",
-  "unityRelease": "16f1",
+  "version": "3.0.0-pre.9",
+  "unity": "2022.3",
   "description": "Smart camera tools for passionate creators. \n\nCinemachine 3.0 is a newer and better version of Cinemachine, but upgrading an existing project from 2.X will likely require some effort.  If you're considering upgrading an older project, please see our upgrade guide in the user manual.",
   "keywords": [
     "camera",
