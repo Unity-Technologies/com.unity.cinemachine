@@ -63,19 +63,9 @@ namespace Unity.Cinemachine.Editor
                 var element = instructions.GetArrayElementAtIndex(index);
 
                 var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
-                var vcamSel = row.AddChild(new PopupField<Object>());
+                var vcamSel = row.AddChild(new PopupField<Object> { name = $"vcamSelector{index}" });
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.TrackAnyUserActivity(() => 
-                {
-                    if (Target == null)
-                        return; // object deleted
-                    vcamSel.choices ??= new();
-                    vcamSel.choices.Clear();
-                    var children = Target.ChildCameras;
-                    for (int i = 0; i < children.Count; ++i)
-                        vcamSel.choices.Add(children[i]);
-                });
         
                 var blend = row.AddChild(
                     new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
@@ -89,6 +79,28 @@ namespace Unity.Cinemachine.Editor
                 ((BindableElement)row).BindProperty(element);
                 vcamSel.BindProperty(vcamSelProp);
             };
+
+            // Update the list items
+            list.TrackAnyUserActivity(() =>
+            {
+                int index = 0;
+                var iter = list.itemsSource.GetEnumerator();
+                while (iter.MoveNext())
+                {
+                    var vcamSel = list.Q<PopupField<Object>>($"vcamSelector{index}");
+                    if (vcamSel != null)
+                    {
+                        if (Target == null)
+                            return; // object deleted
+                        vcamSel.choices ??= new();
+                        vcamSel.choices.Clear();
+                        var children = Target.ChildCameras;
+                        for (int i = 0; i < children.Count; ++i)
+                            vcamSel.choices.Add(children[i]);
+                    }
+                    ++index;
+                }
+            });
 
             // Local function
             static void FormatInstructionElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)

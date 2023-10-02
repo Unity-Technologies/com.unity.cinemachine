@@ -68,27 +68,23 @@ namespace Unity.Cinemachine.Editor
                 list.RefreshItems();  // rebuild the list
             });
 
-            // Delay to work around a bug in ListView (UUM-27687 and UUM-27688)
-            list.OnInitialGeometry(() =>
+            list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
+            list.bindItem = (row, index) =>
             {
-                list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
-                list.bindItem = (row, index) =>
-                {
-                    // Remove children - items get recycled
-                    for (int i = row.childCount - 1; i >= 0; --i)
-                        row.RemoveAt(i);
+                // Remove children - items get recycled
+                for (int i = row.childCount - 1; i >= 0; --i)
+                    row.RemoveAt(i);
 
-                    var def = new CinemachineBlenderSettings.CustomBlend();
-                    var element = elements.GetArrayElementAtIndex(index);
+                var def = new CinemachineBlenderSettings.CustomBlend();
+                var element = elements.GetArrayElementAtIndex(index);
 
-                    var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
-                    var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
-                    var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
-                    FormatElement(false, from, to, blend);
+                var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
+                var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
+                var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
+                FormatElement(false, from, to, blend);
 
-                    ((BindableElement)row).BindProperty(element); // bind must be done at the end
-                };
-            });
+                ((BindableElement)row).BindProperty(element); // bind must be done at the end
+            };
 
             // Local function
             static void FormatElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)
