@@ -76,14 +76,16 @@ namespace Unity.Cinemachine.Editor
                     row.RemoveAt(i);
 
                 var def = new CinemachineBlenderSettings.CustomBlend();
-                var element = elements.GetArrayElementAtIndex(index);
+                var element = index < elements.arraySize ? elements.GetArrayElementAtIndex(index) : null;
+                if (!IsUnityNull(element))
+                {
+                    var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
+                    var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
+                    var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
+                    FormatElement(false, from, to, blend);
 
-                var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
-                var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
-                var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
-                FormatElement(false, from, to, blend);
-
-                ((BindableElement)row).BindProperty(element); // bind must be done at the end
+                    ((BindableElement)row).BindProperty(element); // bind must be done at the end
+                }
             };
 
             // Local function
@@ -123,6 +125,13 @@ namespace Unity.Cinemachine.Editor
                 return row;
             }
 
+            // Local function
+            static bool IsUnityNull(object obj)
+            {
+                // Checks whether an object is null or Unity pseudo-null
+                // without having to cast to UnityEngine.Object manually
+                return obj == null || ((obj is UnityEngine.Object) && ((UnityEngine.Object)obj) == null);
+            }
             return ux;
         }
     }
