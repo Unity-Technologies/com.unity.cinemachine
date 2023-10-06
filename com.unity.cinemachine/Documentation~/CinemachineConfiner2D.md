@@ -25,6 +25,9 @@ Skeleton computation is the most resource-heavy part of the cache calculation, s
 
 - To optimize the skeleton calculation, set the **Max Window Size** property to the largest size you expect the camera window to have. Cinemachine does not spend time calculating the skeleton for window sizes larger than that.
 
+## Efficiency
+It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and blend between them instead of changing one Confiner2D's input bounding shape, because the initial cost of calculating the confiner shape is high.
+
 
 # Properties:
 
