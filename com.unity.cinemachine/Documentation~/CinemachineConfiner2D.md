@@ -18,7 +18,7 @@ In these cases, for efficiency reasons, Cinemachine does not automatically regen
 
 If the input polygon scales uniformly or translates or rotates, the cache remains valid.
 
-When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateLensCache() from script.
+When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateCache() from script.
 
 ## Oversize Windows
 If sections of the confining polygon are too small to fully contain the camera window, Cinemachine calculates a polygon skeleton for those regions. This is a shape with no area, that serves as a place to put the camera when it is confined to this region of the shape.
