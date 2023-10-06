@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: In some circumstances, FramingTransposer was using the wrong FOV or Ortho size for framing.
 - Regression fix: CinemachineCollider generated NaN positions if no target was set.
 - Improved OrbitalFollow's ForceCameraPosition algorithm.
+- Documented InvalidateLensCache in confiner2D.
 - Removed CinemachineTollSettings overlay.
 
 
