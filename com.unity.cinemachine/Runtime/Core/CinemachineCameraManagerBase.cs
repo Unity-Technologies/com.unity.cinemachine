@@ -111,8 +111,10 @@ namespace Unity.Cinemachine
             set 
             {
                 base.PreviousStateIsValid = value;
-                for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
-                    m_ChildCameras[i].PreviousStateIsValid = value;
+                // Only propagate to the children when we're invalidating the state
+                if (value == false)
+                    for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
+                        m_ChildCameras[i].PreviousStateIsValid = value;
             }
         }
 
