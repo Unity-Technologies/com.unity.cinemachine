@@ -4,13 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-pre.9] - 2023-10-31
 ## [3.0.0-pre.9] - 2023-12-31
 
 ### Fixed
 - Regresion fix: Sequencer inspector child camera popups were not being populated.
 - Regresion fix: Manager Camera's child camera warning icons were not being updated correctly.
 - Regresion fix: ManagerCameras were crushing PreviousStateIsValid in their children.
+- Regression fix: Extensions and components were unable to modify the blend hint.
 - Bugfix: CinemachineInputAxisController editor was missing foldout arrows on the Driven Axis items.
 
 ### Added
