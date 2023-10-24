@@ -122,9 +122,15 @@ namespace Unity.Cinemachine
         public bool IsBlending => m_BlendManager.IsBlending;
 
         /// <summary>
-        /// Get the current active blend in progress.  Will return null if no blend is in progress.
+        /// Get the current blend in progress.  Returns null if none.
+        /// It is also possible to set the current blend, but this is not a recommended usage
+        /// unless it is to set the active blend to null, which will force completion of the blend.
         /// </summary>
-        public CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_BlendManager.ActiveBlend : null;
+        public CinemachineBlend ActiveBlend 
+        {
+            get => PreviousStateIsValid ? m_BlendManager.ActiveBlend : null;
+            set => m_BlendManager.ActiveBlend = value;
+        }
 
         /// <summary>
         /// Get the current active camera.  Will return null if no camera is active.

@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regresion fix: ManagerCameras were crushing PreviousStateIsValid in their children.
 - Bugfix: CinemachineInputAxisController editor was missing foldout arrows on the Driven Axis items.
 
+### Added
+- Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
+
 
 ## [3.0.0-pre.8] - 2023-09-22
 

@@ -474,7 +474,8 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Get the current blend in progress.  Returns null if none.
-        /// It is also possible to set the current blend, but this is not a recommended usage.
+        /// It is also possible to set the current blend, but this is not a recommended usage
+        /// unless it is to set the active blend to null, which will force completion of the blend.
         /// </summary>
         public CinemachineBlend ActiveBlend 
         {
