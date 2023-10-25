@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
 
+### Changed
+- CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
+
 
 ## [3.0.0-pre.8] - 2023-09-22
 
