@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regresion fix: ManagerCameras were crushing PreviousStateIsValid in their children.
 - Regression fix: Extensions and components were unable to modify the blend hint.
 - Bugfix: CinemachineInputAxisController editor was missing foldout arrows on the Driven Axis items.
-
+- Bugfix: HardLockToTarget component was ignoring PreviousStateIsValid flag.
+- 
 ### Added
 - Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
 
