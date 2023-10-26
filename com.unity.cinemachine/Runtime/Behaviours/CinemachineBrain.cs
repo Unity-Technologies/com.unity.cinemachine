@@ -474,7 +474,8 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Get the current blend in progress.  Returns null if none.
-        /// It is also possible to set the current blend, but this is not a recommended usage.
+        /// It is also possible to set the current blend, but this is not a recommended usage
+        /// unless it is to set the active blend to null, which will force completion of the blend.
         /// </summary>
         public CinemachineBlend ActiveBlend 
         {
@@ -614,8 +615,11 @@ namespace Unity.Cinemachine
             CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
         }
         
-        /// Get the highest-priority Enabled ICinemachineCamera that is in my Channel Mask.
-        ICinemachineCamera TopCameraFromPriorityQueue()
+        /// <summary>
+        /// Choose the default active camera in the case that there is no camera override.
+        /// </summary>
+        /// <returns>The highest-priority Enabled ICinemachineCamera that is in my Channel Mask.</returns>
+        protected virtual ICinemachineCamera TopCameraFromPriorityQueue()
         {
             int numCameras = CameraUpdateManager.VirtualCameraCount;
             for (int i = 0; i < numCameras; ++i)

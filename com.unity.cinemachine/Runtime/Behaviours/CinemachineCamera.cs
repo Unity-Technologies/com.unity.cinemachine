@@ -217,8 +217,8 @@ namespace Unity.Cinemachine
             if (lookAt != null)
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
-            InvokeComponentPipeline(ref m_State, deltaTime);
             m_State.BlendHint = (CameraState.BlendHints)BlendHint;
+            InvokeComponentPipeline(ref m_State, deltaTime);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.

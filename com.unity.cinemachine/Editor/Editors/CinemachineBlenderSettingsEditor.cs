@@ -68,27 +68,25 @@ namespace Unity.Cinemachine.Editor
                 list.RefreshItems();  // rebuild the list
             });
 
-            // Delay to work around a bug in ListView (UUM-27687 and UUM-27688)
-            list.OnInitialGeometry(() =>
+            list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
+            list.bindItem = (row, index) =>
             {
-                list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
-                list.bindItem = (row, index) =>
+                // Remove children - items get recycled
+                for (int i = row.childCount - 1; i >= 0; --i)
+                    row.RemoveAt(i);
+
+                var def = new CinemachineBlenderSettings.CustomBlend();
+                var element = index < elements.arraySize ? elements.GetArrayElementAtIndex(index) : null;
+                if (!IsUnityNull(element))
                 {
-                    // Remove children - items get recycled
-                    for (int i = row.childCount - 1; i >= 0; --i)
-                        row.RemoveAt(i);
-
-                    var def = new CinemachineBlenderSettings.CustomBlend();
-                    var element = elements.GetArrayElementAtIndex(index);
-
                     var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
                     var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
                     var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
                     FormatElement(false, from, to, blend);
 
                     ((BindableElement)row).BindProperty(element); // bind must be done at the end
-                };
-            });
+                }
+            };
 
             // Local function
             static void FormatElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)
@@ -127,6 +125,13 @@ namespace Unity.Cinemachine.Editor
                 return row;
             }
 
+            // Local function
+            static bool IsUnityNull(object obj)
+            {
+                // Checks whether an object is null or Unity pseudo-null
+                // without having to cast to UnityEngine.Object manually
+                return obj == null || ((obj is UnityEngine.Object) && ((UnityEngine.Object)obj) == null);
+            }
             return ux;
         }
     }

@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This interface is specifically for Timeline.  The cinemachine timeline track
-    /// drives its target via this interface.
+    /// This interface provides a way to override camera selection logic.
+    /// The cinemachine timeline track drives its target via this interface.
     /// </summary>
     public interface ICameraOverrideStack
     {

@@ -136,7 +136,7 @@ namespace Unity.Cinemachine.Editor
                 foldout.Add(new PropertyField(childProperty));
                 childProperty.NextVisible(false);
             }
-            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null);
+            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null) { style = { marginLeft = 12 }};
         }
     }
 
@@ -158,12 +158,10 @@ namespace Unity.Cinemachine.Editor
                 showBorder = false,
                 showBoundCollectionSize = false,
                 showFoldoutHeader = false,
-                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
+                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
+                style = { marginLeft = -12 }
             });
             list.BindProperty(property);
-
-            // Delay to work around a bug in ListView (UUM-33402)
-            list.OnInitialGeometry(() => list.reorderable = false);
 
             var isEmptyMessage = ux.AddChild(new HelpBox(
                 "No applicable components found.  Must have one of: "
