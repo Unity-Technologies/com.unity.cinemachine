@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
  
 
-## [3.0.0-pre.9] - 2023-12-31
+## [3.0.0-pre.9] - 2023-10-01
 
 ### Fixed
 - Regresion fix: Sequencer inspector child camera popups were not being populated.
