@@ -151,13 +151,6 @@ namespace Unity.Cinemachine
 #endif
         }
 
-#if CINEMACHINE_PHYSICS
-        void OnDestroy()
-        {
-            RuntimeUtility.DestroyScratchCollider();
-        }
-#endif
-
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue
         {
             get

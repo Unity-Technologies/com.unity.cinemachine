@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Bugfix: Divide-by-zero error in InputAxis.CancelDeltaTime if deltaTime is zero.
 
+### Changed
+- RuntimeUtility.GetScratchCollider and RuntimeUtility.DestroyScratchCollider are now public, to allow custom extensions to use them.
+
 
 ## [3.0.0] - 2023-10-25
 
