@@ -166,7 +166,7 @@ namespace Unity.Cinemachine
                     //catch (ArgumentException e) { Debug.LogError(e.ToString()); }
                 }
 #endif
-                return CancelDeltaTime ? inputValue / Time.deltaTime : inputValue;
+                return (Time.deltaTime > 0 && CancelDeltaTime) ? inputValue / Time.deltaTime : inputValue;
             }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM
