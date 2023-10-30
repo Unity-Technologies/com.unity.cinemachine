@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Improved OrbitalFollow's ForceCameraPosition algorithm.
 - Removed CinemachineToolSettings overlay.
 - CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
+- Documented InvalidateLensCache in confiner2D.
+- Removed CinemachineTollSettings overlay.
 
 
 ## [2.9.7] - 2023-05-06

@@ -16,7 +16,9 @@ In these cases, for efficiency reasons, Cinemachine does not automatically regen
 - the script by calling InvalidateCache, or 
 - the component inspector; to do so, press the **Invalidate Cache** button.
 
-If the input polygon scales uniformly or translates or rotates, the cache remains valid. 
+If the input polygon scales uniformly or translates or rotates, the cache remains valid.
+
+When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateCache() from script.
 
 ## Oversize Windows
 If sections of the confining polygon are too small to fully contain the camera window, Cinemachine calculates a polygon skeleton for those regions. This is a shape with no area, that serves as a place to put the camera when it is confined to this region of the shape.
@@ -24,6 +26,9 @@ If sections of the confining polygon are too small to fully contain the camera w
 Skeleton computation is the most resource-heavy part of the cache calculation, so it is a good idea to tune this with some care:
 
 - To optimize the skeleton calculation, set the **Max Window Size** property to the largest size you expect the camera window to have. Cinemachine does not spend time calculating the skeleton for window sizes larger than that.
+
+## Efficiency
+It is much more efficient to have more Cinemachine Cameras with different input bounding shapes and blend between them instead of changing one Confiner2D's input bounding shape, because the initial cost of calculating the confiner shape is high.
 
 
 # Properties:
