@@ -906,5 +906,24 @@ namespace Cinemachine
         /// <param name="streamedVersion">The version that was streamed</param>
         internal protected virtual void LegacyUpgrade(int streamedVersion) {}
         internal virtual void OnBeforeSerialize() {}
+
+        /// <summary>
+        /// Temporarily cancel damping for this frame.  The camera will sanp to its target 
+        /// position when it is updated.
+        /// </summary>
+        /// <param name="updateNow">If true, snap the camera to its target immediately, otherwise wait 
+        /// until the end of the frame when cameras are normally updated.</param>
+        public void CancelDamping(bool updateNow = false)
+        {
+            PreviousStateIsValid = false;
+            if (updateNow)
+            {
+                var up = State.ReferenceUp;
+                var brain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
+                if (brain != null)
+                    up = brain.DefaultWorldUp;
+                InternalUpdateCameraState(up, -1);
+            }
+        }
     }
 }
