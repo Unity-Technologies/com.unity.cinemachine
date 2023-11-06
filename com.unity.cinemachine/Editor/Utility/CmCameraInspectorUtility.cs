@@ -172,7 +172,10 @@ namespace Unity.Cinemachine.Editor
                 var stage = i; // capture for lambda
                 var row = ux.AddChild(new InspectorUtility.LeftRightRow());
                 row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
-                    { style = { flexGrow = 1, alignSelf = Align.Center }});
+                { 
+                    tooltip = "Will add a Behaviour to implement this stage in the procedural pipeline", 
+                    style = { flexGrow = 1, alignSelf = Align.Center }
+                });
                 var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
                 warningIcon.SetVisible(false);
 
@@ -244,7 +247,8 @@ namespace Unity.Cinemachine.Editor
         {
             var row = new InspectorUtility.LabeledRow(
                 "Add Extension", "Extensions are behaviours that inject themselves into "
-                + "the Cinemachine pipeline to alter the camera's behaviour.");
+                + "the Cinemachine pipeline to alter the camera's behaviour.  "
+                + "This dropdown will add the selected extension behaviour.");
 
             var menu = new ContextualMenuManipulator((evt) => 
             {
