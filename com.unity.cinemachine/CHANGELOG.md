@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Bugfix: Divide-by-zero error in InputAxis.CancelDeltaTime if deltaTime is zero.
-
+- Regression fix: CinemachineCamera inspector Solo functionality was not updating correctly.
+- 
 ### Added
 - Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
 - Added CinemachineOrbitalFollow.TargetOffset to reposition orbit center.

@@ -41,7 +41,7 @@ namespace Unity.Cinemachine.Editor
 
             var recenteringInactive = row.Contents.AddChild(new Label(" (inactive)") 
             { 
-                tooltip = "Horizontal recentering is currently inactive, so the recentering target will be ignored.",
+                tooltip = "Recentering is currently disabled, so the recentering target will be ignored.",
                 style = { alignSelf = Align.Center }
             });
             var recenteringProp = serializedObject.FindProperty(() => Target.HorizontalAxis).FindPropertyRelative(
