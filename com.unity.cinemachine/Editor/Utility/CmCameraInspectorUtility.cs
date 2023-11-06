@@ -25,6 +25,9 @@ namespace Unity.Cinemachine.Editor
             var t = target as CinemachineVirtualCameraBase;
             return t != null && t.gameObject.scene.name == null; // causes a small GC alloc
         }
+
+        static Color s_NormalColor = Color.black;
+        static Color s_NormalBkgColor = Color.black;
         
         /// <summary>Add the camera status controls and indicators in the inspector</summary>
         public static void AddCameraStatus(this UnityEditor.Editor editor, VisualElement ux)
@@ -83,43 +86,46 @@ namespace Unity.Cinemachine.Editor
             });
 
             // Capture "normal" colors
-            ux.OnInitialGeometry(() =>
+            if (s_NormalBkgColor == Color.black)
             {
-                var normalColor = statusText.resolvedStyle.color;
-                var normalBkgColor = soloButton.resolvedStyle.backgroundColor;
-
-                // Refresh camera state
-                ux.ContinuousUpdate(() =>
-                { 
-                    if (target == null)
-                        return;
-
-                    bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
-                    var color = isSolo ? Color.Lerp(normalColor, CinemachineCore.SoloGUIColor(), 0.5f) : normalColor;
-
-                    bool isLive = CinemachineCore.IsLive(target);
-                    statusText.text = isLive ? "Status: Live"
-                        : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
-                    statusText.SetEnabled(isLive);
-                    statusText.style.color = color;
-
-                    if (!Application.isPlaying)
-                        updateMode.SetVisible(false);
-                    else
-                    {
-                        var mode = CameraUpdateManager.GetVcamUpdateStatus(target);
-                        updateMode.text = mode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
-                        updateMode.SetVisible(true);
-                    }
-
-                    soloButton.style.color = color;
-                    soloButton.style.backgroundColor = isSolo 
-                        ? Color.Lerp(normalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : normalBkgColor;
-
-                    // Refresh the game view if solo and not playing
-                    if (isSolo && !Application.isPlaying)
-                        InspectorUtility.RepaintGameView();
+                ux.OnInitialGeometry(() =>
+                {
+                    s_NormalColor = statusText.resolvedStyle.color;
+                    s_NormalBkgColor = soloButton.resolvedStyle.backgroundColor;
                 });
+            }
+
+            // Refresh camera state
+            ux.ContinuousUpdate(() =>
+            { 
+                if (target == null)
+                    return;
+
+                bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
+                var color = isSolo ? Color.Lerp(s_NormalColor, CinemachineCore.SoloGUIColor(), 0.5f) : s_NormalColor;
+
+                bool isLive = CinemachineCore.IsLive(target);
+                statusText.text = isLive ? "Status: Live"
+                    : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
+                statusText.SetEnabled(isLive);
+                statusText.style.color = color;
+
+                if (!Application.isPlaying)
+                    updateMode.SetVisible(false);
+                else
+                {
+                    var mode = CameraUpdateManager.GetVcamUpdateStatus(target);
+                    updateMode.text = mode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
+                    updateMode.SetVisible(true);
+                }
+
+                soloButton.style.color = color;
+                soloButton.style.backgroundColor = isSolo 
+                    ? Color.Lerp(s_NormalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : s_NormalBkgColor;
+
+                // Refresh the game view if solo and not playing
+                if (isSolo && !Application.isPlaying)
+                    InspectorUtility.RepaintGameView();
             });
 
             // Kill solo when inspector shuts down
