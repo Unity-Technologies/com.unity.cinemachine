@@ -11,6 +11,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay] 
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine FreeLook Modifier")] // Hide in menu
     [ExecuteAlways]
+    [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLookModifier.html")]
     public class CinemachineFreeLookModifier : CinemachineExtension
     {

@@ -9,6 +9,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Third Person Follow")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineThirdPersonFollow.html")]
     public class CinemachineThirdPersonFollow : CinemachineComponentBase

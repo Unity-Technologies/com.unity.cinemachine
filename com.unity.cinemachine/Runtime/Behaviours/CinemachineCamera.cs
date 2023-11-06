@@ -292,11 +292,12 @@ namespace Unity.Cinemachine
                 var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
                 {
-#if UNITY_EDITOR
-                    if (m_Pipeline[(int)components[i].Stage] != null)
-                        Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
-#endif
-                    m_Pipeline[(int)components[i].Stage] = components[i];
+                    if (m_Pipeline[(int)components[i].Stage] == null)
+                        m_Pipeline[(int)components[i].Stage] = components[i];
+//#if UNITY_EDITOR
+//                    else
+//                        Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
+//#endif
                 }
             }
         }

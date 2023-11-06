@@ -10,6 +10,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Hard Lock to Target")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineHardLockToTarget.html")]
     public class CinemachineHardLockToTarget : CinemachineComponentBase

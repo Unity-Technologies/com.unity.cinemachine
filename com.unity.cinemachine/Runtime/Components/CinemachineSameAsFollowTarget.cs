@@ -10,6 +10,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Same As Follow Target")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSameAsFollowTarget.html")]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase

@@ -192,16 +192,18 @@ namespace Unity.Cinemachine.Editor
                         var t = targets[j] as CinemachineCamera;
                         if (t == null)
                             continue;
-                        var oldComponent = t.GetCinemachineComponent((CinemachineCore.Stage)stage);
-                        var oldType = oldComponent == null ? null : oldComponent.GetType();
-                        if (newType != oldType)
+                        var oldComponents = t.GetComponents<CinemachineComponentBase>();
+                        CinemachineComponentBase existingComponent = null;
+                        for (int k = 0; k < oldComponents.Length; ++k)
                         {
-                            t.InvalidatePipelineCache();
-                            if (oldComponent != null)
-                                Undo.DestroyObjectImmediate(oldComponent);
-                            if (newType != null)
-                                Undo.AddComponent(t.gameObject, newType);
+                            if (existingComponent == null && oldComponents[k].GetType() == newType)
+                                existingComponent = oldComponents[k];
+                            else if (oldComponents[k].Stage == (CinemachineCore.Stage)stage)
+                                Undo.DestroyObjectImmediate(oldComponents[k]);
                         }
+                        if (newType != null && existingComponent == null)
+                            Undo.AddComponent(t.gameObject, newType);
+                        t.InvalidatePipelineCache();
                     }
 
                     static int GetTypeIndexFromSelection(string selection, int stage)

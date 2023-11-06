@@ -20,6 +20,7 @@ namespace Unity.Cinemachine.Editor
         const string k_NeedGroup = "The Tracking or LookAt Target in the CinemachineCamera must be a Target Group.";
         const string k_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
         const string k_AddCamera = "Add\nCinemachineCamera";
+        const string k_DuplicateComponent = "This component is redundant and will be ignored.";
 
         /// <summary>
         /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
@@ -44,6 +45,8 @@ namespace Unity.Cinemachine.Editor
             if (text.Length > 0)
                 noTargetHelp = ux.AddChild(new HelpBox(text, HelpBoxMessageType.Warning));
 
+            var duplicateHelp = ux.AddChild(new HelpBox(k_DuplicateComponent, HelpBoxMessageType.Error));
+
             // Update state
             ux.TrackAnyUserActivity(() =>
             {
@@ -52,6 +55,7 @@ namespace Unity.Cinemachine.Editor
                 
                 var noCamera = false;
                 var noTarget = false;
+                var isDuplicate = false;
                 for (int i = 0; i < targets.Length && !noCamera; ++i)
                 {
                     if (targets[i] is CinemachineComponentBase c)
@@ -68,6 +72,8 @@ namespace Unity.Cinemachine.Editor
                                 (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
                                 && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
                         }
+                        if (vcam != null && vcam.GetCinemachineComponent(c.Stage) != c)
+                            isDuplicate = true;
                     }
                     else if (targets[i] is CinemachineExtension x)
                     {
@@ -89,6 +95,7 @@ namespace Unity.Cinemachine.Editor
                 }
                 noCameraHelp?.SetVisible(noCamera);
                 noTargetHelp?.SetVisible(noTarget && !noCamera);
+                duplicateHelp?.SetVisible(isDuplicate);
             });
         }
 

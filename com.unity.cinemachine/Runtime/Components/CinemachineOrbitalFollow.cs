@@ -13,6 +13,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Orbital Follow")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineOrbitalFollow.html")]
     public class CinemachineOrbitalFollow 
