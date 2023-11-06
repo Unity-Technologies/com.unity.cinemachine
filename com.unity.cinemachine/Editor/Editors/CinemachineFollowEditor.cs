@@ -24,8 +24,8 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FollowOffset)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             return ux;
         }
 

@@ -21,6 +21,13 @@ namespace Unity.Cinemachine
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
     {
+        /// <summary>Offset from the object's center in local space.  
+        /// Use this to fine-tune the orbit when the desired focus of the orbit is not 
+        /// the tracked object's center</summary>
+        [Tooltip("Offset from the target object's center in target-local space. Use this to fine-tune the "
+            + "orbit when the desired focus of the orbit is not the tracked object's center.")]
+        public Vector3 TargetOffset;
+
         /// <summary>Settings to control damping for target tracking.</summary>
         public TrackerSettings TrackerSettings = TrackerSettings.Default;
 
@@ -104,7 +111,10 @@ namespace Unity.Cinemachine
         /// Input axis controller registers here a delegate to call when the camera is reset
         /// </summary>
         Action m_ResetHandler;
-        
+
+        /// <summary>Internal API for inspector</summary>
+        internal Vector3 TrackedPoint { get; private set; }
+
         void OnValidate()
         {
             Radius = Mathf.Max(0, Radius);
@@ -118,6 +128,7 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
+            TargetOffset = Vector3.zero;
             TrackerSettings = TrackerSettings.Default;
             OrbitStyle = OrbitStyles.Sphere;
             Radius = 10;
@@ -243,7 +254,7 @@ namespace Unity.Cinemachine
             m_ResetHandler?.Invoke(); // cancel re-centering
             if (FollowTarget != null)
             {
-                var dir = pos - FollowTargetPosition;
+                var dir = pos - FollowTarget.TransformPoint(TargetOffset);
                 var distance = dir.magnitude;
                 if (distance > 0.001f)
                 {
@@ -413,6 +424,8 @@ namespace Unity.Cinemachine
             pos += m_TargetTracker.GetOffsetForMinimumTargetDistance(
                 this, pos, offset, curState.RawOrientation * Vector3.forward,
                 curState.ReferenceUp, targetPosition);
+            pos += orient * TargetOffset;
+            TrackedPoint = pos;
             curState.RawPosition = pos + offset;
 
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid

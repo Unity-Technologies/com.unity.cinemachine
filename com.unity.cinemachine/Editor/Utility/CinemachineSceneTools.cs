@@ -493,12 +493,12 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         /// <returns>Index of the rig being edited, or -1 if none</returns>
         public static int ThreeOrbitRigHandle(
-            CinemachineVirtualCameraBase vcam, Quaternion rotationFrame, SerializedProperty orbitSetting)
+            CinemachineVirtualCameraBase vcam, Quaternion rotationFrame, 
+            SerializedProperty orbitSetting, Vector3 orbitCenter)
         {
             Cinemachine3OrbitRig.Settings def = new();
 
             var originalColor = Handles.color;
-            var followPos = vcam.Follow.position;
             var draggedRig = -1;
             var minIndex = 1;
             SerializedProperty[] orbits =
@@ -515,7 +515,7 @@ namespace Unity.Cinemachine.Editor
                 
                 if (OrbitHandles(
                     orbitSetting.serializedObject, orbitHeight, orbitRadius, 
-                    followPos, rotationFrame,
+                    orbitCenter, rotationFrame,
                     out var heightHandleId, out var radiusHandleId))
                 {
                     draggedRig = rigIndex;

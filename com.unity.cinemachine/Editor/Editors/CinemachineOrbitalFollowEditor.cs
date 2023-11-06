@@ -27,6 +27,7 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
 
@@ -93,7 +94,7 @@ namespace Unity.Cinemachine.Editor
                         var camPos = orbitalFollow.VcamState.RawPosition;
                         var camTransform = orbitalFollow.VirtualCamera.transform;
                         var camRight = camTransform.right;
-                        var followPos = orbitalFollow.FollowTargetPosition;
+                        var followPos = orbitalFollow.TrackedPoint;
                         var handlePos = followPos + camRight * orbitalFollow.Radius;
                         var rHandleId = GUIUtility.GetControlID(FocusType.Passive);
                         var newHandlePosition = Handles.Slider(rHandleId, handlePos, -camRight,
@@ -133,7 +134,8 @@ namespace Unity.Cinemachine.Editor
                         
                         var draggedRig = CinemachineSceneToolHelpers.ThreeOrbitRigHandle(
                             orbitalFollow.VirtualCamera, orbitalFollow.GetReferenceOrientation(),
-                            new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits));
+                            new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits),
+                            orbitalFollow.TrackedPoint);
                         m_UpdateCache = draggedRig < 0 || draggedRig > 2;
                         orbitalFollow.VerticalAxis.Value = draggedRig switch
                         {
@@ -166,7 +168,7 @@ namespace Unity.Cinemachine.Editor
                 var color = CinemachineCore.IsLive(vcam)
                     ? CinemachineCorePrefs.BoundaryObjectGizmoColour.Value
                     : CinemachineCorePrefs.InactiveGizmoColour.Value;
-                var targetPos = orbital.FollowTargetPosition;
+                var targetPos = orbital.TrackedPoint;
                 var orient = orbital.GetReferenceOrientation();
                 var up = orient * Vector3.up;
                 var rotation = orbital.HorizontalAxis.Value;
