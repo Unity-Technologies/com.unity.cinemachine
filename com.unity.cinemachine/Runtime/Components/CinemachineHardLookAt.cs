@@ -9,6 +9,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Hard Look At")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineHardLookAt.html")]
     public class CinemachineHardLookAt : CinemachineComponentBase

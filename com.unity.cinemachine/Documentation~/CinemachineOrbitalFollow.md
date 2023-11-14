@@ -16,6 +16,7 @@ If you attach an input controller to the CinemachineCamera, then the player can 
 
 | **Property:** || **Function:** |
 |:---|:---|:---|
+| __Target Offset__ || Offset from the target object's center in target-local space. Use this to fine-tune the orbit position when the desired focus of the orbit is not the tracked object's center. |
 | __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. |
 | | _Lock To Target On Assign_ | Makes the orientation of the CinemachineCamera match the local frame of the Tracking target, at the moment when the CinemachineCamera is activated or when the target is assigned. This offset remains constant in world space. The camera doesn't rotate along with the target. |
 | | _Lock To Target With World Up_ | Makes the CinemachineCamera use the local frame of the Tracking target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |

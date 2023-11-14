@@ -41,6 +41,7 @@ namespace Unity.Cinemachine.Editor
 
             var list = container.AddChild(new ListView()
             {
+                name = "InstructionList",
                 reorderable = true,
                 reorderMode = ListViewReorderMode.Animated,
                 showAddRemoveFooter = true,
@@ -63,22 +64,13 @@ namespace Unity.Cinemachine.Editor
                 var element = instructions.GetArrayElementAtIndex(index);
 
                 var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
-                var vcamSel = row.AddChild(new PopupField<Object>());
+                var vcamSel = row.AddChild(new PopupField<Object> { name = $"vcamSelector{index}" });
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.TrackAnyUserActivity(() => 
-                {
-                    if (Target == null)
-                        return; // object deleted
-                    vcamSel.choices ??= new();
-                    vcamSel.choices.Clear();
-                    var children = Target.ChildCameras;
-                    for (int i = 0; i < children.Count; ++i)
-                        vcamSel.choices.Add(children[i]);
-                });
         
-                var blend = row.AddChild(
-                    new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
+                var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
+                if (index == 0)
+                    blend.name = "FirstItemBlend";
                 var hold = row.AddChild(
                     new InspectorUtility.CompactPropertyField(element.FindPropertyRelative(() => def.Hold), " "));
                 hold.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
@@ -114,9 +106,33 @@ namespace Unity.Cinemachine.Editor
             {
                 if (Target == null)
                     return; // object deleted
+
                 var isMultiSelect = targets.Length > 1;
                 multiSelectMsg.SetVisible(isMultiSelect);
                 container.SetVisible(!isMultiSelect);
+
+                // Hide the first blend if not looped
+                var instructions = container.Q<ListView>("InstructionList");
+                instructions.Q<VisualElement>("FirstItemBlend")?.SetEnabled(Target.Loop);
+
+                // Update the list items
+                int index = 0;
+                var iter = instructions.itemsSource.GetEnumerator();
+                while (iter.MoveNext())
+                {
+                    var vcamSel = list.Q<PopupField<Object>>($"vcamSelector{index}");
+                    if (vcamSel != null)
+                    {
+                        if (Target == null)
+                            return; // object deleted
+                        vcamSel.choices ??= new();
+                        vcamSel.choices.Clear();
+                        var children = Target.ChildCameras;
+                        for (int i = 0; i < children.Count; ++i)
+                            vcamSel.choices.Add(children[i]);
+                    }
+                    ++index;
+                }
             });
             this.AddExtensionsDropdown(ux);
 

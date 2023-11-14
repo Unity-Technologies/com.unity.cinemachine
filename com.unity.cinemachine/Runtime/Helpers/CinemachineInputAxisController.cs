@@ -136,6 +136,14 @@ namespace Unity.Cinemachine
             public float LegacyGain = 1;
 #endif
 
+            /// <summary>Enable this if the input value is inherently dependent on frame time.
+            /// For example, mouse deltas will naturally be bigger for longer frames, so 
+            /// should not normally be scaled by deltaTime.</summary>
+            [Tooltip("Enable this if the input value is inherently dependent on frame time.  "
+                + "For example, mouse deltas will naturally be bigger for longer frames, so "
+                + "in this case the default deltaTime scaling should be canceled.")]
+            public bool CancelDeltaTime = false;
+
             /// <inheritdoc />
             public float GetValue(
                 UnityEngine.Object context,
@@ -158,7 +166,7 @@ namespace Unity.Cinemachine
                     //catch (ArgumentException e) { Debug.LogError(e.ToString()); }
                 }
 #endif
-                return inputValue;
+                return (Time.deltaTime > 0 && CancelDeltaTime) ? inputValue / Time.deltaTime : inputValue;
             }
 
 #if CINEMACHINE_UNITY_INPUTSYSTEM

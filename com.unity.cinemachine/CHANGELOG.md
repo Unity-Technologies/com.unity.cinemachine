@@ -5,27 +5,73 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Fixed
+- Bugfix: Divide-by-zero error in InputAxis.CancelDeltaTime if deltaTime is zero.
+- Regression fix: CinemachineCamera inspector Solo functionality was not updating correctly.
+- 
+### Added
+- Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
+- Added CinemachineOrbitalFollow.TargetOffset to reposition orbit center.
+- SaveDuringPlay supports multi-scene editing.
+
+### Changed
+- RuntimeUtility.GetScratchCollider and RuntimeUtility.DestroyScratchCollider are now public, to allow custom extensions to use them.
+
+
+## [3.0.0] - 2023-10-25
+
+### Fixed
+- Regression fix: Extensions and components were unable to modify the blend hint.
+- Bugfix: HardLockToTarget component was ignoring PreviousStateIsValid flag.
+ 
+### Added
+- Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
+
+### Changed
+- CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
+ 
+
+## [3.0.0-pre.9] - 2023-10-01
+
+### Fixed
+- Regresion fix: Sequencer inspector child camera popups were not being populated.
+- Regresion fix: Manager Camera's child camera warning icons were not being updated correctly.
+- Regresion fix: ManagerCameras were crushing PreviousStateIsValid in their children.
+- Bugfix: CinemachineInputAxisController editor was missing foldout arrows on the Driven Axis items.
+
+
+## [3.0.0-pre.8] - 2023-09-22
+
+### Fixed
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing rotational flickering.
 - Bugfix: Deceleration at the end of axis range was too aggressive.
 - Bugfix: Orbital recentering should not be forced when transitioning to a camera.
 - Bugfix: InheritPosition takes the actual camera position, so it works consistently if transitioning mid-blend.
 - Bugfix: CinemachineDeoccluder was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: Spurious camera cut events were being issued, especially in HDRP.
-- Bugfix: Mull reference exceptions when inspector is hidden behind another tab.
+- Bugfix: Null reference exceptions when inspector is hidden behind another tab.
 - Bugfix: GroupFraming inspector was displaying incorrect warning when LookAt target is a group.
 - Bugfix: GroupFraming displays more accurate group size indicator in the game view.
 - Bugfix: nullrefs in log when target group was deleted but was still being referenced by vcams.
 - Regression fix: CinemachineCollider generated NaN positions if no target was set.
+
+### Added
+- New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
-- Improved OrbitalFollow's ForceCameraPosition algorithm.
-- Deoccluder accommodates camera radius in all modes.
-- StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
-- Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
-- Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 - Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
+- Added option to disable deltaTime scaling in CinemachineInputAxisProvider.
+
+### Changed
+- Improved OrbitalFollow's ForceCameraPosition algorithm.
+- Deoccluder accommodates camera radius in all modes.
+- Renamed CinemachineSplineDolly.CameraUp to CameraRotation, which more accurately reflects what it does.
+- Renamed InputAxis.DoRecentering() to InputAxis.UpdateRecentering()
+- StateDrivenCamera: child camera enabled status and priority are now taken into account when choosing the current active camera.
+
+### Deprecated
 - Removed CinemachineToolSettings overlay.
-- New sample: ThirdPersonWithAimMode showing how to implement a FreeLook camera with Aim mode.
 
 
 ## [3.0.0-pre.7] - 2023-05-04

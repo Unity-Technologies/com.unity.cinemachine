@@ -12,6 +12,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Pan Tilt")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePanTilt.html")]
     public class CinemachinePanTilt 
