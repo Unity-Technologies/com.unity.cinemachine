@@ -1,5 +1,5 @@
 {
-    "createSeparatePackage": true,
+    "createSeparatePackage": false,
     "displayName": "Cinemachine Test Package",
     "dependencies": {
        "com.unity.test-framework": "1.1.33"

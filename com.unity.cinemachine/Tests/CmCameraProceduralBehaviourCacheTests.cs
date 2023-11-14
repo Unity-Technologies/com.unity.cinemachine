@@ -51,12 +51,15 @@ namespace Unity.Cinemachine.Tests
             foreach (var cmComponent in s_AllCinemachineComponents)
             {
                 var stage = cmComponent.GetCustomAttribute<CameraPipelineAttribute>().Stage;
-                Assert.True(m_CmCamera.PeekPipelineCacheType(stage) != cmComponent);
+                var oldComponent = m_CmCamera.PeekPipelineCacheType(stage);
+                Assert.True(oldComponent != cmComponent);
                 AddComponent(m_CmCamera.gameObject, cmComponent);
                 Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after add
             
-                // We expect that the last one added should be in the pipeline
-                Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
+                if (oldComponent == null)
+                    Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
+                else
+                    Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == oldComponent); // pipeline is rebuilt correctly
             }
         }
         
