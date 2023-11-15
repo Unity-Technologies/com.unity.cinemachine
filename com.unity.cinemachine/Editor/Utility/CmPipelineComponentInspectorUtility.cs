@@ -13,11 +13,12 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     static class CmPipelineComponentInspectorUtility
     {
-        public enum RequiredTargets { None, Tracking, LookAt, Group };
+        public enum RequiredTargets { None, Tracking, LookAt, GroupLookAt };
 
         const string k_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
-        const string k_NeedLookAt = "A LookAt Tracking Target is required in the CinemachineCamera.";
-        const string k_NeedGroup = "The Tracking or LookAt Target in the CinemachineCamera must be a Target Group.";
+        const string k_NeedLookAt = "A LookAt Target is required in the CinemachineCamera.";
+        const string k_NeedGroupTarget = "The Tracking Target in the CinemachineCamera must be a Target Group.";
+        const string k_NeedGroupLookAt = "The LookAt Target in the CinemachineCamera must be a Target Group.";
         const string k_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
         const string k_AddCamera = "Add\nCinemachineCamera";
         const string k_DuplicateComponent = "This component is redundant and will be ignored.";
@@ -34,17 +35,16 @@ namespace Unity.Cinemachine.Editor
                 k_NeedCamera, HelpBoxMessageType.Warning,
                 k_AddCamera, () => AddCmCameraToTargets(targets)));
 
-            var text = string.Empty;
+            var targetText = string.Empty;
+            var lookAtText = string.Empty;
             switch (requiredTargets)
             {
-                case RequiredTargets.Tracking: text = k_NeedTarget; break;
-                case RequiredTargets.LookAt: text = k_NeedLookAt; break;
-                case RequiredTargets.Group: text = k_NeedGroup; break;
+                case RequiredTargets.Tracking: targetText = k_NeedTarget; break;
+                case RequiredTargets.LookAt: targetText = k_NeedTarget; lookAtText = k_NeedLookAt; break;
+                case RequiredTargets.GroupLookAt: targetText = k_NeedGroupTarget; lookAtText = k_NeedGroupLookAt; break;
             }
-            VisualElement noTargetHelp = null;
-            if (text.Length > 0)
-                noTargetHelp = ux.AddChild(new HelpBox(text, HelpBoxMessageType.Warning));
-
+            var noTargetHelp = targetText.Length > 0 ? ux.AddChild(new HelpBox(targetText, HelpBoxMessageType.Warning)) : null;
+            var noLookAtHelp = lookAtText.Length > 0 ? ux.AddChild(new HelpBox(lookAtText, HelpBoxMessageType.Warning)) : null;
             var duplicateHelp = ux.AddChild(new HelpBox(k_DuplicateComponent, HelpBoxMessageType.Error));
 
             // Update state
@@ -55,6 +55,7 @@ namespace Unity.Cinemachine.Editor
                 
                 var noCamera = false;
                 var noTarget = false;
+                var noLookAtTarget = false;
                 var isDuplicate = false;
                 for (int i = 0; i < targets.Length && !noCamera; ++i)
                 {
@@ -67,10 +68,9 @@ namespace Unity.Cinemachine.Editor
                         switch (requiredTargets)
                         {
                             case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
-                            case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                            case RequiredTargets.Group: noTarget |= 
-                                (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
-                                && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
+                            case RequiredTargets.LookAt: noLookAtTarget |= c.LookAtTarget == null; break;
+                            case RequiredTargets.GroupLookAt: 
+                                noLookAtTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                         }
                         if (vcam != null && vcam.GetCinemachineComponent(c.Stage) != c)
                             isDuplicate = true;
@@ -80,14 +80,15 @@ namespace Unity.Cinemachine.Editor
                         var vcam = x.ComponentOwner;
                         noCamera |= vcam == null;
                         if (vcam != null)
-                            vcam.UpdateTargetCache();
-                        switch (requiredTargets)
                         {
-                            case RequiredTargets.Tracking: noTarget |= noCamera || vcam.Follow == null; break;
-                            case RequiredTargets.LookAt: noTarget |= noCamera || vcam.LookAt == null; break;
-                            case RequiredTargets.Group: noTarget |= noCamera 
-                                || ((vcam.FollowTargetAsGroup == null || !vcam.FollowTargetAsGroup.IsValid)
-                                    && (vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid)); break;
+                            vcam.UpdateTargetCache();
+                            switch (requiredTargets)
+                            {
+                                case RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
+                                case RequiredTargets.LookAt: noLookAtTarget |= vcam.LookAt == null; break;
+                                case RequiredTargets.GroupLookAt: 
+                                    noLookAtTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
+                            }
                         }
                     }
                     else if (targets[i] is MonoBehaviour b)
@@ -95,6 +96,7 @@ namespace Unity.Cinemachine.Editor
                 }
                 noCameraHelp?.SetVisible(noCamera);
                 noTargetHelp?.SetVisible(noTarget && !noCamera);
+                noLookAtHelp?.SetVisible(noLookAtTarget && !noCamera);
                 duplicateHelp?.SetVisible(isDuplicate);
             });
         }
@@ -283,9 +285,8 @@ namespace Unity.Cinemachine.Editor
                     {
                         case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
                         case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                        case RequiredTargets.Group: noTarget |= 
-                            (c.FollowTargetAsGroup == null || !c.FollowTargetAsGroup.IsValid)
-                            && (c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid); break;
+                        case RequiredTargets.GroupLookAt: 
+                            noTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                     }
                 }
                 else if (targets[i] is CinemachineExtension x)
@@ -293,14 +294,15 @@ namespace Unity.Cinemachine.Editor
                     var vcam = x.ComponentOwner;
                     noCamera |= vcam == null;
                     if (vcam != null)
-                        vcam.UpdateTargetCache();
-                    switch (requiredTargets)
                     {
-                        case RequiredTargets.Tracking: noTarget |= noCamera || vcam.Follow == null; break;
-                        case RequiredTargets.LookAt: noTarget |= noCamera || vcam.LookAt == null; break;
-                        case RequiredTargets.Group: noTarget |= noCamera 
-                            || ((vcam.FollowTargetAsGroup == null || !vcam.FollowTargetAsGroup.IsValid)
-                             && (vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid)); break;
+                        vcam.UpdateTargetCache();
+                        switch (requiredTargets)
+                        {
+                            case RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
+                            case RequiredTargets.LookAt: noTarget |= vcam.LookAt == null; break;
+                            case RequiredTargets.GroupLookAt: 
+                                noTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
+                        }
                     }
                 }
             }
@@ -318,7 +320,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     case RequiredTargets.Tracking: text = k_NeedTarget; break;
                     case RequiredTargets.LookAt: text = k_NeedLookAt; break;
-                    case RequiredTargets.Group: text = k_NeedGroup; break;
+                    case RequiredTargets.GroupLookAt: text = k_NeedGroupLookAt; break;
                 }
                 if (text.Length > 0)
                     EditorGUILayout.HelpBox(text, MessageType.Warning);

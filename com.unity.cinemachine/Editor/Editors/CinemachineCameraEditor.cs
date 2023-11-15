@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
-    class CmCameraEditor : UnityEditor.Editor 
+    class CinemachineCameraEditor : UnityEditor.Editor 
     {
         CinemachineCamera Target => target as CinemachineCamera;
 
@@ -53,17 +53,17 @@ namespace Unity.Cinemachine.Editor
             this.AddCameraStatus(ux);
             this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.BlendHint) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
 
             var defaultTargetLabel = new Label() { style = { alignSelf = Align.FlexEnd, opacity = 0.5f }};
-            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Procedural Motion</b>", "", defaultTargetLabel));
+            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Set Procedural Components</b>", "", defaultTargetLabel));
             row.focusable = false;
             row.style.paddingTop = InspectorUtility.SingleLineHeight / 2;
             row.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
 
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
             this.AddPipelineDropdowns(ux);
 
             ux.AddSpace();

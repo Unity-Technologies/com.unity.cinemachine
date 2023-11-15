@@ -51,8 +51,9 @@ namespace Unity.Cinemachine.Editor
 
         static List<string> m_PresetOptions;
         static List<string> m_PhysicalPresetOptions;
-        const string k_AddPresetsLabel = "New Preset with these Settings...";
-        const string k_EditPresetsLabel = "Edit Presets...";
+        const string k_AddPresetsLabel = "New Palette entry with these Settings...";
+        const string k_EditPresetsLabel = "Edit Palette...";
+        const string k_PaletteLabel = "Palette...";
         float m_PreviousAspect;
 
         protected bool HideModeOverride { get; set; }
@@ -61,14 +62,14 @@ namespace Unity.Cinemachine.Editor
         {
             m_PresetOptions ??= new List<string>();
             m_PresetOptions.Clear();
-            var presets = CinemachineLensPresets.InstanceIfExists;
-            for (int i = 0; presets != null && i < presets.Presets.Count; ++i)
-                m_PresetOptions.Add(presets.Presets[i].Name);
+            var palette = CinemachineLensPalette.InstanceIfExists;
+            for (int i = 0; palette != null && i < palette.Presets.Count; ++i)
+                m_PresetOptions.Add(palette.Presets[i].Name);
             m_PresetOptions.Add("");
             m_PresetOptions.Add(k_AddPresetsLabel);
             m_PresetOptions.Add(k_EditPresetsLabel);
 
-            var physicalPresets = CinemachinePhysicalLensPresets.InstanceIfExists;
+            var physicalPresets = CinemachinePhysicalLensPalette.InstanceIfExists;
             m_PhysicalPresetOptions ??= new List<string>();
             m_PhysicalPresetOptions.Clear();
             for (int i = 0; physicalPresets != null && i < physicalPresets.Presets.Count; ++i)
@@ -115,7 +116,7 @@ namespace Unity.Cinemachine.Editor
             {
                 modeOverrideProperty = property.FindPropertyRelative(() => s_Def.ModeOverride);
                 modeHelp = foldout.AddChild(
-                    new HelpBox("Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect", 
+                    new HelpBox("Lens Mode Override must be enabled in the Cinemachine Brain for Mode Override to take effect", 
                         HelpBoxMessageType.Warning));
                 foldout.AddChild(new PropertyField(modeOverrideProperty)).TrackPropertyValue(
                     modeOverrideProperty, (p) => InspectorUtility.RepaintGameView());
@@ -191,7 +192,7 @@ namespace Unity.Cinemachine.Editor
                 new FieldMouseDragger<float>(m_Control).SetDragZone(Label);
 
                 m_Presets = Contents.AddChild(new PopupField<string>
-                    { tooltip = "Custom Lens Presets", style = {flexBasis = 20, flexGrow = 1}});
+                    { tooltip = "Customizable Lens Palette", style = {flexBasis = 20, flexGrow = 1}});
                 m_Presets.RegisterValueChangedCallback(OnPresetValueChanged);
 
                 ShortLabel = new Label("X") { style = { alignSelf = Align.Center, opacity = 0.5f }};
@@ -264,13 +265,13 @@ namespace Unity.Cinemachine.Editor
                         m_Control.SetValueWithoutNotify(v);
 
                         // Sync the presets
-                        var presets = CinemachinePhysicalLensPresets.InstanceIfExists;
+                        var presets = CinemachinePhysicalLensPalette.InstanceIfExists;
                         var index = presets == null ? -1 : presets.GetMatchingPreset(new ()
                         {
                             FocalLength = v,
                             PhysicalProperties = ReadPhysicalSettings()
                         });
-                        m_Presets.SetValueWithoutNotify(index < 0 ? string.Empty : presets.Presets[index].Name);
+                        m_Presets.SetValueWithoutNotify(index < 0 ? k_PaletteLabel : presets.Presets[index].Name);
                         break;
                     }
                     case Modes.VFOV:
@@ -284,9 +285,9 @@ namespace Unity.Cinemachine.Editor
                         m_Control.SetValueWithoutNotify(v);
 
                         // Sync the presets
-                        var presets = CinemachineLensPresets.InstanceIfExists;
+                        var presets = CinemachineLensPalette.InstanceIfExists;
                         var index = presets == null ? -1 : presets.GetMatchingPreset(fovProp.floatValue);
-                        m_Presets.SetValueWithoutNotify(index < 0 ? string.Empty : presets.Presets[index].Name);
+                        m_Presets.SetValueWithoutNotify(index < 0 ? k_PaletteLabel : presets.Presets[index].Name);
                         break;
                     }
                 }
@@ -366,19 +367,19 @@ namespace Unity.Cinemachine.Editor
                 if (GetLensMode() == Modes.Physical)
                 {
                     // Physical presets
-                    var presets = CinemachinePhysicalLensPresets.Instance;
-                    if (presets != null)
+                    var palette = CinemachinePhysicalLensPalette.Instance;
+                    if (palette != null)
                     {
                         // Edit the presets assets if desired
                         if (evt.newValue == k_EditPresetsLabel)
-                            Selection.activeObject = presets;
+                            Selection.activeObject = palette;
                         else if (evt.newValue == k_AddPresetsLabel)
                         {
-                            Selection.activeObject = presets;
-                            Undo.RecordObject(presets, "add preset");
-                            presets.Presets.Add(new ()
+                            Selection.activeObject = palette;
+                            Undo.RecordObject(palette, "add palette entry");
+                            palette.Presets.Add(new ()
                             {
-                                Name = $"{m_Control.value}mm preset {presets.Presets.Count + 1}",
+                                Name = $"{m_Control.value}mm preset {palette.Presets.Count + 1}",
                                 FocalLength = m_Control.value,
                                 PhysicalProperties = ReadPhysicalSettings()
                             });
@@ -386,10 +387,10 @@ namespace Unity.Cinemachine.Editor
                         else 
                         {
                             // Apply the preset
-                            var index = presets.GetPresetIndex(evt.newValue);
+                            var index = palette.GetPresetIndex(evt.newValue);
                             if (index >= 0)
                             {
-                                var v = presets.Presets[index];
+                                var v = palette.Presets[index];
                                 m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView).floatValue = FocalLengthToFov(v.FocalLength);
                                 WritePhysicalSettings(v.PhysicalProperties);
                                 m_LensProperty.serializedObject.ApplyModifiedProperties();
@@ -401,30 +402,30 @@ namespace Unity.Cinemachine.Editor
                 else
                 {
                     // Nonphysical Presets
-                    var presets = CinemachineLensPresets.Instance;
-                    if (presets != null)
+                    var palette = CinemachineLensPalette.Instance;
+                    if (palette != null)
                     {
                         var fovProp = m_LensProperty.FindPropertyRelative(() => s_Def.FieldOfView);
 
                         // Edit the presets assets if desired
                         if (evt.newValue == k_EditPresetsLabel)
-                            Selection.activeObject = presets;
+                            Selection.activeObject = palette;
                         else if (evt.newValue == k_AddPresetsLabel)
                         {
-                            Selection.activeObject = presets;
-                            Undo.RecordObject(presets, "add preset");
-                            presets.Presets.Add(new ()
+                            Selection.activeObject = palette;
+                            Undo.RecordObject(palette, "add palette entry");
+                            palette.Presets.Add(new ()
                             {
-                                Name = $"{fovProp.floatValue} preset {presets.Presets.Count + 1}",
+                                Name = $"{fovProp.floatValue} preset {palette.Presets.Count + 1}",
                                 VerticalFOV = fovProp.floatValue,
                             });
                         }
                         else 
                         {
                             // Apply the preset
-                            var index = presets.GetPresetIndex(evt.newValue);
+                            var index = palette.GetPresetIndex(evt.newValue);
                             if (index >= 0)
-                                fovProp.floatValue = presets.Presets[index].VerticalFOV;
+                                fovProp.floatValue = palette.Presets[index].VerticalFOV;
                             m_LensProperty.serializedObject.ApplyModifiedProperties();
                         }
                     }
@@ -471,15 +472,13 @@ namespace Unity.Cinemachine.Editor
         /// IMGUI IMPLEMENTATION (to be removed) 
         ///===========================================================================
 
-        static readonly GUIContent EditPresetsLabel = new ("Edit Presets...");
         static readonly GUIContent HFOVLabel = new ("Horizontal FOV", "Horizontal Field of View");
         static readonly GUIContent VFOVLabel = new ("Vertical FOV", "Vertical Field of View");
         static readonly GUIContent FocalLengthLabel = new ("Focal Length", "The length of the lens (in mm)");
         static readonly GUIContent OrthoSizeLabel = new ("Ortho Size", "When using an orthographic camera, "
             + "this defines the half-height, in world coordinates, of the camera view.");
-        static readonly GUIContent s_EmptyContent = new (" ");
         static readonly GUIContent AdvancedLabel = new ("Advanced");
-        static readonly string AdvancedHelpboxMessage = "Lens Mode Override must be enabled in the CM Brain for Mode Override to take effect";
+        static readonly string AdvancedHelpboxMessage = "Lens Mode Override must be enabled in the Cinemachine Brain for Mode Override to take effect";
 
         static bool s_AdvancedLensExpanded;
 
@@ -493,7 +492,6 @@ namespace Unity.Cinemachine.Editor
         Snapshot m_Snapshot;
 
         const float vSpace= 2;
-        const float hSpace = 2;
 
         void SnapshotCameraShadowValues(SerializedProperty property)
         {
