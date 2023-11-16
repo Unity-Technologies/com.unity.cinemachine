@@ -5,9 +5,7 @@ The CinemachineCamera is a component that you add to an empty GameObject. It rep
 At any time, each CinemachineCamera may be in one of these states:
 
 * __Live__: The CinemachineCamera actively controls a Unity camera that has a Cinemachine Brain. When a Cinemachine Brain blends from one CinemachineCamera to the next, both CinemachineCameras are live. When the blend is complete, there is only one live CinemachineCamera.
-
 * __Standby__: The CinemachineCamera doesn’t control the Unity camera. However, it still follows and aims at its targets, and updates. A CinemachineCamera in this state is activated and has a priority that is the same as or lower than the live CinemachineCamera.
-
 * __Disabled__: The CinemachineCamera doesn’t control the Unity camera and doesn’t actively follow or aim at its targets. A CinemachineCamera in this state doesn’t consume processing power. To disable a CinemachineCamera, deactivate its GameObject. The CinemachineCamera is present but disabled in the Scene. However, even though the GameObject is deactivated, the CinemachineCamera can still control the Unity camera if the CinemachineCamera is participating in a blend, or if it is invoked by Timeline.
 
 ## Passive Cameras

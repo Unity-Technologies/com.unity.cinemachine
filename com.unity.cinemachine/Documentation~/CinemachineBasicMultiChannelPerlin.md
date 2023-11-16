@@ -9,11 +9,8 @@ The Basic Multi Channel Perlin component applies a noise profile. A noise profil
 To apply noise:
 
 1. Select your CinemachineCamera in the [Scene](https://docs.unity3d.com/Manual/UsingTheSceneView.html) view or [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window.
-
 2. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), use the  __Noise__ drop-down menu to choose __Basic Multi Channel Perlin__.  This will add a noise behavior to the CmMCamera.
-
 3. In the noise behaviour's __Noise Profile__, choose an existing profile asset or [create your own profile](CinemachineNoiseProfiles.md).
-
 4. Use __Amplitude Gain__ and __Frequency Gain__ to fine-tune the noise.
 
 ## Properties

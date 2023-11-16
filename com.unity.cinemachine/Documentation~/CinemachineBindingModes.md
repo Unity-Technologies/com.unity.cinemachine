@@ -1,6 +1,6 @@
 ## Binding Modes
 
-The binding mode defines the coordinate space Unity uses to interpret the camera offset from the target and to apply the damping.
+When following a target with an offset from the target, the binding mode defines the coordinate space Unity uses to interpret the camera offset from the target and to apply the damping.
 </br></br>
 
 ### Lock To Target
