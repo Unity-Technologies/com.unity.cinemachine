@@ -87,6 +87,11 @@ In CM2, CinemachineBrain would only process CinemachineCameras that were assigne
 
 ![Cinemachine Channels Brain](images/CinemachineChannels-brain.png)
 
+### Lens Mode Override
+
+If your project is using virtual cameras with a Lens Mode Override (e.g. changing between physical and perspective and ortho cameras), then this will stop working until you enable mode override and assign a default lens mode in the CinemachineBrain.
+
+![Default Lens Mode](images/DefaultLensMode.png)
 
 ## Upgrading the Project Data
 
