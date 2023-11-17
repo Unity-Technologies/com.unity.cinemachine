@@ -137,7 +137,7 @@ namespace Unity.Cinemachine
 
         [FormerlySerializedAs("m_LensAttributes")]
         [FormerlySerializedAs("m_Lens")]
-        LegacyLensSettings m_LegacyLens;
+        [SerializeField, HideInInspector] LegacyLensSettings m_LegacyLens;
 
         internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {

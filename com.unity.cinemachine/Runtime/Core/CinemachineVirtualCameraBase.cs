@@ -525,6 +525,11 @@ namespace Unity.Cinemachine
         protected virtual void Start()
         {
             m_WasStarted = true;
+
+            // Perform legacy upgrade if necessary
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                PerformLegacyUpgrade(m_StreamingVersion);
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
         
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
