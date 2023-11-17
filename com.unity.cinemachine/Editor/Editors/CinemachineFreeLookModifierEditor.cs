@@ -18,7 +18,8 @@ namespace Unity.Cinemachine
             var ux = new VisualElement();
 
             var invalidSrcMsg = ux.AddChild(
-                new HelpBox("No applicable components found.  Must have one of: "
+                new HelpBox("<b>This component will be ignored because no applicable target components are present.</b>\n\n"
+                    + "Applicable target components include: "
                     + InspectorUtility.GetAssignableBehaviourNames(
                         typeof(CinemachineFreeLookModifier.IModifierValueSource)), 
                     HelpBoxMessageType.Warning));
@@ -80,7 +81,7 @@ namespace Unity.Cinemachine
                 if (property.managedReferenceValue is not CinemachineFreeLookModifier.Modifier m)
                     return new Label("invalid item");
 
-                var warningText = "No applicable components found.  Must have one of: "
+                var warningText = "No applicable targets found.  Applicable targets include: "
                     + InspectorUtility.GetAssignableBehaviourNames(m.CachedComponentType);
 
                 var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};

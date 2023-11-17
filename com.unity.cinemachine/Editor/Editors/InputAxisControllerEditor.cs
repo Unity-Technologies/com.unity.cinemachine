@@ -164,7 +164,8 @@ namespace Unity.Cinemachine.Editor
             list.BindProperty(property);
 
             var isEmptyMessage = ux.AddChild(new HelpBox(
-                "No applicable components found.  Must have one of: "
+                "<b>This component will be ignored because no applicable target components are present.</b>\n\n"
+                    + "Applicable target components include: "
                     + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 
                 HelpBoxMessageType.Warning));
             list.TrackPropertyWithInitialCallback(

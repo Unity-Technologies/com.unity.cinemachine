@@ -10,22 +10,22 @@ namespace Unity.Cinemachine.Editor
     /// User-definable named presets for lenses.  This is a Singleton asset, available in editor only
     /// </summary>
     [Serializable]
-    public sealed class CinemachineLensPresets : ScriptableObject
+    public sealed class CinemachineLensPalette : ScriptableObject
     {
-        static CinemachineLensPresets s_Instance = null;
+        static CinemachineLensPalette s_Instance = null;
         static bool s_AlreadySearched = false;
 
         /// <summary>Get the singleton instance of this object, or null if it doesn't exist</summary>
-        public static CinemachineLensPresets InstanceIfExists
+        public static CinemachineLensPalette InstanceIfExists
         {
             get
             {
                 if (!s_AlreadySearched)
                 {
                     s_AlreadySearched = true;
-                    var guids = AssetDatabase.FindAssets("t:CinemachineLensPresets");
+                    var guids = AssetDatabase.FindAssets("t:CinemachineLensPalette");
                     for (int i = 0; i < guids.Length && s_Instance == null; ++i)
-                        s_Instance = AssetDatabase.LoadAssetAtPath<CinemachineLensPresets>(
+                        s_Instance = AssetDatabase.LoadAssetAtPath<CinemachineLensPalette>(
                             AssetDatabase.GUIDToAssetPath(guids[i]));
                 }
                 return s_Instance;
@@ -33,18 +33,18 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>Get the singleton instance of this object.  Creates asset if nonexistent</summary>
-        public static CinemachineLensPresets Instance
+        public static CinemachineLensPalette Instance
         {
             get
             {
                 if (InstanceIfExists == null)
                 {
                     var newAssetPath = EditorUtility.SaveFilePanelInProject(
-                            "Create Lens Presets asset", "CinemachineLensPresets", "asset",
+                            "Create Lens Palette asset", "CinemachineLensPalette", "asset",
                             "This editor-only file will contain the lens presets for this project");
                     if (!string.IsNullOrEmpty(newAssetPath))
                     {
-                        s_Instance = CreateInstance<CinemachineLensPresets>();
+                        s_Instance = CreateInstance<CinemachineLensPalette>();
                         // Create some sample presets
                         s_Instance.Presets = new()
                         {
