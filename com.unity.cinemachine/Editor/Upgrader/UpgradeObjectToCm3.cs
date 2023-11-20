@@ -311,7 +311,7 @@ namespace Unity.Cinemachine.Editor
             cmCamera.Follow = vcam.m_Follow;
             cmCamera.LookAt = vcam.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = vcam.m_Follow != vcam.m_LookAt;
-            cmCamera.Lens = vcam.Lens;
+            cmCamera.Lens = vcam.m_Lens.ToLensSettings();
             cmCamera.BlendHint = vcam.BlendHint;
             if (vcam.m_OnCameraLiveEvent.GetPersistentEventCount() > 0)
             {
@@ -512,17 +512,19 @@ namespace Unity.Cinemachine.Editor
             CinemachineCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
             if (freelook.m_CommonLens)
-                cmCamera.Lens = freelook.Lens;
+                cmCamera.Lens = freelook.m_Lens.ToLensSettings();
             else
             {
-                cmCamera.Lens = freelook.GetRig(1).Lens;
-                if (!LensSettings.AreEqual(ref freelook.GetRig(1).Lens, ref freelook.GetRig(0).Lens)
-                    || !LensSettings.AreEqual(ref freelook.GetRig(1).Lens, ref freelook.GetRig(2).Lens))
+                cmCamera.Lens = freelook.GetRig(1).m_Lens.ToLensSettings();
+                var lens0 = freelook.GetRig(0).m_Lens.ToLensSettings();
+                var lens2 = freelook.GetRig(2).m_Lens.ToLensSettings();
+                if (!LensSettings.AreEqual(ref cmCamera.Lens, ref lens0)
+                    || !LensSettings.AreEqual(ref cmCamera.Lens, ref lens2))
                 {
                     freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.LensModifier
                     {
-                        Top = freelook.GetRig(0).Lens,
-                        Bottom = freelook.GetRig(2).Lens
+                        Top = lens0,
+                        Bottom = lens2
                     });
                 }
             }

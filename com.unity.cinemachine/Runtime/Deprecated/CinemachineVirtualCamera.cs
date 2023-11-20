@@ -43,7 +43,8 @@ namespace Unity.Cinemachine
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
             + "mirrors the Unity Camera's lens settings, and will be used to drive the "
             + "Unity camera when the vcam is active.")]
-        public LensSettings Lens = LensSettings.Default;
+        [FormerlySerializedAs("m_LensAttributes")]
+        public LegacyLensSettings m_Lens = LegacyLensSettings.Default;
 
         /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
         /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
@@ -77,10 +78,6 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
-        [FormerlySerializedAs("m_LensAttributes")]
-        [FormerlySerializedAs("m_Lens")]
-        [SerializeField, HideInInspector] LegacyLensSettings m_LegacyLens;
-
         internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {
             base.PerformLegacyUpgrade(streamedVersion);
@@ -105,8 +102,6 @@ namespace Unity.Cinemachine
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
-            if (streamedVersion < 20230301)
-                Lens = m_LegacyLens.ToLensSettings();
         }
         // ===============================================================
         
@@ -186,7 +181,8 @@ namespace Unity.Cinemachine
         override protected void OnEnable()
         {
             base.OnEnable();
-            m_State = PullStateFromVirtualCamera(Vector3.up, ref Lens);
+            m_LensSettings = m_Lens.ToLensSettings();
+            m_State = PullStateFromVirtualCamera(Vector3.up, ref m_LensSettings);
             InvalidateComponentPipeline();
         }
 
@@ -206,7 +202,7 @@ namespace Unity.Cinemachine
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         protected void OnValidate()
         {
-            Lens.Validate();
+            m_Lens.Validate();
         }
 
         void OnTransformChildrenChanged()
@@ -463,6 +459,7 @@ namespace Unity.Cinemachine
             }
         }
 
+        private LensSettings m_LensSettings;
         private Transform mCachedLookAtTarget;
         private CinemachineVirtualCameraBase mCachedLookAtTargetVcam;
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
@@ -471,7 +468,8 @@ namespace Unity.Cinemachine
             LookAtTargetAttachment = 1;
 
             // Initialize the camera state, in case the game object got moved in the editor
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref Lens);
+            m_LensSettings = m_Lens.ToLensSettings();
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_LensSettings);
 
             Transform lookAtTarget = LookAt;
             if (lookAtTarget != mCachedLookAtTarget)
