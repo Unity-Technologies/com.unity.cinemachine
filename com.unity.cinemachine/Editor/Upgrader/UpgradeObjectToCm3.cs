@@ -39,7 +39,7 @@ namespace Unity.Cinemachine.Editor
             // Is it a path?
             if (go.TryGetComponent(out CinemachinePathBase path))
                 UpgradePath(path);
-            else
+            else if (!go.TryGetComponent<CinemachineCamera>(out _))
             {
                 // It's some kind of vcam.  Check for FreeLook first because it has
                 // hidden child VirtualCameras and we need to remove them
@@ -160,14 +160,14 @@ namespace Unity.Cinemachine.Editor
             {
                 // if type is not in class upgrade map, then we won't change binding
                 if (!ClassUpgradeMap.ContainsKey(previousBinding.type))
-                    break;
+                    continue;
                     
                 var newBinding = previousBinding;
                 // upgrade type based on mapping
                 newBinding.type = ClassUpgradeMap[previousBinding.type];
 
                 // clean path pointing to old structure where vcam components lived on a hidden child gameObject
-                if (previousBinding.path.Contains("cm"))
+                if (previousBinding.path.EndsWith("cm"))
                 {
                     var path = previousBinding.path;
 
@@ -176,7 +176,7 @@ namespace Unity.Cinemachine.Editor
                     newBinding.path = path.Substring(0, index);
                 }
 
-                if (previousBinding.path.Contains("Rig"))
+                if (previousBinding.path.EndsWith("Rig"))
                 {
                     var path = newBinding.path;
                     //path is either xRig only, or someParent/someOtherParent/.../xRig. In the second case, we need to remove /xRig, thus -1
@@ -193,7 +193,7 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 // clean old convention
-                if (previousBinding.propertyName.Contains("m_"))
+                if (previousBinding.propertyName.StartsWith("m_"))
                 {
                     var propertyName = previousBinding.propertyName;
                     newBinding.propertyName = propertyName.Replace("m_", string.Empty);
@@ -228,6 +228,10 @@ namespace Unity.Cinemachine.Editor
                     }
                 }
 
+#if DEBUG_HELPERS
+                Debug.Log(previousBinding.path + "." + previousBinding.type.Name + "." + previousBinding.propertyName 
+                    + " -> " + newBinding.path + "." + newBinding.type.Name + "." + newBinding.propertyName);
+#endif
                 var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                 AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
                 AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
