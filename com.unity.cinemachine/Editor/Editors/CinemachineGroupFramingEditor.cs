@@ -33,6 +33,7 @@ namespace Unity.Cinemachine.Editor
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingMode)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingSize)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
 
             var perspectiveControls = ux.AddChild(new VisualElement());

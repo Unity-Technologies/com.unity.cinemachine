@@ -36,6 +36,10 @@ namespace Unity.Cinemachine
         [RangeSlider(0, 2)]
         public float FramingSize = 0.8f;
 
+        /// <summary>A nonzero value will offset the group in the camera frame.</summary>
+        [Tooltip("A nonzero value will offset the group in the camera frame.")]
+        public Vector2 FramingOffset = Vector2.zero;
+
         /// <summary>How aggressively the camera tries to frame the group.
         /// Small numbers are more responsive</summary>
         [RangeSlider(0, 20)]
@@ -110,6 +114,7 @@ namespace Unity.Cinemachine
             SizeAdjustment = SizeAdjustmentModes.DollyThenZoom;
             LateralAdjustment = LateralAdjustmentModes.ChangePosition;
             FramingSize = 0.8f;
+            FramingOffset = Vector2.zero;
             Damping = 2;
             DollyRange = new Vector2(-100, 100);
             FovRange = new Vector2(1, 100);
@@ -190,12 +195,13 @@ namespace Unity.Cinemachine
             var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, lens.Aspect) * 0.5f;
             targetHeight = Mathf.Clamp(targetHeight, OrthoSizeRange.x, OrthoSizeRange.y);
 
-            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
-            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
-
             var deltaFov = targetHeight - lens.OrthographicSize;
             extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
             lens.OrthographicSize += extra.FovAdjustment;
+
+            camPos += new Vector3(FramingOffset.x * lens.OrthographicSize / lens.Aspect, FramingOffset.y * lens.OrthographicSize, 0);
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
             state.Lens = lens;
         }
 
