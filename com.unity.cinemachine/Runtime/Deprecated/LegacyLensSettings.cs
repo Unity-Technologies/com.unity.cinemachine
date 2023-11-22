@@ -45,7 +45,8 @@ namespace Unity.Cinemachine
         /// <summary>Obsolete.</summary>
         public float Anamorphism;
 
-        /// <summary>Obsolete.</summary>
+        /// <summary>Convert to LensSettings</summary>
+        /// <returns>Lens Settings representation of the LegacyLensSettings object</returns>
         public LensSettings ToLensSettings()
         {
             var lens = new LensSettings
@@ -73,6 +74,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Obsolete</summary>
+        /// <param name="src">LensSettings to copy from</param>
         public void SetFromLensSettings(LensSettings src)
         {
             FieldOfView = src.FieldOfView;
