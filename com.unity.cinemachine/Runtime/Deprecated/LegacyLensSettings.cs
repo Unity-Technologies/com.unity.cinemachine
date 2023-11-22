@@ -9,25 +9,43 @@ namespace Unity.Cinemachine
     [Serializable]
     public struct LegacyLensSettings
     {
+        /// <summary>Obsolete.</summary>
         public float FieldOfView;
+        /// <summary>Obsolete.</summary>
         public float OrthographicSize;
+        /// <summary>Obsolete.</summary>
         public float NearClipPlane;
+        /// <summary>Obsolete.</summary>
         public float FarClipPlane;
+        /// <summary>Obsolete.</summary>
         public float Dutch;
+        /// <summary>Obsolete.</summary>
         public LensSettings.OverrideModes ModeOverride;
 
+        /// <summary>Obsolete.</summary>
         public Camera.GateFitMode GateFit;
+        /// <summary>Obsolete.</summary>
         [HideInInspector] public Vector2 m_SensorSize;
+        /// <summary>Obsolete.</summary>
         public Vector2 LensShift;
+        /// <summary>Obsolete.</summary>
         public float FocusDistance;
+        /// <summary>Obsolete.</summary>
         public int Iso;
+        /// <summary>Obsolete.</summary>
         public float ShutterSpeed;
+        /// <summary>Obsolete.</summary>
         public float Aperture;
+        /// <summary>Obsolete.</summary>
         public int BladeCount;
+        /// <summary>Obsolete.</summary>
         public Vector2 Curvature;
+        /// <summary>Obsolete.</summary>
         public float BarrelClipping;
+        /// <summary>Obsolete.</summary>
         public float Anamorphism;
 
+        /// <summary>Obsolete.</summary>
         public LensSettings ToLensSettings()
         {
             var lens = new LensSettings
@@ -54,6 +72,7 @@ namespace Unity.Cinemachine
             return lens;
         }
 
+        /// <summary>Obsolete</summary>
         public void SetFromLensSettings(LensSettings src)
         {
             FieldOfView = src.FieldOfView;
@@ -76,7 +95,7 @@ namespace Unity.Cinemachine
             Anamorphism = src.PhysicalProperties.Anamorphism;
         }
         
-        /// <summary>Make sure lens settings are sane.  Call this from OnValidate().</summary>
+        /// <summary>Make sure legacy lens settings are sane.  Call this from OnValidate().</summary>
         public void Validate()
         {
             FarClipPlane = Mathf.Max(FarClipPlane, NearClipPlane + 0.001f);
@@ -91,7 +110,7 @@ namespace Unity.Cinemachine
             Anamorphism = Mathf.Clamp(Anamorphism, -1, 1);
         }
 
-        /// <summary>Default Lens Settings</summary>
+        /// <summary>Obsolete.  Default Legacy Lens Settings</summary>
         public static LegacyLensSettings Default => new ()
         {
             FieldOfView = 40f,
