@@ -1,6 +1,6 @@
 # Cinemachine Confiner 3D
 
-Use the __Cinemachine Confiner 3D__ [extension](CinemachineVirtualCameraExtensions.md) to limit the camera’s position to a volume.
+Use the __Cinemachine Confiner 3D__ [extension](ProceduralMotion.md#extensions) to limit the camera’s position to a volume.
 
 The camera’s position in 3D is confined to a volume.
 
