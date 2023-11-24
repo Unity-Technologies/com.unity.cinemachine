@@ -21,6 +21,17 @@ namespace Unity.Cinemachine
         /// Always returns the Aim stage</summary>
         public override CinemachineCore.Stage Stage { get => CinemachineCore.Stage.Aim; }
 
+        /// <summary>
+        /// Offset from the LookAt target's origin, in target's local space.  The camera will look at this point.
+        /// </summary>
+        [Tooltip("Offset from the LookAt target's origin, in target's local space.  The camera will look at this point.")]
+        public Vector3 LookAtOffset = Vector3.zero;
+
+        void Reset()
+        {
+            LookAtOffset = Vector3.zero;
+        }
+
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for calculating damping.  If less than
@@ -29,7 +40,8 @@ namespace Unity.Cinemachine
         {
             if (IsValid && curState.HasLookAt())
             {
-                Vector3 dir = (curState.ReferenceLookAt - curState.GetCorrectedPosition());
+                var offset = LookAtTargetRotation * LookAtOffset;
+                Vector3 dir = ((curState.ReferenceLookAt + offset) - curState.GetCorrectedPosition());
                 if (dir.magnitude > Epsilon)
                 {
                     if (Vector3.Cross(dir.normalized, curState.ReferenceUp).magnitude < Epsilon)
