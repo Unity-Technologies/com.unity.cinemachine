@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
 - Added CinemachineOrbitalFollow.TargetOffset to reposition orbit center.
+- Added CinemachineGroupFraming.CenterOffset to reposition group ceneter on the screen.
 - Added LookAtOffset to CinemachineHardLookAt behaviour.
 
 ### Changed
