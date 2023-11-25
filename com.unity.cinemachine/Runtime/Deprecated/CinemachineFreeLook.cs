@@ -42,7 +42,8 @@ namespace Unity.Cinemachine
         [Tooltip("Specifies the lens properties of this Virtual Camera.  This generally "
             + "mirrors the Unity Camera's lens settings, and will be used to drive the "
             + "Unity camera when the vcam is active")]
-        public LensSettings Lens = LensSettings.Default;
+        [FormerlySerializedAs("m_LensAttributes")]
+        public LegacyLensSettings m_Lens = LegacyLensSettings.Default;
 
         /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
         /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
@@ -135,10 +136,6 @@ namespace Unity.Cinemachine
         }
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
-        [FormerlySerializedAs("m_LensAttributes")]
-        [FormerlySerializedAs("m_Lens")]
-        LegacyLensSettings m_LegacyLens;
-
         internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {
             base.PerformLegacyUpgrade(streamedVersion);
@@ -172,8 +169,6 @@ namespace Unity.Cinemachine
                     m_LegacyTransitions.m_OnCameraLive = null;
                 }
             }
-            if (streamedVersion < 20230301)
-                Lens = m_LegacyLens.ToLensSettings();
         }
         
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
@@ -183,7 +178,7 @@ namespace Unity.Cinemachine
             m_XAxis.Validate();
             m_RecenterToTargetHeading.Validate();
             m_YAxisRecentering.Validate();
-            Lens.Validate();
+            m_Lens.Validate();
 
             InvalidateRigCache();
             
@@ -807,7 +802,7 @@ namespace Unity.Cinemachine
             for (int i = 0; i < m_Rigs.Length; ++i)
             {
                 if (m_CommonLens)
-                    m_Rigs[i].Lens = Lens;
+                    m_Rigs[i].m_Lens = m_Lens;
 
                 // If we just deserialized from a legacy version,
                 // pull the orbits and targets from the rigs
@@ -850,9 +845,12 @@ namespace Unity.Cinemachine
             return (range > UnityVectorExtensions.Epsilon) ? m_YAxis.Value / range : 0.5f;
         }
 
+        private LensSettings m_LensSettings;
+
         private CameraState CalculateNewState(Vector3 worldUp, float deltaTime)
         {
-            CameraState state = PullStateFromVirtualCamera(worldUp, ref Lens);
+            m_LensSettings = m_Lens.ToLensSettings();
+            CameraState state = PullStateFromVirtualCamera(worldUp, ref m_LensSettings);
             m_YAxisRecentering.DoRecentering(ref m_YAxis, deltaTime, 0.5f);
 
             // Blend from the appropriate rigs

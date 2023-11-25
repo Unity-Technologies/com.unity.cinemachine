@@ -137,11 +137,17 @@ namespace Unity.Cinemachine
         internal protected virtual void PerformLegacyUpgrade(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                Priority.Value = m_LegacyPriority;
+            {
+                if (m_LegacyPriority != 0)
+                {
+                    Priority.Value = m_LegacyPriority;
+                    m_LegacyPriority = 0;
+                }
+            }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
-        int m_LegacyPriority = 10;
+        int m_LegacyPriority = 0;
 
         //============================================================================
 
@@ -525,6 +531,11 @@ namespace Unity.Cinemachine
         protected virtual void Start()
         {
             m_WasStarted = true;
+
+            // Perform legacy upgrade if necessary
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                PerformLegacyUpgrade(m_StreamingVersion);
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
         
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
