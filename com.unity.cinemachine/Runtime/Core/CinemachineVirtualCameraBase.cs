@@ -137,11 +137,17 @@ namespace Unity.Cinemachine
         internal protected virtual void PerformLegacyUpgrade(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                Priority.Value = m_LegacyPriority;
+            {
+                if (m_LegacyPriority != 0)
+                {
+                    Priority.Value = m_LegacyPriority;
+                    m_LegacyPriority = 0;
+                }
+            }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
-        int m_LegacyPriority = 10;
+        int m_LegacyPriority = 0;
 
         //============================================================================
 
