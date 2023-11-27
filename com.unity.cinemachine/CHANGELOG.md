@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineOrbitalFollow.TargetOffset to reposition orbit center.
 - Added CinemachineGroupFraming.CenterOffset to reposition group center on the screen.
 - Added LookAtOffset to CinemachineHardLookAt behaviour.
+- Added support for the new Camera Overlay.
 
 ### Changed
 - RuntimeUtility.GetScratchCollider and RuntimeUtility.DestroyScratchCollider are now public, to allow custom extensions to use them.
