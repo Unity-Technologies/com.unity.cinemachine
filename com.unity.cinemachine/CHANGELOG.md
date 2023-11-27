@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Documented InvalidateLensCache in confiner2D.
 - CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
 - Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
+- SaveDuringPlay supports multi-scene editing.
 
 
 ## [2.9.7] - 2023-05-06

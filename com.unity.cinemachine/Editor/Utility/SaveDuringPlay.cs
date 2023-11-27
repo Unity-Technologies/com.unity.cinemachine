@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 namespace SaveDuringPlay
 {
@@ -26,7 +27,7 @@ namespace SaveDuringPlay
         /// <summary>
         /// Will find the named object, active or inactive, from the full path.
         /// </summary>
-        public static GameObject FindObjectFromFullName(string fullName, GameObject[] roots)
+        public static GameObject FindObjectFromFullName(string fullName, List<GameObject> roots)
         {
             if (string.IsNullOrEmpty(fullName) || roots == null)
                 return null;
@@ -36,7 +37,7 @@ namespace SaveDuringPlay
                 return null;
 
             Transform root = null;
-            for (int i = 0; root == null && i < roots.Length; ++i)
+            for (int i = 0; root == null && i < roots.Count; ++i)
                 if (roots[i].name == path[1])
                     root = roots[i].transform;
 
@@ -62,17 +63,20 @@ namespace SaveDuringPlay
             return root.gameObject;
         }
 
-        /// <summary>Finds all the root objects in a scene, active or not</summary>
-        public static GameObject[] FindAllRootObjectsInScene()
+        /// <summary>Finds all the root objects, active or not, in all open scenes</summary>
+        public static List<GameObject> FindAllRootObjectsInOpenScenes()
         {
-            return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
+            var allRoots = new List<GameObject>();
+            for (int i = 0; i < SceneManager.sceneCount; ++i)
+                allRoots.AddRange(SceneManager.GetSceneAt(i).GetRootGameObjects());
+            return allRoots;
         }
 
 
         /// <summary>
-        /// This finds all the behaviours in scene, active or inactive, excluding prefabs
+        /// This finds all the behaviours, active or inactive, in open scenes, excluding prefabs
         /// </summary>
-        public static T[] FindAllBehavioursInScene<T>() where T : MonoBehaviour
+        public static List<T> FindAllBehavioursInOpenScenes<T>() where T : MonoBehaviour
         {
             List<T> objectsInScene = new List<T>();
             foreach (T b in Resources.FindObjectsOfTypeAll<T>())
@@ -86,7 +90,7 @@ namespace SaveDuringPlay
                     continue;
                 objectsInScene.Add(b);
             }
-            return objectsInScene.ToArray();
+            return objectsInScene;
         }
     }
 
@@ -304,6 +308,8 @@ namespace SaveDuringPlay
 
         Dictionary<string, string> mValues = new Dictionary<string, string>();
 
+        public string ObjetFullPath => mObjectFullPath;
+
         /// <summary>
         /// Recursively collect all the field values in the MonoBehaviours
         /// owned by this object and its descendants.  The values are stored
@@ -312,7 +318,7 @@ namespace SaveDuringPlay
         public void CollectFieldValues(GameObject go)
         {
             mObjectFullPath = ObjectTreeUtil.GetFullName(go);
-            GameObjectFieldScanner scanner = new GameObjectFieldScanner();
+            GameObjectFieldScanner scanner = new ();
             scanner.FilterField = FilterField;
             scanner.FilterComponent = HasSaveDuringPlay;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
@@ -325,7 +331,7 @@ namespace SaveDuringPlay
             scanner.ScanFields(go);
         }
 
-        public GameObject FindSavedGameObject(GameObject[] roots)
+        public GameObject FindSavedGameObject(List<GameObject> roots)
         {
             return ObjectTreeUtil.FindObjectFromFullName(mObjectFullPath, roots);
         }
@@ -337,7 +343,7 @@ namespace SaveDuringPlay
         /// value in the game object, Set the GameObject's value using the value
         /// recorded in the dictionary.
         /// </summary>
-        public bool PutFieldValues(GameObject go, GameObject[] roots)
+        public bool PutFieldValues(GameObject go, List<GameObject> roots)
         {
             GameObjectFieldScanner scanner = new GameObjectFieldScanner();
             scanner.FilterField = FilterField;
@@ -391,7 +397,7 @@ namespace SaveDuringPlay
         /// because the reflection system breaks them down into their primitive components.
         /// You can add more support here, as needed.
         /// </summary>
-        static object LeafObjectFromString(Type type, string value, GameObject[] roots)
+        static object LeafObjectFromString(Type type, string value, List<GameObject> roots)
         {
             if (type == typeof(Single))
                 return float.Parse(value);
@@ -557,9 +563,10 @@ namespace SaveDuringPlay
         static HashSet<GameObject> FindInterestingObjects()
         {
             var objects = new HashSet<GameObject>();
-            MonoBehaviour[] everything = ObjectTreeUtil.FindAllBehavioursInScene<MonoBehaviour>();
-            foreach (var b in everything)
+            var everything = ObjectTreeUtil.FindAllBehavioursInOpenScenes<MonoBehaviour>();
+            for (int i = 0; i < everything.Count; ++i)
             {
+                var b = everything[i];
                 if (!objects.Contains(b.gameObject) && ObjectStateSaver.HasSaveDuringPlay(b))
                 {
                     //Debug.Log("Found " + ObjectTreeUtil.GetFullName(b.gameObject) + " for hot-save");
@@ -593,9 +600,10 @@ namespace SaveDuringPlay
         {
             //Debug.Log("Updating state for all interesting objects");
             bool dirty = false;
-            GameObject[] roots = ObjectTreeUtil.FindAllRootObjectsInScene();
-            foreach (ObjectStateSaver saver in sSavedStates)
+            var roots = ObjectTreeUtil.FindAllRootObjectsInOpenScenes();
+            for (int i = 0; i < sSavedStates.Count; ++i)
             {
+                var saver = sSavedStates[i];
                 GameObject go = saver.FindSavedGameObject(roots);
                 if (go != null)
                 {
