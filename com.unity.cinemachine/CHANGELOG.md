@@ -11,8 +11,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: CinemachineCamera inspector Solo functionality was not updating correctly.
 - Regression fix: Legacy Lens settings had lost their ability to be animated.
 - Bugfix: Upgrader was not correctly upgrading animation bindings in some cases.
-- Regression fix: Extensions and components were unable to modify the blend hint.
-- Bugfix: HardLockToTarget component was ignoring PreviousStateIsValid flag.
 
 ### Added
 - Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
@@ -20,14 +18,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineGroupFraming.CenterOffset to reposition group center on the screen.
 - Added LookAtOffset to CinemachineHardLookAt behaviour.
 - Added support for the new Camera Overlay.
-- Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
 
 ### Changed
 - RuntimeUtility.GetScratchCollider and RuntimeUtility.DestroyScratchCollider are now public, to allow custom extensions to use them.
 - SaveDuringPlay supports multi-scene editing.
-- CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
 
+
+## [3.0.0] - 2023-10-25
+
+### Fixed
+- Regression fix: Extensions and components were unable to modify the blend hint.
+- Bugfix: HardLockToTarget component was ignoring PreviousStateIsValid flag.
  
+### Added
+- Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
+
+### Changed
+- CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
+ 
+
 ## [3.0.0-pre.9] - 2023-10-01
 
 ### Fixed
