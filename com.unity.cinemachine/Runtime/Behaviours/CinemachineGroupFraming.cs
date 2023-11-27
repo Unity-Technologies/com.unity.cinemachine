@@ -36,6 +36,10 @@ namespace Unity.Cinemachine
         [RangeSlider(0, 2)]
         public float FramingSize = 0.8f;
 
+        /// <summary>A nonzero value will offset the group in the camera frame.</summary>
+        [Tooltip("A nonzero value will offset the group in the camera frame.")]
+        public Vector2 CenterOffset = Vector2.zero;
+
         /// <summary>How aggressively the camera tries to frame the group.
         /// Small numbers are more responsive</summary>
         [RangeSlider(0, 20)]
@@ -76,14 +80,14 @@ namespace Unity.Cinemachine
         /// <summary>Allowable FOV range, if adjusting FOV</summary>
         [Tooltip("Allowable FOV range, if adjusting FOV.")]
         [MinMaxRangeSlider(1, 179)]
-        public Vector2 FovRange = new Vector2(1, 100);
+        public Vector2 FovRange = new (1, 100);
 
         /// <summary>Allowable range for the camera to move. 0 is the undollied position.  
         /// Negative values move the camera closer to the target.</summary>
         [Tooltip("Allowable range for the camera to move.  0 is the undollied position.  "
             + "Negative values move the camera closer to the target.")]
         [Vector2AsRange]
-        public Vector2 DollyRange = new Vector2(-100, 100);
+        public Vector2 DollyRange = new (-100, 100);
 
         /// <summary>Allowable orthographic size range, if adjusting orthographic size</summary>
         [Tooltip("Allowable orthographic size range, if adjusting orthographic size.")]
@@ -110,6 +114,7 @@ namespace Unity.Cinemachine
             SizeAdjustment = SizeAdjustmentModes.DollyThenZoom;
             LateralAdjustment = LateralAdjustmentModes.ChangePosition;
             FramingSize = 0.8f;
+            CenterOffset = Vector2.zero;
             Damping = 2;
             DollyRange = new Vector2(-100, 100);
             FovRange = new Vector2(1, 100);
@@ -183,19 +188,21 @@ namespace Unity.Cinemachine
             GroupBoundsMatrix = Matrix4x4.TRS(state.RawPosition, state.RawOrientation, Vector3.one);
             GroupBounds = group.GetViewSpaceBoundingBox(GroupBoundsMatrix, true);
             var camPos = GroupBounds.center; 
-            camPos.z = 0; // don't change the camera's distance from the group
+            camPos.z = Mathf.Min(0, camPos.z - GroupBounds.extents.z);
 
             // Ortho size adjustment
             var lens = state.Lens;
             var targetHeight = GetFrameHeight(GroupBounds.size / FramingSize, lens.Aspect) * 0.5f;
             targetHeight = Mathf.Clamp(targetHeight, OrthoSizeRange.x, OrthoSizeRange.y);
 
-            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
-            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
-
             var deltaFov = targetHeight - lens.OrthographicSize;
             extra.FovAdjustment += vcam.DetachedFollowTargetDamp(deltaFov - extra.FovAdjustment, damping, deltaTime);
             lens.OrthographicSize += extra.FovAdjustment;
+
+            camPos.x -= CenterOffset.x * lens.OrthographicSize / lens.Aspect;
+            camPos.y -= CenterOffset.y * lens.OrthographicSize;
+            extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
+            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
             state.Lens = lens;
         }
 
@@ -249,6 +256,25 @@ namespace Unity.Cinemachine
             var deltaPos = Quaternion.Inverse(state.RawOrientation) * (camPos - state.RawPosition);
             extra.PosAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.PosAdjustment, damping, deltaTime);
             state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+
+            // Apply framing offset
+            if (Mathf.Abs(CenterOffset.x) > 0.01f ||Mathf.Abs(CenterOffset.y) > 0.01f)
+            {
+                var halfFov = 0.5f * state.Lens.FieldOfView;
+                if (moveCamera)
+                {
+                    var d = GroupBounds.center.z - GroupBounds.extents.z;
+                    state.PositionCorrection -= state.RawOrientation * new Vector3(
+                        CenterOffset.x * Mathf.Tan(halfFov * Mathf.Deg2Rad * state.Lens.Aspect) * d,
+                        CenterOffset.y * Mathf.Tan(halfFov * Mathf.Deg2Rad) * d,
+                        0);
+                }
+                else
+                {
+                    var rot = new Vector2(CenterOffset.y * halfFov, CenterOffset.x * halfFov / state.Lens.Aspect);
+                    state.OrientationCorrection *= Quaternion.identity.ApplyCameraRotation(rot, state.ReferenceUp);
+                }
+            }
         }
 
         void AdjustSize(
@@ -319,7 +345,7 @@ namespace Unity.Cinemachine
             else
             {
                 // Rotate to look at center - no parallax shift to worry about
-                camRot = camRot * adjustment;
+                camRot *= adjustment;
                 GroupBoundsMatrix = Matrix4x4.TRS(camPos, camRot, Vector3.one);
                 minAngles -= shift;
                 maxAngles -= shift;
