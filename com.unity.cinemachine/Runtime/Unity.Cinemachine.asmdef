@@ -76,6 +76,11 @@
             "name": "com.unity.modules.uielements",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UIELEMENTS"
+        },
+        {
+            "name": "Unity",
+            "expression": "2023.3.0a17",
+            "define": "CINEMACHINE_UNITY_2023_3_0a17_OR_NEWER"
         }
     ],
     "noEngineReferences": false
