@@ -39,7 +39,7 @@ test_macos_{{editor}}_{{test_project.name}}:
   name : Test project macos {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM::osx
-    image: {% all_platforms.macOS.image %}
+    image: {{all_platforms.macOS.image}}
     flavor: m1.mac
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
