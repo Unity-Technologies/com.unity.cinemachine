@@ -318,7 +318,7 @@ namespace SaveDuringPlay
         public void CollectFieldValues(GameObject go)
         {
             mObjectFullPath = ObjectTreeUtil.GetFullName(go);
-            GameObjectFieldScanner scanner = new ();
+            GameObjectFieldScanner scanner = new GameObjectFieldScanner ();
             scanner.FilterField = FilterField;
             scanner.FilterComponent = HasSaveDuringPlay;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
