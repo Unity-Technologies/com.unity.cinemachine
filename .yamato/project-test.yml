@@ -6,7 +6,7 @@ test_ubuntu_{{editor}}_{{test_project.name}}:
   name : Test project ubuntu {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: package-ci/ubuntu-22.04:v4
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
@@ -22,7 +22,7 @@ test_windows_{{editor}}_{{test_project.name}}:
   name : Test project windows {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/win10:v4
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
@@ -38,7 +38,7 @@ test_macos_{{editor}}_{{test_project.name}}:
   name : Test project macos {{editor}} {{test_project.name}}
   agent:
     type: Unity::VM::osx
-    image: package-ci/mac:stable
+    image: package-ci/macos-13:v4
     flavor: m1.mac
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
