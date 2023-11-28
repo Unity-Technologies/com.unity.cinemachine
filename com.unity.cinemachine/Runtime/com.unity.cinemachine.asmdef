@@ -89,6 +89,11 @@
             "name": "com.unity.modules.imgui",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_IMGUI"
+        },
+        {
+            "name": "Unity",
+            "expression": "2023.3.0a17",
+            "define": "CINEMACHINE_UNITY_2023_3_0a17_OR_NEWER"
         }
     ],
     "noEngineReferences": false
