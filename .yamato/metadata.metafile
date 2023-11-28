@@ -1,7 +1,7 @@
 all_platforms:
   - name: windows
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/win10:v4
     flavor: b1.large
   - name: macOS
     type: Unity::VM::osx
@@ -9,7 +9,7 @@ all_platforms:
     flavor: m1.mac
   - name: ubuntu
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: package-ci/ubuntu-22.04:v4
     flavor: b1.large
 
 all_tests:
