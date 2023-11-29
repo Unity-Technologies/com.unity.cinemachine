@@ -105,6 +105,8 @@ namespace Unity.Cinemachine
         }
         // ===============================================================
         
+        /// <summary>Helper for upgrading from CM2</summary>
+        internal protected override bool IsDprecated => true;
 
         /// <summary>This is the name of the hidden GameObject that will be created as a child object
         /// of the virtual camera.  This hidden game object acts as a container for the polymorphic

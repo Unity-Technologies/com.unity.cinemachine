@@ -171,6 +171,9 @@ namespace Unity.Cinemachine
             }
         }
         
+        /// <summary>Helper for upgrading from CM2</summary>
+        internal protected override bool IsDprecated => true;
+
         /// <summary>Enforce bounds for fields, when changed in inspector.</summary>
         void OnValidate()
         {

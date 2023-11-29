@@ -57,6 +57,9 @@ namespace Unity.Cinemachine
             + "to different CinemachineBrains, for instance in a multi-screen environemnt.")]
         public OutputChannels OutputChannel = OutputChannels.Default;
 
+        /// <summary>Helper for upgrading from CM2</summary>
+        internal protected virtual bool IsDprecated => false;
+
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
         internal int ActivationId;
@@ -547,16 +550,19 @@ namespace Unity.Cinemachine
                 PreviousStateIsValid = false;
             CameraUpdateManager.CameraEnabled(this);
             InvalidateCachedTargets();
+
             // Sanity check - if another vcam component is enabled, shut down
             var vcamComponents = GetComponents<CinemachineVirtualCameraBase>();
             for (int i = 0; i < vcamComponents.Length; ++i)
             {
                 if (vcamComponents[i].enabled && vcamComponents[i] != this)
                 {
-                    Debug.LogWarning(Name
-                        + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling "
-                        + GetType().Name + ".");
-                    enabled = false;
+                    var toDeprecate = vcamComponents[i].IsDprecated ? vcamComponents[i] : this;
+                    if (!toDeprecate.IsDprecated)
+                        Debug.LogWarning(Name
+                            + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling "
+                            + toDeprecate.GetType().Name);
+                    toDeprecate.enabled = false;
                 }
             }
         }
