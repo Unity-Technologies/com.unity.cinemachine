@@ -1,4 +1,4 @@
-## Installing Cinemachine
+## Installation and upgrade
 
 Cinemachine is a free package, available for any project. You install Cinemachine like [any other package](https://docs.unity3d.com/Manual/upm-ui.html).
 
@@ -14,7 +14,7 @@ There are similar `ifdef`-protected behaviours for other packages, such as Timel
 
 This version of Cinemachine is supported by the following versions of the Unity Editor:
 
-* 20222.2.16f1 and later
+* 2022.2.16f1 and later
 
 ## Upgrading from previous versions of Cinemachine
 
