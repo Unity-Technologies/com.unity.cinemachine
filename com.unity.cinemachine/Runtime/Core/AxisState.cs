@@ -235,7 +235,7 @@ namespace Cinemachine
             input *= m_MaxSpeed; // apply gain
             if (deltaTime < 0)
                 m_CurrentSpeed = 0;
-            else
+            else if (deltaTime > 0.0001f)
             {
                 float dampTime = Mathf.Abs(input) < Mathf.Abs(m_CurrentSpeed) ? m_DecelTime : m_AccelTime;
                 m_CurrentSpeed += Damper.Damp(input - m_CurrentSpeed, dampTime, deltaTime);
