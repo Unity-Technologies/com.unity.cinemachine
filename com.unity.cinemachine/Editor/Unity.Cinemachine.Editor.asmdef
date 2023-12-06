@@ -17,6 +17,10 @@
         "Unity.Splines.Editor",
         "Unity.InputSystem",
         "Unity.Mathematics",
+        "Unity.VisualScripting.Flow.Editor",
+        "Unity.VisualScripting.Core.Editor",
+        "Unity.VisualScripting.Flow",
+        "Unity.VisualScripting.Core",
         "Unity.Cinemachine"
     ],
     "includePlatforms": [
