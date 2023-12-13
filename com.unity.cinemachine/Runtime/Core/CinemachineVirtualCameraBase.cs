@@ -913,7 +913,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="updateNow">If true, snap the camera to its target immediately, otherwise wait 
         /// until the end of the frame when cameras are normally updated.</param>
-        public void CancelDamping(bool updateNow = false)
+        internal void CancelDamping(bool updateNow = false)
         {
             PreviousStateIsValid = false;
             if (updateNow)
