@@ -4,6 +4,8 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.9.9] - 2023-12-13
+- Changed: Removed API changes on CinemachineVirtualCameraBase.CancelDamping() and CinemachineBrain.TopCameraFromPriorityQueue()
 
 ## [2.9.8] - 2023-11-29
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
