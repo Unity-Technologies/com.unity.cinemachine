@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.10.0] - 2023-12-14
-- Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
+- Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing rotational flickering.
 - Bugfix: CinemachineCollider was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: In some circumstances, FramingTransposer was using the wrong FOV or Ortho size for framing.
 - Regression fix: CinemachineCollider generated NaN positions if no target was set.
