@@ -920,7 +920,7 @@ namespace Cinemachine
         /// that is visible to my camera.  Culling Mask is used to test visibility.
         /// </summary>
         /// <returns>The highest-priority Enabled ICinemachineCamera that is in my visible layers.</returns>
-        ICinemachineCamera TopCameraFromPriorityQueue()
+        protected virtual ICinemachineCamera TopCameraFromPriorityQueue()
         {
             CinemachineCore core = CinemachineCore.Instance;
             Camera outputCamera = OutputCamera;
