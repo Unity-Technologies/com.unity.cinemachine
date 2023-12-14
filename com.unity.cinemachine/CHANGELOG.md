@@ -5,9 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [2.9.9] - 2023-12-13
-- Removed: API changes on CinemachineVirtualCameraBase.CancelDamping() and CinemachineBrain.TopCameraFromPriorityQueue().
-
-## [2.9.8] - 2023-11-29
 - Bugfix: Occasional precision issue when camera rotation is exactly 180 degress, causing roitational flickering.
 - Bugfix: CinemachineCollider was causing a pop when OnTargetObjectWarped was called.
 - Bugfix: In some circumstances, FramingTransposer was using the wrong FOV or Ortho size for framing.
@@ -15,8 +12,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Improved OrbitalFollow's ForceCameraPosition algorithm.
 - Removed CinemachineToolSettings overlay.
 - Documented InvalidateLensCache in confiner2D.
-- CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
-- Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
 - SaveDuringPlay supports multi-scene editing.
 
 
