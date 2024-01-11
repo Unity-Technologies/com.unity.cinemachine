@@ -1,0 +1,15 @@
+{% metadata_file .yamato/metadata.metafile %}
+---
+
+generate_documentation:
+  name : Generate documentation
+  agent:
+    type: Unity::VM::osx
+    image: package-ci/macos-13:v4
+    flavor: m1.mac
+  commands:
+    - brick_source: git@github.cds.internal.unity3d.com:wind-xu/virtual_production_doc_generation.git@v0.3.0
+      variables:
+        EDITOR_VERSION: trunk
+        PACKAGE_NAME: com.unity.cinemachine
+        PACKAGE_PATH: com.unity.cinemachine
