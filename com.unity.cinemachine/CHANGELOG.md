@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - SimplePlayerAimController upgraded to work on arbitrary surfaces (no longer depends on world up)
+- ThirdPersonFollow sets state.ReferenceUp, to allow usage on arbitrary surfaces without global world up override.
 
 
 ## [3.0.1] - 2023-11-27
