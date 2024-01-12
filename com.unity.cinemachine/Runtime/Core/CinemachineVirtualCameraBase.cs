@@ -28,23 +28,36 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
-        /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
+        /// <summary>
+        /// Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
         /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated 
         /// highest-priority CinemachineCamera will control the main camera. 
         /// 
-        /// The default priority is 0.  Often it is sufficient to leave the default setting.  
-        /// In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, 
-        /// the value can be set here.
+        /// The default priority value is 0. Often it is sufficient to leave the default setting.  
+        /// In special cases where you want a CinemachineCamera to have a higher or lower priority value than 0, you can set it here.
+        ///
+        /// <para>
+        /// <b>Example of setting priority value directly:</b>
+        /// <code>
+        /// cam.Priority.Value = 5;
+        /// </code>
+        /// </para>
+        /// 
+        /// <para>
+        /// <b>Example of using the implicit operator to set priority value:</b>
+        /// <code>
+        /// cam.Priority = 5;
+        /// </code>
+        /// </para>
         /// </summary>
         [NoSaveDuringPlay]
         [Tooltip("Priority can be used to control which Cm Camera is live when multiple CM Cameras are "
             + "active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there "
             + "is another Cm Camera active with a higher priority.  In general, the most-recently-activated "
             + "highest-priority CinemachineCamera will control the main camera. \n\n"
-            + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
-            + "In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, "
-            + "the value can be set here.")]
+            + "The default priority is value 0.  Often it is sufficient to leave the default setting.  "
+            + "In special cases where you want a CinemachineCamera to have a higher or lower priority value than 0, you can set it here.")]
         [EnabledProperty(toggleText: "(using default)")]
         public PrioritySettings Priority = new ();
 
