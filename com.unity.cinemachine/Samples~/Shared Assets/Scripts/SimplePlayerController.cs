@@ -45,6 +45,9 @@ namespace Unity.Cinemachine.Samples
             axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
             axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
         }
+
+        public virtual void SetStrafeMode(bool b) {}
+        public abstract bool IsMoving { get; }
     }
 
     public class SimplePlayerController : SimplePlayerControllerBase
@@ -67,10 +70,21 @@ namespace Unity.Cinemachine.Samples
         bool m_IsJumping;
         CharacterController m_Controller; // optional
 
+        public override void SetStrafeMode(bool b) => Strafe = b;
+        public override bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
+
         public bool IsSprinting => m_IsSprinting;
         public bool IsJumping => m_IsJumping;
-        public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
         public Camera Camera => CameraOverride == null ? Camera.main : CameraOverride;
+
+        public bool IsGrounded()
+        {
+            if (m_Controller != null)
+                return m_Controller.isGrounded;
+
+            // No controller - must compute manually with raycast
+            return GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
+        }
 
         void Start() => TryGetComponent(out m_Controller);
 
@@ -181,15 +195,6 @@ namespace Unity.Cinemachine.Samples
                 }
             }
             return justLanded;
-        }
-
-        bool IsGrounded()
-        {
-            if (m_Controller != null)
-                return m_Controller.isGrounded;
-
-            // No controller - must compute manually with raycast
-            return GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
         }
 
         void ApplyMotion()
