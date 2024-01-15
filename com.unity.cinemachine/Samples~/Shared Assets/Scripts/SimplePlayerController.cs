@@ -56,8 +56,17 @@ namespace Unity.Cinemachine.Samples
         public bool Strafe = false;
 
         public enum ForwardModes { Camera, Player, World };
-        public ForwardModes InputForward = ForwardModes.Camera;
         public enum UpModes { Player, World };
+
+        [Tooltip("Reference frame for the input controls:\n"
+            + "<b>Camera</b>: Input forward is camera forward direction.\n"
+            + "<b>Player</b>: Input forward is Player's forward direction.\n"
+            + "<b>Player</b>: Input forward is World forward direction.")]
+        public ForwardModes InputForward = ForwardModes.Camera;
+
+        [Tooltip("Up direction for computing motion:\n"
+            + "<b>Player</b>: Will move in the Player's local XZ plane.\n"
+            + "<b>World</b>: will move in global XZ plane.")]
         public UpModes UpMode = UpModes.World;
 
         [Tooltip("Override the main camera. Useful for split screen games.")]
@@ -158,7 +167,7 @@ namespace Unity.Cinemachine.Samples
         Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
 
         // Get the reference frame for the input.  The idea is to map camera fwd/right
-        // to something that makes sense for the player.  There is some complexity here to avoid
+        // to the player's XZ plane.  There is some complexity here to avoid
         // gimbal lock when the player is tilted 180 degrees relative to the camera.
         Quaternion GetInputFrame()
         {
@@ -171,11 +180,11 @@ namespace Unity.Cinemachine.Samples
                 case ForwardModes.World: break;
             }
 
-            // Map the raw input frame to something that makes sense as a direction for the player.
+            // Map the raw input frame to something that makes sense as a direction for the player
             var playerUp = transform.up;
             var up = frame * Vector3.up;
 
-            // Are we in the top or bottom hemisphere?  This is needed to avoid gimbal lock.
+            // Is the player in the top or bottom hemisphere?  This is needed to avoid gimbal lock
             const float BlendTime = 2f;
             m_TimeInHemisphere += Time.deltaTime;
             bool inTopHemisphere = Vector3.Dot(up, playerUp) >= 0;
