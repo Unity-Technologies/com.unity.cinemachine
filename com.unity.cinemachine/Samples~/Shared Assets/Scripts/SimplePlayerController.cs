@@ -157,12 +157,12 @@ namespace Unity.Cinemachine.Samples
 
         Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
 
-        // Get the reference frame for the input.  There is some complexity here to avoid
+        // Get the reference frame for the input.  The idea is to map camera fwd/right
+        // to something that makes sense for the player.  There is some complexity here to avoid
         // gimbal lock when the player is tilted 180 degrees relative to the camera.
         Quaternion GetInputFrame()
         {
-            m_TimeInHemisphere += Time.deltaTime;
-
+            // Get the raw input frame, depending of forward mode setting
             var frame = Quaternion.identity;
             switch (InputForward)
             {
@@ -171,11 +171,13 @@ namespace Unity.Cinemachine.Samples
                 case ForwardModes.World: break;
             }
 
+            // Map the raw input frame to something that makes sense as a direction for the player.
             var playerUp = transform.up;
             var up = frame * Vector3.up;
 
             // Are we in the top or bottom hemisphere?  This is needed to avoid gimbal lock.
             const float BlendTime = 2f;
+            m_TimeInHemisphere += Time.deltaTime;
             bool inTopHemisphere = Vector3.Dot(up, playerUp) >= 0;
             if (inTopHemisphere != m_InTopHemisphere)
             {
@@ -183,23 +185,23 @@ namespace Unity.Cinemachine.Samples
                 m_TimeInHemisphere = Mathf.Max(0, BlendTime - m_TimeInHemisphere);
             }
 
-            // If the player is untilted, then early-out with a simple LookRotation
+            // If the player is untilted relative to the input frmae, then early-out with a simple LookRotation
             var axis = Vector3.Cross(up, playerUp);
             if (axis.sqrMagnitude < 0.001f && inTopHemisphere)
                 return Quaternion.LookRotation(frame * Vector3.forward, up);
 
-            // Player is tilted relative to input frame
+            // Player is tilted relative to input frame: tilt the input frame to match
             var angle = UnityVectorExtensions.SignedAngle(up, playerUp, axis);
             var frameA = Quaternion.AngleAxis(angle, axis) * frame;
-            Quaternion frameB = frameA;
 
             // If the player is tilted, then we need to get tricky to avoid gimbal-lock
             // when player is tilted 180 degrees.  There is no perfect solution for this,
-            // we just need to cheat it.
+            // we need to cheat it :/
+            Quaternion frameB = frameA;
             if (!inTopHemisphere || m_TimeInHemisphere < BlendTime)
             {
                 // Compute an alternative reference frame for the bottom hemisphere.
-                // The two reference frame are incompatible where they meet, especially
+                // The two reference frames are incompatible where they meet, especially
                 // when player up is pointing along the X axis of camera frame. 
                 // There is no one reference frame that works for all player directions.
                 frameB = frame * m_Upsidedown;
@@ -213,7 +215,8 @@ namespace Unity.Cinemachine.Samples
                 return inTopHemisphere ? frameA : frameB;
 
             // Because frameA and frameB do not meet correctly if player Up is along X axis,
-            // we blend them over a time in order to avoid degenerate spinning
+            // we blend them over a time in order to avoid degenerate spinning.
+            // This will produce weird movements in spots, but it's the lesser of the evils.
             if (inTopHemisphere)
                 return Quaternion.Slerp(frameB, frameA, m_TimeInHemisphere / BlendTime);
             return Quaternion.Slerp(frameA, frameB, m_TimeInHemisphere / BlendTime);
