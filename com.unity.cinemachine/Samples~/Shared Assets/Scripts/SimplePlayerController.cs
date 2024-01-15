@@ -188,7 +188,7 @@ namespace Unity.Cinemachine.Samples
             // If the player is untilted relative to the input frmae, then early-out with a simple LookRotation
             var axis = Vector3.Cross(up, playerUp);
             if (axis.sqrMagnitude < 0.001f && inTopHemisphere)
-                return Quaternion.LookRotation(frame * Vector3.forward, up);
+                return frame;
 
             // Player is tilted relative to input frame: tilt the input frame to match
             var angle = UnityVectorExtensions.SignedAngle(up, playerUp, axis);
@@ -205,18 +205,17 @@ namespace Unity.Cinemachine.Samples
                 // when player up is pointing along the X axis of camera frame. 
                 // There is no one reference frame that works for all player directions.
                 frameB = frame * m_Upsidedown;
-                var angleB = 180f - angle;
-                var upB = frameB * Vector3.up;
-                var axisB = Vector3.Cross(upB, playerUp);
-                frameB = Quaternion.AngleAxis(angleB, axisB) * frameB;
+                var axisB = Vector3.Cross(frameB * Vector3.up, playerUp);
+                if (axisB.sqrMagnitude > 0.001f)
+                    frameB = Quaternion.AngleAxis(180f - angle, axisB) * frameB;
             }
             // If we have been long enough in one hemisphere, then we can just use its reference frame
             if (m_TimeInHemisphere >= BlendTime)
                 return inTopHemisphere ? frameA : frameB;
 
-            // Because frameA and frameB do not meet correctly if player Up is along X axis,
+            // Because frameA and frameB do not join seamlessly when player Up is along X axis,
             // we blend them over a time in order to avoid degenerate spinning.
-            // This will produce weird movements in spots, but it's the lesser of the evils.
+            // This will produce weird movements occasionally, but it's the lesser of the evils.
             if (inTopHemisphere)
                 return Quaternion.Slerp(frameB, frameA, m_TimeInHemisphere / BlendTime);
             return Quaternion.Slerp(frameA, frameB, m_TimeInHemisphere / BlendTime);
