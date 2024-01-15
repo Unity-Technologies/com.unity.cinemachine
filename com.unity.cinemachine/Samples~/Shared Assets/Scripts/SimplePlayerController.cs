@@ -78,6 +78,9 @@ namespace Unity.Cinemachine.Samples
 
         [Tooltip("Override the main camera. Useful for split screen games.")]
         public Camera CameraOverride;
+
+        [Tooltip("Raycasts for ground will detect these layers")]
+        public LayerMask GroundLayers = 1;
         
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
@@ -294,7 +297,7 @@ namespace Unity.Cinemachine.Samples
         float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
         {
             float kExtraHeight = 2;
-            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, max + kExtraHeight, LayerMask.GetMask("Default")))
+            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, max + kExtraHeight, GroundLayers))
                 return hit.distance - kExtraHeight; 
             return max + 1;
         }
