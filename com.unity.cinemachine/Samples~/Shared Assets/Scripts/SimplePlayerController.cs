@@ -7,9 +7,13 @@ namespace Unity.Cinemachine.Samples
 {
     public abstract class SimplePlayerControllerBase : MonoBehaviour, IInputAxisOwner
     {
+        [Tooltip("Ground speed when walking")]
         public float Speed = 1f;
+        [Tooltip("Ground speed when sprinting")]
         public float SprintSpeed = 4;
+        [Tooltip("Initial vertical speed when jumping")]
         public float JumpSpeed = 4;
+        [Tooltip("Initial vertical speed when sprint-jumping")]
         public float SprintJumpSpeed = 6;
 
         public Action PreUpdate;
@@ -52,7 +56,10 @@ namespace Unity.Cinemachine.Samples
 
     public class SimplePlayerController : SimplePlayerControllerBase
     {
+        [Tooltip("How long it takes for the player to change velocity")]
         public float Damping = 0.5f;
+
+        [Tooltip("If true, player wil strafe when moving sideways, otherwise will turn to face direction of motion")]
         public bool Strafe = false;
 
         public enum ForwardModes { Camera, Player, World };
@@ -61,7 +68,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Reference frame for the input controls:\n"
             + "<b>Camera</b>: Input forward is camera forward direction.\n"
             + "<b>Player</b>: Input forward is Player's forward direction.\n"
-            + "<b>Player</b>: Input forward is World forward direction.")]
+            + "<b>World</b>: Input forward is World forward direction.")]
         public ForwardModes InputForward = ForwardModes.Camera;
 
         [Tooltip("Up direction for computing motion:\n"
