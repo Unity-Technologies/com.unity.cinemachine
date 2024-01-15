@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 ### Changed
-- SimplePlayerAimController upgraded to work on arbitrary surfaces (no longer depends on world up)
 - ThirdPersonFollow sets state.ReferenceUp, to allow usage on arbitrary surfaces without global world up override.
+- SimplePlayerAimController upgraded to work on arbitrary surfaces (no longer depends on world up)
+- SimplePlayerController has logic to avoid input gimbal lock when player is upside-down relative to the camera.
 
 
 ## [3.0.1] - 2023-11-27

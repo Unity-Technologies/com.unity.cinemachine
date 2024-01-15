@@ -70,6 +70,12 @@ namespace Unity.Cinemachine.Samples
         bool m_IsJumping;
         CharacterController m_Controller; // optional
 
+        // These are part of a strategy to combat input gimbal lock when controlling a player
+        // that can move freely on surfaces that go upside-down relative to the camera.
+        bool m_InTopHemisphere = true;
+        float m_TimeInHemisphere = 100;
+        Quaternion m_Upsidedown = Quaternion.AngleAxis(180, Vector3.left);
+
         public override void SetStrafeMode(bool b) => Strafe = b;
         public override bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
 
@@ -103,8 +109,7 @@ namespace Unity.Cinemachine.Samples
             bool justLanded = ProcessJump();
 
             // Get the reference frame for the input
-            if (!GetInputFrame(out var inputFrame))
-                return; // no input frame, give up
+            var inputFrame = GetInputFrame();
 
             // Read the input from the user and put it in the input frame
             m_LastInput = inputFrame * new Vector3(MoveX.Value, 0, MoveZ.Value);
@@ -132,7 +137,7 @@ namespace Unity.Cinemachine.Samples
             // If not strafing, rotate the player to face movement direction
             if (!Strafe && m_CurrentVelocityXZ.sqrMagnitude > 0.001f)
             {
-                var fwd = inputFrame * new Vector3(0, 0, 1);
+                var fwd = inputFrame * Vector3.forward;
                 var qA = transform.rotation;
                 var qB = Quaternion.LookRotation(
                     (InputForward == ForwardModes.Player && Vector3.Dot(fwd, m_CurrentVelocityXZ) < 0)
@@ -152,24 +157,66 @@ namespace Unity.Cinemachine.Samples
 
         Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
 
-        // Get the reference frame for the input
-        bool GetInputFrame(out Quaternion inputFrame)
+        // Get the reference frame for the input.  There is some complexity here to avoid
+        // gimbal lock when the player is tilted 180 degrees relative to the camera.
+        Quaternion GetInputFrame()
         {
-            var up = UpDirection;
-            var fwd = InputForward switch
+            m_TimeInHemisphere += Time.deltaTime;
+
+            var frame = Quaternion.identity;
+            switch (InputForward)
             {
-                ForwardModes.Camera => Camera.transform.forward,
-                ForwardModes.Player => transform.forward,
-                _ => Vector3.forward,
-            };
-            fwd = fwd.ProjectOntoPlane(up);
-            if (fwd.sqrMagnitude < 0.001f)
-            {
-                inputFrame = Quaternion.identity;
-                return false;
+                case ForwardModes.Camera: frame = Camera.transform.rotation; break;
+                case ForwardModes.Player: return transform.rotation;
+                case ForwardModes.World: break;
             }
-            inputFrame = Quaternion.LookRotation(fwd, up);
-            return true;
+
+            var playerUp = transform.up;
+            var up = frame * Vector3.up;
+
+            // Are we in the top or bottom hemisphere?  This is needed to avoid gimbal lock.
+            const float BlendTime = 2f;
+            bool inTopHemisphere = Vector3.Dot(up, playerUp) >= 0;
+            if (inTopHemisphere != m_InTopHemisphere)
+            {
+                m_InTopHemisphere = inTopHemisphere;
+                m_TimeInHemisphere = Mathf.Max(0, BlendTime - m_TimeInHemisphere);
+            }
+
+            // If the player is untilted, then early-out with a simple LookRotation
+            var axis = Vector3.Cross(up, playerUp);
+            if (axis.sqrMagnitude < 0.001f && inTopHemisphere)
+                return Quaternion.LookRotation(frame * Vector3.forward, up);
+
+            // Player is tilted relative to input frame
+            var angle = UnityVectorExtensions.SignedAngle(up, playerUp, axis);
+            var frameA = Quaternion.AngleAxis(angle, axis) * frame;
+            Quaternion frameB = frameA;
+
+            // If the player is tilted, then we need to get tricky to avoid gimbal-lock
+            // when player is tilted 180 degrees.  There is no perfect solution for this,
+            // we just need to cheat it.
+            if (!inTopHemisphere || m_TimeInHemisphere < BlendTime)
+            {
+                // Compute an alternative reference frame for the bottom hemisphere.
+                // The two reference frame are incompatible where they meet, especially
+                // when player up is pointing along the X axis of camera frame. 
+                // There is no one reference frame that works for all player directions.
+                frameB = frame * m_Upsidedown;
+                var angleB = 180f - angle;
+                var upB = frameB * Vector3.up;
+                var axisB = Vector3.Cross(upB, playerUp);
+                frameB = Quaternion.AngleAxis(angleB, axisB) * frameB;
+            }
+            // If we have been long enough in one hemisphere, then we can just use its reference frame
+            if (m_TimeInHemisphere >= BlendTime)
+                return inTopHemisphere ? frameA : frameB;
+
+            // Because frameA and frameB do not meet correctly if player Up is along X axis,
+            // we blend them over a time in order to avoid degenerate spinning
+            if (inTopHemisphere)
+                return Quaternion.Slerp(frameB, frameA, m_TimeInHemisphere / BlendTime);
+            return Quaternion.Slerp(frameA, frameB, m_TimeInHemisphere / BlendTime);
         }
 
         bool ProcessJump()
