@@ -93,6 +93,7 @@ namespace Unity.Cinemachine.Samples
         // that can move freely on surfaces that go upside-down relative to the camera.
         bool m_InTopHemisphere = true;
         float m_TimeInHemisphere = 100;
+        Vector3 m_LastRawInput;
         Quaternion m_Upsidedown = Quaternion.AngleAxis(180, Vector3.left);
 
         public override void SetStrafeMode(bool b) => Strafe = b;
@@ -128,10 +129,12 @@ namespace Unity.Cinemachine.Samples
             bool justLanded = ProcessJump();
 
             // Get the reference frame for the input
-            var inputFrame = GetInputFrame();
+            var rawInput = new Vector3(MoveX.Value, 0, MoveZ.Value);
+            var inputFrame = GetInputFrame(Vector3.Dot(rawInput, m_LastRawInput) < 0.8f);
+            m_LastRawInput = rawInput;
 
             // Read the input from the user and put it in the input frame
-            m_LastInput = inputFrame * new Vector3(MoveX.Value, 0, MoveZ.Value);
+            m_LastInput = inputFrame * rawInput;
             if (m_LastInput.sqrMagnitude > 1)
                 m_LastInput.Normalize();
 
@@ -179,7 +182,7 @@ namespace Unity.Cinemachine.Samples
         // Get the reference frame for the input.  The idea is to map camera fwd/right
         // to the player's XZ plane.  There is some complexity here to avoid
         // gimbal lock when the player is tilted 180 degrees relative to the camera.
-        Quaternion GetInputFrame()
+        Quaternion GetInputFrame(bool inputDirectionChanged)
         {
             // Get the raw input frame, depending of forward mode setting
             var frame = Quaternion.identity;
@@ -228,6 +231,10 @@ namespace Unity.Cinemachine.Samples
                 if (axisB.sqrMagnitude > 0.001f)
                     frameB = Quaternion.AngleAxis(180f - angle, axisB) * frameB;
             }
+            // Blend timer force-expires when user changes input direction
+            if (inputDirectionChanged)
+                m_TimeInHemisphere = BlendTime;
+
             // If we have been long enough in one hemisphere, then we can just use its reference frame
             if (m_TimeInHemisphere >= BlendTime)
                 return inTopHemisphere ? frameA : frameB;
