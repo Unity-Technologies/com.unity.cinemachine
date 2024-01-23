@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("How long it takes for the player to change velocity")]
         public float Damping = 0.5f;
 
-        [Tooltip("If true, player wil strafe when moving sideways, otherwise will turn to face direction of motion")]
+        [Tooltip("If true, player will strafe when moving sideways, otherwise will turn to face direction of motion")]
         public bool Strafe = false;
 
         public enum ForwardModes { Camera, Player, World };
@@ -82,6 +82,12 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Raycasts for ground will detect these layers")]
         public LayerMask GroundLayers = 1;
         
+        [Tooltip("Force of gravity in the down direction (m/s/s)")]
+        public float Gravity = 10;
+
+        const float kDelayBeforeInferringJump = 0.6f;
+        float m_TimeLastGrounded = 0;
+
         Vector3 m_CurrentVelocityXZ;
         Vector3 m_LastInput;
         float m_CurrentVelocityY;
@@ -119,6 +125,7 @@ namespace Unity.Cinemachine.Samples
             m_CurrentVelocityY = 0;
             m_IsSprinting = false;
             m_IsJumping = false;
+            m_TimeLastGrounded = Time.time;
         }
 
         void Update()
@@ -249,18 +256,37 @@ namespace Unity.Cinemachine.Samples
 
         bool ProcessJump()
         {
-            const float kGravity = -10;
             bool justLanded = false;
-            m_CurrentVelocityY += kGravity * Time.deltaTime;
-            if (!m_IsJumping && Jump.Value > 0.01f)
+            var now = Time.time;
+            bool grounded = IsGrounded();
+
+            m_CurrentVelocityY -= Gravity * Time.deltaTime;
+
+            if (!m_IsJumping)
             {
-                m_IsJumping = true;
-                StartJump?.Invoke();
-                m_CurrentVelocityY = m_IsSprinting ? SprintJumpSpeed : JumpSpeed;
+                // Process jump command
+                if (grounded && Jump.Value > 0.01f)
+                {
+                    m_IsJumping = true;
+                    m_CurrentVelocityY = m_IsSprinting ? SprintJumpSpeed : JumpSpeed;
+                }
+                // If we are falling, assume the jump pose
+                if (!grounded && now - m_TimeLastGrounded > kDelayBeforeInferringJump)
+                    m_IsJumping = true;
+ 
+                if (m_IsJumping)
+                {
+                    StartJump?.Invoke();
+                    grounded = false;
+                }
             }
-            if (IsGrounded() && m_CurrentVelocityY < 0)
+
+            if (grounded)
             {
+                m_TimeLastGrounded = Time.time;
                 m_CurrentVelocityY = 0;
+
+                // If we were jumping, complete the jump
                 if (m_IsJumping)
                 {
                     EndJump?.Invoke();
