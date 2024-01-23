@@ -52,7 +52,6 @@ namespace Unity.Cinemachine.Samples
                     {
                         haveHit = true;
                         desiredUp = CaptureUpDirection(ht, cam);
-                        PreviousSateIsValid = false;
                     }
                 }
             }
