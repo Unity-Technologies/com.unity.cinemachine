@@ -2,38 +2,28 @@
 
 For situations where choreographed cameras are desired, you can use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CinemachineCameras.
 
-**Tip**: For simple shot sequences, use a [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md) instead of Timeline.
+**Tip**: For simple shot sequences, you can also use a [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md) instead of Timeline.
 
-Timeline overrides the priority-based decisions made by [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, control returns to the Cinemachine Brain, which chooses the CinemachineCamera with the highest Priority setting.
+## Live Cinemachine Camera selection
 
-You control CinemachineCameras in Timeline with a __Cinemachine Shot Clip__. Each shot clip points to a CinemachineCamera to activate and then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
+Timeline overrides the priority-based decisions made by the [Cinemachine Brain](CinemachineBrain.md). When the timeline finishes, the control [returns to the Cinemachine Brain](concept-activations-transitions.md).
 
-To cut between two CinemachineCameras, place the clips next to each other. To blend between two CinemachineCameras, overlap the clips.
+## Cinemachine Track and Shot Clips
 
-![Cinemachine Shot Clips in Timeline, with a cut (red) and a blend (blue)](images/CinemachineTimelineShotClips.png)
+You control Cinemachine Cameras in Timeline with **Cinemachine Shot Clips** in a **Cinemachine Track**. Each shot clip points to a CinemachineCamera to activate and then deactivate. Use a sequence of shot clips to specify the order and duration of each shot.
 
-To create a Timeline for Cinemachine:
+## Cinemachine Camera transitions
+To cut between two CinemachineCameras, place the clips next to each other.
 
-1. Create an empty GameObject in your Scene by choosing the __GameObject > Create Empty __menu item.
-2. Give the empty GameObject a descriptive name. For example, `IntroTimeline`.
-3. In your Scene, select your empty Timeline object as the focus to create a Timeline Asset and instance.
-4. Click the padlock button to lock the TImeline window to make it easier to add and adjust tracks.
-5. Drag a Unity camera with a CinemachineBrain component onto the Timeline Editor, then choose __Create Cinemachine Track__ from the drop-down menu.
-6. Add other tracks to the Timeline for controlling the subjects of your Scene.  For example, add an Animation track to animate your main character.
+To blend between two CinemachineCameras, overlap the clips.
 
-**Tip**: Delete the default track that refers to your Timeline object. This track isn’t necessary for Timeline. For example, in the Timeline editor, right-click the track for IntroTimeline and choose __Delete__.
+![](images/CinemachineTimelineShotClips.png)  
+_Example: Cinemachine Shot Clips in Timeline, with a cut between Shots A-B and a blend between Shots B-C._
 
-To add Cinemachine Shot Clips to a Cinemachine Track:
-
-1. In the Cinemachine Track, right-click and choose __Add Cinemachine Shot Clip__.
-2. Do one of the following:
-    * To add an existing CinemachineCamera to the shot clip, drag and drop it onto the CinemachineCamera property in the Cinemachine Shot component.
-    * To create a new CinemachineCamera and add it to the shot clip, click Create in the Cinemachine Shot component.
-3. In the Timeline editor, adjust the order, duration, cutting, and blending of the shot clip.
-4. [Adjust the properties of the CinemachineCamera](CinemachineCamera.md) to place it in the Scene and specify what to aim at or follow.
-5. To animate properties of the CinemachineCamera, create an Animation Track for it and animate as you would any other GameObject.
-6. Organize your Timeline tracks to fine-tune your Scene.
-
-You can have multiple CinemachineTracks in the same timeline.  The tracks lower down in the timeline will override any tracks higher up.  By having a shot on a lower track become active while a higher-up CinemachineShot clip is active, you can interrupt the shot with another one.  You can make the interrupting shot blend in or out by setting its Ease In and Ease Out Duration times to non-zero. 
+You can make the interrupting shot blend in or out by setting its Ease In and Ease Out Duration times to non-zero. 
 
 ![Shot Easing](images/ShotEasing.png)
+
+## Multiple Cinemachine Tracks
+
+You can have multiple Cinemachine Tracks in the same timeline. The tracks lower down in the timeline override any tracks higher up. By having a shot on a lower track become active while a higher-up CinemachineShot clip is active, you can interrupt the shot with another one.  

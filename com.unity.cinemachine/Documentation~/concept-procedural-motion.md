@@ -1,5 +1,14 @@
 # Procedural Motion
-While it is posiible to have a CinemachineCamera be passive at its location, or parented to an object, or to have its transform controlled by a custom script, it's also possible to harness the power of Cinemachine's procedural components to create shots that track the movement of objects and compose them on the screen, in ways that you can control without having to write custom code.
+
+On its own, a Cinemachine Camera is a passive GameObject that you can, for example:
+* Place in a fixed location with a static aim.
+* Parent to another GameObject to make it move along with it.
+* Control the Transform via a custom script.
+
+However, for more dynamic and realistic results, you can set up Cinemachine Cameras with procedural motion, for example:
+* Use target tracking in translation and rotation to automatically follow or aim at another GameObject.
+* Add noise to simulate hand-held effects or vehicle shakes.
+* Use impulse signal listening to shake the camera in reaction to a signal emitted by an external source.
 
 ## Positioning and Aiming
 

@@ -6,7 +6,7 @@ Objects with a Cinemachine Brain are displayed in the hierarchy with a little Ci
 
 To add a Cinemachine Brain component to a Unity camera, do __one__ of the following:
 
-* Use the GameObject > Cinemachine menu to [Add a CinemachineCamera](CinemachineSetUpVCam.md) to your Scene. Unity adds a Cinemachine Brain component to the Unity camera for you if there isn’t one already.
+* Use the GameObject > Cinemachine menu to add a CinemachineCamera to your Scene. Unity adds a Cinemachine Brain component to the Unity camera for you if there isn’t one already.
 
 * [Add](https://docs.unity3d.com/Manual/UsingComponents.html) a Cinemachine Brain component to the Unity camera yourself.
 
