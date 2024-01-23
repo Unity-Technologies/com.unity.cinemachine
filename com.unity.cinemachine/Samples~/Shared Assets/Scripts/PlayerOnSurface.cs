@@ -6,11 +6,12 @@ namespace Unity.Cinemachine.Samples
     /// <summary>
     /// This script keeps a player upright on surfaces.
     /// It rotates the player to match the surface normal.
-    /// Player should NOT have a collider on it - it should be a trigger.
+    /// Player is expected to NOT have a collider on it.  To support a player with a collider,
+    /// the raycasts would have to be modified to exclude the player's collider.
     /// </summary>
     public class PlayerOnSurface : MonoBehaviour
     {
-        [Tooltip("How fast the capsule rotates to match the surface normal")]
+        [Tooltip("How fast the player rotates to match the surface normal")]
         public float RotationDamping = 0.2f;
         [Tooltip("What layers to consider as ground")]
         public LayerMask CollideAgainst = 1;
@@ -18,7 +19,7 @@ namespace Unity.Cinemachine.Samples
         public float MaxRaycastDistance = 5;
         [Tooltip("The approximate height of the player.  Used to compute where raycasts begin")]
         public float PlayerHeight = 1;
-        [Tooltip("If true, then the camera up can influence capsule rotation when in free fall")]
+        [Tooltip("If true, then the camera up can influence player rotation when in free fall")]
         public bool CameraControlsFreeFall = false;
 
         Vector3 m_PreviousGround;
@@ -121,7 +122,7 @@ namespace Unity.Cinemachine.Samples
             public Vector3[] Normals;
             public int[] Indices;
         }
-        List<MeshCache> m_MeshCacheList = new List<MeshCache>(); 
+        List<MeshCache> m_MeshCacheList = new(); 
         const int kMaxMeshCacheSize = 5;
         MeshCache GetMeshCache(MeshCollider collider)
         {
@@ -129,7 +130,7 @@ namespace Unity.Cinemachine.Samples
                 if (m_MeshCacheList[i].Mesh == collider)
                     return m_MeshCacheList[i];
             if (m_MeshCacheList.Count >= kMaxMeshCacheSize)
-                m_MeshCacheList.RemoveAt(0);
+                m_MeshCacheList.RemoveAt(0); // discard oldest
             var m = collider.sharedMesh;
             var mc = new MeshCache { Mesh = collider, Normals = m.normals, Indices = m.triangles };
             m_MeshCacheList.Add(mc);
