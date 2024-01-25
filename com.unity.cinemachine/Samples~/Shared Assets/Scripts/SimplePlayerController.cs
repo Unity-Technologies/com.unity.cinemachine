@@ -85,7 +85,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Force of gravity in the down direction (m/s/s)")]
         public float Gravity = 10;
 
-        const float kDelayBeforeInferringJump = 0.6f;
+        const float kDelayBeforeInferringJump = 0.3f;
         float m_TimeLastGrounded = 0;
 
         Vector3 m_CurrentVelocityXZ;
