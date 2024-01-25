@@ -944,7 +944,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 1120369429361536294, guid: ca9f5fa95ffab41fb9a615ab714db018,
+    m_Reference: {fileID: 1120369429361536294, guid: 1d6e640e716dc4ff6989b73d02023f2b,
       type: 3}
   m_PlayerPrefab: {fileID: 8899812594330443548, guid: 33f863ca3153d440d84eccc416174573,
     type: 3}

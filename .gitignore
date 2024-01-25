@@ -16,5 +16,7 @@ npm-debug.log.meta
 /projects/**/obj
 /projects/**/Tests_ProRes
 /projects/**/Temp
+/projects/SamplesEditor/Assets/Samples/Cinemachine
+/projects/SamplesEditor/Assets/Samples/Cinemachine.meta
 *.csproj
 *.sln
