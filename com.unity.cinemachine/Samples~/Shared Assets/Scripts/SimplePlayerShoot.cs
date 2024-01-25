@@ -11,14 +11,17 @@ namespace Unity.Cinemachine.Samples
     /// If an AimTargetManager is specified, then the player will aim at that target.
     /// Otherwise, the player will aim in the forward direction of the player object,
     /// or of the SimplePlayerAimController object if it exists and is not decoupled
-    /// from the player rotation
+    /// from the player rotation.
     /// </summary>
     class SimplePlayerShoot : MonoBehaviour, IInputAxisOwner
     {
+        [Tooltip("The bullet prefab to instantiate when firing")]
         public GameObject BulletPrefab;
-        public float MaxBulletsPerSec = 10;
-        public float PlayerRotationTime = 0.2f;
 
+        [Tooltip("Maximum bullets per second")]
+        public float MaxBulletsPerSec = 10;
+
+        [Tooltip("Input Axis for firing.  Value is 0 or 1")]
         public InputAxis Fire = InputAxis.DefaultMomentary;
         
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
@@ -45,7 +48,6 @@ namespace Unity.Cinemachine.Samples
         void OnValidate()
         {
             MaxBulletsPerSec = Mathf.Max(1, MaxBulletsPerSec);
-            PlayerRotationTime = Mathf.Max(0, PlayerRotationTime);
         }
 
         void Start()
@@ -69,9 +71,14 @@ namespace Unity.Cinemachine.Samples
                 fwd = transform.parent.forward;
             
             // Face the firing direction if appropriate
-            if ((fireNow || now - m_LastFireTime <= PlayerRotationTime) && AimController != null && !decoupled)
-                AimController.RecenterPlayer(PlayerRotationTime);
+            if (AimController != null && !decoupled)
+            {
+                var rotationTime = AimController.RotationDamping;
+                if (fireNow || now - m_LastFireTime <= rotationTime)
+                    AimController.RecenterPlayer(rotationTime);
+            }
 
+            // Fire the bullet
             if (fireNow)
             {
                 m_LastFireTime = now;
@@ -79,6 +86,8 @@ namespace Unity.Cinemachine.Samples
                 if (AimTargetManager != null)
                     fwd = AimTargetManager.GetAimDirection(transform.position, fwd).normalized;
 
+                // Because creating and destroying GameObjects is costly, we pool them and recycle
+                // the deactivated ones.  The bullets deactivate themselves after a time.
                 GameObject bullet = null;
                 for (var i = 0; bullet == null && i < m_BulletPool.Count; ++i) // Look in the pool if one is available
                 {
@@ -88,13 +97,15 @@ namespace Unity.Cinemachine.Samples
                         m_BulletPool.Remove(bullet);
                     }
                 }
-                // Instantiate a bullet if none are found in the pool
+                // Instantiate a new bullet if none are found in the pool
                 if (bullet == null)
                     bullet = Instantiate(BulletPrefab);
 
-                bullet.SetActive(true);
-                bullet.transform.SetPositionAndRotation(transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
+                // Off it goes!
                 m_BulletPool.Add(bullet);
+                bullet.transform.SetPositionAndRotation(
+                    transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
+                bullet.SetActive(true);
                 FireEvent.Invoke();
             }
         }

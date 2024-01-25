@@ -201,6 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 5
     PositionDamping: {x: 3, y: 3, z: 3}
@@ -301,13 +302,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
-  m_LocalRotation: {x: 0.1867422, y: -0.00091963867, z: 0.00017481053, w: 0.9824085}
-  m_LocalPosition: {x: 0, y: 34.6, z: -8}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.18674226, y: -0.001005499, z: 0.00019113148, w: 0.9824084}
+  m_LocalPosition: {x: 0, y: 12.02, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &364965562
 MonoBehaviour:
@@ -333,6 +334,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Mouse X
         LegacyGain: 200
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0.2
@@ -345,6 +347,7 @@ MonoBehaviour:
         Gain: -1
         LegacyInput: Mouse Y
         LegacyGain: -200
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0.2
@@ -357,6 +360,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Mouse ScrollWheel
         LegacyGain: 200
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -547,12 +551,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: HelpText
-      value: "This scene shows a basic FreeLook camera tracking a player walking
-        on the surface of a sphere.  To allow the cameras to correctly use the player's
-        local Up direction, the player is used as a WorldUpOverride in the CM Brain.\r\n\r\nWASD
-        to move, Spacebar to jump, Shift to sprint.  Mouse moves the camera. \r\nIf
-        using Input package, right mouse button to jump and middle mouse button to
-        sprint."
+      value: "This scene shows a FreeLook camera tracking a player walking on the
+        surface of a sphere.  To allow the cameras to correctly use the player's
+        local Up direction, an object tracking the player is used as a WorldUpOverride
+        in the CM Brain.\r\n\r\nWASD to move, Spacebar to jump, Shift to sprint. 
+        Mouse moves the camera. \r\nIf using Input package, right mouse button to
+        jump and middle mouse button to sprint."
       objectReference: {fileID: 0}
     - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: m_Name
@@ -657,13 +661,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
-  m_LocalRotation: {x: 0.1867422, y: -0.00091963867, z: 0.00017481053, w: 0.9824085}
-  m_LocalPosition: {x: 0, y: 34.6, z: -8}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.18674226, y: -0.001005499, z: 0.00019113148, w: 0.9824084}
+  m_LocalPosition: {x: 0, y: 12.02, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &867266298
 MonoBehaviour:
@@ -680,7 +684,7 @@ MonoBehaviour:
   ShowDebugText: 0
   ShowCameraFrustum: 1
   IgnoreTimeScale: 0
-  WorldUpOverride: {fileID: 1596369886}
+  WorldUpOverride: {fileID: 1184580432}
   ChannelMask: 1
   UpdateMethod: 2
   BlendUpdateMethod: 1
@@ -800,13 +804,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044979972}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 60, y: 60, z: 60}
+  m_LocalScale: {x: 15, y: 15, z: 15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1044979977
 MeshCollider:
@@ -830,6 +834,53 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1184580430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1184580432}
+  - component: {fileID: 1184580431}
+  m_Layer: 0
+  m_Name: WorldUpOverride
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1184580431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1184580430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a51048181b52dd044a17566021c7c163, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 1596369886}
+  PositionDamping: 1
+  RotationDamping: 1
+--- !u!4 &1184580432
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1184580430}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.4327984, y: -4.19067, z: 2.9624605}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1596369884
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -940,7 +991,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 30.1
+      value: 7.52
       objectReference: {fileID: 0}
     - target: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -993,7 +1044,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3521509573382385251, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1596369891}
+      addedObject: {fileID: 1596369887}
   m_SourcePrefab: {fileID: 100100000, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
 --- !u!114 &1596369885 stripped
 MonoBehaviour:
@@ -1011,7 +1062,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
   m_PrefabInstance: {fileID: 1596369884}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1596369891
+--- !u!114 &1596369887
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1020,7 +1071,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 415639058}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e154cc58d08db174c936b047bb84c21f, type: 3}
+  m_Script: {fileID: 11500000, guid: 5810a0e64264ad44499c7ec07b601026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Sphere: {fileID: 1044979976}
+  RotationDamping: 0.2
+  CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 1
+  MaxRaycastDistance: 10
+  PlayerHeight: 1
+  CameraControlsFreeFall: 0
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 556492492}
+  - {fileID: 718033751}
+  - {fileID: 867266297}
+  - {fileID: 1184580432}
+  - {fileID: 1044979976}
+  - {fileID: 1596369884}
+  - {fileID: 364965561}

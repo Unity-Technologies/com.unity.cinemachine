@@ -169,6 +169,9 @@ MonoBehaviour:
   InputForward: 0
   UpMode: 0
   CameraOverride: {fileID: 0}
+  GroundLayers:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &7804758404662293724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,6 +196,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Horizontal
         LegacyGain: 1
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -205,6 +209,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Vertical
         LegacyGain: 1
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -217,6 +222,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Jump
         LegacyGain: 1
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -229,6 +235,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Fire3
         LegacyGain: 1
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
