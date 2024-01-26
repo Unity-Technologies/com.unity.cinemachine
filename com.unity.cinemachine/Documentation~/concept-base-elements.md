@@ -56,3 +56,7 @@ You can create as many Cinemachine Cameras as required for your project, but you
 ### Processing power consumption
 
 Cinemachine encourages you to create many Cinemachine Cameras. The Cinemachine Camera is designed to consume little processing power. If your Scene is performance-sensitive, deactivate all but the essential Cinemachine Cameras at any given moment for best performance.
+
+## Additional resources
+
+* [Set up a basic Cinemachine environment](setup-cinemachine-environment.md)

@@ -10,7 +10,7 @@ To add a Cinemachine Brain component to a Unity camera, do __one__ of the follow
 
 * [Add](https://docs.unity3d.com/Manual/UsingComponents.html) a Cinemachine Brain component to the Unity camera yourself.
 
-You can also control CinemachineCameras from [Timeline](CinemachineTimeline.md). Timeline overrides the decisions that Cinemachine Brain would otherwise make.
+You can also control CinemachineCameras from [Timeline](concept-cinemachine-timeline.md). Timeline overrides the decisions that Cinemachine Brain would otherwise make.
 
 Cinemachine Brain holds the following key properties:
 

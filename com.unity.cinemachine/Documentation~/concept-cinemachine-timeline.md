@@ -26,4 +26,8 @@ You can make the interrupting shot blend in or out by setting its Ease In and Ea
 
 ## Multiple Cinemachine Tracks
 
-You can have multiple Cinemachine Tracks in the same timeline. The tracks lower down in the timeline override any tracks higher up. By having a shot on a lower track become active while a higher-up CinemachineShot clip is active, you can interrupt the shot with another one.  
+You can have multiple Cinemachine Tracks in the same timeline. The tracks lower down in the timeline override any tracks higher up. By having a shot on a lower track become active while a higher-up CinemachineShot clip is active, you can interrupt the shot with another one.
+
+## Additional resources
+
+* [Set up Timeline with Cinemachine Cameras](setup-timeline.md)

@@ -6,9 +6,14 @@
 
 <!--- It should give a minimum of context about the level of info the whole section provides. --->
 
-<!--- Also include a table linking to all next level sub-pages, with short descriptions. --->
+| Section | Description |
+| :--- | :--- |
+| [Cinemachine purpose and concepts](CinemachineUsing.md) |  |
+| [Set up a basic Cinemachine environment](setup-cinemachine-environment.md) |  |
+| [Set up multiple Cinemachine Cameras and transitions](setup-multiple-cameras.md) |  |
+| [Add procedural behavior to a Cinemachine Camera](setup-procedural-behavior.md) |  |
+| [Set up Timeline with Cinemachine Cameras](setup-timeline.md) |  |
 
-<!---  --->
 
 
 
@@ -23,3 +28,4 @@ Create dramatic or subtle cuts or blends, for example:
 * Duplicate an existing Cinemachine Camera so that both Cinemachine Cameras are in the same position in the Scene. For the second Cinemachine Camera, change the FOV or composition. When a player enters a trigger volume, Cinemachine blends from the first to the second Cinemachine Camera to emphasize a change in action.
 
 --->
+

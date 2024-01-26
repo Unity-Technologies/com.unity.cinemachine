@@ -4,6 +4,9 @@
 
 <!--- Introduce Cinemachine base principles at a very high level --->
 
-<!--- Add a table linking to all sub-pages, with a short description for each --->
-
-<!---  --->
+| Section | Description |
+| :--- | :--- |
+| [Cinemachine base elements](concept-base-elements.md) |  |
+| [Cinemachine Camera activations and transitions](concept-activations-transitions.md) |  |
+| [Procedural motion](concept-procedural-motion.md) |  |
+| [Cinemachine and Timeline](concept-cinemachine-timeline.md) |  |
