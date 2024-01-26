@@ -8,13 +8,14 @@ namespace Unity.Cinemachine.Samples
     /// It rotates the player to match the surface normal.
     /// Player is expected to NOT have a collider on it.  To support a player with a collider,
     /// the raycasts would have to be modified to exclude the player's collider.
+    /// This script assumes that the pivot point of the player is at the bottom.
     /// </summary>
     public class PlayerOnSurface : MonoBehaviour
     {
         [Tooltip("How fast the player rotates to match the surface normal")]
         public float RotationDamping = 0.2f;
         [Tooltip("What layers to consider as ground")]
-        public LayerMask CollideAgainst = 1;
+        public LayerMask GroundLayers = 1;
         [Tooltip("How far to raycast when checking for ground")]
         public float MaxRaycastDistance = 5;
         [Tooltip("The approximate height of the player.  Used to compute where raycasts begin")]
@@ -27,39 +28,40 @@ namespace Unity.Cinemachine.Samples
         Vector3 m_PreviousPosition;
 
         public bool PreviousSateIsValid { get; set; }
+        private void OnEnable() => PreviousSateIsValid = false;
 
-        // Rotate the capsule to match the normal of the surface it's standing on
+        // Rotate the player to match the normal of the surface it's standing on
         void LateUpdate()
         {
             var tr = transform;
             var desiredUp = tr.up;
-            var originOffset = 0.2f * PlayerHeight * desiredUp;
-            var p0 = tr.position + originOffset; // raycast origin
-            var damping = RotationDamping;
             var down = -desiredUp;
+            var damping = RotationDamping;
             var cam = CameraControlsFreeFall ? Camera.main.transform : null;
+
+            var originOffset = 0.25f * PlayerHeight * desiredUp;
+            var downRaycastOrigin = tr.position + originOffset;
+            var fwdRaycastOrigin = tr.position + 2 * originOffset;
 
             // Check whether we have walked into a surface
             bool haveHit = false;
             if (PreviousSateIsValid)
             {
-                var dir = p0 - m_PreviousPosition;
+                var dir = fwdRaycastOrigin - m_PreviousPosition;
                 var dirLen = dir.magnitude;
-                if (dirLen > 0.0001f)
+                if (dirLen > 0.0001f && Physics.Raycast(m_PreviousPosition, dir, out var ht, 
+                    dirLen + 0.5f * PlayerHeight, GroundLayers, QueryTriggerInteraction.Ignore))
                 {
-                    if (Physics.Raycast(m_PreviousPosition, dir, out var ht, 
-                        0.5f * PlayerHeight, CollideAgainst, QueryTriggerInteraction.Ignore))
-                    {
-                        haveHit = true;
-                        desiredUp = CaptureUpDirection(ht, cam);
-                    }
+                    haveHit = true;
+                    desiredUp = CaptureUpDirection(ht, cam);
                 }
             }
-            m_PreviousPosition = p0;
+            m_PreviousPosition = fwdRaycastOrigin;
+            PreviousSateIsValid = true;
 
             // Find the ground under our feet
-            if (!haveHit && Physics.Raycast(p0, down, out var hit, 
-                MaxRaycastDistance, CollideAgainst, QueryTriggerInteraction.Ignore))
+            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out var hit, 
+                MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
                 desiredUp = CaptureUpDirection(hit, cam);
@@ -68,8 +70,8 @@ namespace Unity.Cinemachine.Samples
             // If nothing is directly under our feet, try to find a surface in the direction
             // where we came from.  This handles the case of sudden convex direction changes in the floor
             // (e.g. going around the lip of a surface)
-            if (!haveHit && Physics.Raycast(p0, m_PreviousGround - p0, out hit, 
-                MaxRaycastDistance, CollideAgainst, QueryTriggerInteraction.Ignore))
+            if (!haveHit && Physics.Raycast(downRaycastOrigin, m_PreviousGround - downRaycastOrigin, out hit, 
+                MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
                 desiredUp = SmoothedNormal(hit);
@@ -77,9 +79,7 @@ namespace Unity.Cinemachine.Samples
 
             // If we're in free fall, optionally allow the camera direction to influence which way is up
             if (!haveHit && cam != null)
-            {
                 desiredUp = cam.TransformDirection(m_CameraSpaceUp);
-            }
 
             // Rotate to match the desired up direction
             float t = Damper.Damp(1, damping, Time.deltaTime);
@@ -94,14 +94,13 @@ namespace Unity.Cinemachine.Samples
                 var rot = Quaternion.Slerp(Quaternion.identity, Quaternion.AngleAxis(angle, axis), t);
                 tr.rotation = rot * tr.rotation;
             }
-            PreviousSateIsValid = true;
         }
 
         Vector3 CaptureUpDirection(RaycastHit hit, Transform cam)
         {
             var desiredUp = SmoothedNormal(hit);
 
-            // Capture the last point where the capsule is touching the ground
+            // Capture the last point where there was ground under our feet
             m_PreviousGround = hit.point;
 
             // While things are stable, capture the camera space up vector in camera space.
