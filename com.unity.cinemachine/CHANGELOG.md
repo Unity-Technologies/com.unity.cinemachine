@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 ### Added
+- FlyAround sample scene showing a simple fly-around camera.
 
 ### Changed
 - ThirdPersonFollow sets state.ReferenceUp, to allow usage on arbitrary surfaces without global world up override.
