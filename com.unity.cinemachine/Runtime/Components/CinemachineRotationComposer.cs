@@ -78,6 +78,12 @@ namespace Unity.Cinemachine
         /// Always returns the Aim stage</summary>
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
+        /// <summary>
+        /// True if this component tries to make the camera look at the Tracking Target.
+        /// Used by inspector to warn the user of potential improper setup.
+        /// </summary>
+        internal override bool CameraLooksAtTarget { get => true; }
+
         /// <summary>Internal API for inspector</summary>
         internal Vector3 TrackedPoint { get; private set; }
 

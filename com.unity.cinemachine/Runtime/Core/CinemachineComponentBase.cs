@@ -210,5 +210,11 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
         public virtual float GetMaxDampTime() => 0;
+
+        /// <summary>
+        /// True if this component tries to make the camera look at the Tracking Target.
+        /// Used by inspector to warn the user of potential improper setup.
+        /// </summary>
+        internal virtual bool CameraLooksAtTarget { get => false; }
     }
 }
