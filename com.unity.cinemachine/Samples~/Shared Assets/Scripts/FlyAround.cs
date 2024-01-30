@@ -5,6 +5,8 @@ namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// This behaviour makes a GameObject fly around in response to user input.
+    /// Movement is relative to the GameObject's local axes.
+    /// 
     /// </summary>
     public class FlyAround : MonoBehaviour, IInputAxisOwner
     {
@@ -85,9 +87,7 @@ namespace Unity.Cinemachine.Samples
     	    // Calculate the move direction and speed based on input
             var rot = Quaternion.Euler(Tilt.Value, Pan.Value, 0);
             var movement = rot * new Vector3(Sideways.Value, UpDown.Value, Forward.Value);
-            var speed = Speed;
-            if (Sprint.Value > 0)
-                speed *= SprintMultiplier;
+            var speed = Sprint.Value < 0.01f ? Speed : Speed * SprintMultiplier;
 
             // Apply motion
             transform.SetPositionAndRotation(transform.position + speed * Time.deltaTime * movement, rot);
