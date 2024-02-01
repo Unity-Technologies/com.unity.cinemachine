@@ -1,4 +1,4 @@
-# Cinemachine Brain
+# Cinemachine Brain component
 
 The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all active [**CinemachineCameras**](CinemachineCamera.md) in the Scene. It chooses the next CinemachineCamera to control the Unity camera. It also controls the [cut or blend](CinemachineBlending.md) from the current CinemachineCamera to the next.
 
@@ -10,7 +10,7 @@ To add a Cinemachine Brain component to a Unity camera, do __one__ of the follow
 
 * [Add](https://docs.unity3d.com/Manual/UsingComponents.html) a Cinemachine Brain component to the Unity camera yourself.
 
-You can also control CinemachineCameras from [Timeline](concept-cinemachine-timeline.md). Timeline overrides the decisions that Cinemachine Brain would otherwise make.
+You can also control CinemachineCameras from [Timeline](concept-timeline.md). Timeline overrides the decisions that Cinemachine Brain would otherwise make.
 
 Cinemachine Brain holds the following key properties:
 

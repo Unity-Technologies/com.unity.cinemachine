@@ -41,7 +41,7 @@ Add an **Extension** to augment the behavior of a Cinemachine Camera for more sp
 
 For example, the [Deoccluder](CinemachineDeoccluder.md) extension moves a camera out of the way of GameObjects that obstruct the camera’s view of its target.
 
-See the [reference](Reference.md) to get the full list of Cinemachine Camera Extensions.
+See the [Reference](Reference.md) to get the list of all available Cinemachine Camera Extensions and access their detailed descriptions.
 
 
 ## Target GameObject tracking

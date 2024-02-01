@@ -1,23 +1,62 @@
 # Set up Timeline with Cinemachine Cameras
 
-## Create a Timeline with a Cinemachine Track
+Set up [Timeline in a Cinemachine environment](concept-timeline.md) to choreograph Cinemachine Cameras and produce a predictable shot sequence:
 
-1. Create an empty GameObject in your Scene by choosing the **GameObject** > **Create Empty** menu item.
-2. Give the empty GameObject a descriptive name. For example, `IntroTimeline`.
-3. In your Scene, select your empty Timeline object as the focus to create a Timeline Asset and instance.
-4. Click the padlock button to lock the TImeline window to make it easier to add and adjust tracks.
-5. Drag a Unity camera with a CinemachineBrain component onto the Timeline Editor, then choose **Create Cinemachine Track** from the drop-down menu.
-6. Add other tracks to the Timeline for controlling the subjects of your Scene.  For example, add an Animation track to animate your main character.
+* Prepare multiple Cinemachine Cameras to support the various shots,
+* Prepare a Timeline, create a Cinemachine Track, and add Cinemachine Shot Clips, and
+* Manage camera cuts and blends.
 
-**Tip**: Delete the default track that refers to your Timeline object. This track isn’t necessary for Timeline. For example, in the Timeline editor, right-click the track for IntroTimeline and choose **Delete**.
+## Prepare the Cinemachine Cameras
 
-## Add Cinemachine Shot Clips to the Cinemachine Track
+1. In the Hierarchy, create a few [static](setup-cinemachine-environment.md) or [procedural](setup-procedural-behavior.md) Cinemachine Cameras with different properties according to the shots you want to get.
 
-1. In the Cinemachine Track, right-click and choose **Add Cinemachine Shot Clip**.
-2. Do one of the following:
-    * To add an existing CinemachineCamera to the shot clip, drag and drop it onto the CinemachineCamera property in the Cinemachine Shot component.
-    * To create a new CinemachineCamera and add it to the shot clip, click Create in the Cinemachine Shot component.
-3. In the Timeline editor, adjust the order, duration, cutting, and blending of the shot clip.
-4. [Adjust the properties of the CinemachineCamera](CinemachineCamera.md) to place it in the Scene and specify what to aim at or follow.
-5. To animate properties of the CinemachineCamera, create an Animation Track for it and animate as you would any other GameObject.
-6. Organize your Timeline tracks to fine-tune your Scene.
+2. Name the Cinemachine Cameras in a way you can easily identify them in the future.
+
+## Prepare the Timeline
+
+1. Create an empty GameObject in your Scene: from the Editor's menu, select **GameObject** > **Create Empty**.
+
+2. Give this empty GameObject a descriptive name, for example, "My Timeline".
+
+3. Open the [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) window if it's not already open, and **Create** a Timeline Asset and instance for "My Timeline" GameObject.
+
+4. Click the padlock button to lock the Timeline window and make it easier to add and adjust tracks.
+
+5. If needed, add tracks that control the subjects of your Scene. For example, add an Animation track to animate your main character.
+
+## Create a Cinemachine Track with Cinemachine Shot Clips
+
+1. From the Hierarchy, drag the Unity Camera GameObject that includes a Cinemachine Brain component onto the Timeline Editor, then select **Create Cinemachine Track**.
+
+   Unity adds a Cinemachine Track targeting the Unity Camera in Timeline.
+
+![](images/setup-timeline-cinemachine-track.png)
+
+2. From the Hierarchy, drag a first Cinemachine Camera GameObject onto the added Cinemachine Track.
+
+   Unity adds to the Cinemachine Track a Cinemachine Shot Clip targeting the Cinemachine Camera you selected.
+
+3. Repeat the previous step as many times as needed with other Cinemachine Cameras to get additional Cinemachine Shot Clips in the Cinemachine Track.
+
+   > [!NOTE]
+   > You can reuse the same Cinemachine Camera several times in separate Cinemachine Shot Clips placed at different times in the Cinemachine Track.
+
+4. Adjust the order and duration of Cinemachine Shot Clips according to the desired shot sequence.
+
+## Create camera cuts
+
+To produce a camera [cut](concept-camera-control-transitions.md#cuts) between two shots:
+
+* Place the two Cinemachine Shot Clips or edit their boundaries so that the clips stick to each other without overlapping.
+
+![](images/setup-timeline-camera-cut.png)
+
+## Create camera blends
+
+To make the Cinemachine Cameras [blend](concept-camera-control-transitions.md#blends) their properties between two shots:
+
+* Move the two Cinemachine Shot Clips or edit their boundaries so that the clips overlap.
+
+   The resulting overlap area defines the blend duration.
+
+![](images/setup-timeline-camera-blend.png)

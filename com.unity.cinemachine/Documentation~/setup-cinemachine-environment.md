@@ -1,10 +1,10 @@
 # Set up a basic Cinemachine environment
 
-Discover the Cinemachine base elements through a basic functional setup:
+Set up your Unity project with the [minimum required elements](concept-essential-elements.md) to make a functional Cinemachine environment:
 
-1. Create a passive Cinemachine Camera – with no specific behavior by definition,
-2. Ensure the Cinemachine Brain is present in the Unity Camera, and
-3. Adjust the Cinemachine Camera properties and see how it affects the Unity Camera.
+* Create a passive Cinemachine Camera – with no specific behavior by definition,
+* Ensure the Cinemachine Brain is present in the Unity Camera, and
+* Adjust the Cinemachine Camera properties and see how it affects the Unity Camera.
 
 > [!NOTE]
 > Your Scene must include only one Unity Camera – a GameObject with a [Camera](https://docs.unity3d.com/Manual/class-Camera.html) component.
@@ -46,6 +46,8 @@ When you create a first Cinemachine Camera in a Scene, Unity automatically adds 
 
 ## Next steps
 
+Here are potential tasks you might want to do now:
+
 * [Create multiple Cinemachine Cameras and manage transitions between them](setup-multiple-cameras.md).
 * [Create a Cinemachine Camera with procedural behavior: example for a camera that follows a character](setup-procedural-behavior.md).
-* Manage a choreographed sequence of Cinemachine Camera shots with Timeline.
+* [Manage a choreographed sequence of Cinemachine Camera shots with Timeline](setup-timeline.md).

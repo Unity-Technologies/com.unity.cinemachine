@@ -1,4 +1,4 @@
-# Basic Multi Channel Perlin
+# Cinemachine Basic Multi Channel Perlin component
 
 Use a Basic Multi Channel Perlin component in a Cinemachine Camera GameObject to simulate camera shake via Perlin noise movement. Perlin noise is a technique to compute pseudo-random movement with a natural behavior.
 

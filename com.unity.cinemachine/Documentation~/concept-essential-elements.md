@@ -1,6 +1,10 @@
-# Cinemachine base elements
+# Cinemachine essential elements
 
-A Cinemachine setup involves three main types of elements:
+Learn about the essential elements that make a functional Cinemachine environment.
+
+## Overview
+
+A functional Cinemachine setup involves three main types of elements:
 
 * A single [**Unity Camera**](#unity-camera) which captures the images across the Scene,
 * A [**Cinemachine Brain**](#cinemachine-brain) which enables the Cinemachine functionality in the Unity Camera, and

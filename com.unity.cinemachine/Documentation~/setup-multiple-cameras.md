@@ -1,10 +1,10 @@
 # Set up multiple Cinemachine Cameras and transitions
 
-Set up and manage a Cinemachine environment with multiple Cinemachine Cameras:
+Set up a Cinemachine environment with multiple Cinemachine Cameras and manage [camera control and transitions](concept-camera-control-transitions.md):
 
-1. Create multiple Cinemachine Cameras with different properties,
-2. Manage Cinemachine Camera transitions in the Cinemachine Brain, and
-3. Test the transitions in Play mode.
+* Create multiple Cinemachine Cameras with different properties,
+* Manage Cinemachine Camera transitions in the Cinemachine Brain, and
+* Test the Live camera activation mechanism and transitions in Play mode.
 
 > [!NOTE]
 > Your Scene must include only one Unity Camera – a GameObject with a [Camera](https://docs.unity3d.com/Manual/class-Camera.html) component.
@@ -19,7 +19,9 @@ Set up and manage a Cinemachine environment with multiple Cinemachine Cameras:
 
    At this point, you can also [verify](setup-cinemachine-environment.md#verify-the-cinemachine-brain-presence) that the Unity Camera includes a [Cinemachine Brain](CinemachineBrain.md) component.
 
-3. Continue to navigate the Scene and create one or two additional Cinemachine Cameras the same way but with different positions and rotations.
+3. Continue to navigate the Scene and create a few additional Cinemachine Cameras the same way but with different positions and rotations.
+
+4. Name the Cinemachine Cameras in a way you can easily identify them in the future.
 
 ## Manage transitions between Cinemachine Cameras
 
@@ -40,5 +42,7 @@ Set up and manage a Cinemachine environment with multiple Cinemachine Cameras:
 
 ## Next steps
 
+Here are potential tasks you might want to do now:
+
 * [Create a Cinemachine Camera with procedural behavior: example for a camera that follows a character](setup-procedural-behavior.md).
-* Manage a choreographed sequence of Cinemachine Camera shots with Timeline.
+* [Manage a choreographed sequence of Cinemachine Camera shots with Timeline](setup-timeline.md).

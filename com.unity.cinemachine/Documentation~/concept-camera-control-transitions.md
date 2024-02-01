@@ -1,24 +1,24 @@
-# Cinemachine Camera activations and transitions
+# Camera control and transitions
 
-<!--- Find a quick and nice way to introduce, all should be about having a Cinemachine Camera control the Unity camera, what makes such a Cinemachine Camera, how to select the next Cinemachine Camera, and what happens when the next Cinemachine Camera takes control of the Unity camera over the current Cinemachine Camera. --->
+Learn about the conditions and mechanisms that make Cinemachine Cameras take turns controlling the Unity Camera and transition between each other by blend or cut.
 
 ## Cinemachine Camera states
 
-At any time, each Cinemachine Camera may be in one of three different states.
+At any time, each Cinemachine Camera may be in one of three different states, but only one is **Live** and controls the Unity Camera at a time, except when a blend occurs.
 
 | State | Description |
 | :--- | :--- |
-| Live | The Cinemachine Camera actively controls a Unity Camera that has a Cinemachine Brain.<br />When a [blend](#blends) occurs from one Cinemachine Camera to the next, both Cinemachine Cameras are live. When the blend is complete, there is only one live Cinemachine Camera. |
-| Standby | The Cinemachine Camera doesn’t control the Unity camera. However, it still follows and aims at its targets, and updates.<br />A Cinemachine Camera in this state has its GameObject activated and a priority that is the same as or lower than the live Cinemachine Camera. |
-| Disabled | The Cinemachine Camera doesn’t control the Unity camera and doesn’t actively follow or aim at its targets.<br />A Cinemachine Camera in this state doesn’t consume processing power. To disable a Cinemachine Camera, deactivate its GameObject. The Cinemachine Camera is present but disabled in the Scene. However, even though the GameObject is deactivated, the Cinemachine Camera can still control the Unity camera if the Cinemachine Camera is participating in a blend, or if Timeline invokes it. |
+| **Live** | The Cinemachine Camera actively controls a Unity Camera that has a Cinemachine Brain.<br />When a [blend](#blends) occurs from one Cinemachine Camera to the next, both Cinemachine Cameras are live. When the blend is complete, there is only one live Cinemachine Camera. |
+| **Standby** | The Cinemachine Camera doesn’t control the Unity camera. However, it still follows and aims at its targets, and updates.<br />A Cinemachine Camera in this state has its GameObject activated and a priority that is the same as or lower than the live Cinemachine Camera. |
+| **Disabled** | The Cinemachine Camera doesn’t control the Unity camera and doesn’t actively follow or aim at its targets.<br />A Cinemachine Camera in this state doesn’t consume processing power. To disable a Cinemachine Camera, deactivate its GameObject. The Cinemachine Camera is present but disabled in the Scene. However, even though the GameObject is deactivated, the Cinemachine Camera can still control the Unity camera if the Cinemachine Camera is participating in a blend, or if Timeline invokes it. |
 
 ## Live Cinemachine Camera selection
 
-The conditions that make a Cinemachine Camera the live one are different depending on the context you're using Cinemachine in.
+The conditions that make a Cinemachine Camera the live one depend on the context you're using Cinemachine in.
 
 ### Realtime dynamic events
 
-By default, the Cinemachine Brain is responsible to handle the live Cinemachine Camera selection.
+By default, the Cinemachine Brain is responsible for handling the live Cinemachine Camera selection.
 
 To be or become live, a Cinemachine Camera must meet the following rules:
 * Its GameObject must be the most recently [activated GameObject](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) that includes a Cinemachine Camera component.
@@ -28,7 +28,7 @@ You can respond to dynamic game events in real time by manipulating Cinemachine 
 
 ### Timeline
 
-Use [Cinemachine with Timeline](concept-cinemachine-timeline.md) to choreograph Cinemachine Cameras and manage shots in predictable situations, like cutscenes.
+Use [Cinemachine with Timeline](concept-timeline.md) to choreograph Cinemachine Cameras and manage shots in predictable situations, like cutscenes.
 
 When you use Timeline with Cinemachine Cameras, Timeline overrides the Cinemachine Brain priority system. The live Cinemachine Camera selection is based on the activation of specific Cinemachine Camera clips that give you precise, to-the-frame camera control.
 

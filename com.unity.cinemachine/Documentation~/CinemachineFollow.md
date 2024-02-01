@@ -1,4 +1,4 @@
-# Follow
+# Cinemachine Follow component
 
 This CinemachineCamera __Position Control__ behavior moves the CinemachineCamera to maintain a fixed offset relative to the __Tracking Target__. It also applies damping.
 

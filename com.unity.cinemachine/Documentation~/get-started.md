@@ -1,18 +1,21 @@
 # Get started with Cinemachine
 
-<!--- This page is a landing page for getting started --->
+Get the essential information to understand how Cinemachine works and follow instructions to set up the minimum functional layers to start using Cinemachine in your project.
 
-<!--- The purpose of the section is to explain the essentials and give quick instructions to get into the mechanics with basic functional results. --->
+<!--- NAVIGATION --->
 
-<!--- It should give a minimum of context about the level of info the whole section provides. --->
+<!--- Once we have a structured version of the use outcome oriented part of the manual, we can have here an additional short paragraph with at least one link leading experienced users to skip this section. --->
+
+<!--- Example: If you already know how Cinemachine works and are interested in instructions to achieve specific goals or in more advanced Cinemachine concepts and tools. --->
+
 
 | Section | Description |
 | :--- | :--- |
-| [Cinemachine purpose and concepts](CinemachineUsing.md) |  |
-| [Set up a basic Cinemachine environment](setup-cinemachine-environment.md) |  |
-| [Set up multiple Cinemachine Cameras and transitions](setup-multiple-cameras.md) |  |
-| [Add procedural behavior to a Cinemachine Camera](setup-procedural-behavior.md) |  |
-| [Set up Timeline with Cinemachine Cameras](setup-timeline.md) |  |
+| [Cinemachine core concepts](concept.md) | Learn about the Cinemachine base elements and core functionality. |
+| [Set up a basic Cinemachine environment](setup-cinemachine-environment.md) | Set up your Unity project with the minimum required elements to make a functional Cinemachine environment. |
+| [Set up multiple Cinemachine Cameras and transitions](setup-multiple-cameras.md) | Set up a Cinemachine environment with multiple Cinemachine Cameras and manage the transitions between them. |
+| [Add procedural behavior to a Cinemachine Camera](setup-procedural-behavior.md) | Set up a Cinemachine Camera for position and rotation control, automatic target tracking, and real-world camera shaking effect. See also how to add extensions to a Cinemachine Camera. |
+| [Set up Timeline with Cinemachine Cameras](setup-timeline.md) | Set up Timeline in a Cinemachine environment to choreograph Cinemachine Cameras and produce a predictable shot sequence |
 
 
 
@@ -28,4 +31,3 @@ Create dramatic or subtle cuts or blends, for example:
 * Duplicate an existing Cinemachine Camera so that both Cinemachine Cameras are in the same position in the Scene. For the second Cinemachine Camera, change the FOV or composition. When a player enters a trigger volume, Cinemachine blends from the first to the second Cinemachine Camera to emphasize a change in action.
 
 --->
-
