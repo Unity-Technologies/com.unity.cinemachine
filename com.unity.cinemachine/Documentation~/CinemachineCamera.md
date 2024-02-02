@@ -26,7 +26,7 @@ The CinemachineCamera is a component that you add to an empty GameObject. It rep
 | **Property:** || **Function:** |
 |:---|:---|:---|
 | **Tracking Target** || The target GameObject that the CinemachineCamera procedurally follows. The procedural algorithms use this target as input when updating the position and rotation of the Unity camera. |
-| **Look At Target** || If enabled, this specifies a distinct target GameObject at which to aim the Unity camera. The [Rotation Control properties](ProceduralMotion.md#rotation-control) use this target to update the rotation of the Unity camera. |
+| **Look At Target** || If enabled, this specifies a distinct target GameObject at which to aim the Unity camera. The [Rotation Control properties](#set-procedural-components-and-add-extension) use this target to update the rotation of the Unity camera. |
 
 ### Lens
 

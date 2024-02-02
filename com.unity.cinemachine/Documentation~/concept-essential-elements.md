@@ -31,7 +31,7 @@ To work with Cinemachine, the Unity Camera GameObject must include a [**Cinemach
 
 ## Cinemachine Cameras
 
-The Cinemachine Cameras (formerly named _Virtual Cameras_) are GameObjects that act as camera placeholders ready to [take control](#next-live-cinemachine-camera) of the Unity Camera according to their status.
+The Cinemachine Cameras (formerly named _Virtual Cameras_) are GameObjects that act as camera placeholders ready to [take control](concept-camera-control-transitions.md) of the Unity Camera according to their status.
 
 When a Cinemachine Cameras takes control of the Unity Camera, it dynamically overrides its properties and behavior, which affects:
 * Where the Unity Camera is positioned in the Scene.
@@ -44,7 +44,7 @@ Cinemachine Camera GameObjects are separate from the Unity Camera GameObject.
 * They behave independently, and must not be nested within each other.
 * They don't include a Camera component, as opposed to the Unity Camera GameObject.
 * They must include a [Cinemachine Camera component](CinemachineCamera.md).
-* They can include additional Cinemachine components to manage [procedural motion]() and add extended functionality.
+* They can include additional Cinemachine components to manage [procedural motion](concept-procedural-motion.md) and add extended functionality.
 
 ![](images/CinemachineSceneHierarchy.png)  
 _Hierarchy example: a Scene containing a Unity Camera with Cinemachine Brain and multiple Cinemachine Cameras._
