@@ -33,18 +33,34 @@ namespace Unity.Cinemachine
             + "get as close as possible to the Follow target.  The value is interpreted "
             + "according to the Position Units setting.")]
         public float CameraPosition;
-
-        /// <summary>How to interpret the Spline Position:
-        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
-        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
-        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
-        /// interpolation between the specific knot index and the next knot."</summary>
+        
         [Tooltip("How to interpret the Spline Position:\n"
             + "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"
             + "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"
             + "- Knot: Values are defined by knot indices and a fractional value representing the normalized " 
             + "interpolation between the specific knot index and the next knot.\n")]
-        public PathIndexUnit PositionUnits = PathIndexUnit.Normalized;
+        [SerializeField] 
+        [FormerlySerializedAs(oldName: "PositionUnits")]
+        internal PathIndexUnit positionUnitsBackingField = PathIndexUnit.Normalized;
+        /// <summary>How to interpret the Spline Position:
+        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
+        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
+        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
+        /// interpolation between the specific knot index and the next knot."</summary>
+        public PathIndexUnit PositionUnits
+        {
+            get => positionUnitsBackingField;
+            set
+            {
+                PathIndexUnit previousValue = positionUnitsBackingField;
+                positionUnitsBackingField = value;
+                
+                if (value != previousValue)
+                {
+                    //Update the CameraPosition to match the new unit type.
+                }
+            }
+        }
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>

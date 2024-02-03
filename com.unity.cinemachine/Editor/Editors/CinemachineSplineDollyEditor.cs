@@ -22,7 +22,7 @@ namespace Unity.Cinemachine.Editor
 
             var row = ux.AddChild(InspectorUtility.PropertyRow(
                 serializedObject.FindProperty(() => Target.CameraPosition), out _));
-            row.Contents.Add(new PropertyField(serializedObject.FindProperty(() => Target.PositionUnits), "") 
+            row.Contents.Add(new PropertyField(serializedObject.FindProperty(() => Target.positionUnitsBackingField), "") 
                 { style = { flexGrow = 2, flexBasis = 0 }});
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineOffset)));
