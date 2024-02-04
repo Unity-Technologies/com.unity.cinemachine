@@ -1,8 +1,15 @@
+using System;
+using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.MethodImplOptions;
+
 using UnityEngine;
 using UnityEngine.Splines;
 
+using static UnityEngine.Splines.PathIndexUnit;
+
 namespace Unity.Cinemachine
 {
+
     /// <summary>
     /// A collection of helpers for UnityEngine Spline.
     /// </summary>
@@ -137,6 +144,112 @@ namespace Unity.Cinemachine
             if (t < 0)
                 t += max;
             return t;
+        }
+        
+        /// <summary>
+        /// Converts the distance from one unit to another.
+        /// </summary>
+        /// <param name="spline">The spline which length is used for conversion.</param>
+        /// <param name="distance">The distance to convert.</param>
+        /// <param name="oldUnits">The original units of the distance.</param>
+        /// <param name="newUnits">The units to convert the distance to.</param>
+        /// <returns>The converted distance.</returns>
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        internal static float ConvertDistance(this Spline spline, float distance, PathIndexUnit oldUnits, PathIndexUnit newUnits)
+        {
+            if(distance == 0) return 0;
+            
+            return (oldUnits, newUnits) switch
+            {
+                (oldUnits: Distance,   newUnits: Normalized) => ConvertDistanceMetresToNormalized(spline, distance),
+                (oldUnits: Normalized, newUnits: Distance)   => ConvertDistanceNormalizedToMetres(spline, distance),
+                (oldUnits: Distance,   newUnits: Knot)       => ConvertDistanceMetresToKnot(      spline, distance),
+                (oldUnits: Knot,       newUnits: Distance)   => ConvertDistanceKnotToMetres(      spline, distance),
+                (oldUnits: Normalized, newUnits: Knot)       => ConvertDistanceNormalizedToKnot(  spline, distance),
+                (oldUnits: Knot,       newUnits: Normalized) => ConvertDistanceKnotToNormalized(  spline, distance),
+                _                                            => distance,
+            };
+        }
+        
+        /// <summary>
+        /// Converts the distance from metres to normalized units.
+        /// </summary>
+        /// <param name="distance">The distance in metres to convert.</param>
+        /// <param name="spline">The spline which length is used for conversion.</param>
+        /// <returns>The converted distance in normalized units.</returns>
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceMetresToNormalized(this Spline spline, float distance)
+        {
+            return distance / spline.GetLength();
+        }
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceNormalizedToMetres(this Spline spline, float distance)
+        {
+            return distance * spline.GetLength();
+        }
+
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceMetresToKnot(this Spline spline, float distance) => ConvertDistanceNormalizedToKnot(spline, distance: ConvertDistanceMetresToNormalized(spline, distance), pathLengthReciprocal: 1 / spline.GetLength());
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceKnotToMetres(this Spline spline, float distance)
+        {
+            return ConvertDistanceNormalizedToMetres(spline, distance: ConvertDistanceKnotToNormalized(spline, distance, pathLengthReciprocal: 1 / spline.GetLength()));
+        }
+        
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance) => ConvertDistanceNormalizedToKnot(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance, float pathLengthReciprocal)
+        {
+            if(distance < 0) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            
+            distance %= 1;
+            
+            float accumulatedDistanceNormalized = 0;
+            for (int knotIndex = 0; knotIndex < spline.Count; knotIndex++)
+            {
+                float curveLengthNormalized = spline.GetCurveLength(knotIndex) * pathLengthReciprocal;
+                
+                if(accumulatedDistanceNormalized + curveLengthNormalized < distance)
+                {
+                    accumulatedDistanceNormalized += curveLengthNormalized;
+                    continue;
+                }
+                
+                float remainingSplineDistanceNormalized = distance - accumulatedDistanceNormalized;
+                
+                float distanceBetweenKnotsNormalized = remainingSplineDistanceNormalized / curveLengthNormalized;
+                
+                return knotIndex + distanceBetweenKnotsNormalized;
+            }
+            return spline.Count - 1;
+        }
+        
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceKnotToNormalized(this Spline spline, float distance) => ConvertDistanceKnotToNormalized(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        private static float ConvertDistanceKnotToNormalized(this Spline spline, float distance, float pathLengthReciprocal)
+        {
+            if(distance < 0) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            
+            distance %= spline.Count - 1;
+            
+            int knotIndex = Mathf.FloorToInt(distance);
+            
+            float distanceToKnotIndexNormalized = 0;
+            for (int i = 0; i < knotIndex; i++)
+            {
+                distanceToKnotIndexNormalized += spline.GetCurveLength(i) * pathLengthReciprocal;
+            }
+            
+            float distanceDecimal   = distance - knotIndex;
+            float remainingDistance = spline.GetCurveLength(knotIndex) * distanceDecimal;
+            
+            float remainingDistanceNormalized = remainingDistance * pathLengthReciprocal;
+
+            float normalizedDistance = distanceToKnotIndexNormalized + remainingDistanceNormalized;
+            
+            return normalizedDistance;
         }
     }
 }

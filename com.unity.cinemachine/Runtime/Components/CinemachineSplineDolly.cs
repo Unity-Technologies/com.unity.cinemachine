@@ -34,6 +34,9 @@ namespace Unity.Cinemachine
             + "according to the Position Units setting.")]
         public float CameraPosition;
         
+        #if UNITY_EDITOR
+        [SerializeField, HideInInspector] internal PathIndexUnit previousPositionUnitsBackingField = PathIndexUnit.Normalized;
+        #endif
         [Tooltip("How to interpret the Spline Position:\n"
             + "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"
             + "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"
@@ -51,15 +54,29 @@ namespace Unity.Cinemachine
         {
             get => positionUnitsBackingField;
             set
-            {
-                PathIndexUnit previousValue = positionUnitsBackingField;
+            { 
+                if(value != positionUnitsBackingField)
+                {
+                    UpdateDistanceForPositionUnits(oldUnits: positionUnitsBackingField, newUnits: value);
+                }
+                else
+                {
+                    #if UNITY_EDITOR
+                    UpdateDistanceForPositionUnits(oldUnits: previousPositionUnitsBackingField, newUnits: value);
+                    #endif    
+                }
+                
                 positionUnitsBackingField = value;
                 
-                if (value != previousValue)
-                {
-                    //Update the CameraPosition to match the new unit type.
-                }
+                #if UNITY_EDITOR
+                previousPositionUnitsBackingField = value;
+                #endif
             }
+        }
+
+        internal void UpdateDistanceForPositionUnits(PathIndexUnit oldUnits, PathIndexUnit newUnits)
+        {
+            CameraPosition = Spline.Spline.ConvertDistance(distance: CameraPosition, oldUnits: oldUnits, newUnits: newUnits);
         }
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
@@ -147,14 +164,20 @@ namespace Unity.Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
+        #if UNITY_EDITOR
         void OnValidate()
         {
+            PositionUnits = positionUnitsBackingField; 
+            
             Damping.Position.x = Mathf.Clamp(Damping.Position.x, 0, 20);
             Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
             Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
             Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
+            
             if (AutomaticDolly.Method != null)
+            {
                 AutomaticDolly.Method.Validate();
+            }
         }
 
         void Reset()
@@ -167,6 +190,7 @@ namespace Unity.Cinemachine
             Damping = default;
             AutomaticDolly.Method = null;
         }
+        #endif
 
         /// <summary>Called when the behaviour is enabled.</summary>
         protected override void OnEnable()
