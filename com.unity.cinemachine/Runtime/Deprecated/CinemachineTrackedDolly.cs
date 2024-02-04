@@ -342,18 +342,19 @@ namespace Unity.Cinemachine
                     SearchIteration = 2
                 };
             }
+            // set splineDolly spline reference
+            if (m_Path != null)
+            {
+                m_Path.TryGetComponent(out c.Spline);
+            }
             c.CameraPosition = m_PathPosition;
             switch (m_PositionUnits)
             {
-                case CinemachinePathBase.PositionUnits.PathUnits: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
-                case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
+                case CinemachinePathBase.PositionUnits.PathUnits:  c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
+                case CinemachinePathBase.PositionUnits.Distance:   c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
                 case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
             }
             c.SplineOffset = m_PathOffset;
-            
-            // set splineDolly spline reference
-            if (m_Path != null) 
-                m_Path.TryGetComponent(out c.Spline);
         }
     }
 }

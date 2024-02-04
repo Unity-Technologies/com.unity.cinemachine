@@ -76,7 +76,10 @@ namespace Unity.Cinemachine
 
         internal void UpdateDistanceForPositionUnits(PathIndexUnit oldUnits, PathIndexUnit newUnits)
         {
-            CameraPosition = Spline.Spline.ConvertDistance(distance: CameraPosition, oldUnits: oldUnits, newUnits: newUnits);
+            if (Spline != null && Spline.Spline != null)
+            {
+                CameraPosition = Spline.Spline.ConvertDistance(distance: CameraPosition, oldUnits: oldUnits, newUnits: newUnits);   
+            }
         }
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
