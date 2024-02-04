@@ -190,11 +190,11 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Converts the distance from knots to normalized units.
+        /// Converts the distance from metres to knots.
         /// </summary>
         /// <param name="spline"> The spline which length is used for conversion. </param>
         /// <param name="distance"> The distance in knots to convert .</param>
-        /// <returns> The converted distance in normalized units. </returns>
+        /// <returns> The converted distance in knots. </returns>
         [MethodImpl(methodImplOptions: AggressiveInlining)]
         internal static float ConvertDistanceMetresToKnot(this Spline spline, float distance)
         {
@@ -267,12 +267,12 @@ namespace Unity.Cinemachine
             return ConvertDistanceNormalizedToKnot(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
         }
         /// <summary>
-        /// Converts the distance from knots to normalized units.
+        /// Converts the distance from normalized units to knots.
         /// </summary>
         /// <param name="spline"> The spline which length is used for conversion. </param>
         /// <param name="distance"> The distance in knots to convert .</param>
         /// <param name="pathLengthReciprocal"> The reciprocal of the length of the spline. </param>
-        /// <returns> The converted distance in normalized units. </returns>
+        /// <returns> The converted distance in knots. </returns>
         [MethodImpl(methodImplOptions: AggressiveInlining)]
         internal static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance, float pathLengthReciprocal)
         {
@@ -300,11 +300,11 @@ namespace Unity.Cinemachine
         }
         
         /// <summary>
-        /// Converts the distance from normalized units to knots.
+        /// Converts the distance from knots to metres.
         /// </summary>
         /// <param name="spline"> The spline which length is used for conversion. </param>
         /// <param name="distance"> The distance in normalized units to convert .</param>
-        /// <returns> The converted distance in knots. </returns>
+        /// <returns> The converted distance in metres. </returns>
         [MethodImpl(methodImplOptions: AggressiveInlining)]
         internal static float ConvertDistanceKnotToMetres(this Spline spline, float distance)
         {
