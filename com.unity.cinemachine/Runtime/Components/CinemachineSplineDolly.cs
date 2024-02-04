@@ -170,6 +170,7 @@ namespace Unity.Cinemachine
         #if UNITY_EDITOR
         void OnValidate()
         {
+            //Required or change check in PositionUnits is never called when changed from the inspector.
             PositionUnits = positionUnitsBackingField; 
             
             Damping.Position.x = Mathf.Clamp(Damping.Position.x, 0, 20);
@@ -178,9 +179,7 @@ namespace Unity.Cinemachine
             Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
             
             if (AutomaticDolly.Method != null)
-            {
                 AutomaticDolly.Method.Validate();
-            }
         }
 
         void Reset()
