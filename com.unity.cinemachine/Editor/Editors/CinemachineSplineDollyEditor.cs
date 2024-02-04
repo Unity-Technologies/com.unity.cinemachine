@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using UnityEngine.Splines;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -22,9 +23,11 @@ namespace Unity.Cinemachine.Editor
 
             var row = ux.AddChild(InspectorUtility.PropertyRow(
                 serializedObject.FindProperty(() => Target.CameraPosition), out _));
-            row.Contents.Add(new PropertyField(serializedObject.FindProperty(() => Target.positionUnitsBackingField), "") 
-                { style = { flexGrow = 2, flexBasis = 0 }});
-
+            
+            SerializedProperty positionUnitsProp  = serializedObject.FindProperty(() => Target.positionUnitsBackingField);
+            PropertyField      positionUnitsField = new (positionUnitsProp, label: "") { style = { flexGrow = 2, flexBasis = 0 } };
+            row.Contents.Add(positionUnitsField);
+            
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRotation)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticDolly)));
@@ -38,6 +41,18 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; !noSpline && i < targets.Length; ++i)
                     noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
                 noSplineHelp.SetVisible(noSpline);
+            }
+            
+            // Store the initial value
+            PathIndexUnit previousUnits = Target.positionUnitsBackingField;
+            ux.TrackPropertyValue(positionUnitsProp, TrackPositionUnits);
+            void TrackPositionUnits(SerializedProperty p)
+            {
+                PathIndexUnit newUnits = (PathIndexUnit) p.enumValueIndex;
+                
+                Target.UpdateDistanceForPositionUnits(previousUnits, newUnits);
+                // Update previous value for the next change
+                previousUnits = newUnits;
             }
 
             return ux;
