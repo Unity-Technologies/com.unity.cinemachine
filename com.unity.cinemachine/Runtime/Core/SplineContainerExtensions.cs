@@ -178,32 +178,62 @@ namespace Unity.Cinemachine
         /// <param name="spline">The spline which length is used for conversion.</param>
         /// <returns>The converted distance in normalized units.</returns>
         [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceMetresToNormalized(this Spline spline, float distance)
+        internal static float ConvertDistanceMetresToNormalized(this Spline spline, float distance)
         {
-            return distance / spline.GetLength();
-        }
-        [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceNormalizedToMetres(this Spline spline, float distance)
-        {
-            return distance * spline.GetLength();
-        }
-
-        [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceMetresToKnot(this Spline spline, float distance) => ConvertDistanceNormalizedToKnot(spline, distance: ConvertDistanceMetresToNormalized(spline, distance), pathLengthReciprocal: 1 / spline.GetLength());
-        [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceKnotToMetres(this Spline spline, float distance)
-        {
-            return ConvertDistanceNormalizedToMetres(spline, distance: ConvertDistanceKnotToNormalized(spline, distance, pathLengthReciprocal: 1 / spline.GetLength()));
+            float splineLength = spline.GetLength();
+            
+            if(distance < 0)            throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if(distance > splineLength) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than the length of the spline.");
+            
+            return distance / splineLength;
         }
         
         [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance) => ConvertDistanceNormalizedToKnot(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
+        internal static float ConvertDistanceNormalizedToMetres(this Spline spline, float distance)
+        {
+            float splineLength = spline.GetLength();
+            
+            if(distance < 0) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if(distance > 1) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than 1.");
+            
+            return distance * splineLength;
+        }
+
+        
         [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance, float pathLengthReciprocal)
+        internal static float ConvertDistanceMetresToKnot(this Spline spline, float distance)
+        {
+            float splineLength = spline.GetLength();
+            
+            if(distance < 0)            throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if(distance > splineLength) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than the length of the spline.");
+            
+            return ConvertDistanceNormalizedToKnot(spline, distance: ConvertDistanceMetresToNormalized(spline, distance), pathLengthReciprocal: 1 / splineLength);
+        }
+        
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        internal static float ConvertDistanceKnotToMetres(this Spline spline, float distance)
+        {
+            if (distance < 0)                throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if (distance > spline.Count - 1) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than the number of knots.");
+            
+            return ConvertDistanceNormalizedToMetres(spline, distance: ConvertDistanceKnotToNormalized(spline, distance, pathLengthReciprocal: 1 / spline.GetLength()));
+        }
+        
+        
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        internal static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance)
+        {
+            if (distance < 0) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if (distance > 1) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than 1.");
+            
+            return ConvertDistanceNormalizedToKnot(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
+        }
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        internal static float ConvertDistanceNormalizedToKnot(this Spline spline, float distance, float pathLengthReciprocal)
         {
             if(distance < 0) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
-            
-            distance %= 1;
+            if(distance > 1) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than 1.");
             
             float accumulatedDistanceNormalized = 0;
             for (int knotIndex = 0; knotIndex < spline.Count; knotIndex++)
@@ -226,13 +256,18 @@ namespace Unity.Cinemachine
         }
         
         [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceKnotToNormalized(this Spline spline, float distance) => ConvertDistanceKnotToNormalized(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
-        [MethodImpl(methodImplOptions: AggressiveInlining)]
-        private static float ConvertDistanceKnotToNormalized(this Spline spline, float distance, float pathLengthReciprocal)
+        internal static float ConvertDistanceKnotToNormalized(this Spline spline, float distance)
         {
-            if(distance < 0) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if(distance < 0)                throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if(distance > spline.Count - 1) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than the number of knots.");
             
-            distance %= spline.Count - 1;
+            return ConvertDistanceKnotToNormalized(spline, distance, pathLengthReciprocal: 1 / spline.GetLength());
+        }
+        [MethodImpl(methodImplOptions: AggressiveInlining)]
+        internal static float ConvertDistanceKnotToNormalized(this Spline spline, float distance, float pathLengthReciprocal)
+        {
+            if(distance < 0)                throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be negative.");
+            if(distance > spline.Count - 1) throw new ArgumentOutOfRangeException(paramName: nameof(distance), message: "Distance cannot be greater than the number of knots.");
             
             int knotIndex = Mathf.FloorToInt(distance);
             
