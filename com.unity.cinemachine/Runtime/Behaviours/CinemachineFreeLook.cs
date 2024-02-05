@@ -367,7 +367,6 @@ namespace Cinemachine
             }
 
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
-            PreviousStateIsValid = true;
 
             // Set up for next frame
             bool activeCam = PreviousStateIsValid && CinemachineCore.Instance.IsLive(this);
@@ -379,6 +378,8 @@ namespace Cinemachine
             PushSettingsToRigs();
             if (m_BindingMode == CinemachineTransposer.BindingMode.SimpleFollowWithWorldUp)
                 m_XAxis.Value = 0;
+
+            PreviousStateIsValid = true;
         }
 
         /// <summary>If we are transitioning from another FreeLook, grab the axis values from it.</summary>
