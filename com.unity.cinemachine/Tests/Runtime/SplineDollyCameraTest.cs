@@ -1,4 +1,3 @@
-#if CINEMACHINE_UNITY_SPLINES
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -276,4 +275,3 @@ namespace Unity.Cinemachine.Tests
         }
     }
 }
-#endif

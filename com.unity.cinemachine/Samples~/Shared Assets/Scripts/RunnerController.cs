@@ -27,7 +27,7 @@ namespace Unity.Cinemachine.Samples
             if (!s_LeaderWasSlowed)
             {
                 if (m_Cart.Spline.Spline.ConvertIndexUnit(
-                    m_Cart.SplinePosition, m_Cart.PositionUnits, PathIndexUnit.Normalized) > 0.5f)
+                    m_Cart.PositionOnSpline, m_Cart.Units, PathIndexUnit.Normalized) > 0.5f)
                 {
                     s_LeaderWasSlowed = true;
                     if (m_Cart.AutomaticDolly.Method is RandomizedDollySpeed speedControl)
@@ -45,7 +45,7 @@ namespace Unity.Cinemachine.Samples
         public void ResetRace()
         {
             // Reset position to start
-            m_Cart.SplinePosition = 0;
+            m_Cart.PositionOnSpline = 0;
             m_StartTime = Time.time;
             m_Cart.AutomaticDolly.Enabled = false;
 

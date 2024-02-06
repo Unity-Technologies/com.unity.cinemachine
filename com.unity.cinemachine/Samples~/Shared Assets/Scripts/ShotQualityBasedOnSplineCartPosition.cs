@@ -19,8 +19,9 @@ namespace Unity.Cinemachine.Samples
                     && vcam.Follow.TryGetComponent(out CinemachineSplineCart cart) 
                     && cart.Spline != null && cart.Spline.Spline != null)
                 {
+                    // Shot quality is just the normalized distance along the path
                     state.ShotQuality = cart.Spline.Spline.ConvertIndexUnit(
-                        cart.SplinePosition, cart.PositionUnits, PathIndexUnit.Normalized);
+                        cart.PositionOnSpline, cart.Units, PathIndexUnit.Normalized);
                 }
             }
         }

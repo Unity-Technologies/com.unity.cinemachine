@@ -21,53 +21,10 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineDolly.html")]
     public class CinemachineSplineDolly : CinemachineComponentBase
     {
-        /// <summary>The Spline container to which the camera will be constrained.</summary>
-        [Tooltip("The Spline container to which the camera will be constrained.")]
-        public SplineContainer Spline;
-
-        /// <summary>The position along the spline at which the camera will be placed. This can be animated directly,
-        /// or set automatically by the Auto-Dolly feature to get as close as possible to the Follow target.
-        /// The value is interpreted according to the Position Units setting.</summary>
-        [Tooltip("The position along the spline at which the camera will be placed.  "
-            + "This can be animated directly, or set automatically by the Auto-Dolly feature to "
-            + "get as close as possible to the Follow target.  The value is interpreted "
-            + "according to the Position Units setting.")]
-        public float CameraPosition;
-        
-        [Tooltip("How to interpret the Spline Position:\n"
-            + "- Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"
-            + "- Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).\n"
-            + "- Knot: Values are defined by knot indices and a fractional value representing the normalized " 
-            + "interpolation between the specific knot index and the next knot.\n")]
-        [SerializeField] 
-        [FormerlySerializedAs(oldName: "PositionUnits")]
-        internal PathIndexUnit positionUnitsBackingField = PathIndexUnit.Normalized;
-        /// <summary>How to interpret the Spline Position:
-        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
-        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
-        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
-        /// interpolation between the specific knot index and the next knot."</summary>
-        public PathIndexUnit PositionUnits
-        {
-            get => positionUnitsBackingField;
-            set
-            { 
-                if(value != positionUnitsBackingField)
-                {
-                    UpdateDistanceForPositionUnits(oldUnits: positionUnitsBackingField, newUnits: value);
-                }
-                
-                positionUnitsBackingField = value;
-            }
-        }
-
-        internal void UpdateDistanceForPositionUnits(PathIndexUnit oldUnits, PathIndexUnit newUnits)
-        {
-            if (Spline != null && Spline.Spline != null)
-            {
-                CameraPosition = Spline.Spline.ConvertDistance(distance: CameraPosition, oldUnits: oldUnits, newUnits: newUnits);   
-            }
-        }
+        /// <summary>
+        /// Holds the Spline container, the spline position, and the position unit type
+        /// </summary>
+        public SplinePosition SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
@@ -154,7 +111,33 @@ namespace Unity.Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
-        #if UNITY_EDITOR
+        /// <summary>The Spline container to which the camera will be constrained.</summary>
+        public SplineContainer Spline
+        {
+            get => SplinePosition.Spline;
+            set => SplinePosition.Spline = value;
+        }
+
+        /// <summary>The position along the spline at which the camera will be placed. This can be animated directly,
+        /// or set automatically by the Auto-Dolly feature to get as close as possible to the Follow target.
+        /// The value is interpreted according to the Position Units setting.</summary>
+        public float CameraPosition
+        {
+            get => SplinePosition.Position;
+            set => SplinePosition.Position = value;
+        }
+
+        /// <summary>How to interpret the Spline Position:
+        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
+        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
+        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
+        /// interpolation between the specific knot index and the next knot."</summary>
+        public PathIndexUnit PositionUnits
+        {
+            get => SplinePosition.Units;
+            set => SplinePosition.ChangeUnitPreservePosition(value);
+        }
+
         void OnValidate()
         {
             Damping.Position.x = Mathf.Clamp(Damping.Position.x, 0, 20);
@@ -167,15 +150,12 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            Spline = null;
-            CameraPosition = 0;
-            PositionUnits = PathIndexUnit.Normalized;
+            SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
             SplineOffset = Vector3.zero;
             CameraRotation = RotationMode.Default;
             Damping = default;
             AutomaticDolly.Method = null;
         }
-        #endif
 
         /// <summary>Called when the behaviour is enabled.</summary>
         protected override void OnEnable()

@@ -344,9 +344,8 @@ namespace Unity.Cinemachine
             }
             // set splineDolly spline reference
             if (m_Path != null)
-            {
-                m_Path.TryGetComponent(out c.Spline);
-            }
+                c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
+
             c.CameraPosition = m_PathPosition;
             switch (m_PositionUnits)
             {

@@ -14,9 +14,10 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineCart.html")]
     public class CinemachineSplineCart : MonoBehaviour
     {
-        /// <summary>The Spline container to which the camera will be constrained.</summary>
-        [Tooltip("The Spline container to which the cart will be constrained.")]
-        public SplineContainer Spline;
+        /// <summary>
+        /// Holds the Spline container, the spline position, and the position unit type
+        /// </summary>
+        public SplinePosition SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -33,16 +34,8 @@ namespace Unity.Cinemachine
         [Tooltip("When to move the cart, if Speed is non-zero")]
         public UpdateMethods UpdateMethod = UpdateMethods.Update;
 
-        /// <summary>How to interpret the Spline Position</summary>
-        [Tooltip("How to interpret the Spline Position.  If set to Knot, values are as follows: "
-            + "0 represents the first knot on the path, 1 is the second, and so on.  "
-            + "Values in-between are points on the spline in between the knots.  "
-            + "If set to Distance, then Spline Position represents distance along the spline.")]
-        public PathIndexUnit PositionUnits = PathIndexUnit.Distance;
-
         /// <summary>Controls how automatic dollying occurs</summary>
         [FoldoutWithEnabledButton]
-        [NoSaveDuringPlay]
         [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
         public SplineAutoDolly AutomaticDolly;
         
@@ -50,12 +43,30 @@ namespace Unity.Cinemachine
         [Tooltip("Used only by Automatic Dolly settings that require it")]
         public Transform TrackingTarget;
 
-        /// <summary>The cart's current position on the spline, in position units</summary>
-        [NoSaveDuringPlay]
-        [Tooltip("The position along the spline at which the cart will be placed.  "
-            + "This can be animated directly or, if the velocity is non-zero, will be updated automatically.  "
-            + "The value is interpreted according to the Position Units setting.")]
-        public float SplinePosition;
+        /// <summary>The Spline container to which the cart will be constrained.</summary>
+        public SplineContainer Spline
+        {
+            get => SplinePosition.Spline;
+            set => SplinePosition.Spline = value;
+        }
+
+        /// <summary>The cart's current position on the spline, in spline position units</summary>
+        public float PositionOnSpline
+        {
+            get => SplinePosition.Position;
+            set => SplinePosition.Position = value;
+        }
+
+        /// <summary>How to interpret PositionOnSpline:
+        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
+        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
+        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
+        /// interpolation between the specific knot index and the next knot."</summary>
+        public PathIndexUnit Units
+        {
+            get => SplinePosition.Units;
+            set => SplinePosition.ChangeUnitPreservePosition(value);
+        }
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
@@ -67,12 +78,10 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            Spline = null;
+            SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
             UpdateMethod = UpdateMethods.Update;
-            PositionUnits = PathIndexUnit.Distance;
             AutomaticDolly.Method = null;
             TrackingTarget = null;
-            SplinePosition = 0;
         }
 
         void OnEnable()
@@ -91,7 +100,7 @@ namespace Unity.Cinemachine
         void Update()
         {
             if (!Application.isPlaying)
-                SetCartPosition(SplinePosition);
+                SetCartPosition(PositionOnSpline);
             else if (UpdateMethod == UpdateMethods.Update)
                 UpdateCartPosition();
         }
@@ -99,7 +108,7 @@ namespace Unity.Cinemachine
         void LateUpdate()
         {
             if (!Application.isPlaying)
-                SetCartPosition(SplinePosition);
+                SetCartPosition(PositionOnSpline);
             else if (UpdateMethod == UpdateMethods.LateUpdate)
                 UpdateCartPosition();
         }
@@ -107,17 +116,17 @@ namespace Unity.Cinemachine
         void UpdateCartPosition()
         {
             if (AutomaticDolly.Enabled && AutomaticDolly.Method != null)
-                SplinePosition = AutomaticDolly.Method.GetSplinePosition(
-                    this, TrackingTarget, Spline, SplinePosition, PositionUnits, Time.deltaTime);
-            SetCartPosition(SplinePosition);
+                PositionOnSpline = AutomaticDolly.Method.GetSplinePosition(
+                    this, TrackingTarget, Spline, PositionOnSpline, Units, Time.deltaTime);
+            SetCartPosition(PositionOnSpline);
         }
 
         void SetCartPosition(float distanceAlongPath)
         {
             if (Spline.IsValid())
             {
-                SplinePosition = Spline.Spline.StandardizePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
-                var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
+                PositionOnSpline = Spline.Spline.StandardizePosition(distanceAlongPath, Units, Spline.Spline.GetLength());
+                var t = Spline.Spline.ConvertIndexUnit(PositionOnSpline, Units, PathIndexUnit.Normalized);
                 Spline.EvaluateSplineWithRoll(SplineRoll, transform.rotation, t, out var pos, out var rot);
                 transform.SetPositionAndRotation(pos, rot);
             }
