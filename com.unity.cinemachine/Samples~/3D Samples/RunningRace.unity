@@ -938,7 +938,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 381337818}
     - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Units
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: SplinePosition.Spline
+      value: 
+      objectReference: {fileID: 381337818}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Spline
       value: 
       objectReference: {fileID: 381337818}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
@@ -1623,7 +1631,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 909308763}
     - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Units
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: SplinePosition.Spline
+      value: 
+      objectReference: {fileID: 909308763}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Spline
       value: 
       objectReference: {fileID: 909308763}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
@@ -2230,7 +2246,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 119660182}
     - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Units
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: SplinePosition.Spline
+      value: 
+      objectReference: {fileID: 119660182}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Spline
       value: 
       objectReference: {fileID: 119660182}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
@@ -2376,7 +2400,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1293460385}
     - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Units
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: SplinePosition.Spline
+      value: 
+      objectReference: {fileID: 1293460385}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Spline
       value: 
       objectReference: {fileID: 1293460385}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
@@ -2725,7 +2757,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2090653184}
     - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Units
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: SplinePosition.Spline
+      value: 
+      objectReference: {fileID: 2090653184}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: SplineSettings.Spline
       value: 
       objectReference: {fileID: 2090653184}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}

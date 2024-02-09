@@ -8,7 +8,7 @@ namespace Unity.Cinemachine
     /// This structure holds the spline reference and the position and position units.
     /// </summary>
     [Serializable]
-    public struct SplinePosition
+    public struct SplineSettings
     {
         /// <summary>The Spline container to which the the position will apply.</summary>
         [Tooltip("The Spline container to which the position will apply.")]

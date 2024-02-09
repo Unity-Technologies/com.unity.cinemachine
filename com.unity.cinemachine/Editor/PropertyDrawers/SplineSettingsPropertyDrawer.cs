@@ -5,12 +5,12 @@ using UnityEngine.Splines;
 
 namespace Unity.Cinemachine.Editor
 {
-    [CustomPropertyDrawer(typeof(SplinePosition))]
-    class SplinePositionPropertyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(SplineSettings))]
+    class SplineSettingsPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            SplinePosition def = new ();
+            SplineSettings def = new ();
             var splineProp = property.FindPropertyRelative(() => def.Spline);
             var positionProp = property.FindPropertyRelative(() => def.Position);
             var unitsProp = property.FindPropertyRelative(() => def.Units);

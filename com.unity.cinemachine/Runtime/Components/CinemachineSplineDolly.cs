@@ -24,7 +24,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplinePosition SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
+        public SplineSettings SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
@@ -114,8 +114,8 @@ namespace Unity.Cinemachine
         /// <summary>The Spline container to which the camera will be constrained.</summary>
         public SplineContainer Spline
         {
-            get => SplinePosition.Spline;
-            set => SplinePosition.Spline = value;
+            get => SplineSettings.Spline;
+            set => SplineSettings.Spline = value;
         }
 
         /// <summary>The position along the spline at which the camera will be placed. This can be animated directly,
@@ -123,8 +123,8 @@ namespace Unity.Cinemachine
         /// The value is interpreted according to the Position Units setting.</summary>
         public float CameraPosition
         {
-            get => SplinePosition.Position;
-            set => SplinePosition.Position = value;
+            get => SplineSettings.Position;
+            set => SplineSettings.Position = value;
         }
 
         /// <summary>How to interpret the Spline Position:
@@ -134,8 +134,8 @@ namespace Unity.Cinemachine
         /// interpolation between the specific knot index and the next knot."</summary>
         public PathIndexUnit PositionUnits
         {
-            get => SplinePosition.Units;
-            set => SplinePosition.ChangeUnitPreservePosition(value);
+            get => SplineSettings.Units;
+            set => SplineSettings.ChangeUnitPreservePosition(value);
         }
 
         void OnValidate()
@@ -150,7 +150,7 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
+            SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
             SplineOffset = Vector3.zero;
             CameraRotation = RotationMode.Default;
             Damping = default;

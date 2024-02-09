@@ -13,7 +13,7 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplinePosition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineSettings)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
 
             var autoDollyProp = serializedObject.FindProperty(() => Target.AutomaticDolly);

@@ -84,13 +84,13 @@ namespace Unity.Cinemachine
             c.UpdateMethod = (CinemachineSplineCart.UpdateMethods)m_UpdateMethod; // enum values match
             switch (m_PositionUnits)
             {
-                case CinemachinePathBase.PositionUnits.PathUnits: c.Units = UnityEngine.Splines.PathIndexUnit.Knot; break;
-                case CinemachinePathBase.PositionUnits.Distance: c.Units = UnityEngine.Splines.PathIndexUnit.Distance; break;
-                case CinemachinePathBase.PositionUnits.Normalized: c.Units = UnityEngine.Splines.PathIndexUnit.Normalized; break;
+                case CinemachinePathBase.PositionUnits.PathUnits: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
+                case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
+                case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
             }
             c.AutomaticDolly.Enabled = true;
             c.AutomaticDolly.Method = new SplineAutoDolly.FixedSpeed { Speed = m_Speed };
-            c.PositionOnSpline = m_Position;
+            c.SplinePosition = m_Position;
             if (m_Path != null)
                 c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
         }

@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Editor
             this.AddMissingCmCameraHelpBox(ux);
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
 
-            var splineProp = serializedObject.FindProperty(() => Target.SplinePosition);
+            var splineProp = serializedObject.FindProperty(() => Target.SplineSettings);
             ux.Add(new PropertyField(splineProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRotation)));

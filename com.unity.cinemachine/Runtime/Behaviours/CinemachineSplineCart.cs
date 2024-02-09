@@ -17,7 +17,8 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplinePosition SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
+        public SplineSettings SplineSettings = new SplineSettings
+        { Units = PathIndexUnit.Normalized };
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -46,15 +47,15 @@ namespace Unity.Cinemachine
         /// <summary>The Spline container to which the cart will be constrained.</summary>
         public SplineContainer Spline
         {
-            get => SplinePosition.Spline;
-            set => SplinePosition.Spline = value;
+            get => SplineSettings.Spline;
+            set => SplineSettings.Spline = value;
         }
 
         /// <summary>The cart's current position on the spline, in spline position units</summary>
-        public float PositionOnSpline
+        public float SplinePosition
         {
-            get => SplinePosition.Position;
-            set => SplinePosition.Position = value;
+            get => SplineSettings.Position;
+            set => SplineSettings.Position = value;
         }
 
         /// <summary>How to interpret PositionOnSpline:
@@ -62,10 +63,10 @@ namespace Unity.Cinemachine
         /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
         /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
         /// interpolation between the specific knot index and the next knot."</summary>
-        public PathIndexUnit Units
+        public PathIndexUnit PositionUnits
         {
-            get => SplinePosition.Units;
-            set => SplinePosition.ChangeUnitPreservePosition(value);
+            get => SplineSettings.Units;
+            set => SplineSettings.ChangeUnitPreservePosition(value);
         }
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
@@ -78,7 +79,7 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            SplinePosition = new SplinePosition { Units = PathIndexUnit.Normalized };
+            SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
             UpdateMethod = UpdateMethods.Update;
             AutomaticDolly.Method = null;
             TrackingTarget = null;
@@ -100,7 +101,7 @@ namespace Unity.Cinemachine
         void Update()
         {
             if (!Application.isPlaying)
-                SetCartPosition(PositionOnSpline);
+                SetCartPosition(SplinePosition);
             else if (UpdateMethod == UpdateMethods.Update)
                 UpdateCartPosition();
         }
@@ -108,7 +109,7 @@ namespace Unity.Cinemachine
         void LateUpdate()
         {
             if (!Application.isPlaying)
-                SetCartPosition(PositionOnSpline);
+                SetCartPosition(SplinePosition);
             else if (UpdateMethod == UpdateMethods.LateUpdate)
                 UpdateCartPosition();
         }
@@ -116,17 +117,17 @@ namespace Unity.Cinemachine
         void UpdateCartPosition()
         {
             if (AutomaticDolly.Enabled && AutomaticDolly.Method != null)
-                PositionOnSpline = AutomaticDolly.Method.GetSplinePosition(
-                    this, TrackingTarget, Spline, PositionOnSpline, Units, Time.deltaTime);
-            SetCartPosition(PositionOnSpline);
+                SplinePosition = AutomaticDolly.Method.GetSplinePosition(
+                    this, TrackingTarget, Spline, SplinePosition, PositionUnits, Time.deltaTime);
+            SetCartPosition(SplinePosition);
         }
 
         void SetCartPosition(float distanceAlongPath)
         {
             if (Spline.IsValid())
             {
-                PositionOnSpline = Spline.Spline.StandardizePosition(distanceAlongPath, Units, Spline.Spline.GetLength());
-                var t = Spline.Spline.ConvertIndexUnit(PositionOnSpline, Units, PathIndexUnit.Normalized);
+                SplinePosition = Spline.Spline.StandardizePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
+                var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
                 Spline.EvaluateSplineWithRoll(SplineRoll, transform.rotation, t, out var pos, out var rot);
                 transform.SetPositionAndRotation(pos, rot);
             }

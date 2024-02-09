@@ -21,7 +21,7 @@ namespace Unity.Cinemachine.Samples
                 {
                     // Shot quality is just the normalized distance along the path
                     state.ShotQuality = cart.Spline.Spline.ConvertIndexUnit(
-                        cart.PositionOnSpline, cart.Units, PathIndexUnit.Normalized);
+                        cart.SplinePosition, cart.PositionUnits, PathIndexUnit.Normalized);
                 }
             }
         }
