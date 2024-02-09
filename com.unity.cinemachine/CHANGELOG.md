@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [unreleased] - 2024-01-01
 - Bugfix: CinemachineFreeLook.ForceCameraPosition() sometimes did not take full effect immediately.
+- Bugfix: 3rdPersonFollow sometimes generated invalid camera position when the target when DampingWhenOccluded is nonzero.
 
 
 ## [2.9.8] - 2023-11-29

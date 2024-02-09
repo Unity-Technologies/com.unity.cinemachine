@@ -270,12 +270,12 @@ namespace Cinemachine
             float cameraRadius, ref float collisionCorrection)
         {
             if (CameraCollisionFilter.value == 0)
-            {
                 return tip;
-            }
             
             var dir = tip - root;
             var len = dir.magnitude;
+            if (len < Epsilon) 
+                return tip;
             dir /= len;
 
             var result = tip;
