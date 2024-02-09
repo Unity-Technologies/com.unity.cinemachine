@@ -329,6 +329,8 @@ namespace Unity.Cinemachine
             
             var dir = tip - root;
             var len = dir.magnitude;
+            if (len < Epsilon)
+                return tip;
             dir /= len;
 
             var result = tip;
