@@ -226,10 +226,6 @@ namespace Unity.Cinemachine
         
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
-            var t = FollowTarget;
-            if (t != null)
-                curState.ReferenceUp = t.up;
-
             var up = curState.ReferenceUp;
             var targetPos = FollowTargetPosition;
             var targetRot = FollowTargetRotation;
