@@ -187,12 +187,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
-    BindingMode: 5
+    BindingMode: 0
     PositionDamping: {x: 3, y: 3, z: 3}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  OrbitStyle: 1
+  OrbitStyle: 0
   Radius: 10
   Orbits:
     Top:
@@ -278,7 +278,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  BlendHint: 12
+  BlendHint: 9
 --- !u!4 &364965561
 Transform:
   m_ObjectHideFlags: 0
@@ -287,8 +287,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1867425, y: -0.00090573786, z: 0.00017216845, w: 0.98240846}
-  m_LocalPosition: {x: 0, y: 12.02, z: -8}
+  m_LocalRotation: {x: 0.08495734, y: -0.0009733698, z: 0.00008299501, w: 0.99638414}
+  m_LocalPosition: {x: 0, y: 10.527058, z: -9.537169}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -783,7 +783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
-    BindingMode: 4
+    BindingMode: 0
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
@@ -874,7 +874,7 @@ MonoBehaviour:
       Curvature: {x: 2, y: 11}
       BarrelClipping: 0.25
       Anamorphism: 0
-  BlendHint: 12
+  BlendHint: 9
 --- !u!4 &858783893
 Transform:
   m_ObjectHideFlags: 0
@@ -985,8 +985,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.1867425, y: -0.00090573786, z: 0.00017216845, w: 0.98240846}
-  m_LocalPosition: {x: 0, y: 12.02, z: -8}
+  m_LocalRotation: {x: 0.08495734, y: -0.0009733698, z: 0.00008299501, w: 0.99638414}
+  m_LocalPosition: {x: 0, y: 10.527058, z: -9.537169}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
