@@ -7,9 +7,7 @@ namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// This script keeps a player upright on surfaces.
-    /// It rotates the player to match the surface normal.
-    /// Player is expected to NOT have a collider on it.  To support a player with a collider,
-    /// the raycasts would have to be modified to exclude the player's collider.
+    /// It rotates the player up to match the surface normal.
     /// This script assumes that the pivot point of the player is at the bottom.
     /// </summary>
     public class PlayerOnSurface : MonoBehaviour
