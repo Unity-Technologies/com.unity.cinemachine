@@ -23,8 +23,8 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("The approximate height of the player.  Used to compute where raycasts begin")]
         public float PlayerHeight = 1;
 
-        [Tooltip("If enabled, then player will fall towads the nearest surface when in free fall")]
-        public bool FreeFallControl;
+        [Tooltip("If enabled, then player will fall towards the nearest surface when in free fall")]
+        public bool FreeFallRecovery;
 
         [Header("Events")]
         [Tooltip("This event is sent when the player moves from one surface to another.")]
@@ -59,29 +59,33 @@ namespace Unity.Cinemachine.Samples
             var fwdRaycastOrigin = tr.position + 2 * originOffset;
             var playerRadius = 0.25f * PlayerHeight; // Approximate player radius - can convert to a parameter if needed
 
+            if (!PreviousSateIsValid)
+            {
+                m_PreviousPosition = fwdRaycastOrigin;
+                m_PreviousGroundPoint = downRaycastOrigin;
+            }
+
+            // Find the direction of motion and speed
+            var motionDir = fwdRaycastOrigin - m_PreviousPosition;
+            var motionLen = motionDir.magnitude;
+            if (motionLen < 0.0001f)
+                motionDir = tr.forward;
+            else
+                motionDir /= motionLen;
+
             // Check whether we have walked into a surface
             bool haveHit = false;
-            if (PreviousSateIsValid)
+            if (Physics.Raycast(m_PreviousPosition, motionDir, out var hit, 
+                motionLen + playerRadius, GroundLayers, QueryTriggerInteraction.Ignore))
             {
-                var dir = fwdRaycastOrigin - m_PreviousPosition;
-                var dirLen = dir.magnitude;
-                if (dirLen < 0.0001f)
-                    dir = tr.forward;
-                else
-                    dir /= dirLen;
-                if (Physics.Raycast(m_PreviousPosition, dir, out var forwardHit, 
-                    dirLen + playerRadius, GroundLayers, QueryTriggerInteraction.Ignore))
-                {
-                    haveHit = true;
-                    desiredUp = CaptureUpDirection(forwardHit);
-                }
+                haveHit = true;
+                desiredUp = CaptureUpDirection(hit);
             }
-            m_PreviousPosition = fwdRaycastOrigin;
-            PreviousSateIsValid = true;
 
-            // Find the ground under our feet
-            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out var hit, 
-                MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
+            var raycastLength = Mathf.Max(MaxRaycastDistance, PreviousSateIsValid 
+                ? (m_PreviousGroundPoint - downRaycastOrigin).magnitude + PlayerHeight : MaxRaycastDistance);
+            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out hit, 
+                raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
                 desiredUp = CaptureUpDirection(hit);
@@ -90,11 +94,12 @@ namespace Unity.Cinemachine.Samples
             // If nothing is directly under our feet, try to find a surface in the direction
             // where we came from.  This handles the case of sudden convex direction changes in the floor
             // (e.g. going around the lip of a surface)
-            if (!haveHit && Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit, 
-                MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
+            if (!haveHit && PreviousSateIsValid 
+                && Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit, 
+                    MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
-                desiredUp = SmoothedNormal(hit);
+                desiredUp = CaptureUpDirection(hit);
             }
 
             // If we don't have a hit by now, we're in free fall
@@ -103,12 +108,14 @@ namespace Unity.Cinemachine.Samples
             else
             {
                 SetCurrentSurface(null);
-                if (FreeFallControl 
-                    && Vector3.Dot(downRaycastOrigin - m_PreviousGroundPoint, desiredUp) <= 0
-                    && FindNearestSurface(downRaycastOrigin, out var surfacePoint))
+                if (FreeFallRecovery 
+                    && Vector3.Dot(motionDir, desiredUp) <= 0
+                    && FindNearestSurface(downRaycastOrigin, raycastLength, out var surfacePoint))
                 {
                     desiredUp = (downRaycastOrigin - surfacePoint).normalized;
-                    //damping = 0;
+                    damping = 0;
+                    if (!PreviousSateIsValid)
+                        m_PreviousGroundPoint = downRaycastOrigin - motionDir;
                 }
             }
 
@@ -125,6 +132,9 @@ namespace Unity.Cinemachine.Samples
                 var rot = Quaternion.Slerp(Quaternion.identity, Quaternion.AngleAxis(angle, axis), t);
                 tr.rotation = rot * tr.rotation;
             }
+
+            m_PreviousPosition = fwdRaycastOrigin;
+            PreviousSateIsValid = true;
         }
 
         Vector3 CaptureUpDirection(RaycastHit hit)
@@ -144,28 +154,31 @@ namespace Unity.Cinemachine.Samples
             }
         }
 
-        bool FindNearestSurface(Vector3 playerPos, out Vector3 surfacePoint)
+        bool FindNearestSurface(Vector3 playerPos, float raycastLength, out Vector3 surfacePoint)
         {
             surfacePoint = playerPos - transform.up; // default is to continue falling down
 
-            // We'll spread out a number of vertical sweeps over several frames
+            // Starting at the bottom, we'll spread out a number of horizontal sweeps over several frames
+            const float kVerticalStep = 10.0f;
+            if (m_FreeFallRaycastAngle == 0 || m_FreeFallRaycastAngle > 180 - kVerticalStep)
+                m_FreeFallRaycastAngle = kVerticalStep / 2 + Time.frameCount % kVerticalStep;
+            else
+                m_FreeFallRaycastAngle += kVerticalStep;
+
+            // We'll do a horizontal sweep at this angle to find the nearest surface 
             var up = transform.up;
             var dir = Quaternion.AngleAxis(m_FreeFallRaycastAngle, transform.right) * -up;
-
-            // We'll do a vertical sweep to find the nearest surface 
-            const float kVerticalStep = 10.0f;
-            m_FreeFallRaycastAngle += kVerticalStep;
-            if (m_FreeFallRaycastAngle > 180 - kVerticalStep)
-                m_FreeFallRaycastAngle = kVerticalStep;
+            const float kHorizontalalSteps = 12;
+            const float kHorizontalStepSize = 360.0f / kHorizontalalSteps;
+            dir = Quaternion.AngleAxis(Time.frameCount % (int)kHorizontalStepSize, -up) * dir;
 
             float nearestDistance = float.MaxValue;
-            const float kHorizontalalSteps = 12;
-            const float korizontalStepSize = 360.0f / kHorizontalalSteps;
-            for (int i = 0; i <= kHorizontalalSteps; ++i)
+            var rotStep = Quaternion.AngleAxis(kHorizontalStepSize, -up);
+            for (int i = 0; i < kHorizontalalSteps; ++i, dir = rotStep * dir)
             {
-                //Debug.DrawLine(playerPos, playerPos + dir * MaxRaycastDistance, Color.yellow, 1);
+                //Debug.DrawLine(playerPos, playerPos + dir * raycastLength, Color.yellow, 1);
                 if (Physics.Raycast(playerPos, dir, out var hit, 
-                    MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
+                    raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.distance < nearestDistance)
                     {
@@ -173,9 +186,6 @@ namespace Unity.Cinemachine.Samples
                         surfacePoint = hit.point;
                     }
                 }
-                if (m_FreeFallRaycastAngle == 0)
-                    break;
-                dir = Quaternion.AngleAxis(korizontalStepSize, -up) * dir;
             }
             return nearestDistance != float.MaxValue;
         }

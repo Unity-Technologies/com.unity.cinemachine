@@ -287,7 +287,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 364965555}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.08495734, y: -0.0009733698, z: 0.00008299501, w: 0.99638414}
+  m_LocalRotation: {x: 0.08495734, y: -0.0009733703, z: 0.00008299505, w: 0.99638414}
   m_LocalPosition: {x: 0, y: 10.527058, z: -9.537169}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -814,8 +814,8 @@ MonoBehaviour:
     Restrictions: 0
   VerticalAxis:
     Value: 17.5
-    Center: 17.5
-    Range: {x: -10, y: 45}
+    Center: 8
+    Range: {x: -80, y: 80}
     Wrap: 0
     Recentering:
       Enabled: 0
@@ -856,7 +856,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 72.80414
+    FieldOfView: 80
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -985,7 +985,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 867266292}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.08495734, y: -0.0009733698, z: 0.00008299501, w: 0.99638414}
+  m_LocalRotation: {x: 0.08495734, y: -0.0009733703, z: 0.00008299505, w: 0.99638414}
   m_LocalPosition: {x: 0, y: 10.527058, z: -9.537169}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1609,9 +1609,9 @@ MonoBehaviour:
   GroundLayers:
     serializedVersion: 2
     m_Bits: 1
-  MaxRaycastDistance: 200
+  MaxRaycastDistance: 5
   PlayerHeight: 1
-  FreeFallControl: 1
+  FreeFallRecovery: 1
   SurfaceChanged:
     m_PersistentCalls:
       m_Calls: []
