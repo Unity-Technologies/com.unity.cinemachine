@@ -81,9 +81,12 @@ namespace Unity.Cinemachine
             {
                 SplineSettings.Position = m_LegacyPosition;
                 SplineSettings.Units = m_LegacyUnits;
-                SplineSettings.Spline = m_LegacySpline;
                 m_LegacyPosition = -1;
                 m_LegacyUnits = 0;
+            }
+            if (m_LegacySpline != null)
+            {
+                SplineSettings.Spline = m_LegacySpline;
                 m_LegacySpline = null;
             }
         }
