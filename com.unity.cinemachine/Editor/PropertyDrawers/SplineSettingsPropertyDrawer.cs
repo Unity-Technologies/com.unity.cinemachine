@@ -17,7 +17,9 @@ namespace Unity.Cinemachine.Editor
 
             var ux = new VisualElement();
             ux.Add(new PropertyField(splineProp));
-            var row = ux.AddChild(InspectorUtility.PropertyRow(positionProp, out _));
+            var row = ux.AddChild(InspectorUtility.PropertyRow(positionProp, out var posField));
+            posField.style.flexGrow = 1;
+            posField.style.flexBasis = 0;
 
             var initialUnits = (PathIndexUnit)unitsProp.enumValueIndex;
             var targets = property.serializedObject.targetObjects;
