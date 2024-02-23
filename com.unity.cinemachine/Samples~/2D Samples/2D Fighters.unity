@@ -397,7 +397,7 @@ Transform:
   m_GameObject: {fileID: 536390822}
   serializedVersion: 2
   m_LocalRotation: {x: 3e-45, y: -1e-45, z: 0, w: 1}
-  m_LocalPosition: {x: -0.076252066, y: 4.8039713, z: -8}
+  m_LocalPosition: {x: 4.4912095, y: 5.9516406, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -636,8 +636,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 916296256}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.27796784, y: 0.6501799, z: -0.22236964, w: 0.6712315}
-  m_LocalPosition: {x: 5.5326877, y: 13.95213, z: 2}
+  m_LocalRotation: {x: -0.6076921, y: 0.36153886, z: -0.3615389, w: 0.60769206}
+  m_LocalPosition: {x: -6.003705, y: 11.156699, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -656,8 +656,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SplineSettings:
-    Spline: {fileID: 1942116120}
-    Position: 29.32791
+    Spline: {fileID: 1910455799}
+    Position: 0
     Units: 0
   UpdateMethod: 0
   AutomaticDolly:
@@ -665,6 +665,9 @@ MonoBehaviour:
     Method:
       rid: 6015593199795437568
   TrackingTarget: {fileID: 0}
+  m_LegacyPosition: -1
+  m_LegacyUnits: 0
+  m_LegacySpline: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -799,7 +802,7 @@ Transform:
   m_GameObject: {fileID: 1093510071}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.076252066, y: 4.8039713, z: 2}
+  m_LocalPosition: {x: 4.4912095, y: 5.9516406, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -896,8 +899,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1166162569}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.6076921, y: 0.36153886, z: -0.3615389, w: 0.60769206}
-  m_LocalPosition: {x: -6.003705, y: 11.156699, z: 2}
+  m_LocalRotation: {x: -0.38684332, y: -0.5919056, z: -0.42166987, w: -0.5676218}
+  m_LocalPosition: {x: -1.0901217, y: 3.0497239, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -916,8 +919,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SplineSettings:
-    Spline: {fileID: 1910455799}
-    Position: 0
+    Spline: {fileID: 1942116120}
+    Position: 59.99
     Units: 0
   UpdateMethod: 0
   AutomaticDolly:
@@ -925,6 +928,9 @@ MonoBehaviour:
     Method:
       rid: 6015593199795437569
   TrackingTarget: {fileID: 1166162573}
+  m_LegacyPosition: -1
+  m_LegacyUnits: 0
+  m_LegacySpline: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -1219,8 +1225,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1574144228}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6411829, y: -0.29813507, z: 0.16395226, w: 0.687837}
-  m_LocalPosition: {x: -14.49968, y: -0.4135821, z: 2}
+  m_LocalRotation: {x: -0.070251755, y: -0.70360833, z: 0.24300878, w: 0.66403824}
+  m_LocalPosition: {x: 8.2297325, y: 4.0041986, z: 1.9999999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1240,7 +1246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SplineSettings:
     Spline: {fileID: 1910455799}
-    Position: 65.178566
+    Position: 40
     Units: 0
   UpdateMethod: 0
   AutomaticDolly:
@@ -1248,6 +1254,9 @@ MonoBehaviour:
     Method:
       rid: 6015593199795437570
   TrackingTarget: {fileID: 0}
+  m_LegacyPosition: -1
+  m_LegacyUnits: 0
+  m_LegacySpline: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -2107,8 +2116,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1930659157}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.21806403, y: 0.67264265, z: 0.09794794, w: 0.7002901}
-  m_LocalPosition: {x: 17.68, y: 3.11, z: 2}
+  m_LocalRotation: {x: 0.4381915, y: -0.5549668, z: -0.4500298, w: 0.545411}
+  m_LocalPosition: {x: 15.309156, y: 8.037641, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2128,7 +2137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SplineSettings:
     Spline: {fileID: 1942116120}
-    Position: 0
+    Position: 10
     Units: 0
   UpdateMethod: 0
   AutomaticDolly:
@@ -2136,6 +2145,9 @@ MonoBehaviour:
     Method:
       rid: 6015593199795437571
   TrackingTarget: {fileID: 0}
+  m_LegacyPosition: -1
+  m_LegacyUnits: 0
+  m_LegacySpline: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -2999,7 +3011,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 23.427963
+  orthographic size: 15.134131
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -3024,7 +3036,7 @@ Transform:
   m_GameObject: {fileID: 2051034878}
   serializedVersion: 2
   m_LocalRotation: {x: 3e-45, y: -1e-45, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5901603, y: 6.7692738, z: -8}
+  m_LocalPosition: {x: 4.6527257, y: 7.103212, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
