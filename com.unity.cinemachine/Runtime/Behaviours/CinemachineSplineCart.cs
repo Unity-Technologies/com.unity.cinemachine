@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
 namespace Unity.Cinemachine
@@ -17,8 +18,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplineSettings SplineSettings = new SplineSettings
-        { Units = PathIndexUnit.Normalized };
+        public SplineSettings SplineSettings = new () { Units = PathIndexUnit.Normalized };
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -71,10 +71,28 @@ namespace Unity.Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
+        // In-editor only: CM 3.0.x Legacy support =================================
+        [SerializeField, HideInInspector, FormerlySerializedAs("SplinePosition")] private float m_LegacyPosition = -1;
+        [SerializeField, HideInInspector, FormerlySerializedAs("PositionUnits")] private PathIndexUnit m_LegacyUnits;
+        [SerializeField, HideInInspector, FormerlySerializedAs("Spline")] private SplineContainer m_LegacySpline;
+        void PerformLegacyUpgrade()
+        {
+            if (m_LegacyPosition != -1)
+            {
+                SplineSettings.Position = m_LegacyPosition;
+                SplineSettings.Units = m_LegacyUnits;
+                SplineSettings.Spline = m_LegacySpline;
+                m_LegacyPosition = -1;
+                m_LegacyUnits = 0;
+                m_LegacySpline = null;
+            }
+        }
+        // =================================
+
         private void OnValidate()
         {
-            if (AutomaticDolly.Method != null)
-                AutomaticDolly.Method.Validate();
+            PerformLegacyUpgrade(); // only called in-editor
+            AutomaticDolly.Method?.Validate();
         }
 
         void Reset()
@@ -88,8 +106,7 @@ namespace Unity.Cinemachine
         void OnEnable()
         {
             RefreshRollCache();
-            if (AutomaticDolly.Method != null)
-                AutomaticDolly.Method.Reset();
+            AutomaticDolly.Method?.Reset();
         }
 
         void FixedUpdate()

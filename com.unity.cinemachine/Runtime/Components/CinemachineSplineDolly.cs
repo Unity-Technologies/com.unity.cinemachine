@@ -24,7 +24,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplineSettings SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
+        public SplineSettings SplineSettings = new () { Units = PathIndexUnit.Normalized };
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
@@ -111,6 +111,24 @@ namespace Unity.Cinemachine
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
+        // In-editor only: CM 3.0.x Legacy support =================================
+        [SerializeField, HideInInspector, FormerlySerializedAs("CameraPosition")] private float m_LegacyPosition = -1;
+        [SerializeField, HideInInspector, FormerlySerializedAs("PositionUnits")] private PathIndexUnit m_LegacyUnits;
+        [SerializeField, HideInInspector, FormerlySerializedAs("Spline")] private SplineContainer m_LegacySpline;
+        void PerformLegacyUpgrade()
+        {
+            if (m_LegacyPosition != -1)
+            {
+                SplineSettings.Position = m_LegacyPosition;
+                SplineSettings.Units = m_LegacyUnits;
+                SplineSettings.Spline = m_LegacySpline;
+                m_LegacyPosition = -1;
+                m_LegacyUnits = 0;
+                m_LegacySpline = null;
+            }
+        }
+        // =================================
+
         /// <summary>The Spline container to which the camera will be constrained.</summary>
         public SplineContainer Spline
         {
@@ -140,12 +158,12 @@ namespace Unity.Cinemachine
 
         void OnValidate()
         {
+            PerformLegacyUpgrade(); // only called in-editor
             Damping.Position.x = Mathf.Clamp(Damping.Position.x, 0, 20);
             Damping.Position.y = Mathf.Clamp(Damping.Position.y, 0, 20);
             Damping.Position.z = Mathf.Clamp(Damping.Position.z, 0, 20);
             Damping.Angular = Mathf.Clamp(Damping.Angular, 0, 20);
-            if (AutomaticDolly.Method != null)
-                AutomaticDolly.Method.Validate();
+            AutomaticDolly.Method?.Validate();
         }
 
         void Reset()
@@ -162,8 +180,7 @@ namespace Unity.Cinemachine
         {
             base.OnEnable();
             RefreshRollCache();
-            if (AutomaticDolly.Method != null)
-                AutomaticDolly.Method.Reset();
+            AutomaticDolly.Method?.Reset();
         }
 
         /// <summary>True if component is enabled and has a spline</summary>
