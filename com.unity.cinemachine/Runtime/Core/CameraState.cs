@@ -247,10 +247,8 @@ namespace Cinemachine
             if (index >= 0)
                 b.m_Weight += GetCustomBlendable(index).m_Weight;
             else
-            {
-                index = NumCustomBlendables;
-                NumCustomBlendables = index + 1;
-            }
+                index = NumCustomBlendables++;
+
             switch (index)
             {
                 case 0: mCustom0 = b; break;
@@ -259,13 +257,21 @@ namespace Cinemachine
                 case 3: mCustom3 = b; break;
                 default: 
                 {
+                    index -= 4;
                     if (m_CustomOverflow == null)
                         m_CustomOverflow = new List<CustomBlendable>();
-                    m_CustomOverflow.Add(b);
+                    if (index < m_CustomOverflow.Count)
+                        m_CustomOverflow[index] = b;
+                    else
+                        m_CustomOverflow.Add(b);
                     break;
                 }
             }
          }
+
+
+
+
 
         /// <summary>Intelligently blend the contents of two states.</summary>
         /// <param name="stateA">The first state, corresponding to t=0</param>
