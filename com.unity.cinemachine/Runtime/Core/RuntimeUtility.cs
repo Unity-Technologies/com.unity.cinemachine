@@ -223,6 +223,7 @@ namespace Unity.Cinemachine
                 s_ScratchCollider = null;
             }
         }
+#endif
 
         /// <summary>
         /// Normalize a curve so that its X and Y axes range from 0 to 1
