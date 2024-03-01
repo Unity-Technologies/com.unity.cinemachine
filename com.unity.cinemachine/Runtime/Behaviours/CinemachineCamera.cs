@@ -217,8 +217,8 @@ namespace Unity.Cinemachine
             if (lookAt != null)
                 m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
                     ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
-            InvokeComponentPipeline(ref m_State, deltaTime);
             m_State.BlendHint = (CameraState.BlendHints)BlendHint;
+            InvokeComponentPipeline(ref m_State, deltaTime);
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
@@ -292,11 +292,12 @@ namespace Unity.Cinemachine
                 var components = GetComponents<CinemachineComponentBase>();
                 for (int i = 0; i < components.Length; ++i)
                 {
-#if UNITY_EDITOR
-                    if (m_Pipeline[(int)components[i].Stage] != null)
-                        Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
-#endif
-                    m_Pipeline[(int)components[i].Stage] = components[i];
+                    if (m_Pipeline[(int)components[i].Stage] == null)
+                        m_Pipeline[(int)components[i].Stage] = components[i];
+//#if UNITY_EDITOR
+//                    else
+//                        Debug.LogWarning("Multiple " + components[i].Stage + " components on " + name);
+//#endif
                 }
             }
         }

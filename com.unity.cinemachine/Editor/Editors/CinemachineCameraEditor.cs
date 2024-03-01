@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
-    class CmCameraEditor : UnityEditor.Editor 
+    class CinemachineCameraEditor : UnityEditor.Editor 
     {
         CinemachineCamera Target => target as CinemachineCamera;
 
@@ -58,7 +58,7 @@ namespace Unity.Cinemachine.Editor
             this.AddGlobalControls(ux);
 
             var defaultTargetLabel = new Label() { style = { alignSelf = Align.FlexEnd, opacity = 0.5f }};
-            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Procedural Motion</b>", "", defaultTargetLabel));
+            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Procedural Components</b>", "", defaultTargetLabel));
             row.focusable = false;
             row.style.paddingTop = InspectorUtility.SingleLineHeight / 2;
             row.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;

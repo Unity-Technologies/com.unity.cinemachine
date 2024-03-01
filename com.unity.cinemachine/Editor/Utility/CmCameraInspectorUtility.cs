@@ -25,6 +25,9 @@ namespace Unity.Cinemachine.Editor
             var t = target as CinemachineVirtualCameraBase;
             return t != null && t.gameObject.scene.name == null; // causes a small GC alloc
         }
+
+        static Color s_NormalColor = Color.black;
+        static Color s_NormalBkgColor = Color.black;
         
         /// <summary>Add the camera status controls and indicators in the inspector</summary>
         public static void AddCameraStatus(this UnityEditor.Editor editor, VisualElement ux)
@@ -72,8 +75,13 @@ namespace Unity.Cinemachine.Editor
                 // Is the camera navel-gazing?
                 CameraState state = target.State;
                 bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
-                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
-                    target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
+                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero();
+                if (isNavelGazing)
+                {
+                    var aim = target.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+                    if (aim == null || !aim.CameraLooksAtTarget)
+                        isNavelGazing = false;
+                }
                 navelGazeMessage.SetVisible(isNavelGazing);
 
                 // Is the camera parenting incorrect?
@@ -83,43 +91,46 @@ namespace Unity.Cinemachine.Editor
             });
 
             // Capture "normal" colors
-            ux.OnInitialGeometry(() =>
+            if (s_NormalBkgColor == Color.black)
             {
-                var normalColor = statusText.resolvedStyle.color;
-                var normalBkgColor = soloButton.resolvedStyle.backgroundColor;
-
-                // Refresh camera state
-                ux.ContinuousUpdate(() =>
-                { 
-                    if (target == null)
-                        return;
-
-                    bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
-                    var color = isSolo ? Color.Lerp(normalColor, CinemachineCore.SoloGUIColor(), 0.5f) : normalColor;
-
-                    bool isLive = CinemachineCore.IsLive(target);
-                    statusText.text = isLive ? "Status: Live"
-                        : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
-                    statusText.SetEnabled(isLive);
-                    statusText.style.color = color;
-
-                    if (!Application.isPlaying)
-                        updateMode.SetVisible(false);
-                    else
-                    {
-                        var mode = CameraUpdateManager.GetVcamUpdateStatus(target);
-                        updateMode.text = mode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
-                        updateMode.SetVisible(true);
-                    }
-
-                    soloButton.style.color = color;
-                    soloButton.style.backgroundColor = isSolo 
-                        ? Color.Lerp(normalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : normalBkgColor;
-
-                    // Refresh the game view if solo and not playing
-                    if (isSolo && !Application.isPlaying)
-                        InspectorUtility.RepaintGameView();
+                ux.OnInitialGeometry(() =>
+                {
+                    s_NormalColor = statusText.resolvedStyle.color;
+                    s_NormalBkgColor = soloButton.resolvedStyle.backgroundColor;
                 });
+            }
+
+            // Refresh camera state
+            ux.ContinuousUpdate(() =>
+            { 
+                if (target == null)
+                    return;
+
+                bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
+                var color = isSolo ? Color.Lerp(s_NormalColor, CinemachineCore.SoloGUIColor(), 0.5f) : s_NormalColor;
+
+                bool isLive = CinemachineCore.IsLive(target);
+                statusText.text = isLive ? "Status: Live"
+                    : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
+                statusText.SetEnabled(isLive);
+                statusText.style.color = color;
+
+                if (!Application.isPlaying)
+                    updateMode.SetVisible(false);
+                else
+                {
+                    var mode = CameraUpdateManager.GetVcamUpdateStatus(target);
+                    updateMode.text = mode == UpdateTracker.UpdateClock.Fixed ? " Fixed Update" : " Late Update";
+                    updateMode.SetVisible(true);
+                }
+
+                soloButton.style.color = color;
+                soloButton.style.backgroundColor = isSolo 
+                    ? Color.Lerp(s_NormalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : s_NormalBkgColor;
+
+                // Refresh the game view if solo and not playing
+                if (isSolo && !Application.isPlaying)
+                    InspectorUtility.RepaintGameView();
             });
 
             // Kill solo when inspector shuts down
@@ -166,7 +177,10 @@ namespace Unity.Cinemachine.Editor
                 var stage = i; // capture for lambda
                 var row = ux.AddChild(new InspectorUtility.LeftRightRow());
                 row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
-                    { style = { flexGrow = 1, alignSelf = Align.Center }});
+                { 
+                    tooltip = "Will add a Behaviour to implement this stage in the procedural pipeline", 
+                    style = { flexGrow = 1, alignSelf = Align.Center }
+                });
                 var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
                 warningIcon.SetVisible(false);
 
@@ -186,16 +200,18 @@ namespace Unity.Cinemachine.Editor
                         var t = targets[j] as CinemachineCamera;
                         if (t == null)
                             continue;
-                        var oldComponent = t.GetCinemachineComponent((CinemachineCore.Stage)stage);
-                        var oldType = oldComponent == null ? null : oldComponent.GetType();
-                        if (newType != oldType)
+                        var oldComponents = t.GetComponents<CinemachineComponentBase>();
+                        CinemachineComponentBase existingComponent = null;
+                        for (int k = 0; k < oldComponents.Length; ++k)
                         {
-                            t.InvalidatePipelineCache();
-                            if (oldComponent != null)
-                                Undo.DestroyObjectImmediate(oldComponent);
-                            if (newType != null)
-                                Undo.AddComponent(t.gameObject, newType);
+                            if (existingComponent == null && oldComponents[k].GetType() == newType)
+                                existingComponent = oldComponents[k];
+                            else if (oldComponents[k].Stage == (CinemachineCore.Stage)stage)
+                                Undo.DestroyObjectImmediate(oldComponents[k]);
                         }
+                        if (newType != null && existingComponent == null)
+                            Undo.AddComponent(t.gameObject, newType);
+                        t.InvalidatePipelineCache();
                     }
 
                     static int GetTypeIndexFromSelection(string selection, int stage)
@@ -236,7 +252,8 @@ namespace Unity.Cinemachine.Editor
         {
             var row = new InspectorUtility.LabeledRow(
                 "Add Extension", "Extensions are behaviours that inject themselves into "
-                + "the Cinemachine pipeline to alter the camera's behaviour.");
+                + "the Cinemachine pipeline to alter the camera's behaviour.  "
+                + "This dropdown will add the selected extension behaviour.");
 
             var menu = new ContextualMenuManipulator((evt) => 
             {
@@ -507,7 +524,6 @@ namespace Unity.Cinemachine.Editor
                 for (int i = row.childCount - 1; i >= 0; --i)
                     row.RemoveAt(i);
 
-                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
                 var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
                 row.AddChild(new ObjectField 
                 { 
@@ -517,6 +533,11 @@ namespace Unity.Cinemachine.Editor
                 }).SetEnabled(false);
                 if (element == null)
                     return;
+
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
+                var warningText = getChildWarning == null ? string.Empty : getChildWarning(element);
+                warningIcon.tooltip = warningText;
+                warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
 
                 var dragger = row.AddChild(new Label(" "));
                 dragger.AddToClassList("unity-base-field__label--with-dragger");
@@ -540,13 +561,6 @@ namespace Unity.Cinemachine.Editor
                 });
                 priorityField.TrackPropertyValue(priorityProp, (p) => priorityField.value = p.intValue);
                 priorityField.TrackPropertyValue(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
-
-                warningIcon.TrackAnyUserActivity(() =>
-                {
-                    var warningText = (getChildWarning == null || element == null) ? string.Empty : getChildWarning(element);
-                    warningIcon.tooltip = warningText;
-                    warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
-                });
             };
 
             list.itemsAdded += (added) =>
@@ -585,10 +599,8 @@ namespace Unity.Cinemachine.Editor
                 // Update child list
                 if (!isMultiSelect)
                 {
-                    var rebuild = list.itemsSource != vcam.ChildCameras || list.itemsSource.Count != vcam.ChildCameras.Count;
                     list.itemsSource = vcam.ChildCameras;
-                    if (rebuild)
-                        list.Rebuild();
+                    list.Rebuild();
                 }
             });
         }

@@ -16,6 +16,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Spline Dolly")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineDolly.html")]
     public class CinemachineSplineDolly : CinemachineComponentBase

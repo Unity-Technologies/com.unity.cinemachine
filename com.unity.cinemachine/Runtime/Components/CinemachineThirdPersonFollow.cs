@@ -9,6 +9,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Third Person Follow")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineThirdPersonFollow.html")]
     public class CinemachineThirdPersonFollow : CinemachineComponentBase
@@ -150,13 +151,6 @@ namespace Unity.Cinemachine
             AvoidObstacles = ObstacleSettings.Default;
 #endif
         }
-
-#if CINEMACHINE_PHYSICS
-        void OnDestroy()
-        {
-            RuntimeUtility.DestroyScratchCollider();
-        }
-#endif
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue
         {
@@ -331,6 +325,8 @@ namespace Unity.Cinemachine
             
             var dir = tip - root;
             var len = dir.magnitude;
+            if (len < Epsilon)
+                return tip;
             dir /= len;
 
             var result = tip;

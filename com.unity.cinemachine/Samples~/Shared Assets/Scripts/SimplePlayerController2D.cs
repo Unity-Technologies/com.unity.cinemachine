@@ -12,9 +12,10 @@ namespace Unity.Cinemachine.Samples
         bool m_IsGrounded;
         Rigidbody2D m_Rigidbody2D;
 
+        public override bool IsMoving => Mathf.Abs(m_Rigidbody2D.velocity.x) > 0.01f;
+
         public bool IsSprinting => m_IsSprinting;
         public bool IsJumping => !m_IsGrounded;
-        public bool IsMoving => Mathf.Abs(m_Rigidbody2D.velocity.x) > 0.01f;
 
         void Start() => TryGetComponent(out m_Rigidbody2D);
         private void OnEnable()

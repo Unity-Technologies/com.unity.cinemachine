@@ -7,25 +7,25 @@ using UnityEngine.Serialization;
 namespace Unity.Cinemachine.Editor
 {
     /// <summary>
-    /// User-definable named presets for lenses.  This is a Singleton asset, available in editor only
+    /// User-definable named presets for physical lenses.  This is a Singleton asset, available in editor only
     /// </summary>
     [Serializable]
-    public sealed class CinemachinePhysicalLensPresets : ScriptableObject
+    public sealed class CinemachinePhysicalLensPalette : ScriptableObject
     {
-        static CinemachinePhysicalLensPresets s_Instance = null;
+        static CinemachinePhysicalLensPalette s_Instance = null;
         static bool s_AlreadySearched = false;
 
         /// <summary>Get the singleton instance of this object, or null if it doesn't exist</summary>
-        public static CinemachinePhysicalLensPresets InstanceIfExists
+        public static CinemachinePhysicalLensPalette InstanceIfExists
         {
             get
             {
                 if (!s_AlreadySearched)
                 {
                     s_AlreadySearched = true;
-                    var guids = AssetDatabase.FindAssets("t:CinemachinePhysicalLensPresets");
+                    var guids = AssetDatabase.FindAssets("t:CinemachinePhysicalLensPalette");
                     for (int i = 0; i < guids.Length && s_Instance == null; ++i)
-                        s_Instance = AssetDatabase.LoadAssetAtPath<CinemachinePhysicalLensPresets>(
+                        s_Instance = AssetDatabase.LoadAssetAtPath<CinemachinePhysicalLensPalette>(
                             AssetDatabase.GUIDToAssetPath(guids[i]));
                 }
                 return s_Instance;
@@ -33,18 +33,18 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>Get the singleton instance of this object.  Creates asset if nonexistent</summary>
-        public static CinemachinePhysicalLensPresets Instance
+        public static CinemachinePhysicalLensPalette Instance
         {
             get
             {
                 if (InstanceIfExists == null)
                 {
                     var newAssetPath = EditorUtility.SaveFilePanelInProject(
-                            "Create Lens Presets asset", "CinemachinePhysicalLensPresets", "asset",
-                            "This editor-only file will contain the lens presets for this project");
+                            "Create Physical Lens Palette asset", "CinemachinePhysicalLensPalette", "asset",
+                            "This editor-only file will contain the physical lens presets for this project");
                     if (!string.IsNullOrEmpty(newAssetPath))
                     {
-                        s_Instance = CreateInstance<CinemachinePhysicalLensPresets>();
+                        s_Instance = CreateInstance<CinemachinePhysicalLensPalette>();
 
                         // Create some sample presets
                         var defaultPhysical = LensSettings.Default.PhysicalProperties;

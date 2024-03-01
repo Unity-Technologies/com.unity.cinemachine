@@ -28,11 +28,12 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Group);
+            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.GroupLookAt);
             var groupSizeIsZeroHelp = ux.AddChild(new HelpBox("Group size is zero, cannot frame.", HelpBoxMessageType.Warning));
 
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingMode)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FramingSize)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
 
             var perspectiveControls = ux.AddChild(new VisualElement());

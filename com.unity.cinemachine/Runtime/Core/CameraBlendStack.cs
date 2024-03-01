@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This interface is specifically for Timeline.  The cinemachine timeline track
-    /// drives its target via this interface.
+    /// This interface provides a way to override camera selection logic.
+    /// The cinemachine timeline track drives its target via this interface.
     /// </summary>
     public interface ICameraOverrideStack
     {
@@ -119,6 +119,8 @@ namespace Unity.Cinemachine
             if (overrideId < 0)
                 overrideId = m_NextFrameId++;
 
+            if (m_FrameStack.Count == 0)
+                m_FrameStack.Add(new StackFrame());
             var frame = m_FrameStack[FindFrame(overrideId, priority)];
             frame.DeltaTimeOverride = deltaTime;
             frame.Source.TimeInBlend = weightB;

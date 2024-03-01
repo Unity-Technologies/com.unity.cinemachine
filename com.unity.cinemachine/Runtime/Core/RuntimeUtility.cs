@@ -182,11 +182,18 @@ namespace Unity.Cinemachine
         static GameObject s_ScratchColliderGameObject;
         static int s_ScratchColliderRefCount;
 
-        internal static SphereCollider GetScratchCollider()
+        /// <summary>
+        /// This is a hidden sphere collider that won't interfere with the scene and can be used 
+        /// for making scratch calculations.  It is a single static object that gets created on first 
+        /// demand and recycled on subsequent demands.  Call DestroyScratchCollider() to destroy the cached
+        /// object.
+        /// </summary>
+        /// <returns>A cached SphereCollider that will get recycled on subsequent calls.</returns>
+        public static SphereCollider GetScratchCollider()
         {
             if (s_ScratchColliderGameObject == null)
             {
-                s_ScratchColliderGameObject = new GameObject("Cinemachine Scratch Collider");
+                s_ScratchColliderGameObject = new("Cinemachine Scratch Collider");
                 s_ScratchColliderGameObject.hideFlags = HideFlags.HideAndDontSave;
                 s_ScratchColliderGameObject.transform.position = Vector3.zero;
                 s_ScratchColliderGameObject.SetActive(true);
@@ -200,22 +207,22 @@ namespace Unity.Cinemachine
             return s_ScratchCollider;
         }
 
-        internal static void DestroyScratchCollider()
+        /// <summary>
+        /// This will destroy the object created by GetScratchCollider() and cause the next call 
+        /// to GetScratchCollider() to create a new cached object.
+        /// </summary>
+        public static void DestroyScratchCollider()
         {
             if (--s_ScratchColliderRefCount == 0)
             {
-                if (s_ScratchColliderGameObject != null)
-                {
-                    s_ScratchColliderGameObject.SetActive(false);
-                    DestroyObject(s_ScratchColliderGameObject.GetComponent<Rigidbody>());
-                }
+                s_ScratchColliderGameObject.SetActive(false);
+                DestroyObject(s_ScratchColliderGameObject.GetComponent<Rigidbody>());
                 DestroyObject(s_ScratchCollider);
                 DestroyObject(s_ScratchColliderGameObject);
                 s_ScratchColliderGameObject = null;
                 s_ScratchCollider = null;
             }
         }
-#endif
 
         /// <summary>
         /// Normalize a curve so that its X and Y axes range from 0 to 1

@@ -111,8 +111,10 @@ namespace Unity.Cinemachine
             set 
             {
                 base.PreviousStateIsValid = value;
-                for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
-                    m_ChildCameras[i].PreviousStateIsValid = value;
+                // Only propagate to the children when we're invalidating the state
+                if (value == false)
+                    for (int i = 0; m_ChildCameras != null && i < m_ChildCameras.Count; ++i)
+                        m_ChildCameras[i].PreviousStateIsValid = value;
             }
         }
 
@@ -120,9 +122,15 @@ namespace Unity.Cinemachine
         public bool IsBlending => m_BlendManager.IsBlending;
 
         /// <summary>
-        /// Get the current active blend in progress.  Will return null if no blend is in progress.
+        /// Get the current blend in progress.  Returns null if none.
+        /// It is also possible to set the current blend, but this is not a recommended usage
+        /// unless it is to set the active blend to null, which will force completion of the blend.
         /// </summary>
-        public CinemachineBlend ActiveBlend => PreviousStateIsValid ? m_BlendManager.ActiveBlend : null;
+        public CinemachineBlend ActiveBlend 
+        {
+            get => PreviousStateIsValid ? m_BlendManager.ActiveBlend : null;
+            set => m_BlendManager.ActiveBlend = value;
+        }
 
         /// <summary>
         /// Get the current active camera.  Will return null if no camera is active.
@@ -278,7 +286,7 @@ namespace Unity.Cinemachine
                 return false;
             PreviousStateIsValid = false;
             m_ChildCameras = new();
-            GetComponentsInChildren(m_ChildCameras);
+            GetComponentsInChildren(true, m_ChildCameras);
             for (int i = m_ChildCameras.Count-1; i >= 0; --i)
                 if (m_ChildCameras[i].transform.parent != transform)
                     m_ChildCameras.RemoveAt(i);

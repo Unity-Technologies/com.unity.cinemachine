@@ -8,7 +8,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Jump Walk
-  m_Speed: 1
+  m_Speed: 0.8
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -400134937491866966}
@@ -236,9 +236,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.06615287
-  m_TransitionOffset: 0
-  m_ExitTime: 0.58234453
+  m_TransitionDuration: 0.17518768
+  m_TransitionOffset: 0.0001478458
+  m_ExitTime: 0.5443275
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -362,7 +362,7 @@ AnimatorStateTransition:
   m_IsExit: 0
   serializedVersion: 3
   m_TransitionDuration: 0.06615287
-  m_TransitionOffset: 0
+  m_TransitionOffset: 0.54
   m_ExitTime: 0.58234453
   m_HasExitTime: 0
   m_HasFixedDuration: 1
@@ -449,7 +449,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Jump Idle
-  m_Speed: 1
+  m_Speed: 0.8
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 775935384185778692}
@@ -476,8 +476,8 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Jump Run
-  m_Speed: 1
-  m_CycleOffset: 0
+  m_Speed: 0.8
+  m_CycleOffset: 0.79
   m_Transitions:
   - {fileID: 3691152097968358944}
   m_StateMachineBehaviours: []

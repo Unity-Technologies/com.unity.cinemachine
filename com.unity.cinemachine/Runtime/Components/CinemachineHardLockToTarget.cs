@@ -10,6 +10,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Hard Lock to Target")]
     [SaveDuringPlay]
+    [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineHardLockToTarget.html")]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
@@ -45,7 +46,7 @@ namespace Unity.Cinemachine
                 return;
 
             Vector3 dampedPos = FollowTargetPosition;
-            if (deltaTime >= 0)
+            if (VirtualCamera.PreviousStateIsValid && deltaTime >= 0)
                 dampedPos = m_PreviousTargetPosition + VirtualCamera.DetachedFollowTargetDamp(
                     dampedPos - m_PreviousTargetPosition, Damping, deltaTime);
             m_PreviousTargetPosition = dampedPos;

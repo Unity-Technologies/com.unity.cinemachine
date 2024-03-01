@@ -29,7 +29,7 @@ namespace Unity.Cinemachine.Tests
             m_ClearShot.LookAt = m_Character.transform;
             var clearShotCollider = clearShotHolder.GetComponent<CinemachineDeoccluder>();
             clearShotCollider.ShotQualityEvaluation.Enabled = true;
-            clearShotCollider.MinimumDistanceFromTarget = 0.1f;
+            clearShotCollider.AvoidObstacles.Enabled = false;
 
             // a stationary vcam1 with a hard lookat
             var vcam1Holder = CreateGameObject("CM Vcam1", typeof(CinemachineCamera));
@@ -47,9 +47,9 @@ namespace Unity.Cinemachine.Tests
             m_Vcam2.Priority.Value = 10;
 
             // a "wall" composed of a single quad that partially obscures vcam1, but not vcam2
-            var wall = CreatePrimitive(PrimitiveType.Quad);
-            wall.transform.SetPositionAndRotation(new Vector3(0, 0, 4), Quaternion.Euler(0, 180, 0));
-            wall.transform.localScale = new Vector3(2, 2, 2);
+            var wall = CreatePrimitive(PrimitiveType.Cube);
+            wall.transform.SetPositionAndRotation(new Vector3(0, 0, 4), Quaternion.identity);
+            wall.transform.localScale = new Vector3(2, 2, 0.2f);
         }
 
         static IEnumerable ClearShotTestCases
@@ -58,7 +58,7 @@ namespace Unity.Cinemachine.Tests
             {
                 yield return new TestCaseData(new Vector3(100, 0, 1), "CM Vcam1").Returns(null);
                 yield return new TestCaseData(new Vector3(5, 0, 1), "CM Vcam1").Returns(null);
-                yield return new TestCaseData(new Vector3(0, 0, 1), "CM Vcam2").Returns(null);
+                yield return new TestCaseData(new Vector3(0, 0, 0), "CM Vcam2").Returns(null);
                 yield return new TestCaseData(new Vector3(-5, 0, 1), "CM Vcam1").Returns(null);
                 yield return new TestCaseData(new Vector3(-100, 0, 1), "CM Vcam1").Returns(null);
             }
@@ -68,9 +68,7 @@ namespace Unity.Cinemachine.Tests
         public IEnumerator TestClearShotSwitchesCameras(Vector3 characterPosition, string expectedVcamName)
         {
             m_Character.transform.position = characterPosition;
-
             yield return new WaitForSeconds(0.5f);
-
             Assert.That(m_ClearShot.LiveChild.Name, Is.EqualTo(expectedVcamName));
         }
     }
