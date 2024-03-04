@@ -87,7 +87,6 @@ namespace Unity.Cinemachine
         {
             public Vector3 PreviousDisplacement;
             public Vector3 PreviousCameraOffset;
-            public Vector3 PreviousCameraPosition;
 
             float m_SmoothedDistance;
             float m_SmoothedTime;
@@ -122,19 +121,8 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(Damping, SmoothingTime);
-        }
+        public override float GetMaxDampTime() => Mathf.Max(Damping, SmoothingTime);
         
-        /// <inheritdoc />
-        public override void OnTargetObjectWarped(
-            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
-        {
-            var extra = GetExtraState<VcamExtraState>(vcam);
-            extra.PreviousCameraPosition += positionDelta;
-        }
-
         /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
@@ -149,7 +137,10 @@ namespace Unity.Cinemachine
             if (stage == CinemachineCore.Stage.Body)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
+                var hasLookAt = state.HasLookAt();
                 var initialCamPos = state.GetCorrectedPosition();
+                var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
+                    state.ReferenceLookAt - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
                 // Rotate the previous collision correction along with the camera
                 var dampingBypass = state.RotationDampingBypass;
@@ -157,12 +148,12 @@ namespace Unity.Cinemachine
 
                 // Resolve collisions
                 var cameraPos = initialCamPos;
-                var lookAt = state.HasLookAt() ? state.ReferenceLookAt : cameraPos;
+                var lookAt = hasLookAt ? state.ReferenceLookAt : cameraPos;
                 var displacement = RespectCameraRadius(cameraPos, lookAt);
 
                 // Apply distance smoothing - this can artificially hold the camera closer
                 // to the target for a while, to reduce popping in and out on bumpy objects
-                if (SmoothingTime > Epsilon && state.HasLookAt())
+                if (SmoothingTime > Epsilon && hasLookAt)
                 {
                     var pos = initialCamPos + displacement;
                     var dir = pos - state.ReferenceLookAt;
@@ -200,18 +191,15 @@ namespace Unity.Cinemachine
                 state.PositionCorrection += displacement;
                 cameraPos = state.GetCorrectedPosition();
 
-                // Adjust the damping bypass to account for the displacement
-                if (state.HasLookAt() && vcam.PreviousStateIsValid)
+                // Restore the lookAt offset
+                if (hasLookAt && displacement.sqrMagnitude > Epsilon)
                 {
-                    var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
-                    var dir1 = cameraPos - state.ReferenceLookAt;
-                    if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
-                        state.RotationDampingBypass = state.RotationDampingBypass 
-                            * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, state.ReferenceUp);
+                    var q = Quaternion.LookRotation(lookAt - cameraPos, state.ReferenceUp);
+                    state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, state.ReferenceUp);
                 }
+
                 extra.PreviousDisplacement = displacement;
                 extra.PreviousCameraOffset = cameraPos - lookAt;
-                extra.PreviousCameraPosition = cameraPos;
             }
         }
 
