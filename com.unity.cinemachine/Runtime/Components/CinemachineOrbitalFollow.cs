@@ -429,6 +429,8 @@ namespace Unity.Cinemachine
             TrackedPoint = pos;
             curState.RawPosition = pos + offset;
 
+            // Compute the rotation bypass for the lookat target
+            offset = curState.HasLookAt() ? curState.ReferenceLookAt - curState.RawPosition : Vector3.zero;
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
