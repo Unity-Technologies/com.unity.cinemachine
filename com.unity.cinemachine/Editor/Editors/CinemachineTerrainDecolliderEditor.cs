@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddMissingCmCameraHelpBox(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CollideAgainst)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TerrainLayers)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.MaximumRaycast)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRadius)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SmoothingTime)));

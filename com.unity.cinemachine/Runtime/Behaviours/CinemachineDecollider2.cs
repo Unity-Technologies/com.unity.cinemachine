@@ -11,12 +11,12 @@ namespace Unity.Cinemachine
     /// Camera will be decollided in the direction of the Tracking Target, but otherwise
     /// no attempt will be make to preserve the line of sight.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Decollider")]
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Decollider2")]
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineDecollider.html")]
-    public class CinemachineDecollider : CinemachineExtension
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineDecollider2.html")]
+    public class CinemachineDecollider2 : CinemachineExtension
     {
         /// <summary>Objects on these layers will be detected.</summary>
         [Tooltip("Objects on these layers will be detected")]

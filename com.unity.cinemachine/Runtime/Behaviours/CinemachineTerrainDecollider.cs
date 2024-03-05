@@ -19,11 +19,11 @@ namespace Unity.Cinemachine
     {
         /// <summary>Objects on these layers will be detected.</summary>
         [Tooltip("Objects on these layers will be detected")]
-        public LayerMask CollideAgainst = 1;
+        public LayerMask TerrainLayers = 1;
 
         /// <summary>Specifies the maximum length of a raycast.</summary>
         [Tooltip("Specifies the maximum length of a raycast")]
-        public float MaximumRaycast = 1000;
+        public float MaximumRaycast = 10;
 
         /// <summary>
         /// Camera will try to maintain this distance from any obstacle.
@@ -63,8 +63,8 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            CollideAgainst = 1;
-            MaximumRaycast = 1000;
+            TerrainLayers = 1;
+            MaximumRaycast = 10;
             CameraRadius = 0.1f; 
             SmoothingTime = 0f;
             Damping = 0.2f;
@@ -76,7 +76,7 @@ namespace Unity.Cinemachine
         class VcamExtraState : VcamExtraStateBase
         {
             public float PreviousDisplacement;
-            public Vector3 PreviousCameraPosition;
+
             float m_SmoothedDistance;
             float m_SmoothedTime;
 
@@ -103,10 +103,7 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(Damping, SmoothingTime);
-        }
+        public override float GetMaxDampTime() => Mathf.Max(Damping, SmoothingTime);
         
         /// <summary>
         /// Callback to do the collision resolution and shot evaluation
@@ -122,14 +119,17 @@ namespace Unity.Cinemachine
             if (stage == CinemachineCore.Stage.Body)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                var initialCamPos = state.GetCorrectedPosition();
-
+                var hasLookAt = state.HasLookAt();
                 var up = state.ReferenceUp;
+                var initialCamPos = state.GetCorrectedPosition();
+                var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
+                    state.ReferenceLookAt - initialCamPos, up) : Vector2.zero;
+
                 float displacement = 0;
                 if (RuntimeUtility.SphereCastIgnoreTag(
-                    new Ray(initialCamPos + MaximumRaycast * up, -up), 
-                    CameraRadius + k_PrecisionSlush,
-                    out var hitInfo, MaximumRaycast, CollideAgainst, string.Empty))
+                        new Ray(initialCamPos + MaximumRaycast * up, -up), 
+                        CameraRadius + k_PrecisionSlush,
+                        out var hitInfo, MaximumRaycast, TerrainLayers, string.Empty))
                 {
                     displacement = MaximumRaycast - hitInfo.distance;
                 }
@@ -150,19 +150,14 @@ namespace Unity.Cinemachine
                 }
 
                 state.PositionCorrection += displacement * up;
-                var cameraPos = state.GetCorrectedPosition();
-
-                // Adjust the damping bypass to account for the displacement
-                if (state.HasLookAt() && vcam.PreviousStateIsValid)
-                {
-                    var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
-                    var dir1 = cameraPos - state.ReferenceLookAt;
-                    if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
-                        state.RotationDampingBypass = state.RotationDampingBypass 
-                            * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, state.ReferenceUp);
-                }
                 extra.PreviousDisplacement = displacement;
-                extra.PreviousCameraPosition = cameraPos;
+
+                // Restore the lookAt offset
+                if (hasLookAt && displacement > Epsilon)
+                {
+                    var q = Quaternion.LookRotation(state.ReferenceLookAt - state.GetCorrectedPosition(), up);
+                    state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
+                }
             }
         }
     }

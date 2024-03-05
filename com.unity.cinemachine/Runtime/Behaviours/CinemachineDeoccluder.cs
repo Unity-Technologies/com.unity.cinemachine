@@ -444,7 +444,7 @@ namespace Unity.Cinemachine
             if (stage == CinemachineCore.Stage.Aim)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
-                extra.TargetObscured = IsTargetOffscreen(state) || CheckForTargetObstructions(state);
+                extra.TargetObscured = state.IsTargetOffscreen() || IsTargetObscured(state);
 
                 if (ShotQualityEvaluation.Enabled && state.HasLookAt())
                 {
@@ -820,7 +820,7 @@ namespace Unity.Cinemachine
             return result;
         }
 
-        bool CheckForTargetObstructions(CameraState state)
+        bool IsTargetObscured(CameraState state)
         {
             if (state.HasLookAt())
             {
@@ -836,35 +836,6 @@ namespace Unity.Cinemachine
                         distance - MinimumDistanceFromTarget,
                         CollideAgainst & ~TransparentLayers, IgnoreTag))
                     return true;
-            }
-            return false;
-        }
-
-        static bool IsTargetOffscreen(CameraState state)
-        {
-            if (state.HasLookAt())
-            {
-                var dir = state.ReferenceLookAt - state.GetCorrectedPosition();
-                dir = Quaternion.Inverse(state.GetCorrectedOrientation()) * dir;
-                if (state.Lens.Orthographic)
-                {
-                    if (Mathf.Abs(dir.y) > state.Lens.OrthographicSize)
-                        return true;
-                    if (Mathf.Abs(dir.x) > state.Lens.OrthographicSize * state.Lens.Aspect)
-                        return true;
-                }
-                else
-                {
-                    var fov = state.Lens.FieldOfView / 2;
-                    var angle = UnityVectorExtensions.Angle(dir.ProjectOntoPlane(Vector3.right), Vector3.forward);
-                    if (angle > fov)
-                        return true;
-
-                    fov = Mathf.Rad2Deg * Mathf.Atan(Mathf.Tan(fov * Mathf.Deg2Rad) * state.Lens.Aspect);
-                    angle = UnityVectorExtensions.Angle(dir.ProjectOntoPlane(Vector3.up), Vector3.forward);
-                    if (angle > fov)
-                        return true;
-                }
             }
             return false;
         }
