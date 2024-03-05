@@ -70,12 +70,10 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Allows you to select a different camera mode to apply to the Camera component
-        /// when Cinemachine activates this Virtual Camera.  The changes applied to the Camera
-        /// component through this setting will remain after the Virtual Camera deactivation.
+        /// when Cinemachine activates this Virtual Camera. 
         /// </summary>
         [Tooltip("Allows you to select a different camera mode to apply to the Camera component "
-            + "when Cinemachine activates this Virtual Camera.  The changes applied to the Camera "
-            + "component through this setting will remain after the Virtual Camera deactivation.")]
+            + "when Cinemachine activates this Virtual Camera.")]
         public OverrideModes ModeOverride;
 
         /// <summary>These are settings that are used only if IsPhysicalCamera is true.</summary>
