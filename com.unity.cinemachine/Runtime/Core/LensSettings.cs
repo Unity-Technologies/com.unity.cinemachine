@@ -16,11 +16,9 @@ namespace Unity.Cinemachine
         /// be in horizontal degress.  Internally, it is always vertical degrees.  
         /// For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV.
         /// </summary>
-        [RangeSlider(1f, 179f)]
-        [Tooltip("This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the "
-            + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
-            + "be in horizontal degress.  Internally, it is always vertical degrees.  "
-            + "For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
+        [Tooltip("This setting controls the Field of View or Local Length of the lens, depending "
+            + "on whether the camera mode is physical or nonphysical.  Field of View can be either horizontal "
+            + "or vertical, depending on the setting in the Camera component.")]
         public float FieldOfView;
 
         /// <summary>
