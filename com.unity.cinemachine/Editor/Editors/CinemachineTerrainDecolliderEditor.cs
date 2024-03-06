@@ -22,6 +22,7 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRadius)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SmoothingTime)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PreserveComposition)));
 
             return ux;
         }
