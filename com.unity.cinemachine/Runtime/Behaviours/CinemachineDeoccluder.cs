@@ -357,9 +357,6 @@ namespace Unity.Cinemachine
                 if (AvoidObstacles.Enabled)
                 {
                     var initialCamPos = state.GetCorrectedPosition();
-                    var hasLookAt = state.HasLookAt();
-                    var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
-                        state.ReferenceLookAt - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
                     // Rotate the previous collision correction along with the camera
                     var dampingBypass = state.RotationDampingBypass;
@@ -384,7 +381,7 @@ namespace Unity.Cinemachine
 
                     // Apply distance smoothing - this can artificially hold the camera closer
                     // to the target for a while, to reduce popping in and out on bumpy objects
-                    if (AvoidObstacles.SmoothingTime > Epsilon && hasLookAt)
+                    if (AvoidObstacles.SmoothingTime > Epsilon && state.HasLookAt())
                     {
                         var pos = initialCamPos + displacement;
                         var dir = pos - state.ReferenceLookAt;
@@ -404,7 +401,7 @@ namespace Unity.Cinemachine
 
                     // Apply additional correction due to camera radius
                     var cameraPos = initialCamPos + displacement;
-                    var referenceLookAt = hasLookAt ? state.ReferenceLookAt : cameraPos;
+                    var referenceLookAt = state.HasLookAt() ? state.ReferenceLookAt : cameraPos;
                     if (AvoidObstacles.Strategy != ObstacleAvoidance.ResolutionStrategy.PullCameraForward)
                         displacement += RespectCameraRadius(cameraPos, referenceLookAt);
 
@@ -415,8 +412,7 @@ namespace Unity.Cinemachine
                     {
                         // To ease the transition between damped and undamped regions, we damp the damp time
                         var dispSqrMag = displacement.sqrMagnitude;
-                        dampTime = dispSqrMag > extra.PreviousDisplacement.sqrMagnitude 
-                            ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
+                        dampTime = dispSqrMag > extra.PreviousDisplacement.sqrMagnitude ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
                         if (dispSqrMag < Epsilon)
                             dampTime = extra.PreviousDampTime - Damper.Damp(extra.PreviousDampTime, dampTime, deltaTime);
 
@@ -427,11 +423,14 @@ namespace Unity.Cinemachine
                     state.PositionCorrection += displacement;
                     cameraPos = state.GetCorrectedPosition();
 
-                    // Restore the lookAt offset
-                    if (hasLookAt && displacement.sqrMagnitude > Epsilon)
+                    // Adjust the damping bypass to account for the displacement
+                    if (vcam.PreviousStateIsValid && state.HasLookAt())
                     {
-                        var q = Quaternion.LookRotation(referenceLookAt - cameraPos, state.ReferenceUp);
-                        state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, state.ReferenceUp);
+                        var dir0 = extra.PreviousCameraPosition - state.ReferenceLookAt;
+                        var dir1 = cameraPos - state.ReferenceLookAt;
+                        if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
+                            state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
+                                dir0, dir1, state.ReferenceUp);
                     }
 
                     extra.PreviousDisplacement = displacement;
