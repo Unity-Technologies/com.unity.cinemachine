@@ -33,8 +33,8 @@ namespace Unity.Cinemachine
         [Serializable]
         public struct DistanceEvaluationSettings
         {
-            /// <summary>If enabled, will evaluate shot quality based on target distance and occlusion</summary>
-            [Tooltip("If enabled, will evaluate shot quality based on target distance and occlusion")]
+            /// <summary>If enabled, will evaluate shot quality based on target distance</summary>
+            [Tooltip("If enabled, will evaluate shot quality based on target distance")]
             public bool Enabled;
 
             /// <summary>If greater than zero, maximum quality boost will occur when target is this far from the camera</summary>
