@@ -17,11 +17,10 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
 
             this.AddMissingCmCameraHelpBox(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CollideAgainst)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.MinimumDistanceFromTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRadius)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SmoothingTime)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PreserveComposition)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Decollision)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TerrainResolution)));
 
             return ux;
         }

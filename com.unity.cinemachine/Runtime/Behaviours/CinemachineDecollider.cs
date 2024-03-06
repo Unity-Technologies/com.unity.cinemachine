@@ -8,8 +8,6 @@ namespace Unity.Cinemachine
     /// An add-on module for CinemachineCamera that post-processes
     /// the final position of the camera. Based on the supplied settings,
     /// the Decollider will pull the camera out of any objects it is intersecting.
-    /// Camera will be decollided in the direction of the Tracking Target, but otherwise
-    /// no attempt will be make to preserve the line of sight.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Decollider")]
     [SaveDuringPlay]
@@ -18,125 +16,94 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDecollider.html")]
     public class CinemachineDecollider : CinemachineExtension
     {
-        /// <summary>Objects on these layers will be detected.</summary>
-        [Tooltip("Objects on these layers will be detected")]
-        public LayerMask CollideAgainst = 1;
-
-        /// <summary>Choose between LookAt target or Follow target for occlusion testing</summary>
-        public enum TargetTypes
-        {
-            /// <summary>Use the LookAt target for occlusion testing</summary>
-            LookAtTarget,
-            /// <summary>Use the Follow target for occlusion testing</summary>
-            FollowTarget
-        };
-
-        /// <summary>Target to consider when performing occlusion tests</summary>
-        [Tooltip("Target to consider when performing occlusion tests")]
-        public TargetTypes TargetType;
-
-        /// <summary>Obstacles closer to the target than this will be ignored</summary>
-        [Tooltip("Obstacles closer to the target than this will be ignored")]
-        public float MinimumDistanceFromTarget = 0.1f;
-
         /// <summary>
-        /// Camera will try to maintain this distance from any obstacle.
-        /// Increase this value if you are seeing inside obstacles due to a large
-        /// FOV on the camera.
+        /// Camera will try to maintain this distance from any obstacle or terrain.
         /// </summary>
-        [Tooltip("Camera will try to maintain this distance from any obstacle.  Try to keep this value small.  "
-            + "Increase it if you are seeing inside obstacles due to a large FOV on the camera.")]
+        [Tooltip("Camera will try to maintain this distance from any obstacle or terrain.  Increase it "
+            + "if necessary to keep the camera from clipping the near edge of obsacles.")]
         public float CameraRadius = 0.1f;
 
         /// <summary>
-        /// Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long.
+        /// Re-adjust the aim to preserve the screen position
+        /// of the LookAt target as much as possible
         /// </summary>
-        [Range(0, 2)]
-        [Tooltip("Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long")]
-        public float SmoothingTime = 0f;
+        [Tooltip("Re-adjust the aim to preserve the screen position of the LookAt target as much as possible")]
+        public bool PreserveComposition = true;
 
-        /// <summary>
-        /// How gradually the camera returns to its normal position after having been corrected.
-        /// Higher numbers will move the camera more gradually back to normal.
-        /// </summary>
-        [Range(0, 10)]
-        [Tooltip("How gradually the camera returns to its normal position after having been corrected.  "
-            + "Higher numbers will move the camera more gradually back to normal.")]
-        public float Damping = 0.2f;
+        /// <summary>Settings for pushing the camera out of intersecting objects</summary>
+        [Serializable]
+        public struct DecollisionSettings
+        {
+            /// <summary>When enabled, will attempt to push the camera out of intersecting objects</summary>
+            [Tooltip("When enabled, will attempt to push the camera out of intersecting objects")]
+            public bool Enabled;
+
+            /// <summary>Objects on these layers will be detected.</summary>
+            [Tooltip("Objects on these layers will be detected")]
+            public LayerMask ObstacleLayers;
+        }
+
+        /// <summary>When enabled, will attempt to push the camera out of intersecting objects</summary>
+        [FoldoutWithEnabledButton]
+        public DecollisionSettings Decollision;
+
+        /// <summary>Settings for putting the camera on top of the terrain</summary>
+        [Serializable]
+        public struct TerrainSettings
+        {
+            /// <summary>When enabled, will attempt to place the camera on top of terrain layers</summary>
+            [Tooltip("When enabled, will attempt to place the camera on top of terrain layers")]
+            public bool Enabled;
+
+            /// <summary>Colliders on these layers will be detected.</summary>
+            [Tooltip("Colliders on these layers will be detected")]
+            public LayerMask TerrainLayers;
+
+            /// <summary>Specifies the maximum length of a raycast used to find terrain colliders.</summary>
+            [Tooltip("Specifies the maximum length of a raycast used to find terrain colliders")]
+            public float MaximumRaycast;
+
+            /// <summary>
+            /// How gradually the camera returns to its normal position after having been corrected.
+            /// Higher numbers will move the camera more gradually back to normal.
+            /// </summary>
+            [Range(0, 10)]
+            [Tooltip("How gradually the camera returns to its normal position after having been corrected.  "
+                + "Higher numbers will move the camera more gradually back to normal.")]
+            public float Damping;
+        }
+
+        /// <summary>When enabled, will attempt to place the camera on top of terrain layers</summary>
+        [FoldoutWithEnabledButton]
+        public TerrainSettings TerrainResolution;
 
         void OnValidate()
         {
-            MinimumDistanceFromTarget = Mathf.Max(0.01f, MinimumDistanceFromTarget);
             CameraRadius = Mathf.Max(0.01f, CameraRadius);
-            SmoothingTime = Mathf.Max(0, SmoothingTime);
-            Damping = Mathf.Max(0, Damping);
         }
 
         void Reset()
         {
-            CollideAgainst = 1;
-            TargetType = TargetTypes.LookAtTarget;
-            MinimumDistanceFromTarget = 0.2f;
-            CameraRadius = 0.1f; 
-            SmoothingTime = 0;
-            Damping = 0.2f;
+            CameraRadius = 0.4f; 
+            PreserveComposition = true;
+            TerrainResolution = new () { Enabled = true, TerrainLayers = 1, MaximumRaycast = 10, Damping = 0.5f };
+            Decollision = new () { Enabled = false, ObstacleLayers = 0 };
         }
         
-        /// <summary>
-        /// Cleanup
-        /// </summary>
+        /// <summary>Cleanup</summary>
         protected override void OnDestroy()
         {
             RuntimeUtility.DestroyScratchCollider();
             base.OnDestroy();
         }
 
-        /// This must be small but greater than 0 - reduces false results due to precision
-        const float k_PrecisionSlush = 0.001f;
-
-        /// <summary>
-        /// Per-vcam extra state info
-        /// </summary>
+        /// <summary>Per-vcam extra state info</summary>
         class VcamExtraState : VcamExtraStateBase
         {
-            public Vector3 PreviousDisplacement;
-            public Vector3 PreviousCameraOffset;
-
-            float m_SmoothedDistance;
-            float m_SmoothedTime;
-
-            public float ApplyDistanceSmoothing(float distance, float smoothingTime)
-            {
-                if (m_SmoothedTime != 0 && smoothingTime > Epsilon)
-                {
-                    float now = CinemachineCore.CurrentTime;
-                    if (now - m_SmoothedTime < smoothingTime)
-                        return Mathf.Min(distance, m_SmoothedDistance);
-                }
-                return distance;
-            }
-            public void UpdateDistanceSmoothing(float distance)
-            {
-                if (m_SmoothedDistance == 0 || distance < m_SmoothedDistance)
-                {
-                    m_SmoothedDistance = distance;
-                    m_SmoothedTime = CinemachineCore.CurrentTime;
-                }
-            }
-            public void ResetDistanceSmoothing(float smoothingTime)
-            {
-                float now = CinemachineCore.CurrentTime;
-                if (now - m_SmoothedTime >= smoothingTime)
-                    m_SmoothedDistance = m_SmoothedTime = 0;
-            }
+            public float PreviousTerrainDisplacement;
+            public Vector3 PreviousCorrectedCameraPosition;
         };
 
-        /// <summary>
-        /// Report maximum damping time needed for this component.
-        /// </summary>
-        /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => Mathf.Max(Damping, SmoothingTime);
-        
         /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
@@ -151,156 +118,145 @@ namespace Unity.Cinemachine
             if (stage == CinemachineCore.Stage.Body)
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
+                var up = state.ReferenceUp;
                 var initialCamPos = state.GetCorrectedPosition();
-                var hasLookAt = GetLookAtPoint(vcam, ref state, out var lookAtPoint);
-                var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
+
+                // Capture lookAt screen offset for composition preservation
+                var preserveLookAt = PreserveComposition && state.HasLookAt();
+                var lookAtPoint = state.HasLookAt() ? state.ReferenceLookAt : initialCamPos;
+                var lookAtScreenOffset = preserveLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                     lookAtPoint - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
-                // Rotate the previous collision correction along with the camera
-                var dampingBypass = state.RotationDampingBypass;
-                extra.PreviousDisplacement = dampingBypass * extra.PreviousDisplacement;
+                if (!vcam.PreviousStateIsValid)
+                    deltaTime = -1;
 
                 // Resolve collisions
-                var cameraPos = initialCamPos;
-                var displacement = RespectCameraRadius(cameraPos, lookAtPoint);
-
-                // Apply distance smoothing - this can artificially hold the camera closer
-                // to the target for a while, to reduce popping in and out on bumpy objects
-                if (SmoothingTime > Epsilon && hasLookAt)
+                if (Decollision.Enabled)
                 {
-                    var pos = initialCamPos + displacement;
-                    var dir = pos - lookAtPoint;
-                    var distance = dir.magnitude;
-                    if (distance > Epsilon)
+                    state.PositionCorrection += DecollideCamera(
+                        initialCamPos, extra.PreviousCorrectedCameraPosition, vcam.PreviousStateIsValid);;
+                }
+                
+                // Resolve terrains
+                extra.PreviousTerrainDisplacement = TerrainResolution.Enabled 
+                    ? ResolveTerrain(extra, state.GetCorrectedPosition(), up, deltaTime) : 0;
+                state.PositionCorrection += extra.PreviousTerrainDisplacement * up;
+
+                // Restore screen composition
+                var newCamPos = state.GetCorrectedPosition();
+                if (preserveLookAt && !(initialCamPos - newCamPos).AlmostZero())
+                {
+                    var q = Quaternion.LookRotation(lookAtPoint - newCamPos, up);
+                    state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
+
+                    if (vcam.PreviousStateIsValid)
                     {
-                        dir /= distance;
-                        if (!displacement.AlmostZero())
-                            extra.UpdateDistanceSmoothing(distance);
-                        distance = extra.ApplyDistanceSmoothing(distance, SmoothingTime);
-                        displacement += (lookAtPoint + dir * distance) - pos;
+                        var dir0 = extra.PreviousCorrectedCameraPosition - lookAtPoint;
+                        var dir1 = newCamPos - lookAtPoint;
+                        if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
+                            state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(dir0, dir1, up);
                     }
                 }
-                    
-                if (displacement.AlmostZero())
-                    extra.ResetDistanceSmoothing(SmoothingTime);
-
-                // Apply damping
-                if (deltaTime >= 0 && vcam.PreviousStateIsValid && Damping > Epsilon)
-                {
-                    var dispSqrMag = displacement.sqrMagnitude;
-                    if (dispSqrMag < extra.PreviousDisplacement.sqrMagnitude)
-                    {
-                        bool bodyAfterAim = false;
-                        if (vcam is CinemachineCamera cam)
-                        {
-                            var body = cam.GetCinemachineComponent(CinemachineCore.Stage.Body);
-                            bodyAfterAim = body != null && body.BodyAppliesAfterAim;
-                        }
-                        var prevDisplacement = bodyAfterAim ? extra.PreviousDisplacement
-                            : lookAtPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
-                        displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, Damping, deltaTime);
-                    }
-                }
-                state.PositionCorrection += displacement;
-                cameraPos = state.GetCorrectedPosition();
-                extra.PreviousDisplacement = displacement;
-                extra.PreviousCameraOffset = cameraPos - lookAtPoint;
-
-                // Restore the lookAtPoint offset
-                if (hasLookAt && displacement.sqrMagnitude > Epsilon)
-                {
-                    var q = Quaternion.LookRotation(lookAtPoint - cameraPos, state.ReferenceUp);
-                    state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, state.ReferenceUp);
-                }
+                extra.PreviousCorrectedCameraPosition = newCamPos;
             }
         }
 
-        bool GetLookAtPoint(CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 lookAtPoint)
+        // Returns distance to move the camera in the up directon to stay on top of terrain
+        float ResolveTerrain(VcamExtraState extra, Vector3 camPos, Vector3 up, float deltaTime)
         {
-            if (TargetType == TargetTypes.FollowTarget)
+            float displacement = 0;
+            if (RuntimeUtility.SphereCastIgnoreTag(
+                    new Ray(camPos + TerrainResolution.MaximumRaycast * up, -up), 
+                    CameraRadius + Epsilon, out var hitInfo, 
+                    TerrainResolution.MaximumRaycast, TerrainResolution.TerrainLayers, string.Empty))
             {
-                var target = vcam.Follow;
-                lookAtPoint = target == null ? Vector3.zero : TargetPositionCache.GetTargetPosition(target);
-                return target != null;
+                displacement = TerrainResolution.MaximumRaycast - hitInfo.distance + Epsilon;
             }
-            lookAtPoint = state.ReferenceLookAt;
-            return state.HasLookAt();
+            // Apply damping
+            if (deltaTime >= 0 && TerrainResolution.Damping > Epsilon)
+            {
+                if (displacement < extra.PreviousTerrainDisplacement)
+                    displacement = extra.PreviousTerrainDisplacement 
+                        + Damper.Damp(displacement - extra.PreviousTerrainDisplacement, 
+                            TerrainResolution.Damping, deltaTime);
+            }
+            return displacement;
         }
+ 
 
         static Collider[] s_ColliderBuffer = new Collider[5];
 
-        Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
+        Vector3 DecollideCamera(Vector3 cameraPos, Vector3 previousCamPos, bool previousIsValid)
         {
-            Vector3 result = Vector3.zero;
-            Vector3 dir = cameraPos - lookAtPos;
-            float distance = dir.magnitude;
-            if (distance > Epsilon)
-                dir /= distance;
+            // Don't handle layers already taken care of by terrain resolution
+            var layers = Decollision.ObstacleLayers;
+            if (TerrainResolution.Enabled)
+                layers &= ~TerrainResolution.TerrainLayers;
+            if (layers == 0)
+                return Vector3.zero;
+
+            Vector3 newCamPos = cameraPos;
 
             // Pull it out of any intersecting obstacles
-            RaycastHit hitInfo;
             int numObstacles = Physics.OverlapSphereNonAlloc(
                 cameraPos, CameraRadius, s_ColliderBuffer,
-                CollideAgainst, QueryTriggerInteraction.Ignore);
-            if (numObstacles == 0 && distance > MinimumDistanceFromTarget + Epsilon)
+                Decollision.ObstacleLayers, QueryTriggerInteraction.Ignore);
+
+            // Make sure the camera position isn't completely inside an obstacle.
+            // OverlapSphereNonAlloc won't catch those.
+            if (numObstacles == 0 && previousIsValid)
             {
-                // Make sure the camera position isn't completely inside an obstacle.
-                // OverlapSphereNonAlloc won't catch those.
-                float d = distance - MinimumDistanceFromTarget;
-                Vector3 targetPos = lookAtPos + dir * MinimumDistanceFromTarget;
-                if (RuntimeUtility.RaycastIgnoreTag(new Ray(targetPos, dir), 
-                    out hitInfo, d, CollideAgainst, string.Empty))
+                Vector3 dir = cameraPos - previousCamPos;
+                float distance = dir.magnitude;
+                if (distance > Epsilon)
                 {
-                    // Only count it if there's an incoming collision but not an outgoing one
-                    Collider c = hitInfo.collider;
-                    if (!c.Raycast(new Ray(cameraPos, -dir), out hitInfo, d))
-                        s_ColliderBuffer[numObstacles++] = c;
+                    dir /= distance;
+                    distance += CameraRadius;
+                    if (RuntimeUtility.RaycastIgnoreTag(new Ray(previousCamPos, dir), 
+                        out var hitInfo, distance, Decollision.ObstacleLayers, string.Empty))
+                    {
+                        // Only count it if there's an incoming collision but not an outgoing one
+                        Collider c = hitInfo.collider;
+                        if (!c.Raycast(new Ray(cameraPos, -dir), out hitInfo, distance))
+                        {
+                            //s_ColliderBuffer[numObstacles++] = c;
+                            newCamPos = previousCamPos + dir * Mathf.Max(0, hitInfo.distance - CameraRadius - Epsilon);
+                        }
+                    }
                 }
             }
-            if (numObstacles > 0 && distance == 0 || distance > MinimumDistanceFromTarget)
+
+            if (numObstacles > 0)
             {
                 var scratchCollider = RuntimeUtility.GetScratchCollider();
                 scratchCollider.radius = CameraRadius;
-
-                Vector3 newCamPos = cameraPos;
                 for (int i = 0; i < numObstacles; ++i)
                 {
-                    Collider c = s_ColliderBuffer[i];
-
-                    // If we have a lookAtPoint target, move the camera to the nearest edge of obstacle
-                    if (distance > MinimumDistanceFromTarget)
-                    {
-                        dir = newCamPos - lookAtPos;
-                        float d = dir.magnitude;
-                        if (d > Epsilon)
-                        {
-                            dir /= d;
-                            var ray = new Ray(lookAtPos, dir);
-                            if (c.Raycast(ray, out hitInfo, d + CameraRadius))
-                                newCamPos = ray.GetPoint(hitInfo.distance) - (dir * k_PrecisionSlush);
-                        }
-                    }
+                    var c = s_ColliderBuffer[i];
                     if (Physics.ComputePenetration(
                         scratchCollider, newCamPos, Quaternion.identity,
                         c, c.transform.position, c.transform.rotation,
                         out var offsetDir, out var offsetDistance))
                     {
-                        newCamPos += offsetDir * offsetDistance;
+                        newCamPos += offsetDir * (offsetDistance + Epsilon);
                     }
                 }
-                result = newCamPos - cameraPos;
             }
 
-            // Respect the minimum distance from target - push camera back if we have to
-            if (distance > Epsilon && MinimumDistanceFromTarget > Epsilon)
+            // In case we pulled it out of one obstacle and into another, check again.
+            // If it's still intersecting something, move it back where it came from.
+            if (previousIsValid && newCamPos != cameraPos)
             {
-                float minDistance = Mathf.Max(MinimumDistanceFromTarget, CameraRadius) + k_PrecisionSlush;
-                Vector3 newOffset = cameraPos + result - lookAtPos;
-                if (newOffset.magnitude < minDistance)
-                    result = lookAtPos - cameraPos + dir * minDistance;
+                var dir = newCamPos - previousCamPos;
+                var distance = dir.magnitude + CameraRadius;
+                if (RuntimeUtility.RaycastIgnoreTag(new Ray(previousCamPos, dir), 
+                    out var hitInfo, distance, Decollision.ObstacleLayers, string.Empty))
+                {
+                    newCamPos = previousCamPos + dir * Mathf.Max(0, hitInfo.distance - CameraRadius - Epsilon);
+                }
             }
 
-            return result;
+            return newCamPos - cameraPos;
         }
     }
 }
