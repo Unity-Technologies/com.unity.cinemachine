@@ -77,6 +77,8 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public TerrainSettings TerrainResolution;
 
+        static Collider[] s_ColliderBuffer = new Collider[10];
+
         void OnValidate()
         {
             CameraRadius = Mathf.Max(0.01f, CameraRadius);
@@ -130,15 +132,26 @@ namespace Unity.Cinemachine
                 if (!vcam.PreviousStateIsValid)
                     deltaTime = -1;
 
-                // Resolve collisions
-                if (Decollision.Enabled && vcam.PreviousStateIsValid)
-                    state.PositionCorrection += DecollideCamera(initialCamPos, extra.PreviousCorrectedCameraPosition);
-                
                 // Resolve terrains
                 extra.PreviousTerrainDisplacement = TerrainResolution.Enabled 
                     ? ResolveTerrain(extra, state.GetCorrectedPosition(), up, deltaTime) : 0;
                 state.PositionCorrection += extra.PreviousTerrainDisplacement * up;
 
+                // Resolve collisions
+                if (Decollision.Enabled)
+                {
+                    var displacement = DecollideCamera(state.GetCorrectedPosition(), lookAtPoint);
+                    if (!displacement.AlmostZero())
+                    {
+                        // Resolve terrains again, just in case the decollider messed it up
+                        state.PositionCorrection += displacement;
+                        extra.PreviousTerrainDisplacement = TerrainResolution.Enabled 
+                            ? ResolveTerrain(extra, state.GetCorrectedPosition(), up, deltaTime) : 0;
+                        if (Mathf.Abs(extra.PreviousTerrainDisplacement) > Epsilon)
+                            state.PositionCorrection += extra.PreviousTerrainDisplacement * up;
+                    }
+                }
+                
                 // Restore screen composition
                 var newCamPos = state.GetCorrectedPosition();
                 if (preserveLookAt && !(initialCamPos - newCamPos).AlmostZero())
@@ -180,10 +193,7 @@ namespace Unity.Cinemachine
             return displacement;
         }
  
-
-        static Collider[] s_ColliderBuffer = new Collider[5];
-
-        Vector3 DecollideCamera(Vector3 cameraPos, Vector3 previousCamPos)
+        Vector3 DecollideCamera(Vector3 cameraPos, Vector3 lookAtPoint)
         {
             // Don't handle layers already taken care of by terrain resolution
             var layers = Decollision.ObstacleLayers;
@@ -192,84 +202,48 @@ namespace Unity.Cinemachine
             if (layers == 0)
                 return Vector3.zero;
 
-            Vector3 newCamPos = cameraPos;
-
             // Detect any intersecting obstacles
-            int numObstacles = Physics.OverlapSphereNonAlloc(
-                cameraPos, CameraRadius - Epsilon, s_ColliderBuffer,
+            var dir = cameraPos - lookAtPoint;
+            var capsuleLength = dir.magnitude;
+            if (capsuleLength < Epsilon)
+                return Vector3.zero;
+
+            dir /= capsuleLength;
+            capsuleLength = Mathf.Max(Epsilon, capsuleLength - CameraRadius * 2);
+            lookAtPoint = cameraPos - dir * capsuleLength;
+
+            Vector3 newCamPos = cameraPos;
+            int numObstacles = Physics.OverlapCapsuleNonAlloc(
+                lookAtPoint, cameraPos, CameraRadius - Epsilon, s_ColliderBuffer,
                 Decollision.ObstacleLayers, QueryTriggerInteraction.Ignore);
 
-            // Make sure the camera position isn't completely inside an obstacle.
-            // OverlapSphereNonAlloc won't catch those.
-            if (numObstacles == 0)
-            {
-                Vector3 dir = cameraPos - previousCamPos;
-                float distance = dir.magnitude;
-                if (distance > Epsilon)
-                {
-                    dir /= distance;
-                    distance += CameraRadius;
-                    if (Physics.Raycast(
-                        new Ray(previousCamPos, dir), out var hitInfo, distance, 
-                        Decollision.ObstacleLayers, QueryTriggerInteraction.Ignore))
-                    {
-                        // Only count it if there's an incoming collision but not an outgoing one
-                        Collider c = hitInfo.collider;
-                        if (!c.Raycast(new Ray(cameraPos, -dir), out hitInfo, distance))
-                        {
-                            s_ColliderBuffer[numObstacles++] = c;
-                            //newCamPos = previousCamPos + dir * Mathf.Max(0, hitInfo.distance - CameraRadius - Epsilon);
-                        }
-                    }
-                }
-            }
-#if true
-            if (numObstacles > 0)
-            {
-                Vector3 dir = cameraPos - previousCamPos;
-                float distance = dir.magnitude;
-                if (distance > Epsilon)
-                {
-                    dir /= distance;
-                    if (RuntimeUtility.SphereCastIgnoreTag(
-                        new Ray(previousCamPos, dir), CameraRadius, out var hitInfo, distance, 
-                        Decollision.ObstacleLayers, string.Empty))
-                    {
-                        newCamPos = previousCamPos + dir * Mathf.Max(0, hitInfo.distance - Epsilon);
-                    }
-                }                
-            }
-#else
+            // Find the one that the camera is intersecting that is closest to the target
             if (numObstacles > 0)
             {
                 var scratchCollider = RuntimeUtility.GetScratchCollider();
-                scratchCollider.radius = CameraRadius;
+                scratchCollider.radius = CameraRadius - Epsilon;
+                float bestDistance = float.MaxValue;
                 for (int i = 0; i < numObstacles; ++i)
                 {
                     var c = s_ColliderBuffer[i];
                     if (Physics.ComputePenetration(
                         scratchCollider, newCamPos, Quaternion.identity,
                         c, c.transform.position, c.transform.rotation,
-                        out var offsetDir, out var offsetDistance))
+                        out var _, out var _))
                     {
-                        newCamPos += offsetDir * (offsetDistance + Epsilon);
+                        // Camera is intersecting - decollide in direction of lookAtPoint
+                        if (c.Raycast(new Ray(lookAtPoint, dir), out var hitInfo, capsuleLength))
+                        {
+                            var distance = Mathf.Max(0, hitInfo.distance - CameraRadius);
+                            if (distance < bestDistance)
+                            {
+                                bestDistance = distance;
+                                newCamPos = lookAtPoint + dir * distance;
+                            }
+                        }
                     }
                 }
             }
-
-            // In case we pulled it out of one obstacle and into another, check again.
-            // If it's still intersecting something, move it back where it came from.
-            if (newCamPos != cameraPos)
-            {
-                var dir = newCamPos - previousCamPos;
-                var distance = dir.magnitude + CameraRadius;
-                if (RuntimeUtility.RaycastIgnoreTag(new Ray(previousCamPos, dir), 
-                    out var hitInfo, distance, Decollision.ObstacleLayers, string.Empty))
-                {
-                    newCamPos = previousCamPos + dir * Mathf.Max(0, hitInfo.distance - CameraRadius - Epsilon);
-                }
-            }
-#endif
             return newCamPos - cameraPos;
         }
     }
