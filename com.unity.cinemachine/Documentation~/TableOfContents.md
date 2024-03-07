@@ -31,7 +31,7 @@
             * [Extensions for avoiding collisions and evaluating shots](CinemachineColliderConfiner.md)
                 * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
                 * [Cinemachine Decollider](CinemachineDecollider.md)
-                * [Cinemachine Terrain Decollider](CinemachineTerrainDecollider.md)
+                * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
                 * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
                 * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
             * [Group Framing extension](CinemachineGroupFraming.md)
