@@ -23,5 +23,6 @@ The Decollider uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script
 | __Terrain Layers__ | Colliders on these layers will be detected. |
 | __Maximum Raycast__ | Specifies the maximum length of a raycast used to find terrain colliders. |
 | __Damping__ | How quickly to return the camera to its normal position after a terran adjustment has gone away. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. |
+| __Smoothing Time__ | Minimum number of seconds to hold the camera at the nearest point to the target. Can be used to reduce excess camera movement in environments with lots of obstacles. |
 
 
