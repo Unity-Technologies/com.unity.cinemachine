@@ -82,8 +82,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 - Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
-- Added CinemachineDecollider to decollide the camera without necessarily preserving the line of sight to the target.
-- Added CinemachineTerrainDecollider to put the camera on top of terrains.
 - Added option to disable deltaTime scaling in CinemachineInputAxisProvider.
 
 ### Changed
