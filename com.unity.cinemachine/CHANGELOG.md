@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - CinemachineDeoccluder can now resolve towards the Follow Target if required, instead of the LookAt target.
+- CinemachineShotQualityEvaluator is a standalone version of the evaluation code in Deoccluder.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
