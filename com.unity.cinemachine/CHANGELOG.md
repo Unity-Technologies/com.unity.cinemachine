@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.
 - CinemachineDeoccluder can now resolve towards the Follow Target if required, instead of the LookAt target.
+- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
@@ -82,8 +83,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Recentering Target to OrbitalFollow.  Recentering is now possible with Lazy Follow.
 - Added API in Deoccluder and ThirdPersonFollow to access which collision objects are impacting the camera position.
 - Added ICinemachineTargetGroup.IsValid property to detect deleted groups.
-- Added CinemachineDecollider to decollide the camera without necessarily preserving the line of sight to the target.
-- Added CinemachineTerrainDecollider to put the camera on top of terrains.
 - Added option to disable deltaTime scaling in CinemachineInputAxisProvider.
 
 ### Changed

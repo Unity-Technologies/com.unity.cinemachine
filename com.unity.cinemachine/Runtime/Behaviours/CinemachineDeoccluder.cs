@@ -66,12 +66,6 @@ namespace Unity.Cinemachine
             public float MinimumOcclusionTime;
 
             /// <summary>
-            /// Use the Follow target when resolving occlusions, instead of the LookAt target.
-            /// </summary>
-            [Tooltip("Use the Follow target when resolving occlusions, instead of the LookAt target")]
-            public bool ResolveTowardsFollowTarget;
-
-            /// <summary>
             /// Camera will try to maintain this distance from any obstacle.
             /// Increase this value if you are seeing inside obstacles due to a large
             /// FOV on the camera.
@@ -364,7 +358,8 @@ namespace Unity.Cinemachine
                 {
                     var initialCamPos = state.GetCorrectedPosition();
                     var up = state.ReferenceUp;
-                    var hasLookAt = GetLookAtTargetPointForAvoidance(vcam, ref state, out var lookAtPoint);
+                    bool hasLookAt = state.HasLookAt();
+                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
                     var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                         lookAtPoint - initialCamPos, up) : Vector2.zero;
 
@@ -458,7 +453,7 @@ namespace Unity.Cinemachine
                 }
             }
             // Rate the shot after the aim was set
-            if (stage == CinemachineCore.Stage.Aim && ShotQualityEvaluation.Enabled && state.HasLookAt())
+            if (stage == CinemachineCore.Stage.Finalize && ShotQualityEvaluation.Enabled && state.HasLookAt())
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.TargetObscured = state.IsTargetOffscreen() || IsTargetObscured(state);
@@ -489,21 +484,7 @@ namespace Unity.Cinemachine
             }
         }
         
-        bool GetLookAtTargetPointForAvoidance(CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 lookAtPoint)
-        {
-            bool hasLookAt = state.HasLookAt();
-            lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
-            if (AvoidObstacles.ResolveTowardsFollowTarget)
-            {
-                var target = vcam.Follow;
-                if (target == null)
-                    return false;
-                lookAtPoint = TargetPositionCache.GetTargetPosition(target);
-                return true;
-            }
-            return hasLookAt;
-        }
-        
+       
         Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra, Vector3 lookAtPoint)
         {
             var displacement = Vector3.zero;
