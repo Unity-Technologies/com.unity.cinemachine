@@ -30,7 +30,6 @@ The Deoccluder uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script
 | __Damping When Occluded__ || How quickly to move the camera to avoid an obstacle. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. Available when Avoid Obstacles is checked. |
 | __Transparent Layers__ || Objects on these layers will never obstruct the view of the target. |
 | __Minimum Occlusion Time__ || Do not take action unless the occulsion has lasted at least this long. |
-| __Resolve Towards Follow Target__ || When enabled, the Deoccluder will move the camera towards the Follow target instead of the LookAt target. |
 | __Maximum Effort__ || Upper limit on how many obstacle hits to process. Higher numbers may impact performance. In most environments four (4) hits is enough. |
 | **Ignore Tag** || Obstacles with this tag will be ignored. It is recommended to set this field to the target's tag. |
 | __Shot Quality Evaluation__ || If enabled, gives a higher score to shots when the target is closer to an optimal distance. |

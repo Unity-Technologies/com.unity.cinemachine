@@ -11,8 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
 
 ### Added
-- CinemachineDeoccluder can now resolve towards the Follow Target if required, instead of the LookAt target.
-- CinemachineShotQualityEvaluator is a standalone version of the evaluation code in Deoccluder.
+- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
