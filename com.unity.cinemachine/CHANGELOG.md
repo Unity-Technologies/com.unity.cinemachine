@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.
-- CinemachineDeoccluder can now resolve towards the Follow Target if required, instead of the LookAt target.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 
 ### Changed
@@ -20,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
 - PlayerOnSphere sample script is now PlayerOnSurface - can walk on arbitrary surfaces.
 - FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
+- Deoccluder evaluates shots in the Finalize stage instead of Aim.
 
 ## [3.0.1] - 2023-11-27
 
