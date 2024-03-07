@@ -16,10 +16,11 @@ The Decollider uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script
 |:---|:---|
 | __Camera Radius__ | Distance to maintain from any obstacle or terrain. Try to keep this value small for the best results. Increase it if necessary to keep the camera from clipping the near edge of obsacles. |
 | __Preserve Composition__ | If enabled, will re-adjust the aim to preserve the screen position of the LookAt target as much as possible. |
-| __Decollision__ | When enabled, will attempt to push the camera out of intersecting objects |
-| __Obstacle Layers__ | Objects on these layers will be detected |
-| __Terrain Resolution__ | When enabled, will attempt to place the camera on top of terrain layers |
-| __Terrain Layers__ | Colliders on these layers will be detected |
+| __Decollision__ | When enabled, will attempt to push the camera out of intersecting objects. |
+| __Obstacle Layers__ | Objects on these layers will be detected. |
+| __Resolve Towards Follow Target__ | When enabled, the Decollider will move the camera towards the Follow target instead of the LookAt target. |
+| __Terrain Resolution__ | When enabled, will attempt to place the camera on top of terrain layers. |
+| __Terrain Layers__ | Colliders on these layers will be detected. |
 | __Maximum Raycast__ | Specifies the maximum length of a raycast used to find terrain colliders. |
 | __Damping__ | How quickly to return the camera to its normal position after a terran adjustment has gone away. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. |
 
