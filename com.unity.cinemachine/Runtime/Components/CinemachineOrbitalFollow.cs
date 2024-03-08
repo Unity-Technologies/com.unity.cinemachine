@@ -430,6 +430,14 @@ namespace Unity.Cinemachine
             curState.RawPosition = pos + offset;
 
             // Compute the rotation bypass for the lookat target
+            if (curState.HasLookAt())
+            {
+                // Handle the common case where lookAt and follow targets are not the same point.
+                // If we don't do this, we can get inappropriate vertical damping when offset changes.
+                var lookAtOfset = orient 
+                    * (curState.ReferenceLookAt - (FollowTargetPosition + FollowTargetRotation * TargetOffset));
+                offset = curState.RawPosition - (pos + lookAtOfset);
+            }
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
