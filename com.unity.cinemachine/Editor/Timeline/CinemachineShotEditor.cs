@@ -54,6 +54,11 @@ namespace Unity.Cinemachine.Editor
             public Subeditor(Object target)
             {
                 Target = target;
+
+                // Target can be null for behaviours with missing scripts
+                if (target == null)
+                    return;
+
                 CreateCachedEditor(target, null, ref m_Editor);
 
                 // Wrap editor in a foldout
@@ -72,8 +77,9 @@ namespace Unity.Cinemachine.Editor
 
             public void Dispose()
             {
-                Foldout.parent?.Remove(Foldout);
-                DestroyImmediate(m_Editor);
+                Foldout?.parent?.Remove(Foldout);
+                if (m_Editor != null)
+                    DestroyImmediate(m_Editor);
                 Foldout = null;
                 m_Editor = null;
                 Target = null;
@@ -262,6 +268,11 @@ namespace Unity.Cinemachine.Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.DisplayName));
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.HelpBox(
+                "For best inspector display, please upgrade Timeline to version 1.8.2 or later", 
+                MessageType.Info);
 
             EditorGUI.BeginChangeCheck();
             if (vcam != null)

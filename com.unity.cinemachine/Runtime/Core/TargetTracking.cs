@@ -80,7 +80,7 @@ namespace Unity.Cinemachine.TargetTracking
 
         /// <summary>How aggressively the camera tries to track the target's rotation.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target's rotation.  "
             + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float QuaternionDamping;

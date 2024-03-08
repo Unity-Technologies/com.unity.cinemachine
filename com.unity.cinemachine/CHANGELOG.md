@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
 - Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
+- Bugfix: StateDriveCamera min activation time was broken.
 
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).

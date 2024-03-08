@@ -95,7 +95,7 @@ namespace Unity.Cinemachine
             /// Upper limit on how many obstacle hits to process.  Higher numbers may impact performance.
             /// In most environments, 4 is enough.
             /// </summary>
-            [RangeSlider(1, 10)]
+            [Range(1, 10)]
             [Tooltip("Upper limit on how many obstacle hits to process.  Higher numbers may impact performance.  "
                 + "In most environments, 4 is enough.")]
             public int MaximumEffort;
@@ -103,7 +103,7 @@ namespace Unity.Cinemachine
             /// <summary>
             /// Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long.
             /// </summary>
-            [RangeSlider(0, 2)]
+            [Range(0, 2)]
             [Tooltip("Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long")]
             public float SmoothingTime;
 
@@ -111,7 +111,7 @@ namespace Unity.Cinemachine
             /// How gradually the camera returns to its normal position after having been corrected.
             /// Higher numbers will move the camera more gradually back to normal.
             /// </summary>
-            [RangeSlider(0, 10)]
+            [Range(0, 10)]
             [Tooltip("How gradually the camera returns to its normal position after having been corrected.  "
                 + "Higher numbers will move the camera more gradually back to normal.")]
             public float Damping;
@@ -120,7 +120,7 @@ namespace Unity.Cinemachine
             /// How gradually the camera moves to resolve an occlusion.
             /// Higher numbers will move the camera more gradually.
             /// </summary>
-            [RangeSlider(0, 10)]
+            [Range(0, 10)]
             [Tooltip("How gradually the camera moves to resolve an occlusion.  "
                 + "Higher numbers will move the camera more gradually.")]
             public float DampingWhenOccluded;
@@ -359,7 +359,7 @@ namespace Unity.Cinemachine
                     var initialCamPos = state.GetCorrectedPosition();
                     var up = state.ReferenceUp;
                     bool hasLookAt = state.HasLookAt();
-                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : initialCamPos;
                     var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                         lookAtPoint - initialCamPos, up) : Vector2.zero;
 
