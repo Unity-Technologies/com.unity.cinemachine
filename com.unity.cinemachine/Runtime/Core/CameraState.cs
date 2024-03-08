@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace Unity.Cinemachine
 {
@@ -185,10 +186,8 @@ namespace Unity.Cinemachine
             if (index >= 0)
                 b.Weight += this.GetCustomBlendable(index).Weight;
             else
-            {
-                index = CustomBlendables.NumItems;
-                CustomBlendables.NumItems = index + 1;
-            }
+                index = CustomBlendables.NumItems++;
+
             switch (index)
             {
                 case 0: CustomBlendables.m_Item0 = b; break;
@@ -197,9 +196,12 @@ namespace Unity.Cinemachine
                 case 3: CustomBlendables.m_Item3 = b; break;
                 default: 
                 {
-                    if (CustomBlendables.m_Overflow == null)
-                        CustomBlendables.m_Overflow = new();
-                    CustomBlendables.m_Overflow.Add(b);
+                    index -= 4;
+                    CustomBlendables.m_Overflow ??= new();
+                    if (index < CustomBlendables.m_Overflow.Count)
+                        CustomBlendables.m_Overflow[index] = b;
+                    else
+                        CustomBlendables.m_Overflow.Add(b);
                     break;
                 }
             }

@@ -518,7 +518,7 @@ namespace Unity.Cinemachine
             /// determines final placement on the Y axis</summary>
             [Tooltip("Controls how taut is the line that connects the rigs' orbits, "
                 + "which determines final placement on the Y axis")]
-            [RangeSlider(0f, 1f)]
+            [Range(0f, 1f)]
             public float SplineCurvature;
 
             /// <summary>Default orbit rig</summary>

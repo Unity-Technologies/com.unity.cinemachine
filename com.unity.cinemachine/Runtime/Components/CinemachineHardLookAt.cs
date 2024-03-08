@@ -22,6 +22,12 @@ namespace Unity.Cinemachine
         public override CinemachineCore.Stage Stage { get => CinemachineCore.Stage.Aim; }
 
         /// <summary>
+        /// True if this component tries to make the camera look at the Tracking Target.
+        /// Used by inspector to warn the user of potential improper setup.
+        /// </summary>
+        internal override bool CameraLooksAtTarget { get => true; }
+
+        /// <summary>
         /// Offset from the LookAt target's origin, in target's local space.  The camera will look at this point.
         /// </summary>
         [Tooltip("Offset from the LookAt target's origin, in target's local space.  The camera will look at this point.")]
