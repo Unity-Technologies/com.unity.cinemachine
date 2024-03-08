@@ -329,8 +329,9 @@ namespace Unity.Cinemachine.Samples
 
         float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
         {
-            float kExtraHeight = 2;
-            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, max + kExtraHeight, GroundLayers))
+            float kExtraHeight = 2; // start a little above the player in case it's moving down fast
+            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, 
+                    max + kExtraHeight, GroundLayers, QueryTriggerInteraction.Ignore))
                 return hit.distance - kExtraHeight; 
             return max + 1;
         }

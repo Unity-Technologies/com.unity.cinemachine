@@ -7,15 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Fixed
+- Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
+- Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
+- Bugfix: StateDriveCamera min activation time was broken.
 
 ### Added
+- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 
 ### Changed
-- ThirdPersonFollow sets state.ReferenceUp, to allow usage on arbitrary surfaces without global world up override.
+- SplineDolly and SplineCart: position on spline is preserved when units change.
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
-- PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
-- SplineDolly and SplineCart API has changed so that position on spline is preserved when units change.  Old scenes will not deserialize correctly and their spline references and positions and units will have to be updated manually.
+- PlayerOnSphere sample script is now PlayerOnSurface - can walk on arbitrary surfaces.
+- FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
 
 ## [3.0.1] - 2023-11-27
 

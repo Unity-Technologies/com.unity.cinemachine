@@ -52,7 +52,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Lowering this value relaxes the camera's attention to the Follow target (normal = 1)
         /// </summary>
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         [Tooltip("Lowering this value relaxes the camera's attention to the Follow target (normal = 1)")]
         [FormerlySerializedAs("m_FollowAttachment")]
         public float FollowAttachment;
@@ -60,7 +60,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Lowering this value relaxes the camera's attention to the LookAt target (normal = 1)
         /// </summary>
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         [Tooltip("Lowering this value relaxes the camera's attention to the LookAt target (normal = 1)")]
         [FormerlySerializedAs("m_LookAtAttachment")]
         public float LookAtAttachment;

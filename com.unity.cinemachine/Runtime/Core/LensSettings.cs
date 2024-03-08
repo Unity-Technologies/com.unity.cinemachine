@@ -16,11 +16,9 @@ namespace Unity.Cinemachine
         /// be in horizontal degress.  Internally, it is always vertical degrees.  
         /// For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV.
         /// </summary>
-        [RangeSlider(1f, 179f)]
-        [Tooltip("This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the "
-            + "associated camera has its FOV axis setting set to Horizontal, in which case display will "
-            + "be in horizontal degress.  Internally, it is always vertical degrees.  "
-            + "For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV")]
+        [Tooltip("This setting controls the Field of View or Local Length of the lens, depending "
+            + "on whether the camera mode is physical or nonphysical.  Field of View can be either horizontal "
+            + "or vertical, depending on the setting in the Camera component.")]
         public float FieldOfView;
 
         /// <summary>
@@ -72,12 +70,10 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Allows you to select a different camera mode to apply to the Camera component
-        /// when Cinemachine activates this Virtual Camera.  The changes applied to the Camera
-        /// component through this setting will remain after the Virtual Camera deactivation.
+        /// when Cinemachine activates this Virtual Camera. 
         /// </summary>
         [Tooltip("Allows you to select a different camera mode to apply to the Camera component "
-            + "when Cinemachine activates this Virtual Camera.  The changes applied to the Camera "
-            + "component through this setting will remain after the Virtual Camera deactivation.")]
+            + "when Cinemachine activates this Virtual Camera.")]
         public OverrideModes ModeOverride;
 
         /// <summary>These are settings that are used only if IsPhysicalCamera is true.</summary>
@@ -114,12 +110,12 @@ namespace Unity.Cinemachine
 
             /// <summary>The aperture number, in f-stop</summary>
             [Tooltip("The aperture number, in f-stop")]
-            [RangeSlider(Camera.kMinAperture, Camera.kMaxAperture)]
+            [Range(Camera.kMinAperture, Camera.kMaxAperture)]
             public float Aperture;
 
             /// <summary>The number of diaphragm blades</summary>
             [Tooltip("The number of diaphragm blades")]
-            [RangeSlider(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
+            [Range(Camera.kMinBladeCount, Camera.kMaxBladeCount)]
             public int BladeCount;
 
             /// <summary>Maps an aperture range to blade curvature</summary>
@@ -129,14 +125,14 @@ namespace Unity.Cinemachine
 
             /// <summary>The strength of the "cat-eye" effect on bokeh (optical vignetting)</summary>
             [Tooltip("The strength of the \"cat-eye\" effect on bokeh (optical vignetting)")]
-            [RangeSlider(0, 1)]
+            [Range(0, 1)]
             public float BarrelClipping;
 
             /// <summary>Stretches the sensor to simulate an anamorphic look.  Positive values distort 
             /// the camera vertically, negative values distore the camera horizontally</summary>
             [Tooltip("Stretches the sensor to simulate an anamorphic look.  Positive values distort the "
                 + "camera vertically, negative values distort the camera horizontally")]
-            [RangeSlider(-1, 1)]
+            [Range(-1, 1)]
             public float Anamorphism;
         }
 

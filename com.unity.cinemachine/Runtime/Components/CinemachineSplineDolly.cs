@@ -85,7 +85,7 @@ namespace Unity.Cinemachine
 
             /// <summary>How aggressively the camera tries to maintain the desired rotation.
             /// This is only used if Camera Rotation is not Default.</summary>
-            [RangeSlider(0f, 20f)]
+            [Range(0f, 20f)]
             [Tooltip("How aggressively the camera tries to maintain the desired rotation.  "
                 + "This is only used if Camera Rotation is not Default.")]
             public float Angular;
