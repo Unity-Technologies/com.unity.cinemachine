@@ -47,7 +47,7 @@ namespace Unity.Cinemachine
             /// <summary>
             /// Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long.
             /// </summary>
-            [RangeSlider(0, 2)]
+            [Range(0, 2)]
             [Tooltip("Smoothing to apply to obstruction resolution.  Nearest camera point is held for at least this long")]
             public float SmoothingTime;
         }
