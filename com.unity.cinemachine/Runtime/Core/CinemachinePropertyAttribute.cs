@@ -117,6 +117,11 @@ namespace Unity.Cinemachine
     public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
 
     /// <summary>
+    /// Sets isDelayed to true for each float field of the vector.
+    /// </summary>
+    public sealed class DelayedVectorAttribute : PropertyAttribute {}
+
+    /// <summary>
     /// Attribute used by camera pipeline authoring components to indicate
     /// which stage of the pipeline they belong in.
     /// </summary>
