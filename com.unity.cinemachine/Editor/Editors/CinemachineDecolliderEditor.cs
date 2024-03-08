@@ -18,7 +18,6 @@ namespace Unity.Cinemachine.Editor
 
             this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRadius)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PreserveComposition)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Decollision)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TerrainResolution)));
 

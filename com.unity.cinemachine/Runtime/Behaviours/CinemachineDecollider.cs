@@ -23,13 +23,6 @@ namespace Unity.Cinemachine
             + "if necessary to keep the camera from clipping the near edge of obsacles.")]
         public float CameraRadius = 0.1f;
 
-        /// <summary>
-        /// Re-adjust the aim to preserve the screen position
-        /// of the LookAt target as much as possible
-        /// </summary>
-        [Tooltip("Re-adjust the aim to preserve the screen position of the LookAt target as much as possible")]
-        public bool PreserveComposition = true;
-
         /// <summary>Settings for pushing the camera out of intersecting objects</summary>
         [Serializable]
         public struct DecollisionSettings
@@ -103,9 +96,8 @@ namespace Unity.Cinemachine
         void Reset()
         {
             CameraRadius = 0.4f; 
-            PreserveComposition = true;
             TerrainResolution = new () { Enabled = true, TerrainLayers = 1, MaximumRaycast = 10, Damping = 0.5f };
-            Decollision = new () { Enabled = false, ObstacleLayers = 0, Damping = 0.5f };
+            Decollision = new () { Enabled = false, ObstacleLayers = 1, Damping = 0.5f };
         }
         
         /// <summary>Cleanup</summary>
@@ -177,9 +169,9 @@ namespace Unity.Cinemachine
                 var initialCamPos = state.GetCorrectedPosition();
 
                 // Capture lookAt screen offset for composition preservation
-                var preserveLookAt = PreserveComposition && state.HasLookAt();
-                var lookAtPoint = state.HasLookAt() ? state.ReferenceLookAt : state.GetCorrectedPosition();
-                var lookAtScreenOffset = preserveLookAt ? state.RawOrientation.GetCameraRotationToTarget(
+                var hasLookAt = state.HasLookAt();
+                var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                     lookAtPoint - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
                 if (!vcam.PreviousStateIsValid)
@@ -214,7 +206,7 @@ namespace Unity.Cinemachine
                 
                 // Restore screen composition
                 var newCamPos = state.GetCorrectedPosition();
-                if (preserveLookAt && !(initialCamPos - newCamPos).AlmostZero())
+                if (hasLookAt && !(initialCamPos - newCamPos).AlmostZero())
                 {
                     var q = Quaternion.LookRotation(lookAtPoint - newCamPos, up);
                     state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
