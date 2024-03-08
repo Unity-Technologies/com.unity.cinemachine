@@ -58,7 +58,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("The opacity of the image.  0 is transparent, 1 is opaque")]
         [FormerlySerializedAs("m_Alpha")]
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         public float Alpha = 1;
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Wipe the image on and off horizontally
         /// </summary>
-        [RangeSlider(-1, 1)]
+        [Range(-1, 1)]
         [Tooltip("Wipe the image on and off horizontally")]
         [FormerlySerializedAs("m_SplitView")]
         public float SplitView = 0f;
