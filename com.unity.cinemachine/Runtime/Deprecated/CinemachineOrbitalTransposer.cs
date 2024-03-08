@@ -181,7 +181,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Size of the velocity sampling window for target heading filter.
             /// Used only if deriving heading from target's movement</summary>
-            [RangeSlider(0, 10)]
+            [Range(0, 10)]
             [Tooltip("Size of the velocity sampling window for target heading filter.  This filters out "
                 + "irregularities in the target's movement.  Used only if deriving heading from target's "
                 + "movement (PositionDelta or Velocity)")]
@@ -189,7 +189,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Additional Y rotation applied to the target heading.
             /// When this value is 0, the camera will be placed behind the target</summary>
-            [RangeSlider(-180f, 180f)]
+            [Range(-180f, 180f)]
             [FormerlySerializedAs("m_HeadingBias")]
             [Tooltip("Where the camera is placed when the X-axis value is zero.  This is a rotation in "
                 + "degrees around the Y axis.  When this value is 0, the camera will be placed behind "

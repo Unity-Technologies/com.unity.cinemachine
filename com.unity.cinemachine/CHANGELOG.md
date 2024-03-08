@@ -14,10 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 
 ### Changed
-- ThirdPersonFollow sets state.ReferenceUp, to allow usage on arbitrary surfaces without global world up override.
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
-- PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
+- PlayerOnSphere sample script is now PlayerOnSurface - can walk on arbitrary surfaces.
+- FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
 
 ## [3.0.1] - 2023-11-27
 
