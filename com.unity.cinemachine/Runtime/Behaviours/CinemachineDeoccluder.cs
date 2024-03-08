@@ -359,7 +359,7 @@ namespace Unity.Cinemachine
                     var initialCamPos = state.GetCorrectedPosition();
                     var up = state.ReferenceUp;
                     bool hasLookAt = state.HasLookAt();
-                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : initialCamPos;
                     var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                         lookAtPoint - initialCamPos, up) : Vector2.zero;
 
