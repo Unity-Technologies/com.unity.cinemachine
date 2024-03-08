@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
+- Bugfix: StateDriveCamera min activation time was broken.
 
 ### Added
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
