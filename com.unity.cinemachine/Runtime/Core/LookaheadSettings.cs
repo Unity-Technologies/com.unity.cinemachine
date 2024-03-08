@@ -21,14 +21,14 @@ namespace Unity.Cinemachine
             + "Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting "
             + "in undesirable jitter.  If the camera jitters unacceptably when the target is in motion, "
             + "turn down this setting, or animate the target more smoothly.")]
-        [RangeSlider(0f, 1f)]
+        [Range(0f, 1f)]
         public float Time;
 
         /// <summary>Controls the smoothness of the lookahead algorithm.  Larger values smooth out
         /// jittery predictions and also increase prediction lag</summary>
         [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth "
             + "out jittery predictions and also increase prediction lag")]
-        [RangeSlider(0, 30)]
+        [Range(0, 30)]
         public float Smoothing;
 
         /// <summary>If checked, movement along the Y axis will be ignored for lookahead calculations</summary>

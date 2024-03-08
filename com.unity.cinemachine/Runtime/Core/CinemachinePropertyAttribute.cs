@@ -56,6 +56,7 @@ namespace Unity.Cinemachine
     /// <summary>
     /// Property applied to int or float fields to generate a slider in the inspector.
     /// </summary>
+    [Obsolete("Use RangeAttribute instead")]
     public sealed class RangeSliderAttribute : PropertyAttribute 
     { 
         /// <summary>Minimum value for the range slider</summary>

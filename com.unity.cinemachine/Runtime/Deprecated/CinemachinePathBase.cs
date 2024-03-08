@@ -12,7 +12,7 @@ namespace Unity.Cinemachine
     {
         /// <summary>Path samples per waypoint</summary>
         [Tooltip("Path samples per waypoint.  This is used for calculating path distances.")]
-        [RangeSlider(1, 100)]
+        [Range(1, 100)]
         public int m_Resolution = 20;
 
         /// <summary>This class holds the settings that control how the path
@@ -27,7 +27,7 @@ namespace Unity.Cinemachine
             public Color inactivePathColor = Color.gray;
             /// <summary>The width of the railroad-tracks that are drawn to represent the path</summary>
             [Tooltip("The width of the railroad-tracks that are drawn to represent the path")]
-            [RangeSlider(0f, 10f)]
+            [Range(0f, 10f)]
             public float width = 0.2f;
         }
         /// <summary>The settings that control how the path
