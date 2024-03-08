@@ -105,7 +105,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("This defines how the widely signal will spread within the effect radius before "
             + "dissipating with distance from the impact point")]
-        [RangeSlider(0,1)]
+        [Range(0,1)]
         [FormerlySerializedAs("m_DissipationRate")]
         public float DissipationRate;
 

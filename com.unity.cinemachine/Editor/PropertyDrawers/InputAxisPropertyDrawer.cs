@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Editor
     [CustomPropertyDrawer(typeof(InputAxis))]
     class InputAxisWithNamePropertyDrawer : PropertyDrawer
     {
-        InputAxis def = new InputAxis(); // to access name strings
+        InputAxis def = new (); // to access name strings
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
@@ -103,11 +103,14 @@ namespace Unity.Cinemachine.Editor
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
             var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
+            valueField.OnInitialGeometry(() => valueField.Q<FloatField>().isDelayed = true);
             valueLabel.AddPropertyDragger(valueProp, valueField);
 
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
-            foldout.Add(new PropertyField(valueProp));
+            var valueField2 = foldout.AddChild(new PropertyField(valueProp));
+            valueField2.OnInitialGeometry(() => valueField2.Q<FloatField>().isDelayed = true);
+
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
             rangeContainer.Add(new PropertyField(property.FindPropertyRelative(() => def.Range)) { style = { flexGrow = 1 }});
@@ -119,10 +122,7 @@ namespace Unity.Cinemachine.Editor
             var recentering = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
 
             var flagsProp = property.FindPropertyRelative(() => def.Restrictions);
-            TrackFlags(flagsProp);
-            ux.TrackPropertyValue(flagsProp, TrackFlags);
-
-            void TrackFlags(SerializedProperty prop)
+            ux.TrackPropertyWithInitialCallback(flagsProp, (prop) =>
             {
                 if (prop.serializedObject == null)
                     return; // object deleted
@@ -133,7 +133,7 @@ namespace Unity.Cinemachine.Editor
                 recentering.SetVisible((flags & (int)(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.Momentary)) == 0);
                 wrap.SetVisible((flags & (int)InputAxis.RestrictionFlags.Momentary) == 0);
                 wrapLabel.SetVisible((flags & (int)InputAxis.RestrictionFlags.Momentary) == 0);
-            }
+            });
 
             return ux;
         }

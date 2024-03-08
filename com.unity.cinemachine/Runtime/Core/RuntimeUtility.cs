@@ -180,6 +180,7 @@ namespace Unity.Cinemachine
 
         static SphereCollider s_ScratchCollider;
         static GameObject s_ScratchColliderGameObject;
+        static int s_ScratchColliderRefCount;
 
         /// <summary>
         /// This is a hidden sphere collider that won't interfere with the scene and can be used 
@@ -202,6 +203,7 @@ namespace Unity.Cinemachine
                 rb.detectCollisions = false;
                 rb.isKinematic = true;
             }
+            ++s_ScratchColliderRefCount;
             return s_ScratchCollider;
         }
 
@@ -211,7 +213,7 @@ namespace Unity.Cinemachine
         /// </summary>
         public static void DestroyScratchCollider()
         {
-            if (s_ScratchColliderGameObject != null)
+            if (--s_ScratchColliderRefCount == 0)
             {
                 s_ScratchColliderGameObject.SetActive(false);
                 DestroyObject(s_ScratchColliderGameObject.GetComponent<Rigidbody>());

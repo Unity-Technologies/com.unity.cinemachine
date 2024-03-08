@@ -16,16 +16,16 @@ namespace Unity.Cinemachine
 
         [Tooltip("Stickier auto focus is more stable (less switching back and forth as tiny "
             + "grass blades cross the camera), but requires looking at a bigger uniform-ish area to switch focus to it.")]
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         public float Stickiness = 0.4f;
 
         [Tooltip("Radius of the FocusDistance sensor in the center of the screen.  A value of 1 would fill the screen.  "
             + "It's recommended to keep this quite small.  Default value is 0.02")]
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         public float KernelRadius = 0.02f;
 
         [Tooltip("Depth tolerance for inclusion in the same depth bucket.  Effectively the depth resolution.")]
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         public float DepthTolerance = 0.02f;
 
         [Tooltip("Position on the screen of the depth sensor.  (0, 0) is screen center.")]

@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: StateDriveCamera min activation time was broken.
 
 ### Added
+- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
