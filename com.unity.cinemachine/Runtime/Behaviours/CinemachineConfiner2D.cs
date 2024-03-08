@@ -62,7 +62,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Damping applied automatically around corners to avoid jumps.</summary>
         [Tooltip("Damping applied around corners to avoid jumps.  Higher numbers are more gradual.")]
-        [RangeSlider(0, 5)]
+        [Range(0, 5)]
         [FormerlySerializedAs("m_Damping")]
         public float Damping;
 
