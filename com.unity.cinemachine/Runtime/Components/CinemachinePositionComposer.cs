@@ -257,7 +257,7 @@ namespace Unity.Cinemachine
                     delta = delta.ProjectOntoPlane(curState.ReferenceUp);
                 TrackedPoint = followTargetPosition + delta;
             }
-            if (!curState.HasLookAt())
+            if (!curState.HasLookAt() || curState.ReferenceLookAt == FollowTargetPosition)
                 curState.ReferenceLookAt = followTargetPosition;
 
             // Allow undamped camera orientation change

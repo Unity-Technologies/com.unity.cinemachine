@@ -355,8 +355,8 @@ namespace Unity.Cinemachine
                         var dir0 = extra.previousCameraPosition - state.ReferenceLookAt;
                         var dir1 = cameraPos - state.ReferenceLookAt;
                         if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
-                            state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                                dir0, dir1, state.ReferenceUp);
+                            state.RotationDampingBypass = state.RotationDampingBypass 
+                                * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, state.ReferenceUp);
                     }
                     extra.previousDisplacement = displacement;
                     extra.previousCameraOffset = cameraPos - lookAt;
