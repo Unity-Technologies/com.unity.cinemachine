@@ -56,6 +56,7 @@ namespace Unity.Cinemachine
     /// <summary>
     /// Property applied to int or float fields to generate a slider in the inspector.
     /// </summary>
+    [Obsolete("Use RangeAttribute instead")]
     public sealed class RangeSliderAttribute : PropertyAttribute 
     { 
         /// <summary>Minimum value for the range slider</summary>
@@ -114,6 +115,11 @@ namespace Unity.Cinemachine
     /// Used for custom drawing in the inspector.
     /// </summary>
     public sealed class Vector2AsRangeAttribute : PropertyAttribute {}
+
+    /// <summary>
+    /// Sets isDelayed to true for each float field of the vector.
+    /// </summary>
+    public sealed class DelayedVectorAttribute : PropertyAttribute {}
 
     /// <summary>
     /// Attribute used by camera pipeline authoring components to indicate

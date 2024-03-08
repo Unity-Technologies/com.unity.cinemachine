@@ -95,7 +95,7 @@ namespace Unity.Cinemachine
         public float Value;
 
         /// <summary>The centered, or at-rest value of this axis.</summary>
-        [Tooltip("The centered, or at-rest value of this axis.")]
+        [Delayed, Tooltip("The centered, or at-rest value of this axis.")]
         public float Center;
 
         /// <summary>The valid range for the axis value.  Value will be clamped to this range.</summary>

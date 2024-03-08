@@ -34,7 +34,7 @@ namespace Unity.Cinemachine
 
         /// <summary>How aggressively the camera tries to frame the group.
         /// Small numbers are more responsive</summary>
-        [RangeSlider(0, 20)]
+        [Range(0, 20)]
         [Tooltip("How aggressively the camera tries to frame the group. Small numbers are more responsive, "
             + "rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a heavier "
             + "more slowly responding camera.")]
@@ -73,12 +73,12 @@ namespace Unity.Cinemachine
         public float m_MaximumDistance = 5000f;
 
         /// <summary>If adjusting FOV, will not set the FOV lower than this</summary>
-        [RangeSlider(1, 179)]
+        [Range(1, 179)]
         [Tooltip("If adjusting FOV, will not set the FOV lower than this.")]
         public float m_MinimumFOV = 3;
 
         /// <summary>If adjusting FOV, will not set the FOV higher than this</summary>
-        [RangeSlider(1, 179)]
+        [Range(1, 179)]
         [Tooltip("If adjusting FOV, will not set the FOV higher than this.")]
         public float m_MaximumFOV = 60;
 
