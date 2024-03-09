@@ -12,15 +12,9 @@ namespace Unity.Cinemachine.Editor
             var ux = new PropertyField(property);
             ux.OnInitialGeometry(() =>
             {
-                var f = ux.Q<FloatField>("unity-x-input");
-                if (f != null)
-                    f.isDelayed = true;
-                f = ux.Q<FloatField>("unity-y-input");
-                if (f != null)
-                    f.isDelayed = true;
-                f = ux.Q<FloatField>("unity-z-input");
-                if (f != null)
-                    f.isDelayed = true;
+                ux.SafeSetIsDelayed("unity-x-input");
+                ux.SafeSetIsDelayed("unity-y-input");
+                ux.SafeSetIsDelayed("unity-z-input");
             });
             return ux;
         }

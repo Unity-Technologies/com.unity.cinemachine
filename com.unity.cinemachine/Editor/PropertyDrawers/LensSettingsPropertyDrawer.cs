@@ -92,11 +92,11 @@ namespace Unity.Cinemachine.Editor
             var outerFovControl = new FovPropertyControl(property, true) { style = { flexGrow = 1 }};
             ux.Add(new InspectorUtility.FoldoutWithOverlay(
                 foldout, outerFovControl, outerFovControl.ShortLabel) { style = { flexGrow = 1 }});
-            outerFovControl.OnInitialGeometry(() => outerFovControl.Q<FloatField>().isDelayed = true);
+            outerFovControl.OnInitialGeometry(() => outerFovControl.SafeSetIsDelayed());
 
             // Populate the foldout
             var innerFovControl = foldout.AddChild(new FovPropertyControl(property, false) { style = { flexGrow = 1 }});
-            innerFovControl.OnInitialGeometry(() => innerFovControl.Q<FloatField>().isDelayed = true);
+            innerFovControl.OnInitialGeometry(() => innerFovControl.SafeSetIsDelayed());
 
             var nearClip = property.FindPropertyRelative(() => s_Def.NearClipPlane);
             foldout.AddChild(new PropertyField(nearClip)).RegisterValueChangeCallback((evt) =>
