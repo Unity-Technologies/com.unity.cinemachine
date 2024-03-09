@@ -441,12 +441,6 @@ namespace Unity.Cinemachine
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
-                // If the LookAt point and Follow point are not co-incident, there can be
-                // some vertical damping creeping in.  It's impossible at this stage to compute
-                // an apporpriate bypass because we don't know the actual LookAt target (an offset
-                // may later be introduced).
-                // To fix inappropriate vertical damping, the user must put the LookAt and
-                // Follow targets at the same point.
                 curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
                     m_PreviousOffset, offset, curState.ReferenceUp);
             }
