@@ -35,6 +35,22 @@ namespace Unity.Cinemachine
             [Tooltip("Objects on these layers will be detected")]
             public LayerMask ObstacleLayers;
 
+            /// <summary>Settings for resolving towards Follow target instead of LookAt.</summary>
+            [Serializable]
+            public struct FollowTargetSettings
+            {
+                /// <summary>Use the Follow target when resolving occlusions, instead of the LookAt target.</summary>
+                [Tooltip("Use the Follow target when resolving occlusions, instead of the LookAt target.")]
+                public bool Enabled;
+
+                [Tooltip("Vertical offset from the Follow target's root, in target local space")]
+                public float YOffset;
+            }
+            
+            /// <summary>Use the Follow target when resolving occlusions, instead of the LookAt target.</summary>
+            [EnabledProperty]
+            public FollowTargetSettings UseFollowTarget;
+
             /// <summary>
             /// How gradually the camera returns to its normal position after having been corrected.
             /// Higher numbers will move the camera more gradually back to normal.
@@ -169,8 +185,7 @@ namespace Unity.Cinemachine
                 var initialCamPos = state.GetCorrectedPosition();
 
                 // Capture lookAt screen offset for composition preservation
-                var hasLookAt = state.HasLookAt();
-                var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                var hasLookAt = GetLookAtTargetPointForAvoidance(vcam, ref state, out var lookAtPoint);
                 var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                     lookAtPoint - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
@@ -223,6 +238,23 @@ namespace Unity.Cinemachine
             }
         }
 
+        bool GetLookAtTargetPointForAvoidance(
+            CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 lookAtPoint)
+        {
+            var hasLookAt = state.HasLookAt();
+            lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+            if (Decollision.UseFollowTarget.Enabled)
+            {
+                var target = vcam.Follow;
+                if (target != null)
+                {
+                    lookAtPoint = TargetPositionCache.GetTargetPosition(target)
+                        + TargetPositionCache.GetTargetRotation(target) * Vector3.up * Decollision.UseFollowTarget.YOffset;
+                }
+            }
+            return hasLookAt;
+        }
+        
         // Returns distance to move the camera in the up directon to stay on top of terrain
         float ResolveTerrain(VcamExtraState extra, Vector3 camPos, Vector3 up, float deltaTime)
         {
