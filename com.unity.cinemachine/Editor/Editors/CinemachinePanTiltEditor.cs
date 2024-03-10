@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -8,15 +7,14 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachinePanTiltEditor : UnityEditor.Editor
     {
-        CinemachinePanTilt Target => target as CinemachinePanTilt;
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ReferenceFrame)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PanAxis)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TiltAxis)));
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
+
             ux.AddSpace();
             this.AddInputControllerHelp(ux, "PanTilt has no input axis controller behaviour.");
             return ux;

@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -8,13 +7,13 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineSameAsFollowTargetEditor : UnityEditor.Editor
     {
-        CinemachineSameAsFollowTarget Target => target as CinemachineSameAsFollowTarget;
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
     }

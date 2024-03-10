@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -11,28 +10,15 @@ namespace Unity.Cinemachine.Editor
     {
         CinemachineThirdPersonFollow Target => target as CinemachineThirdPersonFollow;
         
-        protected virtual void OnEnable()
-        {
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        }
-
-        protected virtual void OnDisable()
-        {
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
+        protected virtual void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+        protected virtual void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShoulderOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalArmLength)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraSide)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
-#if CINEMACHINE_PHYSICS
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AvoidObstacles)));
-#endif
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
         

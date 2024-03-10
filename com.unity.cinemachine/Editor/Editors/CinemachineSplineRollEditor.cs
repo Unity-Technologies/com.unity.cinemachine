@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEditor.Splines;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Splines;
 using UnityEngine.UIElements;
@@ -11,12 +10,12 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineSplineRollEditor : UnityEditor.Editor
     {
-        CinemachineSplineRoll Target => target as CinemachineSplineRoll;
-        
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Roll)));
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
 

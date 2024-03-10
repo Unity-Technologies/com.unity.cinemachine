@@ -22,13 +22,11 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(autoDollyProp));
             var targetField = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.TrackingTarget)));
 
-            TrackAutoDolly(autoDollyProp);
-            ux.TrackPropertyValue(autoDollyProp, TrackAutoDolly);
-            void TrackAutoDolly(SerializedProperty p) 
+            ux.TrackPropertyWithInitialCallback(autoDollyProp, (p) =>
             {
                 var autodolly = p.FindPropertyRelative("Method").managedReferenceValue as SplineAutoDolly.ISplineAutoDolly;
                 targetField.SetVisible(autodolly != null && autodolly.RequiresTrackingTarget);
-            }
+            });
 
             return ux;
         }

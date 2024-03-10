@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -33,7 +32,9 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.LookAt);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LookAtOffset)));
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
 

@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -10,22 +9,16 @@ namespace Unity.Cinemachine.Editor
     {
         CinemachineFollow Target => target as CinemachineFollow;
 
-        void OnEnable()
-        {
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        }
-        
-        void OnDisable()
-        {
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
+        void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+        void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FollowOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
 
