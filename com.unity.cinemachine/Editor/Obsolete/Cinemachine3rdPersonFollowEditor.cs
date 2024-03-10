@@ -54,7 +54,7 @@ namespace Unity.Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            this.IMGUI_DrawMissingCmCameraHelpBox(CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
             DrawRemainingPropertiesInInspector();
         }
 

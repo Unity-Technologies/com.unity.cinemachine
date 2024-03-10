@@ -23,6 +23,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePositionComposer.html")]
     public class CinemachinePositionComposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping

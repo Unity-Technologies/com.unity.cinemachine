@@ -1,11 +1,10 @@
 using UnityEditor;
-using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineHardLookAt))]
     [CanEditMultipleObjects]
-    class CinemachineHardLookAtEditor : UnityEditor.Editor
+    class CinemachineHardLookAtEditor : CinemachineComponentBaseEditor
     {
         CinemachineHardLookAt Target => target as CinemachineHardLookAt;
 
@@ -26,16 +25,6 @@ namespace Unity.Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
   
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-        }
-        
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.LookAt);
-            var prop = serializedObject.GetIterator();
-            if (prop.NextVisible(true))
-                InspectorUtility.AddRemainingProperties(ux, prop);
-            return ux;
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)

@@ -41,7 +41,7 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.LookAt);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.AddHeader("Composition");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));

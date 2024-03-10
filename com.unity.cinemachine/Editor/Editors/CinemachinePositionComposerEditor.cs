@@ -43,7 +43,7 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.AddHeader("Camera Position");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DeadZoneDepth)));

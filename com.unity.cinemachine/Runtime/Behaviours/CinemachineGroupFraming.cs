@@ -12,6 +12,7 @@ namespace Unity.Cinemachine
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Group Framing")]
     [ExecuteAlways]
     [SaveDuringPlay]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.GroupLookAt)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineGroupFraming.html")]
     public class CinemachineGroupFraming : CinemachineExtension
     {

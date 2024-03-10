@@ -1,41 +1,29 @@
 using UnityEditor;
-using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineFollow))]
     [CanEditMultipleObjects]
-    class CinemachineFollowEditor : UnityEditor.Editor
+    class CinemachineFollowEditor : CinemachineComponentBaseEditor
     {
-        CinemachineFollow Target => target as CinemachineFollow;
-
         void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
 
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            var prop = serializedObject.GetIterator();
-            if (prop.NextVisible(true))
-                InspectorUtility.AddRemainingProperties(ux, prop);
-            return ux;
-        }
-
         void OnSceneGUI()
         {
-            if (Target == null || !Target.IsValid)
+            var follow = target as CinemachineFollow;
+            if (follow == null || !follow.IsValid)
                 return;
             if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
             {
-                var property = new SerializedObject(Target).FindProperty(() => Target.FollowOffset);
-                var up = Target.VirtualCamera.State.ReferenceUp;
+                var property = new SerializedObject(follow).FindProperty(() => follow.FollowOffset);
+                var up = follow.VirtualCamera.State.ReferenceUp;
                 CinemachineSceneToolHelpers.FollowOffsetTool(
-                    Target.VirtualCamera, property, Target.GetDesiredCameraPosition(up),
-                    Target.FollowTargetPosition, Target.GetReferenceOrientation(up), () =>
+                    follow.VirtualCamera, property, follow.GetDesiredCameraPosition(up),
+                    follow.FollowTargetPosition, follow.GetReferenceOrientation(up), () =>
                     {
                         // Sanitize the offset
-                        property.vector3Value = Target.EffectiveOffset;
+                        property.vector3Value = follow.EffectiveOffset;
                         property.serializedObject.ApplyModifiedProperties();
                     });
             }

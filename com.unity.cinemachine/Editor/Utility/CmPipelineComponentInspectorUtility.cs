@@ -13,8 +13,6 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     static class CmPipelineComponentInspectorUtility
     {
-        public enum RequiredTargets { None, Tracking, LookAt, GroupLookAt };
-
         const string k_NeedTarget = "A Tracking Target is required in the CinemachineCamera.";
         const string k_NeedLookAt = "A LookAt Target is required in the CinemachineCamera.";
         const string k_NeedGroupTarget = "The Tracking Target in the CinemachineCamera must be a Target Group.";
@@ -27,9 +25,14 @@ namespace Unity.Cinemachine.Editor
         /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
         /// prompting to solve a missing CinemachineCamera component or a missing tracking target
         /// </summary>
-        public static void AddMissingCmCameraHelpBox(
-            this UnityEditor.Editor editor, VisualElement ux, RequiredTargets requiredTargets = RequiredTargets.None)
+        public static void AddMissingCmCameraHelpBox(this UnityEditor.Editor editor, VisualElement ux)
         {
+            // Look for a RequiredTargetAttribute
+            var requiredTargets = RequiredTargetAttribute.RequiredTargets.None;
+            var a = editor.target.GetType().GetCustomAttribute<RequiredTargetAttribute>();
+            if (a != null)
+                requiredTargets = a.RequiredTarget;
+
             var targets = editor.targets;
             var noCameraHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 k_NeedCamera, HelpBoxMessageType.Warning,
@@ -39,9 +42,9 @@ namespace Unity.Cinemachine.Editor
             var lookAtText = string.Empty;
             switch (requiredTargets)
             {
-                case RequiredTargets.Tracking: targetText = k_NeedTarget; break;
-                case RequiredTargets.LookAt: targetText = k_NeedTarget; lookAtText = k_NeedLookAt; break;
-                case RequiredTargets.GroupLookAt: targetText = k_NeedGroupTarget; lookAtText = k_NeedGroupLookAt; break;
+                case RequiredTargetAttribute.RequiredTargets.Tracking: targetText = k_NeedTarget; break;
+                case RequiredTargetAttribute.RequiredTargets.LookAt: targetText = k_NeedTarget; lookAtText = k_NeedLookAt; break;
+                case RequiredTargetAttribute.RequiredTargets.GroupLookAt: targetText = k_NeedGroupTarget; lookAtText = k_NeedGroupLookAt; break;
             }
             var noTargetHelp = targetText.Length > 0 ? ux.AddChild(new HelpBox(targetText, HelpBoxMessageType.Warning)) : null;
             var noLookAtHelp = lookAtText.Length > 0 ? ux.AddChild(new HelpBox(lookAtText, HelpBoxMessageType.Warning)) : null;
@@ -67,9 +70,9 @@ namespace Unity.Cinemachine.Editor
                             vcam.UpdateTargetCache();
                         switch (requiredTargets)
                         {
-                            case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
-                            case RequiredTargets.LookAt: noLookAtTarget |= c.LookAtTarget == null; break;
-                            case RequiredTargets.GroupLookAt: 
+                            case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
+                            case RequiredTargetAttribute.RequiredTargets.LookAt: noLookAtTarget |= c.LookAtTarget == null; break;
+                            case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
                                 noLookAtTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                         }
                         if (vcam != null && vcam.GetCinemachineComponent(c.Stage) != c)
@@ -84,9 +87,9 @@ namespace Unity.Cinemachine.Editor
                             vcam.UpdateTargetCache();
                             switch (requiredTargets)
                             {
-                                case RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
-                                case RequiredTargets.LookAt: noLookAtTarget |= vcam.LookAt == null; break;
-                                case RequiredTargets.GroupLookAt: 
+                                case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
+                                case RequiredTargetAttribute.RequiredTargets.LookAt: noLookAtTarget |= vcam.LookAt == null; break;
+                                case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
                                     noLookAtTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
                             }
                         }
@@ -267,9 +270,14 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// IMGUI support - to be removed when IMGUI is gone
-        public static void IMGUI_DrawMissingCmCameraHelpBox(
-            this UnityEditor.Editor editor, RequiredTargets requiredTargets = RequiredTargets.None)
+        public static void IMGUI_DrawMissingCmCameraHelpBox(this UnityEditor.Editor editor)
         {
+            // Look for a RequiredTargetAttribute
+            var requiredTargets = RequiredTargetAttribute.RequiredTargets.None;
+            var a = editor.target.GetType().GetCustomAttribute<RequiredTargetAttribute>();
+            if (a != null)
+                requiredTargets = a.RequiredTarget;
+                
             bool noCamera = false;
             bool noTarget = false;
             var targets = editor.targets;
@@ -283,9 +291,9 @@ namespace Unity.Cinemachine.Editor
                         vcam.UpdateTargetCache();
                     switch (requiredTargets)
                     {
-                        case RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
-                        case RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                        case RequiredTargets.GroupLookAt: 
+                        case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
+                        case RequiredTargetAttribute.RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
+                        case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
                             noTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                     }
                 }
@@ -298,9 +306,9 @@ namespace Unity.Cinemachine.Editor
                         vcam.UpdateTargetCache();
                         switch (requiredTargets)
                         {
-                            case RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
-                            case RequiredTargets.LookAt: noTarget |= vcam.LookAt == null; break;
-                            case RequiredTargets.GroupLookAt: 
+                            case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
+                            case RequiredTargetAttribute.RequiredTargets.LookAt: noTarget |= vcam.LookAt == null; break;
+                            case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
                                 noTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
                         }
                     }
@@ -318,9 +326,9 @@ namespace Unity.Cinemachine.Editor
                 var text = string.Empty;
                 switch (requiredTargets)
                 {
-                    case RequiredTargets.Tracking: text = k_NeedTarget; break;
-                    case RequiredTargets.LookAt: text = k_NeedLookAt; break;
-                    case RequiredTargets.GroupLookAt: text = k_NeedGroupLookAt; break;
+                    case RequiredTargetAttribute.RequiredTargets.Tracking: text = k_NeedTarget; break;
+                    case RequiredTargetAttribute.RequiredTargets.LookAt: text = k_NeedLookAt; break;
+                    case RequiredTargetAttribute.RequiredTargets.GroupLookAt: text = k_NeedGroupLookAt; break;
                 }
                 if (text.Length > 0)
                     EditorGUILayout.HelpBox(text, MessageType.Warning);
