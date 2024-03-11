@@ -408,7 +408,9 @@ namespace Unity.Cinemachine
 
             Vector3 offset = GetCameraPoint();
 
-            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
+            var gotInputX = HorizontalAxis.TrackValueChange();
+            var gotInputY = VerticalAxis.TrackValueChange();
+            var gotInputZ = RadialAxis.TrackValueChange();
             if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
                 HorizontalAxis.SetValueAndLastValue(0);
 
@@ -449,9 +451,9 @@ namespace Unity.Cinemachine
             if (HorizontalAxis.Recentering.Enabled)
                 UpdateHorizontalCenter(orient);
 
-            HorizontalAxis.UpdateRecentering(deltaTime, gotInput);
-            VerticalAxis.UpdateRecentering(deltaTime, gotInput);
-            RadialAxis.UpdateRecentering(deltaTime, gotInput);
+            HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
+            VerticalAxis.UpdateRecentering(deltaTime, gotInputY);
+            RadialAxis.UpdateRecentering(deltaTime, gotInputZ);
         }
 
         void UpdateHorizontalCenter(Quaternion referenceOrientation) 
