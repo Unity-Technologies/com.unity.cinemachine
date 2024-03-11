@@ -1,14 +1,12 @@
 using UnityEditor;
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineRotationComposer))]
     [CanEditMultipleObjects]
-    class CinemachineRotationComposerEditor : UnityEditor.Editor
+    class CinemachineRotationComposerEditor : CinemachineComponentBaseEditor
     {
-        GameViewComposerGuides m_GameViewGuides = new();
+        readonly GameViewComposerGuides m_GameViewGuides = new();
 
         CinemachineRotationComposer Target => target as CinemachineRotationComposer;
 
@@ -35,22 +33,6 @@ namespace Unity.Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
   
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-        }
-
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-
-            this.AddMissingCmCameraHelpBox(ux);
-            ux.AddHeader("Composition");
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
-            ux.AddHeader("Target Tracking");
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
-
-            return ux;
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)
