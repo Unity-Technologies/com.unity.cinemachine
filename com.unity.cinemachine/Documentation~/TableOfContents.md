@@ -15,7 +15,7 @@
                 * [None](CinemachineAimDoNothing.md)
                 * [Rotation Composer](CinemachineRotationComposer.md)
                 * [Pan Tilt](CinemachinePanTilt.md)
-                * [Same As Follow Target](CinemachineSameAsFollowTarget.md)
+                * [Rotate With Follow Target](CinemachineRotateWithFollowTarget.md)
                 * [Hard Look At](CinemachineHardLookAt.md)
             * [Noise](CinemachineBasicMultiChannelPerlin.md)
                 * [Working with noise profiles](CinemachineNoiseProfiles.md)

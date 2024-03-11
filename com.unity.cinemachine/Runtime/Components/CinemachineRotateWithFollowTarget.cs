@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
@@ -8,19 +6,17 @@ namespace Unity.Cinemachine
     /// This is a CinemachineComponent in the Aim section of the component pipeline.
     /// Its job is to match the orientation of the Follow target.
     /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Same As Follow Target")]
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Rotate With Follow Target")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineSameAsFollowTarget.html")]
-    public class CinemachineSameAsFollowTarget : CinemachineComponentBase
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineRotateWithFollowTarget.html")]
+    public class CinemachineRotateWithFollowTarget : CinemachineComponentBase
     {
         /// <summary>
         /// How much time it takes for the aim to catch up to the target's rotation
         /// </summary>
         [Tooltip("How much time it takes for the aim to catch up to the target's rotation")]
-        [FormerlySerializedAs("m_AngularDamping")]
-        [FormerlySerializedAs("m_Damping")]
         public float Damping = 0;
 
         Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
