@@ -138,8 +138,18 @@ namespace Unity.Cinemachine
                         rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
             
-            PanAxis.UpdateRecentering(deltaTime, PanAxis.TrackValueChange());
-            TiltAxis.UpdateRecentering(deltaTime, TiltAxis.TrackValueChange());
+            var gotInputX = PanAxis.TrackValueChange();
+            var gotInputY = TiltAxis.TrackValueChange();
+
+            // Sync recentering if the recenter times match
+            if (PanAxis.Recentering.Time == TiltAxis.Recentering.Time)
+            {
+                gotInputX |= gotInputY;
+                gotInputY |= gotInputX;
+            }
+
+            PanAxis.UpdateRecentering(deltaTime, gotInputX);
+            TiltAxis.UpdateRecentering(deltaTime, gotInputY);
         }
 
         /// <summary>
