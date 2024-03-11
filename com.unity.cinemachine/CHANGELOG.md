@@ -9,19 +9,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
 - Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
-- Bugfix: StateDriveCamera min activation time was broken.
+- Bugfix: StateDrivenCamera min activation time was broken.
 
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
-- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
+- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- Added StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
+- Added FlyAround sample scene showing a simple fly-around camera.
 
 ### Changed
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
-- PlayerOnSphere sample script is now PlayerOnSurface - can walk on arbitrary surfaces.
+- PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
+- Axis recentering happens independently on axes, so that input on one axis does not impact the recentering state of the others.
 - FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
 - Deoccluder evaluates shots in the Finalize stage instead of Aim.
+
 
 ## [3.0.1] - 2023-11-27
 
