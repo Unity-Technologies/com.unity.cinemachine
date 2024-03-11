@@ -33,7 +33,7 @@ namespace Unity.Cinemachine
         /// <summary>How much of the screen to fill with the bounding box of the targets.</summary>
         [Tooltip("The bounding box of the targets should occupy this amount of the screen space.  "
             + "1 means fill the whole screen.  0.5 means fill half the screen, etc.")]
-        [RangeSlider(0, 2)]
+        [Range(0, 2)]
         public float FramingSize = 0.8f;
 
         /// <summary>A nonzero value will offset the group in the camera frame.</summary>
@@ -42,7 +42,7 @@ namespace Unity.Cinemachine
 
         /// <summary>How aggressively the camera tries to frame the group.
         /// Small numbers are more responsive</summary>
-        [RangeSlider(0, 20)]
+        [Range(0, 20)]
         [Tooltip("How aggressively the camera tries to frame the group. Small numbers are more responsive, "
             + "rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a heavier "
             + "more slowly responding camera.")]
@@ -101,9 +101,8 @@ namespace Unity.Cinemachine
             FramingSize = Mathf.Max(k_MinimumGroupSize, FramingSize);
             Damping = Mathf.Max(0, Damping);
             DollyRange.y = Mathf.Max(DollyRange.x, DollyRange.y);
-            FovRange.x = Mathf.Clamp(FovRange.x, 1, 179);
-            FovRange.y = Mathf.Max(FovRange.x, FovRange.y);
             FovRange.y = Mathf.Clamp(FovRange.y, 1, 179);
+            FovRange.x = Mathf.Clamp(FovRange.x, 1, FovRange.y);
             OrthoSizeRange.x = Mathf.Max(0.01f, OrthoSizeRange.x);
             OrthoSizeRange.y = Mathf.Max(OrthoSizeRange.x, OrthoSizeRange.y);
         }

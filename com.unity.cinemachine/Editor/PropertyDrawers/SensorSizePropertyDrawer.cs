@@ -77,7 +77,7 @@ namespace Unity.Cinemachine.Editor
                 // Find matching preset (if any)
                 var index = s_PresetSizes.FindIndex(
                     e => Mathf.Approximately(v.x, e.x) && Mathf.Approximately(v.y, e.y));
-                presets.SetValueWithoutNotify(index >= 0 ? s_PresetNames[index] : "");
+                presets.SetValueWithoutNotify(index >= 0 ? s_PresetNames[index] : "Custom");
             });
             
             return row;
