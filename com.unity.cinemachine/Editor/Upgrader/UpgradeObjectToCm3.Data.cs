@@ -276,6 +276,18 @@ namespace Unity.Cinemachine.Editor
                     { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
                 }
             },
+            {
+                typeof(CinemachineTrackedDolly), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "PathPosition", new("SplineSettings.Position", typeof(CinemachineSplineDolly)) }
+                }
+            },
+            {
+                typeof(CinemachineDollyCart), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "SplinePosition", new("SplineSettings.Position", typeof(CinemachineSplineCart)) }
+                }
+            },
 #if CINEMACHINE_PHYSICS
             {
                 typeof(CinemachineCollider), new Dictionary<string, Tuple<string, Type>>
