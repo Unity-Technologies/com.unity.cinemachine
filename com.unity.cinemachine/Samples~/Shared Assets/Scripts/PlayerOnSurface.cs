@@ -1,13 +1,13 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// This script keeps a player upright on surfaces.
-    /// It rotates the player to match the surface normal.
-    /// Player is expected to NOT have a collider on it.  To support a player with a collider,
-    /// the raycasts would have to be modified to exclude the player's collider.
+    /// It rotates the player up to match the surface normal.
     /// This script assumes that the pivot point of the player is at the bottom.
     /// </summary>
     public class PlayerOnSurface : MonoBehaviour
@@ -20,15 +20,29 @@ namespace Unity.Cinemachine.Samples
         public float MaxRaycastDistance = 5;
         [Tooltip("The approximate height of the player.  Used to compute where raycasts begin")]
         public float PlayerHeight = 1;
-        [Tooltip("If true, then the camera up can influence player rotation when in free fall")]
-        public bool CameraControlsFreeFall = false;
 
-        Vector3 m_PreviousGround;
-        Vector3 m_CameraSpaceUp;
+        [Tooltip("If enabled, then player will fall towards the nearest surface when in free fall")]
+        public bool FreeFallRecovery;
+
+        [Header("Events")]
+        [Tooltip("This event is sent when the player moves from one surface to another.")]
+        public UnityEvent<Collider> SurfaceChanged = new ();
+
+        Vector3 m_PreviousGroundPoint;
         Vector3 m_PreviousPosition;
+        Collider m_CurrentSurface;
+        float m_FreeFallRaycastAngle = 0;
 
         public bool PreviousSateIsValid { get; set; }
-        private void OnEnable() => PreviousSateIsValid = false;
+        
+        void OnEnable() => PreviousSateIsValid = false;
+
+        void OnValidate()
+        {
+            RotationDamping = Mathf.Max(0, RotationDamping);
+            MaxRaycastDistance = Mathf.Max(PlayerHeight * 0.5f, MaxRaycastDistance);
+            PlayerHeight = Mathf.Max(0, PlayerHeight);
+        }
 
         // Rotate the player to match the normal of the surface it's standing on
         void LateUpdate()
@@ -37,49 +51,71 @@ namespace Unity.Cinemachine.Samples
             var desiredUp = tr.up;
             var down = -desiredUp;
             var damping = RotationDamping;
-            var cam = CameraControlsFreeFall ? Camera.main.transform : null;
 
             var originOffset = 0.25f * PlayerHeight * desiredUp;
             var downRaycastOrigin = tr.position + originOffset;
             var fwdRaycastOrigin = tr.position + 2 * originOffset;
+            var playerRadius = 0.25f * PlayerHeight; // Approximate player radius - can convert to a parameter if needed
+
+            if (!PreviousSateIsValid)
+            {
+                m_PreviousPosition = fwdRaycastOrigin;
+                m_PreviousGroundPoint = downRaycastOrigin;
+            }
+
+            // Find the direction of motion and speed
+            var motionDir = fwdRaycastOrigin - m_PreviousPosition;
+            var motionLen = motionDir.magnitude;
+            if (motionLen < 0.0001f)
+                motionDir = tr.forward;
+            else
+                motionDir /= motionLen;
 
             // Check whether we have walked into a surface
             bool haveHit = false;
-            if (PreviousSateIsValid)
-            {
-                var dir = fwdRaycastOrigin - m_PreviousPosition;
-                var dirLen = dir.magnitude;
-                if (dirLen > 0.0001f && Physics.Raycast(m_PreviousPosition, dir, out var ht, 
-                    dirLen + 0.5f * PlayerHeight, GroundLayers, QueryTriggerInteraction.Ignore))
-                {
-                    haveHit = true;
-                    desiredUp = CaptureUpDirection(ht, cam);
-                }
-            }
-            m_PreviousPosition = fwdRaycastOrigin;
-            PreviousSateIsValid = true;
-
-            // Find the ground under our feet
-            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out var hit, 
-                MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(m_PreviousPosition, motionDir, out var hit, 
+                motionLen + playerRadius, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
-                desiredUp = CaptureUpDirection(hit, cam);
+                desiredUp = CaptureUpDirection(hit);
+            }
+
+            var raycastLength = Mathf.Max(MaxRaycastDistance, PreviousSateIsValid 
+                ? (m_PreviousGroundPoint - downRaycastOrigin).magnitude + PlayerHeight : MaxRaycastDistance);
+            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out hit, 
+                raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
+            {
+                haveHit = true;
+                desiredUp = CaptureUpDirection(hit);
             }
 
             // If nothing is directly under our feet, try to find a surface in the direction
             // where we came from.  This handles the case of sudden convex direction changes in the floor
             // (e.g. going around the lip of a surface)
-            if (!haveHit && Physics.Raycast(downRaycastOrigin, m_PreviousGround - downRaycastOrigin, out hit, 
-                MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
+            if (!haveHit && PreviousSateIsValid 
+                && Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit, 
+                    MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
-                desiredUp = SmoothedNormal(hit);
+                desiredUp = CaptureUpDirection(hit);
             }
 
-            // If we're in free fall, optionally allow the camera direction to influence which way is up
-            if (!haveHit && cam != null)
-                desiredUp = cam.TransformDirection(m_CameraSpaceUp);
+            // If we don't have a hit by now, we're in free fall
+            if (haveHit)
+                m_FreeFallRaycastAngle = 0;
+            else
+            {
+                SetCurrentSurface(null);
+                if (FreeFallRecovery 
+                    && Vector3.Dot(motionDir, desiredUp) <= 0
+                    && FindNearestSurface(downRaycastOrigin, raycastLength, out var surfacePoint))
+                {
+                    desiredUp = (downRaycastOrigin - surfacePoint).normalized;
+                    damping = 0;
+                    if (!PreviousSateIsValid)
+                        m_PreviousGroundPoint = downRaycastOrigin - motionDir;
+                }
+            }
 
             // Rotate to match the desired up direction
             float t = Damper.Damp(1, damping, Time.deltaTime);
@@ -94,22 +130,62 @@ namespace Unity.Cinemachine.Samples
                 var rot = Quaternion.Slerp(Quaternion.identity, Quaternion.AngleAxis(angle, axis), t);
                 tr.rotation = rot * tr.rotation;
             }
+
+            m_PreviousPosition = fwdRaycastOrigin;
+            PreviousSateIsValid = true;
         }
 
-        Vector3 CaptureUpDirection(RaycastHit hit, Transform cam)
+        Vector3 CaptureUpDirection(RaycastHit hit)
         {
-            var desiredUp = SmoothedNormal(hit);
+            m_PreviousGroundPoint = hit.point; // Capture the last point where there was ground under our feet
+            SetCurrentSurface(hit.collider); // Capture the current ground surface
+            return SmoothedNormal(hit);
+        }
 
-            // Capture the last point where there was ground under our feet
-            m_PreviousGround = hit.point;
+        void SetCurrentSurface(Collider surface)
+        {
+            // If the surface has changed, send an event
+            if (surface != m_CurrentSurface)
+            {
+                m_CurrentSurface = surface;
+                SurfaceChanged.Invoke(m_CurrentSurface);
+            }
+        }
 
-            // While things are stable, capture the camera space up vector in camera space.
-            // We use this later in free-fall, to allow the camera to influence which way is up.
-            m_CameraSpaceUp = desiredUp;
-            if (cam != null)
-                m_CameraSpaceUp = cam.InverseTransformDirection(desiredUp);
+        bool FindNearestSurface(Vector3 playerPos, float raycastLength, out Vector3 surfacePoint)
+        {
+            surfacePoint = playerPos - transform.up; // default is to continue falling down
 
-            return desiredUp;
+            // Starting at the bottom, we'll spread out a number of horizontal sweeps over several frames
+            const float kVerticalStep = 10.0f;
+            if (m_FreeFallRaycastAngle == 0 || m_FreeFallRaycastAngle > 180 - kVerticalStep)
+                m_FreeFallRaycastAngle = kVerticalStep / 2 + Time.frameCount % kVerticalStep;
+            else
+                m_FreeFallRaycastAngle += kVerticalStep;
+
+            // We'll do a horizontal sweep at this angle to find the nearest surface 
+            var up = transform.up;
+            var dir = Quaternion.AngleAxis(m_FreeFallRaycastAngle, transform.right) * -up;
+            const float kHorizontalalSteps = 12;
+            const float kHorizontalStepSize = 360.0f / kHorizontalalSteps;
+            dir = Quaternion.AngleAxis(Time.frameCount % (int)kHorizontalStepSize, -up) * dir;
+
+            float nearestDistance = float.MaxValue;
+            var rotStep = Quaternion.AngleAxis(kHorizontalStepSize, -up);
+            for (int i = 0; i < kHorizontalalSteps; ++i, dir = rotStep * dir)
+            {
+                //Debug.DrawLine(playerPos, playerPos + dir * raycastLength, Color.yellow, 1);
+                if (Physics.Raycast(playerPos, dir, out var hit, 
+                    raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
+                {
+                    if (hit.distance < nearestDistance)
+                    {
+                        nearestDistance = hit.distance;
+                        surfacePoint = hit.point;
+                    }
+                }
+            }
+            return nearestDistance != float.MaxValue;
         }
 
         // This code smooths the normals of a mesh so that they don't change abruptly.

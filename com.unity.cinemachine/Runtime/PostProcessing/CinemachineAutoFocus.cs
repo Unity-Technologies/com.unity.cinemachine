@@ -71,7 +71,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.  "
             + "It's recommended to keep this quite small.  Default value is 0.02")]
-        [RangeSlider(0, 0.1f)]
+        [Range(0, 0.1f)]
         public float AutoDetectionRadius;
 
         CustomPassVolume m_CustomPassVolume;

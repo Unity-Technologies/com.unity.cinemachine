@@ -132,9 +132,10 @@ namespace Unity.Cinemachine
             curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
-                curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                    m_PreviousCameraRotation * Vector3.forward, 
-                    rot * Vector3.forward, curState.ReferenceUp);
+                curState.RotationDampingBypass = curState.RotationDampingBypass 
+                    * UnityVectorExtensions.SafeFromToRotation(
+                        m_PreviousCameraRotation * Vector3.forward, 
+                        rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
             
             PanAxis.UpdateRecentering(deltaTime, PanAxis.TrackValueChange());
