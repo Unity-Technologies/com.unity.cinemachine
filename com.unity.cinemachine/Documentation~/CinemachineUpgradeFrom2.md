@@ -51,6 +51,7 @@ Old components have been replaced by new components. These are not renames, they
 - CinemachineCollider is replaced by [CinemachineDeoccluder](CinemachineDeoccluder.md)
 - CinemachineConfiner is replaced by [CinemachineConfiner2D](CinemachineConfiner2D.md) and [CinemachineConfiner3D](CinemachineConfiner3D.md)
 - Cinemachine3rdPersonFollow is replaced by [CinemachineThirdPersonFollow](CinemachineThirdPersonFollow.md).
+- CinemachineSameAsFollowTarget is replaced by [CinemachineRotateWithFollowTarget](CinemachineRotateWithFollowTarget.md).
 
 ### Renamed Components
 

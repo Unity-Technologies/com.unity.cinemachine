@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
 - Axis recentering happens independently on axes, so that input on one axis does not impact the recentering state of the others.
 - FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
+- Replaced SameAsFollowTarget with RotateWithFollowTarget (SameAsFollowTarget still exists but is deprecated).
 
 
 ## [3.0.1] - 2023-11-27
