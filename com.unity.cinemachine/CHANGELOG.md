@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 
 ### Changed
+- SplineDolly and SplineCart: position on spline is preserved when units change.
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
 - PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
