@@ -514,8 +514,8 @@ namespace Unity.Cinemachine
                     var dir0 = m_LastCameraPosition - lookAt;
                     var dir1 = curState.RawPosition - lookAt;
                     if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
-                        curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                            dir0, dir1, curState.ReferenceUp);
+                        curState.RotationDampingBypass = curState.RotationDampingBypass 
+                            * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, curState.ReferenceUp);
                 }
                 m_LastTargetPosition = targetPosition;
                 m_LastCameraPosition = curState.RawPosition;

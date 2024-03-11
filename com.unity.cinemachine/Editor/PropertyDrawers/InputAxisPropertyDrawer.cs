@@ -103,13 +103,13 @@ namespace Unity.Cinemachine.Editor
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
             var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
-            valueField.OnInitialGeometry(() => valueField.Q<FloatField>().isDelayed = true);
+            valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
             valueLabel.AddPropertyDragger(valueProp, valueField);
 
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
             var valueField2 = foldout.AddChild(new PropertyField(valueProp));
-            valueField2.OnInitialGeometry(() => valueField2.Q<FloatField>().isDelayed = true);
+            valueField2.OnInitialGeometry(() => valueField2.SafeSetIsDelayed());
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});

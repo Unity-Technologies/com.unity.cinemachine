@@ -487,6 +487,24 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
+        /// Tries to set isDelayed of a FloatField, IntField, or TextField child, if it exists.
+        /// </summary>
+        /// <param name="e">Parent widget</param>
+        /// <param name="name">name of child (or null)</param>
+        public static void SafeSetIsDelayed(this VisualElement e, string name = null) 
+        {
+            var f = e.Q<FloatField>(name);
+            if (f != null)
+                f.isDelayed = true;
+            var i = e.Q<IntegerField>(name);
+            if (i != null)
+                i.isDelayed = true;
+            var t = e.Q<TextField>(name);
+            if (t != null)
+                t.isDelayed = true;
+        }
+
+        /// <summary>
         /// Draw a bold header in the inspector - hack to get around missing UITK functionality
         /// </summary>
         /// <param name="ux">Container in which to put the header</param>

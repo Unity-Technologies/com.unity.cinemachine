@@ -61,8 +61,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.OnInitialGeometry(() =>
             {
-                minField.Q<FloatField>().isDelayed = true;
-                maxField.Q<FloatField>().isDelayed = true;
+                minField.SafeSetIsDelayed();
+                maxField.SafeSetIsDelayed();
             });
 
             label.AddPropertyDragger(xProp, minField);

@@ -155,9 +155,8 @@ namespace Unity.Cinemachine.Samples
                     break;
                 }
             }
-            var gotInput = VerticalLook.TrackValueChange() | HorizontalLook.TrackValueChange();
-            VerticalLook.UpdateRecentering(Time.deltaTime, gotInput);
-            HorizontalLook.UpdateRecentering(Time.deltaTime, gotInput);
+            VerticalLook.UpdateRecentering(Time.deltaTime, VerticalLook.TrackValueChange());
+            HorizontalLook.UpdateRecentering(Time.deltaTime, HorizontalLook.TrackValueChange());
         }
 
         // Callback for player controller to update our rotation after it has updated its own.

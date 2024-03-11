@@ -408,7 +408,9 @@ namespace Unity.Cinemachine
 
             Vector3 offset = GetCameraPoint();
 
-            var gotInput = HorizontalAxis.TrackValueChange() | HorizontalAxis.TrackValueChange() | RadialAxis.TrackValueChange();
+            var gotInputX = HorizontalAxis.TrackValueChange();
+            var gotInputY = VerticalAxis.TrackValueChange();
+            var gotInputZ = RadialAxis.TrackValueChange();
             if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
                 HorizontalAxis.SetValueAndLastValue(0);
 
@@ -429,6 +431,15 @@ namespace Unity.Cinemachine
             TrackedPoint = pos;
             curState.RawPosition = pos + offset;
 
+            // Compute the rotation bypass for the lookat target
+            if (curState.HasLookAt())
+            {
+                // Handle the common case where lookAt and follow targets are not the same point.
+                // If we don't do this, we can get inappropriate vertical damping when offset changes.
+                var lookAtOfset = orient 
+                    * (curState.ReferenceLookAt - (FollowTargetPosition + FollowTargetRotation * TargetOffset));
+                offset = curState.RawPosition - (pos + lookAtOfset);
+            }
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
@@ -440,9 +451,9 @@ namespace Unity.Cinemachine
             if (HorizontalAxis.Recentering.Enabled)
                 UpdateHorizontalCenter(orient);
 
-            HorizontalAxis.UpdateRecentering(deltaTime, gotInput);
-            VerticalAxis.UpdateRecentering(deltaTime, gotInput);
-            RadialAxis.UpdateRecentering(deltaTime, gotInput);
+            HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
+            VerticalAxis.UpdateRecentering(deltaTime, gotInputY);
+            RadialAxis.UpdateRecentering(deltaTime, gotInputZ);
         }
 
         void UpdateHorizontalCenter(Quaternion referenceOrientation) 
