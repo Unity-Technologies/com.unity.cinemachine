@@ -41,7 +41,23 @@ Add an **Extension** to augment the behavior of a Cinemachine Camera for more sp
 
 For example, the [Deoccluder](CinemachineDeoccluder.md) extension moves a camera out of the way of GameObjects that obstruct the camera’s view of its target.
 
-See the [Reference](Reference.md) to get the list of all available Cinemachine Camera Extensions and access their detailed descriptions.
+Here is the list of all available Cinemachine Camera Extensions:
+
+  * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
+  * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
+  * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
+  * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
+  * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
+  * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)
+  * [Cinemachine Group Framing](CinemachineGroupFraming.md)
+  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md) <!---/!\ Not found in Editor--->
+  * [Cinemachine Post Processing](CinemachinePostProcessing.md) <!---/!\ Deprecated in latest supported Editor version--->
+  * [Cinemachine Recomposer](CinemachineRecomposer.md)
+  * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
+  * [Cinemachine Storyboard](CinemachineStoryboard.md)
+  * [Cinemachine Third Person Aim](CinemachineThirdPersonAim.md)
+  * [Cinemachine Volume Settings](CinemachineVolumeSettings.md)
+  <!---* Cinemachine Camera Offset (component/extension, missing in docs)--->
 
 
 ## Target GameObject tracking

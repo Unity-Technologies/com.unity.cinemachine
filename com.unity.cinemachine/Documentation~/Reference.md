@@ -33,7 +33,7 @@ Here is a list of all components and assets available in the Cinemachine package
 * Target grouping
   * [Cinemachine Target Group](CinemachineTargetGroup.md)
   <!---* Cinemachine Group Weight Manipulator (component, missing in docs)--->
-* Camera grouping
+* Cinemachine Camera groups
   * [Cinemachine Clear Shot](CinemachineClearShot.md)
   * [Cinemachine Mixing Camera](CinemachineMixingCamera.md)
   * [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md)
@@ -51,9 +51,10 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
   * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)
   * [Cinemachine Group Framing](CinemachineGroupFraming.md)
-  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md)<!---/!\ Not found in Editor--->
-  * [Cinemachine Post Processing](CinemachinePostProcessing.md)<!---/!\ Deprecated in latest supported Editor version--->
+  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md) <!---/!\ Not found in Editor--->
+  * [Cinemachine Post Processing](CinemachinePostProcessing.md) <!---/!\ Deprecated in latest supported Editor version--->
   * [Cinemachine Recomposer](CinemachineRecomposer.md)
+  * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
   * [Cinemachine Storyboard](CinemachineStoryboard.md)
   * [Cinemachine Third Person Aim](CinemachineThirdPersonAim.md)
   * [Cinemachine Volume Settings](CinemachineVolumeSettings.md)
