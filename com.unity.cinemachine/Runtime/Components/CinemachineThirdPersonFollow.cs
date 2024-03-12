@@ -44,7 +44,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Specifies which shoulder (left, right, or in-between) the camera is on.</summary>
         [Tooltip("Specifies which shoulder (left, right, or in-between) the camera is on")]
-        [RangeSlider(0, 1)]
+        [Range(0, 1)]
         public float CameraSide;
 
         /// <summary>How far behind the hand the camera will be placed.</summary>
@@ -80,14 +80,14 @@ namespace Unity.Cinemachine
             /// Specifies how close the camera can get to obstacles
             /// </summary>
             [Tooltip("Specifies how close the camera can get to obstacles")]
-            [RangeSlider(0, 1)]
+            [Range(0, 1)]
             public float CameraRadius;
         
             /// <summary>
             /// How gradually the camera moves to correct for occlusions.  
             /// Higher numbers will move the camera more gradually.
             /// </summary>
-            [RangeSlider(0, 10)]
+            [Range(0, 10)]
             [Tooltip("How gradually the camera moves to correct for occlusions.  " +
                 "Higher numbers will move the camera more gradually.")]
             public float DampingIntoCollision;
@@ -96,7 +96,7 @@ namespace Unity.Cinemachine
             /// How gradually the camera returns to its normal position after having been corrected by the built-in
             /// collision resolution system. Higher numbers will move the camera more gradually back to normal.
             /// </summary>
-            [RangeSlider(0, 10)]
+            [Range(0, 10)]
             [Tooltip("How gradually the camera returns to its normal position after having been corrected by the built-in " +
                 "collision resolution system.  Higher numbers will move the camera more gradually back to normal.")]
             public float DampingFromCollision;
@@ -325,6 +325,8 @@ namespace Unity.Cinemachine
             
             var dir = tip - root;
             var len = dir.magnitude;
+            if (len < Epsilon)
+                return tip;
             dir /= len;
 
             var result = tip;

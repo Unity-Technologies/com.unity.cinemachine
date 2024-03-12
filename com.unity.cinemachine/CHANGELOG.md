@@ -7,16 +7,42 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Fixed
+- Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
+- Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
+- Bugfix: StateDrivenCamera min activation time was broken.
+
+### Added
+- FlyAround sample scene showing a simple fly-around camera.
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
+- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+
+### Changed
+- SplineDolly and SplineCart: position on spline is preserved when units change.
+- SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
+- SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
+- PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
+- Axis recentering happens independently on axes, so that input on one axis does not impact the recentering state of the others.
+- FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
+
+
+## [3.0.1] - 2023-11-27
+
+### Fixed
 - Bugfix: Divide-by-zero error in InputAxis.CancelDeltaTime if deltaTime is zero.
 - Regression fix: CinemachineCamera inspector Solo functionality was not updating correctly.
-- 
+- Regression fix: Legacy Lens settings had lost their ability to be animated.
+- Bugfix: Upgrader was not correctly upgrading animation bindings in some cases.
+
 ### Added
 - Added CinemachineVirtualCameraBase.CancelDamping() convenience method to snap camera to its target position.
 - Added CinemachineOrbitalFollow.TargetOffset to reposition orbit center.
-- SaveDuringPlay supports multi-scene editing.
+- Added CinemachineGroupFraming.CenterOffset to reposition group center on the screen.
+- Added LookAtOffset to CinemachineHardLookAt behaviour.
+- Added support for the new Camera Overlay.
 
 ### Changed
 - RuntimeUtility.GetScratchCollider and RuntimeUtility.DestroyScratchCollider are now public, to allow custom extensions to use them.
+- SaveDuringPlay supports multi-scene editing.
 
 
 ## [3.0.0] - 2023-10-25

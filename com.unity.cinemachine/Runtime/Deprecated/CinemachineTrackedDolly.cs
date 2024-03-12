@@ -45,7 +45,7 @@ namespace Unity.Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// x-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in a direction "
             + "perpendicular to the path.  Small numbers are more responsive, rapidly translating "
             + "the camera to keep the target's x-axis offset.  Larger numbers give a more heavy "
@@ -57,7 +57,7 @@ namespace Unity.Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the target's
         /// y-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in the path-local up direction.  "
             + "Small numbers are more responsive, rapidly translating the camera to keep the target's "
             + "y-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different "
@@ -68,7 +68,7 @@ namespace Unity.Cinemachine
         /// Small numbers are more responsive, rapidly translating the camera to keep the
         /// target's z-axis offset.  Larger numbers give a more heavy slowly responding camera.
         /// Using different settings per axis can yield a wide range of camera behaviors</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to maintain its position in a direction parallel to the path.  "
             + "Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  "
             + "Larger numbers give a more heavy slowly responding camera. Using different settings per axis "
@@ -97,21 +97,21 @@ namespace Unity.Cinemachine
 
         /// <summary>"How aggressively the camera tries to track the target rotation's X angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are "
             + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_PitchDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Y angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are "
             + "more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_YawDamping = 0;
 
         /// <summary>How aggressively the camera tries to track the target rotation's Z angle.
         /// Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.</summary>
-        [RangeSlider(0f, 20f)]
+        [Range(0f, 20f)]
         [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers "
             + "are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float m_RollDamping = 0f;
@@ -342,18 +342,18 @@ namespace Unity.Cinemachine
                     SearchIteration = 2
                 };
             }
+            // set splineDolly spline reference
+            if (m_Path != null)
+                c.Spline = m_Path.GetComponent<UnityEngine.Splines.SplineContainer>();
+
             c.CameraPosition = m_PathPosition;
             switch (m_PositionUnits)
             {
-                case CinemachinePathBase.PositionUnits.PathUnits: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
-                case CinemachinePathBase.PositionUnits.Distance: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
+                case CinemachinePathBase.PositionUnits.PathUnits:  c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Knot; break;
+                case CinemachinePathBase.PositionUnits.Distance:   c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Distance; break;
                 case CinemachinePathBase.PositionUnits.Normalized: c.PositionUnits = UnityEngine.Splines.PathIndexUnit.Normalized; break;
             }
             c.SplineOffset = m_PathOffset;
-            
-            // set splineDolly spline reference
-            if (m_Path != null) 
-                m_Path.TryGetComponent(out c.Spline);
         }
     }
 }

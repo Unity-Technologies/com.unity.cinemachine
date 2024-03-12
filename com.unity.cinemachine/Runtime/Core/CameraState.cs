@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace Unity.Cinemachine
 {
@@ -185,10 +186,8 @@ namespace Unity.Cinemachine
             if (index >= 0)
                 b.Weight += this.GetCustomBlendable(index).Weight;
             else
-            {
-                index = CustomBlendables.NumItems;
-                CustomBlendables.NumItems = index + 1;
-            }
+                index = CustomBlendables.NumItems++;
+
             switch (index)
             {
                 case 0: CustomBlendables.m_Item0 = b; break;
@@ -197,9 +196,12 @@ namespace Unity.Cinemachine
                 case 3: CustomBlendables.m_Item3 = b; break;
                 default: 
                 {
-                    if (CustomBlendables.m_Overflow == null)
-                        CustomBlendables.m_Overflow = new();
-                    CustomBlendables.m_Overflow.Add(b);
+                    index -= 4;
+                    CustomBlendables.m_Overflow ??= new();
+                    if (index < CustomBlendables.m_Overflow.Count)
+                        CustomBlendables.m_Overflow[index] = b;
+                    else
+                        CustomBlendables.m_Overflow.Add(b);
                     break;
                 }
             }
@@ -522,6 +524,40 @@ namespace Unity.Cinemachine
                         return i + 4;
             }
             return -1;
+        }
+
+        /// <summary>
+        /// Checks whether the LookAt point falls within the camera's frustum
+        /// </summary>
+        /// <param name="state">Camera state to check</param>
+        /// <returns>True if target is outside the camera frustum</returns>
+        public static bool IsTargetOffscreen(this CameraState state)
+        {
+            if (state.HasLookAt())
+            {
+                var dir = state.ReferenceLookAt - state.GetCorrectedPosition();
+                dir = Quaternion.Inverse(state.GetCorrectedOrientation()) * dir;
+                if (state.Lens.Orthographic)
+                {
+                    if (Mathf.Abs(dir.y) > state.Lens.OrthographicSize)
+                        return true;
+                    if (Mathf.Abs(dir.x) > state.Lens.OrthographicSize * state.Lens.Aspect)
+                        return true;
+                }
+                else
+                {
+                    var fov = state.Lens.FieldOfView / 2;
+                    var angle = UnityVectorExtensions.Angle(dir.ProjectOntoPlane(Vector3.right), Vector3.forward);
+                    if (angle > fov)
+                        return true;
+
+                    fov = Mathf.Rad2Deg * Mathf.Atan(Mathf.Tan(fov * Mathf.Deg2Rad) * state.Lens.Aspect);
+                    angle = UnityVectorExtensions.Angle(dir.ProjectOntoPlane(Vector3.up), Vector3.forward);
+                    if (angle > fov)
+                        return true;
+                }
+            }
+            return false;
         }
     }
 }

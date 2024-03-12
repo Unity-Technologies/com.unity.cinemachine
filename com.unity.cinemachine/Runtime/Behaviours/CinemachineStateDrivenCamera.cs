@@ -111,17 +111,20 @@ namespace Unity.Cinemachine
             base.PerformLegacyUpgrade(streamedVersion);
             if (streamedVersion < 20220721)
             {
-                DefaultTarget = new DefaultTargetSettings 
-                { 
-                    Enabled = true,
-                    Target = new CameraTarget
-                    {
-                        LookAtTarget = m_LegacyLookAt, 
-                        TrackingTarget = m_LegacyFollow, 
-                        CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
-                    }
-                };
-                m_LegacyLookAt = m_LegacyFollow = null;
+                if (m_LegacyLookAt != null || m_LegacyFollow != null)
+                {
+                    DefaultTarget = new DefaultTargetSettings 
+                    { 
+                        Enabled = true,
+                        Target = new CameraTarget
+                        {
+                            LookAtTarget = m_LegacyLookAt, 
+                            TrackingTarget = m_LegacyFollow, 
+                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
+                        }
+                    };
+                    m_LegacyLookAt = m_LegacyFollow = null;
+                }
             }
         }
 
@@ -288,7 +291,7 @@ namespace Unity.Cinemachine
                 // Has it been pending long enough, and are we allowed to switch away
                 // from the active action?
                 if ((now - m_PendingActivationTime) > Instructions[m_PendingInstructionIndex].ActivateAfter
-                    && (now - m_ActivationTime) > Instructions[m_PendingInstructionIndex].MinDuration)
+                    && (now - m_ActivationTime) > Instructions[m_ActiveInstructionIndex].MinDuration)
                 {
                     // Yes, activate it now
                     m_ActiveInstructionIndex = m_PendingInstructionIndex;
@@ -315,6 +318,20 @@ namespace Unity.Cinemachine
                 hash = LookupFakeHash(hash, clips[bestClip].clip);
 
             return hash;
+        }
+
+        /// <summary>
+        /// Call this to cancel the current wait time for the pending instruction and activate 
+        /// the pending instruction immediately.
+        /// </summary>
+        public void CancelWait()
+        {
+            if (m_PendingActivationTime != 0 && m_PendingInstructionIndex >= 0 && m_PendingInstructionIndex < Instructions.Length)
+            {
+                m_ActiveInstructionIndex = m_PendingInstructionIndex;
+                m_ActivationTime = CinemachineCore.CurrentTime;
+                m_PendingActivationTime = 0;
+            }
         }
     }
 }

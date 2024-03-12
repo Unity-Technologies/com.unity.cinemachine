@@ -86,17 +86,20 @@ namespace Unity.Cinemachine
             base.PerformLegacyUpgrade(streamedVersion);
             if (streamedVersion < 20220721)
             {
-                DefaultTarget = new DefaultTargetSettings 
-                { 
-                    Enabled = true,
-                    Target = new CameraTarget
-                    {
-                        LookAtTarget = m_LegacyLookAt, 
-                        TrackingTarget = m_LegacyFollow, 
-                        CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
-                    }
-                };
-                m_LegacyLookAt = m_LegacyFollow = null;
+                if (m_LegacyLookAt != null || m_LegacyFollow != null)
+                {
+                    DefaultTarget = new DefaultTargetSettings 
+                    { 
+                        Enabled = true,
+                        Target = new CameraTarget
+                        {
+                            LookAtTarget = m_LegacyLookAt, 
+                            TrackingTarget = m_LegacyFollow, 
+                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
+                        }
+                    };
+                    m_LegacyLookAt = m_LegacyFollow = null;
+                }
             }
         }
         

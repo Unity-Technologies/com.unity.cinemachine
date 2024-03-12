@@ -39,7 +39,7 @@ namespace Unity.Cinemachine.Editor
             // Is it a path?
             if (go.TryGetComponent(out CinemachinePathBase path))
                 UpgradePath(path);
-            else
+            else if (!go.TryGetComponent<CinemachineCamera>(out _))
             {
                 // It's some kind of vcam.  Check for FreeLook first because it has
                 // hidden child VirtualCameras and we need to remove them
@@ -160,14 +160,14 @@ namespace Unity.Cinemachine.Editor
             {
                 // if type is not in class upgrade map, then we won't change binding
                 if (!ClassUpgradeMap.ContainsKey(previousBinding.type))
-                    break;
+                    continue;
                     
                 var newBinding = previousBinding;
                 // upgrade type based on mapping
                 newBinding.type = ClassUpgradeMap[previousBinding.type];
 
                 // clean path pointing to old structure where vcam components lived on a hidden child gameObject
-                if (previousBinding.path.Contains("cm"))
+                if (previousBinding.path.EndsWith("cm"))
                 {
                     var path = previousBinding.path;
 
@@ -176,7 +176,7 @@ namespace Unity.Cinemachine.Editor
                     newBinding.path = path.Substring(0, index);
                 }
 
-                if (previousBinding.path.Contains("Rig"))
+                if (previousBinding.path.EndsWith("Rig"))
                 {
                     var path = newBinding.path;
                     //path is either xRig only, or someParent/someOtherParent/.../xRig. In the second case, we need to remove /xRig, thus -1
@@ -193,7 +193,7 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 // clean old convention
-                if (previousBinding.propertyName.Contains("m_"))
+                if (previousBinding.propertyName.StartsWith("m_"))
                 {
                     var propertyName = previousBinding.propertyName;
                     newBinding.propertyName = propertyName.Replace("m_", string.Empty);
@@ -228,6 +228,10 @@ namespace Unity.Cinemachine.Editor
                     }
                 }
 
+#if DEBUG_HELPERS
+                Debug.Log(previousBinding.path + "." + previousBinding.type.Name + "." + previousBinding.propertyName 
+                    + " -> " + newBinding.path + "." + newBinding.type.Name + "." + newBinding.propertyName);
+#endif
                 var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
                 AnimationUtility.SetEditorCurve(animationClip, previousBinding, null); //remove previous binding
                 AnimationUtility.SetEditorCurve(animationClip, newBinding, curve); //set new binding
@@ -311,7 +315,7 @@ namespace Unity.Cinemachine.Editor
             cmCamera.Follow = vcam.m_Follow;
             cmCamera.LookAt = vcam.m_LookAt;
             cmCamera.Target.CustomLookAtTarget = vcam.m_Follow != vcam.m_LookAt;
-            cmCamera.Lens = vcam.Lens;
+            cmCamera.Lens = vcam.m_Lens.ToLensSettings();
             cmCamera.BlendHint = vcam.BlendHint;
             if (vcam.m_OnCameraLiveEvent.GetPersistentEventCount() > 0)
             {
@@ -512,17 +516,19 @@ namespace Unity.Cinemachine.Editor
             CinemachineCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
             if (freelook.m_CommonLens)
-                cmCamera.Lens = freelook.Lens;
+                cmCamera.Lens = freelook.m_Lens.ToLensSettings();
             else
             {
-                cmCamera.Lens = freelook.GetRig(1).Lens;
-                if (!LensSettings.AreEqual(ref freelook.GetRig(1).Lens, ref freelook.GetRig(0).Lens)
-                    || !LensSettings.AreEqual(ref freelook.GetRig(1).Lens, ref freelook.GetRig(2).Lens))
+                cmCamera.Lens = freelook.GetRig(1).m_Lens.ToLensSettings();
+                var lens0 = freelook.GetRig(0).m_Lens.ToLensSettings();
+                var lens2 = freelook.GetRig(2).m_Lens.ToLensSettings();
+                if (!LensSettings.AreEqual(ref cmCamera.Lens, ref lens0)
+                    || !LensSettings.AreEqual(ref cmCamera.Lens, ref lens2))
                 {
                     freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.LensModifier
                     {
-                        Top = freelook.GetRig(0).Lens,
-                        Bottom = freelook.GetRig(2).Lens
+                        Top = lens0,
+                        Bottom = lens2
                     });
                 }
             }

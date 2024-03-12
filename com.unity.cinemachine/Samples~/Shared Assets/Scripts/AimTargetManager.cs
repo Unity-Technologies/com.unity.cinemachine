@@ -18,20 +18,13 @@ namespace Unity.Cinemachine.Samples
 
         // We add a CameraUpdatedEvent listener so that we are guaranteed to update after the
         // Brain has positioned the camera
-        void OnEnable()
-        {
-            CinemachineCore.CameraUpdatedEvent.AddListener(SetAimTarget);
-        }
-
-        void OnDisable()
-        {
-            CinemachineCore.CameraUpdatedEvent.RemoveListener(SetAimTarget);
-        }
+        void OnEnable() => CinemachineCore.CameraUpdatedEvent.AddListener(SetAimTarget);
+        void OnDisable() => CinemachineCore.CameraUpdatedEvent.RemoveListener(SetAimTarget);
 
         // This is called after the Brain has positioned the camera.  If the camera has a
         // ThirdPersonAim component with noise cancellation, then we set the aim target
         // position to be precisely what the camera is indicating onscreen.
-        // Otherwise, we disable the reticle and aim target indicator.
+        // Otherwise, we disable the reticle and the aim target indicator.
         void SetAimTarget(CinemachineBrain brain)
         {
             m_HaveAimTarget = false;
@@ -75,8 +68,9 @@ namespace Unity.Cinemachine.Samples
             if (m_HaveAimTarget)
             {
                 var dir = transform.position - firingOrigin;
-                if (dir.sqrMagnitude > 0.01f)
-                    return dir;
+                var len = dir.magnitude;
+                if (len > 0.0001f)
+                    return dir / len;
             }
             return firingDirection;
         }

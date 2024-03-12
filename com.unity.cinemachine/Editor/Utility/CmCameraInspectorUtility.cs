@@ -75,8 +75,13 @@ namespace Unity.Cinemachine.Editor
                 // Is the camera navel-gazing?
                 CameraState state = target.State;
                 bool isNavelGazing = target.PreviousStateIsValid && state.HasLookAt() &&
-                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero() &&
-                    target.GetCinemachineComponent(CinemachineCore.Stage.Aim) != null;
+                    (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero();
+                if (isNavelGazing)
+                {
+                    var aim = target.GetCinemachineComponent(CinemachineCore.Stage.Aim);
+                    if (aim == null || !aim.CameraLooksAtTarget)
+                        isNavelGazing = false;
+                }
                 navelGazeMessage.SetVisible(isNavelGazing);
 
                 // Is the camera parenting incorrect?

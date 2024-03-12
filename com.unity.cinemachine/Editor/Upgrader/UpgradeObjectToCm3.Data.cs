@@ -174,7 +174,7 @@ namespace Unity.Cinemachine.Editor
                     { "PathOffset.x", new("SplineOffset.x", typeof(CinemachineSplineDolly)) },
                     { "PathOffset.y", new("SplineOffset.y", typeof(CinemachineSplineDolly)) },
                     { "PathOffset.z", new("SplineOffset.z", typeof(CinemachineSplineDolly)) },
-                    { "PathPosition", new("CameraPosition", typeof(CinemachineSplineDolly)) },
+                    { "PathPosition", new("SplineSettings.Position", typeof(CinemachineSplineDolly)) },
                     { "XDamping", new("Damping.Position.x", typeof(CinemachineSplineDolly)) },
                     { "YDamping", new("Damping.Position.y", typeof(CinemachineSplineDolly)) },
                     { "ZDamping", new("Damping.Position.z", typeof(CinemachineSplineDolly)) }
@@ -235,6 +235,35 @@ namespace Unity.Cinemachine.Editor
                 {
                     { "XAxis.Value", new("HorizontalAxis.Value", typeof(CinemachineOrbitalFollow)) },
                     { "YAxis.Value", new("VerticalAxis.Value", typeof(CinemachineOrbitalFollow)) },
+                    { "Lens.GateFit", new("Lens.PhysicalProperties.GateFit", typeof(CinemachineCamera)) },
+                    { "Lens.LensShift.x", new("Lens.PhysicalProperties.LensShift.x", typeof(CinemachineCamera)) },
+                    { "Lens.LensShift.y", new("Lens.PhysicalProperties.LensShift.y", typeof(CinemachineCamera)) },
+                    { "Lens.FocusDistance", new("Lens.PhysicalProperties.FocusDistance", typeof(CinemachineCamera)) },
+                    { "Lens.Iso", new("Lens.PhysicalProperties.Iso", typeof(CinemachineCamera)) },
+                    { "Lens.ShutterSpeed", new("Lens.PhysicalProperties.ShutterSpeed", typeof(CinemachineCamera)) },
+                    { "Lens.Aperture", new("Lens.PhysicalProperties.Aperture", typeof(CinemachineCamera)) },
+                    { "Lens.BladeCount", new("Lens.PhysicalProperties.BladeCount", typeof(CinemachineCamera)) },
+                    { "Lens.Curvature.x", new("Lens.PhysicalProperties.Curvature.x", typeof(CinemachineCamera)) },
+                    { "Lens.Curvature.y", new("Lens.PhysicalProperties.Curvature.y", typeof(CinemachineCamera)) },
+                    { "Lens.BarrelClipping", new("Lens.PhysicalProperties.BarrelClipping", typeof(CinemachineCamera)) },
+                    { "Lens.Anamorphism", new("Lens.PhysicalProperties.Anamorphism", typeof(CinemachineCamera)) },
+                }
+            },
+            {
+                typeof(CinemachineVirtualCamera), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "Lens.GateFit", new("Lens.PhysicalProperties.GateFit", typeof(CinemachineCamera)) },
+                    { "Lens.LensShift.x", new("Lens.PhysicalProperties.LensShift.x", typeof(CinemachineCamera)) },
+                    { "Lens.LensShift.y", new("Lens.PhysicalProperties.LensShift.y", typeof(CinemachineCamera)) },
+                    { "Lens.FocusDistance", new("Lens.PhysicalProperties.FocusDistance", typeof(CinemachineCamera)) },
+                    { "Lens.Iso", new("Lens.PhysicalProperties.Iso", typeof(CinemachineCamera)) },
+                    { "Lens.ShutterSpeed", new("Lens.PhysicalProperties.ShutterSpeed", typeof(CinemachineCamera)) },
+                    { "Lens.Aperture", new("Lens.PhysicalProperties.Aperture", typeof(CinemachineCamera)) },
+                    { "Lens.BladeCount", new("Lens.PhysicalProperties.BladeCount", typeof(CinemachineCamera)) },
+                    { "Lens.Curvature.x", new("Lens.PhysicalProperties.Curvature.x", typeof(CinemachineCamera)) },
+                    { "Lens.Curvature.y", new("Lens.PhysicalProperties.Curvature.y", typeof(CinemachineCamera)) },
+                    { "Lens.BarrelClipping", new("Lens.PhysicalProperties.BarrelClipping", typeof(CinemachineCamera)) },
+                    { "Lens.Anamorphism", new("Lens.PhysicalProperties.Anamorphism", typeof(CinemachineCamera)) },
                 }
             },
             {
@@ -245,6 +274,12 @@ namespace Unity.Cinemachine.Editor
                     { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
                     { "DampingIntoCollision", new("AvoidObstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
                     { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                }
+            },
+            {
+                typeof(CinemachineDollyCart), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "SplinePosition", new("SplineSettings.Position", typeof(CinemachineSplineCart)) }
                 }
             },
 #if CINEMACHINE_PHYSICS

@@ -286,7 +286,7 @@ namespace Unity.Cinemachine
                 return false;
             PreviousStateIsValid = false;
             m_ChildCameras = new();
-            GetComponentsInChildren(m_ChildCameras);
+            GetComponentsInChildren(true, m_ChildCameras);
             for (int i = m_ChildCameras.Count-1; i >= 0; --i)
                 if (m_ChildCameras[i].transform.parent != transform)
                     m_ChildCameras.RemoveAt(i);

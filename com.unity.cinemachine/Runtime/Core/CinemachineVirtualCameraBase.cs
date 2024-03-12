@@ -28,23 +28,36 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
-        /// <summary>Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
+        /// <summary>
+        /// Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
         /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
         /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated 
         /// highest-priority CinemachineCamera will control the main camera. 
         /// 
-        /// The default priority is 0.  Often it is sufficient to leave the default setting.  
-        /// In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, 
-        /// the value can be set here.
+        /// The default priority value is 0. Often it is sufficient to leave the default setting.  
+        /// In special cases where you want a CinemachineCamera to have a higher or lower priority value than 0, you can set it here.
+        ///
+        /// <para>
+        /// <b>Example of setting priority value directly:</b>
+        /// <code>
+        /// cam.Priority.Value = 5;
+        /// </code>
+        /// </para>
+        /// 
+        /// <para>
+        /// <b>Example of using the implicit operator to set priority value:</b>
+        /// <code>
+        /// cam.Priority = 5;
+        /// </code>
+        /// </para>
         /// </summary>
         [NoSaveDuringPlay]
         [Tooltip("Priority can be used to control which Cm Camera is live when multiple CM Cameras are "
             + "active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there "
             + "is another Cm Camera active with a higher priority.  In general, the most-recently-activated "
             + "highest-priority CinemachineCamera will control the main camera. \n\n"
-            + "The default priority is 0.  Often it is sufficient to leave the default setting.  "
-            + "In special cases where you want a CinemachineCamera to have a higher or lower priority than 0, "
-            + "the value can be set here.")]
+            + "The default priority is value 0.  Often it is sufficient to leave the default setting.  "
+            + "In special cases where you want a CinemachineCamera to have a higher or lower priority value than 0, you can set it here.")]
         [EnabledProperty(toggleText: "(using default)")]
         public PrioritySettings Priority = new ();
 
@@ -56,6 +69,9 @@ namespace Unity.Cinemachine
         [Tooltip("The output channel functions like Unity layers.  Use it to filter the output of CinemachineCameras "
             + "to different CinemachineBrains, for instance in a multi-screen environemnt.")]
         public OutputChannels OutputChannel = OutputChannels.Default;
+
+        /// <summary>Helper for upgrading from CM2</summary>
+        internal protected virtual bool IsDprecated => false;
 
         /// <summary>A sequence number that represents object activation order of vcams.  
         /// Used for priority sorting.</summary>
@@ -137,11 +153,17 @@ namespace Unity.Cinemachine
         internal protected virtual void PerformLegacyUpgrade(int streamedVersion)
         {
             if (streamedVersion < 20220601)
-                Priority.Value = m_LegacyPriority;
+            {
+                if (m_LegacyPriority != 0)
+                {
+                    Priority.Value = m_LegacyPriority;
+                    m_LegacyPriority = 0;
+                }
+            }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
-        int m_LegacyPriority = 10;
+        int m_LegacyPriority = 0;
 
         //============================================================================
 
@@ -525,6 +547,11 @@ namespace Unity.Cinemachine
         protected virtual void Start()
         {
             m_WasStarted = true;
+
+            // Perform legacy upgrade if necessary
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                PerformLegacyUpgrade(m_StreamingVersion);
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
         
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
@@ -536,16 +563,19 @@ namespace Unity.Cinemachine
                 PreviousStateIsValid = false;
             CameraUpdateManager.CameraEnabled(this);
             InvalidateCachedTargets();
+
             // Sanity check - if another vcam component is enabled, shut down
             var vcamComponents = GetComponents<CinemachineVirtualCameraBase>();
             for (int i = 0; i < vcamComponents.Length; ++i)
             {
                 if (vcamComponents[i].enabled && vcamComponents[i] != this)
                 {
-                    Debug.LogWarning(Name
-                        + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling "
-                        + GetType().Name + ".");
-                    enabled = false;
+                    var toDeprecate = vcamComponents[i].IsDprecated ? vcamComponents[i] : this;
+                    if (!toDeprecate.IsDprecated)
+                        Debug.LogWarning(Name
+                            + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling "
+                            + toDeprecate.GetType().Name);
+                    toDeprecate.enabled = false;
                 }
             }
         }

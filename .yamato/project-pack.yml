@@ -5,7 +5,7 @@ pack_{{test_project.name}}:
   name: Pack project {{test_project.name}}
   agent:
     type: Unity::VM
-    image: package-ci/ubuntu:stable
+    image: package-ci/ubuntu-22.04:v4
     flavor: b1.large
   commands:
     - rm com.unity.cinemachine/Tests/.tests.json

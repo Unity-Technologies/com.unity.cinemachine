@@ -48,6 +48,7 @@
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
   * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
+  * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
   * [Cinemachine External Camera](CinemachineExternalCamera.md)
   * [Cinemachine Follow](CinemachineFollow.md)
     * [Binding Modes](CinemachineBindingModes.md)

@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Editor
             this.AddGlobalControls(ux);
 
             var defaultTargetLabel = new Label() { style = { alignSelf = Align.FlexEnd, opacity = 0.5f }};
-            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Set Procedural Components</b>", "", defaultTargetLabel));
+            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Procedural Components</b>", "", defaultTargetLabel));
             row.focusable = false;
             row.style.paddingTop = InspectorUtility.SingleLineHeight / 2;
             row.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;

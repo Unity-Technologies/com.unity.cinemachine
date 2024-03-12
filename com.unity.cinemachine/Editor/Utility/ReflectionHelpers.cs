@@ -287,7 +287,7 @@ namespace Unity.Cinemachine
                     }
                     else if (typeof(IList).IsAssignableFrom(type))
                     {
-                        if (obj is IList fieldValue)
+                        if (f.GetValue(obj) is IList fieldValue)
                         {
                             for (int i = 0; i < fieldValue.Count; ++i)
                             {
