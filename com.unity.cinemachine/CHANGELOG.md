@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [Unreeleased] - 2024-01-02
+- Bugfix: Solo not updating when brain is in FixedUpdate.
+
+
 ## [2.10.0] - 2024-01-01
 - Bugfix: CinemachineFreeLook.ForceCameraPosition() sometimes did not take full effect immediately.
 - Bugfix: 3rdPersonFollow sometimes generated invalid camera position when the target when DampingWhenOccluded is nonzero.

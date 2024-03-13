@@ -418,7 +418,7 @@ namespace Cinemachine
 
             ComputeCurrentBlend(ref mCurrentLiveCameras, 0);
 
-            if (m_UpdateMethod == UpdateMethod.FixedUpdate)
+            if (Application.isPlaying && m_UpdateMethod == UpdateMethod.FixedUpdate)
             {
                 // Special handling for fixed update: cameras that have been enabled
                 // since the last physics frame must be updated now
