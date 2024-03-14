@@ -64,9 +64,10 @@ namespace Unity.Cinemachine.Editor
                 var element = instructions.GetArrayElementAtIndex(index);
 
                 var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
-                var vcamSel = row.AddChild(new PopupField<Object> { name = $"vcamSelector{index}" });
+                var vcamSel = row.AddChild(new PopupField<Object> { name = $"vcamSelector{index}", choices = new() });
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
+                vcamSel.TrackPropertyWithInitialCallback(instructions, (p) => UpdateCameraDropdowns());
         
                 var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
                 if (index == 0)
@@ -81,6 +82,47 @@ namespace Unity.Cinemachine.Editor
                 ((BindableElement)row).BindProperty(element);
                 vcamSel.BindProperty(vcamSelProp);
             };
+
+            container.AddSpace();
+            this.AddChildCameras(container, null);
+
+            container.TrackAnyUserActivity(() =>
+            {
+                if (Target == null)
+                    return; // object deleted
+
+                var isMultiSelect = targets.Length > 1;
+                multiSelectMsg.SetVisible(isMultiSelect);
+                container.SetVisible(!isMultiSelect);
+
+                // Hide the first blend if not looped
+                list.Q<VisualElement>("FirstItemBlend")?.SetEnabled(Target.Loop);
+
+                // Update the list items
+                UpdateCameraDropdowns();
+            });
+            this.AddExtensionsDropdown(ux);
+
+            return ux;
+
+            // Local function
+            void UpdateCameraDropdowns()
+            {
+                var children = Target.ChildCameras;
+                int index = 0;
+                var iter = list.itemsSource.GetEnumerator();
+                while (iter.MoveNext())
+                {
+                    var vcamSel = list.Q<PopupField<Object>>($"vcamSelector{index}");
+                    if (vcamSel != null)
+                    {
+                        vcamSel.choices.Clear();
+                        for (int i = 0; i < children.Count; ++i)
+                            vcamSel.choices.Add(children[i]);
+                    }
+                    ++index;
+                }
+            }
 
             // Local function
             static void FormatInstructionElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)
@@ -99,44 +141,6 @@ namespace Unity.Cinemachine.Editor
                 e3.style.flexGrow = 0;
                 e3.style.unityTextAlign = TextAnchor.MiddleRight;
             }
-            container.AddSpace();
-            this.AddChildCameras(container, null);
-
-            container.TrackAnyUserActivity(() =>
-            {
-                if (Target == null)
-                    return; // object deleted
-
-                var isMultiSelect = targets.Length > 1;
-                multiSelectMsg.SetVisible(isMultiSelect);
-                container.SetVisible(!isMultiSelect);
-
-                // Hide the first blend if not looped
-                var instructions = container.Q<ListView>("InstructionList");
-                instructions.Q<VisualElement>("FirstItemBlend")?.SetEnabled(Target.Loop);
-
-                // Update the list items
-                int index = 0;
-                var iter = instructions.itemsSource.GetEnumerator();
-                while (iter.MoveNext())
-                {
-                    var vcamSel = list.Q<PopupField<Object>>($"vcamSelector{index}");
-                    if (vcamSel != null)
-                    {
-                        if (Target == null)
-                            return; // object deleted
-                        vcamSel.choices ??= new();
-                        vcamSel.choices.Clear();
-                        var children = Target.ChildCameras;
-                        for (int i = 0; i < children.Count; ++i)
-                            vcamSel.choices.Add(children[i]);
-                    }
-                    ++index;
-                }
-            });
-            this.AddExtensionsDropdown(ux);
-
-            return ux;
         }
     }
 }
