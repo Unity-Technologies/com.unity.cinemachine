@@ -55,7 +55,8 @@ namespace Unity.Cinemachine.Editor
                 style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
                     marginLeft = 0, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
             });
-            var updateMode = row.Contents.AddChild(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
+            var updateMode = row.Contents.AddChild(new Label("(Update Mode)") 
+                { style = { flexGrow = 0, alignSelf = Align.Center }});
             updateMode.SetEnabled(false);
             updateMode.style.display = DisplayStyle.None;
 

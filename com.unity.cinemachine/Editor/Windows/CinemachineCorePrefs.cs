@@ -37,6 +37,15 @@ namespace Unity.Cinemachine.Editor
         static readonly GUIContent k_ShowBrainIconsLabel = new(
             "Show Hierarchy Icon", "If checked, an icon will be added next to the CM Brain in the scene hierarchy");
 
+        [InitializeOnLoad]
+        static class SyncStoryboardMute
+        {
+            static SyncStoryboardMute()
+            {
+                CinemachineStoryboard.s_StoryboardGlobalMute = StoryboardGlobalMute.Value;
+            }
+        }
+
         // Core settings is special - it is displayed first therefore this method is exposed
         public static void DrawCoreSettings()
         {
@@ -51,7 +60,8 @@ namespace Unity.Cinemachine.Editor
                 ShowBrainIconInHierarchy.Value = EditorGUILayout.Toggle(k_ShowBrainIconsLabel, ShowBrainIconInHierarchy.Value);
                 SaveDuringPlay.Enabled = EditorGUILayout.Toggle(s_SaveDuringPlayLabel, SaveDuringPlay.Enabled);
 #if CINEMACHINE_UGUI
-                StoryboardGlobalMute.Value = EditorGUILayout.Toggle(s_StoryboardGlobalMuteLabel, StoryboardGlobalMute.Value);
+                StoryboardGlobalMute.Value = CinemachineStoryboard.s_StoryboardGlobalMute 
+                    = EditorGUILayout.Toggle(s_StoryboardGlobalMuteLabel, StoryboardGlobalMute.Value);
 #endif
                 if (EditorGUI.EndChangeCheck())
                     UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
