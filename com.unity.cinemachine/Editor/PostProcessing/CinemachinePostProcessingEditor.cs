@@ -4,104 +4,56 @@ using UnityEditor;
 using System.IO;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEditor.Rendering.PostProcessing;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePostProcessing))]
     class CinemachinePostProcessingEditor : UnityEditor.Editor
     {
-        CinemachinePostProcessing Target => target as CinemachinePostProcessing;
-
-        SerializedProperty m_Profile;
-        SerializedProperty m_FocusTracking;
-
         EffectListEditor m_EffectList;
-        float m_ButtonWidth;
 
-        GUIContent m_NewLabel = new ("New",  "Create a new PostProcessing profile");
-        GUIContent m_CloneLabel = new ("Clone",  "Create a new PostProcessing profile "
-            + "and copy the content of the currently assigned profile");
-
-        void OnEnable()
+        void OnEnable() => m_EffectList = new EffectListEditor(this);
+        void OnDisable() => m_EffectList?.Clear();
+        
+        public override VisualElement CreateInspectorGUI()
         {
-            Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(
-                $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/PostProcessLayer.png");
-
-            m_FocusTracking = serializedObject.FindProperty(() => Target.FocusTracking);
-            m_Profile = serializedObject.FindProperty(() => Target.Profile);
-
-            m_EffectList = new EffectListEditor(this);
-            RefreshEffectListEditor(Target.Profile);
-        }
-
-        void OnDisable()
-        {
-            if (m_EffectList != null)
-                m_EffectList.Clear();
-        }
-
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
+            var ux = new VisualElement();
+            this.AddMissingCmCameraHelpBox(ux);
 
 #if CINEMACHINE_HDRP || CINEMACHINE_URP
-            EditorGUILayout.HelpBox(
+            ux.Add(new HelpBox(
                 "This component is not valid for HDRP and URP projects.  Use the CinemachineVolumeSettings component instead.",
-                MessageType.Warning);
+                HelpBoxMessageType.Warning));
 #endif
 
-            this.IMGUI_DrawMissingCmCameraHelpBox();
+            var post = target as CinemachinePostProcessing;
+            ux.AddChild(new PropertyField(serializedObject.FindProperty(() => post.Weight)));
 
-            EditorGUI.BeginChangeCheck();
+            var trackingProp = serializedObject.FindProperty(() => post.FocusTracking);
+            ux.AddChild(new PropertyField(trackingProp));
+            var focusTargetField = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => post.FocusTarget)));
+            var focusOffsetField = ux.AddChild(new PropertyField(serializedObject.FindProperty(() => post.FocusOffset)));
+            var trackingHelp = ux.AddChild(new HelpBox(
+                "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile.",
+                HelpBoxMessageType.Warning));
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.Weight));
-            EditorGUILayout.PropertyField(m_FocusTracking);
-            var focusMode = (CinemachinePostProcessing.FocusTrackingMode)m_FocusTracking.intValue;
-            if (focusMode != CinemachinePostProcessing.FocusTrackingMode.None)
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.FocusOffset));
-            if (focusMode == CinemachinePostProcessing.FocusTrackingMode.CustomTarget)
-                EditorGUILayout.PropertyField(serializedObject.FindProperty(() => Target.FocusTarget));
-
-            if (focusMode != CinemachinePostProcessing.FocusTrackingMode.None)
+            ux.TrackPropertyWithInitialCallback(trackingProp, (p) =>
             {
+                var mode = (CinemachinePostProcessing.FocusTrackingMode)p.intValue;
+                focusTargetField.SetVisible(mode == CinemachinePostProcessing.FocusTrackingMode.CustomTarget);
+                focusOffsetField.SetVisible(mode != CinemachinePostProcessing.FocusTrackingMode.None);
                 bool valid = false;
-                if (Target.Profile != null && Target.Profile.TryGetSettings(out DepthOfField dof))
-                    valid = dof.enabled && dof.active && dof.focusDistance.overrideState;
-                if (!valid)
-                    EditorGUILayout.HelpBox(
-                        "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile",
-                        MessageType.Warning);
-            }
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
+                if (mode != CinemachinePostProcessing.FocusTrackingMode.None
+                    && post.Profile != null && post.Profile.TryGetSettings(out DepthOfField dof))
+                        valid = dof.enabled && dof.active && dof.focusDistance.overrideState;
+                trackingHelp.SetVisible(mode != CinemachinePostProcessing.FocusTrackingMode.None && !valid);
+            });
 
-            EditorGUI.BeginChangeCheck();
-            DrawProfileInspectorGUI();
-            if (EditorGUI.EndChangeCheck())
-            {
-                Target.InvalidateCachedProfile();
-                serializedObject.ApplyModifiedProperties();
-            }
-        }
-
-        void DrawProfileInspectorGUI()
-        {
-            if (m_ButtonWidth == 0)
-                m_ButtonWidth = GUI.skin.button.CalcSize(m_CloneLabel).x;
-
-            bool assetHasChanged = false;
-            bool haveAsset = m_Profile.objectReferenceValue != null;
-
-            var rect = EditorGUILayout.GetControlRect();
-            rect.width -= m_ButtonWidth * (haveAsset ? 2 : 1);
-            using (var scope = new EditorGUI.ChangeCheckScope())
-            {
-                EditorGUI.PropertyField(rect, m_Profile);
-                assetHasChanged = scope.changed;
-            }
-
-            rect.x += rect.width; rect.width = m_ButtonWidth;
-            if (GUI.Button(rect, m_NewLabel, EditorStyles.miniButton))
+            var profileProp = serializedObject.FindProperty(() => post.Profile);
+            var row = ux.AddChild(InspectorUtility.PropertyRow(profileProp, out var _));
+            var newButton = row.Contents.AddChild(new Button(() =>
             {
                 var path = AssetDatabase.GenerateUniqueAssetPath("PostProcessing Profile");
                 path = EditorUtility.SaveFilePanelInProject(
@@ -109,53 +61,43 @@ namespace Unity.Cinemachine.Editor
                     "This asset will contain the post processing settings");
                 if (path.Length > 0)
                 {
-                    m_Profile.objectReferenceValue = CreatePostProcessProfile(path);
+                    profileProp.objectReferenceValue = CreatePostProcessProfile(path);
                     serializedObject.ApplyModifiedProperties();
-                    assetHasChanged = true;
-                }
-            }
-
-            rect.x += rect.width; rect.width = m_ButtonWidth;
-            if (haveAsset && GUI.Button(rect, m_CloneLabel, EditorStyles.miniButton))
+                }                
+            }) { text = "New", style = { marginRight = 0 }} );
+            var cloneButton = row.Contents.AddChild(new Button(() =>
             {
-                var origin = m_Profile.objectReferenceValue as PostProcessProfile;
+                var origin = profileProp.objectReferenceValue as PostProcessProfile;
                 var path = AssetDatabase.GenerateUniqueAssetPath(AssetDatabase.GetAssetPath(origin));
                 path = EditorUtility.SaveFilePanelInProject(
                     "Clone PostProcessing Profile", Path.GetFileName(path), "asset", 
                     "This asset will contain the post processing settings", Path.GetDirectoryName(path));
                 if (path.Length > 0)
                 {
-                    m_Profile.objectReferenceValue = CopyPostProcessProfile(origin, path);
+                    profileProp.objectReferenceValue = CopyPostProcessProfile(origin, path);
                     serializedObject.ApplyModifiedProperties();
-                    assetHasChanged = true;
-                }
-            }
+                }                
+            }) { text = "Clone", style = { marginLeft = 0 }} );
+            cloneButton.TrackPropertyWithInitialCallback(profileProp, (p) => cloneButton.SetVisible(p.objectReferenceValue != null));
 
-            if (m_Profile.objectReferenceValue == null)
-            {
-                if (assetHasChanged && m_EffectList != null)
-                    m_EffectList.Clear(); // Asset wasn't null before, do some cleanup
-                EditorGUILayout.Space();
-                EditorGUILayout.HelpBox(
-                    "Assign an existing Post-process Profile by choosing an asset, or create a new one by "
-                        + "clicking the \"New\" button.",
-                    MessageType.Info);
-            }
-            else
-            {
-                if (assetHasChanged)
-                    RefreshEffectListEditor((PostProcessProfile)m_Profile.objectReferenceValue);
-                if (m_EffectList != null)
-                    m_EffectList.OnGUI();
-            }
-        }
+            var missingProfileHelp = ux.AddChild(new HelpBox(
+                "Assign an existing Post-process Profile by choosing an asset, or create a new one by "
+                    + "clicking the \"New\" button.",
+                HelpBoxMessageType.Info));
 
-        void RefreshEffectListEditor(PostProcessProfile asset)
-        {
-            m_EffectList ??= new EffectListEditor(this);
-            m_EffectList.Clear();
-            if (asset != null)
-                m_EffectList.Init(asset, new SerializedObject(asset));
+            var effectsEditor = ux.AddChild(new IMGUIContainer(() => m_EffectList.OnGUI()));
+
+            ux.TrackPropertyWithInitialCallback(profileProp, (p) =>
+            {
+                missingProfileHelp.SetVisible(p.objectReferenceValue == null);
+                effectsEditor.SetVisible(p.objectReferenceValue != null);
+                var profile = (PostProcessProfile)p.objectReferenceValue;
+                m_EffectList.Clear();
+                if (profile != null)
+                    m_EffectList.Init(profile, new SerializedObject(profile));
+            });
+
+            return ux;
         }
 
         static PostProcessProfile CreatePostProcessProfile(string path)
