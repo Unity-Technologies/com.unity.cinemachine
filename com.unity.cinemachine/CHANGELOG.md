@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreeleased] - 2024-01-02
 - Bugfix: Solo not updating when brain is in FixedUpdate.
+- Bugfix: Target Groups with zero active members now report their last valid position and dimensions.
 
 
 ## [2.10.0] - 2024-01-01
