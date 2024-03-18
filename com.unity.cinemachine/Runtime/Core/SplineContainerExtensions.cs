@@ -88,7 +88,7 @@ namespace Unity.Cinemachine
         {
             var result = LocalEvaluateSplineWithRoll(spline, roll, defaultRotation, tNormalized, out position, out rotation);
             position = spline.transform.TransformPoint(position);
-            rotation = rotation * spline.transform.rotation;
+            rotation = spline.transform.rotation * rotation;
             return result;
         }
         
