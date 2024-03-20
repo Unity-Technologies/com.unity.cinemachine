@@ -1,4 +1,4 @@
-# Cinemachine core concepts
+# Discover Cinemachine concepts
 
 Learn about the Cinemachine base elements and core functionality.
 

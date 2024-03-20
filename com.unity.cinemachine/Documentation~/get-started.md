@@ -16,6 +16,7 @@ Get the essential information to understand how Cinemachine works and follow ins
 | [Set up multiple Cinemachine Cameras and transitions](setup-multiple-cameras.md) | Set up a Cinemachine environment with multiple Cinemachine Cameras and manage the transitions between them. |
 | [Add procedural behavior to a Cinemachine Camera](setup-procedural-behavior.md) | Set up a Cinemachine Camera for position and rotation control, automatic target tracking, and real-world camera shaking effect. See also how to add extensions to a Cinemachine Camera. |
 | [Set up Timeline with Cinemachine Cameras](setup-timeline.md) | Set up Timeline in a Cinemachine environment to choreograph Cinemachine Cameras and produce a predictable shot sequence |
+| [Use convenient tools and shortcuts](ui-ref.md) | Use interface tools and shortcuts and target the proper Cinemachine elements to set up according to your needs and ease your configuration experience. |
 
 
 
