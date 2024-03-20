@@ -1,4 +1,4 @@
-# Third Person Cameras
+# Create a Third Person Camera
 
 While it is possible - and often appropriate - to make a Third Person camera using a [FreeLook Camera](FreeLookCameras.md), there are cases where that doesn't give you all the control you need.  For example, when you want to have an over-the-shoulder offset, or precise aiming control (in a shooter, for instance) and want to keep that control while blending to an aiming camera, it can be difficult to maintain the desired precision with the FreeLook.
 

@@ -1,6 +1,6 @@
-# Add procedural behavior to a Cinemachine Camera
+# Follow and frame a character
 
-Create and set up a Follow Camera.
+Create and set up a Cinemachine Camera that automatically follows and frames a character.
 
 > [!NOTE]
 > Your Scene must include a GameObject you can target to follow it with the Cinemachine Camera.
@@ -22,13 +22,10 @@ Create and set up a Follow Camera.
 
 ## Adjust the Cinemachine Camera behavior
 
-1. [Customize the CinemachineCamera](CinemachineCamera.md) as needed.
+1. Use the Inspector to access the [Cinemachine Camera component](CinemachineCamera.md) properties for further configuration.
 
-   Choose the desired behaviour for following and looking at, and adjust settings such as the follow offset, the follow damping, the screen composition, and the damping used when re-aiming the camera.
-
-## Next steps
-
-Here are potential tasks you might want to do now:
-
-* [Create multiple Cinemachine Cameras and manage transitions between them](setup-multiple-cameras.md).
-* [Manage a choreographed sequence of Cinemachine Camera shots with Timeline](setup-timeline.md).
+2. Adjust the properties such as:
+   * The follow offset
+   * The follow damping
+   * The screen composition, and
+   * The damping used when re-aiming the camera

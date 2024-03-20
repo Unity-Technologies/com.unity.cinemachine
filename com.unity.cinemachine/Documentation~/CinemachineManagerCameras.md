@@ -1,4 +1,4 @@
-# Managing and grouping CinemachineCameras
+# Manage grouped cameras
 
 A __Manager Camera__ oversees many CinemachineCameras but acts as a single CinemachineCamera from the point of view of Cinemachine Brain and Timeline.
 
