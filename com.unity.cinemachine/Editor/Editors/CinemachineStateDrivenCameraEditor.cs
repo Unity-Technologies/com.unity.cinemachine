@@ -301,7 +301,7 @@ for (int i = 0; i < children.Count; ++i)
                 }
             }
 
-            List<AnimationClip> CollectClips(Motion motion)
+            List<AnimationClip> CollectClips(UnityEngine.Motion motion)
             {
                 var clips = new List<AnimationClip>();
                 var clip = motion as AnimationClip;
