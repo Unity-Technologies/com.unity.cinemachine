@@ -4,8 +4,8 @@
 
 Here is a list of all components and assets available in the Cinemachine package, organized by concepts.
 
-> [!NOTE]
-> The table of contents in the left pane provides the same list in alphabetical order for quick reference.
+> [!TIP]
+> Use the table of contents on the left to search the same items in alphabetical order.
 
 * Base Cinemachine components
   * [Cinemachine Brain](CinemachineBrain.md)

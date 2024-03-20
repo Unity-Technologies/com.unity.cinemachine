@@ -8,7 +8,7 @@ This algorithm first moves the camera along the camera Z axis until the __Tracki
 
 ## Properties
 
-| **Property:** || **Function:** |
+| **Property** || **Function** |
 |:---|:---|:---|
 | __Target Offset__ || Position in target-local coordinates of the point of interest on the target to be tracked.  0, 0, 0 would be the target's origin. |
 | __Lookahead Time__ || Adjusts the offset of the Cinemachine Camera from the Tracking target based on the motion of the target. Cinemachine estimates the point where the target will be this many seconds into the future. This feature is sensitive to noisy animation and can amplify the noise, resulting in undesirable camera jitter. If the camera jitters unacceptably when the target is in motion, turn down this property, or animate the target more smoothly. |
@@ -24,3 +24,7 @@ This algorithm first moves the camera along the camera Z axis until the __Tracki
 || _Size_ | The size of the region in which the camera can place the target, expressed as a fraction of screen size.  This region is by default centered around the Screen Position, but can be shifted using the Offset setting.  A value of 1 means full screen width or height. |
 || _Offset_ | Shifts the hard limits horizontally or vertically relative to the Target Position. |
 | __Center On Activate__ || Moves the camera to put the target at the center of the dead zone when the camera becomes live. |
+
+## Shot composition
+
+[!include[](includes/shot-composition.md)]

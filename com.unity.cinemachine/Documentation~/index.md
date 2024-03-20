@@ -10,6 +10,8 @@ Cinemachine works in real time across all genres including FPS, third person, 2D
 
 Cinemachine works well with other Unity tools, acting as a powerful complement to Timeline, animation, and post-processing assets. Create your own [extensions](concept-procedural-motion.md#extensions) or integrate it with your custom camera scripts.
 
-## [Get started](get-started.md)
+### [Get started](get-started.md)
 
-## [Samples and tutorials](samples-tutorials.md)
+### [Samples and tutorials](samples-tutorials.md)
+
+### [Reference](Reference.md)

@@ -1,6 +1,4 @@
-## Composing a shot
-
-The [__Position Composer__](CinemachinePositionComposer.md) and [__Rotation Composer__](CinemachineRotationComposer.md) behaviours define areas in the camera frame for you to compose a shot:
+This component defines areas in the camera frame for you to compose a shot:
 
 * __Dead zone__: The area of the frame in which Cinemachine keeps the target. The target can move within this region and the CinemachineCamera will not adjust to reframe it until the target leaves the dead zone.
 
@@ -12,7 +10,7 @@ The [__Position Composer__](CinemachinePositionComposer.md) and [__Rotation Comp
 
 The __Game View Guide__ gives an interactive, visual indication of these areas. The guides appear as tinted areas in the [Game view](https://docs.unity3d.com/Manual/GameView.html).
 
-![Game Window Guides gives a visual indication of the damping, screen, soft zone, and dead zone](images/CinemachineGameWindowGuides.png)
+![Game Window Guides gives a visual indication of the damping, screen, soft zone, and dead zone](../images/CinemachineGameWindowGuides.png)
 
 The clear area indicates the __dead zone__. The blue-tinted area indicates the __soft zone__. The __Screen Position__ is the center of the __Dead Zone__. The red-tinted area indicates the __no pass__ area, which the camera prevents the target from entering. The yellow square indicates the target itself.
 
