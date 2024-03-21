@@ -176,7 +176,7 @@ namespace Unity.Cinemachine.Editor
                     { "PathOffset.x", new("SplineOffset.x", typeof(CinemachineSplineDolly)) },
                     { "PathOffset.y", new("SplineOffset.y", typeof(CinemachineSplineDolly)) },
                     { "PathOffset.z", new("SplineOffset.z", typeof(CinemachineSplineDolly)) },
-                    { "PathPosition", new("CameraPosition", typeof(CinemachineSplineDolly)) },
+                    { "PathPosition", new("SplineSettings.Position", typeof(CinemachineSplineDolly)) },
                     { "XDamping", new("Damping.Position.x", typeof(CinemachineSplineDolly)) },
                     { "YDamping", new("Damping.Position.y", typeof(CinemachineSplineDolly)) },
                     { "ZDamping", new("Damping.Position.z", typeof(CinemachineSplineDolly)) }
@@ -276,6 +276,12 @@ namespace Unity.Cinemachine.Editor
                     { "CameraRadius", new("AvoidObstacles.CameraRadius", typeof(CinemachineThirdPersonFollow)) },
                     { "DampingIntoCollision", new("AvoidObstacles.DampingIntoCollision", typeof(CinemachineThirdPersonFollow)) },
                     { "DampingFromCollision", new("AvoidObstacles.DampingFromCollision", typeof(CinemachineThirdPersonFollow)) }
+                }
+            },
+            {
+                typeof(CinemachineDollyCart), new Dictionary<string, Tuple<string, Type>>
+                {
+                    { "SplinePosition", new("SplineSettings.Position", typeof(CinemachineSplineCart)) }
                 }
             },
 #if CINEMACHINE_PHYSICS
