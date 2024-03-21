@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
+    /// <summary>CinemachineSameAsFollowTarget has been deprecated. Use CinemachineRotateWithFollowTarget instead.</summary>
     [Obsolete("CinemachineSameAsFollowTarget has been deprecated. Use CinemachineRotateWithFollowTarget instead")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
