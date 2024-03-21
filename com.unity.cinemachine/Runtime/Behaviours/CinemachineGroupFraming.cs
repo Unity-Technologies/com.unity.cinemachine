@@ -102,9 +102,8 @@ namespace Unity.Cinemachine
             FramingSize = Mathf.Max(k_MinimumGroupSize, FramingSize);
             Damping = Mathf.Max(0, Damping);
             DollyRange.y = Mathf.Max(DollyRange.x, DollyRange.y);
-            FovRange.x = Mathf.Clamp(FovRange.x, 1, 179);
-            FovRange.y = Mathf.Max(FovRange.x, FovRange.y);
             FovRange.y = Mathf.Clamp(FovRange.y, 1, 179);
+            FovRange.x = Mathf.Clamp(FovRange.x, 1, FovRange.y);
             OrthoSizeRange.x = Mathf.Max(0.01f, OrthoSizeRange.x);
             OrthoSizeRange.y = Mathf.Max(OrthoSizeRange.x, OrthoSizeRange.y);
         }

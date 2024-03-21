@@ -1,5 +1,11 @@
+using System;
+using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.MethodImplOptions;
+
 using UnityEngine;
 using UnityEngine.Splines;
+
+using static UnityEngine.Splines.PathIndexUnit;
 
 namespace Unity.Cinemachine
 {
@@ -126,7 +132,7 @@ namespace Unity.Cinemachine
         /// <param name="splineLength">The length of the spline, in distance units.  
         /// Passed as parameter for efficiency because length calculation is slow.
         /// If a negative value is passed, length will be calculated.</param>
-        /// <returns></returns>
+        /// <returns>The clamped position value, respecting the specified units</returns>
         public static float StandardizePosition(
             this Spline spline, float t, PathIndexUnit unit, float splineLength = -1)
         {

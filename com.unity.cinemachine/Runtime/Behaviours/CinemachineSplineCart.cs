@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Splines;
 
 namespace Unity.Cinemachine
@@ -14,9 +15,10 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineCart.html")]
     public class CinemachineSplineCart : MonoBehaviour
     {
-        /// <summary>The Spline container to which the camera will be constrained.</summary>
-        [Tooltip("The Spline container to which the cart will be constrained.")]
-        public SplineContainer Spline;
+        /// <summary>
+        /// Holds the Spline container, the spline position, and the position unit type
+        /// </summary>
+        public SplineSettings SplineSettings = new () { Units = PathIndexUnit.Normalized };
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -33,16 +35,8 @@ namespace Unity.Cinemachine
         [Tooltip("When to move the cart, if Speed is non-zero")]
         public UpdateMethods UpdateMethod = UpdateMethods.Update;
 
-        /// <summary>How to interpret the Spline Position</summary>
-        [Tooltip("How to interpret the Spline Position.  If set to Knot, values are as follows: "
-            + "0 represents the first knot on the path, 1 is the second, and so on.  "
-            + "Values in-between are points on the spline in between the knots.  "
-            + "If set to Distance, then Spline Position represents distance along the spline.")]
-        public PathIndexUnit PositionUnits = PathIndexUnit.Distance;
-
         /// <summary>Controls how automatic dollying occurs</summary>
         [FoldoutWithEnabledButton]
-        [NoSaveDuringPlay]
         [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
         public SplineAutoDolly AutomaticDolly;
         
@@ -50,36 +44,72 @@ namespace Unity.Cinemachine
         [Tooltip("Used only by Automatic Dolly settings that require it")]
         public Transform TrackingTarget;
 
-        /// <summary>The cart's current position on the spline, in position units</summary>
-        [NoSaveDuringPlay]
-        [Tooltip("The position along the spline at which the cart will be placed.  "
-            + "This can be animated directly or, if the velocity is non-zero, will be updated automatically.  "
-            + "The value is interpreted according to the Position Units setting.")]
-        public float SplinePosition;
+        /// <summary>The Spline container to which the cart will be constrained.</summary>
+        public SplineContainer Spline
+        {
+            get => SplineSettings.Spline;
+            set => SplineSettings.Spline = value;
+        }
+
+        /// <summary>The cart's current position on the spline, in spline position units</summary>
+        public float SplinePosition
+        {
+            get => SplineSettings.Position;
+            set => SplineSettings.Position = value;
+        }
+
+        /// <summary>How to interpret PositionOnSpline:
+        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
+        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
+        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
+        /// interpolation between the specific knot index and the next knot."</summary>
+        public PathIndexUnit PositionUnits
+        {
+            get => SplineSettings.Units;
+            set => SplineSettings.ChangeUnitPreservePosition(value);
+        }
 
         CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
+        // In-editor only: CM 3.0.x Legacy support =================================
+        [SerializeField, HideInInspector, FormerlySerializedAs("SplinePosition")] private float m_LegacyPosition = -1;
+        [SerializeField, HideInInspector, FormerlySerializedAs("PositionUnits")] private PathIndexUnit m_LegacyUnits;
+        [SerializeField, HideInInspector, FormerlySerializedAs("Spline")] private SplineContainer m_LegacySpline;
+        void PerformLegacyUpgrade()
+        {
+            if (m_LegacyPosition != -1)
+            {
+                SplineSettings.Position = m_LegacyPosition;
+                SplineSettings.Units = m_LegacyUnits;
+                m_LegacyPosition = -1;
+                m_LegacyUnits = 0;
+            }
+            if (m_LegacySpline != null)
+            {
+                SplineSettings.Spline = m_LegacySpline;
+                m_LegacySpline = null;
+            }
+        }
+        // =================================
+
         private void OnValidate()
         {
-            if (AutomaticDolly.Method != null)
-                AutomaticDolly.Method.Validate();
+            PerformLegacyUpgrade(); // only called in-editor
+            AutomaticDolly.Method?.Validate();
         }
 
         void Reset()
         {
-            Spline = null;
+            SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
             UpdateMethod = UpdateMethods.Update;
-            PositionUnits = PathIndexUnit.Distance;
             AutomaticDolly.Method = null;
             TrackingTarget = null;
-            SplinePosition = 0;
         }
 
         void OnEnable()
         {
             RefreshRollCache();
-            if (AutomaticDolly.Method != null)
-                AutomaticDolly.Method.Reset();
+            AutomaticDolly.Method?.Reset();
         }
 
         void FixedUpdate()
