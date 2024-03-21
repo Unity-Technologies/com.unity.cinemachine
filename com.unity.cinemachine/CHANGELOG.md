@@ -18,8 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 - CinemachineDeoccluder has the option to resolve towards the Follow target instead of the LookAt target.
 - FlyAround sample scene showing a simple fly-around camera.
-- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
-- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- Added CinemachineDeoccluder.UseFollowTarget option to resolve towards the Follow target instead of the LookAt target.
 
 ### Changed
 - SplineDolly and SplineCart: position on spline is preserved when units change.
