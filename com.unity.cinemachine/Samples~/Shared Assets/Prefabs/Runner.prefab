@@ -25,6 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7394770885881608447}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071067, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -51, y: 1.05, z: 4}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +33,6 @@ Transform:
   m_Children:
   - {fileID: 4403131764514983679}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -0.139, y: 0, z: 0}
 --- !u!114 &7394770885881608446
 MonoBehaviour:
@@ -46,15 +46,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450f466b666a79a4698f2b19a5c87c03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Spline: {fileID: 0}
+  SplineSettings:
+    Spline: {fileID: 0}
+    Position: 0
+    Units: 0
   UpdateMethod: 0
-  PositionUnits: 0
   AutomaticDolly:
     Enabled: 1
     Method:
       rid: 6015593199795437572
   TrackingTarget: {fileID: 0}
-  SplinePosition: 0
+  m_LegacyPosition: -1
+  m_LegacyUnits: 0
+  m_LegacySpline: {fileID: 0}
   references:
     version: 2
     RefIds:
