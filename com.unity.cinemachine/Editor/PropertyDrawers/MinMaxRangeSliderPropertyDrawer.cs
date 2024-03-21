@@ -42,7 +42,8 @@ namespace Unity.Cinemachine.Editor
         {
             var a = attribute as MinMaxRangeSliderAttribute;
 
-            var minField = new FloatField { value = property.vector2Value.x, style = { flexGrow = 1, flexBasis = 0 }};
+            var minField = new FloatField 
+                { value = property.vector2Value.x, isDelayed = true, style = { flexGrow = 1, flexBasis = 0 }};
             minField.AddToClassList(InspectorUtility.kAlignFieldClass);
             minField.TrackPropertyValue(property, (evt) => minField.value = evt.vector2Value.x);
             minField.RegisterValueChangedCallback((evt) =>
@@ -60,9 +61,10 @@ namespace Unity.Cinemachine.Editor
             };
             slider.BindProperty(property);
 
-            var curveMax = new FloatField() { value = property.vector2Value.y, style = { flexGrow = 1, flexBasis = 0 } };
-            curveMax.TrackPropertyValue(property, (evt) => curveMax.value = evt.vector2Value.y);
-            curveMax.RegisterValueChangedCallback((evt) =>
+            var maxField = new FloatField() 
+                { value = property.vector2Value.y, isDelayed = true, style = { flexGrow = 1, flexBasis = 0 } };
+            maxField.TrackPropertyValue(property, (evt) => maxField.value = evt.vector2Value.y);
+            maxField.RegisterValueChangedCallback((evt) =>
             {
                 var v = property.vector2Value;
                 v.y = Mathf.Min(evt.newValue, a.Max);
@@ -74,7 +76,7 @@ namespace Unity.Cinemachine.Editor
             row.Left.Add(new Label { text = property.displayName, tooltip = property.tooltip, style = { alignSelf = Align.Center }});
             row.Right.Add(minField);
             row.Right.Add(slider);
-            row.Right.Add(curveMax);
+            row.Right.Add(maxField);
             return row;
         }
     }

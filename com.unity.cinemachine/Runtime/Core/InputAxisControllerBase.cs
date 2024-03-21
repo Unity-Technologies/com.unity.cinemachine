@@ -184,7 +184,6 @@ namespace Unity.Cinemachine
         public void UpdateControllers(UnityEngine.Object context)
         {
             var deltaTime = Time.deltaTime;
-            //bool gotInput = false;
             for (int i = 0; i < Controllers.Count; ++i)
             {
                 var c = Controllers[i];
@@ -195,9 +194,7 @@ namespace Unity.Cinemachine
                     c.InputValue = c.Input.GetValue(context, hint);
 
                 c.Driver.ProcessInput(ref m_Axes[i].DrivenAxis(), c.InputValue, deltaTime);
-                //gotInput |= Mathf.Abs(c.InputValue) > 0.001f;
             }
-            // GML todo: handle synching of recentering across multiple axes
         }
     }
 
