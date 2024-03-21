@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Unity.Cinemachine
 {
+    /// <summary>
+    /// Evaluates shot quality in the Finalize stage based on LookAt target occlusion and distance.
+    /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Shot Quality Evaluator")]
     [SaveDuringPlay]
     [ExecuteAlways]
@@ -79,6 +82,7 @@ namespace Unity.Cinemachine
             DistanceEvaluation = DistanceEvaluationSettings.Default;
         }
         
+        /// <inheritdoc />
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {

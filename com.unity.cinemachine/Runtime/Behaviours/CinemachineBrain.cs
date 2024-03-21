@@ -523,7 +523,7 @@ namespace Unity.Cinemachine
 
             m_BlendManager.ComputeCurrentBlend();
 
-            if (UpdateMethod == UpdateMethods.FixedUpdate)
+            if (Application.isPlaying && UpdateMethod == UpdateMethods.FixedUpdate)
             {
                 // Special handling for fixed update: cameras that have been enabled
                 // since the last physics frame must be updated now
