@@ -46,6 +46,7 @@ Here is the list of all available Cinemachine Camera Extensions:
   * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
+  * [Cinemachine Decollider](CinemachineDecollider.md)
   * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
   * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
   * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)
