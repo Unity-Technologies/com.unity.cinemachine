@@ -5,7 +5,7 @@ On its own, a Cinemachine Camera is a **passive** GameObject that acts as a came
 * Parent to another GameObject to make it move and rotate along with it.
 * Manipulate via a custom script to move and rotate it and control its lens.
 
-However, for more realistic results, you can add **procedural** behaviors and extensions to any Cinemachine Camera to make it dynamically move, shake, track targets, compose its own shots, respond to user inputs, move along a predefined path, react to external impulse signals, produce post-processing effects, and more.
+However, for more sophisticated results, you can add **procedural** behaviors and extensions to any Cinemachine Camera to make it dynamically move, shake, track targets, compose its own shots, respond to user inputs, move along a predefined path, react to external impulse signals, produce post-processing effects, and more.
 
 
 ## Procedural behaviors and extensions
@@ -16,7 +16,7 @@ The [Cinemachine Camera component](CinemachineCamera.md) allows you to select a 
 
 Select and configure **Position Control** and **Rotation Control** behaviors to make the Cinemachine Camera **move** and **aim** the Unity Camera according to some constraints or criteria.
 
-Most of the available behaviors require to [track or look at a target GameObject](#target-gameobject-tracking), while the other support target tracking depending on how you configure them. Also, some behaviors support user input.
+Most of the available behaviors are designed to [track or look at a target GameObject](#target-gameobject-tracking).  Additionally, some behaviors support user input to orbit or rotate the camera.
 
 With these behaviors, you can:
 * Follow a target with a [fixed offset](CinemachineFollow.md), in [orbital configuration](CinemachineOrbitalFollow.md), or as a [third or first person](CinemachineThirdPersonFollow.md).

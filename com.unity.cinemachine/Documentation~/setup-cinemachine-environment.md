@@ -30,6 +30,9 @@ When you create a first Cinemachine Camera in a Scene, Unity automatically adds 
 > [!NOTE]
 > You can manually add the Cinemachine Brain component as any other component to the Unity Camera GameObject if needed, but remember that only one Unity Camera in the Scene must have a Cinemachine Brain. 
 
+> [!NOTE]
+> Once the Cinemachine Brain is present, the Unity Camera's transform and lens settings are locked and cannot be changed directly in the Camera inspector. You can only change these properties of the camera by changing the corresponding properties of the CinemachineCamera.
+
 ## Adjust the Cinemachine Camera properties
 
 1. Open the Game view.  

@@ -27,6 +27,8 @@ You can have multiple Cinemachine Tracks in the same Timeline. The tracks lower 
 
 By having a shot on a lower track become active while a higher-up CinemachineShot clip is active, you can interrupt the shot with another one.
 
+It's also possible to have multiple Timelines with Cinemachine tracks.  In this case, the Timeline that was most recently activated overrides the others, with control reverting to the previous Timeline in places where the overriding Timeline has no Cinemachine Camera Clips active.
+
 ## Blend with other Cinemachine Tracks and the Brain
 
 You can blend a Cinemachine Shot Clip with another one that is in a separate Cinemachine Track, or even with the Cinemachine Camera currently identified as the Live one by the Cinemachine Brain.

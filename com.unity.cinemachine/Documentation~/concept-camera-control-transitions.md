@@ -14,15 +14,14 @@ At any time, each Cinemachine Camera may be in one of three different states, bu
 
 ## Live Cinemachine Camera selection
 
-The conditions that make a Cinemachine Camera the live one depend on the context you're using Cinemachine in.
+The conditions that make a Cinemachine Camera the live one depend on the context in which you're using Cinemachine.  By default, the Cinemachine Brain is responsible for handling the live Cinemachine Camera selection.
+
+- The Brain chooses the active [Cinemachine Camera component](CinemachineCamera.md) with the highest Priority and makes it Live.
+- If multiple active CinemchineCameras share the same highest priority, then the ost recently [activated](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) of them will be chosen.
+- Deactivated or lower-priority CinemachineCameras can be Live if they are part of a blend, until the blend is finished.
+- If a Timeline is active with Cinemachine tracks, it overrides the Brain's priority system and drives the Live cameras and blends explicitly, regardless of their Priority and active state.
 
 ### Realtime dynamic events
-
-By default, the Cinemachine Brain is responsible for handling the live Cinemachine Camera selection.
-
-To be or become live, a Cinemachine Camera must meet the following rules:
-* Its GameObject must be the most recently [activated GameObject](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) that includes a Cinemachine Camera component.
-* Its Priority, a property you can optionally set in the [Cinemachine Camera component](CinemachineCamera.md), must be the highest among activated Cinemachine Cameras.
 
 You can respond to dynamic game events in real time by manipulating Cinemachine Camera priorities or by activating and deactivating their GameObjects. This is particularly useful for live gameplay, where action isn’t always predictable.
 
@@ -30,7 +29,7 @@ You can respond to dynamic game events in real time by manipulating Cinemachine 
 
 Use [Cinemachine with Timeline](concept-timeline.md) to choreograph Cinemachine Cameras and manage shots in predictable situations, like cutscenes.
 
-When you use Timeline with Cinemachine Cameras, Timeline overrides the Cinemachine Brain priority system. The live Cinemachine Camera selection is based on the activation of specific Cinemachine Camera clips that give you precise, to-the-frame camera control.
+When you use Timeline with Cinemachine Cameras, Timeline overrides the Cinemachine Brain priority system, meaning that the Priority and active state of the Cinemachine Cameras is ignored when a Cinemachine Camera Clip is active. The live Cinemachine Camera selection is based on the activation of specific Cinemachine Camera clips that give you precise, to-the-frame camera control.
 
 ## Cinemachine Camera transitions
 

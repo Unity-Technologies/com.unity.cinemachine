@@ -17,4 +17,6 @@ A new Cinemachine Camera and spline appear in the [Hierarchy]([https://docs.unit
 
 Any Unity spline can be used as a path in Cinemachine.  Just drag it into the [Spline Dolly](CinemachineSplineDolly.md) Spline property field, and immediately the CinemachineCamera will be confined to the spline. 
 
+By default, Unity Splines contain no rotation data. Camera rotation will be inferred from the spline tangent at any point, combined with the world Up vector. To add rotation about the tangent, you can use the [Cinemachine Spline Roll](CinemachineSplineRoll.md) behaviour. This allows you to specify Roll values for any point along the spline. Roll values are used to rotate the camera about the spline tangent at that point, giving you more control over the camera's final rotation.
 
+If a Cinemachine Spline Roll behaviour is added to the spline, all cameras and dolly carts that use the spline will see it. Alternatively, you can add the Cinemachine Spline Roll behaviour to the Cinemachine Camera itself, in which case the roll will only apply to it.

@@ -20,6 +20,9 @@ Create and set up a Cinemachine Camera that automatically follows and frames a c
 
    The CinemachineCamera automatically positions the Unity camera relative to this GameObject at all times, and rotates the camera to look at the GameObject, even as you move it in the Scene.
 
+> [!NOTE]
+> If you invoked th **Follow Camera** menu item by right-clicking on the GameObject that you want to follow, the "Tracking Target" of the new camera will automatically be populated with the object on which you right-clicked.
+
 ## Adjust the Cinemachine Camera behavior
 
 1. Use the Inspector to access the [Cinemachine Camera component](CinemachineCamera.md) properties for further configuration.
@@ -29,3 +32,4 @@ Create and set up a Cinemachine Camera that automatically follows and frames a c
    * The follow damping
    * The screen composition, and
    * The damping used when re-aiming the camera
+   * The Lens settings
