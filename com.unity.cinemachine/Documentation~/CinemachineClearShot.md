@@ -1,6 +1,6 @@
 # Cinemachine Clear Shot Camera
 
-The __Cinemachine ClearShot Camera__ component chooses among its children CinemachineCameras for the best quality shot of the target. Use Clear Shot to set up complex multi-camera coverage of a Scene to guarantee a clear view of the target.
+The __Cinemachine ClearShot Camera__ component chooses among its child CinemachineCameras for the best quality shot of the target. Use Clear Shot to set up complex multi-camera coverage of a Scene to guarantee a clear view of the target.
 
 This can be a very powerful tool. CinemachineCamera children with [Cinemachine Deoccluder](CinemachineDeoccluder.md) or other shot quality evaluator extensions analyze the shot for target obstructions, optimal target distance, and so on. Clear Shot uses this information to choose the best child to activate.
 

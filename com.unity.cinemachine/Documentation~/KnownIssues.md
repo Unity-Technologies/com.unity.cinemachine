@@ -5,10 +5,10 @@ If accumulation's "Anti-aliasing" option is enabled and the scene contains a Cin
 **Workaround**: Reset the projection matrix every frame, after CinemachineBrain has modified the camera.
 
 
-	public class FixProjection : MonoBehaviour
-	{
-		void LateUpdate() 
-		{ 
-			Camera.main.ResetProjectionMatrix(); 
-		}
-	}
+    public class FixProjection : MonoBehaviour
+    {
+        void LateUpdate() 
+        { 
+            Camera.main.ResetProjectionMatrix(); 
+        }
+    }

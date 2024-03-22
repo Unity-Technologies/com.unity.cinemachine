@@ -1,6 +1,6 @@
 # Cinemachine Deoccluder
 
-__Cinemachine Deoccluder__ is an [extension](CinemachineVirtualCameraExtensions.md) for the CinemachineCamera. It post-processes the final position of the CinemachineCamera to attempt to preserve the line of sight with the __Look At__ target of the CinemachineCamera. It does this by moving away from the GameObjects that obstruct the view.
+__Cinemachine Deoccluder__ is an [extension](concept-procedural-motion.md#extensions) for the CinemachineCamera. It post-processes the final position of the CinemachineCamera to attempt to preserve the line of sight with the __Look At__ target of the CinemachineCamera. It does this by moving away from the GameObjects that obstruct the view.
 
 Add a Cinemachine Deoccluder extension to a CinemachineCamera to do any of the following tasks:
 
