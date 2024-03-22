@@ -1,14 +1,14 @@
-# Follow
+# Cinemachine Follow component
 
 This CinemachineCamera __Position Control__ behavior moves the CinemachineCamera to maintain a fixed offset relative to the __Tracking Target__. It also applies damping.
 
 The fixed offset can be interpreted in various ways, depending on the Binding Mode.
 
-## Properties:
+## Properties
 
-| **Property:** || **Function:** |
+| **Property** || **Function** |
 |:---|:---|:---|
-| __[Binding Mode](CinemachineBindingModes.md)__ || How to use to interpret the offset from the target. |
+| __[Binding Mode](#binding-modes)__ || How to use to interpret the offset from the target. |
 | | _World Space_ | The offset is interpreted in world space relative to the origin of the Follow target. The camera will not change position when the target rotates. |
 | | _Lock To Target_ | Makes the CinemachineCamera use the local frame of the Follow target. When the target rotates, the camera moves with it to maintain the offset and to maintain the same view of the target. |
 | | _Lock To Target With World Up_ | Makes the CinemachineCamera use the local frame of the Follow target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
@@ -21,5 +21,6 @@ The fixed offset can be interpreted in various ways, depending on the Binding Mo
 | __Rotation Damping__ || How responsively the camera tracks the target's pitch, yaw, and roll, when in Euler angular damping mode. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly.|
 | __Quaternion Damping__ || How responsively the camera tracks the target's rotation, when in Quaternion Angular Damping Mode.|
 
+## Binding Modes
 
-
+[!include[](includes/binding-modes.md)]

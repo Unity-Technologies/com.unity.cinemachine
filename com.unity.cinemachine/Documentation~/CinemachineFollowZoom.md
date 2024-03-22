@@ -1,6 +1,6 @@
 # Cinemachine Follow Zoom
 
-This [extension](CinemachineVirtualCameraExtensions.md) adjusts the FOV of the lens to keep the target object at a constant size on the screen, regardless of camera and target position.
+This [extension](concept-procedural-motion.md#extensions) adjusts the FOV of the lens to keep the target object at a constant size on the screen, regardless of camera and target position.
 
 ## Properties:
 
