@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
                     if (ScaleImpactWithMass)
                         mass *= m_RigidBody.mass;
                     if (getVelocity)
-#if CINEMACHINE_UNITY_2023_3_0a17_OR_NEWER
+#if UNITY_2023_3_OR_NEWER
                         vel = -m_RigidBody.linearVelocity;
 #else
                         vel = -m_RigidBody.velocity;
@@ -113,7 +113,7 @@ namespace Unity.Cinemachine
                     if (ScaleImpactWithMass)
                         mass *= rb.mass;
                     if (getVelocity)
-#if CINEMACHINE_UNITY_2023_3_0a17_OR_NEWER
+#if UNITY_2023_3_OR_NEWER
                         vel += rb.linearVelocity;
 #else
                         vel += rb.velocity;
