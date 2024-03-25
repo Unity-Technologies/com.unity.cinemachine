@@ -91,7 +91,7 @@ namespace Cinemachine
                     if (m_ScaleImpactWithMass)
                         mass *= mRigidBody.mass;
                     if (getVelocity)
-#if CINEMACHINE_UNITY_2023_3_0a17_OR_NEWER
+#if UNITY_2023_3_OR_NEWER
                         vel = -mRigidBody.linearVelocity;
 #else
                         vel = -mRigidBody.velocity;
@@ -103,7 +103,7 @@ namespace Cinemachine
                     if (m_ScaleImpactWithMass)
                         mass *= rb.mass;
                     if (getVelocity)
-#if CINEMACHINE_UNITY_2023_3_0a17_OR_NEWER
+#if UNITY_2023_3_OR_NEWER
                         vel += rb.linearVelocity;
 #else
                         vel += rb.velocity;
