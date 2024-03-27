@@ -7,22 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Fixed
-- Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
+- Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CinemachineBrain is inactive.
 - Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
 - Bugfix: StateDrivenCamera min activation time was broken.
 - Bugfix: Solo not updating when brain is in FixedUpdate.
+- Bugfix: Spline roll was being calculated incorrectly when spline was rotated.
 
 ### Added
-- FlyAround sample scene showing a simple fly-around camera.
-- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
+- FlyAround sample scene showing a simple fly-around camera.
 
 ### Changed
 - SplineDolly and SplineCart: position on spline is preserved when units change.
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
 - PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
-- Axis recentering happens independently on axes, so that input on one axis does not impact the recentering state of the others.
+- Axis recentering happens independently on axes with differing recentering tmes, so that input on one axis does not impact the recentering state of the others.
 - FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
 
 

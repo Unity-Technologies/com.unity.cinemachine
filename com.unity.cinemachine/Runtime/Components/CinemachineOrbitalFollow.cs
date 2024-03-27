@@ -15,6 +15,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineOrbitalFollow.html")]
     public class CinemachineOrbitalFollow 
         : CinemachineComponentBase, IInputAxisOwner, IInputAxisResetSource
@@ -450,6 +451,14 @@ namespace Unity.Cinemachine
 
             if (HorizontalAxis.Recentering.Enabled)
                 UpdateHorizontalCenter(orient);
+
+            // Sync recentering if the recenter times match
+            gotInputX |= gotInputY && (HorizontalAxis.Recentering.Time == VerticalAxis.Recentering.Time);
+            gotInputX |= gotInputZ && (HorizontalAxis.Recentering.Time == RadialAxis.Recentering.Time);
+            gotInputY |= gotInputX && (VerticalAxis.Recentering.Time == HorizontalAxis.Recentering.Time);
+            gotInputY |= gotInputZ && (VerticalAxis.Recentering.Time == RadialAxis.Recentering.Time);
+            gotInputZ |= gotInputX && (RadialAxis.Recentering.Time == HorizontalAxis.Recentering.Time);
+            gotInputZ |= gotInputY && (RadialAxis.Recentering.Time == VerticalAxis.Recentering.Time);
 
             HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
             VerticalAxis.UpdateRecentering(deltaTime, gotInputY);

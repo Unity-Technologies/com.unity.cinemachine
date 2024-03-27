@@ -558,7 +558,11 @@ namespace Unity.Cinemachine
             {
                 case Heading.HeadingDefinition.Velocity:
 #if CINEMACHINE_PHYSICS
+    #if UNITY_2023_3_OR_NEWER
+                    velocity = m_TargetRigidBody.linearVelocity;
+    #else
                     velocity = m_TargetRigidBody.velocity;
+    #endif
                     break;
 #endif
                 case Heading.HeadingDefinition.PositionDelta:

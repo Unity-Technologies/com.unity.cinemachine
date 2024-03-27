@@ -23,31 +23,15 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePositionComposer.html")]
     public class CinemachinePositionComposer : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
         , CinemachineFreeLookModifier.IModifiableComposition
     {
-        /// <summary>
-        /// Offset from the target object (in target-local co-ordinates).  The camera will attempt to
-        /// frame the point which is the target's position plus this offset.  Use it to correct for
-        /// cases when the target's origin is not the point of interest for the camera.
-        /// </summary>
-        [Tooltip("Offset from the target object (in target-local co-ordinates).  "
-            + "The camera will attempt to frame the point which is the target's position plus "
-            + "this offset.  Use it to correct for cases when the target's origin is not the "
-            + "point of interest for the camera.")]
-        [FormerlySerializedAs("TrackedObjectOffset")]
-        public Vector3 TargetOffset;
-
-        /// <summary>This setting will instruct the composer to adjust its target offset based
-        /// on the motion of the target.  The composer will look at a point where it estimates
-        /// the target will be a little into the future.</summary>
-        [FoldoutWithEnabledButton]
-        public LookaheadSettings Lookahead;
-
         /// <summary>The distance along the camera axis that will be maintained from the target</summary>
+        [Header("Camera Position")]
         [Tooltip("The distance along the camera axis that will be maintained from the target")]
         public float CameraDistance = 10f;
 
@@ -57,6 +41,30 @@ namespace Unity.Cinemachine
             + "this distance of the specified camera distance")]
         public float DeadZoneDepth = 0;
         
+        /// <summary>Settings for screen-space composition</summary>
+        [Header("Composition")]
+        [HideFoldout]
+        public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
+
+        /// <summary>Force target to center of screen when this camera activates.  
+        /// If false, will clamp target to the edges of the dead zone</summary>
+        [Tooltip("Force target to center of screen when this camera activates.  If false, will "
+            + "clamp target to the edges of the dead zone")]
+        public bool CenterOnActivate = true;
+
+        /// <summary>
+        /// Offset from the target object (in target-local co-ordinates).  The camera will attempt to
+        /// frame the point which is the target's position plus this offset.  Use it to correct for
+        /// cases when the target's origin is not the point of interest for the camera.
+        /// </summary>
+        [Header("Target Tracking")]
+        [Tooltip("Offset from the target object (in target-local co-ordinates).  "
+            + "The camera will attempt to frame the point which is the target's position plus "
+            + "this offset.  Use it to correct for cases when the target's origin is not the "
+            + "point of interest for the camera.")]
+        [FormerlySerializedAs("TrackedObjectOffset")]
+        public Vector3 TargetOffset;
+
         /// <summary>How aggressively the camera tries to follow the target in screen space.
         /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
         /// the dead zone. Larger numbers give a more heavy slowly responding camera.
@@ -67,15 +75,11 @@ namespace Unity.Cinemachine
             + "vertical and horizontal settings can yield a wide range of camera behaviors.")]
         public Vector3 Damping;
 
-        /// <summary>Settings for screen-space composition</summary>
-        [HideFoldout]
-        public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
-
-        /// <summary>Force target to center of screen when this camera activates.  
-        /// If false, will clamp target to the edges of the dead zone</summary>
-        [Tooltip("Force target to center of screen when this camera activates.  If false, will "
-            + "clamp target to the edges of the dead zone")]
-        public bool CenterOnActivate = true;
+        /// <summary>This setting will instruct the composer to adjust its target offset based
+        /// on the motion of the target.  The composer will look at a point where it estimates
+        /// the target will be a little into the future.</summary>
+        [FoldoutWithEnabledButton]
+        public LookaheadSettings Lookahead;
 
         const float kMinimumCameraDistance = 0.01f;
 

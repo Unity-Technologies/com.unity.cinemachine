@@ -41,20 +41,13 @@ namespace Unity.Cinemachine.Editor
             }
         }
         
-        protected virtual void OnEnable()
-        {
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        }
-
-        protected virtual void OnDisable()
-        {
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
+        protected virtual void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+        protected virtual void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            this.IMGUI_DrawMissingCmCameraHelpBox(CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
+            this.IMGUI_DrawMissingCmCameraHelpBox();
             DrawRemainingPropertiesInInspector();
         }
 
