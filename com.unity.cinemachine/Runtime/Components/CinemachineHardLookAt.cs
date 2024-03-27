@@ -11,6 +11,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.LookAt)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineHardLookAt.html")]
     public class CinemachineHardLookAt : CinemachineComponentBase
     {

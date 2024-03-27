@@ -136,6 +136,33 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
+    /// Attribute used by inspector to display warnings about missing targets.
+    /// This can be used on CinemachineComponents and CinemachineExtensions.
+    /// </summary>
+    public sealed class RequiredTargetAttribute : System.Attribute
+    {
+        /// <summary>Choices for which targets are required</summary>
+        public enum RequiredTargets 
+        { 
+            /// <summary>No specific target is required.</summary>
+            None, 
+            /// <summary>Tracking Target is required for the pipeline element to work</summary>
+            Tracking, 
+            /// <summary>LookAt Target is required for the pipeline element to work</summary>
+            LookAt, 
+            /// <summary>LookAt Target is required and must be a ICinemachineTargetGroup for the pipeline element to work</summary>
+            GroupLookAt 
+        };
+
+        /// <summary>Get the stage in the Camera Pipeline in which to position this component</summary>
+        public RequiredTargets RequiredTarget { get; private set; }
+
+        /// <summary>Constructor: Pipeline Stage is defined here.</summary>
+        /// <param name="requiredTarget">Which targets are required</param>
+        public RequiredTargetAttribute(RequiredTargets requiredTarget) { RequiredTarget = requiredTarget; }
+    }
+
+    /// <summary>
     /// Attribute applied to a CinemachineVirtualCameraBase property to produce
     /// a child camera selector in the inspectoe.
     /// </summary>

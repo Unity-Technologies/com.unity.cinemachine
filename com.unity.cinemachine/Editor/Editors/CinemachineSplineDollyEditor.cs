@@ -25,15 +25,13 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutomaticDolly)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
 
-            TrackSpline(splineProp);
-            ux.TrackPropertyValue(splineProp, TrackSpline);
-            void TrackSpline(SerializedProperty p)
+            ux.TrackPropertyWithInitialCallback(splineProp, (p) =>
             {
                 bool noSpline = false;
                 for (int i = 0; !noSpline && i < targets.Length; ++i)
                     noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
                 noSplineHelp.SetVisible(noSpline);
-            }
+            });
 
             return ux;
         }

@@ -32,16 +32,9 @@ namespace Unity.Cinemachine.Editor
             var liveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
             row.SetEnabled(false);
 
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowDebugText)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShowCameraFrustum)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.IgnoreTimeScale)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.WorldUpOverride)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ChannelMask)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendUpdateMethod)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.LensModeOverride)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
 
             ux.ContinuousUpdate(() =>
             {

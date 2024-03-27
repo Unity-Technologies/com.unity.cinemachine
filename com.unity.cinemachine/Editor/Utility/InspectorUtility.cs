@@ -818,5 +818,19 @@ namespace Unity.Cinemachine.Editor
             }
             return row;
         }
+
+        public static void AddRemainingProperties(VisualElement ux, SerializedProperty property)
+        {
+            if (property != null)
+            {
+                var p = property.Copy();
+                do
+                {
+                    if (p.name != "m_Script")
+                        ux.Add(new PropertyField(p));
+                }
+                while (p.NextVisible(false));
+            }
+        }
     }
 }

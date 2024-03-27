@@ -3,32 +3,14 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-using UnityEditor.UIElements;
-using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineDeoccluder))]
     [CanEditMultipleObjects]
-    class CinemachineDeoccluderEditor : UnityEditor.Editor
+    class CinemachineDeoccluderEditor : CinemachineExtensionEditor
     {
-        CinemachineDeoccluder Target => target as CinemachineDeoccluder;
         static List<List<Vector3>> s_pathsCache;
-
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-
-            this.AddMissingCmCameraHelpBox(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CollideAgainst)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.IgnoreTag)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TransparentLayers)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.MinimumDistanceFromTarget)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AvoidObstacles)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShotQualityEvaluation)));
-
-            return ux;
-        }
 
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineDeoccluder))]
         static void DrawColliderGizmos(CinemachineDeoccluder collider, GizmoType type)
