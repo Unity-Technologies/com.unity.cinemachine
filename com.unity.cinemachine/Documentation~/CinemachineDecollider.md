@@ -1,9 +1,9 @@
 # Cinemachine Decollider
 
-__Cinemachine Decollider__ is an [extension](CinemachineVirtualCameraExtensions.md) for the [Camera](CinemachineCamera.md). It post-processes the final position of the CinemachineCamera to pull the camera out of colliding objects.  Altough collisions will be resolved in the direction of the camera target, no attempt will be made to preserve the line of sight to the target.  For that, please use [CinemachineDeoccluder](CinemachineDeoccluder.md).
+__Cinemachine Decollider__ is an [extension](CinemachineVirtualCameraExtensions.md) for the [Camera](CinemachineCamera.md). It post-processes the final position of the CinemachineCamera to pull the camera out of colliding objects.  Although collisions will be resolved in the direction of the camera target, no attempt will be made to preserve the line of sight to the target.  For that, please use [CinemachineDeoccluder](CinemachineDeoccluder.md).
 
 The Decollider combines two algorithms:
-1. **Terrain Resolution**.  A ray is cast from above the camera in the downwards direction.  If it hits a collider above the camera and the collider is on one of the specified Terrain Layers, the camera is moved upwards to the hit point.
+1. **Terrain Resolution**.  A ray is cast from above the camera in the downwards direction.  If it hits a collider above the camera and the collider is on one of the specified Terrain Layers, the camera is moved upwards to the hit point, placing the camera on top of the collider.
 1. **Obstacle Resolution**.  Obstacles on the specified layers that overlap the camera are detected and the camera is moved out of them in the direction of the camera target.  If the camera sphere does not actually intersect an object, it will not be moved.
 
 If a layer is present in both the Terrain Resolution layer mask and the Obstacle decollision layer mask, then the layer will be considered by the terrain algorithm only, and not by the obstacle decollision algorithm.
