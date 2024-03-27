@@ -1,11 +1,5 @@
-using System;
-using System.Runtime.CompilerServices;
-using static System.Runtime.CompilerServices.MethodImplOptions;
-
 using UnityEngine;
 using UnityEngine.Splines;
-
-using static UnityEngine.Splines.PathIndexUnit;
 
 namespace Unity.Cinemachine
 {
@@ -94,7 +88,7 @@ namespace Unity.Cinemachine
         {
             var result = LocalEvaluateSplineWithRoll(spline, roll, defaultRotation, tNormalized, out position, out rotation);
             position = spline.transform.TransformPoint(position);
-            rotation = rotation * spline.transform.rotation;
+            rotation = spline.transform.rotation * rotation;
             return result;
         }
         

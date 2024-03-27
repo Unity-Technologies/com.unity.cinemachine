@@ -10,6 +10,7 @@ namespace Unity.Cinemachine
     /// </summary>
     [Obsolete("Cinemachine3rdPersonFollow has been deprecated. Use CinemachineThirdPersonFollow instead")]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [AddComponentMenu("")]
     [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/Cinemachine3rdPersonFollow.html")]

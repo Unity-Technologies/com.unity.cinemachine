@@ -1,6 +1,6 @@
 # Cinemachine Target Group
 
-Use Cinemachine Target Group to treat multiple GameObjects as a single Tracking target. It can also be used as targets for procedural behaviour that bneeds to know the size of the target, for example the [Group Framing](CinemachineGroupFraming.md) extension.
+Use Cinemachine Target Group to treat multiple GameObjects as a single Tracking target. It can also be used as targets for procedural behaviour that needs to know the size of the target, for example the [Group Framing](CinemachineGroupFraming.md) extension.
 
 To create a Target Group:
 1. Add a CinemachineTargetGroup component to an empty GameObject.
@@ -28,7 +28,7 @@ To Populate a Target Group:
 | | _Group Center_ | Use the center of the axis-aligned bounding box that contains all items of the Target Group. |
 | | _Group Average_ | Use the weighted average of the positions of the items in the Target Group. |
 | __Rotation Mode__ || How to calculate the rotation of the Target Group.  |
-| | _Manual_ | Use the values specified in the Rotation properties of the Target Group’s transform. This is the recommended setting. |
+| | _Manual_ | Use the values specified in the Rotation properties of the Target Group’s transform. |
 | | _Group Average_ | Weighted average of the orientation of the items in the Target Group. |
 | __Update Method__ || When to update the transform of the Target Group. |
 | | _Update_ | Update in the normal MonoBehaviour Update() method. |

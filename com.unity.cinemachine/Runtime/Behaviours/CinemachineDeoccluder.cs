@@ -358,8 +358,7 @@ namespace Unity.Cinemachine
                 {
                     var initialCamPos = state.GetCorrectedPosition();
                     var up = state.ReferenceUp;
-                    bool hasLookAt = state.HasLookAt();
-                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : initialCamPos;
+                    var hasLookAt = GetLookAtTargetPointForAvoidance(vcam, ref state, out var lookAtPoint);
                     var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                         lookAtPoint - initialCamPos, up) : Vector2.zero;
 
@@ -484,7 +483,14 @@ namespace Unity.Cinemachine
             }
         }
         
-       
+        bool GetLookAtTargetPointForAvoidance(
+            CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 lookAtPoint)
+        {
+            var hasLookAt = state.HasLookAt();
+            lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+            return hasLookAt;
+        }
+        
         Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra, Vector3 lookAtPoint)
         {
             var displacement = Vector3.zero;

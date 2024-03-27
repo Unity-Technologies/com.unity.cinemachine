@@ -2,7 +2,6 @@
 
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -11,8 +10,6 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineConfiner3DEditor : UnityEditor.Editor
     {
-        CinemachineConfiner3D Target => target as CinemachineConfiner3D;
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
@@ -23,19 +20,17 @@ namespace Unity.Cinemachine.Editor
                 "Bounding Volume must be a BoxCollider, SphereCollider, CapsuleCollider, or convex MeshCollider.", 
                 HelpBoxMessageType.Warning));
 
-            var volumeProp = serializedObject.FindProperty(() => Target.BoundingVolume);
-            ux.Add(new PropertyField(volumeProp));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));
+            var confiner = target as CinemachineConfiner3D;
+            var volumeProp = serializedObject.FindProperty(() => confiner.BoundingVolume);
+            InspectorUtility.AddRemainingProperties(ux, volumeProp);
 
-            TrackVolume(volumeProp);
-            ux.TrackPropertyValue(volumeProp, TrackVolume);
-            void TrackVolume(SerializedProperty p)
+            ux.TrackPropertyWithInitialCallback(volumeProp, (p) =>
             {
                 var c = p.objectReferenceValue;
                 var mesh = c as MeshCollider;
                 var isConvexMesh = mesh != null && mesh.convex;
                 boundsHelp.SetVisible(!(isConvexMesh || c is BoxCollider || c is SphereCollider || c is CapsuleCollider));
-            }
+            });
             return ux;
         }
 
