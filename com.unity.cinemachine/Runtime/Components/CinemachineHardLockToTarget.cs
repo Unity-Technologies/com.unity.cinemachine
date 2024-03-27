@@ -12,6 +12,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineHardLockToTarget.html")]
     public class CinemachineHardLockToTarget : CinemachineComponentBase
     {

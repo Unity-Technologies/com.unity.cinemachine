@@ -7,20 +7,12 @@ namespace Unity.Cinemachine.Editor
     [CustomEditor(typeof(CinemachineInputAxisController))]
     class InputAxisControllerEditor : UnityEditor.Editor
     {
-        CinemachineInputAxisController Target => target as CinemachineInputAxisController;
-        
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            
-#if CINEMACHINE_UNITY_INPUTSYSTEM
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PlayerIndex)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AutoEnableInputs)));
-#endif
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ScanRecursively)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SuppressInputWhileBlending)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.m_ControllerManager)));
-
+            var prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+                InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
         

@@ -17,23 +17,30 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.LookAt)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineRotationComposer.html")]
     public class CinemachineRotationComposer : CinemachineComponentBase, 
         CinemachineFreeLookModifier.IModifiableComposition
     {
+        /// <summary>Settings for screen-space composition</summary>
+        [Header("Composition")]
+        [HideFoldout]
+        public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
+
+        /// <summary>Force target to center of screen when this camera activates.  
+        /// If false, will clamp target to the edges of the dead zone</summary>
+        [Tooltip("Force target to center of screen when this camera activates.  If false, will "
+            + "clamp target to the edges of the dead zone")]
+        public bool CenterOnActivate = true;
+
         /// <summary>Target offset from the object's center in LOCAL space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
         /// when the desired area is not in the tracked object's center</summary>
+        [Header("Target Tracking")]
         [Tooltip("Target offset from the target object's center in target-local space. Use this to "
             + "fine-tune the tracking target position when the desired area is not the tracked object's center.")]
         [FormerlySerializedAs("TrackedObjectOffset")]
         public Vector3 TargetOffset;
-
-        /// <summary>This setting will instruct the composer to adjust its target offset based
-        /// on the motion of the target.  The composer will look at a point where it estimates
-        /// the target will be a little into the future.</summary>
-        [FoldoutWithEnabledButton]
-        public LookaheadSettings Lookahead;
 
         /// <summary>How aggressively the camera tries to follow the target in screen space.
         /// Small numbers are more responsive, rapidly orienting the camera to keep the target in
@@ -45,15 +52,12 @@ namespace Unity.Cinemachine
             + "vertical and horizontal settings can yield a wide range of camera behaviors.")]
         public Vector2 Damping;
 
-        /// <summary>Settings for screen-space composition</summary>
-        [HideFoldout]
-        public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
+        /// <summary>This setting will instruct the composer to adjust its target offset based
+        /// on the motion of the target.  The composer will look at a point where it estimates
+        /// the target will be a little into the future.</summary>
+        [FoldoutWithEnabledButton]
+        public LookaheadSettings Lookahead;
 
-        /// <summary>Force target to center of screen when this camera activates.  
-        /// If false, will clamp target to the edges of the dead zone</summary>
-        [Tooltip("Force target to center of screen when this camera activates.  If false, will "
-            + "clamp target to the edges of the dead zone")]
-        public bool CenterOnActivate = true;
 
         void Reset()
         {
