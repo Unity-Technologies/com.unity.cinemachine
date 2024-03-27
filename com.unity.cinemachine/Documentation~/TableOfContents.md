@@ -48,6 +48,7 @@
   * [Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
+  * [Cinemachine Decollider](CinemachineDecollider.md)
   * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
   * [Cinemachine External Camera](CinemachineExternalCamera.md)
   * [Cinemachine Follow](CinemachineFollow.md)
