@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -8,12 +7,9 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineBasicMultiChannelPerlinEditor : UnityEditor.Editor
     {
-        CinemachineBasicMultiChannelPerlin Target => target as CinemachineBasicMultiChannelPerlin;
-
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-
             this.AddMissingCmCameraHelpBox(ux);
 
             var noProfile = ux.AddChild(new HelpBox(
@@ -21,11 +17,9 @@ namespace Unity.Cinemachine.Editor
                 + "in the project, or from one of the presets.", 
                 HelpBoxMessageType.Warning));
 
-            var profileProp = serializedObject.FindProperty(() => Target.NoiseProfile);
-            ux.Add(new PropertyField(profileProp));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.PivotOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AmplitudeGain)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.FrequencyGain)));
+            var perlin = target as CinemachineBasicMultiChannelPerlin;
+            var profileProp = serializedObject.FindProperty(() => perlin.NoiseProfile);
+            InspectorUtility.AddRemainingProperties(ux, profileProp);
 
             var row = ux.AddChild(new InspectorUtility.LeftRightRow());
             row.Right.Add(new Button(() =>
