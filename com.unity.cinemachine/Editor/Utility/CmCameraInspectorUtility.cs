@@ -45,7 +45,7 @@ namespace Unity.Cinemachine.Editor
 
             var noBrainMessage = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 "A CinemachineBrain is required in the scene.", 
-                HelpBoxMessageType.Error, "Add Brain", () => CinemachineMenu.GetOrCreateBrain()));
+                HelpBoxMessageType.Warning, "Add Brain", () => CinemachineMenu.GetOrCreateBrain()));
 
             var navelGazeMessage = ux.AddChild(new HelpBox(
                 "The camera is trying to look at itself.", 
