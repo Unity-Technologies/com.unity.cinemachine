@@ -68,6 +68,7 @@ namespace Unity.Cinemachine.Editor
             typeof(CinemachineDollyCart),
             typeof(CinemachinePipeline),
             typeof(Cinemachine3rdPersonFollow),
+            typeof(CinemachineSameAsFollowTarget),
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             typeof(CinemachineInputProvider),
 #endif
@@ -97,6 +98,7 @@ namespace Unity.Cinemachine.Editor
             { typeof(CinemachineSmoothPath), typeof(SplineContainer) },
             { typeof(CinemachineDollyCart), typeof(CinemachineSplineCart) },
             { typeof(Cinemachine3rdPersonFollow), typeof(CinemachineThirdPersonFollow) },
+            { typeof(CinemachineSameAsFollowTarget), typeof(CinemachineRotateWithFollowTarget) },
 #if CINEMACHINE_PHYSICS
             { typeof(CinemachineCollider), typeof(CinemachineDeoccluder) },
 #endif

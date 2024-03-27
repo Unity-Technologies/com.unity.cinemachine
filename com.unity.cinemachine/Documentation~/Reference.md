@@ -21,7 +21,7 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Hard Look At](CinemachineHardLookAt.md)
   * [Cinemachine Pan Tilt](CinemachinePanTilt.md)
   * [Cinemachine Rotation Composer](CinemachineRotationComposer.md)
-  * [Cinemachine Same As Follow Target](CinemachineSameAsFollowTarget.md)
+  * [Cinemachine Rotate With Follow Target](CinemachineRotateWithFollowTarget.md)
 * Noise
   * [Basic Multi Channel Perlin](CinemachineBasicMultiChannelPerlin.md)
   * [Noise Settings Asset](CinemachineNoiseProfiles.md)

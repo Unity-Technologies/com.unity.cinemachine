@@ -68,7 +68,7 @@
   * [Cinemachine Post Processing](CinemachinePostProcessing.md)
   * [Cinemachine Recomposer](CinemachineRecomposer.md)
   * [Cinemachine Rotation Composer](CinemachineRotationComposer.md)
-  * [Cinemachine Same As Follow Target](CinemachineSameAsFollowTarget.md)
+  * [Cinemachine Rotate With Follow Target](CinemachineRotateWithFollowTarget.md)
   * [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md)
   * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
   * [Cinemachine Spline Cart](CinemachineSplineCart.md)
