@@ -6,5 +6,7 @@ When you exit Play Mode, Cinemachine scans the Scene to collect any changed prop
 
 Check __Save During Play__ on any CinemachineCamera in the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html) to enable this feature.  This is a global property, not per-camera, so you only need to check or uncheck it once.
 
-Cinemachine components have the special attribute `[SaveDuringPlay]` to enable this functionality. Feel free to use it on classes within your own custom scripts too if you need it. To exclude a field in a class with the `[SaveDuringPlay]` attribute, add the `[NoSaveDuringPlay]` attribute to the field.
+Cinemachine components have the special attribute `[SaveDuringPlay]` to enable this functionality. Specific fields are excluded from being saved by having the `[NoSaveDuringPlay]` attribute added to the field.
+
+You can also use the `[SaveDuringPlay]` and `[NoSaveDuringPlay]` on your own custom scripts, to acquire the same functionality for them as well.
 

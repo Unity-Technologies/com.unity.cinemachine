@@ -14,8 +14,8 @@ namespace Unity.Cinemachine
         [Tooltip("The Spline container to which the position will apply.")]
         public SplineContainer Spline;
 
-        /// <summary>The psotion along the spline.  The actual value corresponding to a given point
-        /// on the spline will depend on the unity type.
+        /// <summary>The position along the spline.  The actual value corresponding to a given point
+        /// on the spline will depend on the unity type.</summary>
         [Tooltip("The position along the spline.  The actual value corresponding to a given point "
             + "on the spline will depend on the unity type.")]
         public float Position;

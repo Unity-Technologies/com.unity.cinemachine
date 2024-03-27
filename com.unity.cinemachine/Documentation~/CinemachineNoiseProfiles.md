@@ -1,4 +1,4 @@
-# Working with noise profiles
+# Noise Settings Asset
 
 A __noise profile__ is an asset that defines a procedural curve for camera noise. The __Basic Multi Channel Perlin__ component applies a noise profile to the movement of the camera. Cinemachine applies noise movement after computing the position of the camera. This way, camera noise does not affect the computation of camera movement in future updates.
 

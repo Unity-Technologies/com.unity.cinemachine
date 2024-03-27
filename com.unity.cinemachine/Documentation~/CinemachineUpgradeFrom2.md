@@ -56,7 +56,7 @@ Old components have been replaced by new components. These are not renames, they
 ### Renamed Components
 
 - Cinemachine3rdPersonAim has been renamed to [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md).
-- CinemachineBlendListCamera has been renamed to [Cinemachine Sequencer Camera](CinemachineBlendListCamera.md).
+- CinemachineBlendListCamera has been renamed to [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md).
 
 ### Renamed Fields 
 
@@ -88,6 +88,11 @@ In CM2, CinemachineBrain would only process CinemachineCameras that were assigne
 
 ![Cinemachine Channels Brain](images/CinemachineChannels-brain.png)
 
+### Lens Mode Override
+
+If your project is using virtual cameras with a Lens Mode Override (e.g. changing between physical and perspective and ortho cameras), then this will stop working until you enable mode override and assign a default lens mode in the CinemachineBrain.
+
+![Default Lens Mode](images/DefaultLensMode.png)
 
 ## Upgrading the Project Data
 

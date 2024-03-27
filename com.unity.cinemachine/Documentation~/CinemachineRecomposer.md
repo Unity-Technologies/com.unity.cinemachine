@@ -1,6 +1,6 @@
 # Cinemachine Recomposer Extension
 
-Use the Cinemachine Recomposer [extension](CinemachineVirtualCameraExtensions.md) is an add-on module for CinemachineCamera that adds a final tweak to the camera composition.  It is intended for use in a Timeline context, where you want to hand-adjust the output of procedural or recorded camera aiming.
+Use the Cinemachine Recomposer [extension](concept-procedural-motion.md#extensions) is an add-on module for CinemachineCamera that adds a final tweak to the camera composition.  It is intended for use in a Timeline context, where you want to hand-adjust the output of procedural or recorded camera aiming.
 
 All of these properties can be animated within the Timeline.
 
