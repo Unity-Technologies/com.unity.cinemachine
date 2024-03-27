@@ -53,6 +53,7 @@ namespace Unity.Cinemachine.Editor
             this.AddCameraStatus(ux);
             this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.BlendHint) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
@@ -63,7 +64,6 @@ namespace Unity.Cinemachine.Editor
             row.style.paddingTop = InspectorUtility.SingleLineHeight / 2;
             row.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
 
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
             this.AddPipelineDropdowns(ux);
 
             ux.AddSpace();

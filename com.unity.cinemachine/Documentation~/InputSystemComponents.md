@@ -1,4 +1,4 @@
-# Using Input System components with Cinemachine
+# Use Input System with Cinemachine
 
 For more complex input configurations like supporting multiple devices, you will need to receive inputs from the `PlayerInput` component provided by the Input System package. The following section assumes you already know how to setup this component. For more information, see the [Input System](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.5/manual/index.html) documentation and samples.
 

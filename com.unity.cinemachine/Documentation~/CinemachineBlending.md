@@ -1,4 +1,4 @@
-# Blending between CinemachineCameras
+# Cinemachine Blender Settings
 
 Use blending properties to specify how the Cinemachine Brain component performs a blend between CinemachineCameras.
 

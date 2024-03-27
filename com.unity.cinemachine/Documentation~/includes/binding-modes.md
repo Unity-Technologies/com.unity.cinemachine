@@ -1,6 +1,4 @@
-## Binding Modes
-
-The binding mode defines the coordinate space Unity uses to interpret the camera offset from the target and to apply the damping.
+When following a target with an offset from the target, the binding mode defines the coordinate space Unity uses to interpret the camera offset from the target and to apply the damping.
 </br></br>
 
 ### Lock To Target
@@ -9,8 +7,8 @@ Makes the CinemachineCamera use the local frame of the Follow target. When the t
 
 |                                           |                                   |
 | ------------------------------------------------- | --------------------------------------------------- |
-| Start </br>![](images/cm-binding-mode-lock-target-start.png) | Pitch, 45 degrees </br> ![](images/cm-binding-mode-lock-target-pitch45.png) |
-| Yaw, 45 degrees </br> ![](images/cm-binding-mode-lock-target-yaw45.png) | Roll, 45 degrees </br>![](images/cm-binding-mode-lock-target-roll45.png) |
+| Start </br>![](../images/cm-binding-mode-lock-target-start.png) | Pitch, 45 degrees </br> ![](../images/cm-binding-mode-lock-target-pitch45.png) |
+| Yaw, 45 degrees </br> ![](../images/cm-binding-mode-lock-target-yaw45.png) | Roll, 45 degrees </br>![](../images/cm-binding-mode-lock-target-roll45.png) |
 
 </br></br>
 ### Lock To Target No Roll
@@ -21,8 +19,8 @@ Makes the CinemachineCamera use the local frame of the Follow target, with roll 
 
 |                                                    |                                            |
 | --------------------------------------------------------- | ----------------------------------------------------------- |
-| Start  </br> ![](images/cm-binding-mode-lock-target-no-roll-start.png) | Pitch, 45 degrees </br>![](images/cm-binding-mode-lock-target-no-roll-pitch45.png) |
-| Yaw, 45 degrees </br>![](images/cm-binding-mode-lock-target-no-roll-yaw45.png) | Roll, 45 degrees </br>![](images/cm-binding-mode-lock-target-no-roll-roll45.png) |
+| Start  </br> ![](../images/cm-binding-mode-lock-target-no-roll-start.png) | Pitch, 45 degrees </br>![](../images/cm-binding-mode-lock-target-no-roll-pitch45.png) |
+| Yaw, 45 degrees </br>![](../images/cm-binding-mode-lock-target-no-roll-yaw45.png) | Roll, 45 degrees </br>![](../images/cm-binding-mode-lock-target-no-roll-roll45.png) |
 
 
 
@@ -38,8 +36,8 @@ Makes the orientation of the CinemachineCamera match the local frame of the Foll
 
 |                                                        |                                             |
 | ----------------------------------------------------------- | ------------------------------------------------------------ |
-| Start </br> ![](images/cm-binding-mode-lock-target-on-assign-start.png) | Pitch, 45 degrees </br>![](images/cm-binding-mode-lock-target-on-assign-pitch45.png) |
-| Yaw, 45 degrees </br>![](images/cm-binding-mode-lock-target-on-assign-yaw45.png) | Roll, 45 degrees </br>![](images/cm-binding-mode-lock-target-on-assign-roll45.png) |
+| Start </br> ![](../images/cm-binding-mode-lock-target-on-assign-start.png) | Pitch, 45 degrees </br>![](../images/cm-binding-mode-lock-target-on-assign-pitch45.png) |
+| Yaw, 45 degrees </br>![](../images/cm-binding-mode-lock-target-on-assign-yaw45.png) | Roll, 45 degrees </br>![](../images/cm-binding-mode-lock-target-on-assign-roll45.png) |
 
 
 </br></br>
@@ -53,8 +51,8 @@ Makes the CinemachineCamera use the local frame of the Follow target with tilt a
 
 |                                                        |                                             |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Start </br> ![](images/cm-binding-mode-lock-target-world-up-start.png) | Pitch, 45 degrees </br>![](images/cm-binding-mode-lock-target-world-up-pitch45.png) |
-| Yaw, 45 degrees </br>![](images/cm-binding-mode-lock-target-world-up-yaw45.png) | Roll, 45 degrees </br>![](images/cm-binding-mode-lock-target-world-up-roll45.png) |
+| Start </br> ![](../images/cm-binding-mode-lock-target-world-up-start.png) | Pitch, 45 degrees </br>![](../images/cm-binding-mode-lock-target-world-up-pitch45.png) |
+| Yaw, 45 degrees </br>![](../images/cm-binding-mode-lock-target-world-up-yaw45.png) | Roll, 45 degrees </br>![](../images/cm-binding-mode-lock-target-world-up-roll45.png) |
 
 
 </br></br>
@@ -70,8 +68,8 @@ The offset is interpreted in world space relative to the origin of the Follow ta
 
 |                                            |                                   |
 | ------------------------------------------------- | --------------------------------------------------- |
-|Start </br> ![](images/cm-binding-mode-world-space-start.png) | Pitch, 45 degrees </br>![](images/cm-binding-mode-world-space-pitch45.png) |
-| Yaw, 45 degrees </br> ![](images/cm-binding-mode-world-space-yaw45.png) | Roll, 45 degrees </br>![](images/cm-binding-mode-world-space-roll45.png) |
+|Start </br> ![](../images/cm-binding-mode-world-space-start.png) | Pitch, 45 degrees </br>![](../images/cm-binding-mode-world-space-pitch45.png) |
+| Yaw, 45 degrees </br> ![](../images/cm-binding-mode-world-space-yaw45.png) | Roll, 45 degrees </br>![](../images/cm-binding-mode-world-space-roll45.png) |
 
 
 
@@ -89,6 +87,6 @@ The camera attempts to move as little as possible to maintain the same distance 
 
 |                                                         |                                            |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Start </br>![](images/cm-binding-mode-simple-follow-world-up-start.png) | Pitch, 45 degrees </br>![](images/cm-binding-mode-simple-follow-world-up-pitch45.png) |
-| Yaw, 45 degrees </br>![](images/cm-binding-mode-simple-follow-world-up-yaw45.png) | Roll, 45 degrees </br>![](images/cm-binding-mode-simple-follow-world-up-roll45.png) |
+| Start </br>![](../images/cm-binding-mode-simple-follow-world-up-start.png) | Pitch, 45 degrees </br>![](../images/cm-binding-mode-simple-follow-world-up-pitch45.png) |
+| Yaw, 45 degrees </br>![](../images/cm-binding-mode-simple-follow-world-up-yaw45.png) | Roll, 45 degrees </br>![](../images/cm-binding-mode-simple-follow-world-up-roll45.png) |
 

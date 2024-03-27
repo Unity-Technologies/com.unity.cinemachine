@@ -299,7 +299,7 @@ namespace Unity.Cinemachine.Editor
         /// Gets the first loaded <see cref="CinemachineBrain"/>. Creates one on 
         /// the <see cref="Camera.main"/> if none were found.
         /// </summary>
-        static CinemachineBrain GetOrCreateBrain()
+        public static CinemachineBrain GetOrCreateBrain()
         {
             if (CinemachineBrain.ActiveBrainCount > 0)
                 return CinemachineBrain.GetActiveBrain(0);
@@ -316,7 +316,9 @@ namespace Unity.Cinemachine.Editor
                 return Undo.AddComponent<CinemachineBrain>(cam.gameObject);
 
             // No camera, just create a brain on an empty object
-            return ObjectFactory.CreateGameObject("CinemachineBrain").AddComponent<CinemachineBrain>();
+            var obj = ObjectFactory.CreateGameObject("CinemachineBrain", typeof(CinemachineBrain));
+            Undo.RegisterCreatedObjectUndo(obj, "CinemachineBrain");
+            return obj.GetComponent<CinemachineBrain>();
         }
     }
 }
