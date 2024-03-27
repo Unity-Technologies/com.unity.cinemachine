@@ -47,9 +47,9 @@ namespace Unity.Cinemachine.Editor
 #endif
                 HelpBoxMessageType.Warning));
 
-            ux.TrackPropertyWithInitialCallback(trackingProp, (p) =>
+            ux.TrackAnyUserActivity(() =>
             {
-                var mode = (CinemachineVolumeSettings.FocusTrackingMode)p.intValue;
+                var mode = (CinemachineVolumeSettings.FocusTrackingMode)trackingProp.intValue;
                 focusTargetField.SetVisible(mode == CinemachineVolumeSettings.FocusTrackingMode.CustomTarget);
                 focusOffsetField.SetVisible(mode != CinemachineVolumeSettings.FocusTrackingMode.None);
 

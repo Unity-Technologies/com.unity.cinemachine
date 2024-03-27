@@ -39,9 +39,9 @@ namespace Unity.Cinemachine.Editor
                 "Focus Tracking requires an active DepthOfField/FocusDistance effect in the profile.",
                 HelpBoxMessageType.Warning));
 
-            ux.TrackPropertyWithInitialCallback(trackingProp, (p) =>
+            ux.TrackAnyUserActivity(() =>
             {
-                var mode = (CinemachinePostProcessing.FocusTrackingMode)p.intValue;
+                var mode = (CinemachinePostProcessing.FocusTrackingMode)trackingProp.intValue;
                 focusTargetField.SetVisible(mode == CinemachinePostProcessing.FocusTrackingMode.CustomTarget);
                 focusOffsetField.SetVisible(mode != CinemachinePostProcessing.FocusTrackingMode.None);
                 bool valid = false;
