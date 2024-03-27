@@ -20,6 +20,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineDeoccluder.html")]
     public class CinemachineDeoccluder : CinemachineExtension, IShotQualityEvaluator
     {
@@ -374,7 +375,9 @@ namespace Unity.Cinemachine
                 {
                     var initialCamPos = state.GetCorrectedPosition();
                     var up = state.ReferenceUp;
-                    var hasLookAt = GetLookAtTargetPointForAvoidance(vcam, ref state, out var lookAtPoint);
+                    var hasLookAt = state.HasLookAt();
+                    var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                    var hasResolutionTarget = GetAvoidanceResolutionTargetPoint(vcam, ref state, out var resolutionTargetPoint);
                     var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                         lookAtPoint - initialCamPos, up) : Vector2.zero;
 
@@ -383,7 +386,8 @@ namespace Unity.Cinemachine
                     extra.PreviousDisplacement = dampingBypass * extra.PreviousDisplacement;
 
                     // Calculate the desired collision correction
-                    var displacement = hasLookAt ? PreserveLineOfSight(ref state, ref extra, lookAtPoint) : Vector3.zero;
+                    var displacement = hasResolutionTarget 
+                        ? PreserveLineOfSight(ref state, ref extra, resolutionTargetPoint) : Vector3.zero;
                     if (AvoidObstacles.MinimumOcclusionTime > Epsilon)
                     {
                         // If minimum occlusion time set, ignore new occlusions until they've lasted long enough
@@ -401,10 +405,10 @@ namespace Unity.Cinemachine
 
                     // Apply distance smoothing - this can artificially hold the camera closer
                     // to the target for a while, to reduce popping in and out on bumpy objects
-                    if (AvoidObstacles.SmoothingTime > Epsilon && hasLookAt)
+                    if (hasResolutionTarget && AvoidObstacles.SmoothingTime > Epsilon)
                     {
                         var pos = initialCamPos + displacement;
-                        var dir = pos - lookAtPoint;
+                        var dir = pos - resolutionTargetPoint;
                         var distance = dir.magnitude;
                         if (distance > Epsilon)
                         {
@@ -412,7 +416,7 @@ namespace Unity.Cinemachine
                             if (!displacement.AlmostZero())
                                 extra.UpdateDistanceSmoothing(distance);
                             distance = extra.ApplyDistanceSmoothing(distance, AvoidObstacles.SmoothingTime);
-                            displacement += (lookAtPoint + dir * distance) - pos;
+                            displacement += (resolutionTargetPoint + dir * distance) - pos;
                         }
                     }
                     
@@ -422,7 +426,7 @@ namespace Unity.Cinemachine
                     // Apply additional correction due to camera radius
                     var newCamPos = initialCamPos + displacement;
                     if (AvoidObstacles.Strategy != ObstacleAvoidance.ResolutionStrategy.PullCameraForward)
-                        displacement += RespectCameraRadius(newCamPos, lookAtPoint);
+                        displacement += RespectCameraRadius(newCamPos, resolutionTargetPoint);
 
                     // Apply damping
                     float dampTime = AvoidObstacles.DampingWhenOccluded;
@@ -436,7 +440,7 @@ namespace Unity.Cinemachine
                         if (dispSqrMag < Epsilon)
                             dampTime = extra.PreviousDampTime - Damper.Damp(extra.PreviousDampTime, dampTime, deltaTime);
 
-                        var prevDisplacement = lookAtPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
+                        var prevDisplacement = resolutionTargetPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
                         displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
                     }
                     
@@ -462,7 +466,7 @@ namespace Unity.Cinemachine
                     }
 
                     extra.PreviousDisplacement = displacement;
-                    extra.PreviousCameraOffset = newCamPos - lookAtPoint;
+                    extra.PreviousCameraOffset = newCamPos - resolutionTargetPoint;
                     extra.PreviousCameraPosition = newCamPos;
                     extra.PreviousDampTime = dampTime;
                 }
@@ -499,21 +503,22 @@ namespace Unity.Cinemachine
             }
         }
         
-        bool GetLookAtTargetPointForAvoidance(
-            CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 lookAtPoint)
+        bool GetAvoidanceResolutionTargetPoint(
+            CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 resolutuionTargetPoint)
         {
-            var hasLookAt = state.HasLookAt();
-            lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+            var hasResolutionPoint = state.HasLookAt();
+            resolutuionTargetPoint = hasResolutionPoint ? state.ReferenceLookAt : state.GetCorrectedPosition();
             if (AvoidObstacles.UseFollowTarget.Enabled)
             {
                 var target = vcam.Follow;
                 if (target != null)
                 {
-                    lookAtPoint = TargetPositionCache.GetTargetPosition(target)
+                    hasResolutionPoint = true;
+                    resolutuionTargetPoint = TargetPositionCache.GetTargetPosition(target)
                         + TargetPositionCache.GetTargetRotation(target) * Vector3.up * AvoidObstacles.UseFollowTarget.YOffset;
                 }
             }
-            return hasLookAt;
+            return hasResolutionPoint;
         }
         
         Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra, Vector3 lookAtPoint)

@@ -185,7 +185,9 @@ namespace Unity.Cinemachine
                 var initialCamPos = state.GetCorrectedPosition();
 
                 // Capture lookAt screen offset for composition preservation
-                var hasLookAt = GetLookAtTargetPointForAvoidance(vcam, ref state, out var lookAtPoint);
+                var hasLookAt = state.HasLookAt();
+                var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                var resolutionTargetPoint = GetAvoidanceResolutionTargetPoint(vcam, ref state);
                 var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                     lookAtPoint - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
@@ -201,8 +203,8 @@ namespace Unity.Cinemachine
                 if (Decollision.Enabled)
                 {
                     var oldCamPos = state.GetCorrectedPosition();
-                    var displacement = DecollideCamera(oldCamPos, lookAtPoint);
-                    displacement = ApplySmoothingAndDamping(displacement, lookAtPoint, oldCamPos, extra, deltaTime);
+                    var displacement = DecollideCamera(oldCamPos, resolutionTargetPoint);
+                    displacement = ApplySmoothingAndDamping(displacement, resolutionTargetPoint, oldCamPos, extra, deltaTime);
                     if (!displacement.AlmostZero())
                     {
                         state.PositionCorrection += displacement;
@@ -238,21 +240,20 @@ namespace Unity.Cinemachine
             }
         }
 
-        bool GetLookAtTargetPointForAvoidance(
-            CinemachineVirtualCameraBase vcam, ref CameraState state, out Vector3 lookAtPoint)
+        Vector3 GetAvoidanceResolutionTargetPoint(
+            CinemachineVirtualCameraBase vcam, ref CameraState state)
         {
-            var hasLookAt = state.HasLookAt();
-            lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+            var resolutuionTargetPoint = state.HasLookAt() ? state.ReferenceLookAt : state.GetCorrectedPosition();
             if (Decollision.UseFollowTarget.Enabled)
             {
                 var target = vcam.Follow;
                 if (target != null)
                 {
-                    lookAtPoint = TargetPositionCache.GetTargetPosition(target)
+                    resolutuionTargetPoint = TargetPositionCache.GetTargetPosition(target)
                         + TargetPositionCache.GetTargetRotation(target) * Vector3.up * Decollision.UseFollowTarget.YOffset;
                 }
             }
-            return hasLookAt;
+            return resolutuionTargetPoint;
         }
         
         // Returns distance to move the camera in the up directon to stay on top of terrain
