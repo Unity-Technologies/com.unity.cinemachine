@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 - StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
-- CinemachineDeoccluder has the option to resolve towards the Follow target instead of the LookAt target.
 - FlyAround sample scene showing a simple fly-around camera.
 
 ### Changed
