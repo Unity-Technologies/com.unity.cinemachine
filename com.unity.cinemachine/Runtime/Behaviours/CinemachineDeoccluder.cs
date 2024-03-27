@@ -74,22 +74,6 @@ namespace Unity.Cinemachine
                 + "Increase it if you are seeing inside obstacles due to a large FOV on the camera.")]
             public float CameraRadius;
 
-            /// <summary>Settings for resolving towards Follow target instead of LookAt.</summary>
-            [Serializable]
-            public struct FollowTargetSettings
-            {
-                /// <summary>Use the Follow target when resolving occlusions, instead of the LookAt target.</summary>
-                [Tooltip("Use the Follow target when resolving occlusions, instead of the LookAt target.")]
-                public bool Enabled;
-
-                [Tooltip("Vertical offset from the Follow target's root, in target local space")]
-                public float YOffset;
-            }
-            
-            /// <summary>Use the Follow target when resolving occlusions, instead of the LookAt target.</summary>
-            [EnabledProperty]
-            public FollowTargetSettings UseFollowTarget;
-            
             /// <summary>The way in which the Deoccluder will attempt to preserve sight of the target.</summary>
             public enum ResolutionStrategy
             {
@@ -504,15 +488,6 @@ namespace Unity.Cinemachine
         {
             var hasLookAt = state.HasLookAt();
             lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
-            if (AvoidObstacles.UseFollowTarget.Enabled)
-            {
-                var target = vcam.Follow;
-                if (target != null)
-                {
-                    lookAtPoint = TargetPositionCache.GetTargetPosition(target)
-                        + TargetPositionCache.GetTargetRotation(target) * Vector3.up * AvoidObstacles.UseFollowTarget.YOffset;
-                }
-            }
             return hasLookAt;
         }
         
