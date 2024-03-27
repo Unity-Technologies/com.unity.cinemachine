@@ -351,7 +351,7 @@ namespace Unity.Cinemachine
             m_LastUpdateFrame = Time.frameCount;
             UpdateMemberValidity();
             m_AveragePos = CalculateAveragePosition(out m_MaxWeight);
-            BoundingBox = CalculateBoundingBox();
+            BoundingBox = CalculateBoundingBox(m_MaxWeight);
             m_BoundingSphere = CalculateBoundingSphere(m_MaxWeight);
 
             switch (PositionMode)
@@ -414,17 +414,16 @@ namespace Unity.Cinemachine
         }
         
         // Assumes that CalculateAveragePosition() has been called 
-        Bounds CalculateBoundingBox()
+        Bounds CalculateBoundingBox(float maxWeight)
         {
+            if (maxWeight < UnityVectorExtensions.Epsilon)
+                return m_BoundingBox;
             var b = new Bounds(m_AveragePos, Vector3.zero);
-            if (m_MaxWeight > UnityVectorExtensions.Epsilon)
+            var count = m_ValidMembers.Count;
+            for (int i = 0; i < count; ++i)
             {
-                var count = m_ValidMembers.Count;
-                for (int i = 0; i < count; ++i)
-                {
-                    var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, m_MaxWeight);
-                    b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
-                }
+                var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, m_MaxWeight);
+                b.Encapsulate(new Bounds(s.position, s.radius * 2 * Vector3.one));
             }
             return b;
         }
@@ -437,19 +436,14 @@ namespace Unity.Cinemachine
         /// <returns>An approximate bounding sphere.  Will be slightly large.</returns>
         BoundingSphere CalculateBoundingSphere(float maxWeight)
         {
-            var sphere = new BoundingSphere { position = transform.position };
-            bool gotOne = false;
-
             var count = m_ValidMembers.Count;
-            for (int i = 0; i < count; ++i)
+            if (count == 0 || maxWeight < UnityVectorExtensions.Epsilon)
+                return m_BoundingSphere;
+
+            var sphere = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[0]], m_AveragePos, maxWeight);
+            for (int i = 1; i < count; ++i)
             {
                 var s = WeightedMemberBoundsForValidMember(Targets[m_ValidMembers[i]], m_AveragePos, maxWeight);
-                if (!gotOne)
-                {
-                    gotOne = true;
-                    sphere = s;
-                    continue;
-                }
                 var distance = (s.position - sphere.position).magnitude + s.radius;
                 if (distance > sphere.radius)
                 {
@@ -520,8 +514,9 @@ namespace Unity.Cinemachine
             if (!Matrix4x4.Inverse3DAffine(observer, ref world2local))
                 world2local = observer.inverse;
 
-            zRange = Vector2.zero;
-            var b = new Bounds();
+            var r = m_BoundingSphere.radius;
+            var b = new Bounds() { center = world2local.MultiplyPoint3x4(m_AveragePos), extents = new Vector3(r, r, r) };
+            zRange = new Vector2(b.center.z - r, b.center.z + r);
             if (CachedCountIsValid)
             {
                 bool haveOne = false;

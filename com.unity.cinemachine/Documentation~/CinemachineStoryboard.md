@@ -1,6 +1,6 @@
 # Storyboard
 
-Use the Cinemachine Storyboard [extension](CinemachineVirtualCameraExtensions.md) to let artists, producers, and directors contribute to your game development. Cinemachine Storyboard places a still image in screen space over the output of the Unity camera.
+Use the Cinemachine Storyboard [extension](concept-procedural-motion.md#extensions) to let artists, producers, and directors contribute to your game development. Cinemachine Storyboard places a still image in screen space over the output of the Unity camera.
 
 Storyboard simplifies animatics for your team. Start with still images to pre-visualize terrain, layout, movement, lighting, timing, and so on. Following the intentions of the Storyboard image, developers incrementally add the assets, GameObjects, and settings that implement the Scene.
 
