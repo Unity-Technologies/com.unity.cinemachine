@@ -12,6 +12,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSameAsFollowTarget.html")]
     public class CinemachineSameAsFollowTarget : CinemachineComponentBase
     {

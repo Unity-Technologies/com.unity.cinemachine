@@ -1,40 +1,14 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineThirdPersonFollow))]
     [CanEditMultipleObjects]
-    class CinemachineThirdPersonFollowEditor : UnityEditor.Editor
+    class CinemachineThirdPersonFollowEditor : CinemachineComponentBaseEditor
     {
-        CinemachineThirdPersonFollow Target => target as CinemachineThirdPersonFollow;
-        
-        protected virtual void OnEnable()
-        {
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        }
-
-        protected virtual void OnDisable()
-        {
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
-        
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.ShoulderOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.VerticalArmLength)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraSide)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
-#if CINEMACHINE_PHYSICS
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AvoidObstacles)));
-#endif
-            return ux;
-        }
+        protected virtual void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
+        protected virtual void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineThirdPersonFollow))]
         static void DrawThirdPersonGizmos(CinemachineThirdPersonFollow target, GizmoType selectionType)
@@ -70,7 +44,7 @@ namespace Unity.Cinemachine.Editor
         
         void OnSceneGUI()
         {
-            var thirdPerson = Target;
+            var thirdPerson = target as CinemachineThirdPersonFollow;
             if (thirdPerson == null || !thirdPerson.IsValid)
                 return;
 

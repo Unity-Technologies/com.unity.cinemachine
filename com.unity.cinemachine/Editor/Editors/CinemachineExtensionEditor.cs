@@ -3,21 +3,22 @@ using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachinePanTilt))]
+    [CustomEditor(typeof(CinemachineExtension), true)]
     [CanEditMultipleObjects]
-    class CinemachinePanTiltEditor : UnityEditor.Editor
+    class CinemachineExtensionEditor : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux);
+
+            // Add children
             var prop = serializedObject.GetIterator();
             if (prop.NextVisible(true))
                 InspectorUtility.AddRemainingProperties(ux, prop);
 
-            ux.AddSpace();
-            this.AddInputControllerHelp(ux, "PanTilt has no input axis controller behaviour.");
             return ux;
         }
     }
 }
+

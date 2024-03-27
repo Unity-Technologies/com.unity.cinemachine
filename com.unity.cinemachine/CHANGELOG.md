@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
-- Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 - Added StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 - Added FlyAround sample scene showing a simple fly-around camera.
 

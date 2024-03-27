@@ -1,15 +1,13 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachinePositionComposer))]
     [CanEditMultipleObjects]
-    class CinemachinePositionComposerEditor : UnityEditor.Editor
+    class CinemachinePositionComposerEditor : CinemachineComponentBaseEditor
     {
-        GameViewComposerGuides m_GameViewGuides = new();
+        readonly GameViewComposerGuides m_GameViewGuides = new();
 
         CinemachinePositionComposer Target => target as CinemachinePositionComposer;
 
@@ -38,23 +36,6 @@ namespace Unity.Cinemachine.Editor
 
             CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
             CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
-        }
-
-        public override VisualElement CreateInspectorGUI()
-        {
-            var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
-            ux.AddHeader("Camera Position");
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraDistance)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DeadZoneDepth)));
-            ux.AddHeader("Composition");
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Composition)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CenterOnActivate)));
-            ux.AddHeader("Target Tracking");
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lookahead)));
-            return ux;
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)

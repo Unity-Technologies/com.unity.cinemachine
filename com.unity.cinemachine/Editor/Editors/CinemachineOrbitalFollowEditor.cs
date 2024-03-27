@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            this.AddMissingCmCameraHelpBox(ux, CmPipelineComponentInspectorUtility.RequiredTargets.Tracking);
+            this.AddMissingCmCameraHelpBox(ux);
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
             ux.AddSpace();
