@@ -10,11 +10,8 @@ To create a Mixing Camera:
 
 1. In the Unity menu, choose __GameObject > Cinemachine > Mixing Camera__.
 A new Mixing Camera appears in the [Hierarchy](https://docs.unity3d.com/Manual/Hierarchy.html) window. By default, Unity also adds two CinemachineCameras as children of the Mixing Camera.
-
 2. Adjust the children CinemachineCameras.
-
 3. Add up to six more child cameras.
-
 4. Select the Mixing Camera in the Hierarchy window then adjust the Child Camera Weights in the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html) window.
 
 ![Child Camera Weights (red) and their contributions to the final position (blue)](images/CinemachineMixingCameraChildren.png)

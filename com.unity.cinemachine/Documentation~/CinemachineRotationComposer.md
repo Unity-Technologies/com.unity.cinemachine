@@ -1,10 +1,10 @@
-# Rotation Composer
+# Cinemachine Rotation Composer component
 
 This CinemachineCamera __Rotation Control__ behaviour rotates the camera to face the __Look At__ target. It also applies offsets, damping, and composition rules. It only rotates the camera, it never changes the camera's position.  Examples of targets for aiming: the upper spine or head bone of a character, vehicles, or dummy objects which are controlled or animated programmatically.
 
-## Properties:
+## Properties
 
-| **Property:** || **Function:** |
+| **Property** || **Function** |
 |:---|:---|:---|
 | __Target Offset__ || Offset from the center of the Look At target, in target-local space. Use this to fine-tune the target's position when the point of interest is not the tracked object’s center. You can also use [Scene Handles](handles.md) to modify this property. |
 | __Lookahead Time__ || Adjust the rotation based on the motion of the Look At target. The algorithm estimates the point that the target will be this many seconds into the future. This feature is sensitive to noisy animation. It can amplify the noise, resulting in undesirable camera jitter. If the camera jitters unacceptably when the target is in motion, turn down this property or animate the target more smoothly. |
@@ -19,3 +19,6 @@ This CinemachineCamera __Rotation Control__ behaviour rotates the camera to face
 || _Offset_ | Shifts the hard limits horizontally or vertically relative to the Target Position. |
 | __Center On Activate__ || Rotates the camera to put the target at the center of the dead zone when the camera becomes live. |
 
+## Shot composition
+
+[!include[](includes/shot-composition.md)]

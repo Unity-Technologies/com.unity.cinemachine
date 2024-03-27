@@ -12,12 +12,12 @@ If you attach an input controller to the CinemachineCamera, then the player can 
 
 ![Orbital Transposer](images/OrbitalFollowInspector.png)
 
-## Properties:
+## Properties
 
-| **Property:** || **Function:** |
+| **Property** || **Function** |
 |:---|:---|:---|
 | __Target Offset__ || Offset from the target object's center in target-local space. Use this to fine-tune the orbit position when the desired focus of the orbit is not the tracked object's center. |
-| __[Binding Mode](CinemachineBindingModes.md)__ || The coordinate space to use to interpret the offset from the target. |
+| __[Binding Mode](#binding-modes)__ || The coordinate space to use to interpret the offset from the target. |
 | | _Lock To Target On Assign_ | Makes the orientation of the CinemachineCamera match the local frame of the Tracking target, at the moment when the CinemachineCamera is activated or when the target is assigned. This offset remains constant in world space. The camera doesn't rotate along with the target. |
 | | _Lock To Target With World Up_ | Makes the CinemachineCamera use the local frame of the Tracking target with tilt and roll set to 0. This binding mode ignores all target rotations except yaw. |
 | | _Lock To Target No Roll_ | Makes the CinemachineCamera use the local frame of the Tracking target, with roll set to 0. |
@@ -46,3 +46,6 @@ If you attach an input controller to the CinemachineCamera, then the player can 
 |  | _Wait_ | If recentering is enabled for an axis, it will wait this many seconds after the last user input before beginning the recentering process. |
 |  | _Time_ | The time it takes for the recentering to complete, once it has started. |
 
+## Binding Modes
+
+[!include[](includes/binding-modes.md)]

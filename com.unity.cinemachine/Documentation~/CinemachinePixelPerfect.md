@@ -2,7 +2,7 @@
 
 Both the __Pixel Perfect Camera__ and Cinemachine modify the Camera’s orthographic size. Using these two systems together in a single Scene would cause them to fight for control over the Camera and produce unwanted results. The __Cinemachine Pixel Perfect__ extension solves this incompatibility.
 
-__Cinemachine Pixel Perfect__ is an [extension](CinemachineVirtualCameraExtensions.md) for the __CinemachineCamera__ that alters the orthographic size of the CinemachineCamera. The extension detects the presence of the Pixel Perfect Camera component, and uses the component settings to calculate for the correct orthographic size of the CinemachineCamera that best retains the Sprites in a pixel-perfect resolution.
+__Cinemachine Pixel Perfect__ is an [extension](concept-procedural-motion.md#extensions) for the __CinemachineCamera__ that alters the orthographic size of the CinemachineCamera. The extension detects the presence of the Pixel Perfect Camera component, and uses the component settings to calculate for the correct orthographic size of the CinemachineCamera that best retains the Sprites in a pixel-perfect resolution.
 
 To add this extension to your CinemachineCameras, use the __Add Extension__ dropdown menu on the CinemachineCamera Inspector window. Add this extension to each CinemachineCamera in your Project.
 

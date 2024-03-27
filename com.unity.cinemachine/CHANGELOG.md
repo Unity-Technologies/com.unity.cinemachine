@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Fixed
-- Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CMBrain is inactive.
+- Bugfix: index out of range exception when adding a Cm Shot to a timeline track whose CinemachineBrain is inactive.
 - Bugfix: OrbitalFollow with 3-ring setup would inappropriately damp in respose to vertical input if LookAt and Follow were at different vertical positions.
 - Bugfix: StateDrivenCamera min activation time was broken.
 - Bugfix: Solo not updating when brain is in FixedUpdate.
+- Bugfix: Spline roll was being calculated incorrectly when spline was rotated.
 
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.
@@ -25,7 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SimplePlayerAimController sample upgraded to work on arbitrary surfaces (no longer depends on world up).
 - SimplePlayerController sample has logic to avoid input gimbal lock when player is upside-down relative to the camera.
 - PlayerOnSphere sample is now PlayerOnSurface - can walk on arbitrary surfaces.
-- Axis recentering happens independently on axes, so that input on one axis does not impact the recentering state of the others.
+- Axis recentering happens independently on axes with differing recentering tmes, so that input on one axis does not impact the recentering state of the others.
 - FreeLookOnSphericalSurface sample is improved, adding a moving surface and second camera.
 - Deoccluder evaluates shots in the Finalize stage instead of Aim.
 
