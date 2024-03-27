@@ -14,9 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Spline roll was being calculated incorrectly when spline was rotated.
 
 ### Added
-- FlyAround sample scene showing a simple fly-around camera.
-- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
+- StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
+- FlyAround sample scene showing a simple fly-around camera.
 
 ### Changed
 - SplineDolly and SplineCart: position on spline is preserved when units change.
