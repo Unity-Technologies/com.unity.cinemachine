@@ -1,25 +1,12 @@
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(FoldoutWithEnabledButtonAttribute))]
-    class FoldoutWithEnabledButtonPropertyDrawer : PropertyDrawer
+    partial class FoldoutWithEnabledButtonPropertyDrawer : PropertyDrawer
     {
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            var a = (FoldoutWithEnabledButtonAttribute)attribute;
-            return InspectorUtility.EnabledFoldoutHeight(property, a.EnabledPropertyName);
-        }
-
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-        {
-            var a = (FoldoutWithEnabledButtonAttribute)attribute;
-            InspectorUtility.EnabledFoldout(rect, property, a.EnabledPropertyName);
-        }
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var a = (FoldoutWithEnabledButtonAttribute)attribute;
@@ -64,14 +51,8 @@ namespace Unity.Cinemachine.Editor
 
 
     [CustomPropertyDrawer(typeof(EnabledPropertyAttribute))]
-    class EnabledPropertyPropertyDrawer : PropertyDrawer
+    partial class EnabledPropertyPropertyDrawer : PropertyDrawer
     {
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-        {
-            var a = (EnabledPropertyAttribute)attribute;
-            InspectorUtility.EnabledFoldoutSingleLine(rect, property, a.EnabledPropertyName, a.ToggleDisabledText);
-        }
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var a = (EnabledPropertyAttribute)attribute;

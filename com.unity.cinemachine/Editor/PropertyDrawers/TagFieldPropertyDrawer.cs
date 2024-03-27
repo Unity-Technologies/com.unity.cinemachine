@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -6,31 +5,8 @@ using UnityEditor.UIElements;
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(TagFieldAttribute))]
-    class TagFieldPropertyDrawer : PropertyDrawer
+    partial class TagFieldPropertyDrawer : PropertyDrawer
     {
-        readonly GUIContent m_ClearText = new ("Clear", "Set the tag to empty");
-
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-        {
-            const float hSpace = 2;
-            var textDimensions = GUI.skin.button.CalcSize(m_ClearText);
-            rect.width -= textDimensions.x + hSpace;
-            
-            var tagValue = property.stringValue;
-            EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
-            EditorGUI.BeginChangeCheck();
-            tagValue = EditorGUI.TagField(rect, EditorGUI.BeginProperty(rect, label, property), tagValue);
-            if (EditorGUI.EndChangeCheck())
-                property.stringValue = tagValue;
-            EditorGUI.showMixedValue = false;
-
-            rect.x += rect.width + hSpace; rect.width = textDimensions.x; rect.height -=1;
-            GUI.enabled = tagValue.Length > 0;
-            if (GUI.Button(rect, m_ClearText))
-                property.stringValue = string.Empty;
-            GUI.enabled = true;
-        }
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             var row = new InspectorUtility.LabeledRow(property.displayName, property.tooltip);
