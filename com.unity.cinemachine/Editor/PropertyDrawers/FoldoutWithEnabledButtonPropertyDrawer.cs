@@ -92,7 +92,7 @@ namespace Unity.Cinemachine.Editor
             if (enabledProp == null || childProperty == null)
                 return new PropertyField(property);
 
-            var row = new InspectorUtility.LabeledRow(preferredLabel, childProperty.tooltip);
+            var row = new InspectorUtility.LabeledRow(preferredLabel, enabledProp.tooltip);
             var toggle = row.Contents.AddChild(new Toggle("") 
                 { style = { flexGrow = 0, marginTop = 2, marginLeft = 0, alignSelf = Align.Center }});
             toggle.BindProperty(enabledProp);
@@ -102,14 +102,17 @@ namespace Unity.Cinemachine.Editor
                 disabledText = row.Contents.AddChild(new Label(a.ToggleDisabledText)
                     { style = { flexGrow = 0, flexBasis = 0, marginLeft = 8, alignSelf = Align.Center, opacity = 0.5f }});
 
-            var childField = row.Contents.AddChild(new PropertyField(childProperty, "") 
+            var childLabel = row.Contents.AddChild(new Label(childProperty.displayName)
+                { style = { flexGrow = 0, marginLeft = 8, alignSelf = Align.Center }, tooltip = childProperty.tooltip});
+            var childField = row.Contents.AddChild(new PropertyField(childProperty, "")
                 { style = { flexGrow = 1, marginTop = -1, marginLeft = 5, marginBottom = -1 }});
-            row.Label.AddPropertyDragger(childProperty, childField);
+            childLabel.AddPropertyDragger(childProperty, childField);
             childField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
 
             row.TrackPropertyWithInitialCallback(enabledProp, (p) => 
             {
                 childField?.SetVisible(p.boolValue);
+                childLabel?.SetVisible(p.boolValue);
                 disabledText?.SetVisible(!p.boolValue);
             });
 

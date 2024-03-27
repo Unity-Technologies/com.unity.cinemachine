@@ -12,7 +12,6 @@ namespace Unity.Cinemachine.Editor
         CinemachineClearShot Target => target as CinemachineClearShot;
         EvaluatorState m_EvaluatorState;
 
-
         static string GetAvailableQualityEvaluatorNames()
         {
             var names = InspectorUtility.GetAssignableBehaviourNames(typeof(IShotQualityEvaluator));
