@@ -55,7 +55,7 @@ namespace Unity.Cinemachine
             /// </summary>
             [Tooltip("A zero Offset means that the hard limits will be centered around the target screen position.  "
                 + "A nonzero Offset will uncenter the hard limits relative to the target screen position.")]
-            [DelayedVector]
+            //[DelayedVector] // interferes with game guide refresh
             public Vector2 Offset;
         }
         /// <summary>The target will not be allowed to be outside this region.
