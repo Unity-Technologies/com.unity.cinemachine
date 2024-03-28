@@ -52,21 +52,21 @@ namespace Unity.Cinemachine
             [Tooltip("The virtual camera to activate when the animation state becomes active")]
             [FormerlySerializedAs("m_VirtualCamera")]
             public CinemachineVirtualCameraBase Camera;
-            /// <summary>How long to wait (in seconds) before activating the virtual camera.
+            /// <summary>How long to wait (in seconds) before activating the camera.
             /// This filters out very short state durations</summary>
-            [Tooltip("How long to wait (in seconds) before activating the virtual camera. "
+            [Tooltip("How long to wait (in seconds) before activating the camera. "
                 + "This filters out very short state durations")]
             [FormerlySerializedAs("m_ActivateAfter")]
             public float ActivateAfter;
-            /// <summary>The minimum length of time (in seconds) to keep a virtual camera active</summary>
-            [Tooltip("The minimum length of time (in seconds) to keep a virtual camera active")]
+            /// <summary>The minimum length of time (in seconds) to keep a camera active</summary>
+            [Tooltip("The minimum length of time (in seconds) to keep a camera active")]
             [FormerlySerializedAs("m_MinDuration")]
             public float MinDuration;
         };
 
         /// <summary>The set of instructions associating virtual cameras with states.
         /// These instructions are used to choose the live child at any given moment</summary>
-        [Tooltip("The set of instructions associating virtual cameras with states.  "
+        [Tooltip("The set of instructions associating cameras with states.  "
         + "These instructions are used to choose the live child at any given moment")]
         [FormerlySerializedAs("m_Instructions")]
         public Instruction[] Instructions;

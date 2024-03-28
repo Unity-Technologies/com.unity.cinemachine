@@ -21,7 +21,7 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Hard Look At](CinemachineHardLookAt.md)
   * [Cinemachine Pan Tilt](CinemachinePanTilt.md)
   * [Cinemachine Rotation Composer](CinemachineRotationComposer.md)
-  * [Cinemachine Same As Follow Target](CinemachineSameAsFollowTarget.md)
+  * [Cinemachine Rotate With Follow Target](CinemachineRotateWithFollowTarget.md)
 * Noise
   * [Basic Multi Channel Perlin](CinemachineBasicMultiChannelPerlin.md)
   * [Noise Settings Asset](CinemachineNoiseProfiles.md)
@@ -47,6 +47,7 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
+  * [Cinemachine Decollider](CinemachineDecollider.md)
   * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
   * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
   * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)

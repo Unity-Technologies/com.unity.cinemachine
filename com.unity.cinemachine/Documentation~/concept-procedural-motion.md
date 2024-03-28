@@ -23,8 +23,8 @@ With these behaviors, you can:
 
 * Compose shots with adaptive camera [position](CinemachinePositionComposer.md) and [rotation](CinemachineRotationComposer.md), or centered [hard look](CinemachineHardLookAt.md), to keep the target in the camera frame.
 
-* Apply the target's [position](CinemachineHardLockToTarget.md) and [rotation](CinemachineSameAsFollowTarget.md) to the camera instead of having the target in the camera frame. 
-
+* Apply the target's [position](CinemachineHardLockToTarget.md) and [rotation](CinemachineRotateWithFollowTarget.md) to the camera instead of having the target in the camera frame. 
+  
 * Move the camera along a predefined Spline to simulate a [dolly camera path](CinemachineSplineDolly.md).
 
 * Rotate the camera around configurable [pan and tilt](CinemachinePanTilt.md) axes.
@@ -46,6 +46,7 @@ Here is the list of all available Cinemachine Camera Extensions:
   * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
+  * [Cinemachine Decollider](CinemachineDecollider.md)
   * [Cinemachine Deoccluder](CinemachineDeoccluder.md)
   * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
   * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)

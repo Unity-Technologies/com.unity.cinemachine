@@ -83,6 +83,6 @@ The CinemachineCamera is a component that you add to an empty GameObject. It rep
 || [**Rotation Composer**](CinemachineRotationComposer.md) | Keep the **Look At** target in the camera frame, with composition controls and damping.
 || [**Hard Look At**](CinemachineHardLookAt.md) | Keep the **Look At** target in the center of the camera frame.
 || [**Pan Tilt**](CinemachinePanTilt.md) | Rotate the CinemachineCamera, optionally based on the user’s input.
-|| [**Same As Follow Target**](CinemachineSameAsFollowTarget.md) | Set the camera’s rotation to match the rotation of the **Tracking Target**.
+|| [**Rotate With Follow Target**](CinemachineRotateWithFollowTarget.md) | Set the camera’s rotation to match the rotation of the **Tracking Target**.
 | **Noise** || Shortcut for setting the procedural noise behavior of the CinemachineCamera. |
 | **Add Extension** || Shortcut for adding procedural extension behaviors to the CinemachineCamera. |
