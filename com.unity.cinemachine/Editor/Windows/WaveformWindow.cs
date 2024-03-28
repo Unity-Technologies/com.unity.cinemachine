@@ -3,195 +3,201 @@ using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
     class WaveformWindow : EditorWindow
     {
-        WaveformGenerator mWaveformGenerator;
-        Texture2D mScreenshot;
-        string mScreenshotFilename;
-
         // Controls how frequently (in seconds) the view will update.
         // Performance is really bad, so keep this as large as possible.
-        public static float UpdateInterval = 0.5f;
-        public static void SetDefaultUpdateInterval() { UpdateInterval = 0.5f; }
+        static float s_UpdateInterval = 0.5f;
+
+        string m_ScreenshotFilename;
+        static WaveformWindow s_Window;
+
+        WaveformGenerator m_WaveformGenerator;
+        Texture2D m_Screenshot;
+        float m_LastUpdateTime = 0;
+        VisualElement m_ImageDisplay;
+ 
+        public static void RefreshNow()
+        {
+            if (s_Window != null)
+                s_Window.CaptureScreen();
+        }
 
         //[MenuItem("Window/Waveform Monitor")]
         public static void OpenWindow()
         {
-            WaveformWindow window = EditorWindow.GetWindow<WaveformWindow>(false);
-            window.autoRepaintOnSceneChange = true;
-            //window.position = new Rect(100, 100, 400, 400);
-            window.Show(true);
+            s_Window = EditorWindow.GetWindow<WaveformWindow>(false);
+            s_Window.autoRepaintOnSceneChange = true;
+            s_Window.Show(true);
         }
 
         private void OnEnable()
         {
-            titleContent = new GUIContent("Waveform", CinemachineSettings.CinemachineLogoTexture);
-            mWaveformGenerator = new WaveformGenerator();
+            m_WaveformGenerator = new();
+            m_Screenshot = new (2, 2);
 
-            mScreenshotFilename = Path.GetFullPath(FileUtil.GetUniqueTempPathInProject() + ".png");
-            ScreenCapture.CaptureScreenshot(mScreenshotFilename);
-            EditorApplication.update += UpdateScreenshot;
+            titleContent = new GUIContent("Waveform", CinemachineSettings.CinemachineLogoTexture);
+            m_ScreenshotFilename = Path.GetFullPath(FileUtil.GetUniqueTempPathInProject() + ".png");
+
+            ScreenCapture.CaptureScreenshot(m_ScreenshotFilename);
+            m_LastUpdateTime = 0;
+            EditorApplication.update += TimedCapture;
         }
 
         private void OnDisable()
         {
-            EditorApplication.update -= UpdateScreenshot;
-            if (!string.IsNullOrEmpty(mScreenshotFilename) && File.Exists(mScreenshotFilename))
-                File.Delete(mScreenshotFilename);
-            mScreenshotFilename = null;
-            mWaveformGenerator.DestroyBuffers();
-            if (mScreenshot != null)
-                DestroyImmediate(mScreenshot);
-            mScreenshot = null;
+            EditorApplication.update -= TimedCapture;
+            if (!string.IsNullOrEmpty(m_ScreenshotFilename) && File.Exists(m_ScreenshotFilename))
+                File.Delete(m_ScreenshotFilename);
+            m_ScreenshotFilename = null;
+            m_WaveformGenerator.DestroyBuffers();
         }
-
-        private void OnGUI()
+        
+        public void CreateGUI()
         {
-            Rect rect = EditorGUILayout.GetControlRect(true);
-            EditorGUIUtility.labelWidth /= 2;
-            EditorGUI.BeginChangeCheck();
-            mWaveformGenerator.m_Exposure = EditorGUI.Slider(
-                rect, "Exposure", mWaveformGenerator.m_Exposure, 0.01f, 2);
-            if (EditorGUI.EndChangeCheck())
-                UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-            EditorGUIUtility.labelWidth *= 2;
-            rect.y += rect.height;
-            rect.height = position.height - rect.height;
-            var tex = mWaveformGenerator.Result;
-            if (tex != null)
-                GUI.DrawTexture(rect, tex);
-        }
-
-        float mLastUpdateTime = 0;
-        private void UpdateScreenshot()
-        {
-            // Don't do this too often
-            float now = Time.time;
-            if (mScreenshot != null && now - mLastUpdateTime < UpdateInterval)
-                return;
-
-            mLastUpdateTime = now;
-            if (!string.IsNullOrEmpty(mScreenshotFilename) && File.Exists(mScreenshotFilename))
+            var ux = rootVisualElement;
+            var exposureField = ux.AddChild(new Slider("Exposure", 0.01f, 2) 
+                { value = m_WaveformGenerator.Exposure, showInputField = true });
+            exposureField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+            exposureField.RegisterValueChangedCallback((evt) => 
             {
-                byte[] fileData = File.ReadAllBytes(mScreenshotFilename);
-                if (mScreenshot == null)
-                    mScreenshot = new Texture2D(2, 2);
-                mScreenshot.LoadImage(fileData); // this will auto-resize the texture dimensions.
-                mWaveformGenerator.RenderWaveform(mScreenshot);
+                m_WaveformGenerator.Exposure = evt.newValue;
+                CaptureScreen();
+            });
+            m_ImageDisplay = ux.AddChild(new VisualElement() { style = { flexGrow = 1 }});
+        }
 
-                // Capture the next one
-                ScreenCapture.CaptureScreenshot(mScreenshotFilename);
+        void TimedCapture()
+        {
+            // Don't do this costly thing too often
+            if (Time.realtimeSinceStartup - m_LastUpdateTime > s_UpdateInterval)
+                CaptureScreen();
+        }
+
+        void CaptureScreen()
+        {
+            m_LastUpdateTime = Time.realtimeSinceStartup;
+            if (!string.IsNullOrEmpty(m_ScreenshotFilename) && File.Exists(m_ScreenshotFilename))
+            {
+                byte[] fileData = File.ReadAllBytes(m_ScreenshotFilename);
+                m_Screenshot.LoadImage(fileData); // this will auto-resize the texture dimensions.
+                m_WaveformGenerator.RenderWaveform(m_Screenshot);
+
+                // The capture is delayed, setup for the next call
+                ScreenCapture.CaptureScreenshot(m_ScreenshotFilename);
             }
+            m_ImageDisplay.style.backgroundImage = Background.FromRenderTexture(m_WaveformGenerator.Result);
+            Repaint();
         }
 
         class WaveformGenerator
         {
-            public float m_Exposure = 0.2f;
+            public float Exposure = 0.2f;
 
-            RenderTexture mOutput;
-            ComputeBuffer mData;
+            RenderTexture m_Output;
+            ComputeBuffer m_Data;
 
-            int mThreadGroupSize;
-            int mThreadGroupSizeX;
-            int mThreadGroupSizeY;
+            int m_ThreadGroupSize;
+            int m_ThreadGroupSizeX;
+            int m_ThreadGroupSizeY;
 
-            ComputeShader mWaveformCompute;
-            MaterialPropertyBlock mWaveformProperties;
-            Material mWaveformMaterial;
-            CommandBuffer mCmd;
+            ComputeShader m_WaveformCompute;
+            MaterialPropertyBlock m_WaveformProperties;
+            Material m_WaveformMaterial;
+            CommandBuffer m_Cmd;
 
-            static Mesh sFullscreenTriangle;
+            static Mesh s_FullscreenTriangle;
             static Mesh FullscreenTriangle
             {
                 get
                 {
-                    if (sFullscreenTriangle == null)
+                    if (s_FullscreenTriangle == null)
                     {
-                        sFullscreenTriangle = new Mesh { name = "Fullscreen Triangle" };
-                        sFullscreenTriangle.SetVertices(new List<Vector3>
+                        s_FullscreenTriangle = new Mesh { name = "Fullscreen Triangle" };
+                        s_FullscreenTriangle.SetVertices(new List<Vector3>
                         {
-                            new Vector3(-1f, -1f, 0f),
-                            new Vector3(-1f,  3f, 0f),
-                            new Vector3( 3f, -1f, 0f)
+                            new (-1f, -1f, 0f),
+                            new (-1f,  3f, 0f),
+                            new ( 3f, -1f, 0f)
                         });
-                        sFullscreenTriangle.SetIndices(
+                        s_FullscreenTriangle.SetIndices(
                             new [] { 0, 1, 2 }, MeshTopology.Triangles, 0, false);
-                        sFullscreenTriangle.UploadMeshData(false);
+                        s_FullscreenTriangle.UploadMeshData(false);
                     }
-                    return sFullscreenTriangle;
+                    return s_FullscreenTriangle;
                 }
             }
 
             public WaveformGenerator()
             {
-                mWaveformCompute = AssetDatabase.LoadAssetAtPath<ComputeShader>(
-                        $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/CMWaveform.compute");
-                mWaveformProperties = new MaterialPropertyBlock();
-                mWaveformMaterial = new Material(AssetDatabase.LoadAssetAtPath<Shader>(
+                m_WaveformCompute = AssetDatabase.LoadAssetAtPath<ComputeShader>(
+                    $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/CMWaveform.compute");
+                m_WaveformProperties = new MaterialPropertyBlock();
+                m_WaveformMaterial = new Material(AssetDatabase.LoadAssetAtPath<Shader>(
                     $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/CMWaveform.shader"))
                 {
                     name = "CMWaveformMaterial",
                     hideFlags = HideFlags.DontSave
                 };
-                mCmd = new CommandBuffer();
+                m_Cmd = new CommandBuffer();
             }
 
             void CreateBuffers(int width, int height)
             {
-                if (mOutput == null || !mOutput.IsCreated()
-                    || mOutput.width != width || mOutput.height != height)
+                if (m_Output == null || !m_Output.IsCreated()
+                    || m_Output.width != width || m_Output.height != height)
                 {
-                    DestroyImmediate(mOutput);
-                    mOutput = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32)
+                    DestroyImmediate(m_Output);
+                    m_Output = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32)
                     {
                         anisoLevel = 0,
                         filterMode = FilterMode.Bilinear,
                         wrapMode = TextureWrapMode.Clamp,
                         useMipMap = false
                     };
-                    mOutput.Create();
+                    m_Output.Create();
                 }
 
-                int count = Mathf.CeilToInt(width / (float)mThreadGroupSizeX) * mThreadGroupSizeX * height;
-                if (mData == null)
-                    mData = new ComputeBuffer(count, sizeof(uint) << 2);
-                else if (mData.count < count)
+                int count = Mathf.CeilToInt(width / (float)m_ThreadGroupSizeX) * m_ThreadGroupSizeX * height;
+                if (m_Data == null)
+                    m_Data = new ComputeBuffer(count, sizeof(uint) << 2);
+                else if (m_Data.count < count)
                 {
-                    mData.Release();
-                    mData = new ComputeBuffer(count, sizeof(uint) << 2);
+                    m_Data.Release();
+                    m_Data = new ComputeBuffer(count, sizeof(uint) << 2);
                 }
             }
 
             public void DestroyBuffers()
             {
-                if (mData != null)
-                    mData.Release();
-                mData = null;
-                DestroyImmediate(mOutput);
-                mOutput = null;
+                m_Data?.Release();
+                m_Data = null;
+                DestroyImmediate(m_Output);
+                m_Output = null;
             }
 
-            public RenderTexture Result { get { return mOutput; } }
+            public RenderTexture Result => m_Output;
 
             public void RenderWaveform(Texture2D source)
             {
-                if (mWaveformMaterial == null)
+                if (m_WaveformMaterial == null)
                     return;
 
                 int width = source.width;
                 int height = source.height;
                 int histogramResolution = 256;
 
-                mThreadGroupSize = 256;
-                mThreadGroupSizeX = 16;
-                mThreadGroupSizeY = 16;
+                m_ThreadGroupSize = 256;
+                m_ThreadGroupSizeX = 16;
+                m_ThreadGroupSizeY = 16;
                 CreateBuffers(width, histogramResolution);
 
-                mCmd.Clear();
-                mCmd.BeginSample("CMWaveform");
+                m_Cmd.Clear();
+                m_Cmd.BeginSample("CMWaveform");
 
                 var parameters = new Vector4(
                     width, height,
@@ -199,34 +205,34 @@ namespace Unity.Cinemachine.Editor
                     histogramResolution);
 
                 // Clear the buffer on every frame
-                int kernel = mWaveformCompute.FindKernel("KCMWaveformClear");
-                mCmd.SetComputeBufferParam(mWaveformCompute, kernel, "_WaveformBuffer", mData);
-                mCmd.SetComputeVectorParam(mWaveformCompute, "_Params", parameters);
-                mCmd.DispatchCompute(mWaveformCompute, kernel,
-                    Mathf.CeilToInt(width / (float)mThreadGroupSizeX),
-                    Mathf.CeilToInt(histogramResolution / (float)mThreadGroupSizeY), 1);
+                int kernel = m_WaveformCompute.FindKernel("KCMWaveformClear");
+                m_Cmd.SetComputeBufferParam(m_WaveformCompute, kernel, "_WaveformBuffer", m_Data);
+                m_Cmd.SetComputeVectorParam(m_WaveformCompute, "_Params", parameters);
+                m_Cmd.DispatchCompute(m_WaveformCompute, kernel,
+                    Mathf.CeilToInt(width / (float)m_ThreadGroupSizeX),
+                    Mathf.CeilToInt(histogramResolution / (float)m_ThreadGroupSizeY), 1);
 
                 // Gather all pixels and fill in our waveform
-                kernel = mWaveformCompute.FindKernel("KCMWaveformGather");
-                mCmd.SetComputeBufferParam(mWaveformCompute, kernel, "_WaveformBuffer", mData);
-                mCmd.SetComputeTextureParam(mWaveformCompute, kernel, "_Source", source);
-                mCmd.SetComputeVectorParam(mWaveformCompute, "_Params", parameters);
-                mCmd.DispatchCompute(mWaveformCompute, kernel, width,
-                    Mathf.CeilToInt(height / (float)mThreadGroupSize), 1);
+                kernel = m_WaveformCompute.FindKernel("KCMWaveformGather");
+                m_Cmd.SetComputeBufferParam(m_WaveformCompute, kernel, "_WaveformBuffer", m_Data);
+                m_Cmd.SetComputeTextureParam(m_WaveformCompute, kernel, "_Source", source);
+                m_Cmd.SetComputeVectorParam(m_WaveformCompute, "_Params", parameters);
+                m_Cmd.DispatchCompute(m_WaveformCompute, kernel, width,
+                    Mathf.CeilToInt(height / (float)m_ThreadGroupSize), 1);
 
                 // Generate the waveform texture
-                float exposure = Mathf.Max(0f, m_Exposure);
+                float exposure = Mathf.Max(0f, Exposure);
                 exposure *= (float)histogramResolution / height;
-                mWaveformProperties.SetVector(Shader.PropertyToID("_Params"),
+                m_WaveformProperties.SetVector(Shader.PropertyToID("_Params"),
                     new Vector4(width, histogramResolution, exposure, 0f));
-                mWaveformProperties.SetBuffer(Shader.PropertyToID("_WaveformBuffer"), mData);
-                mCmd.SetRenderTarget(mOutput);
-                mCmd.DrawMesh(
+                m_WaveformProperties.SetBuffer(Shader.PropertyToID("_WaveformBuffer"), m_Data);
+                m_Cmd.SetRenderTarget(m_Output);
+                m_Cmd.DrawMesh(
                     FullscreenTriangle, Matrix4x4.identity,
-                    mWaveformMaterial, 0, 0, mWaveformProperties);
-                mCmd.EndSample("CMWaveform");
+                    m_WaveformMaterial, 0, 0, m_WaveformProperties);
+                m_Cmd.EndSample("CMWaveform");
 
-                Graphics.ExecuteCommandBuffer(mCmd);
+                Graphics.ExecuteCommandBuffer(m_Cmd);
             }
         }
     }
