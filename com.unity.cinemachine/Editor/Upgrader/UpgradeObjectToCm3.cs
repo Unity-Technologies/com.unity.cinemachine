@@ -104,6 +104,9 @@ namespace Unity.Cinemachine.Editor
                 if (ReplaceComponent<Cinemachine3rdPersonFollow, CinemachineThirdPersonFollow>(go)) 
                     go.GetComponent<Cinemachine3rdPersonFollow>().UpgradeToCm3(go.GetComponent<CinemachineThirdPersonFollow>());
 
+                if (ReplaceComponent<CinemachineSameAsFollowTarget, CinemachineRotateWithFollowTarget>(go)) 
+                    go.GetComponent<CinemachineSameAsFollowTarget>().UpgradeToCm3(go.GetComponent<CinemachineRotateWithFollowTarget>());
+
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                     go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
 

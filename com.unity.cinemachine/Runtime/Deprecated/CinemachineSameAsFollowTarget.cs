@@ -1,14 +1,12 @@
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Unity.Cinemachine
 {
-    /// <summary>
-    /// This is a CinemachineComponent in the Aim section of the component pipeline.
-    /// Its job is to match the orientation of the Follow target.
-    /// </summary>
-    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Same As Follow Target")]
+    /// <summary>CinemachineSameAsFollowTarget has been deprecated. Use CinemachineRotateWithFollowTarget instead.</summary>
+    [Obsolete("CinemachineSameAsFollowTarget has been deprecated. Use CinemachineRotateWithFollowTarget instead")]
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
@@ -58,5 +56,12 @@ namespace Unity.Cinemachine
             curState.RawOrientation = dampedOrientation;
             curState.ReferenceUp = dampedOrientation * Vector3.up;
         }
+
+        // Helper to upgrade to CM3
+        internal void UpgradeToCm3(CinemachineRotateWithFollowTarget c)
+        {
+            c.Damping = Damping;
+        }
     }
 }
+#endif
