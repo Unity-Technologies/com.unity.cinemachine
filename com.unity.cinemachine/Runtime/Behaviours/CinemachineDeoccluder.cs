@@ -39,7 +39,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Obstacles closer to the target than this will be ignored</summary>
         [Tooltip("Obstacles closer to the target than this will be ignored")]
-        public float MinimumDistanceFromTarget = 0.2f;
+        public float MinimumDistanceFromTarget = 0.3f;
 
         /// <summary>Settings for deoccluding the camera when obstacles are present</summary>
         [Serializable]
@@ -147,12 +147,12 @@ namespace Unity.Cinemachine
                 Enabled = true,
                 DistanceLimit = 0,
                 MinimumOcclusionTime = 0,
-                CameraRadius = 0.1f,
+                CameraRadius = 0.4f,
                 Strategy = ResolutionStrategy.PullCameraForward,
                 MaximumEffort = 4,
                 SmoothingTime = 0,
-                Damping = 0.2f,
-                DampingWhenOccluded = 0
+                Damping = 0.4f,
+                DampingWhenOccluded = 0.2f
             };
         }
 
@@ -238,7 +238,7 @@ namespace Unity.Cinemachine
             CollideAgainst = 1;
             IgnoreTag = string.Empty;
             TransparentLayers = 0;
-            MinimumDistanceFromTarget = 0.2f;
+            MinimumDistanceFromTarget = 0.3f;
             AvoidObstacles = ObstacleAvoidance.Default;
             ShotQualityEvaluation = QualityEvaluation.Default;
         }
@@ -523,66 +523,58 @@ namespace Unity.Cinemachine
         
         Vector3 PreserveLineOfSight(ref CameraState state, ref VcamExtraState extra, Vector3 lookAtPoint)
         {
-            var displacement = Vector3.zero;
             if (CollideAgainst != 0 && CollideAgainst != TransparentLayers)
             {
                 var cameraPos = state.GetCorrectedPosition();
                 var hitInfo = new RaycastHit();
-                displacement = PullCameraInFrontOfNearestObstacle(
+                var newPos = PullCameraInFrontOfNearestObstacle(
                     cameraPos, lookAtPoint, CollideAgainst & ~TransparentLayers, ref hitInfo);
-                var pos = cameraPos + displacement;
                 if (hitInfo.collider != null)
                 {
-                    extra.AddPointToDebugPath(pos, hitInfo.collider);
+                    extra.AddPointToDebugPath(newPos, hitInfo.collider);
                     if (AvoidObstacles.Strategy != ObstacleAvoidance.ResolutionStrategy.PullCameraForward)
                     {
                         Vector3 targetToCamera = cameraPos - lookAtPoint;
-                        pos = PushCameraBack(
-                            pos, targetToCamera, hitInfo, lookAtPoint,
+                        newPos = PushCameraBack(
+                            newPos, targetToCamera, hitInfo, lookAtPoint,
                             new Plane(state.ReferenceUp, cameraPos),
                             targetToCamera.magnitude, AvoidObstacles.MaximumEffort, ref extra);
                     }
                 }
-                displacement = pos - cameraPos;
+                return newPos - cameraPos;
             }
-            return displacement;
+            return Vector3.zero;
         }
 
         Vector3 PullCameraInFrontOfNearestObstacle(
             Vector3 cameraPos, Vector3 lookAtPos, int layerMask, ref RaycastHit hitInfo)
         {
-            var displacement = Vector3.zero;
+            var newPos = cameraPos;
             var dir = cameraPos - lookAtPos;
             var targetDistance = dir.magnitude;
             if (targetDistance > Epsilon)
             {
                 dir /= targetDistance;
-                var minDistanceFromTarget = Mathf.Max(MinimumDistanceFromTarget, Epsilon);
-                if (targetDistance < minDistanceFromTarget + Epsilon)
-                    displacement = dir * (minDistanceFromTarget - targetDistance);
-                else
+                var minDistance = MinimumDistanceFromTarget + AvoidObstacles.CameraRadius + k_PrecisionSlush;
+                if (targetDistance > minDistance)
                 {
-                    var rayLength = targetDistance - minDistanceFromTarget;
+                    // Make a ray that looks towards the camera, to get the obstacle closest to target
+                    var rayLength = Mathf.Max(targetDistance - minDistance - AvoidObstacles.CameraRadius, k_PrecisionSlush);
                     if (AvoidObstacles.DistanceLimit > Epsilon)
                         rayLength = Mathf.Min(AvoidObstacles.DistanceLimit, rayLength);
-
-                    // Make a ray that looks towards the camera, to get the obstacle closest to target
-                    var ray = new Ray(cameraPos - rayLength * dir, dir);
-                    rayLength += k_PrecisionSlush;
-                    if (rayLength > Epsilon)
+                    if (RuntimeUtility.SphereCastIgnoreTag(
+                        new Ray(lookAtPos + dir * minDistance, dir), 
+                        AvoidObstacles.CameraRadius, out hitInfo, rayLength, layerMask, IgnoreTag))
                     {
-                        if (RuntimeUtility.SphereCastIgnoreTag(
-                                new Ray(lookAtPos + dir * AvoidObstacles.CameraRadius, dir), 
-                                AvoidObstacles.CameraRadius, out hitInfo, 
-                                rayLength - AvoidObstacles.CameraRadius, layerMask, IgnoreTag))
-                        {
-                            var p = hitInfo.point + hitInfo.normal * (AvoidObstacles.CameraRadius + k_PrecisionSlush);
-                            displacement = p - cameraPos;
-                        }
+                        newPos = hitInfo.point + hitInfo.normal * (AvoidObstacles.CameraRadius + k_PrecisionSlush);
                     }
+
+                    // Respect the minimum distance from target - push camera back if we have to
+                    if ((lookAtPos - newPos).sqrMagnitude < minDistance * minDistance)
+                        newPos = lookAtPos + dir * minDistance;
                 }
             }
-            return displacement;
+            return newPos;
         }
 
         Vector3 PushCameraBack(
