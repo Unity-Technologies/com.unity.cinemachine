@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(SensorSizePropertyAttribute))]
-    class SensorSizePropertyDrawer : PropertyDrawer
+    partial class SensorSizePropertyDrawer : PropertyDrawer
     {
         static readonly List<string> s_PresetNames = new () 
         {
@@ -81,16 +81,6 @@ namespace Unity.Cinemachine.Editor
             });
             
             return row;
-        }
-
-        // IMGUI implementation must remain until no more IMGUI inspectors are using it
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-        {
-            var v = EditorGUI.Vector2Field(rect, property.displayName, property.vector2Value);
-            v.x = Mathf.Max(v.x, 0.1f);
-            v.y = Mathf.Max(v.y, 0.1f);
-            property.vector2Value = v;
-            property.serializedObject.ApplyModifiedProperties();
         }
     }
 }
