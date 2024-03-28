@@ -11,7 +11,7 @@ namespace Unity.Cinemachine
         /// tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge</summary>
         [Tooltip("Screen position for target. The camera will adjust to position the "
         + "tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge")]
-        [DelayedVector]
+        //[DelayedVector] // interferes with game guide refresh
         public Vector2 ScreenPosition;
 
         /// <summary>Settings for DeadZone, which is an area within which the camera will not adjust itself.</summary>
@@ -24,7 +24,7 @@ namespace Unity.Cinemachine
             /// Full screen size is 1.</summary>
             [Tooltip("The camera will not adjust if the target is within this range of the "
                 + "screen position.  Full screen size is 1.")]
-            [DelayedVector]
+            //[DelayedVector] // interferes with game guide refresh
             public Vector2 Size;
         }
         /// <summary>The camera will not adjust if the target is within this range of the screen position</summary>
@@ -48,7 +48,7 @@ namespace Unity.Cinemachine
                 + "When the target is within this region, the camera will gradually adjust to re-align "
                 + "towards the desired position, depending on the damping speed.  "
                 + "Full screen size is 1")]
-            [DelayedVector]
+            //[DelayedVector] // interferes with game guide refresh
             public Vector2 Size;
             /// <summary>A zero Offset means that the hard limits will be centered around the target screen position.  
             /// A nonzero Offset will uncenter the hard limits relative to the target screen position.
