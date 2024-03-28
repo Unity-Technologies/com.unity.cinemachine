@@ -28,19 +28,19 @@ namespace Unity.Cinemachine
         [Serializable]
         public struct Instruction
         {
-            /// <summary>The virtual camera to activate when this instruction becomes active</summary>
-            [Tooltip("The virtual camera to activate when this instruction becomes active")]
+            /// <summary>The camera to activate when this instruction becomes active</summary>
+            [Tooltip("The camera to activate when this instruction becomes active")]
             [FormerlySerializedAs("m_VirtualCamera")]
             [ChildCameraProperty]
             public CinemachineVirtualCameraBase Camera;
 
-            /// <summary>How to blend to the next virtual camera in the list (if any)</summary>
-            [Tooltip("How to blend to the next virtual camera in the list (if any)")]
+            /// <summary>How to blend to the next camera in the list (if any)</summary>
+            [Tooltip("How to blend to the next camera in the list (if any)")]
             [FormerlySerializedAs("m_Blend")]
             public CinemachineBlendDefinition Blend;
 
-            /// <summary>How long to wait (in seconds) before activating the next virtual camera in the list (if any)</summary>
-            [Tooltip("How long to wait (in seconds) before activating the next virtual camera in the list (if any)")]
+            /// <summary>How long to wait (in seconds) before activating the next camera in the list (if any)</summary>
+            [Tooltip("How long to wait (in seconds) before activating the next camera in the list (if any)")]
             [FormerlySerializedAs("m_Hold")]
             public float Hold;
 
@@ -48,8 +48,7 @@ namespace Unity.Cinemachine
             public void Validate() => Hold = Mathf.Max(Hold, 0);
         };
 
-        /// <summary>The set of instructions associating virtual cameras with states.
-        /// The set of instructions for enabling child cameras</summary>
+        /// <summary>The set of instructions for enabling child cameras</summary>
         [Tooltip("The set of instructions for enabling child cameras.")]
         [FormerlySerializedAs("m_Instructions")]
         public List<Instruction> Instructions = new ();
