@@ -144,14 +144,14 @@ namespace Unity.Cinemachine
                         continue; // don't know what's going on, just forget about it
                     }
                 }
-                if (closestHit < 0 || h.distance < s_HitBuffer[closestHit].distance)
+                if (h.collider != null && (closestHit < 0 || h.distance < s_HitBuffer[closestHit].distance))
                 {
                     closestHit = i;
                 }
             }
 
             // Naively combine penetrating items
-            if (numPenetrations > 1)
+            if (numPenetrations > 1 && penetrationDistanceSum > UnityVectorExtensions.Epsilon)
             {
                 hitInfo = new RaycastHit();
                 for (int i = 0; i < numPenetrations; ++i)

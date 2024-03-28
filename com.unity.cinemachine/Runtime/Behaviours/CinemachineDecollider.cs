@@ -35,6 +35,22 @@ namespace Unity.Cinemachine
             [Tooltip("Objects on these layers will be detected")]
             public LayerMask ObstacleLayers;
 
+            /// <summary>Settings for resolving towards Follow target instead of LookAt.</summary>
+            [Serializable]
+            public struct FollowTargetSettings
+            {
+                /// <summary>Use the Follow target when resolving occlusions, instead of the LookAt target.</summary>
+                [Tooltip("Use the Follow target when resolving occlusions, instead of the LookAt target.")]
+                public bool Enabled;
+
+                [Tooltip("Vertical offset from the Follow target's root, in target local space")]
+                public float YOffset;
+            }
+            
+            /// <summary>Use the Follow target when resolving occlusions, instead of the LookAt target.</summary>
+            [EnabledProperty]
+            public FollowTargetSettings UseFollowTarget;
+
             /// <summary>
             /// How gradually the camera returns to its normal position after having been corrected.
             /// Higher numbers will move the camera more gradually back to normal.
@@ -171,6 +187,7 @@ namespace Unity.Cinemachine
                 // Capture lookAt screen offset for composition preservation
                 var hasLookAt = state.HasLookAt();
                 var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
+                var resolutionTargetPoint = GetAvoidanceResolutionTargetPoint(vcam, ref state);
                 var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
                     lookAtPoint - initialCamPos, state.ReferenceUp) : Vector2.zero;
 
@@ -186,8 +203,8 @@ namespace Unity.Cinemachine
                 if (Decollision.Enabled)
                 {
                     var oldCamPos = state.GetCorrectedPosition();
-                    var displacement = DecollideCamera(oldCamPos, lookAtPoint);
-                    displacement = ApplySmoothingAndDamping(displacement, lookAtPoint, oldCamPos, extra, deltaTime);
+                    var displacement = DecollideCamera(oldCamPos, resolutionTargetPoint);
+                    displacement = ApplySmoothingAndDamping(displacement, resolutionTargetPoint, oldCamPos, extra, deltaTime);
                     if (!displacement.AlmostZero())
                     {
                         state.PositionCorrection += displacement;
@@ -223,6 +240,22 @@ namespace Unity.Cinemachine
             }
         }
 
+        Vector3 GetAvoidanceResolutionTargetPoint(
+            CinemachineVirtualCameraBase vcam, ref CameraState state)
+        {
+            var resolutuionTargetPoint = state.HasLookAt() ? state.ReferenceLookAt : state.GetCorrectedPosition();
+            if (Decollision.UseFollowTarget.Enabled)
+            {
+                var target = vcam.Follow;
+                if (target != null)
+                {
+                    resolutuionTargetPoint = TargetPositionCache.GetTargetPosition(target)
+                        + TargetPositionCache.GetTargetRotation(target) * Vector3.up * Decollision.UseFollowTarget.YOffset;
+                }
+            }
+            return resolutuionTargetPoint;
+        }
+        
         // Returns distance to move the camera in the up directon to stay on top of terrain
         float ResolveTerrain(VcamExtraState extra, Vector3 camPos, Vector3 up, float deltaTime)
         {

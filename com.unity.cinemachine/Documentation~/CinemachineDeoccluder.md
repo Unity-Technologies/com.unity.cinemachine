@@ -20,6 +20,8 @@ The Deoccluder uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script
 | __Minimum Distance From Target__ || Ignore obstacles that are less than this distance from the target's pivot point. |
 | __Avoid Obstacles__ || When enabled, the Deoccluder will move the camera in the Scene when the target is obscured by an obstacle. Use the Distance Limit, Camera Radius, Strategy, Smoothing Time, Minimum Occlusion Time, Damping, and DampingWhenOccluded properties to adjust how to avoid obstacles. If disabled, the Cinemachine Deoccluder will evaluate shot quality based on obstacles, but will not attempt to move the camera to improve the shot. |
 | __Distance Limit__ || The maximum raycast distance when checking if the line of sight to this camera’s target is clear. Enter 0 to use the current actual distance to the target. Available when Avoid Obstacles is checked. |
+| __Use Follow Target__ || When enabled, the Deoccluder will move the camera towards the Follow target instead of the LookAt target. |
+| __Y Offset__ || When Use Follow Target is enabled, the Follow target's Y position will be considered to be offset by this much in its local vertical direction. |
 | __Camera Radius__ || Distance to maintain from any obstacle. Try to keep this value small for the best results. Increase it if you are seeing inside obstacles due to a large FOV on the camera. Available when Avoid Obstacles is checked. |
 | __Strategy__ || The way in which the Deoccluder attempts to preserve sight of the target. Available when Avoid Obstacles is checked. |
 | | _Pull Camera Forward_ | Move the camera forward along its Z axis until it is in front of the obstacle that is nearest to the target. |
