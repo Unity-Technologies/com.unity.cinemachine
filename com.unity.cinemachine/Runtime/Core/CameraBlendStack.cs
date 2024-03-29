@@ -82,6 +82,8 @@ namespace Unity.Cinemachine
                 {
                     // No snapshot required - reset it
                     m_Snapshot.TakeSnapshot(null);
+                    m_SnapshotSource = null;
+                    m_SnapshotBlendWeight = 0;
                     return cam;
                 }
                 // A snapshot is needed
