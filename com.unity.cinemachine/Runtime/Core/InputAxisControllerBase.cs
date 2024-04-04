@@ -181,9 +181,8 @@ namespace Unity.Cinemachine
         }
     
         /// <summary>Read all the controllers and process their input.</summary>
-        public void UpdateControllers(UnityEngine.Object context)
+        public void UpdateControllers(UnityEngine.Object context, float deltaTime)
         {
-            var deltaTime = Time.deltaTime;
             for (int i = 0; i < Controllers.Count; ++i)
             {
                 var c = Controllers[i];
@@ -225,6 +224,12 @@ namespace Unity.Cinemachine
         [Tooltip("If set, input will not be processed while the Cinemachine Camera is "
             + "participating in a blend.")]
         public bool SuppressInputWhileBlending = true;
+
+        /// <summary>
+        /// If set, then input will be processed using unscaled deltaTime, and not scaled deltaTime.  
+        /// This allows input to continue even when the timescale is set to 0.
+        /// </summary>
+        public bool IgnoreTimeScale;
 
         /// <summary>
         /// Each discovered axis will get a Controller to drive it in Update().
@@ -308,15 +313,23 @@ namespace Unity.Cinemachine
         protected virtual void InitializeControllerDefaultsForAxis(
             in IInputAxisOwner.AxisDescriptor axis, Controller controller) {}
            
-        /// <summary>Read all the controllers and process their input.</summary>
+        /// <summary>Read all the controllers and process their input.
+        /// Default implementation calls UpdateControllers(IgnoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime)</summary>
         protected void UpdateControllers()
+        {
+            UpdateControllers(IgnoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime);
+        }
+
+        /// <summary>Read all the controllers and process their input.</summary>
+        /// <param name="deltaTime">The time interval for which to process the input</param>
+        protected void UpdateControllers(float deltaTime)
         {
             if (SuppressInputWhileBlending 
                 && TryGetComponent<CinemachineVirtualCameraBase>(out var vcam)
                 && vcam.IsParticipatingInBlend())
                 return;
 
-            m_ControllerManager.UpdateControllers(this);
+            m_ControllerManager.UpdateControllers(this, deltaTime);
         }
     }
 }
