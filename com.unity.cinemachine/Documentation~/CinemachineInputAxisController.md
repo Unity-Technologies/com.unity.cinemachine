@@ -22,6 +22,7 @@ This component makes it easy to control a `CinemachineCamera` in a single player
 | __Auto Enable Inputs__ | If Unity's Input package is installed, this option is available. It will automatically enable any mapped input actions at startup |
 | __Scan Recursively__ | If set, a recursive search for IInputAxisOwners behaviours will be performed.  Otherwise, only behaviours attached directly to this GameObject will be considered, and child objects will be ignored. |
 | __Suppress Input While Blending__ | If set and if this component is attached to a CinemachineCamera, input will not be processed while the camera is participating in a blend. |
+| __Ignore Time Scale__ | If set, then input will be processed using unscaled deltaTime, and not scaled deltaTime.  This allows input to continue even when the timescale is set to 0. |
 | __Enabled__ | The controller will drive the input axis while this value is true.  If false, the axis will not be driven by the controller. |
 | __Legacy Input__ | If the legacy input manager is being used, the Input Axis Name to query is specified here. |
 | __Legacy Gain__ | If the legacy input manager is being used, the input value read will be multiplied by this amount. |
