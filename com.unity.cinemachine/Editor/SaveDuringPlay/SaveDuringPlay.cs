@@ -561,6 +561,18 @@ namespace Unity.Cinemachine.Editor
 
         static void RestoreAllInterestingStates()
         {
+            if (s_SavedStates.Count > 0 && !EditorUtility.DisplayDialog(
+                    "Save changes made in Play Mode",
+                    "Some Cinemachine settings have been modified during play mode.  "
+                    + "Would you like to propagate those changes back to the scene?\n\n"
+                    + "Note: if you choose Cancel, then the changes will be lost.  If you choose Save, then it "
+                    + "will still be possible to change your mind later by invoking Undo.",
+                    "Save", "Cancel"))
+            {
+                s_SavedStates = null;
+                return;
+            }
+
             //Debug.Log("Updating state for all interesting objects");
             bool dirty = false;
             var roots = ObjectTreeUtil.FindAllRootObjectsInOpenScenes();
