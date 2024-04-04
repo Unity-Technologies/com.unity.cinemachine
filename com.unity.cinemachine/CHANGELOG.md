@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added CinemachineShotQualityEvaluator which is a standalone version of the evaluation code in Deoccluder.
 - Added StateDrivenCamera.CancelWait() method to cancel the current wait on a pending state change.
 - Added FlyAround sample scene showing a simple fly-around camera.
+- Added IgnoreTimeScale option to InputAxisControllerBase.
 - Added confirmation dialog when exiting play mode, if Save During Play is enabled and changes have been made to saveable properties.
 
 ### Changed
