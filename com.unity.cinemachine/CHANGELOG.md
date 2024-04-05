@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.10.1] - 2024-03-27
 - Bugfix: Solo not updating when brain is in FixedUpdate.
 - Bugfix: Target Groups with zero active members now report their last valid position and dimensions.
+- Bugfix: Cinemachine cameras would sometimes unnecessarily dirty the scene due to floating-point imprecision when setting transform rotations.
 
 
 ## [2.10.0] - 2024-01-01

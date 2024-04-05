@@ -246,7 +246,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>The cacmera state, which will be a blend of the child rig states</summary>
+        /// <summary>The camera state, which will be a blend of the child rig states</summary>
         override public CameraState State { get { return m_State; } }
 
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
@@ -315,12 +315,11 @@ namespace Cinemachine
         /// <param name="rot">Worldspace orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
-            var up = State.ReferenceUp;
+            var up = m_State.ReferenceUp;
             m_YAxis.Value = GetYAxisClosestValue(pos, up);
 
             PreviousStateIsValid = true;
-            transform.position = pos;
-            transform.rotation = rot;
+            transform.ConservativeSetPositionAndRotation(pos, rot);
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
@@ -359,11 +358,17 @@ namespace Cinemachine
             // screws up camera dragging when there is a LookAt behaviour.
             if (Follow != null)
             {
-                Vector3 delta = State.RawPosition - transform.position;
-                transform.position = State.RawPosition;
-                m_Rigs[0].transform.position -= delta;
-                m_Rigs[1].transform.position -= delta;
-                m_Rigs[2].transform.position -= delta;
+                Vector3 delta = m_State.RawPosition - transform.position;
+#if UNITY_EDITOR
+                // Avoid dirtying the scene with insignificant diffs
+                if (!delta.AlmostZero())
+#endif
+                {
+                    transform.position = m_State.RawPosition;
+                    m_Rigs[0].transform.position -= delta;
+                    m_Rigs[1].transform.position -= delta;
+                    m_Rigs[2].transform.position -= delta;
+                }
             }
 
             InvokePostPipelineStageCallback(this, CinemachineCore.Stage.Finalize, ref m_State, deltaTime);
@@ -794,8 +799,7 @@ namespace Cinemachine
                 if (!PreviousStateIsValid)
                 {
                     m_Rigs[i].PreviousStateIsValid = false;
-                    m_Rigs[i].transform.position = transform.position;
-                    m_Rigs[i].transform.rotation = transform.rotation;
+                    m_Rigs[i].transform.ConservativeSetPositionAndRotation(transform.position, transform.rotation);
                 }
 #if UNITY_EDITOR
                 // Hide the rigs from prying eyes
