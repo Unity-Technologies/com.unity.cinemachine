@@ -666,10 +666,15 @@ namespace Unity.Cinemachine
         {
             m_CameraState = state;
             var target = ControlledObject.transform;
+
+            var pos = target.position;
+            var rot = target.rotation;
             if ((state.BlendHint & CameraState.BlendHints.NoPosition) == 0)
-                target.position = state.GetFinalPosition();
+                pos = state.GetFinalPosition();
             if ((state.BlendHint & CameraState.BlendHints.NoOrientation) == 0)
-                target.rotation = state.GetFinalOrientation();
+                rot = state.GetFinalOrientation();
+            target.ConservativeSetPositionAndRotation(pos, rot);
+
             if ((state.BlendHint & CameraState.BlendHints.NoLens) == 0)
             {
                 Camera cam = OutputCamera;

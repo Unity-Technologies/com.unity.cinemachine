@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Solo not updating when brain is in FixedUpdate.
 - Bugfix: Spline roll was being calculated incorrectly when spline was rotated.
 - Bugfix: "Freeze When Blending Out" didn't work when switching betwen two cameras multiple times.
+- Bugfix: Cinemachine cameras would sometimes unnecessarily dirty the scene due to floating-point imprecision when setting transform rotations.
 
 ### Added
 - Added CinemachineDecollider to resolve camera intersection with colliders and terrains, without necessarily preserving line-of-sight to target.

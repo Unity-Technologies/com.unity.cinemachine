@@ -137,7 +137,7 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = false;
-            transform.SetPositionAndRotation(pos, rot);
+            transform.ConservativeSetPositionAndRotation(pos, rot);
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
@@ -222,10 +222,13 @@ namespace Unity.Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
+            var pos = transform.position;
+            var rot = transform.rotation;
             if (Follow != null)
-                transform.position = State.RawPosition;
+                pos = m_State.RawPosition;
             if (LookAt != null)
-                transform.rotation = State.RawOrientation;
+                rot = m_State.RawOrientation;
+            transform.ConservativeSetPositionAndRotation(pos, rot);
             
             // Signal that it's all done
             PreviousStateIsValid = true;
