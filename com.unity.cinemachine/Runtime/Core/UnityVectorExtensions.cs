@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -216,7 +215,6 @@ namespace Unity.Cinemachine
             return v.sqrMagnitude < (Epsilon * Epsilon);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ConservativeSetPositionAndRotation(this Transform t, Vector3 pos, Quaternion rot)
         {
 #if UNITY_EDITOR
