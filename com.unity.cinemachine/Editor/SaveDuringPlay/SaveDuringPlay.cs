@@ -580,7 +580,19 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             if (dirty)
+            {
+                if (!EditorUtility.DisplayDialog(
+                        "Save changes made in Play Mode",
+                        "Some Cinemachine settings that were modified during play mode are being "
+                        + "propagated back to the scene.  Would you like to keep these changes, or undo them?\n\n"
+                        + "Note: if you choose Cancel, then the changes will be undone now.  If you choose Keep, then it "
+                        + "will still be possible to change your mind later by invoking Undo.",
+                        "Keep", "Cancel"))
+                {
+                    Undo.PerformUndo();
+                }
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            }
             s_SavedStates = null;
         }
     }
