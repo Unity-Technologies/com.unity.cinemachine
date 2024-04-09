@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Cinemachine.Utility;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -157,10 +158,13 @@ namespace Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
+            var pos = transform.position;
+            var rot = transform.rotation;
             if (Follow != null)
-                transform.position = State.RawPosition;
+                pos = m_State.RawPosition;
             if (LookAt != null)
-                transform.rotation = State.RawOrientation;
+                rot = m_State.RawOrientation;
+            transform.ConservativeSetPositionAndRotation(pos, rot);
             
             PreviousStateIsValid = true;
         }
@@ -562,8 +566,7 @@ namespace Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = true;
-            transform.position = pos;
-            transform.rotation = rot;
+            transform.ConservativeSetPositionAndRotation(pos, rot);
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 

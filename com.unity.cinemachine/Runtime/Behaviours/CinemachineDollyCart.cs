@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -73,8 +74,9 @@ namespace Cinemachine
             if (m_Path != null)
             {
                 m_Position = m_Path.StandardizeUnit(distanceAlongPath, m_PositionUnits);
-                transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
-                transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+                var pos = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
+                var rot = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+                transform.ConservativeSetPositionAndRotation(pos, rot);
             }
         }
     }

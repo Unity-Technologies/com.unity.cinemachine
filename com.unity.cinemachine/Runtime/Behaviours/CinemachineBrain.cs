@@ -963,10 +963,16 @@ namespace Cinemachine
         {
             CurrentCameraState = state;
             var target = ControlledObject.transform;
+            var pos = target.position;
+            var rot = target.rotation;
             if ((state.BlendHint & CameraState.BlendHintValue.NoPosition) == 0)
-                target.position = state.FinalPosition;
+                pos = state.FinalPosition;
             if ((state.BlendHint & CameraState.BlendHintValue.NoOrientation) == 0)
-                target.rotation = state.FinalOrientation;
+                rot = state.FinalOrientation;
+
+            // Avoid dirtying the scene with insignificant rotations diffs
+            target.ConservativeSetPositionAndRotation(pos, rot);
+
             if ((state.BlendHint & CameraState.BlendHintValue.NoLens) == 0)
             {
                 Camera cam = OutputCamera;
