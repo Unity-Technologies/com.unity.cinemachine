@@ -374,9 +374,13 @@ namespace SaveDuringPlay
         static bool FilterField(string fullName, FieldInfo fieldInfo)
         {
             var attrs = fieldInfo.GetCustomAttributes(false);
-            foreach (var attr in attrs)
-                if (attr.GetType().Name.Equals("NoSaveDuringPlayAttribute"))
+            for (int i = 0; i < attrs.Length; ++i)
+            {
+                if (attrs[i].GetType().Name.Equals("NoSaveDuringPlayAttribute"))
                     return false;
+                if (attrs[i].GetType().Name.Equals("NonSerializedAttribute"))
+                    return false;
+            }
             return true;
         }
 
