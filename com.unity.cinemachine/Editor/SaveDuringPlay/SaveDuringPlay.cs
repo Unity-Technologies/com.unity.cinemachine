@@ -352,7 +352,7 @@ namespace Unity.Cinemachine.Editor
                     if (mValues.TryGetValue(fullName, out string savedValue)
                         && StringFromLeafObject(value) != savedValue)
                     {
-                        //Debug.Log("Put " + mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
+                        //Debug.Log("Put " + mObjectFullPath + "." + fullName + " = " + mValues[fullName] + " --- was " + StringFromLeafObject(value));
                         value = LeafObjectFromString(type, mValues[fullName].Trim(), roots);
                         return true; // changed
                     }
@@ -373,8 +373,12 @@ namespace Unity.Cinemachine.Editor
         {
             var attrs = fieldInfo.GetCustomAttributes(false);
             for (int i = 0; i < attrs.Length; ++i)
+            {
                 if (attrs[i].GetType().Name.Equals("NoSaveDuringPlayAttribute"))
                     return false;
+                if (attrs[i].GetType().Name.Equals("NonSerializedAttribute"))
+                    return false;
+            }
             return true;
         }
 
