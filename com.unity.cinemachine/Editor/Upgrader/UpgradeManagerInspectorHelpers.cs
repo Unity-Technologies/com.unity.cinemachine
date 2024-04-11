@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Editor
 {
     static class UpgradeManagerInspectorHelpers
     {
-        public static void DrawUpgradeControls(UnityEditor.Editor editor, string className)
+        public static void IMGUI_DrawUpgradeControls(UnityEditor.Editor editor, string className)
         {
             var attrs = editor.serializedObject.targetObject.GetType()
                 .GetCustomAttributes(typeof(ObsoleteAttribute), true);

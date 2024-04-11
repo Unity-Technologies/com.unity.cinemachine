@@ -48,7 +48,7 @@ namespace Unity.Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "Spline");
+            UpgradeManagerInspectorHelpers.IMGUI_DrawUpgradeControls(this, "Spline");
 
             if (mWaypointList == null)
                 SetupWaypointList();

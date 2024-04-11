@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Editor
         public override void OnInspectorGUI()
         {
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineSplineCart");
+            UpgradeManagerInspectorHelpers.IMGUI_DrawUpgradeControls(this, "CinemachineSplineCart");
             DrawRemainingPropertiesInInspector();
         }
     }
