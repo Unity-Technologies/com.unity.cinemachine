@@ -16,8 +16,8 @@ namespace Unity.Cinemachine.Editor
             {
                 var pos = EditorGUILayout.GetControlRect(false, 1);
                 InspectorUtility.HelpBoxWithButton(
-                    "Cinemachine can upgrade your project data automatically", MessageType.Info,
-                    new GUIContent("Learn more..."), () =>
+                    "Cinemachine can upgrade your project data automatically.", MessageType.Info,
+                    new GUIContent("Upgrade Now..."), () =>
                     {
                         UnityEditor.PopupWindow.Show(pos, new UpgraderPopup() { Editor = editor, ClassName = className });
                     });

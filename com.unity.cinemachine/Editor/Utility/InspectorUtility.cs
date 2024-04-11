@@ -32,6 +32,7 @@ namespace Unity.Cinemachine.Editor
             static void OnUserDidSomethingStream(ref ObjectChangeEventStream stream) => UserDidSomething?.Invoke();
         }
         
+#if !CINEMACHINE_NO_CM2_SUPPORT
         /// <summary>Put multiple properties on a single inspector line, with
         /// optional label overrides.  Passing null as a label (or sublabel) override will
         /// cause the property's displayName to be used as a label.  For no label at all,
@@ -116,109 +117,6 @@ namespace Unity.Cinemachine.Editor
             EditorGUI.indentLevel = indentLevel;
         }
 
-        /// <summary>
-        /// Normalize a curve so that each of X and Y axes ranges from 0 to 1
-        /// </summary>
-        /// <param name="curve">Curve to normalize</param>
-        /// <returns>The normalized curve</returns>
-        public static AnimationCurve NormalizeCurve(AnimationCurve curve)
-        {
-            return RuntimeUtility.NormalizeCurve(curve, true, true);
-        }
-
-        /// <summary>
-        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify.
-        /// </summary>
-        /// <param name="name">The name to nicify</param>
-        /// <returns>The nicified name</returns>
-        public static string NicifyClassName(string name)
-        {
-            if (name.StartsWith("Cinemachine"))
-                name = name.Substring(11); // Trim the prefix
-            
-            return ObjectNames.NicifyVariableName(name);
-        }
-        
-        /// <summary>
-        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify,
-        /// and add (Deprecated) to types with Obsolete attributes.
-        /// </summary>
-        /// <param name="type">The type to nicify as a string</param>
-        /// <returns>The nicified name</returns>
-        public static string NicifyClassName(Type type)
-        {
-            var name = type.Name;
-            if (name.StartsWith("Cinemachine"))
-                name = name.Substring(11); // Trim the prefix
-            
-            name = ObjectNames.NicifyVariableName(name);
-            
-            if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
-                name += " (Deprecated)";
-
-            return name;
-        }
-
-        /// <summary>
-        /// Add to a list all assets of a given type found in a given location
-        /// </summary>
-        /// <param name="type">The asset type to look for</param>
-        /// <param name="assets">The list to add found assets to</param>
-        /// <param name="path">The location in which to look.  Path is relative to package root.</param>
-        public static void AddAssetsFromPackageSubDirectory(
-            Type type, List<ScriptableObject> assets, string path)
-        {
-            try
-            {
-                path = CinemachineCore.kPackageRoot + "/" + path;
-                var info = new DirectoryInfo(path);
-                path += "/";
-                var fileInfo = info.GetFiles();
-                for (int i = 0; i < fileInfo.Length; ++i)
-                {
-                    var file = fileInfo[i];
-                    if (file.Extension != ".asset")
-                        continue;
-                    var name = path + file.Name;
-                    var a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
-                    if (a != null)
-                        assets.Add(a);
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        // Temporarily here
-        /// <summary>
-        /// Creates a new GameObject.
-        /// </summary>
-        /// <param name="name">Name to give the object.</param>
-        /// <param name="types">Optional components to add.</param>
-        /// <returns>The GameObject that was created.</returns>
-        [Obsolete("Use ObjectFactory.CreateGameObject(string name, params Type[] types) instead.")]
-        public static GameObject CreateGameObject(string name, params Type[] types)
-        {
-            return ObjectFactory.CreateGameObject(name, types);
-        }
-        
-        private static int m_lastRepaintFrame;
-
-        /// <summary>
-        /// Force a repaint of the Game View
-        /// </summary>
-        /// <param name="unused">Like it says</param>
-        public static void RepaintGameView(UnityEngine.Object unused = null)
-        {
-            if (m_lastRepaintFrame == Time.frameCount)
-                return;
-            m_lastRepaintFrame = Time.frameCount;
-
-            EditorApplication.QueuePlayerLoopUpdate();
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-        }
-
         public static float PropertyHeightOfChidren(SerializedProperty property)
         {
             float height = 0;
@@ -251,25 +149,24 @@ namespace Unity.Cinemachine.Editor
         public static void HelpBoxWithButton(
             string message, MessageType messageType, 
             GUIContent buttonContent, Action onClicked)
-        {
-            float verticalPadding = 3 * EditorGUIUtility.standardVerticalSpacing;
+       {
             float lineHeight = EditorGUIUtility.singleLineHeight;
             var buttonSize = GUI.skin.label.CalcSize(buttonContent);
-            buttonSize.x += + lineHeight;
+            buttonSize.x += lineHeight;
 
-            var rect = EditorGUILayout.GetControlRect(false, verticalPadding);
+            var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect(false, 2));
+
+            var boxContent = new GUIContent(message + "\n"); // to make room for the button
+            var boxWidth = rect.width;
+            var boxHeight = GUI.skin.GetStyle("helpbox").CalcHeight(boxContent, rect.width - 3 * lineHeight) + buttonSize.y;
+
+            rect = EditorGUILayout.GetControlRect(false, boxHeight);
             rect = EditorGUI.IndentedRect(rect);
+            rect.width = boxWidth; rect.height = boxHeight;
+            EditorGUI.HelpBox(rect, boxContent.text, messageType);
 
-            var boxContent = new GUIContent(message);
-            var boxWidth = rect.width - buttonSize.x;
-            var boxHeight = GUI.skin.GetStyle("helpbox").CalcHeight(boxContent, boxWidth - 3 * lineHeight) + verticalPadding;
-
-            var height = Mathf.Max(Mathf.Max(buttonSize.y, lineHeight * 1.5f), boxHeight);
-            rect = EditorGUILayout.GetControlRect(false, height + verticalPadding);
-            rect = EditorGUI.IndentedRect(rect);
-            rect.width = boxWidth; rect.height = height;
-            EditorGUI.HelpBox(rect, message, messageType);
-            rect.x += rect.width; rect.width = buttonSize.x;
+            rect.x += rect.width - buttonSize.x - 6; rect.width = buttonSize.x;
+            rect.y += rect.height - buttonSize.y - 6; rect.height = buttonSize.y;
             if (GUI.Button(rect, buttonContent))
                 onClicked();
         }
@@ -371,6 +268,109 @@ namespace Unity.Cinemachine.Editor
             }
             return enabledProp.boolValue;
         }
+#endif
+        /// <summary>
+        /// Add to a list all assets of a given type found in a given location
+        /// </summary>
+        /// <param name="type">The asset type to look for</param>
+        /// <param name="assets">The list to add found assets to</param>
+        /// <param name="path">The location in which to look.  Path is relative to package root.</param>
+        public static void AddAssetsFromPackageSubDirectory(
+            Type type, List<ScriptableObject> assets, string path)
+        {
+            try
+            {
+                path = CinemachineCore.kPackageRoot + "/" + path;
+                var info = new DirectoryInfo(path);
+                path += "/";
+                var fileInfo = info.GetFiles();
+                for (int i = 0; i < fileInfo.Length; ++i)
+                {
+                    var file = fileInfo[i];
+                    if (file.Extension != ".asset")
+                        continue;
+                    var name = path + file.Name;
+                    var a = AssetDatabase.LoadAssetAtPath(name, type) as ScriptableObject;
+                    if (a != null)
+                        assets.Add(a);
+                }
+            }
+            catch
+            {
+            }
+        }
+        
+        /// <summary>
+        /// Normalize a curve so that each of X and Y axes ranges from 0 to 1
+        /// </summary>
+        /// <param name="curve">Curve to normalize</param>
+        /// <returns>The normalized curve</returns>
+        public static AnimationCurve NormalizeCurve(AnimationCurve curve)
+        {
+            return RuntimeUtility.NormalizeCurve(curve, true, true);
+        }
+
+        /// <summary>
+        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify.
+        /// </summary>
+        /// <param name="name">The name to nicify</param>
+        /// <returns>The nicified name</returns>
+        public static string NicifyClassName(string name)
+        {
+            if (name.StartsWith("Cinemachine"))
+                name = name.Substring(11); // Trim the prefix
+            
+            return ObjectNames.NicifyVariableName(name);
+        }
+        
+        /// <summary>
+        /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify,
+        /// and add (Deprecated) to types with Obsolete attributes.
+        /// </summary>
+        /// <param name="type">The type to nicify as a string</param>
+        /// <returns>The nicified name</returns>
+        public static string NicifyClassName(Type type)
+        {
+            var name = type.Name;
+            if (name.StartsWith("Cinemachine"))
+                name = name.Substring(11); // Trim the prefix
+            
+            name = ObjectNames.NicifyVariableName(name);
+            
+            if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
+                name += " (Deprecated)";
+
+            return name;
+        }
+
+        // Temporarily here
+        /// <summary>
+        /// Creates a new GameObject.
+        /// </summary>
+        /// <param name="name">Name to give the object.</param>
+        /// <param name="types">Optional components to add.</param>
+        /// <returns>The GameObject that was created.</returns>
+        [Obsolete("Use ObjectFactory.CreateGameObject(string name, params Type[] types) instead.")]
+        public static GameObject CreateGameObject(string name, params Type[] types)
+        {
+            return ObjectFactory.CreateGameObject(name, types);
+        }
+        
+        private static int m_lastRepaintFrame;
+
+        /// <summary>
+        /// Force a repaint of the Game View
+        /// </summary>
+        /// <param name="unused">Like it says</param>
+        public static void RepaintGameView(UnityEngine.Object unused = null)
+        {
+            if (m_lastRepaintFrame == Time.frameCount)
+                return;
+            m_lastRepaintFrame = Time.frameCount;
+
+            EditorApplication.QueuePlayerLoopUpdate();
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+        }
 
         static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
         public const string s_NoneString = "(none)";
@@ -404,7 +404,6 @@ namespace Unity.Cinemachine.Editor
         /// UI Elements utilities
         ///==============================================================================================
         ///==============================================================================================
-
 
         /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
         public static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
@@ -807,16 +806,30 @@ namespace Unity.Cinemachine.Editor
             string message, HelpBoxMessageType messageType, 
             string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
         {
-            var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            row.Add(new HelpBox(message, messageType) { style = { flexGrow = 1 }});
-            var button = row.AddChild(new Button(onClicked) { text = buttonText, style = { marginLeft = 0 }});
+            var box = new VisualElement { style = 
+            { 
+                flexDirection = FlexDirection.Column, 
+                paddingTop = 8, paddingBottom = 8, paddingLeft = 8, paddingRight = 8 
+            }};
+            box.AddToClassList("unity-help-box");
+
+            var row = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
+            var icon = row.AddChild(MiniHelpIcon("", messageType));
+            icon.style.alignSelf = Align.Auto;
+            icon.style.marginRight = 6;
+            var text = row.AddChild(new Label(message) 
+                { style = { flexGrow = 1, flexBasis = 100, alignSelf = Align.Center, whiteSpace = WhiteSpace.Normal }});
+
+            var buttons = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginTop = 6 }});
+            buttons.Add(new VisualElement { style = { flexGrow = 1 }});
+            var button = buttons.AddChild(new Button(onClicked) { text = buttonText });
             if (contextMenu != null)
             {
                 contextMenu.activators.Clear();
                 contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
                 button.AddManipulator(contextMenu);
             }
-            return row;
+            return box;
         }
 
         public static void AddRemainingProperties(VisualElement ux, SerializedProperty property)

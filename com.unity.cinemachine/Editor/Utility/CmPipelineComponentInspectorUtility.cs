@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Editor
         const string k_NeedGroupTarget = "The Tracking Target in the CinemachineCamera must be a Target Group.";
         const string k_NeedGroupLookAt = "The LookAt Target in the CinemachineCamera must be a Target Group.";
         const string k_NeedCamera = "This component is intended to be used only with a CinemachineCamera.";
-        const string k_AddCamera = "Add\nCinemachineCamera";
+        const string k_AddCamera = "Add CinemachineCamera";
         const string k_DuplicateComponent = "This component is redundant and will be ignored.";
 
         /// <summary>
@@ -269,6 +269,7 @@ namespace Unity.Cinemachine.Editor
             return s_TargetMarkerTex;
         }
 
+#if !CINEMACHINE_NO_CM2_SUPPORT
         /// IMGUI support - to be removed when IMGUI is gone
         public static void IMGUI_DrawMissingCmCameraHelpBox(this UnityEditor.Editor editor)
         {
@@ -335,5 +336,6 @@ namespace Unity.Cinemachine.Editor
                 EditorGUILayout.Space();
             }
         }
+#endif
     }
 }
