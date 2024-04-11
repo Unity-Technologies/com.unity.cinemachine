@@ -11,7 +11,7 @@ namespace Unity.Cinemachine
         /// or
         /// [HelpURL(Documentation.BaseURL + "manual/some-page.html")]
         /// It cannot support String.Format nor string interpolation</summary>
-        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@3.0/";
+        public const string BaseURL = "https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/";
     }
 
     /// <summary>A singleton that manages complete lists of CinemachineBrain and,
