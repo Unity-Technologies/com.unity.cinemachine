@@ -167,7 +167,7 @@ namespace Unity.Cinemachine.Editor
 
             rect.x += rect.width - buttonSize.x - 6; rect.width = buttonSize.x;
             rect.y += rect.height - buttonSize.y - 6; rect.height = buttonSize.y;
-            if (GUI.Button(rect, buttonContent))
+            if (GUI.Button(rect, buttonContent, EditorStyles.miniButton))
                 onClicked();
         }
 
