@@ -163,7 +163,7 @@ namespace Unity.Cinemachine.Editor
         {
             if (!IsPropertyExcluded("Header"))
             {
-                UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
+                UpgradeManagerInspectorHelpers.IMGUI_DrawUpgradeControls(this, "CinemachineCamera");
                 DrawCameraStatusInInspector();
                 DrawGlobalControlsInInspector();
                 DrawInputProviderButtonInInspector();

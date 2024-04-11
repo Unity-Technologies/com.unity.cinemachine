@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Editor
 {
     static class UpgradeManagerInspectorHelpers
     {
-        public static void DrawUpgradeControls(UnityEditor.Editor editor, string className)
+        public static void IMGUI_DrawUpgradeControls(UnityEditor.Editor editor, string className)
         {
             var attrs = editor.serializedObject.targetObject.GetType()
                 .GetCustomAttributes(typeof(ObsoleteAttribute), true);
@@ -16,8 +16,8 @@ namespace Unity.Cinemachine.Editor
             {
                 var pos = EditorGUILayout.GetControlRect(false, 1);
                 InspectorUtility.HelpBoxWithButton(
-                    "Cinemachine can upgrade your project data automatically", MessageType.Info,
-                    new GUIContent("Learn more..."), () =>
+                    "Cinemachine can upgrade your project data automatically.", MessageType.Info,
+                    new GUIContent("Upgrade Now..."), () =>
                     {
                         UnityEditor.PopupWindow.Show(pos, new UpgraderPopup() { Editor = editor, ClassName = className });
                     });

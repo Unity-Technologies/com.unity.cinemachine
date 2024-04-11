@@ -71,7 +71,7 @@ namespace Unity.Cinemachine
 
             // Ordinary properties
             BeginInspector();
-            UpgradeManagerInspectorHelpers.DrawUpgradeControls(this, "CinemachineCamera");
+            UpgradeManagerInspectorHelpers.IMGUI_DrawUpgradeControls(this, "CinemachineCamera");
             DrawCameraStatusInInspector();
             DrawGlobalControlsInInspector();
             DrawInputProviderButtonInInspector();
