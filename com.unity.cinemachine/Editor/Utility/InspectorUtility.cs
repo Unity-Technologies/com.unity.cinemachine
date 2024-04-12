@@ -531,7 +531,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>
         /// Add a property dragger to a float or int label, so that dragging it changes the property value.
         /// </summary>
-        public static void AddPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
+        public static void AddDelayedFriendlyPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
         {
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
@@ -540,9 +540,9 @@ namespace Unity.Cinemachine.Editor
                 label.OnInitialGeometry(() =>
                 {
                     if (p.propertyType == SerializedPropertyType.Float)
-                        new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                        new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>()).SetDragZone(label);
                     else if (p.propertyType == SerializedPropertyType.Integer)
-                        new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                        new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
                 });
             }
         }
@@ -776,7 +776,7 @@ namespace Unity.Cinemachine.Editor
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 if (Label != null)
-                    AddPropertyDragger(Label, property, Field);
+                    AddDelayedFriendlyPropertyDragger(Label, property, Field);
             }
         }
 
@@ -789,7 +789,7 @@ namespace Unity.Cinemachine.Editor
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
                 { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
-            AddPropertyDragger(row.Label, property, propertyField);
+            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField);
 
             // Kill any left margin that gets inserted into the property field
             field.OnInitialGeometry(() => 

@@ -15,17 +15,18 @@ namespace Unity.Cinemachine.Editor
             var ux = new InspectorUtility.LeftRightRow();
             var label = new Label(property.displayName) 
                 { tooltip = property.tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }};
-            var minField = new PropertyField(xProp, "") { style = { flexBasis = 0, flexGrow = 1}};
+            var minField = new PropertyField(xProp, "") { style = { flexBasis = 0, flexGrow = 1 }};
             var maxField = new InspectorUtility.CompactPropertyField(yProp, "...") 
                 { tooltip = property.tooltip, style = { flexBasis = 10, flexGrow = 1, marginLeft = 5 }};
 
-            //ux.OnInitialGeometry(() =>
-            //{
-            //    minField.SafeSetIsDelayed();
-            //    maxField.SafeSetIsDelayed();
-            //});
+            ux.OnInitialGeometry(() =>
+            {
+                minField.SafeSetIsDelayed();
+                maxField.SafeSetIsDelayed();
+                minField.Q<FloatField>(). style.marginLeft = 2;
+            });
 
-            label.AddPropertyDragger(xProp, minField);
+            label.AddDelayedFriendlyPropertyDragger(xProp, minField);
             ux.Left.Add(label);
             ux.Right.Add(minField);
             ux.Right.Add(maxField);

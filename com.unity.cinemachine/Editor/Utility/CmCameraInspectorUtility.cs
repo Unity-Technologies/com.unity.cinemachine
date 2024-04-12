@@ -558,7 +558,7 @@ namespace Unity.Cinemachine.Editor
                     value = enabledProp.boolValue ? priorityProp.intValue : 0,
                     style = { flexBasis = floatFieldWidth, flexGrow = 0, marginRight = 4 }
                 });
-                new FieldMouseDragger<int>(priorityField).SetDragZone(dragger);
+                new DelayedFriendlyFieldDragger<int>(priorityField).SetDragZone(dragger);
                 priorityField.RegisterValueChangedCallback((evt) =>
                 {
                     if (evt.newValue != 0)

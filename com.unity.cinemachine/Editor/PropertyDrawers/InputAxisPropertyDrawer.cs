@@ -25,13 +25,20 @@ namespace Unity.Cinemachine.Editor
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
             var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
-            //valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
-            valueLabel.AddPropertyDragger(valueProp, valueField);
+            valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
+            valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField);
 
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
-            var valueField2 = foldout.AddChild(new PropertyField(valueProp));
-            //valueField2.OnInitialGeometry(() => valueField2.SafeSetIsDelayed());
+            // We want dynamic dragging on the value, even if isDelayed is set
+            var valueFieldRow = foldout.AddChild(new InspectorUtility.LabeledRow(
+                valueProp.displayName, valueProp.tooltip, new PropertyField(valueProp, "")));
+            valueFieldRow.Contents.OnInitialGeometry(() => 
+            {
+                valueFieldRow.Contents.SafeSetIsDelayed();
+                valueFieldRow.Contents.Q<FloatField>().style.marginLeft = 0;
+            });
+            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueFieldRow.Contents);
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
