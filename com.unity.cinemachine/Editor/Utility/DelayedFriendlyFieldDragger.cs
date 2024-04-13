@@ -11,9 +11,7 @@ namespace Unity.Cinemachine
     /// </summary>
     class DelayedFriendlyFieldDragger<T> : BaseFieldMouseDragger
     {
-        /// <summary>
-        /// FieldMouseDraggerForDelayed's constructor.
-        /// </summary>
+        /// <summary>DelayedFriendlyFieldDragger's constructor./// </summary>
         /// <param name="drivenField">The field.</param>
         public DelayedFriendlyFieldDragger(IValueField<T> drivenField)
         {
@@ -28,14 +26,10 @@ namespace Unity.Cinemachine
         private Rect m_DragHotZone;
         private bool m_WasDelayed;
 
-        /// <summary>
-        /// Is dragging.
-        /// </summary>
+        /// <summary>Is dragging.</summary>
         public bool dragging { get; set; }
 
-        /// <summary>
-        /// Start value before drag.
-        /// </summary>
+        /// <summary>Start value before drag.</summary>
         public T startValue { get; set; }
 
         /// <inheritdoc />
@@ -98,7 +92,7 @@ namespace Unity.Cinemachine
                 m_WasDelayed = floatField.isDelayed;
                 floatField.isDelayed = false;
             }
-            if (m_DrivenField is TextInputBaseField<int> intField)
+            else if (m_DrivenField is TextInputBaseField<int> intField)
             {
                 m_WasDelayed = intField.isDelayed;
                 intField.isDelayed = false;
@@ -139,10 +133,13 @@ namespace Unity.Cinemachine
                 EditorGUIUtility.SetWantsMouseJumping(0);
                 m_DrivenField.StopDragging();
 
-                if (m_DrivenField is TextInputBaseField<float> floatField)
-                    floatField.isDelayed = m_WasDelayed;
-                if (m_DrivenField is TextInputBaseField<int> intField)
-                    intField.isDelayed = m_WasDelayed;
+                if (m_WasDelayed)
+                {
+                    if (m_DrivenField is TextInputBaseField<float> floatField)
+                        floatField.isDelayed = true;
+                    else if (m_DrivenField is TextInputBaseField<int> intField)
+                        intField.isDelayed = true;
+                }
             }
         }
 
