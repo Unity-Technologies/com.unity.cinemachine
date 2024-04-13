@@ -456,7 +456,7 @@ namespace Cinemachine
                     v += Mathf.Sign(recenterTarget - v) * r;
 
                 // Damp our way there
-                if (m_RecenteringTime < 0.001f)
+                if (m_RecenteringTime < 0.001f || Mathf.Abs(v - recenterTarget) < 0.001f)
                     v = recenterTarget;
                 else
                     v = Mathf.SmoothDamp(
