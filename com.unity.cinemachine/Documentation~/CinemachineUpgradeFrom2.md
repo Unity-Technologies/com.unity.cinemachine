@@ -64,6 +64,10 @@ The old convention of using "m_FieldName" has been changed to follow Unity's lat
 
 The _SimpleFollowWithWorldUp_ binding mode has been renamed to _LazyFollow_.
 
+### CinemachineCore.Instance is removed
+
+Methods and properties that used to be accessed via the `CinemachineCore.Instance` singleton are now direct static methods and properties on `CinemachineCore`.
+
 ### Cleaner Object Structure, No Hidden GameObjects
 
 Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the vcam, named "cm". This has been removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CinemachineCamera GameObject. You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.
