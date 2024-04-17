@@ -17,9 +17,10 @@ public class CinemachineSettings
     {
         Settings = new WrenchSettings(
             PackagesRootPath,
-            PackagesToRelease
-            
+            PackagesToRelease,
+            useLocalPvpExemptions:true
         );
+        
         Settings.PvpProfilesToCheck = PvPprofilesToCheck;
     }
 
