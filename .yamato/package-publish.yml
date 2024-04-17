@@ -21,7 +21,7 @@ publish:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
     {% for test_name in all_configurations.publish.test_names %}
     {% for test in all_tests %}
     {% if test.name == test_name %}
