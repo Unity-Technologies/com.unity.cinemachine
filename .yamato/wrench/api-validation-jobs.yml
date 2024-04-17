@@ -37,11 +37,11 @@ api_validation_-_cinemachine_-_2022_3_-_windows:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.16.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.17.0
   triggers:
     expression: push.branch match "^release/.*"
     cancel_old_ci: true
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.16.0
+    Wrench: 0.8.17.0
 
