@@ -14,7 +14,7 @@ public static class Program
         var engine = EngineFactory
             .Create()
             .ScanAll()
-            .WithWrenchModule(settings.Settings)
+            .WithWrenchModule(settings.Wrench)
             .GenerateAsync().Result;
     }
 }

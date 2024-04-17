@@ -12,17 +12,21 @@ public class CinemachineSettings
     {
         "com.unity.cinemachine",
     };
+    
+    public readonly string ProjectsDir = "Projects";
+    public readonly string[] ProjectNames = new[] { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
+    
     ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
     public CinemachineSettings()
     {
-        Settings = new WrenchSettings(
+        Wrench = new WrenchSettings(
             PackagesRootPath,
             PackagesToRelease,
             useLocalPvpExemptions:true
         );
         
-        Settings.PvpProfilesToCheck = PvPprofilesToCheck;
+        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }
 
-    public WrenchSettings Settings { get; set; }
+    public WrenchSettings Wrench { get; set; }
 }
