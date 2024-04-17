@@ -26,7 +26,7 @@ test_{{ test.name }}_{{ platform.name }}_{{ editor }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
 {% endfor %}
 {% endfor %}
 {% endfor %}
