@@ -26,9 +26,7 @@ namespace Unity.Cinemachine.Editor
 
             ux.Add(new PropertyField(property.FindPropertyRelative(() => def.PositionDamping)));
 
-            TrackBindingMode(modeProp);
-            ux.TrackPropertyValue(modeProp, TrackBindingMode);
-            void TrackBindingMode(SerializedProperty modeProp)
+            ux.TrackPropertyWithInitialCallback(modeProp, (modeProp) =>
             {
                 if (modeProp.serializedObject == null)
                     return; // object deleted
@@ -36,18 +34,16 @@ namespace Unity.Cinemachine.Editor
                 bool hideRot = mode == TargetTracking.BindingMode.WorldSpace 
                     || mode == TargetTracking.BindingMode.LazyFollow;
                 rotDampingContainer.SetVisible(!hideRot);
-            }
+            });
 
-            TrackRotDampingMode(rotModeProp);
-            ux.TrackPropertyValue(rotModeProp, TrackRotDampingMode);
-            void TrackRotDampingMode(SerializedProperty modeProp)
+            ux.TrackPropertyWithInitialCallback(rotModeProp, (modeProp) =>
             {
                 if (modeProp.serializedObject == null)
                     return; // object deleted
                 var mode = (TargetTracking.AngularDampingMode)modeProp.intValue;
                 quatDampingField.SetVisible(mode == TargetTracking.AngularDampingMode.Quaternion);
                 rotDampingField.SetVisible(mode == TargetTracking.AngularDampingMode.Euler);
-            }
+            });
             return ux;
         }
     }

@@ -68,10 +68,7 @@ namespace Unity.Cinemachine.Editor
             }));
 #endif
 
-            TrackFocusTarget(focusTargetProp);
-            ux.TrackPropertyValue(focusTargetProp, TrackFocusTarget);
-
-            void TrackFocusTarget(SerializedProperty p)
+            ux.TrackPropertyWithInitialCallback(focusTargetProp, (p) =>
             {
                 if (p.serializedObject == null)
                     return; // object deleted
@@ -95,11 +92,11 @@ namespace Unity.Cinemachine.Editor
 #else
                 hdrpOnlyMessage.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter);
 #endif
-            }
+            });
 
 #if CINEMACHINE_HDRP
             // Make the import box disappear after import
-            ux.TrackPropertyValue(computeShaderProp, (p) =>
+            ux.TrackPropertyWithInitialCallback(computeShaderProp, (p) =>
             {
                 if (p.serializedObject == null)
                     return; // object deleted

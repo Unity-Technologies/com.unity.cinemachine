@@ -47,10 +47,10 @@ namespace Unity.Cinemachine.Editor
             var orthoControls = ux.AddChild(new VisualElement());
             orthoControls.Add(new PropertyField(serializedObject.FindProperty(() => Target.OrthoSizeRange)));
 
-            ux.TrackPropertyValue(sizeAdjustmentProperty, (prop) =>
+            ux.TrackPropertyWithInitialCallback(sizeAdjustmentProperty, (prop) =>
             {
-                bool haveDolly = prop.intValue != (int)CinemachineGroupFraming.SizeAdjustmentModes.ZoomOnly;
-                bool haveZoom = prop.intValue != (int)CinemachineGroupFraming.SizeAdjustmentModes.DollyOnly;
+                bool haveDolly = sizeAdjustmentProperty.intValue != (int)CinemachineGroupFraming.SizeAdjustmentModes.ZoomOnly;
+                bool haveZoom = sizeAdjustmentProperty.intValue != (int)CinemachineGroupFraming.SizeAdjustmentModes.DollyOnly;
 
                 fovRange.SetVisible(haveZoom);
                 dollyRange.SetVisible(haveDolly);

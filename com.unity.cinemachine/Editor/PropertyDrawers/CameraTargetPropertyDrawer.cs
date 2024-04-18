@@ -16,9 +16,7 @@ namespace Unity.Cinemachine.Editor
             var follow = ux.AddChild(CreateTargetProperty(property.FindPropertyRelative(() => def.TrackingTarget), customProp));
             var lookAt = ux.AddChild(CreateTargetProperty(property.FindPropertyRelative(() => def.LookAtTarget), customProp));
             
-            TrackCustomProp(customProp);
-            ux.TrackPropertyValue(customProp, TrackCustomProp);
-            void TrackCustomProp(SerializedProperty p) => lookAt.SetVisible(p.boolValue);
+            ux.TrackPropertyWithInitialCallback(customProp, (p) => lookAt.SetVisible(p.boolValue));
 
             return ux;
         }

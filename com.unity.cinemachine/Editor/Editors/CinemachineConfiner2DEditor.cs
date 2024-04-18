@@ -32,15 +32,13 @@ namespace Unity.Cinemachine.Editor
 
             var volumeProp = serializedObject.FindProperty(() => Target.BoundingShape2D);
             ux.Add(new PropertyField(volumeProp));
-            TrackVolume(volumeProp);
-            ux.TrackPropertyValue(volumeProp, TrackVolume);
-            void TrackVolume(SerializedProperty p)
+            ux.TrackAnyUserActivity(() =>
             {
-                var c = p.objectReferenceValue;
+                var c = volumeProp.objectReferenceValue;
                 boundsHelp.SetVisible(c != null && c is not (PolygonCollider2D or BoxCollider2D or CompositeCollider2D));
                 polygonsHelp.SetVisible(c is CompositeCollider2D cc && cc.geometryType != CompositeCollider2D.GeometryType.Polygons);
                 invalidCollider2D.SetVisible(c != null && Target.IsConfinerOvenNull());
-            }
+            });
             
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Damping)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SlowingDistance)));

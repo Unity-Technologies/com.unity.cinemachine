@@ -36,15 +36,13 @@ namespace Unity.Cinemachine.Editor
             var timeWidget = contents.AddChild(new InspectorUtility.CompactPropertyField(timeProp, "s")
                 { style = { flexGrow = 0, flexBasis = floatFieldWidth, marginLeft = 4 }});
 
-            OnStyleChanged(styleProp);
-            contents.TrackPropertyValue(styleProp, OnStyleChanged);
-            void OnStyleChanged(SerializedProperty p)
+            contents.TrackPropertyWithInitialCallback(styleProp, (p) =>
             {
                 if (p.serializedObject == null)
                     return; // object deleted
                 curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Styles.Custom);
                 timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Styles.Cut);
-            }
+            });
 
             return ux;
         }
