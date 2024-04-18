@@ -170,8 +170,7 @@ namespace Unity.Cinemachine
             if (extra.Stage == CinemachineCore.Stage.Finalize || !Application.isPlaying)
             {
                 // We have a special compatibility mode for Confiner2D, because it is a common use-case
-                vcam.TryGetComponent(out extra.Confiner);
-                if (extra.Confiner != null)
+                if (vcam.TryGetComponent(out extra.Confiner))
                     extra.Stage = CinemachineCore.Stage.Body;
                 else
                 {
