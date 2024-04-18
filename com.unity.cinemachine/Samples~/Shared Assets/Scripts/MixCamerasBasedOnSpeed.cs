@@ -24,7 +24,11 @@ namespace Unity.Cinemachine.Samples
             if (Rigidbody == null)
                 return;
         
+#if UNITY_2023_3_OR_NEWER
+            var t = Mathf.Clamp01(Rigidbody.linearVelocity.magnitude / MaxSpeed);
+#else
             var t = Mathf.Clamp01(Rigidbody.velocity.magnitude / MaxSpeed);
+#endif
             m_Mixer.Weight0 = 1 - t;
             m_Mixer.Weight1 = t;
         }
