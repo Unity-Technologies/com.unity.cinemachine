@@ -134,8 +134,10 @@ namespace Unity.Cinemachine
             public float FovAdjustment;
 
             public CinemachineCore.Stage Stage = CinemachineCore.Stage.Finalize; // uninitialized state
+#if CINEMACHINE_PHYSICS_2D
             public CinemachineConfiner2D Confiner;
             public float PreviousOrthoSize;
+#endif
 
             public void Reset()
             {
@@ -143,7 +145,6 @@ namespace Unity.Cinemachine
                 RotAdjustment = Vector2.zero;
                 FovAdjustment = 0;
                 Stage = CinemachineCore.Stage.Finalize;
-                PreviousOrthoSize = 0;
             }
         };
 
@@ -169,10 +170,12 @@ namespace Unity.Cinemachine
 
             if (extra.Stage == CinemachineCore.Stage.Finalize || !Application.isPlaying)
             {
+#if CINEMACHINE_PHYSICS_2D
                 // We have a special compatibility mode for Confiner2D, because it is a common use-case
                 if (vcam.TryGetComponent(out extra.Confiner))
                     extra.Stage = CinemachineCore.Stage.Body;
                 else
+#endif
                 {
                     // Default: applies after Aim
                     extra.Stage = CinemachineCore.Stage.Aim;
@@ -200,12 +203,14 @@ namespace Unity.Cinemachine
             else
                 PerspectiveFraming(vcam, group, extra, ref state, deltaTime);
 
+#if CINEMACHINE_PHYSICS_2D
             // Confiner2D compatibility mode: invalidate the cache if the ortho size changed
             if (extra.Confiner != null && Mathf.Abs(extra.PreviousOrthoSize - state.Lens.OrthographicSize) > Epsilon)
             {
                 extra.Confiner.InvalidateLensCache();
                 extra.PreviousOrthoSize = state.Lens.OrthographicSize;
             }
+#endif
         }
 
         void OrthoFraming(
