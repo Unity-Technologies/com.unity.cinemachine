@@ -133,11 +133,18 @@ namespace Unity.Cinemachine
             public Vector2 RotAdjustment;
             public float FovAdjustment;
 
+            public CinemachineCore.Stage Stage = CinemachineCore.Stage.Finalize; // uninitialized state
+#if CINEMACHINE_PHYSICS_2D
+            public CinemachineConfiner2D Confiner;
+            public float PreviousOrthoSize;
+#endif
+
             public void Reset()
             {
                 PosAdjustment = Vector3.zero;
                 RotAdjustment = Vector2.zero;
                 FovAdjustment = 0;
+                Stage = CinemachineCore.Stage.Finalize;
             }
         };
 
@@ -157,10 +164,33 @@ namespace Unity.Cinemachine
             CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
-            // We have to do it after both Body and Aim, and the only way to ensure that is to
-            // do it after noise (because body and aim can be inverted).
-            // We ignore the noise effect anyway, so it doesn't hurt.
-            if (stage != CinemachineCore.Stage.Noise)
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            if (!vcam.PreviousStateIsValid)
+                extra.Reset();
+
+            if (extra.Stage == CinemachineCore.Stage.Finalize || !Application.isPlaying)
+            {
+#if CINEMACHINE_PHYSICS_2D
+                // We have a special compatibility mode for Confiner2D, because it is a common use-case
+                if (vcam.TryGetComponent(out extra.Confiner))
+                    extra.Stage = CinemachineCore.Stage.Body;
+                else
+#endif
+                {
+                    // Default: applies after Aim
+                    extra.Stage = CinemachineCore.Stage.Aim;
+
+                    // Exception: if vcam has a BodyAppliesAfterAim component, we do it in the Body stage
+                    if (vcam is CinemachineCamera cam)
+                    {
+                        var c = cam.GetCinemachineComponent(CinemachineCore.Stage.Body);
+                        if (c != null && c.BodyAppliesAfterAim)
+                            extra.Stage = CinemachineCore.Stage.Body;
+                    }
+                }
+            }
+
+            if (stage != extra.Stage)
                 return;
             
             var group = vcam.LookAtTargetAsGroup;
@@ -168,14 +198,19 @@ namespace Unity.Cinemachine
             if (group == null || !group.IsValid)
                 return;
 
-            var extra = GetExtraState<VcamExtraState>(vcam);
-            if (!vcam.PreviousStateIsValid)
-                extra.Reset();
-
             if (state.Lens.Orthographic)
                 OrthoFraming(vcam, group, extra, ref state, deltaTime);
             else
                 PerspectiveFraming(vcam, group, extra, ref state, deltaTime);
+
+#if CINEMACHINE_PHYSICS_2D
+            // Confiner2D compatibility mode: invalidate the cache if the ortho size changed
+            if (extra.Confiner != null && Mathf.Abs(extra.PreviousOrthoSize - state.Lens.OrthographicSize) > Epsilon)
+            {
+                extra.Confiner.InvalidateLensCache();
+                extra.PreviousOrthoSize = state.Lens.OrthographicSize;
+            }
+#endif
         }
 
         void OrthoFraming(
