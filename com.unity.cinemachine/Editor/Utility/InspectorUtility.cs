@@ -381,9 +381,8 @@ namespace Unity.Cinemachine.Editor
                 return "(none)";
             if (!s_AssignableTypes.ContainsKey(inputType))
             {
-                var allSources = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => inputType.IsAssignableFrom(t) && !t.IsAbstract 
-                        && typeof(MonoBehaviour).IsAssignableFrom(t)
+                var allSources = ReflectionHelpers.GetTypesDerivedFrom(inputType,
+                    (t) => !t.IsAbstract && typeof(MonoBehaviour).IsAssignableFrom(t)
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var s = string.Empty;
                 var iter = allSources.GetEnumerator();

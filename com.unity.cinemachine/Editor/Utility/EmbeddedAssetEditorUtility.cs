@@ -233,9 +233,8 @@ namespace Unity.Cinemachine.Editor
             static List<Type> GetAssetTypes(Type baseType)
             {
                 // GML todo: optimize with TypeCache
-                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => baseType.IsAssignableFrom(t) && !t.IsAbstract 
-                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(baseType,
+                    (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var list = new List<Type>();
                 var iter = allTypes.GetEnumerator();
                 while (iter.MoveNext())

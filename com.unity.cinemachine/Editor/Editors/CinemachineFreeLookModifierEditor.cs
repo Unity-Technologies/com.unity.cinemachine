@@ -133,10 +133,8 @@ namespace Unity.Cinemachine
             static ModifierMenuItems()
             {
                 // Get all Modifier types
-                var allTypes
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                        (Type t) => typeof(CinemachineFreeLookModifier.Modifier).IsAssignableFrom(t) 
-                        && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineFreeLookModifier.Modifier), 
+                    (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
                 s_AllModifiers.Clear();
                 s_ModifierNames.Clear();
