@@ -182,10 +182,8 @@ namespace Unity.Cinemachine.Editor
         {
             // Collect all the eligible asset types
             Type type = EmbeddedAssetType(property);
-            if (mAssetTypes == null)
-                mAssetTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => type.IsAssignableFrom(t) && !t.IsAbstract 
-                        && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToArray();
+            mAssetTypes ??= ReflectionHelpers.GetTypesDerivedFrom(type, 
+                (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToArray();
 
             float iconSize = r.height + 4;
             r.width -= iconSize;

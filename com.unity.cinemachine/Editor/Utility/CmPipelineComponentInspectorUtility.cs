@@ -133,9 +133,8 @@ namespace Unity.Cinemachine.Editor
         {
             if (s_AllAxisControllerTypes == null)
             {
-                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                    (Type t) => typeof(IInputAxisController).IsAssignableFrom(t) && !t.IsAbstract 
-                        && typeof(MonoBehaviour).IsAssignableFrom(t)
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(IInputAxisController),
+                    (t) => !t.IsAbstract && typeof(MonoBehaviour).IsAssignableFrom(t) 
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 s_AllAxisControllerTypes = new();
                 var iter = allTypes.GetEnumerator();

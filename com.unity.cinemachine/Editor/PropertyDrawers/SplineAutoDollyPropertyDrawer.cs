@@ -110,10 +110,8 @@ namespace Unity.Cinemachine.Editor
             static AutoDollyMenuItems()
             {
                 // Get all eligible types
-                var allTypes
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                        (Type t) => typeof(SplineAutoDolly.ISplineAutoDolly).IsAssignableFrom(t) 
-                            && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(SplineAutoDolly.ISplineAutoDolly),
+                    (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
                 s_AllItems.Clear();
                 s_AllItems.Add(null);

@@ -36,10 +36,10 @@ namespace Unity.Cinemachine.Tests.Editor
         {
             get
             {
-                s_AllCinemachineComponents = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
-                    typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
-                    && t.GetCustomAttribute<CameraPipelineAttribute>() != null
-                    && t.GetCustomAttribute<ObsoleteAttribute>() != null);
+                s_AllCinemachineComponents = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
+                    (t) => !t.IsAbstract 
+                        && t.GetCustomAttribute<CameraPipelineAttribute>() != null
+                        && t.GetCustomAttribute<ObsoleteAttribute>() != null);
                 foreach (var cmComponent in s_AllCinemachineComponents)
                     yield return new TestCaseData(cmComponent).SetName(cmComponent.Name).Returns(null);
             }
