@@ -1,4 +1,4 @@
-#if !CINEMACHINE_NO_CM2_SUPPORT
+#if !CINEMACHINE_NO_CM2_SUPPORT && !UNITY_7000_0_OR_NEWER
 #pragma warning disable CS0618 // obsolete warnings
 
 using System;

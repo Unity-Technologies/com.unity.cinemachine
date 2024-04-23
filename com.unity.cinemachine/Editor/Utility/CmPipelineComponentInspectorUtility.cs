@@ -269,7 +269,7 @@ namespace Unity.Cinemachine.Editor
             return s_TargetMarkerTex;
         }
 
-#if !CINEMACHINE_NO_CM2_SUPPORT
+#if !CINEMACHINE_NO_CM2_SUPPORT && !UNITY_7000_0_OR_NEWER
         /// IMGUI support - to be removed when IMGUI is gone
         public static void IMGUI_DrawMissingCmCameraHelpBox(this UnityEditor.Editor editor)
         {

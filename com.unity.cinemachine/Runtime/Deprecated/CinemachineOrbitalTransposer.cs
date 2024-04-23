@@ -1,4 +1,4 @@
-#if !CINEMACHINE_NO_CM2_SUPPORT
+#if !CINEMACHINE_NO_CM2_SUPPORT && !UNITY_7000_0_OR_NEWER
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -558,7 +558,7 @@ namespace Unity.Cinemachine
             {
                 case Heading.HeadingDefinition.Velocity:
 #if CINEMACHINE_PHYSICS
-    #if UNITY_2023_3_OR_NEWER
+    #if UNITY_2023_3_OR_NEWER && !UNITY_7000_0_OR_NEWER
                     velocity = m_TargetRigidBody.linearVelocity;
     #else
                     velocity = m_TargetRigidBody.velocity;

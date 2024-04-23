@@ -1,4 +1,4 @@
-#if !CINEMACHINE_NO_CM2_SUPPORT
+#if !CINEMACHINE_NO_CM2_SUPPORT && !UNITY_7000_0_OR_NEWER
 #if CINEMACHINE_PHYSICS
 using UnityEngine;
 using System.Collections.Generic;

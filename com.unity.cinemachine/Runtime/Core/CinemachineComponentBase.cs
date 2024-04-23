@@ -20,7 +20,7 @@ namespace Unity.Cinemachine
             {
                 if (m_VcamOwner == null)
                     TryGetComponent(out m_VcamOwner);
-#if !CINEMACHINE_NO_CM2_SUPPORT
+#if !CINEMACHINE_NO_CM2_SUPPORT && !UNITY_7000_0_OR_NEWER
                 if (m_VcamOwner == null && transform.parent != null)
                     transform.parent.TryGetComponent(out m_VcamOwner);
 #endif
