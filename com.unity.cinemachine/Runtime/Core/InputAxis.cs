@@ -259,7 +259,7 @@ namespace Unity.Cinemachine
                 CancelRecentering();
                 return;
             }
-            if (m_RecenteringState.m_ForceRecenter || (Recentering.Enabled && deltaTime < 0))
+            if ((m_RecenteringState.m_ForceRecenter || Recentering.Enabled) && deltaTime < 0)
             {
                 Value = Center;
                 CancelRecentering();
