@@ -39,6 +39,26 @@ namespace Unity.Cinemachine
         /// <summary>Defines the reference frame against which pan and tilt rotations are made.</summary>
         public ReferenceFrames ReferenceFrame = ReferenceFrames.ParentObject;
 
+        /// <summary>
+        /// Defines the recentering target: Recentering goes here
+        /// </summary>
+        public enum RecenterTargetModes
+        {
+            /// <summary>Go to the Center value defined in the axis</summary>
+            AxisCenter,
+
+            /// <summary>Axis angles are relative to Follow target's forward</summary>
+            TrackingTargetForward,
+
+            /// <summary>Axis angles are relative to LookAt target's forward</summary>
+            LookAtTargetForward
+        }
+
+        /// <summary>
+        /// Defines the recentering target: recentering goes here
+        /// </summary>
+        public RecenterTargetModes RecenterTarget = RecenterTargetModes.AxisCenter;
+
         /// <summary>Axis representing the current horizontal rotation.  Value is in degrees
         /// and represents a rotation about the up vector</summary>
         [Tooltip("Axis representing the current horizontal rotation.  Value is in degrees "
@@ -71,6 +91,7 @@ namespace Unity.Cinemachine
             PanAxis = DefaultPan;
             TiltAxis = DefaultTilt;
             ReferenceFrame = ReferenceFrames.ParentObject;
+            RecenterTarget = RecenterTargetModes.AxisCenter;
         }
 
         static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
@@ -148,8 +169,9 @@ namespace Unity.Cinemachine
                 gotInputY |= gotInputX;
             }
 
-            PanAxis.UpdateRecentering(deltaTime, gotInputX);
-            TiltAxis.UpdateRecentering(deltaTime, gotInputY);
+            var recenterTarget = GetRecenterTarget();
+            PanAxis.UpdateRecentering(deltaTime, gotInputX, recenterTarget.x);
+            TiltAxis.UpdateRecentering(deltaTime, gotInputY, recenterTarget.y);
         }
 
         /// <summary>
@@ -212,6 +234,33 @@ namespace Unity.Cinemachine
                 case ReferenceFrames.ParentObject: target = VirtualCamera.transform.parent; break;
             }
             return (target != null) ? target.rotation : Quaternion.FromToRotation(Vector3.up, up);
+        }
+
+        /// <summary>
+        /// Get the horizonmtal and vertical angles that correspong to "at rest" position.
+        /// </summary>
+        /// <returns>X is horizontal angle (rot Y) and Y is vertical angle (rot X)</returns>
+        public Vector2 GetRecenterTarget()
+        {
+            Transform t = null;
+            switch (RecenterTarget)
+            {
+                case RecenterTargetModes.TrackingTargetForward: t = VirtualCamera.Follow; break;
+                case RecenterTargetModes.LookAtTargetForward: t = VirtualCamera.LookAt; break;
+                default: break;
+            }
+            if (t != null)
+            {
+                var fwd = t.forward;
+                var parent = VirtualCamera.transform.parent;
+                if (parent != null)
+                    fwd = parent.rotation * fwd;
+                var v = Quaternion.FromToRotation(Vector3.forward, fwd).eulerAngles;
+                return new Vector2(NormalizeAngle(v.y), NormalizeAngle(v.x));
+            }
+            return Vector2.zero;
+
+            static float NormalizeAngle(float angle) => ((angle + 180) % 360) - 180; 
         }
     }
 }

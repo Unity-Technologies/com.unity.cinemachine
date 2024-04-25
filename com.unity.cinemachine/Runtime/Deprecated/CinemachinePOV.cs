@@ -254,6 +254,7 @@ namespace Unity.Cinemachine
         internal void UpgradeToCm3(CinemachinePanTilt c)
         {
             c.ReferenceFrame = CinemachinePanTilt.ReferenceFrames.ParentObject;
+            c.RecenterTarget = (CinemachinePanTilt.RecenterTargetModes)m_RecenterTarget;
 
             c.PanAxis.Range = new Vector2(m_HorizontalAxis.m_MinValue, m_HorizontalAxis.m_MaxValue);
             c.PanAxis.Center = 0;
