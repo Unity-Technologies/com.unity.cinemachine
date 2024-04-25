@@ -11,6 +11,7 @@ namespace Cinemachine.Cookbook.Recipes;
 public class Triggers : RecipeBase
 {
     private readonly CinemachineSettings config = new ();
+    private const string packageName = "com.unity.cinemachine";
     
     protected override ISet<Job> LoadJobs()
         => Combine.Collections(GetTriggers()).SelectJobs();
@@ -18,13 +19,30 @@ public class Triggers : RecipeBase
     private ISet<IJobBuilder> GetTriggers()
     {
         HashSet<IJobBuilder> builders = new();
-        var nightlyDeps = config.Wrench.WrenchJobs["com.unity.cinemachine"][JobTypes.Validation];
+        var validationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation];
         var projectTests = new ProjectTest().AsDependencies();
-        
+        var codeCoverage = new CodeCoverage().AsDependencies();
         builders.Add(JobBuilder.Create($"Nightly Trigger")
             .WithDependencies(projectTests)
-            .WithDependencies(nightlyDeps)
+            .WithDependencies(validationTests)
+            .WithDescription("Nightly check on main")
+            
+        );
+        builders.Add(JobBuilder.Create($"All Trigger")
+            .WithDependencies(projectTests)
+            .WithDependencies(validationTests)
+            .WithDependencies(codeCoverage)
             .WithPullRequestTrigger(pr => pr.ExcludeDraft())
+            .WithDescription("All tests defined in recipes.")
+        );
+        
+        var prsubset = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("windows") || job.JobId.Contains("6000"));
+        
+        builders.Add(JobBuilder.Create("Package CI")
+            .WithDependencies(prsubset)
+            .WithPullRequestTrigger(pr => pr.ExcludeDraft())
+            .WithBranchesTrigger(b => b.Only("main", "release[/]\\\\d+[.]\\\\d+)"))
+            .WithDescription("Tests to run on PRs and mainline branches.")
         );
         return builders;
     }

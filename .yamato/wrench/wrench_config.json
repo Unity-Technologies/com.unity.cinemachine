@@ -20,6 +20,6 @@
   },
   "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_cinemachine",
   "branch_pattern": "ReleaseSlash",
-  "wrench_version": "0.8.18.0",
+  "wrench_version": "0.8.19.0",
   "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json"
 }
