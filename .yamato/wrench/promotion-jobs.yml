@@ -92,10 +92,10 @@ publish_cinemachine:
         unzip: true
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.18.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.18.0
+    Wrench: 0.8.19.0
 
 # Publish Dry Run  for cinemachine to https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-npm
 publish_dry_run_cinemachine:
@@ -188,11 +188,11 @@ publish_dry_run_cinemachine:
         unzip: true
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.18.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
   triggers:
     expression: push.branch match "^release/.*"
     cancel_old_ci: true
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.18.0
+    Wrench: 0.8.19.0
 
