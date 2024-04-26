@@ -566,10 +566,9 @@ namespace Unity.Cinemachine.Editor
         static void RestoreAllInterestingStates()
         {
             //Debug.Log("Updating state for all interesting objects");
-            bool dirty = false;
             var roots = ObjectTreeUtil.FindAllRootObjectsInOpenScenes();
             string savedObjects = "";
-            int numNamesCollected = 0;
+            int numObjectsSaved = 0;
             const int MaxNamesToCollect = 10;
             for (int i = 0; i < s_SavedStates.Count; ++i)
             {
@@ -581,10 +580,10 @@ namespace Unity.Cinemachine.Editor
                     if (saver.PutFieldValues(go, roots))
                     {
                         //Debug.Log("SaveDuringPlay: updated settings of " + saver.ObjetFullPath);
-                        ++numNamesCollected;
-                        if (numNamesCollected == MaxNamesToCollect)
+                        ++numObjectsSaved;
+                        if (numObjectsSaved == MaxNamesToCollect)
                             savedObjects += "...(and more)\n";
-                        else if (numNamesCollected < MaxNamesToCollect)
+                        else if (numObjectsSaved < MaxNamesToCollect)
                         {
                             var name = saver.ObjetFullPath;
                             if (name[0] == '/')
@@ -592,11 +591,10 @@ namespace Unity.Cinemachine.Editor
                             savedObjects += name + "\n";
                         }
                         EditorUtility.SetDirty(go);
-                        dirty = true;
                     }
                 }
             }
-            if (dirty)
+            if (numObjectsSaved > 0)
             {
                 var text = "Some Cinemachine settings that were modified during play mode are being "
                         + "propagated back to the scene.  Would you like to keep these changes, or undo them?\n\n"
