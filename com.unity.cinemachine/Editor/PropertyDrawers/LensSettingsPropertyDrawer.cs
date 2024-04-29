@@ -92,11 +92,9 @@ namespace Unity.Cinemachine.Editor
             var outerFovControl = new FovPropertyControl(property, true) { style = { flexGrow = 1 }};
             ux.Add(new InspectorUtility.FoldoutWithOverlay(
                 foldout, outerFovControl, outerFovControl.ShortLabel) { style = { flexGrow = 1 }});
-            //outerFovControl.OnInitialGeometry(() => outerFovControl.SafeSetIsDelayed());
 
             // Populate the foldout
             var innerFovControl = foldout.AddChild(new FovPropertyControl(property, false) { style = { flexGrow = 1 }});
-            //innerFovControl.OnInitialGeometry(() => innerFovControl.SafeSetIsDelayed());
 
             var nearClip = property.FindPropertyRelative(() => s_Def.NearClipPlane);
             foldout.AddChild(new PropertyField(nearClip)).RegisterValueChangeCallback((evt) =>
@@ -191,7 +189,8 @@ namespace Unity.Cinemachine.Editor
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
                 Label.AddToClassList("unity-base-field__label--with-dragger");
-                new FieldMouseDragger<float>(m_Control).SetDragZone(Label);
+                new DelayedFriendlyFieldDragger<float>(m_Control).SetDragZone(Label);
+                m_Control.OnInitialGeometry(() => m_Control.SafeSetIsDelayed());
 
                 m_Presets = Contents.AddChild(new PopupField<string>
                     { tooltip = "Customizable Lens Palette", style = {flexBasis = 20, flexGrow = 1}});
@@ -199,7 +198,7 @@ namespace Unity.Cinemachine.Editor
 
                 ShortLabel = new Label("X") { style = { alignSelf = Align.Center, opacity = 0.5f }};
                 ShortLabel.AddToClassList("unity-base-field__label--with-dragger");
-                new FieldMouseDragger<float>(m_Control).SetDragZone(ShortLabel);
+                new DelayedFriendlyFieldDragger<float>(m_Control).SetDragZone(ShortLabel);
 
                 this.TrackPropertyWithInitialCallback(property, OnLensPropertyChanged);
             }
