@@ -167,8 +167,7 @@ namespace Unity.Cinemachine
             }
 
             // Have we already been updated this frame?
-            if (s_UpdateStatus == null)
-                s_UpdateStatus = new();
+            s_UpdateStatus ??= new();
             if (!s_UpdateStatus.TryGetValue(vcam, out UpdateStatus status))
             {
                 status = new UpdateStatus
@@ -212,7 +211,7 @@ namespace Unity.Cinemachine
             target = vcam.Follow;
             if (target != null)
                 return target;
-            // If no target, use the vcam itself
+            // If no target, use the vcam itself (maybe its position is being animated)
             return vcam.transform;
         }
 

@@ -15,74 +15,72 @@ namespace Unity.Cinemachine
         class UpdateStatus
         {
             const int kWindowSize = 30;
-            int windowStart;
-            int numWindowLateUpdateMoves;
-            int numWindowFixedUpdateMoves;
-            int numWindows;
-            int lastFrameUpdated;
-            Matrix4x4 lastPos;
+            int m_WindowStart;
+            int m_NumWindowLateUpdateMoves;
+            int m_NumWindowFixedUpdateMoves;
+            int m_NumWindows;
+            int m_LastFrameUpdated;
+            Matrix4x4 m_LastPos;
 #if DEBUG_LOG_NAME
-            string name;
+            string m_Name;
 #endif
             public UpdateClock PreferredUpdate { get; private set; }
 
 #if DEBUG_LOG_NAME
             public UpdateStatus(string targetName, int currentFrame, Matrix4x4 pos)
             {
-                name = targetName;
+                m_Name = targetName;
 #else
             public UpdateStatus(int currentFrame, Matrix4x4 pos)
             {
 #endif
-                windowStart = currentFrame;
-                lastFrameUpdated = Time.frameCount;
+                m_WindowStart = currentFrame;
+                m_LastFrameUpdated = Time.frameCount;
                 PreferredUpdate = UpdateClock.Late;
-                lastPos = pos;
+                m_LastPos = pos;
             }
 
             public void OnUpdate(int currentFrame, UpdateClock currentClock, Matrix4x4 pos)
             {
-                if (lastPos == pos)
+                if (m_LastPos == pos)
                     return;
 
                 if (currentClock == UpdateClock.Late)
-                    ++numWindowLateUpdateMoves;
-                else if (lastFrameUpdated != currentFrame) // only count 1 per rendered frame
-                    ++numWindowFixedUpdateMoves;
-                lastPos = pos;
+                    ++m_NumWindowLateUpdateMoves;
+                else if (m_LastFrameUpdated != currentFrame) // only count 1 per rendered frame
+                    ++m_NumWindowFixedUpdateMoves;
+                m_LastPos = pos;
 
-                UpdateClock choice;
-                if (numWindowFixedUpdateMoves > 3 && numWindowLateUpdateMoves < numWindowFixedUpdateMoves / 3)
+                UpdateClock choice = UpdateClock.Late;
+                if (m_NumWindowFixedUpdateMoves > 3 && m_NumWindowLateUpdateMoves < m_NumWindowFixedUpdateMoves / 3)
                     choice = UpdateClock.Fixed;
-                else
-                    choice =  UpdateClock.Late;
-                if (numWindows == 0)
+                if (m_NumWindows == 0)
                     PreferredUpdate = choice;
  
-                if (windowStart + kWindowSize <= currentFrame)
+                if (m_WindowStart + kWindowSize <= currentFrame)
                 {
 #if DEBUG_LOG_NAME
-                    Debug.Log(name + ": Window " + numWindows + ": Late=" + numWindowLateUpdateMoves + ", Fixed=" + numWindowFixedUpdateMoves);
+                    Debug.Log(m_Name + ": Window " + m_NumWindows + ": Late=" + m_NumWindowLateUpdateMoves + ", Fixed=" + m_NumWindowFixedUpdateMoves + ", currentClock=" + currentClock);
 #endif
                     PreferredUpdate = choice;
-                    ++numWindows;
-                    windowStart = currentFrame;
-                    numWindowLateUpdateMoves = (PreferredUpdate == UpdateClock.Late) ? 1 : 0;
-                    numWindowFixedUpdateMoves = (PreferredUpdate == UpdateClock.Fixed) ? 1 : 0;
+                    ++m_NumWindows;
+                    m_WindowStart = currentFrame;
+                    m_NumWindowLateUpdateMoves = (PreferredUpdate == UpdateClock.Late) ? 1 : 0;
+                    m_NumWindowFixedUpdateMoves = (PreferredUpdate == UpdateClock.Fixed) ? 1 : 0;
                 }
             }
         }
-        static Dictionary<Transform, UpdateStatus> m_UpdateStatus  = new();
+        static Dictionary<Transform, UpdateStatus> s_UpdateStatus  = new();
 
         [RuntimeInitializeOnLoadMethod]
-        static void InitializeModule() => m_UpdateStatus.Clear();
+        static void InitializeModule() => s_UpdateStatus.Clear();
         
         static List<Transform> s_ToDelete = new();
         static void UpdateTargets(UpdateClock currentClock)
         {
             // Update the registry for all known targets
             int now = Time.frameCount;
-            var iter = m_UpdateStatus.GetEnumerator();
+            var iter = s_UpdateStatus.GetEnumerator();
             while (iter.MoveNext())
             {
                 var current = iter.Current;
@@ -92,7 +90,7 @@ namespace Unity.Cinemachine
                     current.Value.OnUpdate(now, currentClock, current.Key.localToWorldMatrix);
             }
             for (int i = s_ToDelete.Count-1; i >= 0; --i)
-                m_UpdateStatus.Remove(s_ToDelete[i]);
+                s_UpdateStatus.Remove(s_ToDelete[i]);
             s_ToDelete.Clear();
             iter.Dispose();
         }
@@ -101,7 +99,7 @@ namespace Unity.Cinemachine
         {
             if (Application.isPlaying && target != null)
             {
-                if (m_UpdateStatus.TryGetValue(target, out var status))
+                if (s_UpdateStatus.TryGetValue(target, out var status))
                     return status.PreferredUpdate;
 
                 // Add the target to the registry
@@ -110,19 +108,19 @@ namespace Unity.Cinemachine
 #else
                 status = new UpdateStatus(Time.frameCount, target.localToWorldMatrix);
 #endif
-                m_UpdateStatus.Add(target, status);
+                s_UpdateStatus.Add(target, status);
             }
             return UpdateClock.Late;
         }
 
-        static float m_LastUpdateTime;
+        static float s_LastUpdateTime;
         public static void OnUpdate(UpdateClock currentClock)
         {
             // Do something only if we are the first controller processing this frame
             float now = CinemachineCore.CurrentTime;
-            if (now != m_LastUpdateTime)
+            if (now != s_LastUpdateTime)
             {
-                m_LastUpdateTime = now;
+                s_LastUpdateTime = now;
                 UpdateTargets(currentClock);
             }
         }
