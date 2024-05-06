@@ -245,11 +245,18 @@ namespace Unity.Cinemachine
             Value = m_RecenteringState.m_LastValue = value;
         }
 
-        /// <summary>Call this to manage re-centering axis value to axis center.
+        /// <summary>Call this to manage re-centering axis value towards axis center.
         /// This assumes that TrackValueChange() has been called already this frame.</summary>
         /// <param name="deltaTime">Current deltaTime, or -1 for immediate re-centering</param>
         /// <param name="forceCancel">If true, cancel any re-centering currently in progress and reset the timer.</param>
-        public void UpdateRecentering(float deltaTime, bool forceCancel)
+        public void UpdateRecentering(float deltaTime, bool forceCancel) => UpdateRecentering(deltaTime, forceCancel, Center);
+
+        /// <summary>Call this to manage re-centering axis value towards the supplied center value.
+        /// This assumes that TrackValueChange() has been called already this frame.</summary>
+        /// <param name="deltaTime">Current deltaTime, or -1 for immediate re-centering</param>
+        /// <param name="forceCancel">If true, cancel any re-centering currently in progress and reset the timer.</param>
+        /// <param name="center">The value to recenter toward.</param>
+        public void UpdateRecentering(float deltaTime, bool forceCancel, float center)
         {
             if ((Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
                 return;
@@ -261,7 +268,7 @@ namespace Unity.Cinemachine
             }
             if ((m_RecenteringState.m_ForceRecenter || Recentering.Enabled) && deltaTime < 0)
             {
-                Value = Center;
+                Value = ClampValue(center);
                 CancelRecentering();
             }
             else if (m_RecenteringState.m_ForceRecenter 
@@ -269,7 +276,7 @@ namespace Unity.Cinemachine
                     - m_RecenteringState.m_LastValueChangeTime >= Recentering.Wait))
             {
                 var v = ClampValue(Value);
-                var c = Center;
+                var c = center;
                 var distance = Mathf.Abs(c - v);
                 if (distance < RecenteringState.k_Epsilon || Recentering.Time < RecenteringState.k_Epsilon)
                 {
