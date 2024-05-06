@@ -6,10 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.1.1] - 2025-01-01
 
-### Changed
-- CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
+### Fixed
 - Bugfix: InputAxis.TriggerRecentering() function caused the axis to immediately snap to its recenter value.
 - Bugfix: When multiple CM Brains were present, FixedUpdte cameras were sometimes being updated too frequently, resulting in jittery motion.
+
+### Changed
+- CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
+
+### Added
+- Added Recenter Target setting to CinemachinePanTilt
 
 
 ## [3.1.0] - 2024-04-01

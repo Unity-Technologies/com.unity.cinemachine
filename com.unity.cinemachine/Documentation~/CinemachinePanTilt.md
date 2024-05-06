@@ -21,7 +21,11 @@ This CinemachineCamera __Rotation Control__ behavior pans and tilts the camera i
 | | _Center_ | The value that Recentering will recenter to, if Recentering is enabled. |
 | | _Range_ | The minimum and maximum for the Value. Must fall inside of [-90, 90]. |
 | | _Wrap_ | If enabled, the axis wraps around when it reaches the end of its range, forming a loop. |
-| __Recentering__ | | If enabled for an axis, Recentering will gradually return the axis value to its Center. |
+| __Recentering__ | | If enabled for an axis, Recentering will gradually return the axis value to the recentering target. |
 |  | _Wait_ | If recentering is enabled for an axis, it will wait this many seconds after the last user input before beginning the recentering process. |
 |  | _Time_ | The time it takes for the recentering to complete, once it has started. |
+| __Recenter Target__ || When Axis Recentering happens, it will recenter towards this target.  |
+| | _Axis Center_ | Recenter to the Center value defined within the axis. |
+| | _Tracking Target Forward_ | Recenter to the value that aligns with the Tracking Target's forward axis. |
+| | _LookAt Target Forward_ | Recenter to the value that aligns with the LookAt Target's forward axis. |
 

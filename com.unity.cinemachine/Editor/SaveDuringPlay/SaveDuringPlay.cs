@@ -566,8 +566,10 @@ namespace Unity.Cinemachine.Editor
         static void RestoreAllInterestingStates()
         {
             //Debug.Log("Updating state for all interesting objects");
-            bool dirty = false;
             var roots = ObjectTreeUtil.FindAllRootObjectsInOpenScenes();
+            string savedObjects = "";
+            int numObjectsSaved = 0;
+            const int MaxNamesToCollect = 10;
             for (int i = 0; i < s_SavedStates.Count; ++i)
             {
                 var saver = s_SavedStates[i];
@@ -578,26 +580,34 @@ namespace Unity.Cinemachine.Editor
                     if (saver.PutFieldValues(go, roots))
                     {
                         //Debug.Log("SaveDuringPlay: updated settings of " + saver.ObjetFullPath);
+                        ++numObjectsSaved;
+                        if (numObjectsSaved == MaxNamesToCollect)
+                            savedObjects += "...(and more)\n";
+                        else if (numObjectsSaved < MaxNamesToCollect)
+                        {
+                            var name = saver.ObjetFullPath;
+                            if (name[0] == '/')
+                                name = name.Substring(1);
+                            savedObjects += name + "\n";
+                        }
                         EditorUtility.SetDirty(go);
-                        dirty = true;
                     }
                 }
             }
-            if (dirty)
+            if (numObjectsSaved > 0)
             {
-                if (!EditorUtility.DisplayDialog(
-                        "Save changes made in Play Mode",
-                        "Some Cinemachine settings that were modified during play mode are being "
+                var text = "Some Cinemachine settings that were modified during play mode are being "
                         + "propagated back to the scene.  Would you like to keep these changes, or undo them?\n\n"
-                        + "Note: if you choose Cancel, then the changes will be undone now.  If you choose Keep, then it "
-                        + "will still be possible to change your mind later by invoking Undo.",
-                        "Keep", "Cancel"))
-                {
+                        + "Modified objects include:\n\n"
+                        + savedObjects
+                        + "\nNote: if you choose Cancel, then the changes will be undone now.  If you choose Keep, then it "
+                        + "will still be possible to change your mind later by invoking Undo.";
+                if (!EditorUtility.DisplayDialog("Save changes made in Play Mode", text, "Keep", "Cancel"))
                     Undo.PerformUndo();
-                }
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }
             s_SavedStates = null;
         }
+
     }
 }

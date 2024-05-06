@@ -36,9 +36,8 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 // Get all ICinemachineComponents
-                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) =>
-                    typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract &&
-                    t.GetCustomAttribute<CameraPipelineAttribute>() != null); // we allow obsolete attributes here
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
+                    (t) => !t.IsAbstract && t.GetCustomAttribute<CameraPipelineAttribute>() != null); // we allow obsolete attributes here
 
                 foreach (var t in allTypes)
                 {
