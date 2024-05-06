@@ -20,7 +20,6 @@ namespace Unity.Cinemachine
             public int lastUpdateFrame;
             public int lastUpdateFixedFrame;
             public UpdateTracker.UpdateClock lastUpdateMode;
-            public float lastUpdateDeltaTime;
         }
         static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> s_UpdateStatus;
 
@@ -176,7 +175,6 @@ namespace Unity.Cinemachine
             {
                 status = new UpdateStatus
                 {
-                    lastUpdateDeltaTime = -2,
                     lastUpdateMode = UpdateTracker.UpdateClock.Late,
                     lastUpdateFrame = Time.frameCount + 2, // so that frameDelta ends up negative
                     lastUpdateFixedFrame = s_FixedFrameCount + 2
@@ -201,7 +199,6 @@ namespace Unity.Cinemachine
             status.lastUpdateFrame = Time.frameCount;
             status.lastUpdateFixedFrame = s_FixedFrameCount;
             status.lastUpdateMode = updateClock;
-            status.lastUpdateDeltaTime = deltaTime;
         }
 
         static Transform GetUpdateTarget(CinemachineVirtualCameraBase vcam)
