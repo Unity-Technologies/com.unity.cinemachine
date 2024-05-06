@@ -29,10 +29,9 @@ namespace Unity.Cinemachine.Tests
             m_CmCamera = CreateGameObject("CinemachineCamera", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_CmCamera.Priority.Value = 100;
             
-            s_AllCinemachineComponents = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
-                typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
-                && t.GetCustomAttribute<CameraPipelineAttribute>() != null
-                && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+            s_AllCinemachineComponents = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
+                (t) => !t.IsAbstract && t.GetCustomAttribute<CameraPipelineAttribute>() != null
+                    && t.GetCustomAttribute<ObsoleteAttribute>() == null);
         }
 
         [TearDown]

@@ -348,10 +348,10 @@ namespace Unity.Cinemachine.Editor
                 }
 
                 // Get all CinemachineComponentBase
-                var allTypes = ReflectionHelpers.GetTypesInAllDependentAssemblies((Type t) => 
-                    typeof(CinemachineComponentBase).IsAssignableFrom(t) && !t.IsAbstract 
-                    && t.GetCustomAttribute<CameraPipelineAttribute>() != null
-                    && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
+                    (t) => !t.IsAbstract 
+                        && t.GetCustomAttribute<CameraPipelineAttribute>() != null
+                        && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
                 var iter = allTypes.GetEnumerator();
                 while (iter.MoveNext())
@@ -367,10 +367,8 @@ namespace Unity.Cinemachine.Editor
                 s_ExtensionNames = new List<string>();
                 s_ExtensionTypes.Add(null);
                 s_ExtensionNames.Add("(select)");
-                var allExtensions
-                    = ReflectionHelpers.GetTypesInAllDependentAssemblies(
-                            (Type t) => typeof(CinemachineExtension).IsAssignableFrom(t) 
-                                && !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                var allExtensions = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineExtension),
+                    (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var iter2 = allExtensions.GetEnumerator();
                 while (iter2.MoveNext())
                 {

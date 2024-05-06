@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -31,80 +32,21 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Search the assembly for all types that match a predicate</summary>
-        /// <param name="assembly">The assembly to search</param>
-        /// <param name="predicate">The type to look for</param>
-        /// <returns>A list of types found in the assembly that inherit from the predicate</returns>
-        public static IEnumerable<Type> GetTypesInAssembly(
-            Assembly assembly, Predicate<Type> predicate)
+        /// <summary>Search all assemblies for all types that match a predicate</summary>
+        /// <param name="type">The type or interface to look for</param>
+        /// <param name="predicate">Additional conditions to test</param>
+        /// <returns>A list of types found that inherit from the type and satisfy the predicate.</returns>
+        public static IEnumerable<Type> GetTypesDerivedFrom(Type type, Predicate<Type> predicate)
         {
             var list = new List<Type>();
-            if (assembly != null)
+            var iter = TypeCache.GetTypesDerivedFrom(type).GetEnumerator();
+            while (iter.MoveNext())
             {
-                try 
-                { 
-                    var allTypes = assembly.GetTypes(); 
-                    if (allTypes != null)
-                    {
-                        for (int i = 0; i < allTypes.Length; ++i)
-                        {
-                            var t = allTypes[i];
-                            if (t != null && predicate(t))
-                                list.Add(t);
-                        }
-                    }
-                }
-                catch (Exception) {} // Can't load the types in this assembly
+                var t = iter.Current;
+                if (t != null && predicate(t))
+                    list.Add(t);
             }
             return list;
-        }
-
-        /// <summary>Get a type from a name</summary>
-        /// <param name="typeName">The name of the type to search for</param>
-        /// <returns>The type matching the name, or null if not found</returns>
-        public static Type GetTypeInAllDependentAssemblies(string typeName)
-        {
-            var iter = GetTypesInAllDependentAssemblies(t => t.Name == typeName).GetEnumerator();
-            if (iter.MoveNext())
-                return iter.Current;
-            return null;
-        }
-
-        /// <summary>Search all assemblies for all types that match a predicate</summary>
-        /// <param name="predicate">The type to look for</param>
-        /// <returns>A list of types found in the assembly that inherit from the predicate</returns>
-        public static IEnumerable<Type> GetTypesInAllDependentAssemblies(Predicate<Type> predicate)
-        {
-            List<Type> foundTypes = new(100);
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            var definedIn = typeof(CinemachineComponentBase).Assembly.GetName().Name;
-            for (int i = 0; i < assemblies.Length; ++i)
-            {
-                var assembly = assemblies[i];
-                if (assembly.GlobalAssemblyCache)
-                    continue;
-
-                // Note that we have to call GetName().Name.  Just GetName() will not work.  
-                bool skip = assembly.GetName().Name != definedIn;
-                if (skip)
-                {
-                    var referencedAssemblies = assembly.GetReferencedAssemblies();
-                    for (int j = 0; skip && j < referencedAssemblies.Length; ++j)
-                        if (referencedAssemblies[j].Name == definedIn)
-                            skip = false;
-                }
-                if (skip)
-                    continue;
-
-                try
-                {
-                    var iter = GetTypesInAssembly(assembly, predicate).GetEnumerator();
-                    while (iter.MoveNext())
-                        foundTypes.Add(iter.Current);
-                }
-                catch (Exception) {} // Just skip uncooperative assemblies
-            }
-            return foundTypes;
         }
 
         /// <summary>Cheater extension to access internal field of an object</summary>
