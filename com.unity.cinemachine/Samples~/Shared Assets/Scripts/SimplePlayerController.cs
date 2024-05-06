@@ -109,14 +109,7 @@ namespace Unity.Cinemachine.Samples
         public bool IsJumping => m_IsJumping;
         public Camera Camera => CameraOverride == null ? Camera.main : CameraOverride;
 
-        public bool IsGrounded()
-        {
-            if (m_Controller != null)
-                return m_Controller.isGrounded;
-
-            // No controller - must compute manually with raycast
-            return GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
-        }
+        public bool IsGrounded() => GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
 
         void Start() => TryGetComponent(out m_Controller);
 
@@ -329,7 +322,7 @@ namespace Unity.Cinemachine.Samples
 
         float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
         {
-            float kExtraHeight = 2; // start a little above the player in case it's moving down fast
+            float kExtraHeight = m_Controller == null ? 2 : 0; // start a little above the player in case it's moving down fast
             if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, 
                     max + kExtraHeight, GroundLayers, QueryTriggerInteraction.Ignore))
                 return hit.distance - kExtraHeight; 

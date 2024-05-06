@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Bugfix: InputAxis.TriggerRecentering() function caused the axis to immediately snap to its recenter value.
+- SimplePlayerController no longer uses PlayerController.isGrounded because it's not reliable outside of FixedUpdate.
 
 ### Changed
 - CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
