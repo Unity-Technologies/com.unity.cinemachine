@@ -68,7 +68,8 @@ namespace Unity.Cinemachine.Editor
         {
             var allRoots = new List<GameObject>();
             for (int i = 0; i < SceneManager.sceneCount; ++i)
-                allRoots.AddRange(SceneManager.GetSceneAt(i).GetRootGameObjects());
+                if (SceneManager.GetSceneAt(i).isLoaded)
+                    allRoots.AddRange(SceneManager.GetSceneAt(i).GetRootGameObjects());
             return allRoots;
         }
 
