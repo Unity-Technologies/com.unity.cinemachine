@@ -78,8 +78,7 @@ namespace Unity.Cinemachine
         public Quaternion OrientationCorrection;
 
         /// <summary>
-        /// These hints can be or'ed together to influence how blending is done, and how state
-        /// is applied to the camera
+        /// Combine these hints to influence how blending is done, and how state is applied to the camera.
         /// </summary>
         public enum BlendHints
         {
@@ -110,8 +109,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// These hints can be or'ed together to influence how blending is done, and how state
-        /// is applied to the camera
+        /// Combine these hints to influence how blending is done, and how state is applied to the camera.
         /// </summary>
         public BlendHints BlendHint;
 
