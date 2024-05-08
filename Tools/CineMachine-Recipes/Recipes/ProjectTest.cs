@@ -62,7 +62,7 @@ public class ProjectTest : RecipeBase
                                     .WithExtraArgs("--suite=PlayMode"))))
                             .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.Key}")
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
-                            .WithArtifact(new Artifact("artifacts", "artifacts"));
+                            .WithArtifact(new Artifact("artifacts", "artifacts/*"));
                             ;
                             
                         builders.Add(job);
