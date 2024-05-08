@@ -70,7 +70,9 @@ namespace Unity.Cinemachine
             Finalize
         };
 
-        /// <summary>Hint for transitioning to and from Cinemachine cameras</summary>
+        /// <summary>Hint for transitioning to and from CinemachineCameras.  Hints can be combined, although 
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// make an arbitrary choice.</summary>
         [Flags]
         public enum BlendHints
         {
