@@ -1,4 +1,5 @@
 using Cinemachine.Cookbook.Settings;
+using RecipeEngine.Api.Artifacts;
 using RecipeEngine.Api.Extensions;
 using RecipeEngine.Api.Jobs;
 using RecipeEngine.Api.Platforms;
@@ -61,6 +62,7 @@ public class ProjectTest : RecipeBase
                                     .WithExtraArgs("--suite=PlayMode"))))
                             .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.Key}")
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
+                            .WithArtifact(new Artifact("artifacts", "artifacts"));
                             ;
                             
                         builders.Add(job);
