@@ -169,6 +169,9 @@ namespace Unity.Cinemachine
                 if (Instructions[i].Camera != null
                     && Instructions[i].Camera.transform.parent != transform)
                 {
+#if UNITY_EDITOR
+                    UnityEditor.Undo.RecordObject(this, "CinemachineStateDrivenCamera instruction");
+#endif
                     Instructions[i].Camera = null;
                 }
                 if (!m_InstructionDictionary.TryGetValue(Instructions[i].FullHash, out var list))

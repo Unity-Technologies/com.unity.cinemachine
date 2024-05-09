@@ -140,6 +140,9 @@ namespace Unity.Cinemachine
                 if (Instructions[i].Camera != null
                     && Instructions[i].Camera.transform.parent != transform)
                 {
+#if UNITY_EDITOR
+                    UnityEditor.Undo.RecordObject(this, "CinemachineSequencerCamera instruction");
+#endif
                     var e = Instructions[i];
                     e.Camera = null;
                     Instructions[i] = e;

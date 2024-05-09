@@ -108,7 +108,10 @@ namespace Unity.Cinemachine.Editor
                     {
                         var index = stateSel.index;
                         if (index >= 0 && index < m_TargetStates.Count)
+                        {
                             stateSelProp.intValue = index;
+                            stateSelProp.serializedObject.ApplyModifiedProperties();
+                        }
                         evt.StopPropagation();
                     }
                 });
@@ -141,6 +144,7 @@ namespace Unity.Cinemachine.Editor
 
                 // Bind must be last
                 ((BindableElement)row).BindProperty(element);
+                //stateSel.BindProperty(stateSelProp);
                 vcamSel.BindProperty(vcamSelProp);
             };
 
@@ -173,8 +177,6 @@ namespace Unity.Cinemachine.Editor
                     if (vcamSel != null)
                     {
                         vcamSel.choices.Clear();
-for (int i = 0; i < children.Count; ++i)
-    Debug.Log($"vcamSelector{index}: {children[i].name}");
                         for (int i = 0; i < children.Count; ++i)
                             vcamSel.choices.Add(children[i]);
                     }
