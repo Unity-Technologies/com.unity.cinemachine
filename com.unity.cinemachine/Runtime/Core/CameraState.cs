@@ -112,8 +112,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// These hints can be or'ed toether to influence how blending is done, and how state
-        /// is applied to the camera
+        /// Combine these hints to influence how blending is done, and how state is applied to the camera.
         /// </summary>
         public enum BlendHintValue
         {
@@ -138,8 +137,7 @@ namespace Cinemachine
         }
 
         /// <summary>
-        /// These hints can be or'ed toether to influence how blending is done, and how state
-        /// is applied to the camera
+        /// Combine these hints to influence how blending is done, and how state is applied to the camera.
         /// </summary>
         public BlendHintValue BlendHint;
 
