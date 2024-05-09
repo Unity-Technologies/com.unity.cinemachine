@@ -62,7 +62,7 @@ namespace Unity.Cinemachine.Editor
             var ux = rootVisualElement;
             var exposureField = ux.AddChild(new Slider("Exposure", 0.01f, 2) 
                 { value = m_WaveformGenerator.Exposure, showInputField = true });
-            exposureField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+            exposureField.RemoveFromClassList(InspectorUtility.AlignFieldClassName);
             exposureField.RegisterValueChangedCallback((evt) => 
             {
                 m_WaveformGenerator.Exposure = evt.newValue;

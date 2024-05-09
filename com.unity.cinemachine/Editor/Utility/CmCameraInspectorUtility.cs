@@ -57,7 +57,7 @@ namespace Unity.Cinemachine.Editor
             { 
                 text = "Solo", 
                 style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
-                    marginLeft = 0, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
+                    marginLeft = 3, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
             });
             var updateMode = row.Contents.AddChild(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
             updateMode.SetEnabled(false);
@@ -290,7 +290,7 @@ namespace Unity.Cinemachine.Editor
                 text = "(select)", 
                 style = 
                 { 
-                    flexGrow = 1, marginRight = 0, marginLeft = 3, 
+                    flexGrow = 1, marginRight = -2, marginLeft = 3, 
                     paddingTop = 0, paddingBottom = 0, paddingLeft = 1,
                     height = InspectorUtility.SingleLineHeight + 2, 
                     unityTextAlign = TextAnchor.MiddleLeft
@@ -392,7 +392,7 @@ namespace Unity.Cinemachine.Editor
                 tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
                 value = SaveDuringPlay.Enabled
             });
-            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+            toggle.AddToClassList(InspectorUtility.AlignFieldClassName);
             toggle.RegisterValueChangedCallback((evt) => 
             {
                 SaveDuringPlay.Enabled = evt.newValue;
@@ -409,7 +409,7 @@ namespace Unity.Cinemachine.Editor
                 index = index,
                 style = { flexGrow = 1 }
             });
-            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+            dropdown.AddToClassList(InspectorUtility.AlignFieldClassName);
             dropdown.RegisterValueChangedCallback((evt) => 
             {
                 CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue != choices[0];

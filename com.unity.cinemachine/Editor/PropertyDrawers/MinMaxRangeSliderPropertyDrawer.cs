@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
 
             var minField = new FloatField 
                 { value = property.vector2Value.x, isDelayed = true, style = { flexGrow = 1, flexBasis = 0 }};
-            minField.AddToClassList(InspectorUtility.kAlignFieldClass);
+            minField.AddToClassList(InspectorUtility.AlignFieldClassName);
             minField.TrackPropertyValue(property, (evt) => minField.value = evt.vector2Value.x);
             minField.RegisterValueChangedCallback((evt) =>
             {
@@ -26,6 +26,7 @@ namespace Unity.Cinemachine.Editor
 
             var slider = new MinMaxSlider()
             { 
+                focusable = false,
                 lowLimit = a.Min, highLimit = a.Max,
                 style = { flexGrow = 3, flexBasis = 0, paddingLeft = 5, paddingRight = 5 }
             };
@@ -42,7 +43,7 @@ namespace Unity.Cinemachine.Editor
                 property.serializedObject.ApplyModifiedProperties();
             });
 
-            var row = new InspectorUtility.LeftRightRow { style = { flexGrow = 1 }};
+            var row = new InspectorUtility.LeftRightRow();
             row.Left.Add(new Label { text = property.displayName, tooltip = property.tooltip, style = { alignSelf = Align.Center }});
             row.Right.Add(minField);
             row.Right.Add(slider);

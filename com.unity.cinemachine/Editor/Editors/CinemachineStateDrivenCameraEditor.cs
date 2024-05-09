@@ -39,7 +39,7 @@ namespace Unity.Cinemachine.Editor
 
             var layerProp = serializedObject.FindProperty(() => Target.LayerIndex);
             var layerSel = ux.AddChild(new PopupField<string>(layerProp.displayName) { tooltip = layerProp.tooltip });
-            layerSel.AddToClassList(InspectorUtility.kAlignFieldClass);
+            layerSel.AddToClassList(InspectorUtility.AlignFieldClassName);
             layerSel.RegisterValueChangedCallback((evt) => 
             {
                 layerProp.intValue = Mathf.Max(0, m_LayerNames.FindIndex(v => v == evt.newValue));

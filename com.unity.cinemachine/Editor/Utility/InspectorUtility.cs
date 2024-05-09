@@ -13,7 +13,7 @@ namespace Unity.Cinemachine.Editor
     /// Collection of tools and helpers for drawing inspectors
     /// </summary>
     [InitializeOnLoad]
-    static class InspectorUtility
+    static partial class InspectorUtility
     {
         /// <summary>
         /// Callback that happens whenever something undoable happens, either with 
@@ -31,244 +31,7 @@ namespace Unity.Cinemachine.Editor
             static void OnUserDidSomething() => UserDidSomething?.Invoke();
             static void OnUserDidSomethingStream(ref ObjectChangeEventStream stream) => UserDidSomething?.Invoke();
         }
-        
-#if !CINEMACHINE_NO_CM2_SUPPORT
-        /// <summary>Put multiple properties on a single inspector line, with
-        /// optional label overrides.  Passing null as a label (or sublabel) override will
-        /// cause the property's displayName to be used as a label.  For no label at all,
-        /// pass GUIContent.none.</summary>
-        /// <param name="rect">Rect in which to draw</param>
-        /// <param name="label">Main label</param>
-        /// <param name="props">Properties to place on the line</param>
-        /// <param name="subLabels">Sublabels for the properties</param>
-        public static void MultiPropertyOnLine(
-            Rect rect,
-            GUIContent label,
-            SerializedProperty[] props, GUIContent[] subLabels)
-        {
-            if (props == null || props.Length == 0)
-                return;
 
-            const int hSpace = 2;
-            int indentLevel = EditorGUI.indentLevel;
-            float labelWidth = EditorGUIUtility.labelWidth;
-
-            float totalSubLabelWidth = 0;
-            int numBoolColumns = 0;
-            List<GUIContent> actualLabels = new List<GUIContent>();
-            for (int i = 0; i < props.Length; ++i)
-            {
-                GUIContent sublabel = new GUIContent(props[i].displayName, props[i].tooltip);
-                if (subLabels != null && subLabels.Length > i && subLabels[i] != null)
-                    sublabel = subLabels[i];
-                actualLabels.Add(sublabel);
-                totalSubLabelWidth += GUI.skin.label.CalcSize(sublabel).x;
-                if (i > 0)
-                    totalSubLabelWidth += hSpace;
-                // Special handling for toggles, or it looks stupid
-                if (props[i].propertyType == SerializedPropertyType.Boolean)
-                {
-                    totalSubLabelWidth += rect.height + hSpace;
-                    ++numBoolColumns;
-                }
-            }
-
-            float subFieldWidth = rect.width - labelWidth - totalSubLabelWidth;
-            float numCols = props.Length - numBoolColumns;
-            float colWidth = numCols == 0 ? 0 : subFieldWidth / numCols;
-
-            // Main label.  If no first sublabel, then main label must take on that
-            // role, for mouse dragging value-scrolling support
-            int subfieldStartIndex = 0;
-            if (label == null)
-                label = new GUIContent(props[0].displayName, props[0].tooltip);
-            if (actualLabels[0] != GUIContent.none)
-                rect = EditorGUI.PrefixLabel(rect, label);
-            else
-            {
-                rect.width = labelWidth + colWidth;
-                EditorGUI.PropertyField(rect, props[0], label);
-                rect.x += rect.width + hSpace;
-                subfieldStartIndex = 1;
-            }
-
-            for (int i = subfieldStartIndex; i < props.Length; ++i)
-            {
-                EditorGUI.indentLevel = 0;
-                EditorGUIUtility.labelWidth = GUI.skin.label.CalcSize(actualLabels[i]).x;
-                if (props[i].propertyType == SerializedPropertyType.Boolean)
-                {
-                    rect.x += hSpace;
-                    rect.width = EditorGUIUtility.labelWidth + rect.height;
-                    EditorGUI.BeginProperty(rect, actualLabels[i], props[i]);
-                    props[i].boolValue = EditorGUI.ToggleLeft(rect, actualLabels[i], props[i].boolValue);
-                }
-                else
-                {
-                    rect.width = EditorGUIUtility.labelWidth + colWidth;
-                    EditorGUI.BeginProperty(rect, actualLabels[i], props[i]);
-                    EditorGUI.PropertyField(rect, props[i], actualLabels[i]);
-                }
-                EditorGUI.EndProperty();
-                rect.x += rect.width + hSpace;
-            }
-
-            EditorGUIUtility.labelWidth = labelWidth;
-            EditorGUI.indentLevel = indentLevel;
-        }
-
-        public static float PropertyHeightOfChidren(SerializedProperty property)
-        {
-            float height = 0;
-            var childProperty = property.Copy();
-            var endProperty = childProperty.GetEndProperty();
-            childProperty.NextVisible(true);
-            while (!SerializedProperty.EqualContents(childProperty, endProperty))
-            {
-                height += EditorGUI.GetPropertyHeight(childProperty)
-                    + EditorGUIUtility.standardVerticalSpacing;
-                childProperty.NextVisible(false);
-            }
-            return height - EditorGUIUtility.standardVerticalSpacing;
-        }
-
-        public static void DrawChildProperties(Rect position, SerializedProperty property)
-        {
-            var childProperty = property.Copy();
-            var endProperty = childProperty.GetEndProperty();
-            childProperty.NextVisible(true);
-            while (!SerializedProperty.EqualContents(childProperty, endProperty))
-            {
-                position.height = EditorGUI.GetPropertyHeight(childProperty);
-                EditorGUI.PropertyField(position, childProperty, true);
-                position.y += position.height + EditorGUIUtility.standardVerticalSpacing;
-                childProperty.NextVisible(false);
-            }
-        }
-
-        public static void HelpBoxWithButton(
-            string message, MessageType messageType, 
-            GUIContent buttonContent, Action onClicked)
-       {
-            float lineHeight = EditorGUIUtility.singleLineHeight;
-            var buttonSize = GUI.skin.label.CalcSize(buttonContent);
-            buttonSize.x += lineHeight;
-
-            var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect(false, 2));
-
-            var boxContent = new GUIContent(message + "\n"); // to make room for the button
-            var boxWidth = rect.width;
-            var boxHeight = GUI.skin.GetStyle("helpbox").CalcHeight(boxContent, rect.width - 3 * lineHeight) + buttonSize.y;
-
-            rect = EditorGUILayout.GetControlRect(false, boxHeight);
-            rect = EditorGUI.IndentedRect(rect);
-            rect.width = boxWidth; rect.height = boxHeight;
-            EditorGUI.HelpBox(rect, boxContent.text, messageType);
-
-            rect.x += rect.width - buttonSize.x - 6; rect.width = buttonSize.x;
-            rect.y += rect.height - buttonSize.y - 6; rect.height = buttonSize.y;
-            if (GUI.Button(rect, buttonContent, EditorStyles.miniButton))
-                onClicked();
-        }
-
-        public static float EnabledFoldoutHeight(SerializedProperty property, string enabledPropertyName)
-        {
-            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
-            if (enabledProp == null)
-                return EditorGUI.GetPropertyHeight(property);
-            if (!enabledProp.boolValue)
-                return EditorGUIUtility.singleLineHeight;
-            return PropertyHeightOfChidren(property);
-        }
-
-        public static bool EnabledFoldout(
-            Rect rect, SerializedProperty property, string enabledPropertyName,
-            GUIContent label = null)
-        {
-            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
-            if (enabledProp == null)
-            {
-                EditorGUI.PropertyField(rect, property, true);
-                rect.x += EditorGUIUtility.labelWidth;
-                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
-                return property.isExpanded;
-            }
-            rect.height = EditorGUIUtility.singleLineHeight;
-            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
-            EditorGUI.PropertyField(rect, enabledProp, label);
-            if (enabledProp.boolValue)
-            {
-                ++EditorGUI.indentLevel;
-                var childProperty = property.Copy();
-                var endProperty = childProperty.GetEndProperty();
-                childProperty.NextVisible(true);
-                while (!SerializedProperty.EqualContents(childProperty, endProperty))
-                {
-                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
-                    {
-                        rect.y += rect.height + EditorGUIUtility.standardVerticalSpacing;
-                        rect.height = EditorGUI.GetPropertyHeight(childProperty);
-                        EditorGUI.PropertyField(rect, childProperty, true);
-                    }
-                    childProperty.NextVisible(false);
-                }
-                --EditorGUI.indentLevel;
-            }
-            return enabledProp.boolValue;
-        }
-
-        public static bool EnabledFoldoutSingleLine(
-            Rect rect, SerializedProperty property,
-            string enabledPropertyName, string disabledToggleLabel,
-            GUIContent label = null)
-        {
-            var enabledProp = property.FindPropertyRelative(enabledPropertyName);
-            if (enabledProp == null)
-            {
-                EditorGUI.PropertyField(rect, property, true);
-                rect.x += EditorGUIUtility.labelWidth;
-                EditorGUI.LabelField(rect, new GUIContent($"unknown field `{enabledPropertyName}`"));
-                return property.isExpanded;
-            }
-            rect.height = EditorGUIUtility.singleLineHeight;
-            label ??= new GUIContent(property.displayName, enabledProp.tooltip);
-            EditorGUI.PropertyField(rect, enabledProp, label);
-            if (!enabledProp.boolValue)
-            {
-                if (!string.IsNullOrEmpty(disabledToggleLabel))
-                {
-                    var w = EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight + 3;
-                    var r = rect; r.x += w; r.width -= w;
-                    var oldColor = GUI.color;
-                    GUI.color = new (oldColor.r, oldColor.g, oldColor.g, 0.5f);
-                    EditorGUI.LabelField(r, disabledToggleLabel);
-                    GUI.color = oldColor;
-                }
-            }
-            else
-            {
-                rect.width -= EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
-                rect.x += EditorGUIUtility.labelWidth + EditorGUIUtility.singleLineHeight;
-
-                var childProperty = property.Copy();
-                var endProperty = childProperty.GetEndProperty();
-                childProperty.NextVisible(true);
-                while (!SerializedProperty.EqualContents(childProperty, endProperty))
-                {
-                    if (!SerializedProperty.EqualContents(childProperty, enabledProp))
-                    {
-                        var oldWidth = EditorGUIUtility.labelWidth;
-                        EditorGUIUtility.labelWidth = 6; // for dragging
-                        EditorGUI.PropertyField(rect, childProperty, new GUIContent(" "));
-                        EditorGUIUtility.labelWidth = oldWidth;
-                        break; // Draw only the first property
-                    }
-                    childProperty.NextVisible(false);
-                }
-            }
-            return enabledProp.boolValue;
-        }
-#endif
         /// <summary>
         /// Add to a list all assets of a given type found in a given location
         /// </summary>
@@ -319,7 +82,6 @@ namespace Unity.Cinemachine.Editor
         {
             if (name.StartsWith("Cinemachine"))
                 name = name.Substring(11); // Trim the prefix
-            
             return ObjectNames.NicifyVariableName(name);
         }
         
@@ -331,29 +93,10 @@ namespace Unity.Cinemachine.Editor
         /// <returns>The nicified name</returns>
         public static string NicifyClassName(Type type)
         {
-            var name = type.Name;
-            if (name.StartsWith("Cinemachine"))
-                name = name.Substring(11); // Trim the prefix
-            
-            name = ObjectNames.NicifyVariableName(name);
-            
+            var name = NicifyClassName(type.Name);
             if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
                 name += " (Deprecated)";
-
             return name;
-        }
-
-        // Temporarily here
-        /// <summary>
-        /// Creates a new GameObject.
-        /// </summary>
-        /// <param name="name">Name to give the object.</param>
-        /// <param name="types">Optional components to add.</param>
-        /// <returns>The GameObject that was created.</returns>
-        [Obsolete("Use ObjectFactory.CreateGameObject(string name, params Type[] types) instead.")]
-        public static GameObject CreateGameObject(string name, params Type[] types)
-        {
-            return ObjectFactory.CreateGameObject(name, types);
         }
         
         private static int m_lastRepaintFrame;
@@ -372,7 +115,7 @@ namespace Unity.Cinemachine.Editor
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }
 
-        static Dictionary<Type, string> s_AssignableTypes = new Dictionary<Type, string>();
+        static Dictionary<Type, string> s_AssignableTypes = new ();
         public const string s_NoneString = "(none)";
 
         public static string GetAssignableBehaviourNames(Type inputType)
@@ -398,14 +141,8 @@ namespace Unity.Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
-        ///==============================================================================================
-        ///==============================================================================================
-        /// UI Elements utilities
-        ///==============================================================================================
-        ///==============================================================================================
-
         /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
-        public static string kAlignFieldClass => BaseField<bool>.alignedFieldUssClassName;
+        public static string AlignFieldClassName => BaseField<bool>.alignedFieldUssClassName;
 
         // this is a hack to get around some vertical alignment issues in UITK
         public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
@@ -515,7 +252,7 @@ namespace Unity.Cinemachine.Editor
             row.focusable = false;
             row.Label.style.flexGrow = 1;
             row.Label.style.paddingTop = verticalPad;
-            row.Label.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
+            row.Label.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing - 2;
         }
 
         /// <summary>
@@ -618,34 +355,6 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// This is a hack to get proper layout within th inspector.
-        /// There seems to be no sanctioned way to get the current inspector label width.
-        /// This creates a row with a properly-sized label in front of it.
-        /// </summary>
-        public class LabeledRow : BaseField<bool> // bool is just a dummy because it has to be something
-        {
-            public Label Label => labelElement;
-            public VisualElement Contents { get; }
-
-            public LabeledRow(string label, string tooltip = "") 
-                : this (label, tooltip, new VisualElement()) 
-            {
-                style.flexDirection = FlexDirection.Row;
-                style.flexGrow = 1;
-                Contents.style.flexDirection = FlexDirection.Row;
-                Contents.style.flexGrow = 1;
-            }
-
-            public LabeledRow(string label, string tooltip, VisualElement contents) : base(label, contents)
-            {
-                Contents = contents;
-                AddToClassList(alignedFieldUssClassName);
-                this.tooltip = tooltip;
-                Label.tooltip = tooltip;
-            }
-        }
-
-        /// <summary>
         /// This is an inspector container with 2 side-by-side rows. The Left row's width is 
         /// locked to the inspector field label size, for proper alignment.
         /// </summary>
@@ -667,22 +376,95 @@ namespace Unity.Cinemachine.Editor
             public LeftRightRow()
             {
                 // This is to peek at the resolved label width
-                var hack = AddChild(this,  new LabeledRow(" ") { style = { height = 1, marginTop = -2 }});
-
-                var row = AddChild(this, new VisualElement 
-                    { style = { flexDirection = FlexDirection.Row }});
-                Left = row.AddChild(new VisualElement 
-                    { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
-                Right = row.AddChild(new VisualElement 
-                    { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
-
-                hack.Label.RegisterCallback<GeometryChangedEvent>((_) => 
+                Add(new AlignFieldSizer { OnLabelWidthChanged = (w) => 
                 {
                     if (KillLeftMargin)
-                        hack.style.marginLeft = 0;
-                    Left.style.width = hack.Label.resolvedStyle.width + DivisionOffset;
-                    row.style.marginLeft = hack.resolvedStyle.marginLeft;
-                });
+                        style.marginLeft = 0;
+                    Left.style.width = w + DivisionOffset;
+                }});
+
+                style.marginLeft = 3;
+                var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
+                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
+                Right = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginLeft = 2 }});
+            }
+
+            // This is a hacky thing to create custom inspector rows with labels that are the correct size
+            class AlignFieldSizer : BaseField<bool> // bool is just a dummy because it has to be something
+            {
+                public Action<float> OnLabelWidthChanged;
+                public AlignFieldSizer() : base (" ", new VisualElement()) 
+                {
+                    focusable = false;
+                    style.flexDirection = FlexDirection.Row;
+                    style.flexGrow = 1;
+                    style.height = 1;
+                    style.marginTop = -2;
+                    AddToClassList(AlignFieldClassName);
+                    labelElement.RegisterCallback<GeometryChangedEvent>((_) 
+                        => OnLabelWidthChanged?.Invoke(labelElement.resolvedStyle.width));
+                }
+            }
+        }
+
+        /// <summary>
+        /// This creates a row with a properly-sized label in front of it.
+        /// The label's width is locked to the inspector field label size, for proper alignment.
+        /// </summary>
+        public class LabeledRow : VisualElement
+        {
+            public Label Label { get; private set; }
+            public VisualElement Contents { get; private set; } 
+
+            public LabeledRow(string label, string tooltip, VisualElement contents)
+            {
+                var row = this.AddChild(new LeftRightRow() { style = { flexGrow = 1 }});
+                Label = row.Left.AddChild(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
+                Contents = row.Right.AddChild(contents);
+                style.marginRight = 0;
+                Contents.tooltip = tooltip;
+                Contents.style.marginRight = 0;
+                Contents.style.flexGrow = 1;
+            }
+
+            public LabeledRow(string label, string tooltip = "") 
+                : this(label, tooltip, new VisualElement { style = { flexDirection = FlexDirection.Row }}) {}
+        }
+
+        /// <summary>
+        /// A row containing a property field.  Suitable for adding widgets next to the property field.
+        /// </summary>
+        public static LabeledRow PropertyRow(
+            SerializedProperty property, out PropertyField propertyField, string label = null)
+        {
+            var row = new LabeledRow(label ?? property.displayName, property.tooltip);
+            propertyField = row.Contents.AddChild(new PropertyField(property, "")
+                { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
+            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField);
+            return row;
+        }
+        
+        /// <summary>
+        /// A property field with a minimally-sized label that does not respect inspector sizing.
+        /// Suitable for embedding in a row within the right-hand side of the inspector.
+        /// </summary>
+        public class CompactPropertyField : VisualElement
+        {
+            public Label Label;
+            public PropertyField Field;
+
+            public CompactPropertyField(SerializedProperty property) : this(property, property.displayName) {}
+
+            public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
+            {
+                style.flexDirection = FlexDirection.Row;
+                if (!string.IsNullOrEmpty(label))
+                    Label = AddChild(this, new Label(label) 
+                        { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
+                Field.style.marginLeft = Field.style.marginLeft.value.value - 1;
+                if (Label != null)
+                    AddDelayedFriendlyPropertyDragger(Label, property, Field);
             }
         }
 
@@ -756,70 +538,26 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        /// <summary>
-        /// A property field with a minimally-sized label that does not respect inspector sizing.
-        /// Suitable for embedding in a row within the right-hand side of the inspector.
-        /// </summary>
-        public class CompactPropertyField : VisualElement
-        {
-            public Label Label;
-            public PropertyField Field;
-
-            public CompactPropertyField(SerializedProperty property) : this(property, property.displayName) {}
-
-            public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
-            {
-                style.flexDirection = FlexDirection.Row;
-                if (!string.IsNullOrEmpty(label))
-                    Label = AddChild(this, new Label(label) 
-                        { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
-                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
-                if (Label != null)
-                    AddDelayedFriendlyPropertyDragger(Label, property, Field);
-            }
-        }
-
-        /// <summary>
-        /// A row containing a property field.  Suitable for adding widgets nest to the property field.
-        /// </summary>
-        public static LabeledRow PropertyRow(
-            SerializedProperty property, out PropertyField propertyField, string label = null)
-        {
-            var row = new LabeledRow(label ?? property.displayName, property.tooltip);
-            var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
-                { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
-            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField);
-
-            // Kill any left margin that gets inserted into the property field
-            field.OnInitialGeometry(() => 
-            {
-                var children = field.Children().GetEnumerator();
-                if (children.MoveNext())
-                    children.Current.style.marginLeft = 0;
-                children.Dispose();
-            });
-            return row;
-        }
-
         public static VisualElement HelpBoxWithButton(
             string message, HelpBoxMessageType messageType, 
             string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
         {
             var box = new VisualElement { style = 
             { 
-                flexDirection = FlexDirection.Column, 
+                flexDirection = FlexDirection.Row, 
                 paddingTop = 8, paddingBottom = 8, paddingLeft = 8, paddingRight = 8 
             }};
             box.AddToClassList("unity-help-box");
+            var innerBox = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Column, flexGrow = 1 }});
 
-            var row = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
+            var row = innerBox.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
             var icon = row.AddChild(MiniHelpIcon("", messageType));
             icon.style.alignSelf = Align.Auto;
             icon.style.marginRight = 6;
             var text = row.AddChild(new Label(message) 
                 { style = { flexGrow = 1, flexBasis = 100, alignSelf = Align.Center, whiteSpace = WhiteSpace.Normal }});
 
-            var buttons = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginTop = 6 }});
+            var buttons = innerBox.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginTop = 6 }});
             buttons.Add(new VisualElement { style = { flexGrow = 1 }});
             var button = buttons.AddChild(new Button(onClicked) { text = buttonText });
             if (contextMenu != null)

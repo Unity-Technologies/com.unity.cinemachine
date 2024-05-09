@@ -23,7 +23,6 @@ namespace Unity.Cinemachine.Editor
             {
                 minField.SafeSetIsDelayed();
                 maxField.SafeSetIsDelayed();
-                minField.Q<FloatField>().style.marginLeft = 2;
             });
 
             label.AddDelayedFriendlyPropertyDragger(xProp, minField);

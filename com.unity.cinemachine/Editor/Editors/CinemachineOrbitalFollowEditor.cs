@@ -27,8 +27,8 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux);
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TrackerSettings)));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.TargetOffset)));
             ux.AddSpace();
 
             var orbitModeProp = serializedObject.FindProperty(() => Target.OrbitStyle);

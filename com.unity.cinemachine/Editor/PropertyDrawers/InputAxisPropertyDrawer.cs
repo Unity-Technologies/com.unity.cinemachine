@@ -12,19 +12,12 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             // When foldout is closed, we display the axis value on the same line, for convenience
-            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
-            foldout.RegisterValueChangedCallback((evt) => 
-            {
-                if (evt.target == foldout)
-                {
-                    property.isExpanded = evt.newValue;
-                    property.serializedObject.ApplyModifiedProperties();
-                    evt.StopPropagation();
-                }
-            });
+            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip };
+            foldout.BindProperty(property);
+
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
-            var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
+            var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1, marginLeft = 4}};
             valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
             valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField);
 
@@ -32,12 +25,8 @@ namespace Unity.Cinemachine.Editor
 
             // We want dynamic dragging on the value, even if isDelayed is set
             var valueFieldRow = foldout.AddChild(new InspectorUtility.LabeledRow(
-                valueProp.displayName, valueProp.tooltip, new PropertyField(valueProp, "")));
-            valueFieldRow.Contents.OnInitialGeometry(() => 
-            {
-                valueFieldRow.Contents.SafeSetIsDelayed();
-                valueFieldRow.Contents.Q<FloatField>().style.marginLeft = 0;
-            });
+                valueProp.displayName, valueProp.tooltip, new PropertyField(valueProp, "") { style = { marginLeft = 0 }}));
+            valueFieldRow.Contents.OnInitialGeometry(() => valueFieldRow.Contents.SafeSetIsDelayed());
             valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueFieldRow.Contents);
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));

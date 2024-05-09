@@ -74,7 +74,7 @@ namespace Unity.Cinemachine.Editor
                     blend.name = "FirstItemBlend";
                 var hold = row.AddChild(
                     new InspectorUtility.CompactPropertyField(element.FindPropertyRelative(() => def.Hold), " "));
-                hold.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+                hold.RemoveFromClassList(InspectorUtility.AlignFieldClassName);
                     
                 FormatInstructionElement(false, vcamSel, blend, hold);
 

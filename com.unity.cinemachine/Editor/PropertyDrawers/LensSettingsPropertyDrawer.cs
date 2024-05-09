@@ -86,7 +86,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
 
             // When foldout is closed, we display the FOV on the same line, for convenience
-            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
+            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip };
             foldout.BindProperty(property);
 
             var outerFovControl = new FovPropertyControl(property, true) { style = { flexGrow = 1 }};
@@ -185,7 +185,8 @@ namespace Unity.Cinemachine.Editor
                 var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
                 m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
 
-                m_Control = Contents.AddChild(new FloatField("") { style = {flexBasis = 20, flexGrow = 2, marginLeft = 0}});
+                m_Control = Contents.AddChild(new FloatField("") 
+                    { style = { flexBasis = 20, flexGrow = 2, marginLeft = hideLabel ? -3 : 3 }});
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
                 Label.AddToClassList("unity-base-field__label--with-dragger");
@@ -193,7 +194,7 @@ namespace Unity.Cinemachine.Editor
                 m_Control.OnInitialGeometry(() => m_Control.SafeSetIsDelayed());
 
                 m_Presets = Contents.AddChild(new PopupField<string>
-                    { tooltip = "Customizable Lens Palette", style = {flexBasis = 20, flexGrow = 1}});
+                    { tooltip = "Customizable Lens Palette", style = { flexBasis = 20, flexGrow = 1 }});
                 m_Presets.RegisterValueChangedCallback(OnPresetValueChanged);
 
                 ShortLabel = new Label("X") { style = { alignSelf = Align.Center, opacity = 0.5f }};
