@@ -133,6 +133,7 @@ namespace Cinemachine
         public Target[] m_Targets = Array.Empty<Target>();
 
         float m_MaxWeight;
+        float m_WeightSum;
         Vector3 m_AveragePos;
         Bounds m_BoundingBox;
         BoundingSphere m_BoundingSphere;
@@ -330,10 +331,9 @@ namespace Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             UpdateMemberValidity();
-            m_AveragePos = CalculateAveragePosition(out m_MaxWeight);
-
-            BoundingBox = CalculateBoundingBox(m_MaxWeight);
-            m_BoundingSphere = CalculateBoundingSphere(m_MaxWeight);
+            m_AveragePos = CalculateAveragePosition();
+            BoundingBox = CalculateBoundingBox();
+            m_BoundingSphere = CalculateBoundingSphere();
 
             switch (m_PositionMode)
             {
@@ -362,42 +362,42 @@ namespace Cinemachine
             m_ValidMembers.Capacity = Mathf.Max(m_ValidMembers.Capacity, count);
             m_MemberValidity.Clear();
             m_MemberValidity.Capacity = Mathf.Max(m_MemberValidity.Capacity, count);
+            m_WeightSum = m_MaxWeight = 0;
             for (int i = 0; i < count; ++i)
             {
                 m_MemberValidity.Add(m_Targets[i].target != null 
                         && m_Targets[i].weight > UnityVectorExtensions.Epsilon
                         && m_Targets[i].target.gameObject.activeInHierarchy);
                 if (m_MemberValidity[i])
+                {
                     m_ValidMembers.Add(i);
+                    m_MaxWeight = Mathf.Max(m_MaxWeight, m_Targets[i].weight);
+                    m_WeightSum += m_Targets[i].weight;
+                }
             }
         }
 
         // Assumes that UpdateMemberValidity() has been called
-        Vector3 CalculateAveragePosition(out float maxWeight)
+        Vector3 CalculateAveragePosition()
         {
+            if (m_WeightSum < UnityVectorExtensions.Epsilon)
+                return transform.position;
+
             var pos = Vector3.zero;
-            float weightSum = 0;
-            maxWeight = 0;
             var count = m_ValidMembers.Count;
             for (int i = 0; i < count; ++i)
             {
                 var targetIndex = m_ValidMembers[i];
                 var weight = m_Targets[targetIndex].weight;
-                weightSum += weight;
                 pos += TargetPositionCache.GetTargetPosition(m_Targets[targetIndex].target) * weight;
-                maxWeight = Mathf.Max(maxWeight, weight);
             }
-            if (weightSum > UnityVectorExtensions.Epsilon)
-                pos /= weightSum;
-            else
-                pos = transform.position;
-            return pos;
+            return pos / m_WeightSum;
         }
         
-        // Assumes that CalculateAveragePosition() has been called 
-        Bounds CalculateBoundingBox(float maxWeight)
+        // Assumes that UpdateMemberValidity() has been called 
+        Bounds CalculateBoundingBox()
         {
-            if (maxWeight < UnityVectorExtensions.Epsilon)
+            if (m_MaxWeight < UnityVectorExtensions.Epsilon)
                 return BoundingBox;
             var b = new Bounds(m_AveragePos, Vector3.zero);
             var count = m_ValidMembers.Count;
@@ -411,20 +411,20 @@ namespace Cinemachine
         
         /// <summary>
         /// Use Ritter's algorithm for calculating an approximate bounding sphere.
-        /// Assumes that CalculateBoundingBox() has been called.
+        /// Assumes that UpdateMemberValidity() has been called.
         /// </summary>
         /// <param name="maxWeight">The maximum weight of members in the group</param>
         /// <returns>An approximate bounding sphere.  Will be slightly large.</returns>
-        BoundingSphere CalculateBoundingSphere(float maxWeight)
+        BoundingSphere CalculateBoundingSphere()
         {
             var count = m_ValidMembers.Count;
-            if (count == 0 || maxWeight < UnityVectorExtensions.Epsilon)
+            if (count == 0 || m_MaxWeight < UnityVectorExtensions.Epsilon)
                 return m_BoundingSphere;
 
-            var sphere = WeightedMemberBoundsForValidMember(ref m_Targets[m_ValidMembers[0]], m_AveragePos, maxWeight);
+            var sphere = WeightedMemberBoundsForValidMember(ref m_Targets[m_ValidMembers[0]], m_AveragePos, m_MaxWeight);
             for (int i = 1; i < count; ++i)
             {
-                var s = WeightedMemberBoundsForValidMember(ref m_Targets[m_ValidMembers[i]], m_AveragePos, maxWeight);
+                var s = WeightedMemberBoundsForValidMember(ref m_Targets[m_ValidMembers[i]], m_AveragePos, m_MaxWeight);
                 var distance = (s.position - sphere.position).magnitude + s.radius;
                 if (distance > sphere.radius)
                 {
@@ -436,23 +436,26 @@ namespace Cinemachine
             return sphere;
         }
 
+        /// Assumes that UpdateMemberValidity() has been called.
         Quaternion CalculateAverageOrientation()
         {
-            if (m_MaxWeight <= UnityVectorExtensions.Epsilon)
-                return transform.rotation;
-            
-            float weightedAverage = 0;
-            var r = Quaternion.identity;
-            var count = m_ValidMembers.Count;
-            for (int i = 0; i < count; ++i)
+            if (m_WeightSum > 0.001f)
             {
-                var targetIndex = m_ValidMembers[i];
-                var scaledWeight = m_Targets[targetIndex].weight / m_MaxWeight;
-                var rot = TargetPositionCache.GetTargetRotation(m_Targets[targetIndex].target);
-                r *= Quaternion.Slerp(Quaternion.identity, rot, scaledWeight);
-                weightedAverage += scaledWeight;
+                var averageForward = Vector3.zero;
+                var averageUp = Vector3.zero;
+                var count = m_ValidMembers.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    var targetIndex = m_ValidMembers[i];
+                    var scaledWeight = m_Targets[targetIndex].weight / m_WeightSum;
+                    var rot = TargetPositionCache.GetTargetRotation(m_Targets[targetIndex].target);
+                    averageForward += rot * Vector3.forward * scaledWeight;
+                    averageUp += rot * Vector3.up * scaledWeight;
+                }
+                if (averageForward.sqrMagnitude > 0.0001f && averageUp.sqrMagnitude > 0.0001f)
+                    return Quaternion.LookRotation(averageForward, averageUp);
             }
-            return Quaternion.Slerp(Quaternion.identity, r, 1.0f / weightedAverage);
+            return transform.rotation;
         }
 
         void FixedUpdate()
