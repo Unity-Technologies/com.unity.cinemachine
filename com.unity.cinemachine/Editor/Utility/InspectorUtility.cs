@@ -513,7 +513,7 @@ namespace Unity.Cinemachine.Editor
                             foldout.SetVisible(true);
                             foldout.value = true;
                             closedFoldout.SetValueWithoutNotify(false);
-                            //foldout.Focus(); // GML why doesn't this work?
+                            foldout.Q<Toggle>().Focus();
                         }
                         evt.StopPropagation();
                     }
@@ -530,7 +530,7 @@ namespace Unity.Cinemachine.Editor
                             foldout.SetVisible(false);
                             closedFoldout.SetValueWithoutNotify(false);
                             foldout.value = false;
-                            //closedFoldout.Focus(); // GML why doesn't this work?
+                            closedFoldout.Q<Toggle>().Focus();
                         }
                         evt.StopPropagation();
                     }
