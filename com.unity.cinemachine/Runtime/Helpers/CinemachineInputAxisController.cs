@@ -19,7 +19,7 @@ namespace Unity.Cinemachine
     [ExecuteAlways]
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Input Axis Controller")]
-    [HelpURL(Documentation.BaseURL + "manual/InputAxisController.html")]
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineInputAxisController.html")]
     public class CinemachineInputAxisController 
         : InputAxisControllerBase<CinemachineInputAxisController.Reader> 
     {
