@@ -10,7 +10,7 @@ Add a Cinemachine Deoccluder extension to a CinemachineCamera to do any of the f
 
 * Evaluate shot quality. __Shot quality__ is a measure of the distance of the CinemachineCamera from its ideal position, the distance of the CinemachineCamera to its target, and the obstacles that block the view of the target. Other modules use shot quality, including [Clear Shot](CinemachineClearShot.md).
 
-The Deoccluder uses a [Physics Raycaster](https://docs.unity3d.com/Manual/script-PhysicsRaycaster.html). Therefore, Cinemachine Deoccluder requires that potential obstacles have [collider](https://docs.unity3d.com/Manual/CollidersOverview.html) volumes. There is a performance cost for this requirement. If this cost is prohibitive in your game, consider implementing this functionality differently.
+The Deoccluder uses a [Physics Raycaster](https://docs.unity3d.com/ScriptReference/Physics.Raycast.html). Therefore, Cinemachine Deoccluder requires that potential obstacles have [collider](https://docs.unity3d.com/Manual/CollidersOverview.html) volumes. There is a performance cost for this requirement. If this cost is prohibitive in your game, consider implementing this functionality differently.
 
 ## Properties:
 
