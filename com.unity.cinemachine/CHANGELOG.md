@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - Bugfix: InputAxis.TriggerRecentering() function caused the axis to immediately snap to its recenter value.
+- Bugfix: When multiple CM Brains were present, FixedUpdte cameras were sometimes being updated too frequently, resulting in jittery motion.
 - SimplePlayerController no longer uses PlayerController.isGrounded because it's not reliable outside of FixedUpdate.
 
 ### Changed
