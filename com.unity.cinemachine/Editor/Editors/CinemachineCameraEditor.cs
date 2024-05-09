@@ -53,17 +53,18 @@ namespace Unity.Cinemachine.Editor
             this.AddCameraStatus(ux);
             this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.BlendHint) });
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
+
+            var defaultTargetLabel = new ObjectField("");
+            defaultTargetLabel.SetEnabled(false);
+            var defaultTargetRow = ux.AddChild(new InspectorUtility.LabeledRow("Default Target", "", defaultTargetLabel));
+            defaultTargetRow.tooltip = "The default target is set in the parent object, and will be used if the Tracking Target is None";
+            defaultTargetRow.focusable = false;
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
 
-            var defaultTargetLabel = new Label() { style = { alignSelf = Align.FlexEnd, opacity = 0.5f }};
-            var row = ux.AddChild(new InspectorUtility.LabeledRow("<b>Procedural Components</b>", "", defaultTargetLabel));
-            row.focusable = false;
-            row.style.paddingTop = InspectorUtility.SingleLineHeight / 2;
-            row.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
-
+            ux.AddHeader("Procedural Components");
             this.AddPipelineDropdowns(ux);
 
             ux.AddSpace();
@@ -77,9 +78,9 @@ namespace Unity.Cinemachine.Editor
                 var deltaTime = Application.isPlaying ? Time.deltaTime : -1;
                 Target.InternalUpdateCameraState(brain == null ? Vector3.up : brain.DefaultWorldUp, deltaTime);
                 bool haveDefault = Target.Target.TrackingTarget != Target.Follow;
-                defaultTargetLabel.SetVisible(haveDefault);
+                defaultTargetRow.SetVisible(haveDefault);
                 if (haveDefault)
-                    defaultTargetLabel.text = "Default target: " + Target.Follow.name;
+                    defaultTargetLabel.value = Target.Follow;
                 CmCameraInspectorUtility.SortComponents(target as CinemachineVirtualCameraBase);
             });
 

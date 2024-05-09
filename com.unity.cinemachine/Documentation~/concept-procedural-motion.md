@@ -51,8 +51,8 @@ Here is the list of all available Cinemachine Camera Extensions:
   * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
   * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)
   * [Cinemachine Group Framing](CinemachineGroupFraming.md)
-  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md) <!---/!\ Not found in Editor--->
-  * [Cinemachine Post Processing](CinemachinePostProcessing.md) <!---/!\ Deprecated in latest supported Editor version--->
+  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md)
+  * [Cinemachine Post Processing](CinemachinePostProcessing.md)
   * [Cinemachine Recomposer](CinemachineRecomposer.md)
   * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
   * [Cinemachine Storyboard](CinemachineStoryboard.md)

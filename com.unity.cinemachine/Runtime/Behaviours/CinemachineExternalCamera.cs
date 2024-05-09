@@ -22,8 +22,12 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_LookAt")]
         public Transform LookAtTarget = null;
 
-        /// <summary>Hint for transitioning to and from this virtual camera</summary>
-        [Tooltip("Hint for transitioning to and from this virtual camera")]
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// make an arbitrary choice.</summary>
+        [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
+            + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
+            + "make an arbitrary choice.")]
         [FormerlySerializedAs("m_PositionBlending")]
         [FormerlySerializedAs("m_BlendHint")]
         public CinemachineCore.BlendHints BlendHint = 0;
