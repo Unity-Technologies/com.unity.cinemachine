@@ -9,6 +9,7 @@ using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
+    [CanEditMultipleObjects]
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
     class CinemachineStateDrivenCameraEditor : UnityEditor.Editor
     {
@@ -106,10 +107,10 @@ namespace Unity.Cinemachine.Editor
                 {
                     if (evt.target == stateSel)
                     {
-                        var index = stateSel.index;
-                        if (index >= 0 && index < m_TargetStates.Count)
+                        var i = stateSel.index;
+                        if (i >= 0 && i < m_TargetStates.Count)
                         {
-                            stateSelProp.intValue = index;
+                            stateSelProp.intValue = m_TargetStates[i];
                             stateSelProp.serializedObject.ApplyModifiedProperties();
                         }
                         evt.StopPropagation();
@@ -144,7 +145,6 @@ namespace Unity.Cinemachine.Editor
 
                 // Bind must be last
                 ((BindableElement)row).BindProperty(element);
-                //stateSel.BindProperty(stateSelProp);
                 vcamSel.BindProperty(vcamSelProp);
             };
 
@@ -239,7 +239,7 @@ namespace Unity.Cinemachine.Editor
             while (iter.MoveNext())
                 parents.Add(new CinemachineStateDrivenCamera.ParentHash 
                     { Hash = iter.Current.Key, HashOfParent = iter.Current.Value });
-            Target.HashOfParent = parents.ToArray();
+            Target.SetParentHash(parents);
         }
 
         class StateCollector
