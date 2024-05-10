@@ -300,7 +300,7 @@ namespace Unity.Cinemachine
             Vector3 newCamPos = cameraPos;
             int numObstacles = Physics.OverlapCapsuleNonAlloc(
                 lookAtPoint, cameraPos, CameraRadius - Epsilon, s_ColliderBuffer,
-                Decollision.ObstacleLayers, QueryTriggerInteraction.Ignore);
+                layers, QueryTriggerInteraction.Ignore);
 
             // Find the one that the camera is intersecting that is closest to the target
             if (numObstacles > 0)

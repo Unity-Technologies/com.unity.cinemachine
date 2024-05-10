@@ -20,8 +20,8 @@ Here is a list of all components and assets available in the Cinemachine package
 * Rotation control
   * [Cinemachine Hard Look At](CinemachineHardLookAt.md)
   * [Cinemachine Pan Tilt](CinemachinePanTilt.md)
-  * [Cinemachine Rotation Composer](CinemachineRotationComposer.md)
   * [Cinemachine Rotate With Follow Target](CinemachineRotateWithFollowTarget.md)
+  * [Cinemachine Rotation Composer](CinemachineRotationComposer.md)
 * Noise
   * [Basic Multi Channel Perlin](CinemachineBasicMultiChannelPerlin.md)
   * [Noise Settings Asset](CinemachineNoiseProfiles.md)
@@ -52,8 +52,8 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Follow Zoom](CinemachineFollowZoom.md)
   * [Cinemachine FreeLook Modifier](CinemachineFreeLookModifier.md)
   * [Cinemachine Group Framing](CinemachineGroupFraming.md)
-  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md) <!---/!\ Not found in Editor--->
-  * [Cinemachine Post Processing](CinemachinePostProcessing.md) <!---/!\ Deprecated in latest supported Editor version--->
+  * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md)
+  * [Cinemachine Post Processing](CinemachinePostProcessing.md)
   * [Cinemachine Recomposer](CinemachineRecomposer.md)
   * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
   * [Cinemachine Storyboard](CinemachineStoryboard.md)

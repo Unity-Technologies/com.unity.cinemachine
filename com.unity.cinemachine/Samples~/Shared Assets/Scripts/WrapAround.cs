@@ -23,9 +23,9 @@ namespace Unity.Cinemachine.Samples
             var pos = transform.position;
             var newPos = pos;
             if (newPos[(int)Axis] < MinRange)
-                newPos[(int)Axis] = MaxRange;
+                newPos[(int)Axis] += MaxRange - MinRange;
             if (newPos[(int)Axis] > MaxRange)
-                newPos[(int)Axis] = MinRange;
+                newPos[(int)Axis] += MinRange - MaxRange;
 
             var delta = newPos - pos;
             if (!delta.AlmostZero())
@@ -33,9 +33,9 @@ namespace Unity.Cinemachine.Samples
                 transform.position = newPos;
 
                 // Handle objects driven by a Rigidbody.
-                // This is actually quite naive - it might sometimes introduce a little pop.
+                // We don't use Rigidbody.MovePosition() because it's a warp and we want to bypass interpolation.
                 if (TryGetComponent<Rigidbody>(out var rb))
-                    rb.MovePosition(newPos);
+                    rb.position = newPos;
 
                 // Notify any CinemachineCameras that are targeting this object
                 CinemachineCore.OnTargetObjectWarped(transform, delta);
