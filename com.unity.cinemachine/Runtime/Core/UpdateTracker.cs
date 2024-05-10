@@ -10,7 +10,7 @@ namespace Unity.Cinemachine
     /// </summary>
     internal class UpdateTracker
     {
-        public enum UpdateClock { Fixed, Late }
+        public enum UpdateClock { Fixed = 1, Late = 2}
 
         class UpdateStatus
         {
@@ -113,16 +113,21 @@ namespace Unity.Cinemachine
             return UpdateClock.Late;
         }
 
-        static float s_LastUpdateTime;
-        public static void OnUpdate(UpdateClock currentClock)
+        static object s_LastUpdateContext;
+        public static void OnUpdate(UpdateClock currentClock, object context)
         {
             // Do something only if we are the first controller processing this frame
-            float now = CinemachineCore.CurrentTime;
-            if (now != s_LastUpdateTime)
+            if (s_LastUpdateContext == null || s_LastUpdateContext == context)
             {
-                s_LastUpdateTime = now;
+                s_LastUpdateContext = context;
                 UpdateTargets(currentClock);
             }
+        }
+
+        public static void ForgetContext(object context)
+        {
+            if (s_LastUpdateContext == context)
+                s_LastUpdateContext = null;
         }
     }
 }
