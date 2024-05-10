@@ -467,7 +467,7 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < count; ++i)
                 {
                     var targetIndex = m_ValidMembers[i];
-                    var scaledWeight = m_Targets[targetIndex].Weight / m_WeightSum;
+                    var scaledWeight = Targets[targetIndex].Weight / m_WeightSum;
                     var rot = TargetPositionCache.GetTargetRotation(Targets[targetIndex].Object);
                     averageForward += rot * Vector3.forward * scaledWeight;
                     averageUp += rot * Vector3.up * scaledWeight;
