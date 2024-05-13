@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using UnityEngine.UIElements;
+using UnityEditor.SceneManagement;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -88,7 +89,7 @@ namespace Unity.Cinemachine.Editor
                 }) { 
                     text = text, 
                     style = { flexGrow = 0, alignSelf = Align.Center } 
-                }).SetEnabled(!CinemachineUpgradeManager.ObjectsUsePrefabs(Editor.targets));
+                }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.ObjectsUsePrefabs(Editor.targets));
 
                 // Upgrade current scene
                 ux.AddChild(new TextElement()
@@ -105,7 +106,7 @@ namespace Unity.Cinemachine.Editor
                 }) { 
                     text = "Upgrade all objects in Scene", 
                     style = { flexGrow = 0, alignSelf = Align.Center } 
-                }).SetEnabled(!CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
+                }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
 
                 // Upgrade project
                 ux.AddChild(new TextElement()
