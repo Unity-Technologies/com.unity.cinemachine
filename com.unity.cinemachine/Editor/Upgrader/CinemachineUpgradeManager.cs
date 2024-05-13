@@ -178,7 +178,7 @@ namespace Unity.Cinemachine.Editor
                     if (b != null)
                         go = b.gameObject;
                 }
-                if (go != null && PrefabUtility.IsPartOfAnyPrefab(go))
+                if (go != null && (PrefabUtility.IsPartOfPrefabInstance(go) || PrefabStageUtility.GetCurrentPrefabStage() != null))
                     return true;
             }
             return false;

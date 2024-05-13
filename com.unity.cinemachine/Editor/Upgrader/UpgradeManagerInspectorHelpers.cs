@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
                 ux.AddChild(new TextElement()
                 {
                     text = "Unity can upgrade the objects currently being inspected, but only if none of them "
-                        + "are prefab instances.  Undo is supported for this operation.",
+                        + "are prefabs or prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
                 var text = "Upgrade this object to " + ClassName;
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine.Editor
                 ux.AddChild(new TextElement()
                 {
                     text = "Unity can upgrade all the Cinemachine objects in the current scene, but only if none of them "
-                        + "are prefab instances.  Undo is supported for this operation.",
+                        + "are prefabs or prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 20, marginBottom = 10, alignSelf = Align.Center }
                 });
                 ux.AddChild(new Button(() =>
