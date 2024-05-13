@@ -258,7 +258,7 @@ namespace Cinemachine.PostFX
                     v.weight = b.m_Weight;
                     ++numPPblendables;
                 }
-#if true // set this to true to force first weight to 1
+#if false // set this to true to force first weight to 1
                 // If more than one volume, then set the frst one's weight to 1
                 if (numPPblendables > 1)
                     firstVolume.weight = 1;
