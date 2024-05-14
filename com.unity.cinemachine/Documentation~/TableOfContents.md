@@ -60,6 +60,7 @@
   * [Cinemachine Impulse Listener](CinemachineImpulseListener.md)
   * [Cinemachine Impulse Source](CinemachineImpulseSource.md)
   * [Cinemachine Input Axis Controller](CinemachineInputAxisController.md)
+  * [Cinemachine LookAt Data On Spline](CinemachineLookAtDataOnSpline.md)
   * [Cinemachine Mixing Camera](CinemachineMixingCamera.md)
   * [Cinemachine Orbital Follow](CinemachineOrbitalFollow.md)
   * [Cinemachine Pan Tilt](CinemachinePanTilt.md)

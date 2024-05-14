@@ -20,9 +20,12 @@ namespace Unity.Cinemachine
         public struct Item
         {
             /// <summary>The worldspace point to look at</summary>
+            [Tooltip("The world space point at which to look")]
             public Vector3 LookAtPoint;
         
             /// <summary>Easing value for the Bezier curve. 0 is linear, 1 is smooth.</summary>
+            [Tooltip("Controls how to ease in and out of this data point.  A value of 0 will linearly interpolate between "
+                + "LookAt points, while a value of 1 will slow down and briefly pause the rotation and pause at the point.")]
             [Range(0, 1)]
             public float Easing;
         }
