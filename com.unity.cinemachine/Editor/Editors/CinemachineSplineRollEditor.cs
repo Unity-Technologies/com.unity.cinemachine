@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEditor.Splines;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Splines;
 using UnityEngine.UIElements;
@@ -16,6 +17,11 @@ namespace Unity.Cinemachine.Editor
             var prop = serializedObject.GetIterator();
             if (prop.NextVisible(true))
                 InspectorUtility.AddRemainingProperties(ux, prop);
+
+            // Invalidate the mesh cache when the property changes (SetDirty() not always called!)
+            var splineData = target as CinemachineSplineRoll;
+            ux.TrackPropertyValue(serializedObject.FindProperty(() => splineData.Roll), (p) => SplineGizmoCache.Instance = null);
+
             return ux;
         }
 

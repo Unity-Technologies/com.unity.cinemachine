@@ -16,6 +16,7 @@ namespace Unity.Cinemachine
 
         /// <summary>The position along the spline.  The actual value corresponding to a given point
         /// on the spline will depend on the unity type.</summary>
+        [NoSaveDuringPlay]
         [Tooltip("The position along the spline.  The actual value corresponding to a given point "
             + "on the spline will depend on the unity type.")]
         public float Position;

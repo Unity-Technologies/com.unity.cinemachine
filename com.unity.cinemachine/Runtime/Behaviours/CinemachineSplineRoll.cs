@@ -22,6 +22,7 @@ namespace Unity.Cinemachine
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
         /// When placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
+        [HideFoldout]
         [Tooltip("Roll (in degrees) around the forward direction for specific location on the track.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
