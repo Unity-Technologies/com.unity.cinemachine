@@ -746,7 +746,7 @@ namespace Unity.Cinemachine
         public bool FollowTargetChanged { get; private set; }
 
         /// <summary>
-        /// This property is true if the LookAtTarget was changed this frame.
+        /// This property is true if the LookAt was changed this frame.
         /// </summary>
         public bool LookAtTargetChanged { get; private set; }
 

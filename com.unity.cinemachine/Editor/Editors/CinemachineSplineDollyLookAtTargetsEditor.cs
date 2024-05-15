@@ -8,7 +8,7 @@ using UnityEditor.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
-    [CustomEditor(typeof(CinemachineLookAtDataOnSpline))]
+    [CustomEditor(typeof(CinemachineSplineDollyLookAtTargets))]
     [CanEditMultipleObjects]
     class CinemachineLookAtDataOnSplineEditor : CinemachineComponentBaseEditor
     {
@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux);
 
-            var splineData = target as CinemachineLookAtDataOnSpline;
+            var splineData = target as CinemachineSplineDollyLookAtTargets;
             var invalidHelp = new HelpBox(
                 "This component requires a CinemachineSplineDolly component referencing a nonempty Spline", 
                 HelpBoxMessageType.Warning);
@@ -28,7 +28,7 @@ namespace Unity.Cinemachine.Editor
                 { text = "Edit Data Points in Scene View" });
             ux.AddSpace();
 
-            var property = serializedObject.FindProperty(() => splineData.LookAtData);
+            var property = serializedObject.FindProperty(() => splineData.Targets);
             ux.Add(new PropertyField(property.FindPropertyRelative("m_IndexUnit")) 
                 { tooltip = "Defines how to interpret the Index field for each data point.  "
                     + "Knot is the recommended value because it remains robust if the spline points change." });
@@ -41,21 +41,21 @@ namespace Unity.Cinemachine.Editor
         }
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
-                | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineLookAtDataOnSpline))]
-        static void DrawGizmos(CinemachineLookAtDataOnSpline splineData, GizmoType selectionType)
+                | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSplineDollyLookAtTargets))]
+        static void DrawGizmos(CinemachineSplineDollyLookAtTargets splineData, GizmoType selectionType)
         {
             // For performance reasons, we only draw a gizmo for the current active game object
-            if (Selection.activeGameObject == splineData.gameObject && splineData.LookAtData.Count > 0
+            if (Selection.activeGameObject == splineData.gameObject && splineData.Targets.Count > 0
                 && splineData.GetTargets(out var spline, out _) && spline.Spline != null)
             {
                 Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
 
-                var indexUnit = splineData.LookAtData.PathIndexUnit;
-                for (int i = 0; i < splineData.LookAtData.Count; i++)
+                var indexUnit = splineData.Targets.PathIndexUnit;
+                for (int i = 0; i < splineData.Targets.Count; i++)
                 {
-                    var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, splineData.LookAtData[i].Index, indexUnit);
+                    var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, splineData.Targets[i].Index, indexUnit);
                     spline.Evaluate(t, out var position, out _, out _);
-                    var p = splineData.LookAtData[i].Value.WorldLookAt;
+                    var p = splineData.Targets[i].Value.WorldLookAt;
                     Gizmos.DrawLine(position, p);
                     Gizmos.DrawSphere(p, HandleUtility.GetHandleSize(p) * 0.1f);
 
@@ -64,7 +64,7 @@ namespace Unity.Cinemachine.Editor
                     {
                         var oldColor = Gizmos.color;
                         Gizmos.color = Color.white;
-                        var it = new CinemachineLookAtDataOnSpline.LerpItem();
+                        var it = new CinemachineSplineDollyLookAtTargets.LerpItem();
                         for (float j = 0; j < 1f; j += 0.05f)
                         {
                             var item = it.Interpolate(splineData.LookAtData[i-1].Value, splineData.LookAtData[i].Value, j);
@@ -80,30 +80,29 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(DataPoint<CinemachineLookAtDataOnSpline.Item>))]
+    [CustomPropertyDrawer(typeof(DataPoint<CinemachineSplineDollyLookAtTargets.Item>))]
     class CinemachineLookAtDataOnSplineItemPropertyDrawer : PropertyDrawer
     {
-        Transform m_LastLookAtTarget;
-
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
                 + "The value is interpreted according to the Index Unit setting.";
 
-            CinemachineLookAtDataOnSpline.Item def = new ();
+            CinemachineSplineDollyLookAtTargets.Item def = new ();
             var indexProp = property.FindPropertyRelative("m_Index");
             var valueProp = property.FindPropertyRelative("m_Value");
+            var lookAtProp = valueProp.FindPropertyRelative(() => def.LookAt);
+            var offsetProp = valueProp.FindPropertyRelative(() => def.Offset);
 
-            var overlay = new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 100 }};
+            var overlay = new VisualElement () { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
+            overlay.Add(new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 50 }});
+            overlay.Add(new PropertyField(lookAtProp, "") { style = { flexGrow = 4, flexBasis = 50, marginLeft = 3 }});
             var overlayLabel = new Label("Index") { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
             overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay);
 
-            var foldout = new Foldout() { text = "Data Point" };
+            var foldout = new Foldout() { text = "Target" };
             foldout.BindProperty(property);
             foldout.Add(new PropertyField(indexProp) { tooltip = indexTooltip });
-
-            var lookAtProp = valueProp.FindPropertyRelative(() => def.LookAtTarget);
-            var offsetProp = valueProp.FindPropertyRelative(() => def.Offset);
 
             var row = foldout.AddChild(InspectorUtility.PropertyRow(lookAtProp, out _));
             row.Contents.Add(new Button(() => 
@@ -122,15 +121,15 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [EditorTool("LookAt Data On Spline Tool", typeof(CinemachineLookAtDataOnSpline))]
+    [EditorTool("Spline Dolly LookAt Targets Tool", typeof(CinemachineSplineDollyLookAtTargets))]
     class LookAtDataOnSplineTool : EditorTool
     {
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
 
-        bool GetTargets(out CinemachineLookAtDataOnSpline splineDataTarget, out SplineContainer spline, out CinemachineSplineDolly dolly)
+        bool GetTargets(out CinemachineSplineDollyLookAtTargets splineDataTarget, out SplineContainer spline, out CinemachineSplineDolly dolly)
         {
-            splineDataTarget = target as CinemachineLookAtDataOnSpline;
+            splineDataTarget = target as CinemachineSplineDollyLookAtTargets;
             if (splineDataTarget != null && splineDataTarget.GetTargets(out spline, out dolly))
                 return true;
             spline = null;
@@ -144,8 +143,8 @@ namespace Unity.Cinemachine.Editor
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(
                     CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmTrackLookAt@256.png"),
-                text = "LookAt Data On Spline Tool",
-                tooltip = "Assign LookAt points to points on the spline."
+                text = "Spline Dolly LookAt Targets Tool",
+                tooltip = "Assign LookAt targets to positions on the spline."
             };
         }
 
@@ -154,16 +153,16 @@ namespace Unity.Cinemachine.Editor
             if (!GetTargets(out var splineDataTarget, out var spline, out _))
                 return;
 
-            Undo.RecordObject(splineDataTarget, "Modifying CinemachineLookAtDataOnSpline values");
+            Undo.RecordObject(splineDataTarget, "Modifying CinemachineSplineDollyLookAtTargets values");
             using (new Handles.DrawingScope(Handles.selectedColor))
             {
-                DrawDataPoints(splineDataTarget.LookAtData);
+                DrawDataPoints(splineDataTarget.Targets);
                 var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-                nativeSpline.DataPointHandles(splineDataTarget.LookAtData);
+                nativeSpline.DataPointHandles(splineDataTarget.Targets);
             }
         }
 
-        void DrawDataPoints(SplineData<CinemachineLookAtDataOnSpline.Item> splineData)
+        void DrawDataPoints(SplineData<CinemachineSplineDollyLookAtTargets.Item> splineData)
         {
             for (var r = 0; r < splineData.Count; ++r)
             {

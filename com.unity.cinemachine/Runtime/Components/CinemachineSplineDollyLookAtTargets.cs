@@ -5,23 +5,23 @@ using UnityEngine.Splines;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// CinemachineLookAtDataOnSpline is a component that allows the camera to look at 
+    /// CinemachineSplineDollyLookAtTargets is a component that allows the camera to look at 
     /// specific points in the world as it moves along a spline.
     /// </summary>
     [ExecuteAlways, SaveDuringPlay]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Look At Data On Spline")]
+    [AddComponentMenu("Cinemachine/Procedural/Rotation Control/Cinemachine Spline Dolly LookAt Targets")]
     [DisallowMultipleComponent]
-    [HelpURL(Documentation.BaseURL + "manual/CinemachineLookAtDataOnSpline.html")]
-    public class CinemachineLookAtDataOnSpline : CinemachineComponentBase
+    [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineDollyLookAtTargets.html")]
+    public class CinemachineSplineDollyLookAtTargets : CinemachineComponentBase
     {
         /// <summary>LookAt targets for the camera at specific positions on the Spline</summary>
         [Serializable]
         public struct Item
         {
-            /// <summary>The target object to look at.  It may be None, in which case the LookAt pont will specify a point in world spac</summary>
-            [Tooltip("The target object to look at.  It may be None, in which case the LookAt pont will specify a point in world space.")]
-            public Transform LookAtTarget;
+            /// <summary>The target object to look at.  It may be None, in which case the LookAt point will specify a point in world spac</summary>
+            [Tooltip("The target object to look at.  It may be None, in which case the LookAt point will specify a point in world space.")]
+            public Transform LookAt;
 
             /// <summary>The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point</summary>
             [Tooltip("The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point.")]
@@ -36,12 +36,12 @@ namespace Unity.Cinemachine
             /// <summary>Get/set the LookAt point in world space.</summary>
             public Vector3 WorldLookAt 
             {
-                readonly get => LookAtTarget == null ? Offset : LookAtTarget.TransformPoint(Offset);
-                set => Offset = LookAtTarget == null ? value : LookAtTarget.InverseTransformPoint(value);
+                readonly get => LookAt == null ? Offset : LookAt.TransformPoint(Offset);
+                set => Offset = LookAt == null ? value : LookAt.InverseTransformPoint(value);
             }
         }
 
-        /// <summary>Interpolator for the LookAtData</summary>
+        /// <summary>Interpolator for the Targets</summary>
         internal struct LerpItem : IInterpolator<Item>
         {
             public Item Interpolate(Item a, Item b, float t)
@@ -56,12 +56,12 @@ namespace Unity.Cinemachine
 
         /// <summary>LookAt targets for the camera at specific positions on the Spline</summary>
         [Tooltip("LookAt targets for the camera at specific positions on the Spline")]
-        public SplineData<Item> LookAtData = new () { DefaultValue = new Item { Easing = 1 } };
+        public SplineData<Item> Targets = new () { DefaultValue = new Item { Easing = 1 } };
 
-        void Reset() => LookAtData = new SplineData<Item> { DefaultValue = new Item { Easing = 1 } };
+        void Reset() => Targets = new SplineData<Item> { DefaultValue = new Item { Easing = 1 } };
 
         /// <inheritdoc/>
-        public override bool IsValid => enabled && LookAtData != null && GetTargets(out _, out _);
+        public override bool IsValid => enabled && Targets != null && GetTargets(out _, out _);
 
         /// <inheritdoc/>
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
@@ -76,7 +76,7 @@ namespace Unity.Cinemachine
             if (splinePath == null || splinePath.Count == 0)
                 return;
 
-            var item = LookAtData.Evaluate(splinePath, dolly.CameraPosition, dolly.PositionUnits, new LerpItem());
+            var item = Targets.Evaluate(splinePath, dolly.CameraPosition, dolly.PositionUnits, new LerpItem());
             var dir = item.Offset - state.RawPosition;
             if (dir.sqrMagnitude > UnityVectorExtensions.Epsilon)
             {
