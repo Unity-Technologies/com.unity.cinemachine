@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
 
 ### Added
-- New Rotation Control behaviour LookAtDataOnSpline lets you specify LookAt points at desird positions along a Spline Dolly trajectory.
+- New Rotation Control behaviour SplineDollyLookAtTargets lets you specify LookAt points at desird positions along a Spline Dolly trajectory.
 - Added Recenter Target setting to CinemachinePanTilt.
 
 
