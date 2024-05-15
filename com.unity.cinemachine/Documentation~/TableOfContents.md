@@ -61,6 +61,7 @@
   * [Cinemachine Impulse Source](CinemachineImpulseSource.md)
   * [Cinemachine Input Axis Controller](CinemachineInputAxisController.md)
   * [Cinemachine Mixing Camera](CinemachineMixingCamera.md)
+  * [Cinemachine LookAt Data On Spline](CinemachineLookAtDataOnSpline.md)
   * [Cinemachine Orbital Follow](CinemachineOrbitalFollow.md)
   * [Cinemachine Pan Tilt](CinemachinePanTilt.md)
   * [Cinemachine Pixel Perfect](CinemachinePixelPerfect.md)
