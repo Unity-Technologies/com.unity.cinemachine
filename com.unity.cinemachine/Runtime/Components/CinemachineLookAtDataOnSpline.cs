@@ -23,8 +23,8 @@ namespace Unity.Cinemachine
             [Tooltip("The target object to look at.  It may be None, in which case the LookAt pont will specify a point in world space.")]
             public Transform LookAtTarget;
 
-            /// <summary>The ofsset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point</summary>
-            [Tooltip("The ofsset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point.")]
+            /// <summary>The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point</summary>
+            [Tooltip("The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point.")]
             public Vector3 Offset;
         
             /// <summary>Easing value for the Bezier curve. 0 is linear, 1 is smooth.</summary>

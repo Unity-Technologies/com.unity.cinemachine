@@ -21,7 +21,7 @@ When the LookAtDataOnSpline is selected in the inspector, a Scene View tool is p
 | __Data Points__ |  | The list of markup points on the spline.  As the camera approaches these points, the corresponding fields will come into effect. |
 | | _Index_ | The position on the Spline where the camera should look at the supplied point.  The value is interpreted according to the _Index Unit_ setting. |
 | | _Look At Target_ | The target object to look at.  It may be None, in which case the LookAt pont will specify a point in world space. |
-| | _Offset_ | The ofsset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point. |
+| | _Offset_ | The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point. |
 | | _Easing_ | Controls how to ease in and out of this target.  A value of 0 will linearly interpolate between LookAt points, while a value of 1 will slow down and briefly pause the rotation to look at the target. |
 
 
