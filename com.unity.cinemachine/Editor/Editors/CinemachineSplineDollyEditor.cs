@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-using UnityEngine.Splines;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -17,6 +16,7 @@ namespace Unity.Cinemachine.Editor
 
             this.AddMissingCmCameraHelpBox(ux);
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
+            var splineIsChildHelp = ux.AddChild(new HelpBox("Spline should not be a child of this object.", HelpBoxMessageType.Error));
 
             var splineProp = serializedObject.FindProperty(() => Target.SplineSettings);
             ux.Add(new PropertyField(splineProp));
@@ -31,6 +31,18 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; !noSpline && i < targets.Length; ++i)
                     noSpline = targets[i] != null && ((CinemachineSplineDolly)targets[i]).Spline == null;
                 noSplineHelp.SetVisible(noSpline);
+            });
+
+            ux.TrackAnyUserActivity(() =>
+            {
+                bool isChild = false;
+                for (int i = 0; !isChild && i < targets.Length; ++i)
+                {
+                    var t = targets[i] as CinemachineSplineDolly;
+                    if (t != null && t.Spline != null)
+                        isChild = t.transform.IsAncestorOf(t.Spline.transform);
+                }
+                splineIsChildHelp.SetVisible(isChild);
             });
 
             return ux;

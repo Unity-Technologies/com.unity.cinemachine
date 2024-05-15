@@ -22,6 +22,7 @@ namespace Unity.Cinemachine
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
         /// When placed on a vcam, this is going to be a local override that only affects that vcam.
         /// </summary>
+        [HideFoldout]
         [Tooltip("Roll (in degrees) around the forward direction for specific location on the track.\n" +
             "- When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.\n" +
             "- When placed on a vcam, this is going to be a local override that only affects that vcam.")]
@@ -29,20 +30,48 @@ namespace Unity.Cinemachine
 
 #if UNITY_EDITOR
         // Only needed for drawing the gizmo
-        internal SplineContainer Container
+        internal SplineContainer Spline
         {
             get 
             { 
                 // In case behaviour was re-parented in the editor, we check every time
-                TryGetComponent(out SplineContainer container);
-                if (container != null)
-                    return container;
-                return m_SplineContainer;
+                if (TryGetComponent(out ISplineReferencer referencer))
+                    return referencer.Spline;
+                if (TryGetComponent(out SplineContainer spline))
+                    return spline;
+                return null;
             }
-            set { m_SplineContainer = value; }
         }
-        SplineContainer m_SplineContainer;
 #endif
         void OnEnable() {} // Needed so we can disable it in the editor
+
+        /// <summary>Cache for clients that use CinemachineSplineRoll</summary>
+        internal struct RollCache
+        {
+            CinemachineSplineRoll m_RollCache;
+
+            public void Refresh(MonoBehaviour owner)
+            {
+                m_RollCache = null;
+
+                // Check if owner has CinemachineSplineRoll
+                if (!owner.TryGetComponent(out m_RollCache) && owner is ISplineReferencer referencer)
+                {
+                    // Check if the spline has CinemachineSplineRoll
+                    var spline = referencer.Spline;
+                    if (spline != null)
+                        spline.TryGetComponent(out m_RollCache);
+                }
+            }
+
+            public CinemachineSplineRoll GetSplineRoll(MonoBehaviour owner)
+            {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    Refresh(owner);
+#endif
+                return m_RollCache;
+            }
+        }
     }
 }

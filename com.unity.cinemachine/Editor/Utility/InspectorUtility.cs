@@ -844,5 +844,16 @@ namespace Unity.Cinemachine.Editor
                 while (p.NextVisible(false));
             }
         }
+
+        public static bool IsAncestorOf(this Transform p, Transform other)
+        {
+            while (other != null && p != null)
+            {
+                if (other == p)
+                    return true;
+                other = other.parent;
+            }
+            return false;
+        }
     }
 }

@@ -4,6 +4,23 @@ using UnityEngine.Splines;
 
 namespace Unity.Cinemachine
 {
+    /// <summary>Interface for behaviours that reference a Spline</summary>
+    public interface ISplineReferencer
+    {
+        /// <summary>The Spline container to which the cart will be constrained.</summary>
+        public SplineContainer Spline { get; set; }
+
+        /// <summary>The cart's current position on the spline, in spline position units</summary>
+        public float SplinePosition { get; set; }
+
+        /// <summary>How to interpret PositionOnSpline:
+        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
+        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
+        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
+        /// interpolation between the specific knot index and the next knot."</summary>
+        public PathIndexUnit PositionUnits { get; set; }
+    }
+
     /// <summary>
     /// This structure holds the spline reference and the position and position units.
     /// </summary>
@@ -16,6 +33,7 @@ namespace Unity.Cinemachine
 
         /// <summary>The position along the spline.  The actual value corresponding to a given point
         /// on the spline will depend on the unity type.</summary>
+        [NoSaveDuringPlay]
         [Tooltip("The position along the spline.  The actual value corresponding to a given point "
             + "on the spline will depend on the unity type.")]
         public float Position;

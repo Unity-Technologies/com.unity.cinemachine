@@ -13,7 +13,7 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Spline Cart")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineCart.html")]
-    public class CinemachineSplineCart : MonoBehaviour
+    public class CinemachineSplineCart : MonoBehaviour, ISplineReferencer
     {
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
@@ -44,6 +44,8 @@ namespace Unity.Cinemachine
         [Tooltip("Used only by Automatic Dolly settings that require it")]
         public Transform TrackingTarget;
 
+        CinemachineSplineRoll.RollCache m_RollCache;
+
         /// <summary>The Spline container to which the cart will be constrained.</summary>
         public SplineContainer Spline
         {
@@ -69,7 +71,6 @@ namespace Unity.Cinemachine
             set => SplineSettings.ChangeUnitPreservePosition(value);
         }
 
-        CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
         // In-editor only: CM 3.0.x Legacy support =================================
         [SerializeField, HideInInspector, FormerlySerializedAs("SplinePosition")] private float m_LegacyPosition = -1;
@@ -108,7 +109,7 @@ namespace Unity.Cinemachine
 
         void OnEnable()
         {
-            RefreshRollCache();
+            m_RollCache.Refresh(this);
             AutomaticDolly.Method?.Reset();
         }
 
@@ -148,35 +149,9 @@ namespace Unity.Cinemachine
             {
                 SplinePosition = Spline.Spline.StandardizePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
                 var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
-                Spline.EvaluateSplineWithRoll(SplineRoll, transform.rotation, t, out var pos, out var rot);
+                Spline.EvaluateSplineWithRoll(m_RollCache.GetSplineRoll(this), transform.rotation, t, out var pos, out var rot);
                 transform.ConservativeSetPositionAndRotation(pos, rot);
             }
-        }
-
-        CinemachineSplineRoll SplineRoll
-        {
-            get
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    RefreshRollCache();
-#endif
-                return m_RollCache;
-            }
-        }
-        
-        void RefreshRollCache()
-        {
-            // check if we have CinemachineSplineRoll
-            TryGetComponent(out m_RollCache);
-#if UNITY_EDITOR
-            // need to tell CinemachineSplineRoll about its spline for gizmo drawing purposes
-            if (m_RollCache != null)
-                m_RollCache.Container = Spline; 
-#endif
-            // check if our spline has CinemachineSplineRoll
-            if (Spline != null && m_RollCache == null)
-                Spline.TryGetComponent(out m_RollCache);
         }
     }
 }
