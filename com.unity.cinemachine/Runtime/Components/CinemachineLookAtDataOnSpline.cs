@@ -31,7 +31,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Interpolator for the LookAtData</summary>
-        internal struct LerpRotation : IInterpolator<Item>
+        internal struct LerpItem : IInterpolator<Item>
         {
             public Item Interpolate(Item a, Item b, float t)
             {
@@ -67,7 +67,7 @@ namespace Unity.Cinemachine
             if (splinePath == null || splinePath.Count == 0)
                 return;
 
-            var item = LookAtData.Evaluate(splinePath, dolly.CameraPosition, dolly.PositionUnits, new LerpRotation());
+            var item = LookAtData.Evaluate(splinePath, dolly.CameraPosition, dolly.PositionUnits, new LerpItem());
             var dir = item.LookAtPoint - state.RawPosition;
             if (dir.sqrMagnitude > UnityVectorExtensions.Epsilon)
             {

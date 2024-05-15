@@ -80,19 +80,26 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(CinemachineLookAtDataOnSpline.Item))]
+    [CustomPropertyDrawer(typeof(DataPoint<CinemachineLookAtDataOnSpline.Item>))]
     class CinemachineLookAtDataOnSplineItemPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             CinemachineLookAtDataOnSpline.Item def = new ();
-            var ux = new VisualElement();
-            ux.Add(new PropertyField(property.FindPropertyRelative(() => def.LookAtPoint)));
-            ux.Add(new PropertyField(property.FindPropertyRelative(() => def.Easing)));
-            return ux;
+            var indexProp = property.FindPropertyRelative("m_Index");
+            var valueProp = property.FindPropertyRelative("m_Value");
+
+            var overlay = new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 100 }};
+            var overlayLabel = new Label("Index") { style = { alignSelf = Align.Center }};
+            overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay);
+
+            var foldout = new Foldout() { text = "Data Point" };
+            foldout.Add(new PropertyField(indexProp));
+            foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.LookAtPoint)));
+            foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
+            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel);
         }
     }
-
 
     [EditorTool("LookAt Data On Spline Tool", typeof(CinemachineLookAtDataOnSpline))]
     class LookAtDataOnSplineTool : EditorTool
