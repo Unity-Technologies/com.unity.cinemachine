@@ -64,7 +64,7 @@ namespace Unity.Cinemachine
             if (roll != null && roll.enabled)
             {
                 float rollValue = roll.Roll.Evaluate(spline.Spline, tNormalized, 
-                    PathIndexUnit.Normalized, new UnityEngine.Splines.Interpolators.LerpFloat());
+                    PathIndexUnit.Normalized, new CinemachineSplineRoll.LerpRollData());
                 rotation = Quaternion.AngleAxis(-rollValue, fwd) * rotation;
             }
             return true;

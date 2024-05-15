@@ -53,7 +53,7 @@ namespace Unity.Cinemachine.Editor
             if (SplineGizmoCache.Instance == null 
                 || SplineGizmoCache.Instance.Mesh == null
                 || SplineGizmoCache.Instance.Spline != spline.Spline
-                || SplineGizmoCache.Instance.SplineData != splineRoll.Roll
+                || SplineGizmoCache.Instance.RollData != splineRoll.Roll
                 || SplineGizmoCache.Instance.Width != width
                 || SplineGizmoCache.Instance.Resolution != resolution)
             {
@@ -103,7 +103,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     Mesh = mesh,
                     Spline = spline.Spline,
-                    SplineData = splineRoll.Roll,
+                    RollData = splineRoll.Roll,
                     Width = width,
                     Resolution = resolution
                 };
@@ -122,7 +122,7 @@ namespace Unity.Cinemachine.Editor
         class SplineGizmoCache
         {
             public Mesh Mesh;
-            public SplineData<float> SplineData;
+            public SplineData<CinemachineSplineRoll.RollData> RollData;
             public Spline Spline;
             public float Width;
             public int Resolution;
@@ -135,22 +135,36 @@ namespace Unity.Cinemachine.Editor
                 Instance = null;
                 EditorSplineUtility.AfterSplineWasModified -= OnSplineChanged;
                 EditorSplineUtility.AfterSplineWasModified += OnSplineChanged;
-                EditorSplineUtility.UnregisterSplineDataChanged<float>(OnSplineDataChanged);
-                EditorSplineUtility.RegisterSplineDataChanged<float>(OnSplineDataChanged);
+                EditorSplineUtility.UnregisterSplineDataChanged<CinemachineSplineRoll.RollData>(OnSplineDataChanged);
+                EditorSplineUtility.RegisterSplineDataChanged<CinemachineSplineRoll.RollData>(OnSplineDataChanged);
             }
             static void OnSplineChanged(Spline spline)
             {
                 if (Instance != null && spline == Instance.Spline)
                     Instance = null;
             }
-            static void OnSplineDataChanged(SplineData<float> data)
+            static void OnSplineDataChanged(SplineData<CinemachineSplineRoll.RollData> data)
             {
-                if (Instance != null && data == Instance.SplineData)
+                if (Instance != null && data == Instance.RollData)
                     Instance = null;
             }
         }
     }
 
+    [CustomPropertyDrawer(typeof(DataPoint<CinemachineSplineRoll.RollData>))]
+    class CinemachineLookAtDataOnSplineItemPropertyDrawer : PropertyDrawer
+    {
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row }};
+            ux.Add(new InspectorUtility.CompactPropertyField(property.FindPropertyRelative("m_Index")));
+
+            var def = new CinemachineSplineRoll.RollData();
+            var valueProp = property.FindPropertyRelative("m_Value");
+            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value)) { style = { marginLeft = 3 }});
+            return ux;
+        }
+    }
 
     [EditorTool("Spline Roll Tool", typeof(CinemachineSplineRoll))]
     sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
@@ -190,7 +204,7 @@ namespace Unity.Cinemachine.Editor
             if (!GetTargets(out var splineData, out var spline))
                 return;
 
-            Undo.RecordObject(splineData, "Modifying Roll SplineData");
+            Undo.RecordObject(splineData, "Modifying Roll RollData");
             var color = Handles.selectedColor;
             if (!Active) 
                 color.a = k_UnselectedAlpha;
@@ -219,7 +233,7 @@ namespace Unity.Cinemachine.Editor
         // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
-        bool DrawRollDataPoints(NativeSpline spline, SplineData<float> splineData, bool enabled)
+        bool DrawRollDataPoints(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, bool enabled)
         {
             var inUse = false;
             for (var r = 0; r < splineData.Count; ++r)

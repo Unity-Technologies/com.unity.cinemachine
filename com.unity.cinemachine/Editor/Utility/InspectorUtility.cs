@@ -770,10 +770,11 @@ namespace Unity.Cinemachine.Editor
             public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
             {
                 style.flexDirection = FlexDirection.Row;
+                style.flexGrow = 1;
                 if (!string.IsNullOrEmpty(label))
                     Label = AddChild(this, new Label(label) 
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
-                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 20 } });
                 if (Label != null)
                     AddDelayedFriendlyPropertyDragger(Label, property, Field);
             }
