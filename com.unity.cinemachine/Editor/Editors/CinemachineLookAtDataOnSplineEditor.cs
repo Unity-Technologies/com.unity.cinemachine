@@ -94,6 +94,7 @@ namespace Unity.Cinemachine.Editor
             overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay);
 
             var foldout = new Foldout() { text = "Data Point" };
+            foldout.BindProperty(property);
             foldout.Add(new PropertyField(indexProp));
             foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.LookAtPoint)));
             foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
