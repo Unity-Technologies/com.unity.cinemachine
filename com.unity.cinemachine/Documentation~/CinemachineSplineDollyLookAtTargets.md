@@ -18,7 +18,7 @@ When the LookAtDataOnSpline is selected in the inspector, a Scene View tool is p
 | Property | Field | Description |
 | --- | --- | --- |
 | __Index Unit__ |  | Defines how to interpret the _Index_ field for each data point.  _Knot_ is the recommended value because it remains robust if the spline points change. |
-| __Targets__ |  | The list of markup points on the spline.  As the camera approaches these points, the corresponding fields will come into effect. |
+| __Targets__ |  | The list of LookAt target on the spline.  As the camera approaches these positions on the spline, the camera will look at the corresponding targets. |
 | | _Index_ | The position on the Spline where the camera should look at the supplied point.  The value is interpreted according to the _Index Unit_ setting. |
 | | _Look At_ | The target object to look at.  It may be None, in which case the Offset will specify a point in world space. |
 | | _Offset_ | The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point. |

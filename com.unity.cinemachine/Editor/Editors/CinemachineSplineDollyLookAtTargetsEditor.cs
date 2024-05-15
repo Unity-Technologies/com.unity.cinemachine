@@ -34,8 +34,8 @@ namespace Unity.Cinemachine.Editor
                     + "Knot is the recommended value because it remains robust if the spline points change." });
 
             ux.Add(new PropertyField(property.FindPropertyRelative("m_DataPoints"), "Targets") 
-                { tooltip = "The list of markup points on the spline.  As the camera approaches these points on the spline, "
-                    + "the corresponding LookAt points will come into effect."});
+                { tooltip = "The list of LookAt target on the spline.  As the camera approaches these positions on the spline, "
+                    + "the camera will look at the corresponding targets."});
 
             return ux;
         }
