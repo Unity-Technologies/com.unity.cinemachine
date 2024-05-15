@@ -19,8 +19,8 @@ namespace Unity.Cinemachine
         [Serializable]
         public struct Item
         {
-            /// <summary>The target object to look at.  It may be None, in which case the LookAt point will specify a point in world spac</summary>
-            [Tooltip("The target object to look at.  It may be None, in which case the LookAt point will specify a point in world space.")]
+            /// <summary>The target object to look at.  It may be None, in which case the Offset will specify a point in world spac</summary>
+            [Tooltip("The target object to look at.  It may be None, in which case the Offset will specify a point in world space.")]
             public Transform LookAt;
 
             /// <summary>The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point</summary>

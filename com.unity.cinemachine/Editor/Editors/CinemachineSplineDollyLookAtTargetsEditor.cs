@@ -25,7 +25,7 @@ namespace Unity.Cinemachine.Editor
             ux.TrackAnyUserActivity(() => invalidHelp.SetVisible(splineData != null && !splineData.GetTargets(out _, out _)));
 
             ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
-                { text = "Edit Data Points in Scene View" });
+                { text = "Edit Targets in Scene View" });
             ux.AddSpace();
 
             var property = serializedObject.FindProperty(() => splineData.Targets);
@@ -33,7 +33,7 @@ namespace Unity.Cinemachine.Editor
                 { tooltip = "Defines how to interpret the Index field for each data point.  "
                     + "Knot is the recommended value because it remains robust if the spline points change." });
 
-            ux.Add(new PropertyField(property.FindPropertyRelative("m_DataPoints")) 
+            ux.Add(new PropertyField(property.FindPropertyRelative("m_DataPoints"), "Targets") 
                 { tooltip = "The list of markup points on the spline.  As the camera approaches these points on the spline, "
                     + "the corresponding LookAt points will come into effect."});
 
