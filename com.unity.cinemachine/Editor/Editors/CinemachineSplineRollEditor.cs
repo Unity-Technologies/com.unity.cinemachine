@@ -15,6 +15,11 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
+
+            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(SplineRollTool))) 
+                { text = "Edit Data Points in Scene View" });
+            ux.AddSpace();
+
             var prop = serializedObject.GetIterator();
             if (prop.NextVisible(true))
                 InspectorUtility.AddRemainingProperties(ux, prop);
@@ -147,7 +152,7 @@ namespace Unity.Cinemachine.Editor
     }
 
 
-    [EditorTool("Roll Tool", typeof(CinemachineSplineRoll))]
+    [EditorTool("Spline Roll Tool", typeof(CinemachineSplineRoll))]
     sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
         GUIContent m_IconContent;
@@ -272,7 +277,6 @@ namespace Unity.Cinemachine.Editor
                         return true;
                     }
                 }
-
                 return false;
             }
         }
