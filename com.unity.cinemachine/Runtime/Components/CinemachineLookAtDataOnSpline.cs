@@ -15,19 +15,30 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineLookAtDataOnSpline.html")]
     public class CinemachineLookAtDataOnSpline : CinemachineComponentBase
     {
-        /// <summary>LookAt targets for the camera at specific points on the Spline</summary>
+        /// <summary>LookAt targets for the camera at specific positions on the Spline</summary>
         [Serializable]
         public struct Item
         {
-            /// <summary>The worldspace point to look at</summary>
-            [Tooltip("The point that the camera should look at, in world space co-ordinates.")]
-            public Vector3 LookAtPoint;
+            /// <summary>The target object to look at.  It may be None, in which case the LookAt pont will specify a point in world spac</summary>
+            [Tooltip("The target object to look at.  It may be None, in which case the LookAt pont will specify a point in world space.")]
+            public Transform LookAtTarget;
+
+            /// <summary>The ofsset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point</summary>
+            [Tooltip("The ofsset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point.")]
+            public Vector3 Offset;
         
             /// <summary>Easing value for the Bezier curve. 0 is linear, 1 is smooth.</summary>
             [Tooltip("Controls how to ease in and out of this data point.  A value of 0 will linearly interpolate between "
                 + "LookAt points, while a value of 1 will slow down and briefly pause the rotation to look at the target.")]
             [Range(0, 1)]
             public float Easing;
+
+            /// <summary>Get/set the LookAt point in world space.</summary>
+            public Vector3 WorldLookAt 
+            {
+                readonly get => LookAtTarget == null ? Offset : LookAtTarget.TransformPoint(Offset);
+                set => Offset = LookAtTarget == null ? value : LookAtTarget.InverseTransformPoint(value);
+            }
         }
 
         /// <summary>Interpolator for the LookAtData</summary>
@@ -35,18 +46,16 @@ namespace Unity.Cinemachine
         {
             public Item Interpolate(Item a, Item b, float t)
             {
-                var p1 = Vector3.Lerp(Vector3.Lerp(a.LookAtPoint, b.LookAtPoint, 0.33f), a.LookAtPoint, a.Easing);
-                var p2 = Vector3.Lerp(Vector3.Lerp(b.LookAtPoint, a.LookAtPoint, 0.33f), b.LookAtPoint, b.Easing);
-                return new Item
-                {
-                    LookAtPoint = SplineHelpers.Bezier3(t, a.LookAtPoint, p1, p2, b.LookAtPoint),
-                    Easing = Mathf.Lerp(a.Easing, b.Easing, t)
-                };
+                var pa = a.WorldLookAt;
+                var pb = b.WorldLookAt;
+                var p1 = Vector3.Lerp(Vector3.Lerp(pa, pb, 0.33f), pa, a.Easing);
+                var p2 = Vector3.Lerp(Vector3.Lerp(pb, pa, 0.33f), pb, b.Easing);
+                return new Item { Offset = SplineHelpers.Bezier3(t, pa, p1, p2, pb) };
             }
         }
 
-        /// <summary>LookAt targets for the camera at specific points on the Spline</summary>
-        [Tooltip("LookAt targets for the camera at specific points on the Spline")]
+        /// <summary>LookAt targets for the camera at specific positions on the Spline</summary>
+        [Tooltip("LookAt targets for the camera at specific positions on the Spline")]
         public SplineData<Item> LookAtData = new () { DefaultValue = new Item { Easing = 1 } };
 
         void Reset() => LookAtData = new SplineData<Item> { DefaultValue = new Item { Easing = 1 } };
@@ -68,7 +77,7 @@ namespace Unity.Cinemachine
                 return;
 
             var item = LookAtData.Evaluate(splinePath, dolly.CameraPosition, dolly.PositionUnits, new LerpItem());
-            var dir = item.LookAtPoint - state.RawPosition;
+            var dir = item.Offset - state.RawPosition;
             if (dir.sqrMagnitude > UnityVectorExtensions.Epsilon)
             {
                 var up = state.ReferenceUp;
@@ -81,7 +90,7 @@ namespace Unity.Cinemachine
                 }
                 state.RawOrientation = Quaternion.LookRotation(dir, up);
             }
-            state.ReferenceLookAt = item.LookAtPoint;
+            state.ReferenceLookAt = item.Offset;
         }
 
         /// <summary>

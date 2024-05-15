@@ -55,7 +55,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, splineData.LookAtData[i].Index, indexUnit);
                     spline.Evaluate(t, out var position, out _, out _);
-                    var p = splineData.LookAtData[i].Value.LookAtPoint;
+                    var p = splineData.LookAtData[i].Value.WorldLookAt;
                     Gizmos.DrawLine(position, p);
                     Gizmos.DrawSphere(p, HandleUtility.GetHandleSize(p) * 0.1f);
 
@@ -64,12 +64,12 @@ namespace Unity.Cinemachine.Editor
                     {
                         var oldColor = Gizmos.color;
                         Gizmos.color = Color.white;
-                        var it = new CinemachineLookAtDataOnSpline.LerpRotation();
+                        var it = new CinemachineLookAtDataOnSpline.LerpItem();
                         for (float j = 0; j < 1f; j += 0.05f)
                         {
                             var item = it.Interpolate(splineData.LookAtData[i-1].Value, splineData.LookAtData[i].Value, j);
-                            Gizmos.DrawLine(p, item.LookAtPoint);
-                            p = item.LookAtPoint;
+                            Gizmos.DrawLine(p, item.WorldLookAt);
+                            p = item.WorldLookAt;
                             Gizmos.DrawSphere(p, HandleUtility.GetHandleSize(p) * 0.05f);
                         }
                         Gizmos.color = oldColor;
@@ -83,21 +83,41 @@ namespace Unity.Cinemachine.Editor
     [CustomPropertyDrawer(typeof(DataPoint<CinemachineLookAtDataOnSpline.Item>))]
     class CinemachineLookAtDataOnSplineItemPropertyDrawer : PropertyDrawer
     {
+        Transform m_LastLookAtTarget;
+
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
+                + "The value is interpreted according to the Index Unit setting.";
+
             CinemachineLookAtDataOnSpline.Item def = new ();
             var indexProp = property.FindPropertyRelative("m_Index");
             var valueProp = property.FindPropertyRelative("m_Value");
 
-            var overlay = new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 100 }};
-            var overlayLabel = new Label("Index") { style = { alignSelf = Align.Center }};
+            var overlay = new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 100 }};
+            var overlayLabel = new Label("Index") { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
             overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay);
 
             var foldout = new Foldout() { text = "Data Point" };
             foldout.BindProperty(property);
-            foldout.Add(new PropertyField(indexProp));
-            foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.LookAtPoint)));
+            foldout.Add(new PropertyField(indexProp) { tooltip = indexTooltip });
+
+            var lookAtProp = valueProp.FindPropertyRelative(() => def.LookAtTarget);
+            var offsetProp = valueProp.FindPropertyRelative(() => def.Offset);
+
+            var row = foldout.AddChild(InspectorUtility.PropertyRow(lookAtProp, out _));
+            row.Contents.Add(new Button(() => 
+            {
+                var previous = lookAtProp.objectReferenceValue as Transform;
+                lookAtProp.objectReferenceValue = null;
+                if (previous != null)
+                    offsetProp.vector3Value = previous.TransformPoint(offsetProp.vector3Value);
+                lookAtProp.serializedObject.ApplyModifiedProperties();
+            }) { text = "Clear", tooltip = "Set the Target to None, and convert the offset to world space" });
+
+            foldout.Add(new PropertyField(offsetProp));
             foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
+
             return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel);
         }
     }
@@ -148,11 +168,11 @@ namespace Unity.Cinemachine.Editor
             for (var r = 0; r < splineData.Count; ++r)
             {
                 var dataPoint = splineData[r];
-                var newPos = Handles.PositionHandle(dataPoint.Value.LookAtPoint, Quaternion.identity);
-                if (newPos != dataPoint.Value.LookAtPoint)
+                var newPos = Handles.PositionHandle(dataPoint.Value.WorldLookAt, Quaternion.identity);
+                if (newPos != dataPoint.Value.WorldLookAt)
                 {
                     var item = dataPoint.Value;
-                    item.LookAtPoint = newPos;
+                    item.WorldLookAt = newPos;
                     dataPoint.Value = item;
                     splineData[r] = dataPoint;
                 }
