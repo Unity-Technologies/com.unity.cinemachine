@@ -20,7 +20,7 @@ When the LookAtDataOnSpline is selected in the inspector, a Scene View tool is p
 | __Index Unit__ |  | Defines how to interpret the _Index_ field for each data point.  _Knot_ is the recommended value because it remains robust if the spline points change. |
 | __Data Points__ |  | The list of markup points on the spline.  As the camera approaches these points, the corresponding fields will come into effect. |
 | | _Index_ | The position on the Spline where the camera should look at the supplied point.  The value is interpreted according to the _Index Unit_ setting. |
-| | _Look At Point_ | The point that the cmara should look at, in world space co-ordinates. |
-| | _Easing_ | Controls how to ease in and out of this data point.  A value of 0 will linearly interpolate between LookAt points, while a value of 1 will slow down and briefly pause the rotation and pause at the point. |
+| | _Look At Point_ | The point that the camera should look at, in world space co-ordinates. |
+| | _Easing_ | Controls how to ease in and out of this target.  A value of 0 will linearly interpolate between LookAt points, while a value of 1 will slow down and briefly pause the rotation to look at the target. |
 
 
