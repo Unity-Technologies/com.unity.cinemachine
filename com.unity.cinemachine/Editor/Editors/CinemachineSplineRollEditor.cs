@@ -152,12 +152,15 @@ namespace Unity.Cinemachine.Editor
     }
 
     [CustomPropertyDrawer(typeof(DataPoint<CinemachineSplineRoll.RollData>))]
-    class CinemachineLookAtDataOnSplineItemPropertyDrawer : PropertyDrawer
+    class CinemachineLookAtDataOnSplineDataPointPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
+            const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
+                + "The value is interpreted according to the Index Unit setting.";
+
             var ux = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            ux.Add(new InspectorUtility.CompactPropertyField(property.FindPropertyRelative("m_Index")));
+            ux.Add(new InspectorUtility.CompactPropertyField(property.FindPropertyRelative("m_Index")) { tooltip = indexTooltip });
 
             var def = new CinemachineSplineRoll.RollData();
             var valueProp = property.FindPropertyRelative("m_Value");
