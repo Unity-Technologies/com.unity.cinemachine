@@ -123,7 +123,7 @@ namespace Unity.Cinemachine.Editor
         
         public static void DrawLabel(Vector3 position, string text)
         {
-            var labelOffset = HandleUtility.GetHandleSize(position) / 5f;
+            var labelOffset = HandleUtility.GetHandleSize(position) / 2f;
             Handles.Label(position + new Vector3(0, -labelOffset, 0), text, s_LabelStyle);
         }
 

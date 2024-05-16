@@ -46,11 +46,10 @@ namespace Unity.Cinemachine
         {
             public Item Interpolate(Item a, Item b, float t)
             {
-                var pa = a.WorldLookAt;
-                var pb = b.WorldLookAt;
-                var p1 = Vector3.Lerp(Vector3.Lerp(pa, pb, 0.33f), pa, a.Easing);
-                var p2 = Vector3.Lerp(Vector3.Lerp(pb, pa, 0.33f), pb, b.Easing);
-                return new Item { Offset = SplineHelpers.Bezier3(t, pa, p1, p2, pb) };
+                var t2 = t * t;
+                var d = 1f - t;
+                t = 3f * d * d * t * Mathf.Lerp(0.3333f, 0, a.Easing) + 3f * d * t2 * Mathf.Lerp(0.6666f, 1, b.Easing) + t * t2;
+                return new Item { Offset = Vector3.Lerp(a.WorldLookAt, b.WorldLookAt, t) };
             }
         }
 

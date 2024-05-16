@@ -5,13 +5,32 @@ using UnityEngine.UIElements;
 using UnityEngine;
 using UnityEngine.Splines;
 using UnityEditor.UIElements;
+using System;
 
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSplineDollyLookAtTargets))]
-    [CanEditMultipleObjects]
     class CinemachineLookAtDataOnSplineEditor : CinemachineComponentBaseEditor
     {
+        private void OnEnable()
+        {
+            LookAtDataOnSplineTool.s_OnDataLookAtDragged += (spline, splineData, index) => 
+                EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
+
+            LookAtDataOnSplineTool.s_OnDataIndexDragged += (spline, splineData, index) =>
+            {
+                // Bring the camera to this point on the spline
+                var dolly = splineData.GetComponent<CinemachineSplineDolly>();
+                if (dolly != null)
+                {
+                    var dataPoint = splineData.Targets[index];
+                    Undo.RecordObject(dolly, "Modifying CinemachineSplineDollyLookAtTargets values");
+                    dolly.CameraPosition = spline.Spline.ConvertIndexUnit(dataPoint.Index, splineData.Targets.PathIndexUnit, dolly.PositionUnits);
+                    EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
+                }
+            };
+        }
+
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
@@ -24,18 +43,38 @@ namespace Unity.Cinemachine.Editor
             ux.Add(invalidHelp);
             ux.TrackAnyUserActivity(() => invalidHelp.SetVisible(splineData != null && !splineData.GetTargets(out _, out _)));
 
-            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
-                { text = "Edit Targets in Scene View" });
-            ux.AddSpace();
-
-            var property = serializedObject.FindProperty(() => splineData.Targets);
-            ux.Add(new PropertyField(property.FindPropertyRelative("m_IndexUnit")) 
+            var targetsProp = serializedObject.FindProperty(() => splineData.Targets);
+            ux.Add(new PropertyField(targetsProp.FindPropertyRelative("m_IndexUnit")) 
                 { tooltip = "Defines how to interpret the Index field for each data point.  "
                     + "Knot is the recommended value because it remains robust if the spline points change." });
 
-            ux.Add(new PropertyField(property.FindPropertyRelative("m_DataPoints"), "Targets") 
+            ux.AddSpace();
+            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
+                { text = "Edit Targets in Scene View" });
+
+            ux.AddHeader("Targets");
+            var dataPointsProp = targetsProp.FindPropertyRelative("m_DataPoints");
+            var list = ux.AddChild(new PropertyField(dataPointsProp, "Targets") 
                 { tooltip = "The list of LookAt target on the spline.  As the camera approaches these positions on the spline, "
                     + "the camera will look at the corresponding targets."});
+            list.OnInitialGeometry(() => 
+            {
+                var listView = list.Q<ListView>();
+                listView.reorderable = false;
+                listView.showFoldoutHeader = false;
+                listView.showBoundCollectionSize = false;
+            });
+
+            ux.TrackPropertyValue(dataPointsProp, (p) => 
+            {
+                if (p.arraySize > 1)
+                {
+                    // Hack to set dirty to force a reorder
+                    var item = splineData.Targets[0];
+                    splineData.Targets[0] = item;
+                    splineData.Targets.SortIfNecessary();
+                }
+            });
 
             return ux;
         }
@@ -58,23 +97,6 @@ namespace Unity.Cinemachine.Editor
                     var p = splineData.Targets[i].Value.WorldLookAt;
                     Gizmos.DrawLine(position, p);
                     Gizmos.DrawSphere(p, HandleUtility.GetHandleSize(p) * 0.1f);
-
-#if false // Enable this for debugging easing
-                    if (i > 0)
-                    {
-                        var oldColor = Gizmos.color;
-                        Gizmos.color = Color.white;
-                        var it = new CinemachineSplineDollyLookAtTargets.LerpItem();
-                        for (float j = 0; j < 1f; j += 0.05f)
-                        {
-                            var item = it.Interpolate(splineData.LookAtData[i-1].Value, splineData.LookAtData[i].Value, j);
-                            Gizmos.DrawLine(p, item.WorldLookAt);
-                            p = item.WorldLookAt;
-                            Gizmos.DrawSphere(p, HandleUtility.GetHandleSize(p) * 0.05f);
-                        }
-                        Gizmos.color = oldColor;
-                    }
-#endif
                 }
             }
         }
@@ -95,14 +117,17 @@ namespace Unity.Cinemachine.Editor
             var offsetProp = valueProp.FindPropertyRelative(() => def.Offset);
 
             var overlay = new VisualElement () { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-            overlay.Add(new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 50 }});
+            var indexField1 = overlay.AddChild(new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 50 }});
+            indexField1.OnInitialGeometry(() => indexField1.SafeSetIsDelayed());
+
             overlay.Add(new PropertyField(lookAtProp, "") { style = { flexGrow = 4, flexBasis = 50, marginLeft = 3 }});
             var overlayLabel = new Label("Index") { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
-            overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay);
+            overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay, false);
 
-            var foldout = new Foldout() { text = "Target" };
+            var foldout = new Foldout() { text = "Data Point" };
             foldout.BindProperty(property);
-            foldout.Add(new PropertyField(indexProp) { tooltip = indexTooltip });
+            var indexField2 = foldout.AddChild(new PropertyField(indexProp) { tooltip = indexTooltip });
+            indexField2.OnInitialGeometry(() => indexField2.SafeSetIsDelayed());
 
             var row = foldout.AddChild(InspectorUtility.PropertyRow(lookAtProp, out _));
             row.Contents.Add(new Button(() => 
@@ -117,7 +142,7 @@ namespace Unity.Cinemachine.Editor
             foldout.Add(new PropertyField(offsetProp));
             foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
 
-            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel);
+            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel) { style = { marginLeft = 12 }};
         }
     }
 
@@ -125,12 +150,16 @@ namespace Unity.Cinemachine.Editor
     class LookAtDataOnSplineTool : EditorTool
     {
         GUIContent m_IconContent;
+
+        public static Action<SplineContainer, CinemachineSplineDollyLookAtTargets, int> s_OnDataIndexDragged;
+        public static Action<SplineContainer, CinemachineSplineDollyLookAtTargets, int> s_OnDataLookAtDragged;
+
         public override GUIContent toolbarIcon => m_IconContent;
 
-        bool GetTargets(out CinemachineSplineDollyLookAtTargets splineDataTarget, out SplineContainer spline, out CinemachineSplineDolly dolly)
+        bool GetTargets(out CinemachineSplineDollyLookAtTargets splineData, out SplineContainer spline, out CinemachineSplineDolly dolly)
         {
-            splineDataTarget = target as CinemachineSplineDollyLookAtTargets;
-            if (splineDataTarget != null && splineDataTarget.GetTargets(out spline, out dolly))
+            splineData = target as CinemachineSplineDollyLookAtTargets;
+            if (splineData != null && splineData.GetTargets(out spline, out dolly))
                 return true;
             spline = null;
             dolly = null;
@@ -150,32 +179,70 @@ namespace Unity.Cinemachine.Editor
 
         public override void OnToolGUI(EditorWindow window)
         {
-            if (!GetTargets(out var splineDataTarget, out var spline, out _))
+            if (!GetTargets(out var splineData, out var spline, out _))
                 return;
 
-            Undo.RecordObject(splineDataTarget, "Modifying CinemachineSplineDollyLookAtTargets values");
+            Undo.RecordObject(splineData, "Modifying CinemachineSplineDollyLookAtTargets values");
             using (new Handles.DrawingScope(Handles.selectedColor))
             {
-                DrawDataPoints(splineDataTarget.Targets);
-                var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-                nativeSpline.DataPointHandles(splineDataTarget.Targets);
+                int changed = DrawDataPointHandles(spline, splineData);
+                if (changed >= 0)
+                    s_OnDataLookAtDragged?.Invoke(spline, splineData, changed);
+
+                changed = DrawIndexPointHandles(spline, splineData);
+                if (changed >= 0)
+                    s_OnDataIndexDragged?.Invoke(spline, splineData, changed);
             }
         }
 
-        void DrawDataPoints(SplineData<CinemachineSplineDollyLookAtTargets.Item> splineData)
+        int DrawIndexPointHandles(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData)
         {
-            for (var r = 0; r < splineData.Count; ++r)
+            int anchorId = GUIUtility.GetControlID(FocusType.Passive);
+
+            var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
+            nativeSpline.DataPointHandles(splineData.Targets);
+
+            int nearestIndex = ControlIdToIndex(anchorId, HandleUtility.nearestControl, splineData.Targets.Count);
+            if (nearestIndex >= 0)
+                DrawTooltip(spline, splineData, nearestIndex);
+
+            return ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Targets.Count);
+
+            static int ControlIdToIndex(int anchorId, int controlId, int targetCount)
             {
-                var dataPoint = splineData[r];
+                int index = controlId - anchorId - 2;
+                return index >= 0 && index < targetCount ? index : -1;
+            }
+        }
+
+        int DrawDataPointHandles(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData)
+        {
+            int changed = -1;
+            for (var i = 0; i < splineData.Targets.Count; ++i)
+            {
+                var dataPoint = splineData.Targets[i];
                 var newPos = Handles.PositionHandle(dataPoint.Value.WorldLookAt, Quaternion.identity);
                 if (newPos != dataPoint.Value.WorldLookAt)
                 {
                     var item = dataPoint.Value;
                     item.WorldLookAt = newPos;
                     dataPoint.Value = item;
-                    splineData[r] = dataPoint;
+                    splineData.Targets[i] = dataPoint;
+                    changed = i;
                 }
             }
+            return changed;
+        }
+
+        void DrawTooltip(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData, int index)
+        {
+            var dataPoint = splineData.Targets[index];
+            var targetText = dataPoint.Value.LookAt != null ? dataPoint.Value.LookAt.name : dataPoint.Value.WorldLookAt.ToString();
+            var text = $"Index: {dataPoint.Index}\nLookAt: {targetText}";
+
+            var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, dataPoint.Index, splineData.Targets.PathIndexUnit);
+            spline.Evaluate(t, out var position, out _, out _);
+            CinemachineSceneToolHelpers.DrawLabel(position, text);
         }
     }
 }
