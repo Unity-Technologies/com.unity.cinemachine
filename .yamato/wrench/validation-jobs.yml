@@ -52,10 +52,10 @@ validate_-_cinemachine_-_2022_3_-_macos:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.19.0
+    Wrench: 0.8.22.0
   labels:
   - Packages:cinemachine
 
@@ -110,10 +110,10 @@ validate_-_cinemachine_-_2022_3_-_ubuntu:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.19.0
+    Wrench: 0.8.22.0
   labels:
   - Packages:cinemachine
 
@@ -168,10 +168,10 @@ validate_-_cinemachine_-_2022_3_-_windows:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.19.0
+    Wrench: 0.8.22.0
   labels:
   - Packages:cinemachine
 
@@ -226,10 +226,10 @@ validate_-_cinemachine_-_6000_0_-_macos:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.19.0
+    Wrench: 0.8.22.0
   labels:
   - Packages:cinemachine
 
@@ -284,10 +284,10 @@ validate_-_cinemachine_-_6000_0_-_ubuntu:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.19.0
+    Wrench: 0.8.22.0
   labels:
   - Packages:cinemachine
 
@@ -342,10 +342,10 @@ validate_-_cinemachine_-_6000_0_-_windows:
   - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.8.19.0
+    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.19.0
+    Wrench: 0.8.22.0
   labels:
   - Packages:cinemachine
 
