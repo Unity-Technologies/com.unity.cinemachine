@@ -36,6 +36,9 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
             this.AddMissingCmCameraHelpBox(ux);
 
+            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
+                { text = "Edit Targets in Scene View" });
+
             var splineData = target as CinemachineSplineDollyLookAtTargets;
             var invalidHelp = new HelpBox(
                 "This component requires a CinemachineSplineDolly component referencing a nonempty Spline", 
@@ -47,10 +50,6 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(targetsProp.FindPropertyRelative("m_IndexUnit")) 
                 { tooltip = "Defines how to interpret the Index field for each data point.  "
                     + "Knot is the recommended value because it remains robust if the spline points change." });
-
-            ux.AddSpace();
-            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
-                { text = "Edit Targets in Scene View" });
 
             ux.AddHeader("Targets");
             var dataPointsProp = targetsProp.FindPropertyRelative("m_DataPoints");
