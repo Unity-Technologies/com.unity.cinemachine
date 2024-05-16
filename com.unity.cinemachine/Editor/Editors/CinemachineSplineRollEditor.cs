@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSplineRoll))]
-    [CanEditMultipleObjects]
     class CinemachineSplineRollEditor : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
