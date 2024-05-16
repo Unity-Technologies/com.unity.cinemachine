@@ -1,5 +1,5 @@
 {
-  "project_path": "Tools/CineMachine-Recipes",
+  "project_path": "Tools\\CineMachine-Recipes",
   "schema_version": 0.4,
   "packages": {
     "com.unity.cinemachine": {
@@ -20,6 +20,6 @@
   },
   "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_cinemachine",
   "branch_pattern": "ReleaseSlash",
-  "wrench_version": "0.8.19.0",
+  "wrench_version": "0.8.22.0",
   "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json"
 }
