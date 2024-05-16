@@ -201,8 +201,7 @@ namespace Unity.Cinemachine
 
         static void CreatePlaybackCurves()
         {
-            if (m_Cache == null)
-                m_Cache = new Dictionary<Transform, CacheEntry>();
+            m_Cache ??= new Dictionary<Transform, CacheEntry>();
             var iter = m_Cache.GetEnumerator();
             while (iter.MoveNext())
                 iter.Current.Value.CreateCurves();
