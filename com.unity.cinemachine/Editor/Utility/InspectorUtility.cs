@@ -530,7 +530,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>
         /// Add a property dragger to a float or int label, so that dragging it changes the property value.
         /// </summary>
-        public static void AddDelayedFriendlyPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
+        public static void AddDelayedFriendlyPropertyDragger(this Label label, SerializedProperty p, VisualElement field, bool noDelayOnDrag)
         {
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
@@ -538,10 +538,20 @@ namespace Unity.Cinemachine.Editor
                 label.AddToClassList("unity-base-field__label--with-dragger");
                 label.OnInitialGeometry(() =>
                 {
-                    if (p.propertyType == SerializedPropertyType.Float)
-                        new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                    else if (p.propertyType == SerializedPropertyType.Integer)
-                        new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                    if (noDelayOnDrag)
+                    {
+                        if (p.propertyType == SerializedPropertyType.Float)
+                            new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                        else if (p.propertyType == SerializedPropertyType.Integer)
+                            new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                    }
+                    else
+                    {
+                        if (p.propertyType == SerializedPropertyType.Float)
+                            new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                        else if (p.propertyType == SerializedPropertyType.Integer)
+                            new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                    }
                 });
             }
         }
@@ -776,7 +786,7 @@ namespace Unity.Cinemachine.Editor
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 20 } });
                 if (Label != null)
-                    AddDelayedFriendlyPropertyDragger(Label, property, Field);
+                    AddDelayedFriendlyPropertyDragger(Label, property, Field, true);
             }
         }
 
@@ -789,7 +799,7 @@ namespace Unity.Cinemachine.Editor
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
                 { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
-            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField);
+            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, true);
 
             // Kill any left margin that gets inserted into the property field
             field.OnInitialGeometry(() => 

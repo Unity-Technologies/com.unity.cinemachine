@@ -19,13 +19,37 @@ namespace Unity.Cinemachine.Editor
                 { text = "Edit Data Points in Scene View" });
             ux.AddSpace();
 
-            var prop = serializedObject.GetIterator();
-            if (prop.NextVisible(true))
-                InspectorUtility.AddRemainingProperties(ux, prop);
-
-            // Invalidate the mesh cache when the property changes (SetDirty() not always called!)
             var splineData = target as CinemachineSplineRoll;
-            ux.TrackPropertyValue(serializedObject.FindProperty(() => splineData.Roll), (p) => SplineGizmoCache.Instance = null);
+            var rollProp = serializedObject.FindProperty(() => splineData.Roll);
+            ux.Add(new PropertyField(rollProp.FindPropertyRelative("m_IndexUnit")) 
+                { tooltip = "Defines how to interpret the Index field for each data point.  "
+                    + "Knot is the recommended value because it remains robust if the spline points change." });
+
+            ux.AddHeader("Data Points");
+            var dataPointsProp = rollProp.FindPropertyRelative("m_DataPoints");
+            var list = ux.AddChild(new PropertyField(dataPointsProp));
+            list.OnInitialGeometry(() => 
+            {
+                var listView = list.Q<ListView>();
+                listView.reorderable = false;
+                listView.showFoldoutHeader = false;
+                listView.showBoundCollectionSize = false;
+            });
+
+            ux.TrackPropertyValue(dataPointsProp, (p) => 
+            {
+                // Invalidate the mesh cache when the property changes (SetDirty() not always called!)
+                SplineGizmoCache.Instance = null; 
+                EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
+
+                if (p.arraySize > 1)
+                {
+                    // Hack to set dirty to force a reorder
+                    var item = splineData.Roll[0];
+                    splineData.Roll[0] = item;
+                    splineData.Roll.SortIfNecessary();
+                }
+            });
 
             return ux;
         }
@@ -158,12 +182,18 @@ namespace Unity.Cinemachine.Editor
             const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
                 + "The value is interpreted according to the Index Unit setting.";
 
-            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            ux.Add(new InspectorUtility.CompactPropertyField(property.FindPropertyRelative("m_Index")) { tooltip = indexTooltip });
-
             var def = new CinemachineSplineRoll.RollData();
+            var indexProp = property.FindPropertyRelative("m_Index");
             var valueProp = property.FindPropertyRelative("m_Value");
-            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value)) { style = { marginLeft = 3 }});
+
+            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginLeft = 3 }};
+
+            var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
+            var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
+            indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
+            InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField, false);
+
+            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value)) { style = { marginLeft = 6 }});
             return ux;
         }
     }
