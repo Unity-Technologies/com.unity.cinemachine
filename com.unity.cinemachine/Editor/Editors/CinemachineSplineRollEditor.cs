@@ -186,14 +186,16 @@ namespace Unity.Cinemachine.Editor
             var indexProp = property.FindPropertyRelative("m_Index");
             var valueProp = property.FindPropertyRelative("m_Value");
 
-            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginLeft = 3 }};
+            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
 
+            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }});
             var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
             var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
             indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
             InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField, false);
 
-            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value)) { style = { marginLeft = 6 }});
+            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }});
+            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value)));
             return ux;
         }
     }
@@ -201,10 +203,8 @@ namespace Unity.Cinemachine.Editor
     [EditorTool("Spline Roll Tool", typeof(CinemachineSplineRoll))]
     sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
     {
+        const float k_UnselectedAlpha = 0.3f;
         GUIContent m_IconContent;
-        bool m_RollInUse;
-        bool Active => ToolManager.IsActiveTool(this);
-
         public override GUIContent toolbarIcon => m_IconContent;
 
         bool GetTargets(out CinemachineSplineRoll splineData, out SplineContainer spline)
@@ -230,7 +230,21 @@ namespace Unity.Cinemachine.Editor
             };
         }
 
-        const float k_UnselectedAlpha = 0.3f;
+        // Draw the data handles when the tool is inactive
+        public void OnDrawHandles()
+        {
+            if (Event.current.type != EventType.Repaint || ToolManager.IsActiveTool(this) || !GetTargets(out var splineData, out var spline))
+                return;
+
+            var color = Handles.color;
+            color.a = k_UnselectedAlpha;
+            using (new Handles.DrawingScope(color))
+            {
+                var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
+                DrawDataPointHandles(nativeSpline, splineData.Roll, false);
+            }
+        }
+
         public override void OnToolGUI(EditorWindow window)
         {
             if (!GetTargets(out var splineData, out var spline))
@@ -238,39 +252,43 @@ namespace Unity.Cinemachine.Editor
 
             Undo.RecordObject(splineData, "Modifying Roll RollData");
             var color = Handles.selectedColor;
-            if (!Active) 
-                color.a = k_UnselectedAlpha;
             using (new Handles.DrawingScope(color))
             {
                 var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-                m_RollInUse = DrawRollDataPoints(nativeSpline, splineData.Roll, true);
-                nativeSpline.DataPointHandles(splineData.Roll);
+                DrawIndexPointHandles(nativeSpline, splineData.Roll);
+                DrawDataPointHandles(nativeSpline, splineData.Roll, true);
             }
         }
 
-        public void OnDrawHandles()
+        int DrawIndexPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         {
-            if (Event.current.type != EventType.Repaint || Active || !GetTargets(out var splineData, out var spline))
-                return;
+            int anchorId = GUIUtility.GetControlID(FocusType.Passive);
+            spline.DataPointHandles(splineData);
+            int nearestIndex = ControlIdToIndex(anchorId, HandleUtility.nearestControl, splineData.Count);
+            if (nearestIndex >= 0)
+                DrawTooltip(spline, splineData, nearestIndex);
 
-            var color = Handles.selectedColor;
-            color.a = k_UnselectedAlpha;
-            using (new Handles.DrawingScope(color))
+            // Return the index that's being changed, or -1
+            return ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Count);
+
+            // Local function
+            static int ControlIdToIndex(int anchorId, int controlId, int targetCount)
             {
-                var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-                DrawRollDataPoints(nativeSpline, splineData.Roll, false);
+                int index = controlId - anchorId - 2;
+                return index >= 0 && index < targetCount ? index : -1;
             }
         }
         
         // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
-        bool DrawRollDataPoints(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, bool enabled)
+
+        int DrawDataPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, bool enabled)
         {
-            var inUse = false;
-            for (var r = 0; r < splineData.Count; ++r)
+            int changed = -1;
+            for (var i = 0; i < splineData.Count; ++i)
             {
-                var dataPoint = splineData[r];
+                var dataPoint = splineData[i];
                 var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.PathIndexUnit);
                 spline.Evaluate(t, out var position, out var tangent, out var up);
 
@@ -278,11 +296,13 @@ namespace Unity.Cinemachine.Editor
                 if (DrawDataPoint(id, position, tangent, up, dataPoint.Value, out var result))
                 {
                     dataPoint.Value = result;
-                    splineData.SetDataPoint(r, dataPoint);
-                    inUse = true;
+                    splineData.SetDataPoint(i, dataPoint);
+                    changed = i;
                 }
+                if (id == HandleUtility.nearestControl || id == GUIUtility.hotControl)
+                    DrawTooltip(spline, splineData, i);
             }
-            return inUse;
+            return changed;
 
             // local function
             bool DrawDataPoint(int controlID, Vector3 position, Vector3 tangent, Vector3 up, float rollData, out float result)
@@ -299,10 +319,7 @@ namespace Unity.Cinemachine.Editor
 
                     var handleSize = Mathf.Max(HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth.Value);
                     if (Event.current.type == EventType.Repaint) 
-                    {
-                        using (new Handles.DrawingScope(m_RollInUse ? Handles.selectedColor : Handles.color)) 
-                            Handles.ArrowHandleCap(-1, Vector3.zero, globalRot, handleSize, EventType.Repaint);
-                    }
+                        Handles.ArrowHandleCap(-1, Vector3.zero, globalRot, handleSize, EventType.Repaint);
                     
                     var newGlobalRot = Handles.Disc(controlID, globalRot, Vector3.zero, Vector3.forward, handleSize, false, 0);
                     if (GUIUtility.hotControl == controlID)
@@ -325,6 +342,16 @@ namespace Unity.Cinemachine.Editor
                 }
                 return false;
             }
+        }
+
+        void DrawTooltip(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, int index)
+        {
+            var dataPoint = splineData[index];
+            var text = $"Index: {dataPoint.Index}\nRoll: {dataPoint.Value.Value}";
+
+            var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.PathIndexUnit);
+            spline.Evaluate(t, out var position, out _, out _);
+            CinemachineSceneToolHelpers.DrawLabel(position, text);
         }
     }
 }
