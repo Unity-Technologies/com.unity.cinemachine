@@ -86,7 +86,10 @@ namespace Unity.Cinemachine.Editor
             if (Selection.activeGameObject == splineData.gameObject && splineData.Targets.Count > 0
                 && splineData.GetTargets(out var spline, out _) && spline.Spline != null)
             {
-                Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
+                var c = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
+                if (ToolManager.activeToolType != typeof(LookAtDataOnSplineTool))
+                    c.a = 0.5f;
+                Gizmos.color = c;
 
                 var indexUnit = splineData.Targets.PathIndexUnit;
                 for (int i = 0; i < splineData.Targets.Count; i++)
