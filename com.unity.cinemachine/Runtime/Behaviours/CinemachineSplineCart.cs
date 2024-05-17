@@ -147,8 +147,9 @@ namespace Unity.Cinemachine
         {
             if (Spline.IsValid())
             {
-                SplinePosition = Spline.Spline.StandardizePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
-                var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
+                var splinePath = Spline.Splines[0];
+                SplinePosition = splinePath.StandardizePosition(distanceAlongPath, PositionUnits);
+                var t = splinePath.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
                 Spline.EvaluateSplineWithRoll(m_RollCache.GetSplineRoll(this), transform.rotation, t, out var pos, out var rot);
                 transform.ConservativeSetPositionAndRotation(pos, rot);
             }

@@ -59,15 +59,16 @@ namespace Unity.Cinemachine
 
 #if UNITY_EDITOR
         // Only needed for drawing the gizmo
-        internal SplineContainer Spline
+        internal ISplineContainer SplineContainer
         {
             get 
             { 
                 // In case behaviour was re-parented in the editor, we check every time
                 if (TryGetComponent(out ISplineReferencer referencer))
-                    return referencer.Spline;
-                if (TryGetComponent(out SplineContainer spline))
-                    return spline;
+                    return referencer.Spline == null || referencer.Spline.Splines.Count == 0 
+                        ? null : referencer.Spline;
+                if (TryGetComponent(out ISplineContainer container))
+                    return container.Splines.Count > 0 ? container : null;
                 return null;
             }
         }
@@ -88,8 +89,8 @@ namespace Unity.Cinemachine
                 {
                     // Check if the spline has CinemachineSplineRoll
                     var spline = referencer.Spline;
-                    if (spline != null)
-                        spline.TryGetComponent(out m_RollCache);
+                    if (spline != null && spline is Component component)
+                        component.TryGetComponent(out m_RollCache);
                 }
             }
 

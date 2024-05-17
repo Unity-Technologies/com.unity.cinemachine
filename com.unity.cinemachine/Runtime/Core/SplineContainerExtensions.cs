@@ -11,7 +11,7 @@ namespace Unity.Cinemachine
         /// <summary>Check spline container and child spline for null</summary>
         /// <param name="spline">spline container to check</param>
         /// <returns>true if container holds a non-null spline</returns>
-        public static bool IsValid(this SplineContainer spline) => spline != null && spline.Spline != null;
+        public static bool IsValid(this ISplineContainer spline) => spline != null && spline.Splines != null && spline.Splines.Count > 0;
 
         /// <summary>
         /// Apply to a <see cref="SplineContainer"/>additional roll from <see cref="CinemachineSplineRoll"/>
@@ -23,14 +23,14 @@ namespace Unity.Cinemachine
         /// <param name="rotation">returned rotation at the point on the spline, in spline-local coords</param>
         /// <returns>True if the spline position is valid</returns>
         public static bool LocalEvaluateSplineWithRoll(
-            this SplineContainer spline,
+            this ISplineContainer spline,
             CinemachineSplineRoll roll,
             Quaternion defaultRotation,
             float tNormalized, 
             out Vector3 position, out Quaternion rotation)
         {
-            if (spline.Spline == null || !SplineUtility.Evaluate(
-                spline.Spline, tNormalized, out var localPosition, out var localTangent, out var localUp))
+            if (!spline.IsValid() || !SplineUtility.Evaluate(
+                spline.Splines[0], tNormalized, out var localPosition, out var localTangent, out var localUp))
             {
                 position = Vector3.zero;
                 rotation = Quaternion.identity;
@@ -47,7 +47,7 @@ namespace Unity.Cinemachine
                 const float delta = 0.01f;
                 var atEnd = tNormalized > 1.0f - delta;
                 var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
-                var p = spline.EvaluatePosition(t1);
+                var p = spline.Splines[0].EvaluatePosition(t1);
                 fwd = atEnd ? localPosition - p : p - localPosition;
             }
 
@@ -63,7 +63,7 @@ namespace Unity.Cinemachine
             // Apply extra roll
             if (roll != null && roll.enabled)
             {
-                float rollValue = roll.Roll.Evaluate(spline.Spline, tNormalized, 
+                float rollValue = roll.Roll.Evaluate(spline.Splines[0], tNormalized, 
                     PathIndexUnit.Normalized, new CinemachineSplineRoll.LerpRollData());
                 rotation = Quaternion.AngleAxis(-rollValue, fwd) * rotation;
             }
@@ -80,15 +80,18 @@ namespace Unity.Cinemachine
         /// <param name="rotation">returned rotation at the point on the spline, in world coords</param>
         /// <returns>True if the spline position is valid</returns>
         public static bool EvaluateSplineWithRoll(
-            this SplineContainer spline,
+            this ISplineContainer splineContainer,
             CinemachineSplineRoll roll,
             Quaternion defaultRotation,
             float tNormalized, 
             out Vector3 position, out Quaternion rotation)
         {
-            var result = LocalEvaluateSplineWithRoll(spline, roll, defaultRotation, tNormalized, out position, out rotation);
-            position = spline.transform.TransformPoint(position);
-            rotation = spline.transform.rotation * rotation;
+            var result = LocalEvaluateSplineWithRoll(splineContainer, roll, defaultRotation, tNormalized, out position, out rotation);
+            if (splineContainer is Component component)
+            {
+                position = component.transform.TransformPoint(position);
+                rotation = component.transform.rotation * rotation;
+            }
             return result;
         }
         

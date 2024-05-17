@@ -14,41 +14,34 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
+            var splineData = target as CinemachineSplineRoll;
 
-            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(SplineRollTool))) 
+            var invalidHelp = new HelpBox(
+                "This component should be associated with a non-empty spline", 
+                HelpBoxMessageType.Warning);
+            ux.Add(invalidHelp);
+            var toolButton = ux.AddChild(new Button(() => ToolManager.SetActiveTool(typeof(SplineRollTool))) 
                 { text = "Edit Data Points in Scene View" });
             ux.AddSpace();
-
-            var splineData = target as CinemachineSplineRoll;
-            var rollProp = serializedObject.FindProperty(() => splineData.Roll);
-            ux.Add(new PropertyField(rollProp.FindPropertyRelative("m_IndexUnit")) 
-                { tooltip = "Defines how to interpret the Index field for each data point.  "
-                    + "Knot is the recommended value because it remains robust if the spline points change." });
-
-            ux.AddHeader("Data Points");
-            var dataPointsProp = rollProp.FindPropertyRelative("m_DataPoints");
-            var list = ux.AddChild(new PropertyField(dataPointsProp));
-            list.OnInitialGeometry(() => 
+            ux.TrackAnyUserActivity(() =>
             {
-                var listView = list.Q<ListView>();
-                listView.reorderable = false;
-                listView.showFoldoutHeader = false;
-                listView.showBoundCollectionSize = false;
+                var haveSpline = splineData != null && splineData.SplineContainer != null;
+                invalidHelp.SetVisible(!haveSpline);
+                toolButton.SetEnabled(haveSpline);
             });
 
-            ux.TrackPropertyValue(dataPointsProp, (p) => 
+            var rollProp = serializedObject.FindProperty(() => splineData.Roll);
+            ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData?.SplineContainer));
+
+            ux.AddHeader("Data Points");
+            var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
+                splineData.Roll, rollProp, () => splineData?.SplineContainer));
+
+            ux.TrackPropertyValue(rollProp, (p) => 
             {
                 // Invalidate the mesh cache when the property changes (SetDirty() not always called!)
                 SplineGizmoCache.Instance = null; 
                 EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
-
-                if (p.arraySize > 1)
-                {
-                    // Hack to set dirty to force a reorder
-                    var item = splineData.Roll[0];
-                    splineData.Roll[0] = item;
-                    splineData.Roll.SortIfNecessary();
-                }
             });
 
             return ux;
@@ -68,8 +61,8 @@ namespace Unity.Cinemachine.Editor
 
         static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)
         {
-            var spline = splineRoll == null ? null : splineRoll.Spline;
-            if (spline == null || spline.Spline == null || spline.Spline.Count == 0)
+            var spline = splineRoll == null ? null : splineRoll.SplineContainer as SplineContainer;
+            if (spline == null)
                 return;
 
             // Rebuild the cached mesh if necessary.  This can be expensive!
@@ -212,7 +205,7 @@ namespace Unity.Cinemachine.Editor
             splineData = target as CinemachineSplineRoll;
             if (splineData != null)
             {
-                spline = splineData.Spline;
+                spline = splineData.SplineContainer as SplineContainer;
                 return spline != null && spline.Spline != null;
             }
             spline = null;
