@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -62,7 +60,7 @@ namespace Unity.Cinemachine.Editor
             pathUnitProp.enumValueIndex = (int)newIndexUnit;
         }
 
-        public static ListView CreateDataListField<T>(
+        public static PropertyField CreateDataListField<T>(
             SplineData<T> splineData,
             SerializedProperty splineDataProp, 
             GetSplineDelegate getSpline)
@@ -72,21 +70,21 @@ namespace Unity.Cinemachine.Editor
 
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
-            //var array = arrayProp.objectReferenceValue as IList;
 
-            var list = new ListView() 
-            { 
-                reorderable = false, 
-                showFoldoutHeader = false, 
-                showBoundCollectionSize = false, 
-                showAddRemoveFooter = true
-            };
-            list.BindProperty(arrayProp);
+            var list = new PropertyField(arrayProp);
+            list.OnInitialGeometry(() => 
+            {
+                var listView = list.Q<ListView>();
+                listView.reorderable = false;
+                listView.showFoldoutHeader = false;
+                listView.showBoundCollectionSize = false;
+                listView.showAddRemoveFooter = true;
+                listView.showAlternatingRowBackgrounds = AlternatingRowBackground.All;
+            });
 
             list.TrackPropertyValue(arrayProp, (p) => 
             {
                 Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
-                //p.serializedObject.ApplyModifiedProperties();
 
                 // Make sure the indexes are properly wrapped around at the bondaries of a loop
                 SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0);

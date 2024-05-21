@@ -60,7 +60,7 @@ namespace Unity.Cinemachine
         void Reset() => Targets = new SplineData<Item> { DefaultValue = new Item { Easing = 1 } };
 
         /// <inheritdoc/>
-        public override bool IsValid => enabled && Targets != null && GetTargets(out _, out _);
+        public override bool IsValid => enabled && Targets != null && GetGetSplineAndDolly(out _, out _);
 
         /// <inheritdoc/>
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
@@ -68,7 +68,7 @@ namespace Unity.Cinemachine
         /// <inheritdoc/>
         public override void MutateCameraState(ref CameraState state, float deltaTime)
         {
-            if (!GetTargets(out var spline, out var dolly))
+            if (!GetGetSplineAndDolly(out var spline, out var dolly))
                 return;
 
             var splinePath = spline.Spline;
@@ -98,7 +98,7 @@ namespace Unity.Cinemachine
         /// <param name="spline">The spline being augmented</param>
         /// <param name="dolly">The associated CinemachineTrackDolly component</param>
         /// <returns></returns>
-        internal bool GetTargets(out SplineContainer spline, out CinemachineSplineDolly dolly)
+        internal bool GetGetSplineAndDolly(out SplineContainer spline, out CinemachineSplineDolly dolly)
         {
             if (TryGetComponent(out dolly))
             {

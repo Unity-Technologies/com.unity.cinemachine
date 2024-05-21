@@ -22,7 +22,6 @@ namespace Unity.Cinemachine.Editor
             ux.Add(invalidHelp);
             var toolButton = ux.AddChild(new Button(() => ToolManager.SetActiveTool(typeof(SplineRollTool))) 
                 { text = "Edit Data Points in Scene View" });
-            ux.AddSpace();
             ux.TrackAnyUserActivity(() =>
             {
                 var haveSpline = splineData != null && splineData.SplineContainer != null;

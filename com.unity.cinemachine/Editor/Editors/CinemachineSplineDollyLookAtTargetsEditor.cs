@@ -14,66 +14,48 @@ namespace Unity.Cinemachine.Editor
     {
         private void OnEnable()
         {
-            LookAtDataOnSplineTool.s_OnDataLookAtDragged += (spline, splineData, index) => 
-                EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
+            LookAtDataOnSplineTool.s_OnDataLookAtDragged += BringCameraToSplinePoint;
+            LookAtDataOnSplineTool.s_OnDataIndexDragged += BringCameraToSplinePoint;
 
-            LookAtDataOnSplineTool.s_OnDataIndexDragged += (spline, splineData, index) =>
+            // local method
+            void BringCameraToSplinePoint(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData, int index)
             {
-                // Bring the camera to this point on the spline
-                var dolly = splineData.GetComponent<CinemachineSplineDolly>();
-                if (dolly != null)
+                if (splineData.TryGetComponent<CinemachineSplineDolly>(out var dolly))
                 {
                     var dataPoint = splineData.Targets[index];
                     Undo.RecordObject(dolly, "Modifying CinemachineSplineDollyLookAtTargets values");
                     dolly.CameraPosition = spline.Spline.ConvertIndexUnit(dataPoint.Index, splineData.Targets.PathIndexUnit, dolly.PositionUnits);
                     EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
                 }
-            };
+            }
         }
 
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
+            var splineData = target as CinemachineSplineDollyLookAtTargets;
             this.AddMissingCmCameraHelpBox(ux);
 
-            ux.Add(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
-                { text = "Edit Targets in Scene View" });
-
-            var splineData = target as CinemachineSplineDollyLookAtTargets;
             var invalidHelp = new HelpBox(
                 "This component requires a CinemachineSplineDolly component referencing a nonempty Spline", 
                 HelpBoxMessageType.Warning);
             ux.Add(invalidHelp);
-            ux.TrackAnyUserActivity(() => invalidHelp.SetVisible(splineData != null && !splineData.GetTargets(out _, out _)));
+            var toolButton = ux.AddChild(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
+                { text = "Edit Targets in Scene View" });
+            ux.TrackAnyUserActivity(() =>
+            {
+                var haveSpline = splineData != null && splineData.GetGetSplineAndDolly(out _, out _);
+                invalidHelp.SetVisible(!haveSpline);
+                toolButton.SetEnabled(haveSpline);
+            });
 
             var targetsProp = serializedObject.FindProperty(() => splineData.Targets);
-            ux.Add(new PropertyField(targetsProp.FindPropertyRelative("m_IndexUnit")) 
-                { tooltip = "Defines how to interpret the Index field for each data point.  "
-                    + "Knot is the recommended value because it remains robust if the spline points change." });
+            ux.Add(SplineDataInspectorUtility.CreatePathUnitField(targetsProp, () 
+                => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null));
 
             ux.AddHeader("Targets");
-            var dataPointsProp = targetsProp.FindPropertyRelative("m_DataPoints");
-            var list = ux.AddChild(new PropertyField(dataPointsProp, "Targets") 
-                { tooltip = "The list of LookAt target on the spline.  As the camera approaches these positions on the spline, "
-                    + "the camera will look at the corresponding targets."});
-            list.OnInitialGeometry(() => 
-            {
-                var listView = list.Q<ListView>();
-                listView.reorderable = false;
-                listView.showFoldoutHeader = false;
-                listView.showBoundCollectionSize = false;
-            });
-
-            ux.TrackPropertyValue(dataPointsProp, (p) => 
-            {
-                if (p.arraySize > 1)
-                {
-                    // Hack to set dirty to force a reorder
-                    var item = splineData.Targets[0];
-                    splineData.Targets[0] = item;
-                    splineData.Targets.SortIfNecessary();
-                }
-            });
+            var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
+                splineData.Targets, targetsProp, () => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null));
 
             return ux;
         }
@@ -84,7 +66,7 @@ namespace Unity.Cinemachine.Editor
         {
             // For performance reasons, we only draw a gizmo for the current active game object
             if (Selection.activeGameObject == splineData.gameObject && splineData.Targets.Count > 0
-                && splineData.GetTargets(out var spline, out _) && spline.Spline != null)
+                && splineData.GetGetSplineAndDolly(out var spline, out _) && spline.Spline != null)
             {
                 var c = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
                 if (ToolManager.activeToolType != typeof(LookAtDataOnSplineTool))
@@ -158,10 +140,10 @@ namespace Unity.Cinemachine.Editor
 
         public override GUIContent toolbarIcon => m_IconContent;
 
-        bool GetTargets(out CinemachineSplineDollyLookAtTargets splineData, out SplineContainer spline, out CinemachineSplineDolly dolly)
+        bool GetGetSplineAndDolly(out CinemachineSplineDollyLookAtTargets splineData, out SplineContainer spline, out CinemachineSplineDolly dolly)
         {
             splineData = target as CinemachineSplineDollyLookAtTargets;
-            if (splineData != null && splineData.GetTargets(out spline, out dolly))
+            if (splineData != null && splineData.GetGetSplineAndDolly(out spline, out dolly))
                 return true;
             spline = null;
             dolly = null;
@@ -181,7 +163,7 @@ namespace Unity.Cinemachine.Editor
 
         public override void OnToolGUI(EditorWindow window)
         {
-            if (!GetTargets(out var splineData, out var spline, out _))
+            if (!GetGetSplineAndDolly(out var splineData, out var spline, out _))
                 return;
 
             Undo.RecordObject(splineData, "Modifying CinemachineSplineDollyLookAtTargets values");
@@ -206,7 +188,7 @@ namespace Unity.Cinemachine.Editor
 
             int nearestIndex = ControlIdToIndex(anchorId, HandleUtility.nearestControl, splineData.Targets.Count);
             if (nearestIndex >= 0)
-                DrawTooltip(spline, splineData, nearestIndex);
+                DrawTooltip(spline, splineData, nearestIndex, false);
 
             return ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Targets.Count);
 
@@ -223,7 +205,13 @@ namespace Unity.Cinemachine.Editor
             for (var i = 0; i < splineData.Targets.Count; ++i)
             {
                 var dataPoint = splineData.Targets[i];
+
+                int anchorId0 = GUIUtility.GetControlID(FocusType.Passive);
                 var newPos = Handles.PositionHandle(dataPoint.Value.WorldLookAt, Quaternion.identity);
+                int anchorId1 = GUIUtility.GetControlID(FocusType.Passive);
+                if (HandleUtility.nearestControl > anchorId0 && HandleUtility.nearestControl < anchorId1)
+                    DrawTooltip(spline, splineData, i, true);
+
                 if (newPos != dataPoint.Value.WorldLookAt)
                 {
                     var item = dataPoint.Value;
@@ -236,15 +224,19 @@ namespace Unity.Cinemachine.Editor
             return changed;
         }
 
-        void DrawTooltip(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData, int index)
+        void DrawTooltip(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData, int index, bool useLookAt)
         {
             var dataPoint = splineData.Targets[index];
             var targetText = dataPoint.Value.LookAt != null ? dataPoint.Value.LookAt.name : dataPoint.Value.WorldLookAt.ToString();
             var text = $"Index: {dataPoint.Index}\nLookAt: {targetText}";
 
             var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, dataPoint.Index, splineData.Targets.PathIndexUnit);
-            spline.Evaluate(t, out var position, out _, out _);
-            CinemachineSceneToolHelpers.DrawLabel(position, text);
+            spline.Evaluate(t, out var p0, out _, out _);
+            var p1 = dataPoint.Value.WorldLookAt;
+            CinemachineSceneToolHelpers.DrawLabel(useLookAt ? p1 : (Vector3)p0, text);
+
+            // Highlight the view line
+            Handles.DrawLine(p0, p1, Handles.lineThickness + 2);
         }
     }
 }
