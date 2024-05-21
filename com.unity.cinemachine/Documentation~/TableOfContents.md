@@ -73,6 +73,7 @@
   * [Cinemachine Shot Quality Evaluator](CinemachineShotQualityEvaluator.md)
   * [Cinemachine Spline Cart](CinemachineSplineCart.md)
   * [Cinemachine Spline Dolly](CinemachineSplineDolly.md)
+  * [Cinemachine Spline Dolly LookAt Targets](CinemachineSplineDollyLookAtTargets.md)
   * [Cinemachine Spline Roll](CinemachineSplineRoll.md)
   * [Cinemachine State-Driven camera](CinemachineStateDrivenCamera.md)
   * [Cinemachine Storyboard](CinemachineStoryboard.md)
