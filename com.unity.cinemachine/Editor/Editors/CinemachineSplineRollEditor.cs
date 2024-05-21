@@ -187,7 +187,7 @@ namespace Unity.Cinemachine.Editor
             InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField, false);
 
             ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }});
-            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value)));
+            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));
             return ux;
         }
     }

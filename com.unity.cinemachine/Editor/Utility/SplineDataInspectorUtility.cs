@@ -79,7 +79,7 @@ namespace Unity.Cinemachine.Editor
                 listView.showFoldoutHeader = false;
                 listView.showBoundCollectionSize = false;
                 listView.showAddRemoveFooter = true;
-                listView.showAlternatingRowBackgrounds = AlternatingRowBackground.All;
+                listView.showAlternatingRowBackgrounds = AlternatingRowBackground.None;
             });
 
             list.TrackPropertyValue(arrayProp, (p) => 
