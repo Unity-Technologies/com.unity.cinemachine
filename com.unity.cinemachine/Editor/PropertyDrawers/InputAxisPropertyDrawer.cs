@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
             var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
             valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
-            valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField, true);
+            valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField, (d) => d.CancelDelayedWhenDragging = true);
 
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
@@ -38,7 +38,7 @@ namespace Unity.Cinemachine.Editor
                 valueFieldRow.Contents.SafeSetIsDelayed();
                 valueFieldRow.Contents.Q<FloatField>().style.marginLeft = 0;
             });
-            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueFieldRow.Contents, true);
+            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueFieldRow.Contents, (d) => d.CancelDelayedWhenDragging = true);
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});

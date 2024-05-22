@@ -184,7 +184,7 @@ namespace Unity.Cinemachine.Editor
             var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
             var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
             indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
-            InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField, false);
+            InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField);
 
             ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }});
             ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));

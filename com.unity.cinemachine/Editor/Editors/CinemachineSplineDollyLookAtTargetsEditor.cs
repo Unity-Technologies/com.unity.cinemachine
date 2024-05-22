@@ -13,6 +13,14 @@ namespace Unity.Cinemachine.Editor
     [CustomEditor(typeof(CinemachineSplineDollyLookAtTargets))]
     class CinemachineLookAtDataOnSplineEditor : CinemachineComponentBaseEditor
     {
+        class UndRedoMonitor
+        {
+            int m_LastUndoRedoFrame;
+            public UndRedoMonitor() { Undo.undoRedoPerformed += () => m_LastUndoRedoFrame = Time.frameCount; }
+            public bool IsUndoRedo => Time.frameCount <= m_LastUndoRedoFrame + 1;
+        }
+        UndRedoMonitor m_UndoRedoMonitor = new ();
+
         /// <summary>
         /// This is needed to keep track of array values so that when they are changed by the user
         /// we can peek at the previous values and decide if we need to update the offset
@@ -20,48 +28,83 @@ namespace Unity.Cinemachine.Editor
         /// We also use it to select the appropriate item in the ListView when the user manipulates
         /// a data point in the scene view.
         /// </summary>
-        class ArrayValuesCache
+        class InspectorStateCache
         {
-            public int LastUndoRedoFrame = -1;
+            bool m_WasDragging = false;
+            DataPoint<CinemachineSplineDollyLookAtTargets.Item> m_DraggedValue;
             List<DataPoint<CinemachineSplineDollyLookAtTargets.Item>> m_DataPointsCache = new ();
 
-            public ArrayValuesCache() { Undo.undoRedoPerformed += () => LastUndoRedoFrame = Time.frameCount; }
+            public int CurrentSelection { get; set; } = -1;
 
             // Returns index of first changed item, and its previous value
             public int GetFirstChangedItem(
                 CinemachineSplineDollyLookAtTargets splineData, 
                 out DataPoint<CinemachineSplineDollyLookAtTargets.Item> previousValue)
             {
+                if (m_WasDragging)
+                {
+                    previousValue = m_DraggedValue;
+                    for (int i = 0; i < splineData.Targets.Count; ++i)
+                        if (Equals(m_DraggedValue, splineData.Targets[i]))
+                            return i;
+                    return -1;
+                }
                 int count = Mathf.Min(splineData.Targets.Count, m_DataPointsCache.Count);
                 for (int i = 0; i < count; ++i)
                 {
-                    var dataPoint = splineData.Targets[i];
-                    if (m_DataPointsCache[i].Index != dataPoint.Index 
-                        || m_DataPointsCache[i].Value.LookAt != dataPoint.Value.LookAt
-                        || m_DataPointsCache[i].Value.Offset != dataPoint.Value.Offset)
+                    if (!Equals(m_DataPointsCache[i], splineData.Targets[i]))
                     {
                         previousValue = m_DataPointsCache[i];
-                        m_DataPointsCache[i] = dataPoint;
                         return i;
                     }
                 }
                 previousValue = default;
                 return -1;
+
+                static bool Equals(
+                    DataPoint<CinemachineSplineDollyLookAtTargets.Item> a, 
+                    DataPoint<CinemachineSplineDollyLookAtTargets.Item> b)
+                {
+                    return a.Index == b.Index && a.Value.LookAt == b.Value.LookAt 
+                        && a.Value.Offset == b.Value.Offset && a.Value.Easing == b.Value.Easing;
+                }
             }
 
-            public void Refresh(CinemachineSplineDollyLookAtTargets splineData)
+            public void Reset(CinemachineSplineDollyLookAtTargets splineData)
             {
+                m_WasDragging = false;
                 m_DataPointsCache.Clear();
                 for (int i = 0; i < splineData.Targets.Count; ++i)
                     m_DataPointsCache.Add(splineData.Targets[i]);
             }
+
+            public void SnapshotIndexDrag(CinemachineSplineDollyLookAtTargets splineData, int arrayIndex, float value)
+            {
+                if (arrayIndex >= 0 && arrayIndex < m_DataPointsCache.Count
+                    && splineData != null && splineData.GetGetSplineAndDolly(out var spline, out _))
+                {
+                    m_WasDragging = true;
+                    m_DraggedValue = m_DataPointsCache[arrayIndex];
+                    m_DraggedValue.Index = spline.Spline.StandardizePosition(value, splineData.Targets.PathIndexUnit);
+                }
+            }
         }
-        ArrayValuesCache m_ArrayValuesCache = new ();
+
+        static Dictionary<CinemachineSplineDollyLookAtTargets, InspectorStateCache> m_CacheLookup = new ();
+        static InspectorStateCache GetInspectorStateCache(CinemachineSplineDollyLookAtTargets splineData) => m_CacheLookup[splineData];
 
         private void OnEnable()
         {
             LookAtDataOnSplineTool.s_OnDataLookAtDragged += BringCameraToSplinePoint;
             LookAtDataOnSplineTool.s_OnDataIndexDragged += BringCameraToSplinePoint;
+            m_CacheLookup.Add(target as CinemachineSplineDollyLookAtTargets, new InspectorStateCache());
+        }
+
+        private void OnDisable()
+        {
+            LookAtDataOnSplineTool.s_OnDataLookAtDragged -= BringCameraToSplinePoint;
+            LookAtDataOnSplineTool.s_OnDataIndexDragged -= BringCameraToSplinePoint;
+            m_CacheLookup.Remove(target as CinemachineSplineDollyLookAtTargets);
         }
 
         public override VisualElement CreateInspectorGUI()
@@ -116,17 +159,15 @@ namespace Unity.Cinemachine.Editor
                     var overlay = new VisualElement () { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
                     var indexField1 = overlay.AddChild(new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 50 }});
                     indexField1.OnInitialGeometry(() => indexField1.SafeSetIsDelayed());
-                    indexField1.RegisterValueChangeCallback((evt) => BringCameraToSplinePoint(spline, splineData, index)); // GML does nothing!  TODO: Fix this
 
                     var lookAtField1 = overlay.AddChild(new PropertyField(lookAtProp, "") { style = { flexGrow = 4, flexBasis = 50, marginLeft = 3 }});
                     var overlayLabel = new Label("Index") { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
-                    overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay, false);
-
+                    overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay, OnIndexDraggerCreated);
+                    
                     var foldout = new Foldout() { text = $"Target {index}" };
                     foldout.BindProperty(element);
                     var indexField2 = foldout.AddChild(new PropertyField(indexProp) { tooltip = indexTooltip });
                     indexField2.OnInitialGeometry(() => indexField2.SafeSetIsDelayed());
-                    indexField2.RegisterValueChangeCallback((evt) => BringCameraToSplinePoint(spline, splineData, index)); // GML does nothing!  TODO: Fix this
                     var lookAtField2 = foldout.AddChild(new PropertyField(lookAtProp));
                     foldout.Add(new PropertyField(offsetProp));
                     foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
@@ -134,20 +175,29 @@ namespace Unity.Cinemachine.Editor
                     ux.Add(new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel) { style = { marginLeft = 12 }});
 
                     ((BindableElement)ux).BindProperty(element); // bind must be done at the end
+
+                    // local function
+                    void OnIndexDraggerCreated(IDelayedFriendlyDragger dragger)
+                    {
+                        dragger.OnStartDrag = () => list.selectedIndex = index;
+                        dragger.OnDragValueChangedFloat = (v) => 
+                        {
+                            GetInspectorStateCache(splineData).SnapshotIndexDrag(splineData, index, v);
+                            BringCameraToCustomSplinePoint(splineData, v);
+                        };
+                    }
                 };
 
                 list.TrackPropertyValue(arrayProp, (p) => 
                 {
-                    var selectedIndex = m_ArrayValuesCache.GetFirstChangedItem(splineData, out var previous);
+                    var selectedIndex = GetInspectorStateCache(splineData).GetFirstChangedItem(splineData, out var previous);
                     if (selectedIndex >= 0)
                     {
                         list.selectedIndex = selectedIndex;
                         list.ScrollToItem(selectedIndex);
 
-                        BringCameraToSplinePoint(spline, splineData, selectedIndex);
-
                         // Don't mess with the offset if change was a result of undo/redo
-                        if (Time.frameCount <= m_ArrayValuesCache.LastUndoRedoFrame + 1)
+                        if (m_UndoRedoMonitor.IsUndoRedo)
                             return;
 
                         var newData = splineData.Targets[selectedIndex];
@@ -171,23 +221,41 @@ namespace Unity.Cinemachine.Editor
                             p.serializedObject.Update();
                         }
                     }
-                    EditorApplication.delayCall += () => m_ArrayValuesCache.Refresh(splineData);
+                    EditorApplication.delayCall += () => GetInspectorStateCache(splineData).Reset(splineData);
                 });
+
+                list.selectedIndicesChanged += (indices) =>
+                {
+                    var it = indices.GetEnumerator();
+                    if (it.MoveNext())
+                    {
+                        GetInspectorStateCache(splineData).CurrentSelection = it.Current;
+                        BringCameraToSplinePoint(splineData, it.Current);
+                    }
+                    else
+                        GetInspectorStateCache(splineData).CurrentSelection = -1;
+                };
             });
 
             return ux;
         }
 
-        static void BringCameraToSplinePoint(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData, int index)
+        static void BringCameraToSplinePoint(CinemachineSplineDollyLookAtTargets splineData, int index)
         {
-            if (splineData != null && splineData.TryGetComponent<CinemachineSplineDolly>(out var dolly))
+            if (splineData != null)
+                BringCameraToCustomSplinePoint(splineData, splineData.Targets[index].Index);
+        }
+
+        static void BringCameraToCustomSplinePoint(CinemachineSplineDollyLookAtTargets splineData, float splineIndex)
+        {
+            if (splineData != null && splineData.GetGetSplineAndDolly(out var spline, out var dolly))
             {
-                var dataPoint = splineData.Targets[index];
                 Undo.RecordObject(dolly, "Modifying CinemachineSplineDollyLookAtTargets values");
-                dolly.CameraPosition = spline.Spline.ConvertIndexUnit(dataPoint.Index, splineData.Targets.PathIndexUnit, dolly.PositionUnits);
+                dolly.CameraPosition = spline.Spline.ConvertIndexUnit(splineIndex, splineData.Targets.PathIndexUnit, dolly.PositionUnits);
                 EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
             }
         }
+
 
         [DrawGizmo(GizmoType.Active | GizmoType.NotInSelectionHierarchy
                 | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachineSplineDollyLookAtTargets))]
@@ -200,14 +268,18 @@ namespace Unity.Cinemachine.Editor
                 var c = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
                 if (ToolManager.activeToolType != typeof(LookAtDataOnSplineTool))
                     c.a = 0.5f;
-                Gizmos.color = c;
 
+                var inspectorCache = GetInspectorStateCache(splineData);
                 var indexUnit = splineData.Targets.PathIndexUnit;
                 for (int i = 0; i < splineData.Targets.Count; i++)
                 {
                     var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, splineData.Targets[i].Index, indexUnit);
                     spline.Evaluate(t, out var position, out _, out _);
                     var p = splineData.Targets[i].Value.WorldLookAt;
+                    if (inspectorCache.CurrentSelection == i)
+                        Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
+                    else
+                        Gizmos.color = c;
                     Gizmos.DrawLine(position, p);
                     Gizmos.DrawSphere(p, HandleUtility.GetHandleSize(p) * 0.1f);
                 }
@@ -220,8 +292,8 @@ namespace Unity.Cinemachine.Editor
     {
         GUIContent m_IconContent;
 
-        public static Action<SplineContainer, CinemachineSplineDollyLookAtTargets, int> s_OnDataIndexDragged;
-        public static Action<SplineContainer, CinemachineSplineDollyLookAtTargets, int> s_OnDataLookAtDragged;
+        public static Action<CinemachineSplineDollyLookAtTargets, int> s_OnDataIndexDragged;
+        public static Action<CinemachineSplineDollyLookAtTargets, int> s_OnDataLookAtDragged;
 
         public override GUIContent toolbarIcon => m_IconContent;
 
@@ -256,11 +328,11 @@ namespace Unity.Cinemachine.Editor
             {
                 int changed = DrawDataPointHandles(spline, splineData);
                 if (changed >= 0)
-                    s_OnDataLookAtDragged?.Invoke(spline, splineData, changed);
+                    s_OnDataLookAtDragged?.Invoke(splineData, changed);
 
                 changed = DrawIndexPointHandles(spline, splineData);
                 if (changed >= 0)
-                    s_OnDataIndexDragged?.Invoke(spline, splineData, changed);
+                    s_OnDataIndexDragged?.Invoke(splineData, changed);
             }
         }
 

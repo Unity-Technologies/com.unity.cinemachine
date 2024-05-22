@@ -1,15 +1,34 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PointerType = UnityEngine.UIElements.PointerType;
 
-namespace Unity.Cinemachine
+namespace Unity.Cinemachine.Editor
 {
+    interface IDelayedFriendlyDragger
+    {
+        /// <summary>If true, temporarily disable isDelayed when dragging</summary>
+        public bool CancelDelayedWhenDragging { get; set; }
+
+        /// <summary>Called when dragging starts.
+        public Action OnStartDrag { get; set; }
+
+        /// <summary>Called when dragging stops.
+        public Action OnStopDrag { get; set; }
+
+        /// <summary>Called when the value changes during dragging.</summary>
+        public Action<int> OnDragValueChangedInt { get; set; }
+
+        /// <summary>Called when the value changes during dragging.</summary>
+        public Action<float> OnDragValueChangedFloat { get; set; }
+    }
+
     /// <summary>
     /// Provides dragging on a visual element to change a value field with 
-    /// isDelayed set, but for int and float driven fields turns off isDelayed while dragging.
+    /// isDelayed set, but for int and float driven fields can turn off isDelayed while dragging.
     /// </summary>
-    class DelayedFriendlyFieldDragger<T> : BaseFieldMouseDragger
+    class DelayedFriendlyFieldDragger<T> : BaseFieldMouseDragger, IDelayedFriendlyDragger
     {
         /// <summary>DelayedFriendlyFieldDragger's constructor./// </summary>
         /// <param name="drivenField">The field.</param>
@@ -31,6 +50,21 @@ namespace Unity.Cinemachine
 
         /// <summary>Start value before drag.</summary>
         public T startValue { get; set; }
+
+        /// <summary>If true, temporarily disable isDelayed when draggin</summary>
+        public bool CancelDelayedWhenDragging { get; set; }
+
+        /// <summary>Called when dragging starts.
+        public Action OnStartDrag { get; set; }
+
+        /// <summary>Called when dragging stops.
+        public Action OnStopDrag { get; set; }
+
+        /// <summary>Called when the value changes during dragging.</summary>
+        public Action<int> OnDragValueChangedInt { get; set; }
+
+        /// <summary>Called when the value changes during dragging.</summary>
+        public Action<float> OnDragValueChangedFloat { get; set; }
 
         /// <inheritdoc />
         public sealed override void SetDragZone(VisualElement dragElement, Rect hotZone)
@@ -90,15 +124,19 @@ namespace Unity.Cinemachine
             if (m_DrivenField is TextInputBaseField<float> floatField)
             {
                 m_WasDelayed = floatField.isDelayed;
-                floatField.isDelayed = false;
+                if (CancelDelayedWhenDragging)
+                    floatField.isDelayed = false;
             }
             else if (m_DrivenField is TextInputBaseField<int> intField)
             {
                 m_WasDelayed = intField.isDelayed;
-                intField.isDelayed = false;
+                if (CancelDelayedWhenDragging)
+                    intField.isDelayed = false;
             }
             m_DrivenField.StartDragging();
             EditorGUIUtility.SetWantsMouseJumping(1);
+
+            OnStartDrag?.Invoke();
         }
 
         private void UpdateValueOnPointerMove(PointerMoveEvent evt)
@@ -112,6 +150,19 @@ namespace Unity.Cinemachine
             {
                 DeltaSpeed s = shiftKey ? DeltaSpeed.Fast : (altKey ? DeltaSpeed.Slow : DeltaSpeed.Normal);
                 m_DrivenField.ApplyInputDeviceDelta(deltaPosition, s, startValue);
+
+                if (OnDragValueChangedFloat != null && m_DrivenField is TextInputBaseField<float> floatField)
+                {
+                    var textElement = floatField.Q<TextElement>();
+                    if (textElement != null)
+                        OnDragValueChangedFloat.Invoke((float)(object)float.Parse(textElement.text));
+                }
+                else if (OnDragValueChangedInt != null && m_DrivenField is TextInputBaseField<int> intField)
+                {
+                    var textElement = intField.Q<TextElement>();
+                    if (textElement != null)
+                        OnDragValueChangedInt.Invoke((int)(object)int.Parse(textElement.text));
+                }
             }
         }
 
@@ -124,6 +175,7 @@ namespace Unity.Cinemachine
         {
             if (dragging)
             {
+                OnStopDrag?.Invoke();
                 dragging = false;
                 m_DragElement.UnregisterCallback<PointerMoveEvent>(UpdateValueOnPointerMove);
                 m_DragElement.ReleasePointer(pointerId);
