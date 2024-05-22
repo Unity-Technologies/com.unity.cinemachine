@@ -166,8 +166,11 @@ namespace Unity.Cinemachine.Editor
                     
                     var foldout = new Foldout() { text = $"Target {index}" };
                     foldout.BindProperty(element);
-                    var indexField2 = foldout.AddChild(new PropertyField(indexProp) { tooltip = indexTooltip });
+                    var row = foldout.AddChild(new InspectorUtility.LabeledRow("Index", indexTooltip));
+                    var indexField2 = row.Contents.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1 }});
                     indexField2.OnInitialGeometry(() => indexField2.SafeSetIsDelayed());
+                    row.Label.AddDelayedFriendlyPropertyDragger(indexProp, indexField2, OnIndexDraggerCreated);
+
                     var lookAtField2 = foldout.AddChild(new PropertyField(lookAtProp));
                     foldout.Add(new PropertyField(offsetProp));
                     foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
