@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Editor
             var noSplineHelp = ux.AddChild(new HelpBox("A Spline is required.", HelpBoxMessageType.Warning));
             var splineIsChildHelp = ux.AddChild(new HelpBox("Spline should not be a child of this object.", HelpBoxMessageType.Error));
 
-            var splineProp = serializedObject.FindProperty(() => Target.SplineSettings);
+            var splineProp = serializedObject.FindProperty("m_SplineSettings");
             ux.Add(new PropertyField(splineProp));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineOffset)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CameraRotation)));

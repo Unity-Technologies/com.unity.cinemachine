@@ -30,7 +30,7 @@ namespace Unity.Cinemachine.Editor
             });
 
             var rollProp = serializedObject.FindProperty(() => splineData.Roll);
-            ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData?.SplineContainer));
+            ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData == null ? null : splineData.SplineContainer));
 
             ux.AddHeader("Data Points");
             var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
@@ -60,26 +60,31 @@ namespace Unity.Cinemachine.Editor
 
         static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)
         {
-            var spline = splineRoll == null ? null : splineRoll.SplineContainer as SplineContainer;
-            if (spline == null)
+            var splineContainer = splineRoll == null ? null : splineRoll.SplineContainer as SplineContainer;
+            if (!splineContainer.IsValid())
                 return;
+
+            var transform = splineContainer.transform;
+            var scale = transform.lossyScale;
+            width = width * 3 / (scale.x + scale.y + scale.z);
 
             // Rebuild the cached mesh if necessary.  This can be expensive!
             if (SplineGizmoCache.Instance == null 
                 || SplineGizmoCache.Instance.Mesh == null
-                || SplineGizmoCache.Instance.Spline != spline.Spline
+                || SplineGizmoCache.Instance.Spline != splineContainer.Spline
                 || SplineGizmoCache.Instance.RollData != splineRoll.Roll
                 || SplineGizmoCache.Instance.Width != width
                 || SplineGizmoCache.Instance.Resolution != resolution)
             {
-                var numKnots = spline.Spline.Count;
+                var numKnots = splineContainer.Spline.Count;
                 var numSteps = numKnots * resolution;
                 var stepSize = 1.0f / numSteps;
                 var halfWidth = width * 0.5f;
 
                 // For efficiency, we create a mesh with the track and draw it in one shot
-                spline.LocalEvaluateSplineWithRoll(splineRoll, Quaternion.identity, 0, out var p, out var q);
-                var w = (q * Vector3.right) * halfWidth;
+                var scaledSpline = new CachedScaledSpline(splineContainer.Spline, transform, Collections.Allocator.Temp);
+                scaledSpline.LocalEvaluateSplineWithRoll(splineRoll, Quaternion.identity, 0, out var p, out var q);
+                var w = q * Vector3.right * halfWidth;
 
                 var indices = new int[2 * 3 * numSteps];
                 numSteps++; // ceil
@@ -94,8 +99,8 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 1; i < numSteps; ++i)
                 {
                     var t = i * stepSize;
-                    spline.LocalEvaluateSplineWithRoll(splineRoll, Quaternion.identity, t, out p, out q);
-                    w = (q * Vector3.right) * halfWidth;
+                    scaledSpline.LocalEvaluateSplineWithRoll(splineRoll, Quaternion.identity, t, out p, out q);
+                    w = q * Vector3.right * halfWidth;
 
                     indices[iIndex++] = vIndex - 2;
                     indices[iIndex++] = vIndex - 1;
@@ -117,7 +122,7 @@ namespace Unity.Cinemachine.Editor
                 SplineGizmoCache.Instance = new SplineGizmoCache
                 {
                     Mesh = mesh,
-                    Spline = spline.Spline,
+                    Spline = splineContainer.Spline,
                     RollData = splineRoll.Roll,
                     Width = width,
                     Resolution = resolution
@@ -126,7 +131,7 @@ namespace Unity.Cinemachine.Editor
             // Draw the path
             var colorOld = Gizmos.color;
             var matrixOld = Gizmos.matrix;
-            Gizmos.matrix = spline.transform.localToWorldMatrix;
+            Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
             Gizmos.color = pathColor;
             Gizmos.DrawWireMesh(SplineGizmoCache.Instance.Mesh);
             Gizmos.matrix =matrixOld;
@@ -180,22 +185,21 @@ namespace Unity.Cinemachine.Editor
 
             var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
 
-            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }});
+            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
             var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
             var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
             indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
             InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField);
 
-            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }});
+            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
             ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));
             return ux;
         }
     }
 
     [EditorTool("Spline Roll Tool", typeof(CinemachineSplineRoll))]
-    sealed class SplineRollTool : EditorTool, IDrawSelectedHandles
+    sealed class SplineRollTool : EditorTool
     {
-        const float k_UnselectedAlpha = 0.3f;
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
 
@@ -222,21 +226,6 @@ namespace Unity.Cinemachine.Editor
             };
         }
 
-        // Draw the data handles when the tool is inactive
-        public void OnDrawHandles()
-        {
-            if (Event.current.type != EventType.Repaint || ToolManager.IsActiveTool(this) || !GetTargets(out var splineData, out var spline))
-                return;
-
-            var color = Handles.color;
-            color.a = k_UnselectedAlpha;
-            using (new Handles.DrawingScope(color))
-            {
-                var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-                DrawDataPointHandles(nativeSpline, splineData.Roll, false);
-            }
-        }
-
         public override void OnToolGUI(EditorWindow window)
         {
             if (!GetTargets(out var splineData, out var spline))
@@ -248,7 +237,7 @@ namespace Unity.Cinemachine.Editor
             {
                 var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
                 DrawIndexPointHandles(nativeSpline, splineData.Roll);
-                DrawDataPointHandles(nativeSpline, splineData.Roll, true);
+                DrawDataPointHandles(nativeSpline, splineData.Roll);
             }
         }
 
@@ -275,7 +264,7 @@ namespace Unity.Cinemachine.Editor
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
 
-        int DrawDataPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, bool enabled)
+        int DrawDataPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         {
             int changed = -1;
             for (var i = 0; i < splineData.Count; ++i)
@@ -284,7 +273,7 @@ namespace Unity.Cinemachine.Editor
                 var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.PathIndexUnit);
                 spline.Evaluate(t, out var position, out var tangent, out var up);
 
-                var id = enabled ? GUIUtility.GetControlID(FocusType.Passive) : -1;
+                var id = GUIUtility.GetControlID(FocusType.Passive);
                 if (DrawDataPoint(id, position, tangent, up, dataPoint.Value, out var result))
                 {
                     dataPoint.Value = result;
@@ -309,7 +298,7 @@ namespace Unity.Cinemachine.Editor
                     var localRot = Quaternion.Euler(0, rollData, 0);
                     var globalRot = m_DefaultHandleOrientation * localRot;
 
-                    var handleSize = Mathf.Max(HandleUtility.GetHandleSize(Vector3.zero) / 2f, CinemachineSplineDollyPrefs.SplineWidth.Value);
+                    var handleSize = HandleUtility.GetHandleSize(Vector3.zero) / 2f;
                     if (Event.current.type == EventType.Repaint) 
                         Handles.ArrowHandleCap(-1, Vector3.zero, globalRot, handleSize, EventType.Repaint);
                     

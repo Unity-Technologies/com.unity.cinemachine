@@ -15,7 +15,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
 
             var splineIsChildHelp = ux.AddChild(new HelpBox("Spline should not be a child of this object.", HelpBoxMessageType.Error));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineSettings)));
+            ux.Add(new PropertyField(serializedObject.FindProperty("m_SplineSettings")));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
 
             var autoDollyProp = serializedObject.FindProperty(() => Target.AutomaticDolly);
