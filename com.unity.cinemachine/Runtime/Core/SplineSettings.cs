@@ -125,6 +125,8 @@ namespace Unity.Cinemachine
             m_IsAllocated = true;
         }
 
+        ~CachedScaledSpline() => Dispose();
+
         /// <inheritdoc/>
         public void Dispose() 
         { 
