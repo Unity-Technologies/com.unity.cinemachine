@@ -65,8 +65,8 @@ namespace Unity.Cinemachine
             { 
                 // In case behaviour was re-parented in the editor, we check every time
                 if (TryGetComponent(out ISplineReferencer referencer))
-                    return referencer.Spline == null || referencer.Spline.Splines.Count == 0 
-                        ? null : referencer.Spline;
+                    return referencer.SplineSettings.Spline == null || referencer.SplineSettings.Spline.Splines.Count == 0 
+                        ? null : referencer.SplineSettings.Spline;
                 if (TryGetComponent(out ISplineContainer container))
                     return container.Splines.Count > 0 ? container : null;
                 return null;
@@ -88,7 +88,7 @@ namespace Unity.Cinemachine
                 if (!owner.TryGetComponent(out m_RollCache) && owner is ISplineReferencer referencer)
                 {
                     // Check if the spline has CinemachineSplineRoll
-                    var spline = referencer.Spline;
+                    var spline = referencer.SplineSettings.Spline;
                     if (spline != null && spline is Component component)
                         component.TryGetComponent(out m_RollCache);
                 }

@@ -18,7 +18,8 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplineSettings SplineSettings = new () { Units = PathIndexUnit.Normalized };
+        [SerializeField, FormerlySerializedAs("SplineSettings")]
+        SplineSettings m_SplineSettings = new () { Units = PathIndexUnit.Normalized };
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -46,18 +47,21 @@ namespace Unity.Cinemachine
 
         CinemachineSplineRoll.RollCache m_RollCache;
 
+        /// <inheritdoc/>
+        public ref SplineSettings SplineSettings => ref m_SplineSettings;
+
         /// <summary>The Spline container to which the cart will be constrained.</summary>
         public SplineContainer Spline
         {
-            get => SplineSettings.Spline;
-            set => SplineSettings.Spline = value;
+            get => m_SplineSettings.Spline;
+            set => m_SplineSettings.Spline = value;
         }
 
         /// <summary>The cart's current position on the spline, in spline position units</summary>
         public float SplinePosition
         {
-            get => SplineSettings.Position;
-            set => SplineSettings.Position = value;
+            get => m_SplineSettings.Position;
+            set => m_SplineSettings.Position = value;
         }
 
         /// <summary>How to interpret PositionOnSpline:
@@ -67,8 +71,8 @@ namespace Unity.Cinemachine
         /// interpolation between the specific knot index and the next knot."</summary>
         public PathIndexUnit PositionUnits
         {
-            get => SplineSettings.Units;
-            set => SplineSettings.ChangeUnitPreservePosition(value);
+            get => m_SplineSettings.Units;
+            set => m_SplineSettings.ChangeUnitPreservePosition(value);
         }
 
 
@@ -80,14 +84,14 @@ namespace Unity.Cinemachine
         {
             if (m_LegacyPosition != -1)
             {
-                SplineSettings.Position = m_LegacyPosition;
-                SplineSettings.Units = m_LegacyUnits;
+                m_SplineSettings.Position = m_LegacyPosition;
+                m_SplineSettings.Units = m_LegacyUnits;
                 m_LegacyPosition = -1;
                 m_LegacyUnits = 0;
             }
             if (m_LegacySpline != null)
             {
-                SplineSettings.Spline = m_LegacySpline;
+                m_SplineSettings.Spline = m_LegacySpline;
                 m_LegacySpline = null;
             }
         }
@@ -101,7 +105,7 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
+            m_SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
             UpdateMethod = UpdateMethods.Update;
             AutomaticDolly.Method = null;
             TrackingTarget = null;
@@ -145,7 +149,7 @@ namespace Unity.Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
-            var spline = SplineSettings.GetCachedSpline();
+            var spline = m_SplineSettings.GetCachedSpline();
             if (spline != null)
             {
                 var splinePath = Spline.Splines[0];

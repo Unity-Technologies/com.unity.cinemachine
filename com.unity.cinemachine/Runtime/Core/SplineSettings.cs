@@ -11,18 +11,9 @@ namespace Unity.Cinemachine
     /// <summary>Interface for behaviours that reference a Spline</summary>
     public interface ISplineReferencer
     {
-        /// <summary>The Spline container to which the cart will be constrained.</summary>
-        public SplineContainer Spline { get; set; }
-
-        /// <summary>The current position on the spline, in spline position units</summary>
-        public float SplinePosition { get; set; }
-
-        /// <summary>How to interpret SplinePosition:
-        /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
-        /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
-        /// - Knot: Values are defined by knot indices and a fractional value representing the normalized
-        /// interpolation between the specific knot index and the next knot."</summary>
-        public PathIndexUnit PositionUnits { get; set; }
+        /// <summary>Get a reference to the SplineSettings struct contained in this object.</summary>
+        /// <returns>A reference to the embedded SplineSettings struct</returns>
+        public ref SplineSettings SplineSettings { get; }
     }
 
     /// <summary>
@@ -62,7 +53,7 @@ namespace Unity.Cinemachine
         public void ChangeUnitPreservePosition(PathIndexUnit newUnits)
         {
             if (Spline.IsValid() && newUnits != Units)
-                Position = Spline.Spline.ConvertIndexUnit(Position, Units, newUnits);
+                Position = GetCachedSpline().ConvertIndexUnit(Position, Units, newUnits);
             Units = newUnits;
         }
 
@@ -151,7 +142,7 @@ namespace Unity.Cinemachine
             var scale = transform != null ? transform.lossyScale : Vector3.one;
             return spline == m_CachedSource && (m_CachedScale - scale).AlmostZero() 
                 && m_NativeSpline.Count == m_CachedSource.Count
-                //&& Mathf.Abs(m_CachedRawLength - spline.GetLength()) < 0.001f; // is this too slow?
+                //&& Mathf.Abs(m_CachedRawLength - spline.GetLength()) < 0.001f; // this would catch almost everything but is it too expensive?
                 ;
         }
 
