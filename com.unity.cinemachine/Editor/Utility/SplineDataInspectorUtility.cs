@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -27,8 +25,8 @@ namespace Unity.Cinemachine.Editor
                 if (spline != null && newIndexUnit != (PathIndexUnit)indexUnitProp.intValue)
                 {
                     Undo.RecordObject(splineDataProp.serializedObject.targetObject, "Change Index Unit");
+                    splineDataProp.serializedObject.Update();
                     ConvertPathUnit(splineDataProp, spline, 0, newIndexUnit);
-                    indexUnitProp.intValue = (int)newIndexUnit;
                     splineDataProp.serializedObject.ApplyModifiedProperties();
                 }
             });
@@ -44,21 +42,19 @@ namespace Unity.Cinemachine.Editor
         {
             if (container == null || container.Splines.Count == 0)
                 return;
-            var spline = container.Splines[splineIndex];
-            var transform = container is Component component ? component.transform.localToWorldMatrix : Matrix4x4.identity;
-
-            using var native = new NativeSpline(spline, transform);
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var from = (PathIndexUnit)Enum.GetValues(typeof(PathIndexUnit)).GetValue(pathUnitProp.enumValueIndex);
 
+            var spline = container.Splines[splineIndex];
+            var transform = container is Component component ? component.transform.localToWorldMatrix : Matrix4x4.identity;
+            using var native = new NativeSpline(spline, transform);
             for (int i = 0, c = arrayProp.arraySize; i < c; ++i)
             {
                 var point = arrayProp.GetArrayElementAtIndex(i);
                 var index = point.FindPropertyRelative("m_Index");
                 index.floatValue = native.ConvertIndexUnit(index.floatValue, from, newIndexUnit);
             }
-
             pathUnitProp.enumValueIndex = (int)newIndexUnit;
         }
 
@@ -72,7 +68,6 @@ namespace Unity.Cinemachine.Editor
 
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
-            //var array = arrayProp.objectReferenceValue as IList;
 
             var list = new ListView() 
             { 
@@ -86,7 +81,6 @@ namespace Unity.Cinemachine.Editor
             list.TrackPropertyValue(arrayProp, (p) => 
             {
                 Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
-                //p.serializedObject.ApplyModifiedProperties();
 
                 // Make sure the indexes are properly wrapped around at the bondaries of a loop
                 SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0);
@@ -105,17 +99,19 @@ namespace Unity.Cinemachine.Editor
         {
             if (container == null || container.Splines.Count == 0)
                 return;
-            var spline = container.Splines[splineIndex];
-            var splineLength = spline.GetLength();
+
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var unit = (PathIndexUnit)Enum.GetValues(typeof(PathIndexUnit)).GetValue(pathUnitProp.enumValueIndex);
 
+            var spline = container.Splines[splineIndex];
+            var transform = container is Component component ? component.transform : null;
+            var scaledSpline = new CachedScaledSpline(spline, transform, Collections.Allocator.Temp);
             for (int i = 0, c = arrayProp.arraySize; i < c; ++i)
             {
                 var point = arrayProp.GetArrayElementAtIndex(i);
                 var index = point.FindPropertyRelative("m_Index");
-                index.floatValue = spline.StandardizePosition(index.floatValue, unit, splineLength);
+                index.floatValue = scaledSpline.StandardizePosition(index.floatValue, unit, out _);
             }
         }
     }

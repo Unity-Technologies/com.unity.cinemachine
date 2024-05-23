@@ -217,12 +217,11 @@ namespace Unity.Cinemachine
             if (!IsValid)
                 return;
 
-            var splinePath = Spline.Spline;
-            if (splinePath == null || splinePath.Count == 0)
+            var spline = SplineSettings.GetCachedSpline();
+            if (spline == null)
                 return;
             
-            var pathLength = splinePath.GetLength();
-            var splinePos = splinePath.StandardizePosition(CameraPosition, PositionUnits, pathLength);
+            var splinePos = spline.StandardizePosition(CameraPosition, PositionUnits, out var maxPos);
 
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
@@ -242,19 +241,18 @@ namespace Unity.Cinemachine
             if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 // If spline is closed, we choose shortest path for damping
-                var max = splinePath.GetMaxPosition(PositionUnits, pathLength);
                 var prev = m_PreviousSplinePosition;
-                if (splinePath.Closed && Mathf.Abs(splinePos - prev) > max * 0.5f)
-                    prev += (splinePos > prev) ? max : -max;
+                if (spline.Closed && Mathf.Abs(splinePos - prev) > maxPos * 0.5f)
+                    prev += (splinePos > prev) ? maxPos : -maxPos;
 
                 // Do the damping
                 splinePos = prev + Damper.Damp(splinePos - prev, Damping.Position.z, deltaTime);
             }
             m_PreviousSplinePosition = CameraPosition = splinePos;
 
-            Spline.EvaluateSplineWithRoll(
-                m_RollCache.GetSplineRoll(this), m_PreviousRotation, 
-                splinePath.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
+            spline.EvaluateSplineWithRoll(
+                Spline.transform, m_RollCache.GetSplineRoll(this), m_PreviousRotation, 
+                spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
                 out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position

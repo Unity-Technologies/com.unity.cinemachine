@@ -145,12 +145,13 @@ namespace Unity.Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
-            if (Spline.IsValid())
+            var spline = SplineSettings.GetCachedSpline();
+            if (spline != null)
             {
                 var splinePath = Spline.Splines[0];
-                SplinePosition = splinePath.StandardizePosition(distanceAlongPath, PositionUnits);
+                SplinePosition = spline.StandardizePosition(distanceAlongPath, PositionUnits, out _);
                 var t = splinePath.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
-                Spline.EvaluateSplineWithRoll(m_RollCache.GetSplineRoll(this), transform.rotation, t, out var pos, out var rot);
+                spline.EvaluateSplineWithRoll(transform, m_RollCache.GetSplineRoll(this), transform.rotation, t, out var pos, out var rot);
                 transform.ConservativeSetPositionAndRotation(pos, rot);
             }
         }
