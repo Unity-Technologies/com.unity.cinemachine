@@ -74,8 +74,14 @@ namespace Unity.Cinemachine.Editor
                 {
                     EditorApplication.delayCall += () => 
                     {
-                        if (data == splineData)
-                            list.selectedIndex = index;
+                        // This is a hack to avoid spurious exceptions thrown by uitoolkit!
+                        // GML TODO: Remove when they fix it
+                        try 
+                        {
+                            if (data == splineData)
+                                list.selectedIndex = index;
+                        }
+                        catch {} // Ignore exceptions
                     };
                 }
             });

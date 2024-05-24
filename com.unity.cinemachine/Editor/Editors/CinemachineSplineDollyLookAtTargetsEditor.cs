@@ -188,11 +188,15 @@ namespace Unity.Cinemachine.Editor
                 {
                     EditorApplication.delayCall += () => 
                     {
-                        if (data == splineData)
+                        try 
                         {
-                            list.selectedIndex = index;
-                            BringCameraToSplinePoint(data, index);
+                            if (data == splineData)
+                            {
+                                list.selectedIndex = index;
+                                BringCameraToSplinePoint(data, index);
+                            }
                         }
+                        catch {} // Ignore exceptions
                     };
                 }
             });
