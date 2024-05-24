@@ -64,6 +64,7 @@ namespace Unity.Cinemachine.Editor
             GetSplineDelegate getSpline)
         {
             var sortMethod = splineData.GetType().GetMethod("ForceSort", BindingFlags.Instance | BindingFlags.NonPublic);
+            var setDataPointMethod = splineData.GetType().GetMethod("SetDataPoint", BindingFlags.Instance | BindingFlags.Public);
 
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
@@ -77,6 +78,16 @@ namespace Unity.Cinemachine.Editor
                 listView.showBoundCollectionSize = false;
                 listView.showAddRemoveFooter = true;
                 listView.showAlternatingRowBackgrounds = AlternatingRowBackground.None;
+
+                var button = list.Q<Button>("unity-list-view__add-button");
+                button.clicked += () => 
+                {
+                    if (arrayProp.arraySize == 1)
+                    {
+                        setDataPointMethod.Invoke(splineData, new object[] { 0, new DataPoint<T> () { Value = splineData.DefaultValue } });
+                        arrayProp.serializedObject.Update();
+                    }
+                };
             });
 
             list.TrackPropertyValue(arrayProp, (p) => 
