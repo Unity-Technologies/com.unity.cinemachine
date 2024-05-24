@@ -79,6 +79,7 @@ namespace Unity.Cinemachine.Editor
                 listView.showAddRemoveFooter = true;
                 listView.showAlternatingRowBackgrounds = AlternatingRowBackground.None;
 
+                // When we add the first item, make sure to use the default value
                 var button = list.Q<Button>("unity-list-view__add-button");
                 button.clicked += () => 
                 {
@@ -114,7 +115,7 @@ namespace Unity.Cinemachine.Editor
 
         static bool SanitizePathUnit(SerializedProperty splineDataProp, ISplineContainer container, int splineIndex)
         {
-            if (container == null || container.Splines.Count == 0)
+            if (container == null || container.Splines.Count <= splineIndex)
                 return false;
 
             bool changed = false;
@@ -122,22 +123,50 @@ namespace Unity.Cinemachine.Editor
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var unit = (PathIndexUnit)Enum.GetValues(typeof(PathIndexUnit)).GetValue(pathUnitProp.enumValueIndex);
 
-            var spline = container.Splines[splineIndex];
             var transform = container is Component component ? component.transform : null;
-            var scaledSpline = new CachedScaledSpline(spline, transform, Collections.Allocator.Temp);
+            using var nativeSpline = new NativeSpline(container.Splines[splineIndex], transform);
             for (int i = 0, c = arrayProp.arraySize; i < c; ++i)
             {
                 var point = arrayProp.GetArrayElementAtIndex(i);
                 var index = point.FindPropertyRelative("m_Index");
-                var newValue = scaledSpline.StandardizePosition(index.floatValue, unit, out _);
+
+                var newValue = nativeSpline.StandardizePostition(index.floatValue, unit);
                 if (newValue != index.floatValue)
                 {
                     index.floatValue = newValue;
                     changed = true;
                 }
-                index.floatValue = scaledSpline.StandardizePosition(index.floatValue, unit, out _);
             }
             return changed;
+        }
+
+        /// <summary>
+        /// Keeps position within the cacnonical range for the spline, removing wraps if spline is looped.
+        /// </summary>
+        static float StandardizePostition(this ISpline spline, float t, PathIndexUnit unit)
+        {
+            float maxPos = 1;
+            switch (unit)
+            {
+                case PathIndexUnit.Distance: 
+                    maxPos = spline.GetLength(); 
+                    break;
+                case PathIndexUnit.Knot: 
+                {
+                    var knotCount = spline.Count;
+                    maxPos = (!spline.Closed || knotCount < 2) ? Mathf.Max(0, knotCount - 1) : knotCount;
+                    break;
+                }
+            }
+
+            if (float.IsNaN(t))
+                return 0;
+            if (!spline.Closed)
+                return Mathf.Clamp(t, 0, maxPos);
+            t %= maxPos;
+            if (t < 0)
+                t += maxPos;
+            return t;
         }
     }
 }

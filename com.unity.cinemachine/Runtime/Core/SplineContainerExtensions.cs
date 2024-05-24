@@ -14,7 +14,7 @@ namespace Unity.Cinemachine
         public static bool IsValid(this ISplineContainer spline) => spline != null && spline.Splines != null && spline.Splines.Count > 0;
 
         /// <summary>
-        /// Apply to a <see cref="SplineContainer"/>additional roll from <see cref="CinemachineSplineRoll"/>
+        /// Apply to a <see cref="CachedScaledSpline"/>additional roll from <see cref="CinemachineSplineRoll"/>
         /// </summary>
         /// <param name="spline">The spline in question</param>
         /// <param name="roll">The additional roll to apply</param>
@@ -24,7 +24,7 @@ namespace Unity.Cinemachine
         /// <param name="rotation">returned rotation at the point on the spline, in spline-local coords</param>
         /// <returns>True if the spline position is valid</returns>
         public static bool LocalEvaluateSplineWithRoll(
-            this CachedScaledSpline spline,
+            this ISpline spline,
             float tNormalized, 
             Quaternion defaultRotation,
             CinemachineSplineRoll roll,
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Apply to a <see cref="SplineContainer"/>additional roll from <see cref="CinemachineSplineRoll"/>
+        /// Apply to a <see cref="CachedScaledSpline"/>additional roll from <see cref="CinemachineSplineRoll"/>
         /// </summary>
         /// <param name="spline">The spline in question</param>
         /// <param name="tNormalized">The normalized position on the spline</param>
@@ -119,7 +119,7 @@ namespace Unity.Cinemachine
         /// <param name="unit">The spline position is expressed in these units</param>
         /// This is needed because we don't have access to the spline's scale.</param>
         /// <returns></returns>
-        public static float GetMaxPosition(this CachedScaledSpline spline, PathIndexUnit unit)
+        public static float GetMaxPosition(this ISpline spline, PathIndexUnit unit)
         {
             switch (unit)
             {
@@ -142,9 +142,11 @@ namespace Unity.Cinemachine
         /// <param name="unit">The spline position is expressed in these units</param>
         /// This is needed because we don't have access to the spline's scale.</param>
         /// <returns>The clamped position value, respecting the specified units</returns>
-        public static float StandardizePosition(this CachedScaledSpline spline, float t, PathIndexUnit unit, out float maxPos)
+        public static float StandardizePosition(this ISpline spline, float t, PathIndexUnit unit, out float maxPos)
         {
             maxPos = spline.GetMaxPosition(unit);
+            if (float.IsNaN(t))
+                return 0;
             if (!spline.Closed)
                 return Mathf.Clamp(t, 0, maxPos);
             t %= maxPos;
