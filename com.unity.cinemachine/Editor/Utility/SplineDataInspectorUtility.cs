@@ -89,27 +89,48 @@ namespace Unity.Cinemachine.Editor
                         arrayProp.serializedObject.Update();
                     }
                 };
-            });
 
-            list.TrackPropertyValue(arrayProp, (p) => 
-            {
-                p.serializedObject.ApplyModifiedProperties();
-
-                // Make sure the indexes are properly wrapped around at the boundaries of a loop
-                if (SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0))
+                listView.TrackPropertyValue(arrayProp, (p) => 
+                {
                     p.serializedObject.ApplyModifiedProperties();
 
-                // Sort the array
-                bool needsSort = false;
-                for (int i = 1; !needsSort && i < splineData.Count; ++i)
-                    needsSort = splineData[i].Index < splineData[i - 1].Index;
-                if (needsSort)
-                {
-                    Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
-                    sortMethod?.Invoke(splineData, null);
-                    p.serializedObject.Update();
-                }
+                    // Make sure the indexes are properly wrapped around at the boundaries of a loop
+                    if (SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0))
+                        p.serializedObject.ApplyModifiedProperties();
+
+                    // Sort the array
+                    bool needsSort = false;
+                    for (int i = 1; !needsSort && i < splineData.Count; ++i)
+                        needsSort = splineData[i].Index < splineData[i - 1].Index;
+                    if (needsSort)
+                    {
+                        // Try to preserve the selected item through the sort
+                        float index = 0;
+                        T value = default;
+                        var selected = listView.selectedIndex;
+                        if (selected >= 0)
+                        {
+                            index = splineData[selected].Index;
+                            value = splineData[selected].Value;
+                        }
+
+                        Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
+                        sortMethod?.Invoke(splineData, null);
+                        p.serializedObject.Update();
+
+                        for (int i = 0; selected >= 0 && i < splineData.Count; ++i)
+                        {
+                            if (index == splineData[i].Index && splineData[i].Value.Equals(value))
+                            {
+                                listView.selectedIndex = i;
+                                EditorApplication.delayCall += () => listView.ScrollToItem(i);
+                                break;
+                            }
+                        }
+                    }
+                });
             });
+
             return list;
         }
 

@@ -30,45 +30,9 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         class InspectorStateCache
         {
-            bool m_WasDragging = false;
-            DataPoint<CinemachineSplineDollyLookAtTargets.Item> m_DraggedValue;
             List<DataPoint<CinemachineSplineDollyLookAtTargets.Item>> m_DataPointsCache = new ();
 
             public int CurrentSelection { get; set; } = -1;
-
-            // Returns index of first changed item, and its previous value
-            public int GetFirstChangedItem(
-                CinemachineSplineDollyLookAtTargets splineData, 
-                out DataPoint<CinemachineSplineDollyLookAtTargets.Item> previousValue)
-            {
-                if (m_WasDragging)
-                {
-                    previousValue = m_DraggedValue;
-                    for (int i = 0; i < splineData.Targets.Count; ++i)
-                        if (Equals(m_DraggedValue, splineData.Targets[i]))
-                            return i;
-                    return -1;
-                }
-                int count = Mathf.Min(splineData.Targets.Count, m_DataPointsCache.Count);
-                for (int i = 0; i < count; ++i)
-                {
-                    if (!Equals(m_DataPointsCache[i], splineData.Targets[i]))
-                    {
-                        previousValue = m_DataPointsCache[i];
-                        return i;
-                    }
-                }
-                previousValue = default;
-                return -1;
-
-                static bool Equals(
-                    DataPoint<CinemachineSplineDollyLookAtTargets.Item> a, 
-                    DataPoint<CinemachineSplineDollyLookAtTargets.Item> b)
-                {
-                    return a.Index == b.Index && a.Value.LookAt == b.Value.LookAt 
-                        && a.Value.Offset == b.Value.Offset && a.Value.Easing == b.Value.Easing;
-                }
-            }
 
             public bool GetCachedValue(int index, out DataPoint<CinemachineSplineDollyLookAtTargets.Item> value)
             {
@@ -83,40 +47,23 @@ namespace Unity.Cinemachine.Editor
 
             public void Reset(CinemachineSplineDollyLookAtTargets splineData)
             {
-                m_WasDragging = false;
                 m_DataPointsCache.Clear();
                 for (int i = 0; i < splineData.Targets.Count; ++i)
                     m_DataPointsCache.Add(splineData.Targets[i]);
             }
-
-            public void SnapshotIndexDrag(CinemachineSplineDollyLookAtTargets splineData, int arrayIndex, float value)
-            {
-                if (arrayIndex >= 0 && arrayIndex < m_DataPointsCache.Count
-                    && splineData != null && splineData.GetGetSplineAndDolly(out var spline, out var dolly))
-                {
-                    m_WasDragging = true;
-                    m_DraggedValue = m_DataPointsCache[arrayIndex];
-                    m_DraggedValue.Index = dolly.SplineSettings.GetCachedSpline().StandardizePosition(value, splineData.Targets.PathIndexUnit, out _);
-                }
-            }
         }
 
+        // We keep the state cache in a static dictionary so that it can be accessed by the gizmo drawer
         static Dictionary<CinemachineSplineDollyLookAtTargets, InspectorStateCache> m_CacheLookup = new ();
-        static InspectorStateCache GetInspectorStateCache(CinemachineSplineDollyLookAtTargets splineData) => m_CacheLookup[splineData];
-
-        private void OnEnable()
+        static InspectorStateCache GetInspectorStateCache(CinemachineSplineDollyLookAtTargets splineData)
         {
-            LookAtDataOnSplineTool.s_OnDataLookAtDragged += BringCameraToSplinePoint;
-            LookAtDataOnSplineTool.s_OnDataIndexDragged += BringCameraToSplinePoint;
-            m_CacheLookup.Add(target as CinemachineSplineDollyLookAtTargets, new InspectorStateCache());
+            if (m_CacheLookup.TryGetValue(splineData, out var value))
+                return value;
+            return null;
         }
 
-        private void OnDisable()
-        {
-            LookAtDataOnSplineTool.s_OnDataLookAtDragged -= BringCameraToSplinePoint;
-            LookAtDataOnSplineTool.s_OnDataIndexDragged -= BringCameraToSplinePoint;
-            m_CacheLookup.Remove(target as CinemachineSplineDollyLookAtTargets);
-        }
+        private void OnEnable() => m_CacheLookup.Add(target as CinemachineSplineDollyLookAtTargets, new InspectorStateCache());
+        private void OnDisable() => m_CacheLookup.Remove(target as CinemachineSplineDollyLookAtTargets);
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -172,12 +119,12 @@ namespace Unity.Cinemachine.Editor
                     indexField1.OnInitialGeometry(() => indexField1.SafeSetIsDelayed());
 
                     var lookAtField1 = overlay.AddChild(new PropertyField(lookAtProp, "") { style = { flexGrow = 4, flexBasis = 50, marginLeft = 3 }});
-                    var overlayLabel = new Label("Index") { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
+                    var overlayLabel = new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
                     overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay, OnIndexDraggerCreated);
                     
                     var foldout = new Foldout() { text = $"Target {index}" };
                     foldout.BindProperty(element);
-                    var row = foldout.AddChild(new InspectorUtility.LabeledRow("Index", indexTooltip));
+                    var row = foldout.AddChild(new InspectorUtility.LabeledRow(indexProp.displayName, indexTooltip));
                     var indexField2 = row.Contents.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1 }});
                     indexField2.OnInitialGeometry(() => indexField2.SafeSetIsDelayed());
                     row.Label.AddDelayedFriendlyPropertyDragger(indexProp, indexField2, OnIndexDraggerCreated);
@@ -220,38 +167,34 @@ namespace Unity.Cinemachine.Editor
                     void OnIndexDraggerCreated(IDelayedFriendlyDragger dragger)
                     {
                         dragger.OnStartDrag = () => list.selectedIndex = index;
-                        dragger.OnDragValueChangedFloat = (v) => 
-                        {
-                            GetInspectorStateCache(splineData).SnapshotIndexDrag(splineData, index, v);
-                            BringCameraToCustomSplinePoint(splineData, v);
-                        };
+                        dragger.OnDragValueChangedFloat = (v) => BringCameraToCustomSplinePoint(splineData, v);
                     }
                 };
 
-                list.TrackPropertyValue(arrayProp, (p) => 
-                {
-                    var selectedIndex = GetInspectorStateCache(splineData).GetFirstChangedItem(splineData, out var previous);
-                    if (selectedIndex >= 0)
-                    {
-                        list.selectedIndex = selectedIndex;
-                        EditorApplication.delayCall += () => list.ScrollToItem(selectedIndex);
-                    }
-                    EditorApplication.delayCall += () => GetInspectorStateCache(splineData).Reset(splineData);
-                });
+                list.TrackPropertyValue(arrayProp, (p) => EditorApplication.delayCall += () => GetInspectorStateCache(splineData).Reset(splineData));
 
+                // When the list selection changes, cache the index and put the camera at that point on the dolly track
                 list.selectedIndicesChanged += (indices) =>
                 {
                     var it = indices.GetEnumerator();
-                    if (it.MoveNext())
-                    {
-                        GetInspectorStateCache(splineData).CurrentSelection = it.Current;
-                        BringCameraToSplinePoint(splineData, it.Current);
-                    }
-                    else
-                    {
-                        GetInspectorStateCache(splineData).CurrentSelection = -1;
-                    }
+                    var cache =  GetInspectorStateCache(splineData);
+                    cache.CurrentSelection = it.MoveNext() ? it.Current : -1;
+                    BringCameraToSplinePoint(splineData, cache.CurrentSelection);
                 };
+
+                LookAtDataOnSplineTool.s_OnDataLookAtDragged += OnToolDragged;
+                LookAtDataOnSplineTool.s_OnDataIndexDragged += OnToolDragged;
+                void OnToolDragged(CinemachineSplineDollyLookAtTargets data, int index)
+                {
+                    EditorApplication.delayCall += () => 
+                    {
+                        if (data == splineData)
+                        {
+                            list.selectedIndex = index;
+                            BringCameraToSplinePoint(data, index);
+                        }
+                    };
+                }
             });
 
             return ux;
@@ -259,7 +202,7 @@ namespace Unity.Cinemachine.Editor
 
         static void BringCameraToSplinePoint(CinemachineSplineDollyLookAtTargets splineData, int index)
         {
-            if (splineData != null)
+            if (splineData != null && index >= 0)
                 BringCameraToCustomSplinePoint(splineData, splineData.Targets[index].Index);
         }
 
@@ -295,7 +238,7 @@ namespace Unity.Cinemachine.Editor
                     var t = SplineUtility.GetNormalizedInterpolation(spline, splineData.Targets[i].Index, indexUnit);
                     spline.EvaluateSplinePosition(splineContainer.transform, t, out var position);
                     var p = splineData.Targets[i].Value.WorldLookAt;
-                    if (inspectorCache.CurrentSelection == i)
+                    if (inspectorCache != null && inspectorCache.CurrentSelection == i)
                         Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
                     else
                         Gizmos.color = c;
@@ -310,11 +253,10 @@ namespace Unity.Cinemachine.Editor
     class LookAtDataOnSplineTool : EditorTool
     {
         GUIContent m_IconContent;
+        public override GUIContent toolbarIcon => m_IconContent;
 
         public static Action<CinemachineSplineDollyLookAtTargets, int> s_OnDataIndexDragged;
         public static Action<CinemachineSplineDollyLookAtTargets, int> s_OnDataLookAtDragged;
-
-        public override GUIContent toolbarIcon => m_IconContent;
 
         void OnEnable()
         {
@@ -350,17 +292,17 @@ namespace Unity.Cinemachine.Editor
         int DrawIndexPointHandles(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData)
         {
             int anchorId = GUIUtility.GetControlID(FocusType.Passive);
-
             spline.DataPointHandles(splineData.Targets);
-
             var nearestIndex = ControlIdToIndex(anchorId, HandleUtility.nearestControl, splineData.Targets.Count);
             var hotIndex = ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Targets.Count);
             var tooltipIndex = hotIndex >= 0 ? hotIndex : nearestIndex;
             if (tooltipIndex >= 0)
                 DrawTooltip(spline, splineData, tooltipIndex, false);
 
+            // Return the index that's being changed, or -1
             return hotIndex;
 
+            // Local function
             static int ControlIdToIndex(int anchorId, int controlId, int targetCount)
             {
                 int index = controlId - anchorId - 2;

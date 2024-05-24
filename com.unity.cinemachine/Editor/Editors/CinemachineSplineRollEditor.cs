@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Splines;
@@ -33,8 +34,51 @@ namespace Unity.Cinemachine.Editor
             ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData == null ? null : splineData.SplineContainer));
 
             ux.AddHeader("Data Points");
-            var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
+            var listField = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
                 splineData.Roll, rollProp, () => splineData?.SplineContainer));
+            var arrayProp = rollProp.FindPropertyRelative("m_DataPoints");
+            listField.OnInitialGeometry(() => 
+            {
+                var list = listField.Q<ListView>();
+
+                list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row }};
+                list.bindItem = (ux, index) =>
+                {
+                    // Remove children - items get recycled
+                    for (int i = ux.childCount - 1; i >= 0; --i)
+                        ux.RemoveAt(i);
+
+                    const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
+                        + "The value is interpreted according to the Index Unit setting.";
+
+                    var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
+                    var def = new CinemachineSplineRoll.RollData();
+                    var indexProp = element.FindPropertyRelative("m_Index");
+                    var valueProp = element.FindPropertyRelative("m_Value");
+
+                    ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
+                    var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
+                    var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
+                    indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
+                    label.AddDelayedFriendlyPropertyDragger(indexProp, indexField, (dragger) => dragger.OnStartDrag = () => list.selectedIndex = index);
+
+                    ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
+                    ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));
+
+                    ((BindableElement)ux).BindProperty(element); // bind must be done at the end
+                };
+
+                SplineRollTool.s_OnDataLookAtDragged += OnToolDragged;
+                SplineRollTool.s_OnDataIndexDragged += OnToolDragged;
+                void OnToolDragged(CinemachineSplineRoll data, int index)
+                {
+                    EditorApplication.delayCall += () => 
+                    {
+                        if (data == splineData)
+                            list.selectedIndex = index;
+                    };
+                }
+            });
 
             ux.TrackPropertyValue(rollProp, (p) => 
             {
@@ -171,37 +215,14 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    [CustomPropertyDrawer(typeof(DataPoint<CinemachineSplineRoll.RollData>))]
-    class CinemachineLookAtDataOnSplineDataPointPropertyDrawer : PropertyDrawer
-    {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
-        {
-            const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
-                + "The value is interpreted according to the Index Unit setting.";
-
-            var def = new CinemachineSplineRoll.RollData();
-            var indexProp = property.FindPropertyRelative("m_Index");
-            var valueProp = property.FindPropertyRelative("m_Value");
-
-            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-
-            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-            var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
-            var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
-            indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
-            InspectorUtility.AddDelayedFriendlyPropertyDragger(label, indexProp, indexField);
-
-            ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-            ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));
-            return ux;
-        }
-    }
-
     [EditorTool("Spline Roll Tool", typeof(CinemachineSplineRoll))]
     sealed class SplineRollTool : EditorTool
     {
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
+
+        public static Action<CinemachineSplineRoll, int> s_OnDataIndexDragged;
+        public static Action<CinemachineSplineRoll, int> s_OnDataLookAtDragged;
 
         bool GetTargets(out CinemachineSplineRoll splineData, out SplineContainer spline)
         {
@@ -236,8 +257,12 @@ namespace Unity.Cinemachine.Editor
             using (new Handles.DrawingScope(color))
             {
                 var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-                DrawIndexPointHandles(nativeSpline, splineData.Roll);
-                DrawDataPointHandles(nativeSpline, splineData.Roll);
+                int changedIndex = DrawIndexPointHandles(nativeSpline, splineData.Roll);
+                if (changedIndex >= 0)
+                    s_OnDataIndexDragged?.Invoke(splineData, changedIndex);
+                changedIndex = DrawDataPointHandles(nativeSpline, splineData.Roll);
+                if (changedIndex >= 0)
+                    s_OnDataLookAtDragged?.Invoke(splineData, changedIndex);
             }
         }
 
@@ -246,11 +271,13 @@ namespace Unity.Cinemachine.Editor
             int anchorId = GUIUtility.GetControlID(FocusType.Passive);
             spline.DataPointHandles(splineData);
             int nearestIndex = ControlIdToIndex(anchorId, HandleUtility.nearestControl, splineData.Count);
-            if (nearestIndex >= 0)
-                DrawTooltip(spline, splineData, nearestIndex);
+            var hotIndex = ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Count);
+            var tooltipIndex = hotIndex >= 0 ? hotIndex : nearestIndex;
+            if (tooltipIndex >= 0)
+                DrawTooltip(spline, splineData, tooltipIndex);
 
             // Return the index that's being changed, or -1
-            return ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Count);
+            return hotIndex;
 
             // Local function
             static int ControlIdToIndex(int anchorId, int controlId, int targetCount)
@@ -267,6 +294,7 @@ namespace Unity.Cinemachine.Editor
         int DrawDataPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         {
             int changed = -1;
+            int tooltipIndex = -1;
             for (var i = 0; i < splineData.Count; ++i)
             {
                 var dataPoint = splineData[i];
@@ -280,9 +308,11 @@ namespace Unity.Cinemachine.Editor
                     splineData.SetDataPoint(i, dataPoint);
                     changed = i;
                 }
-                if (id == HandleUtility.nearestControl || id == GUIUtility.hotControl)
-                    DrawTooltip(spline, splineData, i);
+                if (tooltipIndex < 0 && id == HandleUtility.nearestControl || id == GUIUtility.hotControl)
+                    tooltipIndex = i;
             }
+            if (tooltipIndex >= 0)
+                DrawTooltip(spline, splineData, tooltipIndex);
             return changed;
 
             // local function
