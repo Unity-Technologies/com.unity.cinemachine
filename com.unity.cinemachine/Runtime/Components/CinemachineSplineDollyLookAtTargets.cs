@@ -68,15 +68,12 @@ namespace Unity.Cinemachine
         /// <inheritdoc/>
         public override void MutateCameraState(ref CameraState state, float deltaTime)
         {
-            if (!GetGetSplineAndDolly(out var spline, out var dolly))
+            if (!GetGetSplineAndDolly(out _, out var dolly))
                 return;
 
-            var splinePath = spline.Spline;
-            if (splinePath == null || splinePath.Count == 0)
-                return;
-
-            var item = Targets.Evaluate(splinePath, dolly.CameraPosition, dolly.PositionUnits, new LerpItem());
-            var dir = item.Offset - state.RawPosition;
+            var spline = dolly.SplineSettings.GetCachedSpline();
+            var item = Targets.Evaluate(spline, dolly.CameraPosition, dolly.PositionUnits, new LerpItem());
+            var dir = item.WorldLookAt - state.RawPosition;
             if (dir.sqrMagnitude > UnityVectorExtensions.Epsilon)
             {
                 var up = state.ReferenceUp;

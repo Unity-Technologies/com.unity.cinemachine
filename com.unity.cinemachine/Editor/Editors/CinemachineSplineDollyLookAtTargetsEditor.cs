@@ -70,6 +70,17 @@ namespace Unity.Cinemachine.Editor
                 }
             }
 
+            public bool GetCachedValue(int index, out DataPoint<CinemachineSplineDollyLookAtTargets.Item> value)
+            {
+                if (index >= 0 && index < m_DataPointsCache.Count)
+                {
+                    value = m_DataPointsCache[index];
+                    return true;
+                }
+                value = default;
+                return false;
+            }
+
             public void Reset(CinemachineSplineDollyLookAtTargets splineData)
             {
                 m_WasDragging = false;
@@ -81,11 +92,11 @@ namespace Unity.Cinemachine.Editor
             public void SnapshotIndexDrag(CinemachineSplineDollyLookAtTargets splineData, int arrayIndex, float value)
             {
                 if (arrayIndex >= 0 && arrayIndex < m_DataPointsCache.Count
-                    && splineData != null && splineData.GetGetSplineAndDolly(out var spline, out _))
+                    && splineData != null && splineData.GetGetSplineAndDolly(out var spline, out var dolly))
                 {
                     m_WasDragging = true;
                     m_DraggedValue = m_DataPointsCache[arrayIndex];
-                    m_DraggedValue.Index = spline.Spline.StandardizePosition(value, splineData.Targets.PathIndexUnit);
+                    m_DraggedValue.Index = dolly.SplineSettings.GetCachedSpline().StandardizePosition(value, splineData.Targets.PathIndexUnit, out _);
                 }
             }
         }
@@ -177,6 +188,32 @@ namespace Unity.Cinemachine.Editor
 
                     ux.Add(new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel) { style = { marginLeft = 12 }});
 
+                    ux.TrackPropertyValue(lookAtProp, (p) => 
+                    {
+                        // Don't mess with the offset if change was a result of undo/redo
+                        if (m_UndoRedoMonitor.IsUndoRedo)
+                            return;
+
+                        // if lookAt target was set to null, preserve the worldspace location
+                        if (GetInspectorStateCache(splineData).GetCachedValue(index, out var previous))
+                        {
+                            var newData = p.objectReferenceValue;
+                            if (newData == null && previous.Value.LookAt != null)
+                                SetOffset(previous.Value.WorldLookAt);
+
+                            // if lookAt target was changed, zero the offset
+                            else if (newData != null && newData != previous.Value.LookAt)
+                                SetOffset(Vector3.zero);
+
+                            // local function
+                            void SetOffset(Vector3 offset)
+                            {
+                                offsetProp.vector3Value = offset;
+                                p.serializedObject.ApplyModifiedProperties();
+                            }
+                        }
+                    });
+
                     ((BindableElement)ux).BindProperty(element); // bind must be done at the end
 
                     // local function
@@ -197,32 +234,7 @@ namespace Unity.Cinemachine.Editor
                     if (selectedIndex >= 0)
                     {
                         list.selectedIndex = selectedIndex;
-                        list.ScrollToItem(selectedIndex);
-
-                        // Don't mess with the offset if change was a result of undo/redo
-                        if (m_UndoRedoMonitor.IsUndoRedo)
-                            return;
-
-                        var newData = splineData.Targets[selectedIndex];
-
-                        // if lookAt target was set to null, preserve the worldspace location
-                        if (newData.Value.LookAt == null && previous.Value.LookAt != null)
-                            SetOffset(previous.Value.WorldLookAt);
-
-                        // if lookAt target was changed, zero the offset
-                        else if (newData.Value.LookAt != null && newData.Value.LookAt != previous.Value.LookAt)
-                            SetOffset(Vector3.zero);
-
-                        // local function
-                        void SetOffset(Vector3 offset)
-                        {
-                            Undo.RecordObject(splineData, "Modifying CinemachineSplineDollyLookAtTargets values");
-                            var v = newData.Value;
-                            v.Offset = offset;
-                            newData.Value = v;
-                            splineData.Targets.SetDataPoint(selectedIndex, newData);
-                            p.serializedObject.Update();
-                        }
+                        EditorApplication.delayCall += () => list.ScrollToItem(selectedIndex);
                     }
                     EditorApplication.delayCall += () => GetInspectorStateCache(splineData).Reset(splineData);
                 });
@@ -236,7 +248,9 @@ namespace Unity.Cinemachine.Editor
                         BringCameraToSplinePoint(splineData, it.Current);
                     }
                     else
+                    {
                         GetInspectorStateCache(splineData).CurrentSelection = -1;
+                    }
                 };
             });
 
@@ -254,7 +268,8 @@ namespace Unity.Cinemachine.Editor
             if (splineData != null && splineData.GetGetSplineAndDolly(out var spline, out var dolly))
             {
                 Undo.RecordObject(dolly, "Modifying CinemachineSplineDollyLookAtTargets values");
-                dolly.CameraPosition = spline.Spline.ConvertIndexUnit(splineIndex, splineData.Targets.PathIndexUnit, dolly.PositionUnits);
+                dolly.CameraPosition = dolly.SplineSettings.GetCachedSpline().ConvertIndexUnit(
+                    splineIndex, splineData.Targets.PathIndexUnit, dolly.PositionUnits);
                 EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
             }
         }
@@ -266,8 +281,9 @@ namespace Unity.Cinemachine.Editor
         {
             // For performance reasons, we only draw a gizmo for the current active game object
             if (Selection.activeGameObject == splineData.gameObject && splineData.Targets.Count > 0
-                && splineData.GetGetSplineAndDolly(out var spline, out _) && spline.Spline != null)
+                && splineData.GetGetSplineAndDolly(out var splineContainer, out var dolly))
             {
+                var spline = dolly.SplineSettings.GetCachedSpline();
                 var c = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
                 if (ToolManager.activeToolType != typeof(LookAtDataOnSplineTool))
                     c.a = 0.5f;
@@ -276,8 +292,8 @@ namespace Unity.Cinemachine.Editor
                 var indexUnit = splineData.Targets.PathIndexUnit;
                 for (int i = 0; i < splineData.Targets.Count; i++)
                 {
-                    var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, splineData.Targets[i].Index, indexUnit);
-                    spline.Evaluate(t, out var position, out _, out _);
+                    var t = SplineUtility.GetNormalizedInterpolation(spline, splineData.Targets[i].Index, indexUnit);
+                    spline.EvaluateSplinePosition(splineContainer.transform, t, out var position);
                     var p = splineData.Targets[i].Value.WorldLookAt;
                     if (inspectorCache.CurrentSelection == i)
                         Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
@@ -300,16 +316,6 @@ namespace Unity.Cinemachine.Editor
 
         public override GUIContent toolbarIcon => m_IconContent;
 
-        bool GetGetSplineAndDolly(out CinemachineSplineDollyLookAtTargets splineData, out SplineContainer spline, out CinemachineSplineDolly dolly)
-        {
-            splineData = target as CinemachineSplineDollyLookAtTargets;
-            if (splineData != null && splineData.GetGetSplineAndDolly(out spline, out dolly))
-                return true;
-            spline = null;
-            dolly = null;
-            return false;
-        }
-
         void OnEnable()
         {
             m_IconContent = new GUIContent
@@ -323,27 +329,29 @@ namespace Unity.Cinemachine.Editor
 
         public override void OnToolGUI(EditorWindow window)
         {
-            if (!GetGetSplineAndDolly(out var splineData, out var spline, out _))
+            var splineData = target as CinemachineSplineDollyLookAtTargets;
+            if (splineData == null || !splineData.GetGetSplineAndDolly(out var splineContainer, out var dolly))
                 return;
 
             Undo.RecordObject(splineData, "Modifying CinemachineSplineDollyLookAtTargets values");
             using (new Handles.DrawingScope(Handles.selectedColor))
             {
-                int changed = DrawDataPointHandles(spline, splineData);
-                if (changed >= 0)
-                    s_OnDataLookAtDragged?.Invoke(splineData, changed);
+                var spline = new NativeSpline(splineContainer.Spline, splineContainer.transform.localToWorldMatrix);
+                int changedIndex = DrawDataPointHandles(spline, splineData);
+                if (changedIndex >= 0)
+                    s_OnDataLookAtDragged?.Invoke(splineData, changedIndex);
 
-                changed = DrawIndexPointHandles(spline, splineData);
-                if (changed >= 0)
-                    s_OnDataIndexDragged?.Invoke(splineData, changed);
+                changedIndex = DrawIndexPointHandles(spline, splineData);
+                if (changedIndex >= 0)
+                    s_OnDataIndexDragged?.Invoke(splineData, changedIndex);
             }
         }
 
-        int DrawIndexPointHandles(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData)
+        int DrawIndexPointHandles(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData)
         {
             int anchorId = GUIUtility.GetControlID(FocusType.Passive);
-            var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
-            nativeSpline.DataPointHandles(splineData.Targets);
+
+            spline.DataPointHandles(splineData.Targets);
 
             var nearestIndex = ControlIdToIndex(anchorId, HandleUtility.nearestControl, splineData.Targets.Count);
             var hotIndex = ControlIdToIndex(anchorId, GUIUtility.hotControl, splineData.Targets.Count);
@@ -360,7 +368,7 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        int DrawDataPointHandles(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData)
+        int DrawDataPointHandles(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData)
         {
             int changed = -1;
             for (var i = 0; i < splineData.Targets.Count; ++i)
@@ -389,7 +397,7 @@ namespace Unity.Cinemachine.Editor
             return changed;
         }
 
-        void DrawTooltip(SplineContainer spline, CinemachineSplineDollyLookAtTargets splineData, int index, bool useLookAt)
+        void DrawTooltip(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData, int index, bool useLookAt)
         {
             var dataPoint = splineData.Targets[index];
             var haveLookAt = dataPoint.Value.LookAt != null;
@@ -398,10 +406,10 @@ namespace Unity.Cinemachine.Editor
                 targetText += $" + {dataPoint.Value.Offset}";
             var text = $"Target {index}\nIndex: {dataPoint.Index}\nLookAt: {targetText}";
 
-            var t = SplineUtility.GetNormalizedInterpolation(spline.Spline, dataPoint.Index, splineData.Targets.PathIndexUnit);
+            var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.Targets.PathIndexUnit);
             spline.Evaluate(t, out var p0, out _, out _);
             var p1 = dataPoint.Value.WorldLookAt;
-            CinemachineSceneToolHelpers.DrawLabel(useLookAt ? p1 : (Vector3)p0, text);
+            CinemachineSceneToolHelpers.DrawLabel(useLookAt ? p1 : p0, text);
 
             // Highlight the view line
             Handles.DrawLine(p0, p1, Handles.lineThickness + 2);

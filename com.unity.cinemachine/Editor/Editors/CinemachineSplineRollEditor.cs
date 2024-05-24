@@ -83,7 +83,7 @@ namespace Unity.Cinemachine.Editor
 
                 // For efficiency, we create a mesh with the track and draw it in one shot
                 var scaledSpline = new CachedScaledSpline(splineContainer.Spline, transform, Collections.Allocator.Temp);
-                scaledSpline.LocalEvaluateSplineWithRoll(splineRoll, Quaternion.identity, 0, out var p, out var q);
+                scaledSpline.LocalEvaluateSplineWithRoll(0, Quaternion.identity, splineRoll, out var p, out var q);
                 var w = q * Vector3.right * halfWidth;
 
                 var indices = new int[2 * 3 * numSteps];
@@ -99,7 +99,7 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 1; i < numSteps; ++i)
                 {
                     var t = i * stepSize;
-                    scaledSpline.LocalEvaluateSplineWithRoll(splineRoll, Quaternion.identity, t, out p, out q);
+                    scaledSpline.LocalEvaluateSplineWithRoll(t, Quaternion.identity, splineRoll, out p, out q);
                     w = q * Vector3.right * halfWidth;
 
                     indices[iIndex++] = vIndex - 2;

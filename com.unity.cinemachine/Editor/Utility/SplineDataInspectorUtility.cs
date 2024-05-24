@@ -64,7 +64,6 @@ namespace Unity.Cinemachine.Editor
             GetSplineDelegate getSpline)
         {
             var sortMethod = splineData.GetType().GetMethod("ForceSort", BindingFlags.Instance | BindingFlags.NonPublic);
-            var dirtyMethod = splineData.GetType().GetMethod("SetDirty", BindingFlags.Instance | BindingFlags.NonPublic);
 
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
@@ -82,26 +81,32 @@ namespace Unity.Cinemachine.Editor
 
             list.TrackPropertyValue(arrayProp, (p) => 
             {
-                Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
-
-                // Make sure the indexes are properly wrapped around at the bondaries of a loop
-                SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0);
                 p.serializedObject.ApplyModifiedProperties();
+
+                // Make sure the indexes are properly wrapped around at the boundaries of a loop
+                if (SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0))
+                    p.serializedObject.ApplyModifiedProperties();
 
                 // Sort the array
-                sortMethod?.Invoke(splineData, null);
-                p.serializedObject.Update();
-                dirtyMethod?.Invoke(splineData, null);
-                p.serializedObject.ApplyModifiedProperties();
+                bool needsSort = false;
+                for (int i = 1; !needsSort && i < splineData.Count; ++i)
+                    needsSort = splineData[i].Index < splineData[i - 1].Index;
+                if (needsSort)
+                {
+                    Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
+                    sortMethod?.Invoke(splineData, null);
+                    p.serializedObject.Update();
+                }
             });
             return list;
         }
 
-        static void SanitizePathUnit(SerializedProperty splineDataProp, ISplineContainer container, int splineIndex)
+        static bool SanitizePathUnit(SerializedProperty splineDataProp, ISplineContainer container, int splineIndex)
         {
             if (container == null || container.Splines.Count == 0)
-                return;
+                return false;
 
+            bool changed = false;
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var unit = (PathIndexUnit)Enum.GetValues(typeof(PathIndexUnit)).GetValue(pathUnitProp.enumValueIndex);
@@ -113,8 +118,15 @@ namespace Unity.Cinemachine.Editor
             {
                 var point = arrayProp.GetArrayElementAtIndex(i);
                 var index = point.FindPropertyRelative("m_Index");
+                var newValue = scaledSpline.StandardizePosition(index.floatValue, unit, out _);
+                if (newValue != index.floatValue)
+                {
+                    index.floatValue = newValue;
+                    changed = true;
+                }
                 index.floatValue = scaledSpline.StandardizePosition(index.floatValue, unit, out _);
             }
+            return changed;
         }
     }
 }

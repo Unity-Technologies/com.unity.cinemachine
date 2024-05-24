@@ -190,6 +190,12 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method?.Reset();
         }
 
+        protected override void OnDisable()
+        {
+            m_SplineSettings.InvalidateCache();
+            base.OnDisable();
+        }
+
         /// <summary>True if component is enabled and has a spline</summary>
         public override bool IsValid => enabled && Spline != null;
 
@@ -246,9 +252,8 @@ namespace Unity.Cinemachine
             m_PreviousSplinePosition = CameraPosition = splinePos;
 
             spline.EvaluateSplineWithRoll(
-                Spline.transform, m_RollCache.GetSplineRoll(this), m_PreviousRotation, 
-                spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
-                out var newPos, out var newSplineRotation);
+                Spline.transform, spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
+                m_PreviousRotation, m_RollCache.GetSplineRoll(this), out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position
             var offsetX = newSplineRotation * Vector3.right;

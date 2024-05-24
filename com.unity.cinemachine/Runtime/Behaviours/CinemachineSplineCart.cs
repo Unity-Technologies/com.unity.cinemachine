@@ -117,6 +117,11 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method?.Reset();
         }
 
+        void OnDisable()
+        {
+            m_SplineSettings.InvalidateCache();
+        }
+        
         void FixedUpdate()
         {
             if (UpdateMethod == UpdateMethods.FixedUpdate)
@@ -155,7 +160,7 @@ namespace Unity.Cinemachine
                 var splinePath = Spline.Splines[0];
                 SplinePosition = spline.StandardizePosition(distanceAlongPath, PositionUnits, out _);
                 var t = splinePath.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
-                spline.EvaluateSplineWithRoll(transform, m_RollCache.GetSplineRoll(this), transform.rotation, t, out var pos, out var rot);
+                spline.EvaluateSplineWithRoll(transform, t, transform.rotation, m_RollCache.GetSplineRoll(this), out var pos, out var rot);
                 transform.ConservativeSetPositionAndRotation(pos, rot);
             }
         }
