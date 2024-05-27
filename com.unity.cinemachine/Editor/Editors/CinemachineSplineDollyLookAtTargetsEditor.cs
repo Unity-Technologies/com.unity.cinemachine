@@ -188,6 +188,8 @@ namespace Unity.Cinemachine.Editor
                 {
                     EditorApplication.delayCall += () => 
                     {
+                        // GML This is a hack to avoid spurious exceptions thrown by uitoolkit!
+                        // GML TODO: Remove when they fix it
                         try 
                         {
                             if (data == splineData)
