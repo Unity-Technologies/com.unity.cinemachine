@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Decollider ignores terrain layers when resolving obstacles.
 - Bugfix: The GroupAverage Rotation Mode in CinemachineTargetGroup was not calculated properly.
 - Bugfix: add missing null check in CinemachineTargetGroup.WeightedMemberBoundsForValidMember.
+- Bugfix: add missing null check in CinemachineDeoccluder.PushCameraBack().
 
 ### Changed
 - CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
