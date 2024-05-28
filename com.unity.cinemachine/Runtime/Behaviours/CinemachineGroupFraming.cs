@@ -220,7 +220,9 @@ namespace Unity.Cinemachine
             var damping = vcam.PreviousStateIsValid && deltaTime >= 0 ? Damping : 0;
 
             // Position adjustment: work in camera-local coords
-            GroupBoundsMatrix = Matrix4x4.TRS(state.RawPosition, state.RawOrientation, Vector3.one);
+            var statePos = state.GetCorrectedPosition();
+            var stateRot = state.GetCorrectedOrientation();
+            GroupBoundsMatrix = Matrix4x4.TRS(statePos, stateRot, Vector3.one);
             GroupBounds = group.GetViewSpaceBoundingBox(GroupBoundsMatrix, true);
             var camPos = GroupBounds.center; 
             camPos.z = Mathf.Min(0, camPos.z - GroupBounds.extents.z);
@@ -237,7 +239,7 @@ namespace Unity.Cinemachine
             camPos.x -= CenterOffset.x * lens.OrthographicSize / lens.Aspect;
             camPos.y -= CenterOffset.y * lens.OrthographicSize;
             extra.PosAdjustment += vcam.DetachedFollowTargetDamp(camPos - extra.PosAdjustment, damping, deltaTime);
-            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+            state.PositionCorrection += stateRot * extra.PosAdjustment;
             state.Lens = lens;
         }
 
@@ -246,9 +248,11 @@ namespace Unity.Cinemachine
             VcamExtraState extra, ref CameraState state, float deltaTime)
         {
             var damping = vcam.PreviousStateIsValid && deltaTime >= 0 ? Damping : 0;
+            var statePos = state.GetCorrectedPosition();
+            var stateRot = state.GetCorrectedOrientation();
 
-            var camPos = state.RawPosition;
-            var camRot = state.RawOrientation;
+            var camPos = statePos;
+            var camRot = stateRot;
             var up = camRot * Vector3.up;
             var fov = state.Lens.FieldOfView;
 
@@ -283,14 +287,15 @@ namespace Unity.Cinemachine
             lens.FieldOfView += extra.FovAdjustment;
             state.Lens = lens;
 
-            var deltaRot = state.RawOrientation.GetCameraRotationToTarget(camRot * Vector3.forward, up);
+            var deltaRot = stateRot.GetCameraRotationToTarget(camRot * Vector3.forward, up);
             extra.RotAdjustment.x += vcam.DetachedFollowTargetDamp(deltaRot.x - extra.RotAdjustment.x, damping, deltaTime);
             extra.RotAdjustment.y += vcam.DetachedFollowTargetDamp(deltaRot.y - extra.RotAdjustment.y, damping, deltaTime);
             state.OrientationCorrection = state.OrientationCorrection * Quaternion.identity.ApplyCameraRotation(extra.RotAdjustment, up);
+            stateRot = state.GetCorrectedOrientation();
 
-            var deltaPos = Quaternion.Inverse(state.RawOrientation) * (camPos - state.RawPosition);
+            var deltaPos = Quaternion.Inverse(stateRot) * (camPos - statePos);
             extra.PosAdjustment += vcam.DetachedFollowTargetDamp(deltaPos - extra.PosAdjustment, damping, deltaTime);
-            state.PositionCorrection += state.RawOrientation * extra.PosAdjustment;
+            state.PositionCorrection += stateRot * extra.PosAdjustment;
 
             // Apply framing offset
             if (Mathf.Abs(CenterOffset.x) > 0.01f ||Mathf.Abs(CenterOffset.y) > 0.01f)
@@ -299,7 +304,7 @@ namespace Unity.Cinemachine
                 if (moveCamera)
                 {
                     var d = GroupBounds.center.z - GroupBounds.extents.z;
-                    state.PositionCorrection -= state.RawOrientation * new Vector3(
+                    state.PositionCorrection -= stateRot * new Vector3(
                         CenterOffset.x * Mathf.Tan(halfFov * Mathf.Deg2Rad * state.Lens.Aspect) * d,
                         CenterOffset.y * Mathf.Tan(halfFov * Mathf.Deg2Rad) * d,
                         0);
