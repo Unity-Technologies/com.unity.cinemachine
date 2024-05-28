@@ -10,40 +10,35 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             TargetTracking.TrackerSettings def = new();
+            var modeProp = property.FindPropertyRelative(() => def.BindingMode);
+            var rotModeProp = property.FindPropertyRelative(() => def.AngularDampingMode);
 
             var ux = new VisualElement();
 
-            var modeProp = property.FindPropertyRelative(() => def.BindingMode);
             ux.Add(new PropertyField(modeProp));
-
-            var rotDampingContainer = ux.AddChild(new VisualElement());
-            var rotModeProp = property.FindPropertyRelative(() => def.AngularDampingMode);
-            rotDampingContainer.Add(new PropertyField(rotModeProp));
-            var rotDampingField = rotDampingContainer.AddChild(
-                new PropertyField(property.FindPropertyRelative(() => def.RotationDamping)));
-            var quatDampingField = rotDampingContainer.AddChild(
-                new PropertyField(property.FindPropertyRelative(() => def.QuaternionDamping)));
-
+            var rotModeField = ux.AddChild(new PropertyField(rotModeProp));
+            var rotDampingField = ux.AddChild(new PropertyField(property.FindPropertyRelative(() => def.RotationDamping)));
+            var quatDampingField = ux.AddChild(new PropertyField(property.FindPropertyRelative(() => def.QuaternionDamping)));
             ux.Add(new PropertyField(property.FindPropertyRelative(() => def.PositionDamping)));
 
-            ux.TrackPropertyWithInitialCallback(modeProp, (modeProp) =>
+            ux.TrackPropertyWithInitialCallback(modeProp, (modeProp) => UpdateRotVisibility());
+            ux.TrackPropertyWithInitialCallback(rotModeProp, (modeProp) => UpdateRotVisibility());
+
+            void UpdateRotVisibility()
             {
                 if (modeProp.serializedObject == null)
                     return; // object deleted
                 var mode = (TargetTracking.BindingMode)modeProp.intValue;
-                bool hideRot = mode == TargetTracking.BindingMode.WorldSpace 
-                    || mode == TargetTracking.BindingMode.LazyFollow;
-                rotDampingContainer.SetVisible(!hideRot);
-            });
+                var rotMode = (TargetTracking.AngularDampingMode)rotModeProp.intValue;
 
-            ux.TrackPropertyWithInitialCallback(rotModeProp, (modeProp) =>
-            {
-                if (modeProp.serializedObject == null)
-                    return; // object deleted
-                var mode = (TargetTracking.AngularDampingMode)modeProp.intValue;
-                quatDampingField.SetVisible(mode == TargetTracking.AngularDampingMode.Quaternion);
-                rotDampingField.SetVisible(mode == TargetTracking.AngularDampingMode.Euler);
-            });
+                bool showRot = mode != TargetTracking.BindingMode.WorldSpace && mode != TargetTracking.BindingMode.LazyFollow;
+                bool showQuat = mode == TargetTracking.BindingMode.LockToTarget && rotMode == TargetTracking.AngularDampingMode.Quaternion;
+
+                rotModeField.SetVisible(mode == TargetTracking.BindingMode.LockToTarget);
+                rotDampingField.SetVisible(showRot && !showQuat);
+                quatDampingField.SetVisible(showRot && showQuat);
+            }
+
             return ux;
         }
     }
