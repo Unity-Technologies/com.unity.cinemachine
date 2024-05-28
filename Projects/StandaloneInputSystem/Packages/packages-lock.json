@@ -25,7 +25,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.27",
+      "version": "3.0.28",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -73,7 +73,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.splines": {
-      "version": "2.5.2",
+      "version": "2.6.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {

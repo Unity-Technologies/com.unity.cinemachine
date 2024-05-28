@@ -2,11 +2,11 @@
   "dependencies": {
     "com.unity.ai.navigation": "1.1.5",
     "com.unity.cinemachine": "file:../../../com.unity.cinemachine",
-    "com.unity.ide.rider": "3.0.27",
+    "com.unity.ide.rider": "3.0.28",
     "com.unity.ide.visualstudio": "2.0.22",
     "com.unity.ide.vscode": "1.2.5",
     "com.unity.inputsystem": "1.7.0",
-    "com.unity.splines": "2.5.2",
+    "com.unity.splines": "2.6.1",
     "com.unity.test-framework": "1.1.33",
     "com.unity.timeline": "1.7.6",
     "com.unity.ugui": "1.0.0",
