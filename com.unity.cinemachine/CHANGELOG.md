@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Cinemachine cameras would sometimes unnecessarily dirty the scene due to floating-point imprecision when setting transform rotations.
 - Bugfix: The GroupAverage Rotation Mode in CinemachineTargetGroup was not calculated properly.
 - Bugfix: PostProcessing and VolumeSettings were not blending correctly to and from empty profiles.
+- Bugfix: add missing null check in CinemachineTargetGroup.WeightedMemberBoundsForValidMember.
 
 
 ## [2.10.0] - 2024-01-01

@@ -313,7 +313,7 @@ namespace Cinemachine
 
         static BoundingSphere WeightedMemberBoundsForValidMember(ref Target t, Vector3 avgPos, float maxWeight)
         {
-            var pos = TargetPositionCache.GetTargetPosition(t.target);
+            var pos = t.target == null ? avgPos : TargetPositionCache.GetTargetPosition(t.target);
             var w = Mathf.Max(0, t.weight);
             if (maxWeight > UnityVectorExtensions.Epsilon && w < maxWeight)
                 w /= maxWeight;
