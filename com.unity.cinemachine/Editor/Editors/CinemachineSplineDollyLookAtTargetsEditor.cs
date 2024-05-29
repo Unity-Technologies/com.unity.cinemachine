@@ -54,16 +54,22 @@ namespace Unity.Cinemachine.Editor
         }
 
         // We keep the state cache in a static dictionary so that it can be accessed by the gizmo drawer
-        static Dictionary<CinemachineSplineDollyLookAtTargets, InspectorStateCache> m_CacheLookup = new ();
+        static Dictionary<CinemachineSplineDollyLookAtTargets, InspectorStateCache> s_CacheLookup = new ();
         static InspectorStateCache GetInspectorStateCache(CinemachineSplineDollyLookAtTargets splineData)
         {
-            if (m_CacheLookup.TryGetValue(splineData, out var value))
+            if (s_CacheLookup.TryGetValue(splineData, out var value))
                 return value;
-            return null;
+            value = new ();
+            s_CacheLookup.Add(splineData, value);
+            return value;
         }
 
-        private void OnEnable() => m_CacheLookup.Add(target as CinemachineSplineDollyLookAtTargets, new InspectorStateCache());
-        private void OnDisable() => m_CacheLookup.Remove(target as CinemachineSplineDollyLookAtTargets);
+        private void OnDisable() 
+        {
+            var t = target as CinemachineSplineDollyLookAtTargets;
+            if (s_CacheLookup.ContainsKey(t))
+                s_CacheLookup.Remove(t);
+        }
 
         public override VisualElement CreateInspectorGUI()
         {
