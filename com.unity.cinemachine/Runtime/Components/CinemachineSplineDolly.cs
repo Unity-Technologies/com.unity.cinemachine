@@ -182,7 +182,7 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method = null;
         }
 
-        /// <summary>Called when the behaviour is enabled.</summary>
+        /// <inheritdoc/>
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -190,6 +190,7 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method?.Reset();
         }
 
+        /// <inheritdoc/>
         protected override void OnDisable()
         {
             m_SplineSettings.InvalidateCache();
