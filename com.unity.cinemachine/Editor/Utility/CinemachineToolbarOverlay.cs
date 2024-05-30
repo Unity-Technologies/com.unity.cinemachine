@@ -1,11 +1,6 @@
-using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
-using UnityEditor.Overlays;
-using UnityEditor.Toolbars;
 using UnityEngine;
-using UnityEngine.UIElements;
-using System.Collections.Generic;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -25,7 +20,7 @@ namespace Unity.Cinemachine.Editor
     ///
     /// To check, if a tool has been enabled/disabled in the editor script, use CinemachineSceneToolUtility.IsToolActive.
     /// </summary>
-    public abstract class CinemachineTool : EditorTool, IDrawSelectedHandles
+    abstract class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
         GUIContent m_IconContent;
         
@@ -148,7 +143,7 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     [Overlay(typeof(SceneView), "Cinemachine Tool Settings")]
     [Icon(CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmCamera@256.png")]
-    public class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
+    class CinemachineToolSettingsOverlay : Overlay, ICreateToolbar
     {
         static readonly string[] k_CmToolbarItems = { OrbitalFollowOrbitSelection.id };
         
