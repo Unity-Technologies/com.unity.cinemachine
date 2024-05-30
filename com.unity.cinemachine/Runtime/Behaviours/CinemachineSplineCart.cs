@@ -117,6 +117,8 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method?.Reset();
         }
 
+        void OnDisable() => SplineSettings.InvalidateCache();
+
         void FixedUpdate()
         {
             if (UpdateMethod == UpdateMethods.FixedUpdate)

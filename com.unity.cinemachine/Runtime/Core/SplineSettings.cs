@@ -73,12 +73,18 @@ namespace Unity.Cinemachine
         public CachedScaledSpline GetCachedSpline()
         {
             if (!Spline.IsValid())
+            {
+                m_CachedSpline?.Dispose();
                 m_CachedSpline = null;
+            }
             else
             {
                 // Only check crude validity once per frame, to keep things efficient
                 if (m_CachedSpline == null || (Time.frameCount != m_CachedFrame && !m_CachedSpline.IsCrudelyValid(Spline.Spline, Spline.transform)))
+                {
+                    m_CachedSpline?.Dispose();
                     m_CachedSpline = new CachedScaledSpline(Spline.Spline, Spline.transform);
+                }
 #if UNITY_EDITOR
                 // Deep check only in editor and if not playing
                 else if (!Application.isPlaying && Time.frameCount != m_CachedFrame && !m_CachedSpline.KnotsAreValid(Spline.Spline, Spline.transform))
@@ -95,7 +101,11 @@ namespace Unity.Cinemachine
         /// subtle changes are made to the spline's control points at runtime, client is responsible 
         /// for calling InvalidateCache().
         /// </summary>
-        public void InvalidateCache() => m_CachedSpline = null;
+        public void InvalidateCache()
+        {
+            m_CachedSpline?.Dispose();
+            m_CachedSpline = null;
+        }
     }
 
 
@@ -124,8 +134,6 @@ namespace Unity.Cinemachine
             m_CachedScale = scale;
             m_IsAllocated = true;
         }
-
-        ~CachedScaledSpline() => Dispose();
 
         /// <inheritdoc/>
         public void Dispose() 
