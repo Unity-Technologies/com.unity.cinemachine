@@ -54,6 +54,10 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>LookAt targets for the camera at specific positions on the Spline</summary>
+        /// <remarks>It is not recommended to modify the data array at runtime, because the infrastructure
+        /// expects the array to be in strclty increasing order of distance along the spline.  If you do change
+        /// the array at runtime, you must take care to keep it in this order, or the results will be unpredictable.
+        /// </remarks>
         [Tooltip("LookAt targets for the camera at specific positions on the Spline")]
         public SplineData<Item> Targets = new () { DefaultValue = new Item { Easing = 1 } };
 
