@@ -19,7 +19,7 @@ namespace Unity.Cinemachine.Editor
             public UndRedoMonitor() { Undo.undoRedoPerformed += () => m_LastUndoRedoFrame = Time.frameCount; }
             public bool IsUndoRedo => Time.frameCount <= m_LastUndoRedoFrame + 1;
         }
-        UndRedoMonitor m_UndoRedoMonitor = new ();
+        readonly UndRedoMonitor m_UndoRedoMonitor = new ();
 
         /// <summary>
         /// This is needed to keep track of array values so that when they are changed by the user
@@ -30,7 +30,7 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         class InspectorStateCache
         {
-            List<DataPoint<CinemachineSplineDollyLookAtTargets.Item>> m_DataPointsCache = new ();
+            readonly List<DataPoint<CinemachineSplineDollyLookAtTargets.Item>> m_DataPointsCache = new ();
 
             public int CurrentSelection { get; set; } = -1;
 
@@ -54,7 +54,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         // We keep the state cache in a static dictionary so that it can be accessed by the gizmo drawer
-        static Dictionary<CinemachineSplineDollyLookAtTargets, InspectorStateCache> s_CacheLookup = new ();
+        static readonly Dictionary<CinemachineSplineDollyLookAtTargets, InspectorStateCache> s_CacheLookup = new ();
         static InspectorStateCache GetInspectorStateCache(CinemachineSplineDollyLookAtTargets splineData)
         {
             if (s_CacheLookup.TryGetValue(splineData, out var value))

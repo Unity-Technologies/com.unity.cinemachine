@@ -244,7 +244,7 @@ namespace Unity.Cinemachine.Editor
 
         void OnEnable()
         {
-            m_IconContent = new GUIContent
+            m_IconContent = new ()
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>(CinemachineSceneToolHelpers.GetIconPath() + "CmSplineRollTool@256.png"),
                 text = "Roll Tool",
