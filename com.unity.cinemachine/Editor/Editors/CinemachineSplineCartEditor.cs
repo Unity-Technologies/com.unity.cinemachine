@@ -13,7 +13,9 @@ namespace Unity.Cinemachine.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.SplineSettings)));
+
+            var splineIsChildHelp = ux.AddChild(new HelpBox("Spline should not be a child of this object.", HelpBoxMessageType.Error));
+            ux.Add(new PropertyField(serializedObject.FindProperty("m_SplineSettings")));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.UpdateMethod)));
 
             var autoDollyProp = serializedObject.FindProperty(() => Target.AutomaticDolly);
@@ -26,6 +28,18 @@ namespace Unity.Cinemachine.Editor
                 targetField.SetVisible(autodolly != null && autodolly.RequiresTrackingTarget);
             });
 
+            ux.TrackAnyUserActivity(() =>
+            {
+                bool isChild = false;
+                for (int i = 0; !isChild && i < targets.Length; ++i)
+                {
+                    var t = targets[i] as CinemachineSplineCart;
+                    if (t != null && t.Spline != null)
+                        isChild = t.transform.IsAncestorOf(t.Spline.transform);
+                }
+                splineIsChildHelp.SetVisible(isChild);
+            });
+            
             return ux;
         }
     }

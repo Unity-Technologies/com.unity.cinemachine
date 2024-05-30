@@ -13,12 +13,13 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Spline Cart")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineCart.html")]
-    public class CinemachineSplineCart : MonoBehaviour
+    public class CinemachineSplineCart : MonoBehaviour, ISplineReferencer
     {
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplineSettings SplineSettings = new () { Units = PathIndexUnit.Normalized };
+        [SerializeField, FormerlySerializedAs("SplineSettings")]
+        SplineSettings m_SplineSettings = new () { Units = PathIndexUnit.Normalized };
         
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
@@ -44,18 +45,23 @@ namespace Unity.Cinemachine
         [Tooltip("Used only by Automatic Dolly settings that require it")]
         public Transform TrackingTarget;
 
+        CinemachineSplineRoll.RollCache m_RollCache;
+
+        /// <inheritdoc/>
+        public ref SplineSettings SplineSettings => ref m_SplineSettings;
+
         /// <summary>The Spline container to which the cart will be constrained.</summary>
         public SplineContainer Spline
         {
-            get => SplineSettings.Spline;
-            set => SplineSettings.Spline = value;
+            get => m_SplineSettings.Spline;
+            set => m_SplineSettings.Spline = value;
         }
 
         /// <summary>The cart's current position on the spline, in spline position units</summary>
         public float SplinePosition
         {
-            get => SplineSettings.Position;
-            set => SplineSettings.Position = value;
+            get => m_SplineSettings.Position;
+            set => m_SplineSettings.Position = value;
         }
 
         /// <summary>How to interpret PositionOnSpline:
@@ -65,11 +71,10 @@ namespace Unity.Cinemachine
         /// interpolation between the specific knot index and the next knot."</summary>
         public PathIndexUnit PositionUnits
         {
-            get => SplineSettings.Units;
-            set => SplineSettings.ChangeUnitPreservePosition(value);
+            get => m_SplineSettings.Units;
+            set => m_SplineSettings.ChangeUnitPreservePosition(value);
         }
 
-        CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
 
         // In-editor only: CM 3.0.x Legacy support =================================
         [SerializeField, HideInInspector, FormerlySerializedAs("SplinePosition")] private float m_LegacyPosition = -1;
@@ -79,14 +84,14 @@ namespace Unity.Cinemachine
         {
             if (m_LegacyPosition != -1)
             {
-                SplineSettings.Position = m_LegacyPosition;
-                SplineSettings.Units = m_LegacyUnits;
+                m_SplineSettings.Position = m_LegacyPosition;
+                m_SplineSettings.Units = m_LegacyUnits;
                 m_LegacyPosition = -1;
                 m_LegacyUnits = 0;
             }
             if (m_LegacySpline != null)
             {
-                SplineSettings.Spline = m_LegacySpline;
+                m_SplineSettings.Spline = m_LegacySpline;
                 m_LegacySpline = null;
             }
         }
@@ -100,7 +105,7 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
+            m_SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
             UpdateMethod = UpdateMethods.Update;
             AutomaticDolly.Method = null;
             TrackingTarget = null;
@@ -108,9 +113,11 @@ namespace Unity.Cinemachine
 
         void OnEnable()
         {
-            RefreshRollCache();
+            m_RollCache.Refresh(this);
             AutomaticDolly.Method?.Reset();
         }
+
+        void OnDisable() => SplineSettings.InvalidateCache();
 
         void FixedUpdate()
         {
@@ -144,39 +151,15 @@ namespace Unity.Cinemachine
 
         void SetCartPosition(float distanceAlongPath)
         {
-            if (Spline.IsValid())
+            var spline = m_SplineSettings.GetCachedSpline();
+            if (spline != null)
             {
-                SplinePosition = Spline.Spline.StandardizePosition(distanceAlongPath, PositionUnits, Spline.Spline.GetLength());
-                var t = Spline.Spline.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
-                Spline.EvaluateSplineWithRoll(SplineRoll, transform.rotation, t, out var pos, out var rot);
+                var splinePath = Spline.Splines[0];
+                SplinePosition = spline.StandardizePosition(distanceAlongPath, PositionUnits, out _);
+                var t = splinePath.ConvertIndexUnit(SplinePosition, PositionUnits, PathIndexUnit.Normalized);
+                spline.EvaluateSplineWithRoll(Spline.transform, m_RollCache.GetSplineRoll(this), transform.rotation, t, out var pos, out var rot);
                 transform.ConservativeSetPositionAndRotation(pos, rot);
             }
-        }
-
-        CinemachineSplineRoll SplineRoll
-        {
-            get
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    RefreshRollCache();
-#endif
-                return m_RollCache;
-            }
-        }
-        
-        void RefreshRollCache()
-        {
-            // check if we have CinemachineSplineRoll
-            TryGetComponent(out m_RollCache);
-#if UNITY_EDITOR
-            // need to tell CinemachineSplineRoll about its spline for gizmo drawing purposes
-            if (m_RollCache != null)
-                m_RollCache.Container = Spline; 
-#endif
-            // check if our spline has CinemachineSplineRoll
-            if (Spline != null && m_RollCache == null)
-                Spline.TryGetComponent(out m_RollCache);
         }
     }
 }
