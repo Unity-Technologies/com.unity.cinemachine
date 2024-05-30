@@ -364,6 +364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
+  IgnoreTimeScale: 0
   m_ControllerManager:
     Controllers:
     - Name: Move X
@@ -827,7 +828,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1670372959}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4c41ac9245b87c4192012080077d830, type: 3}
+  m_Script: {fileID: 11500000, guid: 4afa82ae3200b82408d605c3dbdd1e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: 0

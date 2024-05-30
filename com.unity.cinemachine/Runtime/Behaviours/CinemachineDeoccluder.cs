@@ -585,7 +585,7 @@ namespace Unity.Cinemachine
             // Take a step along the wall.
             var pos = currentPos;
             var dir = Vector3.zero;
-            if (!GetWalkingDirection(pos, pushDir, obstacle, ref dir))
+            if (obstacle.collider == null || !GetWalkingDirection(pos, pushDir, obstacle, ref dir))
                 return pos;
 
             Ray ray = new Ray(pos, dir);

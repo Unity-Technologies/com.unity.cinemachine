@@ -245,6 +245,8 @@ namespace Unity.Cinemachine.TargetTracking
                 }
             }
             // Gimbal lock situation - use previous orientation if it exists
+            if (PreviousReferenceOrientation == new Quaternion(0, 0, 0, 0))
+                return Quaternion.identity;
             return PreviousReferenceOrientation.normalized;
         }
 

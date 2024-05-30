@@ -23,6 +23,7 @@ namespace Unity.Cinemachine.Editor
             ux.Add(invalidHelp);
             var toolButton = ux.AddChild(new Button(() => ToolManager.SetActiveTool(typeof(SplineRollTool))) 
                 { text = "Edit Data Points in Scene View" });
+
             ux.TrackAnyUserActivity(() =>
             {
                 var haveSpline = splineData != null && splineData.SplineContainer != null;
@@ -124,7 +125,8 @@ namespace Unity.Cinemachine.Editor
                 || SplineGizmoCache.Instance.Spline != splineContainer.Spline
                 || SplineGizmoCache.Instance.RollData != splineRoll.Roll
                 || SplineGizmoCache.Instance.Width != width
-                || SplineGizmoCache.Instance.Resolution != resolution)
+                || SplineGizmoCache.Instance.Resolution != resolution
+                || SplineGizmoCache.Instance.Enabled != splineRoll.enabled)
             {
                 var numKnots = splineContainer.Spline.Count;
                 var numSteps = numKnots * resolution;
@@ -175,7 +177,8 @@ namespace Unity.Cinemachine.Editor
                     Spline = splineContainer.Spline,
                     RollData = splineRoll.Roll,
                     Width = width,
-                    Resolution = resolution
+                    Resolution = resolution,
+                    Enabled = splineRoll.enabled
                 };
             }
             // Draw the path
@@ -196,6 +199,7 @@ namespace Unity.Cinemachine.Editor
             public Spline Spline;
             public float Width;
             public int Resolution;
+            public bool Enabled;
 
             public static SplineGizmoCache Instance;
 
@@ -230,6 +234,15 @@ namespace Unity.Cinemachine.Editor
         public static Action<CinemachineSplineRoll, int> s_OnDataIndexDragged;
         public static Action<CinemachineSplineRoll, int> s_OnDataLookAtDragged;
 
+        void OnEnable()
+        {
+            m_IconContent = new GUIContent
+            {
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/CmSplineRollTool@256.png"),
+                tooltip = "Adjust the roll data points along the spline"
+            };
+        }
+
         bool GetTargets(out CinemachineSplineRoll splineData, out SplineContainer spline)
         {
             splineData = target as CinemachineSplineRoll;
@@ -242,16 +255,6 @@ namespace Unity.Cinemachine.Editor
             return false;
         }
 
-        void OnEnable()
-        {
-            m_IconContent = new ()
-            {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(CinemachineSceneToolHelpers.GetIconPath() + "CmSplineRollTool@256.png"),
-                text = "Roll Tool",
-                tooltip = "Adjust the roll data points along the spline."
-            };
-        }
-
         public override void OnToolGUI(EditorWindow window)
         {
             if (!GetTargets(out var splineData, out var spline))
@@ -262,6 +265,7 @@ namespace Unity.Cinemachine.Editor
             using (new Handles.DrawingScope(color))
             {
                 var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
+
                 int changedIndex = DrawIndexPointHandles(nativeSpline, splineData.Roll);
                 if (changedIndex >= 0)
                     s_OnDataIndexDragged?.Invoke(splineData, changedIndex);

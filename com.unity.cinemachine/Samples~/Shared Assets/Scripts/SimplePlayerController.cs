@@ -76,13 +76,13 @@ namespace Unity.Cinemachine.Samples
             + "<b>World</b>: will move in global XZ plane.")]
         public UpModes UpMode = UpModes.World;
 
-        [Tooltip("Override the main camera. Useful for split screen games.")]
+        [Tooltip("Override the main camera. Useful for split-screen games.")]
         public Camera CameraOverride;
 
         [Tooltip("Raycasts for ground will detect these layers")]
         public LayerMask GroundLayers = 1;
         
-        [Tooltip("Force of gravity in the down direction (m/s/s)")]
+        [Tooltip("Force of gravity in the down direction (m/s^2)")]
         public float Gravity = 10;
 
         const float kDelayBeforeInferringJump = 0.3f;
@@ -97,6 +97,9 @@ namespace Unity.Cinemachine.Samples
 
         // These are part of a strategy to combat input gimbal lock when controlling a player
         // that can move freely on surfaces that go upside-down relative to the camera.
+        // This is only used in the specific situation where the character is upside-down relative to the input frame,
+        // and the input directives become ambiguous.
+        // If the camera and input frame are travelling along with the player, then these are not used.
         bool m_InTopHemisphere = true;
         float m_TimeInHemisphere = 100;
         Vector3 m_LastRawInput;
@@ -111,6 +114,7 @@ namespace Unity.Cinemachine.Samples
 
         public bool IsGrounded() => GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
 
+        // Note that m_Controller is an optional component: we'll use it if it's there.
         void Start() => TryGetComponent(out m_Controller);
 
         private void OnEnable()
@@ -181,7 +185,7 @@ namespace Unity.Cinemachine.Samples
 
         // Get the reference frame for the input.  The idea is to map camera fwd/right
         // to the player's XZ plane.  There is some complexity here to avoid
-        // gimbal lock when the player is tilted 180 degrees relative to the camera.
+        // gimbal lock when the player is tilted 180 degrees relative to the input frame.
         Quaternion GetInputFrame(bool inputDirectionChanged)
         {
             // Get the raw input frame, depending of forward mode setting
@@ -197,7 +201,8 @@ namespace Unity.Cinemachine.Samples
             var playerUp = transform.up;
             var up = frame * Vector3.up;
 
-            // Is the player in the top or bottom hemisphere?  This is needed to avoid gimbal lock
+            // Is the player in the top or bottom hemisphere?  This is needed to avoid gimbal lock,
+            // but only when the player is upside-down relative to the input frame.
             const float BlendTime = 2f;
             m_TimeInHemisphere += Time.deltaTime;
             bool inTopHemisphere = Vector3.Dot(up, playerUp) >= 0;

@@ -2,6 +2,7 @@
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEditor.EditorTools;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -30,21 +31,8 @@ namespace Unity.Cinemachine.Editor
             cam.Lens = CinemachineMenu.MatchSceneViewCamera(cam.transform);
         }
 
-        void OnEnable()
-        {
-            Undo.undoRedoPerformed += ResetTarget;
-
-            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
-        }
-
-        void OnDisable()
-        {
-            Undo.undoRedoPerformed -= ResetTarget;
-
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
-        }
+        void OnEnable() => Undo.undoRedoPerformed += ResetTarget;
+        void OnDisable() => Undo.undoRedoPerformed -= ResetTarget;
 
         public override VisualElement CreateInspectorGUI()
         {
@@ -87,26 +75,53 @@ namespace Unity.Cinemachine.Editor
             return ux;
         }
 
-        void OnSceneGUI()
+        [EditorTool("Field of View Tool", typeof(CinemachineCamera))]
+        class FoVTool : EditorTool
         {
-            var cmCam = Target;
-            if (cmCam == null)
-                return;
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
+            {
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/FOV.png"),
+                    tooltip = "Adjust the Field of View of the Lens",
+                };
+            }
 
-            var originalColor = Handles.color;
-            Handles.color = Handles.preselectionColor;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
+            public override void OnToolGUI(EditorWindow window)
             {
-                CinemachineSceneToolHelpers.FovToolHandle(cmCam, 
-                    new SerializedObject(cmCam).FindProperty(() => cmCam.Lens), 
-                    cmCam.Lens, cmCam.Lens.UseHorizontalFOV);
+                var vcam = target as CinemachineCamera;
+                if (target == null)
+                    return;
+
+                CinemachineSceneToolHelpers.DoFovToolHandle(
+                    vcam, new SerializedObject(vcam).FindProperty(() => vcam.Lens), vcam.Lens, vcam.Lens.UseHorizontalFOV);
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
+        }
+
+        [EditorTool("Far-Near Clip Tool", typeof(CinemachineCamera))]
+        class FarNearClipTool : EditorTool
+        {
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
             {
-                CinemachineSceneToolHelpers.NearFarClipHandle(cmCam,
-                    new SerializedObject(cmCam).FindProperty(() => cmCam.Lens));
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/FarNearClip.png"),
+                    tooltip = "Adjust the Far/Near Clip of the Lens",
+                };
             }
-            Handles.color = originalColor;
+
+            public override void OnToolGUI(EditorWindow window)
+            {
+                var vcam = target as CinemachineCamera;
+                if (target == null)
+                    return;
+
+                CinemachineSceneToolHelpers.DoNearFarClipHandle(vcam, new SerializedObject(vcam).FindProperty(() => vcam.Lens));
+            }
         }
     }
 }
