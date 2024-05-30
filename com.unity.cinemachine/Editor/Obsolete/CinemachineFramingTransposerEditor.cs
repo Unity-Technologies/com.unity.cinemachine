@@ -88,9 +88,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -99,9 +96,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         public override void OnInspectorGUI()
@@ -170,61 +164,6 @@ namespace Unity.Cinemachine.Editor
                         z + e.z, z - e.z, e.x / e.y);
                 }
                 Gizmos.matrix = m;
-            }
-        }
-
-        void OnSceneGUI()
-        {
-            var framingTransposer = Target;
-            if (framingTransposer == null || !framingTransposer.IsValid)
-            {
-                return;
-            }
-            
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
-            {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    Target.VirtualCamera, 
-                    new SerializedObject(Target).FindProperty(() => Target.m_TrackedObjectOffset),
-                    CinemachineCore.Stage.Body);
-            }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
-                var originalColor = Handles.color;
-                var camPos = framingTransposer.VcamState.RawPosition;
-                var targetForward = framingTransposer.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
-                EditorGUI.BeginChangeCheck();
-                Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
-                var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
-                var newHandlePosition = Handles.Slider(cdHandleId, camPos, targetForward,
-                    CinemachineSceneToolHelpers.CubeHandleCapSize(camPos), Handles.CubeHandleCap, 0.5f);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    // Modify via SerializedProperty for OnValidate to get called automatically, and scene repainting too
-                    var so = new SerializedObject(framingTransposer);
-                    var prop = so.FindProperty(() => framingTransposer.m_CameraDistance);
-                    prop.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newHandlePosition, camPos, targetForward);
-                    so.ApplyModifiedProperties();
-                }
-
-                var cameraDistanceHandleIsDragged = GUIUtility.hotControl == cdHandleId;
-                var cameraDistanceHandleIsUsedOrHovered = cameraDistanceHandleIsDragged || 
-                    HandleUtility.nearestControl == cdHandleId;
-                if (cameraDistanceHandleIsUsedOrHovered)
-                {
-                    CinemachineSceneToolHelpers.DrawLabel(camPos, 
-                        "Camera Distance (" + framingTransposer.m_CameraDistance.ToString("F1") + ")");
-                }
-                
-                Handles.color = cameraDistanceHandleIsUsedOrHovered ? 
-                    Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
-                Handles.DrawLine(camPos, 
-                    framingTransposer.FollowTarget.position + framingTransposer.m_TrackedObjectOffset);
-
-                CinemachineSceneToolHelpers.SoloOnDrag(cameraDistanceHandleIsDragged, framingTransposer.VirtualCamera,
-                    cdHandleId);
-                
-                Handles.color = originalColor;
             }
         }
     }
