@@ -67,7 +67,7 @@ namespace Unity.Cinemachine.Editor
         private void OnDisable() 
         {
             var t = target as CinemachineSplineDollyLookAtTargets;
-            if (s_CacheLookup.ContainsKey(t))
+            if (t != null && s_CacheLookup.ContainsKey(t))
                 s_CacheLookup.Remove(t);
         }
 
