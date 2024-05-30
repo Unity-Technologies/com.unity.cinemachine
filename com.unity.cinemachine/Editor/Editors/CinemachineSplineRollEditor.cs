@@ -220,8 +220,7 @@ namespace Unity.Cinemachine.Editor
         {
             m_IconContent = new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                    CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png"),
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(CinemachineSceneToolHelpers.GetIconPath() + "CmSplineRollTool@256.png"),
                 text = "Roll Tool",
                 tooltip = "Adjust the roll data points along the spline."
             };

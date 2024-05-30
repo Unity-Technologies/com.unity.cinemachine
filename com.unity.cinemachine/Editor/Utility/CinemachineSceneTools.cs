@@ -89,7 +89,7 @@ namespace Unity.Cinemachine.Editor
         public static readonly Color HelperLineDefaultColor = new Color(255, 255, 255, 25);
         const float k_DottedLineSpacing = 4f;
 
-        static GUIStyle s_LabelStyle = new GUIStyle 
+        static GUIStyle s_LabelStyle = new () 
         { 
             normal =
             {
@@ -100,6 +100,12 @@ namespace Unity.Cinemachine.Editor
             fontStyle = FontStyle.Bold,
             padding = new RectOffset(5, 0, 5, 0)
         };
+
+        public static string GetIconPath() 
+        {
+            var skin = EditorGUIUtility.isProSkin ? "/Dark" : "";
+            return $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/Icons{skin}/";
+        }
         
         public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
         {
