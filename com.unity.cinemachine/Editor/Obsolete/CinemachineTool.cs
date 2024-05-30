@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Implement this to set your Tool's icon and tooltip.</summary>
         /// <returns>A GUIContent with an icon set.</returns>
         protected abstract GUIContent GetIcon();
-
+        
         /// <summary>This lets the editor find the icon of the tool.</summary>
         public override GUIContent toolbarIcon => null;
 
