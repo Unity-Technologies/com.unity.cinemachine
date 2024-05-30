@@ -93,20 +93,18 @@ namespace Unity.Cinemachine.Editor
         { 
             normal =
             {
-                background = AssetDatabase.LoadAssetAtPath<Texture2D>(
-                    $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/SceneToolsLabelBackground.png"),
+                background = AssetDatabase.LoadAssetAtPath<Texture2D>($"{ResourcePath}/SceneToolsLabelBackground.png"),
                 textColor = Handles.selectedColor,
             },
             fontStyle = FontStyle.Bold,
             padding = new RectOffset(5, 0, 5, 0)
         };
 
-        public static string GetIconPath() 
-        {
-            var skin = EditorGUIUtility.isProSkin ? "/Dark" : "";
-            return $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/Icons{skin}/";
-        }
+        static string SkinSuffix => EditorGUIUtility.isProSkin ? "Dark" : "Light";
+        static string ResourcePath => $"{CinemachineCore.kPackageRoot}/Editor/EditorResources";
         
+        public static string IconPath => $"{ResourcePath}/Icons/{SkinSuffix}";
+
         public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
         {
             var delta = newPos - oldPos;

@@ -203,6 +203,15 @@ namespace Unity.Cinemachine.Editor
     {
         GUIContent m_IconContent;
         public override GUIContent toolbarIcon => m_IconContent;
+        void OnEnable()
+        {
+            m_IconContent = new GUIContent
+            {
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/CmSplineRollTool@256.png"),
+                text = "Roll Tool",
+                tooltip = "Adjust the roll data points along the spline."
+            };
+        }
 
         bool GetTargets(out CinemachineSplineRoll splineData, out SplineContainer spline)
         {
@@ -214,16 +223,6 @@ namespace Unity.Cinemachine.Editor
             }
             spline = null;
             return false;
-        }
-
-        void OnEnable()
-        {
-            m_IconContent = new GUIContent
-            {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(CinemachineSceneToolHelpers.GetIconPath() + "CmSplineRollTool@256.png"),
-                text = "Roll Tool",
-                tooltip = "Adjust the roll data points along the spline."
-            };
         }
 
         public override void OnToolGUI(EditorWindow window)

@@ -75,10 +75,7 @@ namespace Unity.Cinemachine.Editor
         {
             m_State.refreshIcon = m_State.isProSkin != EditorGUIUtility.isProSkin;
             m_State.isProSkin = EditorGUIUtility.isProSkin;
-            return $"{CinemachineCore.kPackageRoot}/Editor/EditorResources/Handles/" +
-                (m_State.isProSkin ? 
-                    (m_State.isSelected ? "Dark-Selected" : "Dark") : 
-                    (m_State.isSelected ? "Light-Selected" : "Light")) + "/";
+            return $"{CinemachineSceneToolHelpers.IconPath}/";
         }
 
         struct ToolState
