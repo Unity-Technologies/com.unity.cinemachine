@@ -1,88 +1,9 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.EditorTools;
 using UnityEngine;
 
 namespace Unity.Cinemachine.Editor
 {
-    /// <summary>
-    /// Static class that manages Cinemachine Tools. It knows which tool is active,
-    /// and ensures that exclusive tools are not active at the same time.
-    /// The tools and editors requiring tools register/unregister themselves here.
-    /// </summary>
-    static class CinemachineSceneToolUtility
-    {
-        static Type s_ActiveExclusiveTool;
-        static Dictionary<Type, int> s_RequiredTools;
-
-        /// <summary>
-        /// Checks whether tool is the currently active exclusive tool.
-        /// </summary>
-        /// <param name="tool">Tool to check.</param>
-        /// <returns>True, when the tool is the active exclusive tool. False, otherwise.</returns>
-        public static bool IsToolActive(Type tool) => s_ActiveExclusiveTool == tool;
-
-        /// <summary>
-        /// Register your Type from the editor script's OnEnable function.
-        /// This way CinemachineTools will know which tools to display.
-        /// </summary>
-        /// <param name="tool">Tool to register</param>
-        public static void RegisterTool(Type tool)
-        {
-            if (s_RequiredTools.ContainsKey(tool))
-                s_RequiredTools[tool]++;
-            else
-                s_RequiredTools.Add(tool, 1);
-
-            s_TriggerToolBarRefresh = true;
-        }
-        
-        /// <summary>
-        /// Unregister your Type from the editor script's OnDisable function.
-        /// This way CinemachineTools will know which tools to display.
-        /// </summary>
-        /// <param name="tool">Tool to register</param>
-        public static void UnregisterTool(Type tool)
-        {
-            if (s_RequiredTools.ContainsKey(tool))
-            {
-                --s_RequiredTools[tool];
-                if (s_RequiredTools[tool] <= 0)
-                    s_RequiredTools.Remove(tool);
-            }
-            s_TriggerToolBarRefresh = true;
-        }
-
-        internal static bool IsToolRequired(Type tool) => s_RequiredTools.ContainsKey(tool);
-
-        internal static void SetTool(bool active, Type tool)
-        {
-            if (active)
-                s_ActiveExclusiveTool = tool;
-            else
-                s_ActiveExclusiveTool = s_ActiveExclusiveTool == tool ? null : s_ActiveExclusiveTool;
-            
-            s_TriggerToolBarRefresh = true;
-        }
-
-        static CinemachineSceneToolUtility()
-        {
-            s_RequiredTools = new Dictionary<Type, int>();
-            EditorApplication.update += RefreshToolbar;
-        }
-
-        static bool s_TriggerToolBarRefresh;
-        static void RefreshToolbar()
-        {
-            if (s_TriggerToolBarRefresh)
-            {
-                ToolManager.RefreshAvailableTools();
-                s_TriggerToolBarRefresh = false;
-            }
-        }
-    }
-    
     static class CinemachineSceneToolHelpers
     {
         public const float LineThickness = 2f;
@@ -136,7 +57,7 @@ namespace Unity.Cinemachine.Editor
         static int s_ScaleSliderHash = "ScaleSliderHash".GetHashCode();
         static float s_FOVAfterLastToolModification;
 
-        public static void FovToolHandle(
+        public static void DoFovToolHandle(
             CinemachineVirtualCameraBase vcam, SerializedProperty lensProperty,
             in LensSettings lens, bool isLensHorizontal)
         {
@@ -210,7 +131,7 @@ namespace Unity.Cinemachine.Editor
             Handles.color = originalColor;
         }
 
-        public static void NearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
+        public static void DoNearFarClipHandle(CinemachineVirtualCameraBase vcam, SerializedProperty lens)
         {
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
@@ -376,7 +297,7 @@ namespace Unity.Cinemachine.Editor
             Handles.matrix = originalMatrix;
         }
 
-        public static void TrackedObjectOffsetTool(
+        public static void DoTrackedObjectOffsetTool(
             CinemachineVirtualCameraBase vcam, SerializedProperty trackedObjectOffset, CinemachineCore.Stage stage)
         {
             var target = vcam.LookAt;
@@ -421,7 +342,7 @@ namespace Unity.Cinemachine.Editor
             Handles.color = originalColor;
         }
 
-        public static void FollowOffsetTool(
+        public static void DoFollowOffsetTool(
             CinemachineVirtualCameraBase vcam, SerializedProperty offsetProperty, 
             Vector3 camPos, Vector3 targetPosition, Quaternion targetRotation, 
             Action OnChanged = null)
@@ -456,47 +377,11 @@ namespace Unity.Cinemachine.Editor
             Handles.color = originalColor;
         }
 
-
-#if !CINEMACHINE_NO_CM2_SUPPORT
-        /// <summary>
-        /// Draws Orbit handles (e.g. for freelook)
-        /// </summary>
-        /// <returns>Index of the rig being edited, or -1 if none</returns>
-        [Obsolete]
-        public static int OrbitControlHandleFreelook(
-            CinemachineFreeLook vcam, Quaternion rotationFrame, SerializedProperty orbits)
-        {
-            var originalColor = Handles.color;
-            var followPos = vcam.Follow.position;
-            var draggedRig = -1;
-            var minIndex = 1;
-            for (var rigIndex = 0; rigIndex < orbits.arraySize; ++rigIndex)
-            {
-                var orbit = orbits.GetArrayElementAtIndex(rigIndex);
-                var orbitHeight = orbit.FindPropertyRelative("m_Height");
-                var orbitRadius = orbit.FindPropertyRelative("m_Radius");
-                
-                if (OrbitHandles(
-                    orbits.serializedObject, orbitHeight, orbitRadius, 
-                    followPos, rotationFrame,
-                    out var heightHandleId, out var radiusHandleId))
-                {
-                    draggedRig = rigIndex;
-                    minIndex = Mathf.Min(heightHandleId, radiusHandleId);
-                }
-            }
-            SoloOnDrag(draggedRig != -1, vcam, minIndex);
-
-            Handles.color = originalColor;
-            return draggedRig;
-        }
-#endif
-
         /// <summary>
         /// Draws Orbit handles for OrbitalFollow
         /// </summary>
         /// <returns>Index of the rig being edited, or -1 if none</returns>
-        public static int ThreeOrbitRigHandle(
+        public static int DoThreeOrbitRigHandle(
             CinemachineVirtualCameraBase vcam, Quaternion rotationFrame, 
             SerializedProperty orbitSetting, Vector3 orbitCenter)
         {

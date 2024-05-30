@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.EditorTools;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -22,9 +23,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-            
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -33,9 +31,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)
@@ -61,25 +56,31 @@ namespace Unity.Cinemachine.Editor
                     Target.TrackedPoint, brain.OutputCamera);
         }
 
-        void OnSceneGUI()
+        [EditorTool("Camera Distance Tool", typeof(CinemachinePositionComposer))]
+        class CameraDistanceTool : EditorTool
         {
-            if (Target == null || !Target.IsValid)
-                return;
-            
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    Target.VirtualCamera, 
-                    new SerializedObject(Target).FindProperty(() => Target.TargetOffset),
-                    CinemachineCore.Stage.Body);
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/FollowOffset.png"),
+                    tooltip = "Adjust the Camera Distance",
+                };
             }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+
+            public override void OnToolGUI(EditorWindow window)
             {
-                var property = new SerializedObject(Target).FindProperty(() => Target.CameraDistance);
+                var composer = target as CinemachinePositionComposer;
+                if (composer == null || !composer.IsValid)
+                    return;
+
+                var property = new SerializedObject(composer).FindProperty(() => composer.CameraDistance);
 
                 var originalColor = Handles.color;
-                var camPos = Target.VcamState.RawPosition;
-                var targetForward = Target.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
+                var camPos = composer.VcamState.RawPosition;
+                var targetForward = composer.VirtualCamera.State.GetFinalOrientation() * Vector3.forward;
                 EditorGUI.BeginChangeCheck();
                 Handles.color = CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 var cdHandleId = GUIUtility.GetControlID(FocusType.Passive);
@@ -97,16 +98,43 @@ namespace Unity.Cinemachine.Editor
                 if (isDraggedOrHovered)
                 {
                     CinemachineSceneToolHelpers.DrawLabel(camPos, 
-                        property.displayName + " (" + Target.CameraDistance.ToString("F1") + ")");
+                        property.displayName + " (" + composer.CameraDistance.ToString("F1") + ")");
                 }
                 
                 Handles.color = isDraggedOrHovered ? 
                     Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
-                Handles.DrawLine(camPos, Target.FollowTargetPosition + Target.TargetOffset);
+                Handles.DrawLine(camPos, composer.FollowTargetPosition + composer.TargetOffset);
 
-                CinemachineSceneToolHelpers.SoloOnDrag(isDragged, Target.VirtualCamera, cdHandleId);
+                CinemachineSceneToolHelpers.SoloOnDrag(isDragged, composer.VirtualCamera, cdHandleId);
                 
                 Handles.color = originalColor;
+            }
+        }
+
+        [EditorTool("LookAt Offset Tool", typeof(CinemachinePositionComposer))]
+        class LookAtOffsetTool : EditorTool
+        {
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
+            {
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/TrackedObjectOffset.png"),
+                    tooltip = "Adjust the LookAt Offset",
+                };
+            }
+
+            public override void OnToolGUI(EditorWindow window)
+            {
+                var composer = target as CinemachinePositionComposer;
+                if (composer == null || !composer.IsValid)
+                    return;
+
+                CinemachineSceneToolHelpers.DoTrackedObjectOffsetTool(
+                    composer.VirtualCamera, 
+                    new SerializedObject(composer).FindProperty(() => composer.TargetOffset),
+                    CinemachineCore.Stage.Body);
             }
         }
     }

@@ -1,4 +1,6 @@
 using UnityEditor;
+using UnityEditor.EditorTools;
+using UnityEngine;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -6,19 +8,29 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineFollowEditor : CinemachineComponentBaseEditor
     {
-        void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-
-        void OnSceneGUI()
+        [EditorTool("Follow Offset Tool", typeof(CinemachineFollow))]
+        class FollowOffsetTool : EditorTool
         {
-            var follow = target as CinemachineFollow;
-            if (follow == null || !follow.IsValid)
-                return;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
             {
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/FollowOffset.png"),
+                    tooltip = "Adjust the Follow Offset",
+                };
+            }
+
+            public override void OnToolGUI(EditorWindow window)
+            {
+                var follow = target as CinemachineFollow;
+                if (follow == null || !follow.IsValid)
+                    return;
+
                 var property = new SerializedObject(follow).FindProperty(() => follow.FollowOffset);
                 var up = follow.VirtualCamera.State.ReferenceUp;
-                CinemachineSceneToolHelpers.FollowOffsetTool(
+                CinemachineSceneToolHelpers.DoFollowOffsetTool(
                     follow.VirtualCamera, property, follow.GetDesiredCameraPosition(up),
                     follow.FollowTargetPosition, follow.GetReferenceOrientation(up), () =>
                     {

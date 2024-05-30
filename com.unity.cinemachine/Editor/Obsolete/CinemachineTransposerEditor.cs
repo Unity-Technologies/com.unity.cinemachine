@@ -72,36 +72,6 @@ namespace Unity.Cinemachine.Editor
                     MessageType.Warning);
             DrawRemainingPropertiesInInspector();
         }
-
-        protected virtual void OnEnable()
-        {
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        }
-
-        protected virtual void OnDisable()
-        {
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        }
-        
-        void OnSceneGUI()
-        {
-            var transposer = Target;
-            if (transposer == null || !transposer.IsValid)
-                return;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
-                var property = new SerializedObject(Target).FindProperty(() => Target.m_FollowOffset);
-                var up = Target.VirtualCamera.State.ReferenceUp;
-                CinemachineSceneToolHelpers.FollowOffsetTool(
-                    Target.VirtualCamera, property, Target.GetTargetCameraPosition(up),
-                    Target.FollowTargetPosition, Target.GetReferenceOrientation(up), () =>
-                    {
-                        // Sanitize the offset
-                        property.vector3Value = Target.EffectiveOffset;
-                        property.serializedObject.ApplyModifiedProperties();
-                    });
-            }
-        }
     }
 }
 #endif

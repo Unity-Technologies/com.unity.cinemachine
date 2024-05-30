@@ -209,7 +209,7 @@ namespace Unity.Cinemachine.Editor
             {
                 image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/CmSplineRollTool@256.png"),
                 text = "Roll Tool",
-                tooltip = "Adjust the roll data points along the spline."
+                tooltip = "Adjust the roll data points along the spline"
             };
         }
 

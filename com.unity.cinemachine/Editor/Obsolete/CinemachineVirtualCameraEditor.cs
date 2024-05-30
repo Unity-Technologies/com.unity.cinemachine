@@ -97,9 +97,6 @@ namespace Unity.Cinemachine.Editor
             if (Target != null && Target.m_LockStageInInspector != null)
                foreach (var s in Target.m_LockStageInInspector)
                     m_PipelineSet.SetStageIsLocked(s);
-
-            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
         }
 
         protected override void OnDisable()
@@ -107,33 +104,11 @@ namespace Unity.Cinemachine.Editor
             Undo.undoRedoPerformed -= ResetTargetOnUndo;
             m_PipelineSet.Shutdown();
             base.OnDisable();
-
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
         }
 
         void OnSceneGUI()
         {
             m_PipelineSet.OnSceneGUI(); // call hidden editors' OnSceneGUI
-            
-            var vcam = Target;
-            if (vcam == null || !vcam.IsValid || vcam.m_ExcludedPropertiesInInspector.Contains("m_Lens"))
-                return;
-
-            var originalColor = Handles.color;
-            Handles.color = Handles.preselectionColor;
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
-            {
-                CinemachineSceneToolHelpers.FovToolHandle(vcam, 
-                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens), 
-                    vcam.m_Lens.ToLensSettings(), IsHorizontalFOVUsed());
-            }
-            else if (CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
-            {
-                CinemachineSceneToolHelpers.NearFarClipHandle(vcam, 
-                    new SerializedObject(vcam).FindProperty(() => vcam.m_Lens));
-            }
-            Handles.color = originalColor;
         }
 
         public override void OnInspectorGUI()

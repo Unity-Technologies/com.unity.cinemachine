@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.EditorTools;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -7,13 +8,10 @@ namespace Unity.Cinemachine.Editor
     [CanEditMultipleObjects]
     class CinemachineThirdPersonFollowEditor : CinemachineComponentBaseEditor
     {
-        protected virtual void OnEnable() => CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
-        protected virtual void OnDisable() => CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
-        
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineThirdPersonFollow))]
         static void DrawThirdPersonGizmos(CinemachineThirdPersonFollow target, GizmoType selectionType)
         {
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+            if (ToolManager.activeToolType == typeof(ThirdPersonFollowOffsetTool))
                 return; // don't draw gizmo when using handles
             
             if (target.IsValid)
@@ -41,15 +39,27 @@ namespace Unity.Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
-        
-        void OnSceneGUI()
-        {
-            var thirdPerson = target as CinemachineThirdPersonFollow;
-            if (thirdPerson == null || !thirdPerson.IsValid)
-                return;
 
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
+        [EditorTool("Third Person Follow Offset Tool", typeof(CinemachineThirdPersonFollow))]
+        class ThirdPersonFollowOffsetTool : EditorTool
+        {
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
             {
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/FollowOffset.png"),
+                    tooltip = "Adjust the Third Person Follow Offset",
+                };
+            }
+
+            public override void OnToolGUI(EditorWindow window)
+            {
+                var thirdPerson = target as CinemachineThirdPersonFollow;
+                if (thirdPerson == null || !thirdPerson.IsValid)
+                    return;
+
                 var originalColor = Handles.color;
                 
                 thirdPerson.GetRigPositions(out var followTargetPosition, out var shoulderPosition, 
@@ -84,14 +94,11 @@ namespace Unity.Cinemachine.Editor
                     var so = new SerializedObject(thirdPerson);
                     
                     var shoulderOffset = so.FindProperty(() => thirdPerson.ShoulderOffset);
-                    shoulderOffset.vector3Value += 
-                        CinemachineSceneToolHelpers.PositionHandleDelta(heading, newShoulderPosition, shoulderPosition);
+                    shoulderOffset.vector3Value += CinemachineSceneToolHelpers.PositionHandleDelta(heading, newShoulderPosition, shoulderPosition);
                     var verticalArmLength = so.FindProperty(() => thirdPerson.VerticalArmLength);
-                    verticalArmLength.floatValue += 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newArmPosition, armPosition, followUp);
+                    verticalArmLength.floatValue += CinemachineSceneToolHelpers.SliderHandleDelta(newArmPosition, armPosition, followUp);
                     var cameraDistance = so.FindProperty(() => thirdPerson.CameraDistance);
-                    cameraDistance.floatValue -= 
-                        CinemachineSceneToolHelpers.SliderHandleDelta(newCamPos, camPos, targetForward);
+                    cameraDistance.floatValue -= CinemachineSceneToolHelpers.SliderHandleDelta(newCamPos, camPos, targetForward);
                     
                     so.ApplyModifiedProperties();
                 }
@@ -106,24 +113,24 @@ namespace Unity.Cinemachine.Editor
                 CinemachineSceneToolHelpers.SoloOnDrag(isDragged, thirdPerson.VirtualCamera, sHandleIds.xyz);
 
                 Handles.color = originalColor;
-            }
             
-            // local function that draws label and guide lines, and returns true if a handle has been dragged
-            static bool IsHandleDragged
-                (int handleMinId, int handleMaxId, Vector3 labelPos, string text, Vector3 lineStart, Vector3 lineEnd)
-            {
-                var handleIsDragged = handleMinId <= GUIUtility.hotControl && GUIUtility.hotControl <= handleMaxId;
-                var handleIsDraggedOrHovered = handleIsDragged ||
-                    (handleMinId <= HandleUtility.nearestControl && HandleUtility.nearestControl <= handleMaxId);
+                // local function that draws label and guide lines, and returns true if a handle has been dragged
+                static bool IsHandleDragged
+                    (int handleMinId, int handleMaxId, Vector3 labelPos, string text, Vector3 lineStart, Vector3 lineEnd)
+                {
+                    var handleIsDragged = handleMinId <= GUIUtility.hotControl && GUIUtility.hotControl <= handleMaxId;
+                    var handleIsDraggedOrHovered = handleIsDragged ||
+                        (handleMinId <= HandleUtility.nearestControl && HandleUtility.nearestControl <= handleMaxId);
 
-                if (handleIsDraggedOrHovered)
-                    CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
+                    if (handleIsDraggedOrHovered)
+                        CinemachineSceneToolHelpers.DrawLabel(labelPos, text);
                     
-                Handles.color = handleIsDraggedOrHovered ? 
-                    Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
-                    Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.LineThickness);
+                    Handles.color = handleIsDraggedOrHovered ? 
+                        Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
+                        Handles.DrawLine(lineStart, lineEnd, CinemachineSceneToolHelpers.LineThickness);
                     
-                return handleIsDragged;
+                    return handleIsDragged;
+                }
             }
         }
     }
