@@ -75,7 +75,8 @@ namespace Unity.Cinemachine.Editor
                 || SplineGizmoCache.Instance.Spline != splineContainer.Spline
                 || SplineGizmoCache.Instance.RollData != splineRoll.Roll
                 || SplineGizmoCache.Instance.Width != width
-                || SplineGizmoCache.Instance.Resolution != resolution)
+                || SplineGizmoCache.Instance.Resolution != resolution
+                || SplineGizmoCache.Instance.Enabled != splineRoll.enabled)
             {
                 var numKnots = splineContainer.Spline.Count;
                 var numSteps = numKnots * resolution;
@@ -126,7 +127,8 @@ namespace Unity.Cinemachine.Editor
                     Spline = splineContainer.Spline,
                     RollData = splineRoll.Roll,
                     Width = width,
-                    Resolution = resolution
+                    Resolution = resolution,
+                    Enabled = splineRoll.enabled
                 };
             }
             // Draw the path
@@ -147,6 +149,7 @@ namespace Unity.Cinemachine.Editor
             public Spline Spline;
             public float Width;
             public int Resolution;
+            public bool Enabled;
 
             public static SplineGizmoCache Instance;
 
