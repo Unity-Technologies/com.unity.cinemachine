@@ -190,8 +190,12 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method?.Reset();
         }
 
-        ///<inheritdoc/>
-        protected override void OnDisable() => SplineSettings.InvalidateCache();
+        /// <inheritdoc/>
+        protected override void OnDisable()
+        {
+            m_SplineSettings.InvalidateCache();
+            base.OnDisable();
+        }
 
         /// <summary>True if component is enabled and has a spline</summary>
         public override bool IsValid => enabled && Spline != null;
