@@ -19,12 +19,13 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineDolly.html")]
-    public class CinemachineSplineDolly : CinemachineComponentBase
+    public class CinemachineSplineDolly : CinemachineComponentBase, ISplineReferencer
     {
         /// <summary>
         /// Holds the Spline container, the spline position, and the position unit type
         /// </summary>
-        public SplineSettings SplineSettings = new () { Units = PathIndexUnit.Normalized };
+        [SerializeField, FormerlySerializedAs("SplineSettings")]
+        SplineSettings m_SplineSettings = new () { Units = PathIndexUnit.Normalized };
 
         /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
@@ -109,7 +110,7 @@ namespace Unity.Cinemachine
         Quaternion m_PreviousRotation;
         Vector3 m_PreviousPosition;
 
-        CinemachineSplineRoll m_RollCache; // don't use this directly - use SplineRoll
+        CinemachineSplineRoll.RollCache m_RollCache;
 
         // In-editor only: CM 3.0.x Legacy support =================================
         [SerializeField, HideInInspector, FormerlySerializedAs("CameraPosition")] private float m_LegacyPosition = -1;
@@ -119,24 +120,27 @@ namespace Unity.Cinemachine
         {
             if (m_LegacyPosition != -1)
             {
-                SplineSettings.Position = m_LegacyPosition;
-                SplineSettings.Units = m_LegacyUnits;
+                m_SplineSettings.Position = m_LegacyPosition;
+                m_SplineSettings.Units = m_LegacyUnits;
                 m_LegacyPosition = -1;
                 m_LegacyUnits = 0;
             }
             if (m_LegacySpline != null)
             {
-                SplineSettings.Spline = m_LegacySpline;
+                m_SplineSettings.Spline = m_LegacySpline;
                 m_LegacySpline = null;
             }
         }
         // =================================
 
+        /// <inheritdoc/>
+        public ref SplineSettings SplineSettings => ref m_SplineSettings;
+
         /// <summary>The Spline container to which the camera will be constrained.</summary>
         public SplineContainer Spline
         {
-            get => SplineSettings.Spline;
-            set => SplineSettings.Spline = value;
+            get => m_SplineSettings.Spline;
+            set => m_SplineSettings.Spline = value;
         }
 
         /// <summary>The position along the spline at which the camera will be placed. This can be animated directly,
@@ -144,8 +148,8 @@ namespace Unity.Cinemachine
         /// The value is interpreted according to the Position Units setting.</summary>
         public float CameraPosition
         {
-            get => SplineSettings.Position;
-            set => SplineSettings.Position = value;
+            get => m_SplineSettings.Position;
+            set => m_SplineSettings.Position = value;
         }
 
         /// <summary>How to interpret the Spline Position:
@@ -155,8 +159,8 @@ namespace Unity.Cinemachine
         /// interpolation between the specific knot index and the next knot."</summary>
         public PathIndexUnit PositionUnits
         {
-            get => SplineSettings.Units;
-            set => SplineSettings.ChangeUnitPreservePosition(value);
+            get => m_SplineSettings.Units;
+            set => m_SplineSettings.ChangeUnitPreservePosition(value);
         }
 
         void OnValidate()
@@ -171,19 +175,26 @@ namespace Unity.Cinemachine
 
         void Reset()
         {
-            SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
+            m_SplineSettings = new SplineSettings { Units = PathIndexUnit.Normalized };
             SplineOffset = Vector3.zero;
             CameraRotation = RotationMode.Default;
             Damping = default;
             AutomaticDolly.Method = null;
         }
 
-        /// <summary>Called when the behaviour is enabled.</summary>
+        ///<inheritdoc/>
         protected override void OnEnable()
         {
             base.OnEnable();
-            RefreshRollCache();
+            m_RollCache.Refresh(this);
             AutomaticDolly.Method?.Reset();
+        }
+
+        /// <inheritdoc/>
+        protected override void OnDisable()
+        {
+            m_SplineSettings.InvalidateCache();
+            base.OnDisable();
         }
 
         /// <summary>True if component is enabled and has a spline</summary>
@@ -208,12 +219,11 @@ namespace Unity.Cinemachine
             if (!IsValid)
                 return;
 
-            var splinePath = Spline.Spline;
-            if (splinePath == null || splinePath.Count == 0)
+            var spline = m_SplineSettings.GetCachedSpline();
+            if (spline == null)
                 return;
             
-            var pathLength = splinePath.GetLength();
-            var splinePos = splinePath.StandardizePosition(CameraPosition, PositionUnits, pathLength);
+            var splinePos = spline.StandardizePosition(CameraPosition, PositionUnits, out var maxPos);
 
             // Init previous frame state info
             if (deltaTime < 0 || !VirtualCamera.PreviousStateIsValid)
@@ -221,7 +231,7 @@ namespace Unity.Cinemachine
                 m_PreviousSplinePosition = splinePos;
                 m_PreviousPosition = curState.RawPosition;
                 m_PreviousRotation = curState.RawOrientation;
-                RefreshRollCache();
+                m_RollCache.Refresh(this);
             }
 
             // Invoke AutoDolly algorithm to get new desired spline position
@@ -233,19 +243,18 @@ namespace Unity.Cinemachine
             if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 // If spline is closed, we choose shortest path for damping
-                var max = splinePath.GetMaxPosition(PositionUnits, pathLength);
                 var prev = m_PreviousSplinePosition;
-                if (splinePath.Closed && Mathf.Abs(splinePos - prev) > max * 0.5f)
-                    prev += (splinePos > prev) ? max : -max;
+                if (spline.Closed && Mathf.Abs(splinePos - prev) > maxPos * 0.5f)
+                    prev += (splinePos > prev) ? maxPos : -maxPos;
 
                 // Do the damping
                 splinePos = prev + Damper.Damp(splinePos - prev, Damping.Position.z, deltaTime);
             }
             m_PreviousSplinePosition = CameraPosition = splinePos;
 
-            Spline.EvaluateSplineWithRoll(
-                SplineRoll, m_PreviousRotation, 
-                splinePath.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
+            spline.EvaluateSplineWithRoll(
+                Spline.transform, m_RollCache.GetSplineRoll(this), m_PreviousRotation, 
+                spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
                 out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position
@@ -303,32 +312,6 @@ namespace Unity.Cinemachine
                     break;
             }
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
-        }
-
-        CinemachineSplineRoll SplineRoll
-        {
-            get
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    RefreshRollCache();
-#endif
-                return m_RollCache;
-            }
-        }
-        
-        void RefreshRollCache()
-        {
-            // check if we have CinemachineSplineRoll
-            TryGetComponent(out m_RollCache);
-#if UNITY_EDITOR
-            // need to tell CinemachineSplineRoll about its spline for gizmo drawing purposes
-            if (m_RollCache != null)
-                m_RollCache.Container = Spline; 
-#endif
-            // check if our spline has CinemachineSplineRoll
-            if (Spline != null && m_RollCache == null)
-                Spline.TryGetComponent(out m_RollCache);
         }
     }
 }

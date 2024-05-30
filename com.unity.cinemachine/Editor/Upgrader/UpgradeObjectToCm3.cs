@@ -701,7 +701,7 @@ namespace Unity.Cinemachine.Editor
 
             spline = Undo.AddComponent<SplineContainer>(go);
             var splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
-            splineRoll.Roll = new SplineData<float>();
+            splineRoll.Roll = new SplineData<CinemachineSplineRoll.RollData>();
 
             Undo.RecordObject(pathBase, "Upgrader: disable obsolete");
             pathBase.enabled = false;
@@ -721,7 +721,7 @@ namespace Unity.Cinemachine.Editor
                             TangentIn = -waypoints[i].tangent,
                             TangentOut = waypoints[i].tangent,
                         });
-                        splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
+                        splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
                     }
                     break;
                 }
@@ -740,7 +740,7 @@ namespace Unity.Cinemachine.Editor
                             TangentIn = -tangent,
                             TangentOut = tangent,
                         });
-                        splineRoll.Roll.Add(new DataPoint<float>(i, waypoints[i].roll));
+                        splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
                     }
                     break;
                 }

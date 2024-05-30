@@ -34,7 +34,9 @@ namespace Unity.Cinemachine
         public UpdateMethod m_UpdateMethod = UpdateMethod.Update;
 
         /// <summary>How to interpret the Path Position</summary>
-        [Tooltip("How to interpret the Path Position.  If set to Path Units, values are as follows: 0 represents the first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in between the waypoints.  If set to Distance, then Path Position represents distance along the path.")]
+        [Tooltip("How to interpret the Path Position.  If set to Path Units, values are as follows: 0 represents the "
+            + "first waypoint on the path, 1 is the second, and so on.  Values in-between are points on the path in "
+            + "between the waypoints.  If set to Distance, then Path Position represents distance along the path.")]
         public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.Distance;
 
         /// <summary>Move the cart with this speed</summary>
@@ -43,7 +45,9 @@ namespace Unity.Cinemachine
         public float m_Speed;
 
         /// <summary>The cart's current position on the path, in distance units</summary>
-        [Tooltip("The position along the path at which the cart will be placed.  This can be animated directly or, if the velocity is non-zero, will be updated automatically.  The value is interpreted according to the Position Units setting.")]
+        [Tooltip("The position along the path at which the cart will be placed.  This can be animated directly or, "
+            + "if the velocity is non-zero, will be updated automatically.  The value is interpreted according to the "
+            + "Position Units setting.")]
         [FormerlySerializedAs("m_CurrentDistance")]
         public float m_Position;
 

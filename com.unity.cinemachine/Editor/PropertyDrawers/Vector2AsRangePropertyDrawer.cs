@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
                 minField.Q<FloatField>().style.marginLeft = 2;
             });
 
-            label.AddDelayedFriendlyPropertyDragger(xProp, minField);
+            label.AddDelayedFriendlyPropertyDragger(xProp, minField, true);
             ux.Left.Add(label);
             ux.Right.Add(minField);
             ux.Right.Add(maxField);

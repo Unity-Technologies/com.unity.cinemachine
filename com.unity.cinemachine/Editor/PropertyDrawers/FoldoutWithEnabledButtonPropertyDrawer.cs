@@ -87,7 +87,7 @@ namespace Unity.Cinemachine.Editor
                 { style = { flexGrow = 0, marginLeft = 8, alignSelf = Align.Center }, tooltip = childProperty.tooltip});
             var childField = row.Contents.AddChild(new PropertyField(childProperty, "")
                 { style = { flexGrow = 1, marginTop = -1, marginLeft = 5, marginBottom = -1 }});
-            childLabel.AddDelayedFriendlyPropertyDragger(childProperty, childField);
+            childLabel.AddDelayedFriendlyPropertyDragger(childProperty, childField, true);
             childField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
 
             row.TrackPropertyWithInitialCallback(enabledProp, (p) => 
