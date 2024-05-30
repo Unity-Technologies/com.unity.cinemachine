@@ -5,6 +5,9 @@ using UnityEditor.EditorTools;
 
 namespace Unity.Cinemachine.Editor
 {
+    /// <summary>
+    /// This is a generic Tool class for Cinemachine tools.
+    /// </summary>
     [Obsolete("This class is no longer used.")]
     public abstract class CinemachineTool : EditorTool, IDrawSelectedHandles
     {
