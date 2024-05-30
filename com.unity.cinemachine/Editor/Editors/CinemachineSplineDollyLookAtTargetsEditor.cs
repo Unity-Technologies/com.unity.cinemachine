@@ -274,8 +274,7 @@ namespace Unity.Cinemachine.Editor
         {
             m_IconContent = new ()
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>(CinemachineSceneToolHelpers.GetIconPath() + "CmSplineLookAtTargetsTool@256.png"),
-                text = "Spline Dolly LookAt Targets Tool",
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/CmSplineLookAtTargetsTool@256.png"),
                 tooltip = "Assign LookAt targets to positions on the spline."
             };
         }
