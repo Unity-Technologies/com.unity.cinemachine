@@ -1,4 +1,6 @@
 using UnityEditor;
+using UnityEditor.EditorTools;
+using UnityEngine;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -14,8 +16,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-   
-            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -23,8 +23,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-  
-            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)
@@ -52,16 +50,29 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        void OnSceneGUI()
+        [EditorTool("LookAt Offset Tool", typeof(CinemachineHardLookAt))]
+        class LookAtOffsetTool : EditorTool
         {
-            if (Target == null || !Target.IsValid)
-                return;
-
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    Target.VirtualCamera, 
-                    new SerializedObject(Target).FindProperty(() => Target.LookAtOffset),
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/TrackedObjectOffset.png"),
+                    tooltip = "Adjust the LookAt Offset",
+                };
+            }
+
+            public override void OnToolGUI(EditorWindow window)
+            {
+                var hardLookAt = target as CinemachineHardLookAt;
+                if (hardLookAt == null || !hardLookAt.IsValid)
+                    return;
+
+                CinemachineSceneToolHelpers.DoTrackedObjectOffsetTool(
+                    hardLookAt.VirtualCamera, 
+                    new SerializedObject(hardLookAt).FindProperty(() => hardLookAt.LookAtOffset),
                     CinemachineCore.Stage.Aim);
             }
         }

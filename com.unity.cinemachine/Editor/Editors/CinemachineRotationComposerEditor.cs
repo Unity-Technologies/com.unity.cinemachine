@@ -1,4 +1,6 @@
 using UnityEditor;
+using UnityEditor.EditorTools;
+using UnityEngine;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -21,8 +23,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-   
-            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -31,8 +31,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-  
-            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnGuiHandler(CinemachineBrain brain)
@@ -60,17 +58,29 @@ namespace Unity.Cinemachine.Editor
                     Target.TrackedPoint, brain.OutputCamera);
         }
 
-        void OnSceneGUI()
+        [EditorTool("LookAt Offset Tool", typeof(CinemachineRotationComposer))]
+        class LookAtOffsetTool : EditorTool
         {
-            var composer = Target;
-            if (composer == null || !composer.IsValid)
-                return;
-
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
+            GUIContent m_IconContent;
+            public override GUIContent toolbarIcon => m_IconContent;
+            void OnEnable()
             {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    Target.VirtualCamera, 
-                    new SerializedObject(Target).FindProperty(() => Target.TargetOffset),
+                m_IconContent = new GUIContent
+                {
+                    image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/TrackedObjectOffset.png"),
+                    tooltip = "Adjust the LookAt Offset",
+                };
+            }
+
+            public override void OnToolGUI(EditorWindow window)
+            {
+                var composer = target as CinemachineRotationComposer;
+                if (composer == null || !composer.IsValid)
+                    return;
+
+                CinemachineSceneToolHelpers.DoTrackedObjectOffsetTool(
+                    composer.VirtualCamera, 
+                    new SerializedObject(composer).FindProperty(() => composer.TargetOffset),
                     CinemachineCore.Stage.Aim);
             }
         }
