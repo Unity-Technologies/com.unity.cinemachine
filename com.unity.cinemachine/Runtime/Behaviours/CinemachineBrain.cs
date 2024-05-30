@@ -1,4 +1,4 @@
-//#define RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
+//#define CINEMACHINE_RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
 
 using System;
 using System.Collections;
@@ -25,7 +25,6 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/Cinemachine Brain")]
-    [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrain.html")]
     public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack, ICinemachineMixer
     {
@@ -681,7 +680,7 @@ namespace Unity.Cinemachine
                 if (cam != null)
                 {
                     bool isPhysical = cam.usePhysicalProperties;
-#if RESET_PROJECTION_MATRIX
+#if CINEMACHINE_RESET_PROJECTION_MATRIX
                     cam.ResetProjectionMatrix();
 #endif
                     cam.nearClipPlane = state.Lens.NearClipPlane;
@@ -689,7 +688,7 @@ namespace Unity.Cinemachine
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
                     
-#if RESET_PROJECTION_MATRIX
+#if CINEMACHINE_RESET_PROJECTION_MATRIX
                     if (!LensModeOverride.Enabled)
                         cam.usePhysicalProperties = isPhysical; // because ResetProjectionMatrix resets it
                     else
