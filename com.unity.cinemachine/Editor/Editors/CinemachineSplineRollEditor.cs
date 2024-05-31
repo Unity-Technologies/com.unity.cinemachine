@@ -187,7 +187,7 @@ namespace Unity.Cinemachine.Editor
             var indexProp = property.FindPropertyRelative("m_Index");
             var valueProp = property.FindPropertyRelative("m_Value");
 
-            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
+            var ux = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginRight = 2 }};
 
             ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
             var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
