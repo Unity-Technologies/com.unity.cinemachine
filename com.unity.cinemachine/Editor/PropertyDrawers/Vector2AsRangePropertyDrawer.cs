@@ -25,7 +25,7 @@ namespace Unity.Cinemachine.Editor
                 maxField.SafeSetIsDelayed();
             });
 
-            label.AddDelayedFriendlyPropertyDragger(xProp, minField);
+            label.AddDelayedFriendlyPropertyDragger(xProp, minField, true);
             ux.Left.Add(label);
             ux.Right.Add(minField);
             ux.Right.Add(maxField);

@@ -39,13 +39,13 @@ namespace Unity.Cinemachine.Editor
                     var oldUnits = (PathIndexUnit)pU.enumValueIndex;
                     if (oldUnits != newUnits)
                     {
-                        // Convert the position to the new units
-                        var pS = o.FindProperty(splineProp.propertyPath);
-                        var spline = pS.objectReferenceValue as SplineContainer;
-                        if (spline.IsValid())
+                        var splineReferencer = targets[i] as ISplineReferencer;
+                        var spline = splineReferencer?.SplineSettings.GetCachedSpline();
+                        if (spline != null)
                         {
+                            // Convert the position to the new units
                             var pP = o.FindProperty(positionProp.propertyPath);
-                            pP.floatValue = spline.Spline.ConvertIndexUnit(pP.floatValue, oldUnits, newUnits);
+                            pP.floatValue = spline.ConvertIndexUnit(pP.floatValue, oldUnits, newUnits);
                         }
                         pU.enumValueIndex = (int)newUnits;
                         o.ApplyModifiedProperties();

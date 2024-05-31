@@ -34,10 +34,6 @@ namespace Unity.Cinemachine
         {
             base.OnEnable();
             Target.UpdateInputAxisProvider();
-            
-            CinemachineSceneToolUtility.RegisterTool(typeof(FoVTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FarNearClipTool));
-            CinemachineSceneToolUtility.RegisterTool(typeof(FollowOffsetTool));
         }
         
         protected override void OnDisable()
@@ -47,10 +43,6 @@ namespace Unity.Cinemachine
             // Must destroy child editors or we get exceptions
             if (m_rigEditor != null)
                 UnityEngine.Object.DestroyImmediate(m_rigEditor);
-        
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FoVTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FarNearClipTool));
-            CinemachineSceneToolUtility.UnregisterTool(typeof(FollowOffsetTool));
         }
 
         public override void OnInspectorGUI()
@@ -125,38 +117,6 @@ namespace Unity.Cinemachine
             // Forward to embedded rig editor
             if (m_rigEditor != null && m_RigEditorOnSceneGUI != null)
                 m_RigEditorOnSceneGUI.Invoke(m_rigEditor, null);
-
-            var freelook = Target;
-            if (freelook == null || !freelook.IsValid)
-                return;
-
-            var originalColor = Handles.color;
-            Handles.color = Handles.preselectionColor;
-            if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FoVTool)))
-            {
-                CinemachineSceneToolHelpers.FovToolHandle(freelook, 
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Lens), 
-                    freelook.m_Lens.ToLensSettings(), IsHorizontalFOVUsed());
-            }
-            else if (freelook.m_CommonLens && CinemachineSceneToolUtility.IsToolActive(typeof(FarNearClipTool)))
-            {
-                CinemachineSceneToolHelpers.NearFarClipHandle(freelook, 
-                    new SerializedObject(freelook).FindProperty(() => freelook.m_Lens));
-            }
-            else if (freelook.Follow != null && CinemachineSceneToolUtility.IsToolActive(typeof(FollowOffsetTool)))
-            {
-                var middleRig = freelook.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                if (middleRig != null)
-                {
-                    var referenceFrame = middleRig.GetReferenceOrientation(freelook.State.ReferenceUp);
-                    var draggedRig = CinemachineSceneToolHelpers.OrbitControlHandleFreelook(
-                        freelook, referenceFrame,
-                        new SerializedObject(freelook).FindProperty(() => freelook.m_Orbits));
-                    if (draggedRig >= 0)
-                        SetSelectedRig(Target, draggedRig);
-                }
-            }
-            Handles.color = originalColor;
         }
 
         static GUIContent[] s_RigNames = 

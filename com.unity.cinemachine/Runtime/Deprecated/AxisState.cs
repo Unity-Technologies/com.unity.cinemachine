@@ -427,10 +427,7 @@ namespace Unity.Cinemachine
             }
 
             /// <summary>Skip the wait time and start recentering now (only if enabled).</summary>
-            public void RecenterNow()
-            {
-                mLastAxisInputTime = 0;
-            }
+            public void RecenterNow() => mLastAxisInputTime = -1;
 
             /// <summary>Bring the axis back to the centered state (only if enabled).</summary>
             /// <param name="axis">The axis to recenter</param>
@@ -461,7 +458,7 @@ namespace Unity.Cinemachine
                 if (delta == 0)
                     return;
 
-                if (Time.realtimeSinceStartup < (mLastAxisInputTime + m_WaitTime))
+                if (mLastAxisInputTime >= 0 && Time.realtimeSinceStartup < (mLastAxisInputTime + m_WaitTime))
                     return;
 
                 // Determine the direction

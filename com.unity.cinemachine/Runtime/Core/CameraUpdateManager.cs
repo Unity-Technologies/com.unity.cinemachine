@@ -6,19 +6,20 @@ namespace Unity.Cinemachine
     /// <summary>Owns Camera Registry.
     /// Provides services to update cinemachine cameras and keep track of 
     /// whether and how they have been updated each frame.</summary>
-    static class CameraUpdateManager
+    internal static class CameraUpdateManager
     {
         static readonly VirtualCameraRegistry s_CameraRegistry = new ();
-        static CinemachineVirtualCameraBase s_RoundRobinVcamLastFrame = null;
-        static float s_LastUpdateTime;
-        static int s_FixedFrameCount; // Current fixed frame count
+        static int s_RoundRobinIndex = 0;
+        static int s_RoundRobinSubIndex = 0;
+        static object s_LastFixedUpdateContext;
+        static float s_LastUpdateTime = 0;
+        static int s_FixedFrameCount = 0; // Current fixed frame count
 
         class UpdateStatus
         {
             public int lastUpdateFrame;
             public int lastUpdateFixedFrame;
             public UpdateTracker.UpdateClock lastUpdateMode;
-            public float lastUpdateDeltaTime;
         }
         static Dictionary<CinemachineVirtualCameraBase, UpdateStatus> s_UpdateStatus;
 
@@ -26,7 +27,7 @@ namespace Unity.Cinemachine
         static void InitializeModule() => s_UpdateStatus = new ();
 
         /// <summary>Internal use only</summary>
-        internal enum UpdateFilter
+        public enum UpdateFilter
         {
             Fixed = UpdateTracker.UpdateClock.Fixed,
             Late = UpdateTracker.UpdateClock.Late,
@@ -34,7 +35,7 @@ namespace Unity.Cinemachine
             SmartFixed = Smart | Fixed,
             SmartLate = Smart | Late
         }
-        internal static UpdateFilter s_CurrentUpdateFilter;
+        public static UpdateFilter s_CurrentUpdateFilter;
        
         /// <summary>
         /// List of all active CinemachineCameras for all brains.
@@ -50,15 +51,15 @@ namespace Unity.Cinemachine
             => s_CameraRegistry.GetActiveCamera(index);
 
         /// <summary>Called when a CinemachineCamera is enabled.</summary>
-        internal static void AddActiveCamera(CinemachineVirtualCameraBase vcam) 
+        public static void AddActiveCamera(CinemachineVirtualCameraBase vcam) 
             => s_CameraRegistry.AddActiveCamera(vcam);
 
         /// <summary>Called when a CinemachineCamera is disabled.</summary>
-        internal static void RemoveActiveCamera(CinemachineVirtualCameraBase vcam)
+        public static void RemoveActiveCamera(CinemachineVirtualCameraBase vcam)
             => s_CameraRegistry.RemoveActiveCamera(vcam);
 
         /// <summary>Called when a CinemachineCamera is destroyed.</summary>
-        internal static void CameraDestroyed(CinemachineVirtualCameraBase vcam)
+        public static void CameraDestroyed(CinemachineVirtualCameraBase vcam)
         {
             s_CameraRegistry.CameraDestroyed(vcam);
             if (s_UpdateStatus != null && s_UpdateStatus.ContainsKey(vcam))
@@ -66,77 +67,79 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Called when a vcam is enabled.</summary>
-        internal static void CameraEnabled(CinemachineVirtualCameraBase vcam)
+        public static void CameraEnabled(CinemachineVirtualCameraBase vcam)
             => s_CameraRegistry.CameraEnabled(vcam);
 
         /// <summary>Called when a vcam is disabled.</summary>
-        internal static void CameraDisabled(CinemachineVirtualCameraBase vcam)
+        public static void CameraDisabled(CinemachineVirtualCameraBase vcam)
+            => s_CameraRegistry.CameraDisabled(vcam);
+
+        public static void ForgetContext(object context)
         {
-            s_CameraRegistry.CameraDisabled(vcam);
-            if (s_RoundRobinVcamLastFrame == vcam)
-                s_RoundRobinVcamLastFrame = null;
+            if (s_LastFixedUpdateContext == context)
+                s_LastFixedUpdateContext = null;
         }
 
         /// <summary>Update all the active vcams in the scene, in the correct dependency order.</summary>
-        internal static void UpdateAllActiveVirtualCameras(uint channelMask, Vector3 worldUp, float deltaTime)
+        public static void UpdateAllActiveVirtualCameras(uint channelMask, Vector3 worldUp, float deltaTime, object context)
         {
-            // Setup for roundRobin standby updating
-            var filter = s_CurrentUpdateFilter;
-            bool canUpdateStandby = (filter != UpdateFilter.SmartFixed); // never in smart fixed
-            var currentRoundRobin = s_RoundRobinVcamLastFrame;
+            // Update the fixed frame count - do it only once per fixed frmae
+            if ((s_CurrentUpdateFilter & ~UpdateFilter.Smart) == UpdateFilter.Fixed
+                && (s_LastFixedUpdateContext == null || s_LastFixedUpdateContext == context))
+            {
+                ++s_FixedFrameCount;
+                s_LastFixedUpdateContext = context;
+            }
 
-            // Update the fixed frame count
+            // Advance the round-robin index once per rendered frame
+            var allCameras = s_CameraRegistry.AllCamerasSortedByNestingLevel;
             float now = CinemachineCore.CurrentTime;
             if (now != s_LastUpdateTime)
             {
                 s_LastUpdateTime = now;
-                if ((filter & ~UpdateFilter.Smart) == UpdateFilter.Fixed)
-                    ++s_FixedFrameCount;
+                if (allCameras.Count > 0)
+                {
+                    if (s_RoundRobinIndex >= allCameras.Count)
+                        s_RoundRobinIndex = 0;
+                    if (++s_RoundRobinSubIndex >= allCameras[s_RoundRobinIndex].Count)
+                    {
+                        s_RoundRobinSubIndex = 0;
+                        if (++s_RoundRobinIndex >= allCameras.Count)
+                            s_RoundRobinIndex = 0;
+                    }
+                }
             }
 
             // Update the leaf-most cameras first
-            var allCameras = s_CameraRegistry.AllCamerasSortedByNestingLevel;
             for (int i = allCameras.Count-1; i >= 0; --i)
             {
                 var sublist = allCameras[i];
                 for (int j = sublist.Count - 1; j >= 0; --j)
                 {
                     var vcam = sublist[j];
-                    if (canUpdateStandby && vcam == s_RoundRobinVcamLastFrame)
-                        currentRoundRobin = null; // update the next roundrobin candidate
                     if (vcam == null)
                     {
                         sublist.RemoveAt(j);
                         continue; // deleted
                     }
-                    if (vcam.StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always
-                        || CinemachineCore.IsLive(vcam))
+
+                    // Skip this vcam if it's not on the channel mask
+                    if (((uint)vcam.OutputChannel & channelMask) == 0)
+                        continue;
+
+                    if (CinemachineCore.IsLive(vcam)
+                        || vcam.StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.Always)
                     {
-                        // Skip this vcam if it's not on the channel mask
-                        if (((uint)vcam.OutputChannel & channelMask) != 0)
-                            UpdateVirtualCamera(vcam, worldUp, deltaTime);
+                        UpdateVirtualCamera(vcam, worldUp, deltaTime);
                     }
-                    else if (currentRoundRobin == null
-                        && s_RoundRobinVcamLastFrame != vcam
-                        && canUpdateStandby
-                        && vcam.StandbyUpdate != CinemachineVirtualCameraBase.StandbyUpdateMode.Never
+                    // Do round-robin update
+                    else if (vcam.StandbyUpdate == CinemachineVirtualCameraBase.StandbyUpdateMode.RoundRobin
+                        && s_RoundRobinIndex == i && s_RoundRobinSubIndex == j
                         && vcam.isActiveAndEnabled)
                     {
-                        // Do the round-robin update
-                        s_CurrentUpdateFilter &= ~UpdateFilter.Smart; // force it
                         UpdateVirtualCamera(vcam, worldUp, deltaTime);
-                        s_CurrentUpdateFilter = filter;
-                        currentRoundRobin = vcam;
                     }
                 }
-            }
-
-            // Did we manage to update a roundrobin?
-            if (canUpdateStandby)
-            {
-                if (currentRoundRobin == s_RoundRobinVcamLastFrame)
-                    currentRoundRobin = null; // take the first candidate
-                s_RoundRobinVcamLastFrame = currentRoundRobin;
             }
         }
 
@@ -145,7 +148,7 @@ namespace Unity.Cinemachine
         /// hasn't already been updated this frame.  Always update vcams via this method.
         /// Calling this more than once per frame for the same camera will have no effect.
         /// </summary>
-        internal static void UpdateVirtualCamera(
+        public static void UpdateVirtualCamera(
             CinemachineVirtualCameraBase vcam, Vector3 worldUp, float deltaTime)
         {
             if (vcam == null)
@@ -172,7 +175,6 @@ namespace Unity.Cinemachine
             {
                 status = new UpdateStatus
                 {
-                    lastUpdateDeltaTime = -2,
                     lastUpdateMode = UpdateTracker.UpdateClock.Late,
                     lastUpdateFrame = Time.frameCount + 2, // so that frameDelta ends up negative
                     lastUpdateFixedFrame = s_FixedFrameCount + 2
@@ -186,8 +188,7 @@ namespace Unity.Cinemachine
             
             if (deltaTime >= 0)
             {
-                if (frameDelta == 0 && status.lastUpdateMode == updateClock
-                        && status.lastUpdateDeltaTime == deltaTime)
+                if (frameDelta == 0 && status.lastUpdateMode == updateClock)
                     return; // already updated
                 if (!CinemachineCore.UnitTestMode && frameDelta > 0)
                     deltaTime *= frameDelta; // try to catch up if multiple frames
@@ -198,7 +199,6 @@ namespace Unity.Cinemachine
             status.lastUpdateFrame = Time.frameCount;
             status.lastUpdateFixedFrame = s_FixedFrameCount;
             status.lastUpdateMode = updateClock;
-            status.lastUpdateDeltaTime = deltaTime;
         }
 
         static Transform GetUpdateTarget(CinemachineVirtualCameraBase vcam)
@@ -216,7 +216,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Internal use only - inspector</summary>
-        internal static UpdateTracker.UpdateClock GetVcamUpdateStatus(CinemachineVirtualCameraBase vcam)
+        public static UpdateTracker.UpdateClock GetVcamUpdateStatus(CinemachineVirtualCameraBase vcam)
         {
             if (s_UpdateStatus == null || !s_UpdateStatus.TryGetValue(vcam, out UpdateStatus status))
                 return UpdateTracker.UpdateClock.Late;

@@ -1,4 +1,4 @@
-//#define RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
+//#define CINEMACHINE_RESET_PROJECTION_MATRIX // GML todo: decide on the correct solution
 
 using System;
 using System.Collections;
@@ -25,7 +25,6 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [AddComponentMenu("Cinemachine/Cinemachine Brain")]
-    [SaveDuringPlay]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBrain.html")]
     public class CinemachineBrain : MonoBehaviour, ICameraOverrideStack, ICinemachineMixer
     {
@@ -229,6 +228,8 @@ namespace Unity.Cinemachine
 
             m_BlendManager.OnDisable();
             StopCoroutine(m_PhysicsCoroutine);
+            UpdateTracker.ForgetContext(this);
+            CameraUpdateManager.ForgetContext(this);
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode) 
@@ -518,21 +519,14 @@ namespace Unity.Cinemachine
             m_LastFrameUpdated = Time.frameCount;
 
             float deltaTime = GetEffectiveDeltaTime(false);
-            if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                m_BlendManager.UpdateRootFrame(this, TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime);
-
-            m_BlendManager.ComputeCurrentBlend();
-
-            if (Application.isPlaying && UpdateMethod == UpdateMethods.FixedUpdate)
+            if (Application.isPlaying && (UpdateMethod == UpdateMethods.FixedUpdate || Time.inFixedTimeStep))
             {
+                CameraUpdateManager.s_CurrentUpdateFilter = CameraUpdateManager.UpdateFilter.Fixed;
+
                 // Special handling for fixed update: cameras that have been enabled
                 // since the last physics frame must be updated now
-                if (BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
-                {
-                    CameraUpdateManager.s_CurrentUpdateFilter = CameraUpdateManager.UpdateFilter.Fixed;
-                    if (CinemachineCore.SoloCamera == null)
-                        m_BlendManager.RefreshCurrentCameraState(DefaultWorldUp, GetEffectiveDeltaTime(true));
-                }
+                if (BlendUpdateMethod != BrainUpdateMethods.FixedUpdate && CinemachineCore.SoloCamera == null)
+                    m_BlendManager.RefreshCurrentCameraState(DefaultWorldUp, GetEffectiveDeltaTime(true));
             }
             else
             {
@@ -540,11 +534,16 @@ namespace Unity.Cinemachine
                 if (UpdateMethod == UpdateMethods.SmartUpdate)
                 {
                     // Track the targets
-                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late);
+                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Late, this);
                     filter = CameraUpdateManager.UpdateFilter.SmartLate;
                 }
                 UpdateVirtualCameras(filter, deltaTime);
             }
+
+            if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
+                m_BlendManager.UpdateRootFrame(this, TopCameraFromPriorityQueue(), DefaultWorldUp, deltaTime);
+
+            m_BlendManager.ComputeCurrentBlend();
 
             // Choose the active vcam and apply it to the Unity camera
             if (!Application.isPlaying || BlendUpdateMethod != BrainUpdateMethods.FixedUpdate)
@@ -561,7 +560,7 @@ namespace Unity.Cinemachine
                 if (UpdateMethod == UpdateMethods.SmartUpdate)
                 {
                     // Track the targets
-                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed);
+                    UpdateTracker.OnUpdate(UpdateTracker.UpdateClock.Fixed, this);
                     filter = CameraUpdateManager.UpdateFilter.SmartFixed;
                 }
                 UpdateVirtualCameras(filter, GetEffectiveDeltaTime(true));
@@ -596,7 +595,7 @@ namespace Unity.Cinemachine
         {
             // We always update all active virtual cameras
             CameraUpdateManager.s_CurrentUpdateFilter = updateFilter;
-            CameraUpdateManager.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime);
+            CameraUpdateManager.UpdateAllActiveVirtualCameras((uint)ChannelMask, DefaultWorldUp, deltaTime, this);
 
             // Make sure all live cameras get updated, in case some of them are deactivated
             if (CinemachineCore.SoloCamera != null)
@@ -681,7 +680,7 @@ namespace Unity.Cinemachine
                 if (cam != null)
                 {
                     bool isPhysical = cam.usePhysicalProperties;
-#if RESET_PROJECTION_MATRIX
+#if CINEMACHINE_RESET_PROJECTION_MATRIX
                     cam.ResetProjectionMatrix();
 #endif
                     cam.nearClipPlane = state.Lens.NearClipPlane;
@@ -689,7 +688,7 @@ namespace Unity.Cinemachine
                     cam.orthographicSize = state.Lens.OrthographicSize;
                     cam.fieldOfView = state.Lens.FieldOfView;
                     
-#if RESET_PROJECTION_MATRIX
+#if CINEMACHINE_RESET_PROJECTION_MATRIX
                     if (!LensModeOverride.Enabled)
                         cam.usePhysicalProperties = isPhysical; // because ResetProjectionMatrix resets it
                     else

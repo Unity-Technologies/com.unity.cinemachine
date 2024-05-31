@@ -146,6 +146,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 131001698}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.21180722, y: -1.5552993, z: 5.960883}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -154,7 +155,6 @@ Transform:
   - {fileID: 1675424139}
   - {fileID: 326221290}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &326221289
 GameObject:
@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 326221292}
   - component: {fileID: 326221291}
   m_Layer: 0
-  m_Name: Tracking Red Car
+  m_Name: Fixed Tracking Red Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,13 +182,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326221289}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 131001699}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &326221291
 MonoBehaviour:
@@ -202,13 +202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0.6
-    Smoothing: 5
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -219,6 +212,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0.6
+    Smoothing: 5
+    IgnoreY: 0
 --- !u!114 &326221292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,6 +305,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 569987857}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -313,7 +314,6 @@ Transform:
   - {fileID: 1839922278}
   - {fileID: 1607092317}
   m_Father: {fileID: 1313270463}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &569987859
 MonoBehaviour:
@@ -447,7 +447,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Interpolate
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
@@ -574,13 +574,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1254209701}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.06350215, y: -0.70424956, z: 0.06350214, w: 0.7042496}
   m_LocalPosition: {x: 10.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1904777082}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1254209705
 MonoBehaviour:
@@ -595,7 +595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowDebugText: 1
-  ShowCameraFrustum: 1
+  ShowCameraFrustum: 0
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
   ChannelMask: 2
@@ -639,13 +639,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300810983}
-  m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.13371922, y: -0.6943481, z: 0.13371924, w: 0.694348}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1313270463}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1300810985
 MonoBehaviour:
@@ -753,6 +753,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1313270462}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.21180722, y: -1.5552993, z: 5.960883}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -761,7 +762,6 @@ Transform:
   - {fileID: 1300810984}
   - {fileID: 569987858}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1380885699
 PrefabInstance:
@@ -881,18 +881,19 @@ PrefabInstance:
       value: "This scene shows the importance of choosing the correct Brain Update
         Mode, and of animating all targeted objects the same way.\r\n\r\nBoth cars
         are driven by Rigidbodies, but unless both use Rigidbody Interpolation in
-        the same way, they cannot both be smooth on the screen at the same time,
-        because they are updated on different clocks.  Use the on-screen toggles
-        to change the cars' interpolation settings, and see the result.  Rigidbodies
-        normally apply their animation on the FixedUpdate clock.  With Interpolation
-        enabled, the animation is applied on the Update clock.\r\n\r\nThe three panels
-        on the screen are three independent CM worlds, each with its own CM Brain. 
-        All worlds are running  cameras looking at the same two cars.  Depending
-        on the update mode in the world's CM Brain, the cars may or may not be smooth
-        on-screen.  \r\n\r\nSmartUpdate dynamically adjusts its update clock to match
-        how the current target is being animated.  When the Interpolation settings
-        on the cars are different from each other, you can see in the bottom panel
-        how the camera dynamically adapts to the current target's update mode."
+        the same way, they cannot both be smooth on the screen at the same time. 
+        This is because they are updated on different clocks.\n\nUse the on-screen
+        toggles to change the cars' interpolation settings, and see the result. 
+        Without Interpolation, Rigidbodies apply their animation on the FixedUpdate
+        clock.  With Interpolation enabled, the animation is applied on the Update
+        clock.\r\n\r\nThe three panels on the screen are three independent CM worlds,
+        each with its own CM Brain.  All worlds are running cameras looking at the
+        same two cars.  Depending on the update mode in the world's CM Brain, the
+        cars may or may not be smooth on-screen.  \r\n\r\nSmartUpdate dynamically
+        adjusts its update clock to match how the current target is being animated. 
+        When the Interpolation settings on the cars are different from each other,
+        you can see in the bottom panel how the camera dynamically adapts to the
+        current target's update mode."
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: VisibleAtStart
@@ -931,7 +932,7 @@ MonoBehaviour:
   - Name: Enable Blue Car Interpolation
     IsToggle:
       Enabled: 1
-      Value: 0
+      Value: 1
       OnValueChanged:
         m_PersistentCalls:
           m_Calls:
@@ -954,7 +955,7 @@ MonoBehaviour:
   - Name: Enable Red Car Interpolation
     IsToggle:
       Enabled: 1
-      Value: 1
+      Value: 0
       OnValueChanged:
         m_PersistentCalls:
           m_Calls:
@@ -1000,13 +1001,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1607092316}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.06350215, y: -0.70424956, z: 0.06350214, w: 0.7042496}
   m_LocalPosition: {x: 10.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 569987858}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1607092318
 MonoBehaviour:
@@ -1020,13 +1021,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0.6
-    Smoothing: 5
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -1037,6 +1031,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0.6
+    Smoothing: 5
+    IgnoreY: 0
 --- !u!114 &1607092319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1071,7 +1072,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel: 1
+  OutputChannel: 8
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -1124,13 +1125,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1675424138}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 131001699}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1675424140
 MonoBehaviour:
@@ -1241,13 +1242,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1839922277}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.1337192, y: -0.69434804, z: 0.13371922, w: 0.69434804}
   m_LocalPosition: {x: 12.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 569987858}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1839922279
 MonoBehaviour:
@@ -1261,13 +1262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0.6
-    Smoothing: 5
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -1278,6 +1272,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0.6
+    Smoothing: 5
+    IgnoreY: 0
 --- !u!114 &1839922280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1312,7 +1313,7 @@ MonoBehaviour:
   Priority:
     Enabled: 0
     m_Value: 0
-  OutputChannel: 1
+  OutputChannel: 8
   StandbyUpdate: 2
   m_StreamingVersion: 20230301
   m_LegacyPriority: 10
@@ -1363,6 +1364,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1904777081}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.21180722, y: -1.5552993, z: 5.960883}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -1371,7 +1373,6 @@ Transform:
   - {fileID: 1254209704}
   - {fileID: 1967210318}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1967210314
 GameObject:
@@ -1385,10 +1386,8 @@ GameObject:
   - component: {fileID: 1967210317}
   - component: {fileID: 1967210316}
   - component: {fileID: 1967210315}
-  - component: {fileID: 1967210320}
-  - component: {fileID: 1967210319}
   m_Layer: 0
-  m_Name: Tracking Blue Car
+  m_Name: Late Tracking Blue Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1406,13 +1405,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0.6
-    Smoothing: 5
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -1423,6 +1415,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0.6
+    Smoothing: 5
+    IgnoreY: 0
 --- !u!114 &1967210316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1492,73 +1491,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1967210314}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.06350215, y: -0.70424956, z: 0.06350214, w: 0.7042496}
   m_LocalPosition: {x: 10.788193, y: 3.5552993, z: 3.499117}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1904777082}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1967210319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1967210314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ApplyAfter: 2
-  ChannelMask: -1
-  Gain: 1
-  Use2DDistance: 0
-  UseCameraSpace: 1
-  ReactionSettings:
-    m_SecondaryNoise: {fileID: 0}
-    AmplitudeGain: 1
-    FrequencyGain: 1
-    Duration: 1
-    m_NoiseOffsets: {x: 0, y: 0, z: 0}
---- !u!114 &1967210320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1967210314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbe43d662878a7c43bcd44d43c9e2094, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollideAgainst:
-    serializedVersion: 2
-    m_Bits: 1
-  IgnoreTag: Untagged
-  TransparentLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  MinimumDistanceFromTarget: 0.2
-  AvoidObstacles:
-    Enabled: 1
-    DistanceLimit: 0
-    MinimumOcclusionTime: 0
-    CameraRadius: 0.1
-    Strategy: 0
-    MaximumEffort: 4
-    SmoothingTime: 0
-    Damping: 0.2
-    DampingWhenOccluded: 0
-  ShotQualityEvaluation:
-    Enabled: 0
-    OptimalDistance: 10
-    NearLimit: 5
-    FarLimit: 30
-    MaxQualityBoost: 0.2
 --- !u!1001 &1570214456050329275
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1625,7 +1565,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332479, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Interpolate
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1570214454041857243, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -1679,3 +1619,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ba786fa8607649dab5568a9a20a8906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 1380885699}
+  - {fileID: 1463374689}
+  - {fileID: 1570214456050329275}
+  - {fileID: 1245728184}
+  - {fileID: 1904777082}
+  - {fileID: 131001699}
+  - {fileID: 1313270463}

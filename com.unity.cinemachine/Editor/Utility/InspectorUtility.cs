@@ -267,7 +267,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>
         /// Add a property dragger to a float or int label, so that dragging it changes the property value.
         /// </summary>
-        public static void AddDelayedFriendlyPropertyDragger(this Label label, SerializedProperty p, VisualElement field)
+        public static void AddDelayedFriendlyPropertyDragger(this Label label, SerializedProperty p, VisualElement field, bool noDelayOnDrag)
         {
             if (p.propertyType == SerializedPropertyType.Float 
                 || p.propertyType == SerializedPropertyType.Integer)
@@ -275,10 +275,20 @@ namespace Unity.Cinemachine.Editor
                 label.AddToClassList("unity-base-field__label--with-dragger");
                 label.OnInitialGeometry(() =>
                 {
-                    if (p.propertyType == SerializedPropertyType.Float)
-                        new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                    else if (p.propertyType == SerializedPropertyType.Integer)
-                        new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                    if (noDelayOnDrag)
+                    {
+                        if (p.propertyType == SerializedPropertyType.Float)
+                            new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                        else if (p.propertyType == SerializedPropertyType.Integer)
+                            new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                    }
+                    else
+                    {
+                        if (p.propertyType == SerializedPropertyType.Float)
+                            new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
+                        else if (p.propertyType == SerializedPropertyType.Integer)
+                            new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                    }
                 });
             }
         }
@@ -538,6 +548,52 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
+        /// <summary>
+        /// A property field with a minimally-sized label that does not respect inspector sizing.
+        /// Suitable for embedding in a row within the right-hand side of the inspector.
+        /// </summary>
+        public class CompactPropertyField : VisualElement
+        {
+            public Label Label;
+            public PropertyField Field;
+
+            public CompactPropertyField(SerializedProperty property) : this(property, property.displayName) {}
+
+            public CompactPropertyField(SerializedProperty property, string label, float minLabelWidth = 0)
+            {
+                style.flexDirection = FlexDirection.Row;
+                style.flexGrow = 1;
+                if (!string.IsNullOrEmpty(label))
+                    Label = AddChild(this, new Label(label) 
+                        { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 20 } });
+                if (Label != null)
+                    AddDelayedFriendlyPropertyDragger(Label, property, Field, true);
+            }
+        }
+
+        /// <summary>
+        /// A row containing a property field.  Suitable for adding widgets nest to the property field.
+        /// </summary>
+        public static LabeledRow PropertyRow(
+            SerializedProperty property, out PropertyField propertyField, string label = null)
+        {
+            var row = new LabeledRow(label ?? property.displayName, property.tooltip);
+            var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
+                { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
+            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, true);
+
+            // Kill any left margin that gets inserted into the property field
+            field.OnInitialGeometry(() => 
+            {
+                var children = field.Children().GetEnumerator();
+                if (children.MoveNext())
+                    children.Current.style.marginLeft = 0;
+                children.Dispose();
+            });
+            return row;
+        }
+
         public static VisualElement HelpBoxWithButton(
             string message, HelpBoxMessageType messageType, 
             string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
@@ -581,6 +637,17 @@ namespace Unity.Cinemachine.Editor
                 }
                 while (p.NextVisible(false));
             }
+        }
+
+        public static bool IsAncestorOf(this Transform p, Transform other)
+        {
+            while (other != null && p != null)
+            {
+                if (other == p)
+                    return true;
+                other = other.parent;
+            }
+            return false;
         }
     }
 }

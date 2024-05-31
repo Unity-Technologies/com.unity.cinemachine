@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using UnityEngine.UIElements;
+using UnityEditor.SceneManagement;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -75,7 +76,7 @@ namespace Unity.Cinemachine.Editor
                 ux.AddChild(new TextElement()
                 {
                     text = "Unity can upgrade the objects currently being inspected, but only if none of them "
-                        + "are prefab instances.  Undo is supported for this operation.",
+                        + "are prefabs or prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
                 var text = "Upgrade this object to " + ClassName;
@@ -88,13 +89,13 @@ namespace Unity.Cinemachine.Editor
                 }) { 
                     text = text, 
                     style = { flexGrow = 0, alignSelf = Align.Center } 
-                }).SetEnabled(!CinemachineUpgradeManager.ObjectsUsePrefabs(Editor.targets));
+                }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.ObjectsUsePrefabs(Editor.targets));
 
                 // Upgrade current scene
                 ux.AddChild(new TextElement()
                 {
                     text = "Unity can upgrade all the Cinemachine objects in the current scene, but only if none of them "
-                        + "are prefab instances.  Undo is supported for this operation.",
+                        + "are prefabs or prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 20, marginBottom = 10, alignSelf = Align.Center }
                 });
                 ux.AddChild(new Button(() =>
@@ -105,7 +106,7 @@ namespace Unity.Cinemachine.Editor
                 }) { 
                     text = "Upgrade all objects in Scene", 
                     style = { flexGrow = 0, alignSelf = Align.Center } 
-                }).SetEnabled(!CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
+                }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
 
                 // Upgrade project
                 ux.AddChild(new TextElement()

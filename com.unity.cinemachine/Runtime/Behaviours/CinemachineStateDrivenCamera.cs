@@ -81,7 +81,14 @@ namespace Unity.Cinemachine
             public int HashOfParent;
         }
         /// <summary>Internal API for the Inspector editor</summary>
-        [HideInInspector][SerializeField] internal ParentHash[] HashOfParent = null;
+        [HideInInspector][SerializeField] private List<ParentHash> HashOfParent = new();
+
+        /// <summary>Internal API for the Inspector editor</summary>
+        internal void SetParentHash(List<ParentHash> list)
+        {
+            HashOfParent.Clear();
+            HashOfParent.AddRange(list);
+        }
 
         [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
         [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
@@ -166,11 +173,6 @@ namespace Unity.Cinemachine
             m_InstructionDictionary = new Dictionary<int, List<int>>();
             for (int i = 0; i < Instructions.Length; ++i)
             {
-                if (Instructions[i].Camera != null
-                    && Instructions[i].Camera.transform.parent != transform)
-                {
-                    Instructions[i].Camera = null;
-                }
                 if (!m_InstructionDictionary.TryGetValue(Instructions[i].FullHash, out var list))
                 {
                     list = new List<int>();
@@ -181,7 +183,7 @@ namespace Unity.Cinemachine
 
             // Create the parent lookup
             m_StateParentLookup = new Dictionary<int, int>();
-            for (int i = 0; HashOfParent != null && i < HashOfParent.Length; ++i)
+            for (int i = 0; HashOfParent != null && i < HashOfParent.Count; ++i)
                 m_StateParentLookup[HashOfParent[i].Hash] = HashOfParent[i].HashOfParent;
 
             // Zap the cached current instructions

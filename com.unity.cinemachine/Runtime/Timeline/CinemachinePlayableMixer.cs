@@ -121,6 +121,8 @@ namespace Unity.Cinemachine
                         for (int j = sublist.Count - 1; j >= 0; --j)
                         {
                             var vcam = sublist[j];
+                            if (vcam == null)
+                                continue;
                             if (deltaTime < 0)
                                 vcam.ForceCameraPosition(
                                     TargetPositionCache.GetTargetPosition(vcam.transform), 

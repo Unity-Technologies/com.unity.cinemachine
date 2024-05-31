@@ -68,7 +68,8 @@ namespace Unity.Cinemachine.Editor
         {
             var allRoots = new List<GameObject>();
             for (int i = 0; i < SceneManager.sceneCount; ++i)
-                allRoots.AddRange(SceneManager.GetSceneAt(i).GetRootGameObjects());
+                if (SceneManager.GetSceneAt(i).isLoaded)
+                    allRoots.AddRange(SceneManager.GetSceneAt(i).GetRootGameObjects());
             return allRoots;
         }
 
@@ -600,9 +601,9 @@ namespace Unity.Cinemachine.Editor
                         + "propagated back to the scene.  Would you like to keep these changes, or undo them?\n\n"
                         + "Modified objects include:\n\n"
                         + savedObjects
-                        + "\nNote: if you choose Cancel, then the changes will be undone now.  If you choose Keep, then it "
+                        + "\nNote: if you choose Don't Keep, then the changes will be undone now.  If you choose Keep, then it "
                         + "will still be possible to change your mind later by invoking Undo.";
-                if (!EditorUtility.DisplayDialog("Save changes made in Play Mode", text, "Keep", "Cancel"))
+                if (!EditorUtility.DisplayDialog("Save changes made in Play Mode", text, "Keep", "Don't Keep"))
                     Undo.PerformUndo();
                 UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
             }

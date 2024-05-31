@@ -21,8 +21,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-   
-            CinemachineSceneToolUtility.RegisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         protected virtual void OnDisable()
@@ -31,8 +29,6 @@ namespace Unity.Cinemachine.Editor
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
-  
-            CinemachineSceneToolUtility.UnregisterTool(typeof(TrackedObjectOffsetTool));
         }
 
         public override void OnInspectorGUI()
@@ -76,20 +72,6 @@ namespace Unity.Cinemachine.Editor
             if (Target.LookAtTarget != null && isLive)
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
                     Target.TrackedPoint, brain.OutputCamera);
-        }
-
-        void OnSceneGUI()
-        {
-            if (Target == null || !Target.IsValid)
-                return;
-
-            if (CinemachineSceneToolUtility.IsToolActive(typeof(TrackedObjectOffsetTool)))
-            {
-                CinemachineSceneToolHelpers.TrackedObjectOffsetTool(
-                    Target.VirtualCamera, 
-                    new SerializedObject(Target).FindProperty(() => Target.m_TrackedObjectOffset),
-                    CinemachineCore.Stage.Aim);
-            }
         }
     }
 }
