@@ -42,7 +42,7 @@ namespace Unity.Cinemachine.Editor
             {
                 var list = listField.Q<ListView>();
 
-                list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row }};
+                list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
                 list.bindItem = (ux, index) =>
                 {
                     // Remove children - items get recycled

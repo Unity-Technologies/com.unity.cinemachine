@@ -103,7 +103,7 @@ namespace Unity.Cinemachine.Editor
             listField.OnInitialGeometry(() => 
             {
                 var list = listField.Q<ListView>();
-                list.makeItem = () => new BindableElement() { style = { marginRight = 2 }};
+                list.makeItem = () => new BindableElement() { style = { marginRight = 4 }};
                 list.bindItem = (ux, index) =>
                 {
                     // Remove children - items get recycled
