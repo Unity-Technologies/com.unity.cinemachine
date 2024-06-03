@@ -97,7 +97,22 @@ namespace Unity.Cinemachine.Editor
 
             ux.AddHeader("Data Points");
             var listField = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
-                splineData.Targets, targetsProp, () => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null));
+                splineData.Targets, targetsProp, 
+                () => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null,
+                () =>
+                {
+                    // Create a default item for index 0
+                    var item = new CinemachineSplineDollyLookAtTargets.Item();
+                    item.LookAt = splineData.VirtualCamera.LookAt;
+                    if (item.LookAt == null)
+                    {
+                        // No LookAt?  Find a point to look at near the spline
+                        dolly.SplineSettings.GetCachedSpline().EvaluateSplineWithRoll(
+                            spline.transform, 0, Quaternion.identity, null, out var pos, out var rot);
+                        item.WorldLookAt = pos + rot * Vector3.right * 3;
+                    }
+                    return item;
+                }));
 
             var arrayProp = targetsProp.FindPropertyRelative("m_DataPoints");
             listField.OnInitialGeometry(() => 

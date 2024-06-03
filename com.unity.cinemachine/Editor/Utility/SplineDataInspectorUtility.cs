@@ -11,6 +11,7 @@ namespace Unity.Cinemachine.Editor
     static class SplineDataInspectorUtility
     {
         public delegate ISplineContainer GetSplineDelegate();
+        public delegate T GetDefaultValue<T>();
 
         public static VisualElement CreatePathUnitField(SerializedProperty splineDataProp, GetSplineDelegate getSpline)
         {
@@ -61,7 +62,8 @@ namespace Unity.Cinemachine.Editor
         public static PropertyField CreateDataListField<T>(
             SplineData<T> splineData,
             SerializedProperty splineDataProp, 
-            GetSplineDelegate getSpline)
+            GetSplineDelegate getSpline,
+            GetDefaultValue<T> getDefaultValue = null)
         {
             var sortMethod = splineData.GetType().GetMethod("ForceSort", BindingFlags.Instance | BindingFlags.NonPublic);
             var setDataPointMethod = splineData.GetType().GetMethod("SetDataPoint", BindingFlags.Instance | BindingFlags.Public);
@@ -85,7 +87,8 @@ namespace Unity.Cinemachine.Editor
                 {
                     if (arrayProp.arraySize == 1)
                     {
-                        setDataPointMethod.Invoke(splineData, new object[] { 0, new DataPoint<T> () { Value = splineData.DefaultValue } });
+                        T value = getDefaultValue != null ? getDefaultValue() : splineData.DefaultValue;
+                        setDataPointMethod.Invoke(splineData, new object[] { 0, new DataPoint<T> () { Value = value } });
                         arrayProp.serializedObject.Update();
                     }
                 };
