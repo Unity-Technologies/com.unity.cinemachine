@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class CursorLockManager : MonoBehaviour, IInputAxisOwner
+    public class CursorLockManager : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         public InputAxis CursorLock = InputAxis.DefaultMomentary;
         
@@ -23,6 +23,7 @@ namespace Unity.Cinemachine.Samples
         }
 
         void OnEnable() => UnlockCursor();
+        void OnDisable() => UnlockCursor();
 
         void Update()
         {
@@ -40,8 +41,11 @@ namespace Unity.Cinemachine.Samples
 
         public void LockCursor()
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            OnCursorLocked.Invoke();
+            if (enabled)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                OnCursorLocked.Invoke();
+            }
         }
 
         public void UnlockCursor()

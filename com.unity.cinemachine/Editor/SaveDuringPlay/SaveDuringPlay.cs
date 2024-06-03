@@ -308,11 +308,10 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     class ObjectStateSaver
     {
-        string mObjectFullPath;
+        string m_ObjectFullPath;
+        readonly Dictionary<string, string> m_Values = new ();
 
-        Dictionary<string, string> mValues = new Dictionary<string, string>();
-
-        public string ObjetFullPath => mObjectFullPath;
+        public string ObjetFullPath => m_ObjectFullPath;
 
         /// <summary>
         /// Recursively collect all the field values in the MonoBehaviours
@@ -321,15 +320,15 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         public void CollectFieldValues(GameObject go)
         {
-            mObjectFullPath = ObjectTreeUtil.GetFullName(go);
+            m_ObjectFullPath = ObjectTreeUtil.GetFullName(go);
             GameObjectFieldScanner scanner = new ();
             scanner.FilterField = FilterField;
             scanner.FilterComponent = HasSaveDuringPlay;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Save the value in the dictionary
-                    mValues[fullName] = StringFromLeafObject(value);
-                    //Debug.Log(mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
+                    m_Values[fullName] = StringFromLeafObject(value);
+                    //Debug.Log(m_ObjectFullPath + "." + fullName + " = " + m_Values[fullName]);
                     return false;
                 };
             scanner.ScanFields(go);
@@ -337,7 +336,7 @@ namespace Unity.Cinemachine.Editor
 
         public GameObject FindSavedGameObject(List<GameObject> roots)
         {
-            return ObjectTreeUtil.FindObjectFromFullName(mObjectFullPath, roots);
+            return ObjectTreeUtil.FindObjectFromFullName(m_ObjectFullPath, roots);
         }
 
         /// <summary>
@@ -355,11 +354,11 @@ namespace Unity.Cinemachine.Editor
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Lookup the value in the dictionary
-                    if (mValues.TryGetValue(fullName, out string savedValue)
+                    if (m_Values.TryGetValue(fullName, out string savedValue)
                         && StringFromLeafObject(value) != savedValue)
                     {
-                        //Debug.Log("Put " + mObjectFullPath + "." + fullName + " = " + mValues[fullName] + " --- was " + StringFromLeafObject(value));
-                        value = LeafObjectFromString(type, mValues[fullName].Trim(), roots);
+                        //Debug.Log("Put " + m_ObjectFullPath + "." + fullName + " = " + m_Values[fullName] + " --- was " + StringFromLeafObject(value));
+                        value = LeafObjectFromString(type, m_Values[fullName].Trim(), roots);
                         return true; // changed
                     }
                     return false;
@@ -593,7 +592,7 @@ namespace Unity.Cinemachine.Editor
                         {
                             var name = saver.ObjetFullPath;
                             if (name[0] == '/')
-                                name = name.Substring(1);
+                                name = name[1..];
                             savedObjects += name + "\n";
                         }
                         EditorUtility.SetDirty(go);

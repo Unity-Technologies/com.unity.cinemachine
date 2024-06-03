@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
-    public abstract class SimplePlayerControllerBase : MonoBehaviour, IInputAxisOwner
+    public abstract class SimplePlayerControllerBase : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         [Tooltip("Ground speed when walking")]
         public float Speed = 1f;

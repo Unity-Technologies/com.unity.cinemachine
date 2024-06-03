@@ -114,10 +114,8 @@ namespace Unity.Cinemachine
         protected override CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime)
         {
             if (!PreviousStateIsValid)
-            {
                 m_CurrentInstruction = -1;
-                ValidateInstructions();
-            }
+
             AdvanceCurrentInstruction(deltaTime);
             return (m_CurrentInstruction >= 0 && m_CurrentInstruction < Instructions.Count)
                 ? Instructions[m_CurrentInstruction].Camera : null;
@@ -130,21 +128,11 @@ namespace Unity.Cinemachine
         protected override CinemachineBlendDefinition LookupBlend(
             ICinemachineCamera outgoing, ICinemachineCamera incoming) => Instructions[m_CurrentInstruction].Blend;
             
-        /// <summary>Internal API for the inspector editor.</summary>
-        /// // GML todo: make this private, part of UpdateCameraCache()
-        internal void ValidateInstructions()
+        /// <inheritdoc />
+        protected override bool UpdateCameraCache()
         {
             Instructions ??= new ();
-            for (var i = 0; i < Instructions.Count; ++i)
-            {
-                if (Instructions[i].Camera != null
-                    && Instructions[i].Camera.transform.parent != transform)
-                {
-                    var e = Instructions[i];
-                    e.Camera = null;
-                    Instructions[i] = e;
-                }
-            }
+            return base.UpdateCameraCache();
         }
 
         void AdvanceCurrentInstruction(float deltaTime)
