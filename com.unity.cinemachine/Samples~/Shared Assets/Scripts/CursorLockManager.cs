@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class CursorLockManager : MonoBehaviour, IInputAxisOwner
+    public class CursorLockManager : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         public InputAxis CursorLock = InputAxis.DefaultMomentary;
         

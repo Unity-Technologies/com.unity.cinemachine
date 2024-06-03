@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Samples
     /// 
     /// To implement player shooting, add a SimplePlayerShoot behaviour to this GameObject.
     /// </summary>
-    public class SimplePlayerAimController : MonoBehaviour, IInputAxisOwner
+    public class SimplePlayerAimController : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         public enum CouplingMode { Coupled, CoupledWhenMoving, Decoupled }
 

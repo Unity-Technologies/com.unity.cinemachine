@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Samples
     /// Movement is relative to the GameObject's local axes.
     /// 
     /// </summary>
-    public class FlyAround : MonoBehaviour, IInputAxisOwner
+    public class FlyAround : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         [Tooltip("Speed when moving")]
         public float Speed = 10;

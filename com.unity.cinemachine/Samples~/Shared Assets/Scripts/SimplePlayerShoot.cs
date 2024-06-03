@@ -13,7 +13,7 @@ namespace Unity.Cinemachine.Samples
     /// or of the SimplePlayerAimController object if it exists and is not decoupled
     /// from the player rotation.
     /// </summary>
-    class SimplePlayerShoot : MonoBehaviour, IInputAxisOwner
+    class SimplePlayerShoot : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         [Tooltip("The bullet prefab to instantiate when firing")]
         public GameObject BulletPrefab;
