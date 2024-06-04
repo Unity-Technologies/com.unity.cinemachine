@@ -117,7 +117,7 @@ namespace Unity.Cinemachine.Editor
             string[] movedFromAssetPaths, bool didDomainReload)
         {
             if (didDomainReload)
-                EditorApplication.hierarchyWindowItemOnGUI += (int instanceID, Rect r) =>
+                EditorApplication.hierarchyWindowItemOnGUI += (instanceID, r) =>
                 {
                     var instance = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
                     if (instance == null)
