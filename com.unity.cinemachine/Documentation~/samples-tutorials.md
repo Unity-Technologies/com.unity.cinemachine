@@ -12,6 +12,10 @@ The Cinemachine package includes sample scenes that you can [import to your proj
 | 3D Samples | Sample scenes illustrating various ways to use Cinemachine in a 3D setting.<br />Includes: `Brain Update Modes`, `ClearShot`, `Custom Blends`, `Cutscene`, `FadeOutNearbyObjects`, `FreeLook Deoccluder`, `FreeLook on Spherical Surface`, `Impulse Wave`, `Lock-on Target`, `MixingCamera`, `RunningRace`, `SplitScreenCar`, `ThirdPersonWithAimMode`, `ThirdPersonWithRoadieRun`. |
 | Input System Samples | Sample scenes illustrating various ways to use Cinemachine with the input system.<br />Includes: `Split Screen Multiplayer`. |
 
+## Simple Player Controller
+
+Several of the samples make use of of a basic but versatile player controller that you can use in your own projects. Cinemachine's Simple Player Controller is a suite of scripts that can be combined and configured to create character controllers which can be used in different contexts to implement several types of character movement. It is described in more detail [here](SimplePlayerController.md).
+
 ## Tutorials
 
 [A "Using Cinemachine" series of video tutorials](https://www.youtube.com/playlist?list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) is available online in Unity's official YouTube channel. Discover various Cinemachine use cases and watch the immediate effects resulting from the corresponding project setup.
