@@ -449,7 +449,7 @@ namespace Unity.Cinemachine.Editor
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             propertyField = row.Contents.AddChild(new PropertyField(property, "")
                 { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
-            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, true);
+            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, (d) => d.CancelDelayedWhenDragging = true);
             return row;
         }
         
@@ -473,7 +473,7 @@ namespace Unity.Cinemachine.Editor
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
                 Field.style.marginLeft = Field.style.marginLeft.value.value - 1;
                 if (Label != null)
-                    AddDelayedFriendlyPropertyDragger(Label, property, Field, true);
+                    AddDelayedFriendlyPropertyDragger(Label, property, Field, (d) => d.CancelDelayedWhenDragging = true);
             }
         }
 

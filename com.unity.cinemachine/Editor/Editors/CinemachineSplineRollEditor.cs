@@ -59,12 +59,12 @@ namespace Unity.Cinemachine.Editor
 
                     ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
                     var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
-                    var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
+                    var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 }});
                     indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
                     label.AddDelayedFriendlyPropertyDragger(indexProp, indexField, (dragger) => dragger.OnStartDrag = () => list.selectedIndex = index);
 
                     ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                    ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));
+                    ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll") { style = { flexGrow = 1 }});
 
                     ((BindableElement)ux).BindProperty(element); // bind must be done at the end
                 };
