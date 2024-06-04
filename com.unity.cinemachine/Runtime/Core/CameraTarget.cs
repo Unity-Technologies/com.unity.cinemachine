@@ -22,7 +22,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// If false, TrackingTarget will be used for all object tracking.  
-        /// If true, then LookAtTarget is used for rotation tracking and 
+        /// If true, then LookAt is used for rotation tracking and 
         /// TrackingTarget is used only for position tracking.
         /// </summary>
         public bool CustomLookAtTarget;

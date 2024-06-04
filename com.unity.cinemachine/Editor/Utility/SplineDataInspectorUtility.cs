@@ -11,6 +11,7 @@ namespace Unity.Cinemachine.Editor
     static class SplineDataInspectorUtility
     {
         public delegate ISplineContainer GetSplineDelegate();
+        public delegate T GetDefaultValueDelegate<T>();
 
         public static VisualElement CreatePathUnitField(SerializedProperty splineDataProp, GetSplineDelegate getSpline)
         {
@@ -58,61 +59,138 @@ namespace Unity.Cinemachine.Editor
             pathUnitProp.enumValueIndex = (int)newIndexUnit;
         }
 
-        public static ListView CreateDataListField<T>(
+        public static PropertyField CreateDataListField<T>(
             SplineData<T> splineData,
             SerializedProperty splineDataProp, 
-            GetSplineDelegate getSpline)
+            GetSplineDelegate getSpline,
+            GetDefaultValueDelegate<T> getDefaultValue = null)
         {
             var sortMethod = splineData.GetType().GetMethod("ForceSort", BindingFlags.Instance | BindingFlags.NonPublic);
-            var dirtyMethod = splineData.GetType().GetMethod("SetDirty", BindingFlags.Instance | BindingFlags.NonPublic);
+            var setDataPointMethod = splineData.GetType().GetMethod("SetDataPoint", BindingFlags.Instance | BindingFlags.Public);
 
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
 
-            var list = new ListView() 
-            { 
-                reorderable = false, 
-                showFoldoutHeader = false, 
-                showBoundCollectionSize = false, 
-                showAddRemoveFooter = true
-            };
-            list.BindProperty(arrayProp);
-
-            list.TrackPropertyValue(arrayProp, (p) => 
+            var list = new PropertyField(arrayProp);
+            list.OnInitialGeometry(() => 
             {
-                Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
+                var listView = list.Q<ListView>();
+                listView.reorderable = false;
+                listView.showFoldoutHeader = false;
+                listView.showBoundCollectionSize = false;
+                listView.showAddRemoveFooter = true;
+                listView.showAlternatingRowBackgrounds = AlternatingRowBackground.None;
 
-                // Make sure the indexes are properly wrapped around at the bondaries of a loop
-                SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0);
-                p.serializedObject.ApplyModifiedProperties();
+                // When we add the first item, make sure to use the default value
+                var button = list.Q<Button>("unity-list-view__add-button");
+                button.clicked += () => 
+                {
+                    if (arrayProp.arraySize == 1)
+                    {
+                        T value = getDefaultValue != null ? getDefaultValue() : splineData.DefaultValue;
+                        setDataPointMethod.Invoke(splineData, new object[] { 0, new DataPoint<T> () { Value = value } });
+                        arrayProp.serializedObject.Update();
+                    }
+                };
 
-                // Sort the array
-                sortMethod?.Invoke(splineData, null);
-                p.serializedObject.Update();
-                dirtyMethod?.Invoke(splineData, null);
-                p.serializedObject.ApplyModifiedProperties();
+                listView.TrackPropertyValue(arrayProp, (p) => 
+                {
+                    p.serializedObject.ApplyModifiedProperties();
+
+                    // Make sure the indexes are properly wrapped around at the boundaries of a loop
+                    if (SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0))
+                        p.serializedObject.ApplyModifiedProperties();
+
+                    // Sort the array
+                    bool needsSort = false;
+                    for (int i = 1; !needsSort && i < splineData.Count; ++i)
+                        needsSort = splineData[i].Index < splineData[i - 1].Index;
+                    if (needsSort)
+                    {
+                        // Try to preserve the selected item through the sort
+                        float index = 0;
+                        T value = default;
+                        var selected = listView.selectedIndex;
+                        if (selected >= 0)
+                        {
+                            index = splineData[selected].Index;
+                            value = splineData[selected].Value;
+                        }
+
+                        Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
+                        sortMethod?.Invoke(splineData, null);
+                        p.serializedObject.Update();
+
+                        for (int i = 0; selected >= 0 && i < splineData.Count; ++i)
+                        {
+                            if (index == splineData[i].Index && splineData[i].Value.Equals(value))
+                            {
+                                listView.selectedIndex = i;
+                                EditorApplication.delayCall += () => listView.ScrollToItem(i);
+                                break;
+                            }
+                        }
+                    }
+                });
             });
+
             return list;
         }
 
-        static void SanitizePathUnit(SerializedProperty splineDataProp, ISplineContainer container, int splineIndex)
+        static bool SanitizePathUnit(SerializedProperty splineDataProp, ISplineContainer container, int splineIndex)
         {
-            if (container == null || container.Splines.Count == 0)
-                return;
+            if (container == null || container.Splines.Count <= splineIndex)
+                return false;
 
+            bool changed = false;
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var unit = (PathIndexUnit)Enum.GetValues(typeof(PathIndexUnit)).GetValue(pathUnitProp.enumValueIndex);
 
-            var spline = container.Splines[splineIndex];
             var transform = container is Component component ? component.transform : null;
-            var scaledSpline = new CachedScaledSpline(spline, transform, Collections.Allocator.Temp);
+            using var nativeSpline = new NativeSpline(container.Splines[splineIndex], transform);
             for (int i = 0, c = arrayProp.arraySize; i < c; ++i)
             {
                 var point = arrayProp.GetArrayElementAtIndex(i);
                 var index = point.FindPropertyRelative("m_Index");
-                index.floatValue = scaledSpline.StandardizePosition(index.floatValue, unit, out _);
+
+                var newValue = nativeSpline.StandardizePostition(index.floatValue, unit);
+                if (newValue != index.floatValue)
+                {
+                    index.floatValue = newValue;
+                    changed = true;
+                }
             }
+            return changed;
+        }
+
+        /// <summary>
+        /// Keeps position within the cacnonical range for the spline, removing wraps if spline is looped.
+        /// </summary>
+        static float StandardizePostition(this ISpline spline, float t, PathIndexUnit unit)
+        {
+            float maxPos = 1;
+            switch (unit)
+            {
+                case PathIndexUnit.Distance: 
+                    maxPos = spline.GetLength(); 
+                    break;
+                case PathIndexUnit.Knot: 
+                {
+                    var knotCount = spline.Count;
+                    maxPos = (!spline.Closed || knotCount < 2) ? Mathf.Max(0, knotCount - 1) : knotCount;
+                    break;
+                }
+            }
+
+            if (float.IsNaN(t))
+                return 0;
+            if (!spline.Closed)
+                return Mathf.Clamp(t, 0, maxPos);
+            t %= maxPos;
+            if (t < 0)
+                t += maxPos;
+            return t;
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.Cinemachine.Samples
 {
-    public class SimpleCarController : MonoBehaviour, IInputAxisOwner
+    public class SimpleCarController : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         public float MotorStrength = 2000;
         public float BrakeStrength = 5000;

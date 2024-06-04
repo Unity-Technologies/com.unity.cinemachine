@@ -70,25 +70,25 @@ namespace Unity.Cinemachine
         /// for calling InvalidateCache().
         /// </summary>
         /// <returns>Cached version of the spline with transform incorporated</returns>
-        public CachedScaledSpline GetCachedSpline()
+        internal CachedScaledSpline GetCachedSpline()
         {
             if (!Spline.IsValid())
-            {
-                m_CachedSpline?.Dispose();
-                m_CachedSpline = null;
-            }
+                InvalidateCache();
             else
             {
                 // Only check crude validity once per frame, to keep things efficient
                 if (m_CachedSpline == null || (Time.frameCount != m_CachedFrame && !m_CachedSpline.IsCrudelyValid(Spline.Spline, Spline.transform)))
                 {
-                    m_CachedSpline?.Dispose();
+                    InvalidateCache();
                     m_CachedSpline = new CachedScaledSpline(Spline.Spline, Spline.transform);
                 }
 #if UNITY_EDITOR
                 // Deep check only in editor and if not playing
                 else if (!Application.isPlaying && Time.frameCount != m_CachedFrame && !m_CachedSpline.KnotsAreValid(Spline.Spline, Spline.transform))
+                {
+                    InvalidateCache();
                     m_CachedSpline = new CachedScaledSpline(Spline.Spline, Spline.transform);
+                }
 #endif
                 m_CachedFrame = Time.frameCount;
             }
@@ -112,12 +112,13 @@ namespace Unity.Cinemachine
     /// <summary>
     /// In order to properly handle the spline scale, we need to cache a spline that incorporates the scale 
     /// natively.  This class does that.
+    /// Be sure to call Dispose() before discarding this object, otherwise there will be memory leaks.
     /// </summary> 
-    public class CachedScaledSpline : ISpline, IDisposable
+    internal class CachedScaledSpline : ISpline, IDisposable
     {
         NativeSpline m_NativeSpline;
         readonly Spline m_CachedSource;
-        readonly float m_CachedRawLength;
+        //readonly float m_CachedRawLength;
         readonly Vector3 m_CachedScale;
         bool m_IsAllocated;
 
@@ -130,7 +131,7 @@ namespace Unity.Cinemachine
             var scale = transform != null ? transform.lossyScale : Vector3.one;
             m_CachedSource = spline;
             m_NativeSpline = new NativeSpline(spline, Matrix4x4.Scale(scale), allocator);
-            m_CachedRawLength = spline.GetLength();
+            //m_CachedRawLength = spline.GetLength();
             m_CachedScale = scale;
             m_IsAllocated = true;
         }

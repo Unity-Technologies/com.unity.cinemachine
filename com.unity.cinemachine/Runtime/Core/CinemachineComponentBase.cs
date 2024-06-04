@@ -40,7 +40,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Standard OnEnable call.  Derived classes should call the base class implementation.
+        /// Standard OnDisable call.  Derived classes should call the base class implementation.
         /// Handles pipeline validation.
         /// </summary>
         protected virtual void OnDisable()

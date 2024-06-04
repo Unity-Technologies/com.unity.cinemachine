@@ -13,7 +13,7 @@ namespace Unity.Cinemachine.Samples
     /// player rotation.
     /// </summary>
     [ExecuteAlways]
-    public class AimCameraRig : CinemachineCameraManagerBase, IInputAxisOwner
+    public class AimCameraRig : CinemachineCameraManagerBase, Unity.Cinemachine.IInputAxisOwner
     {
         public InputAxis AimMode = InputAxis.DefaultMomentary;
 

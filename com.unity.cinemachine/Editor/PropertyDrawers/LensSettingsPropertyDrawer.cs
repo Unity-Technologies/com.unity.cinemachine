@@ -190,7 +190,7 @@ namespace Unity.Cinemachine.Editor
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
                 Label.AddToClassList("unity-base-field__label--with-dragger");
-                new DelayedFriendlyFieldDragger<float>(m_Control).SetDragZone(Label);
+                new DelayedFriendlyFieldDragger<float>(m_Control) { CancelDelayedWhenDragging = true }.SetDragZone(Label);
                 m_Control.OnInitialGeometry(() => m_Control.SafeSetIsDelayed());
 
                 m_Presets = Contents.AddChild(new PopupField<string>
@@ -199,7 +199,7 @@ namespace Unity.Cinemachine.Editor
 
                 ShortLabel = new Label("X") { style = { alignSelf = Align.Center, opacity = 0.5f }};
                 ShortLabel.AddToClassList("unity-base-field__label--with-dragger");
-                new DelayedFriendlyFieldDragger<float>(m_Control).SetDragZone(ShortLabel);
+                new DelayedFriendlyFieldDragger<float>(m_Control) { CancelDelayedWhenDragging = true }.SetDragZone(ShortLabel);
 
                 this.TrackPropertyWithInitialCallback(property, OnLensPropertyChanged);
             }

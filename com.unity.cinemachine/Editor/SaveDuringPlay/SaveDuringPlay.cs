@@ -126,15 +126,21 @@ namespace Unity.Cinemachine.Editor
         public FilterComponentDelegate FilterComponent;
         public delegate bool FilterComponentDelegate(MonoBehaviour b);
 
-        /// <summary>
-        /// The leafmost UnityEngine.Object
-        /// </summary>
+        /// <summary>The leafmost UnityEngine.Object</summary>
         public UnityEngine.Object LeafObject { get; private set; }
 
-        /// <summary>
-        /// Which fields will be scanned
-        /// </summary>
-        const BindingFlags kBindingFlags = BindingFlags.Public | BindingFlags.Instance;
+
+        List<FieldInfo> GetSerializableFields(Type t)
+        {
+            List<FieldInfo> fields = new ();
+            fields.AddRange(t.GetFields(BindingFlags.Public | BindingFlags.Instance));
+
+            var allFields = t.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            for (int i = 0; i < allFields.Length; ++i)
+                if (allFields[i].GetCustomAttribute(typeof(SerializeField)) != null)
+                    fields.Add(allFields[i]);
+            return fields;
+        }
 
         bool ScanFields(string fullName, Type type, ref object obj)
         {
@@ -209,11 +215,11 @@ namespace Unity.Cinemachine.Editor
                 else if (!typeof(UnityEngine.Object).IsAssignableFrom(obj.GetType()))
                 {
                     // Check if it's a complex type (but don't follow UnityEngine.Object references)
-                    FieldInfo[] fields = obj.GetType().GetFields(kBindingFlags);
-                    if (fields.Length > 0)
+                    var fields = GetSerializableFields(obj.GetType());
+                    if (fields.Count > 0)
                     {
                         isLeaf = false;
-                        for (int i = 0; i < fields.Length; ++i)
+                        for (int i = 0; i < fields.Count; ++i)
                         {
                             string name = fullName + "." + fields[i].Name;
                             if (FilterField == null || FilterField(name, fields[i]))
@@ -222,8 +228,7 @@ namespace Unity.Cinemachine.Editor
                                 if (ScanFields(name, fields[i].FieldType, ref fieldValue))
                                 {
                                     doneSomething = true;
-                                    if (OnFieldValueChanged != null)
-                                        OnFieldValueChanged(name, fields[i], obj, fieldValue);
+                                    OnFieldValueChanged?.Invoke(name, fields[i], obj, fieldValue);
                                 }
                             }
                         }
@@ -249,10 +254,10 @@ namespace Unity.Cinemachine.Editor
             bool doneSomething = false;
             LeafObject = b;
 
-            FieldInfo[] fields = b.GetType().GetFields(kBindingFlags);
-            if (fields.Length > 0)
+            var fields = GetSerializableFields(b.GetType());
+            if (fields.Count > 0)
             {
-                for (int i = 0; i < fields.Length; ++i)
+                for (int i = 0; i < fields.Count; ++i)
                 {
                     string name = fullName + "." + fields[i].Name;
                     if (FilterField == null || FilterField(name, fields[i]))
@@ -303,11 +308,10 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     class ObjectStateSaver
     {
-        string mObjectFullPath;
+        string m_ObjectFullPath;
+        readonly Dictionary<string, string> m_Values = new ();
 
-        Dictionary<string, string> mValues = new Dictionary<string, string>();
-
-        public string ObjetFullPath => mObjectFullPath;
+        public string ObjetFullPath => m_ObjectFullPath;
 
         /// <summary>
         /// Recursively collect all the field values in the MonoBehaviours
@@ -316,15 +320,15 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         public void CollectFieldValues(GameObject go)
         {
-            mObjectFullPath = ObjectTreeUtil.GetFullName(go);
+            m_ObjectFullPath = ObjectTreeUtil.GetFullName(go);
             GameObjectFieldScanner scanner = new ();
             scanner.FilterField = FilterField;
             scanner.FilterComponent = HasSaveDuringPlay;
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Save the value in the dictionary
-                    mValues[fullName] = StringFromLeafObject(value);
-                    //Debug.Log(mObjectFullPath + "." + fullName + " = " + mValues[fullName]);
+                    m_Values[fullName] = StringFromLeafObject(value);
+                    //Debug.Log(m_ObjectFullPath + "." + fullName + " = " + m_Values[fullName]);
                     return false;
                 };
             scanner.ScanFields(go);
@@ -332,7 +336,7 @@ namespace Unity.Cinemachine.Editor
 
         public GameObject FindSavedGameObject(List<GameObject> roots)
         {
-            return ObjectTreeUtil.FindObjectFromFullName(mObjectFullPath, roots);
+            return ObjectTreeUtil.FindObjectFromFullName(m_ObjectFullPath, roots);
         }
 
         /// <summary>
@@ -350,11 +354,11 @@ namespace Unity.Cinemachine.Editor
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Lookup the value in the dictionary
-                    if (mValues.TryGetValue(fullName, out string savedValue)
+                    if (m_Values.TryGetValue(fullName, out string savedValue)
                         && StringFromLeafObject(value) != savedValue)
                     {
-                        //Debug.Log("Put " + mObjectFullPath + "." + fullName + " = " + mValues[fullName] + " --- was " + StringFromLeafObject(value));
-                        value = LeafObjectFromString(type, mValues[fullName].Trim(), roots);
+                        //Debug.Log("Put " + m_ObjectFullPath + "." + fullName + " = " + m_Values[fullName] + " --- was " + StringFromLeafObject(value));
+                        value = LeafObjectFromString(type, m_Values[fullName].Trim(), roots);
                         return true; // changed
                     }
                     return false;
@@ -588,7 +592,7 @@ namespace Unity.Cinemachine.Editor
                         {
                             var name = saver.ObjetFullPath;
                             if (name[0] == '/')
-                                name = name.Substring(1);
+                                name = name[1..];
                             savedObjects += name + "\n";
                         }
                         EditorUtility.SetDirty(go);
