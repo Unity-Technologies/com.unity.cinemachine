@@ -2,10 +2,24 @@ using UnityEngine;
 
 namespace Unity.Cinemachine.Samples
 {
+    /// <summary>
+    /// This is a very basic 2D implementation of SimplePlayerControllerBase.  
+    /// 
+    /// It requires a [Rigidbody2D](https://docs.unity3d.com/ScriptReference/Rigidbody2D.html) component 
+    /// to be placed on the player GameObject.  Because it works with a Rigidbody2D, motion control is 
+    /// implemented in the `FixedUpdate()` method.  
+    /// 
+    /// Ground detection only works if the player has a small trigger collider under its feet.
+    /// </summary> 
     [RequireComponent(typeof(Rigidbody2D))]
     public class SimplePlayerController2D : SimplePlayerControllerBase
     {
+        [Tooltip("Reference to the child object that holds the player's visible geometry.  "
+            + "'It will be rotated to face the direction of motion")]
         public Transform PlayerGeometry;
+
+        [Tooltip("If true, then it will be possible to influence the direction of motion while the character is "
+            + "in the air.  Otherwise, the more realistic rule that the feet must be touching the ground will apply.")]
         public bool MotionControlWhileInAir;
 
         bool m_IsSprinting;

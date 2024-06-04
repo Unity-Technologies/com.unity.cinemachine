@@ -5,6 +5,29 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
+    /// <summary>
+    /// This is the base class for SimplePlayerController and SimplePlayerController2D.  
+    /// You can also use it as a base class for your custom controllers.  
+    /// It provides the following:
+    /// 
+    /// **Services:**
+    /// 
+    ///  - 2D motion axes (MoveX and MoveZ)
+    ///  - Jump button
+    ///  - Sprint button
+    ///  - API for strafe mode
+    /// 
+    /// **Actions:**
+    /// 
+    ///  - PreUpdate - invoked at the beginning of `Update()`
+    ///  - PostUpdate - invoked at the end of `Update()`
+    ///  - StartJump - invoked when the player starts jumping
+    ///  - EndJump - invoked when the player stops jumping
+    /// 
+    /// **Events:** 
+    /// 
+    ///  - Landed - invoked when the player lands on the ground
+    /// </summary>
     public abstract class SimplePlayerControllerBase : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         [Tooltip("Ground speed when walking")]
@@ -54,9 +77,33 @@ namespace Unity.Cinemachine.Samples
         public abstract bool IsMoving { get; }
     }
 
+    /// <summary>
+    /// Building on top of SimplePlayerControllerBase, this is the 3D character controller.  
+    /// It provides the following services and settings:
+    /// 
+    /// - Damping (applied to the player's velocity, and to the player's rotation)
+    /// - Strafe Mode
+    /// - Gravity
+    /// - Input Frames (which reference frame is used fo interpreting input: Camera, World, or Player)
+    /// - Ground Detection (using raycasts, or delegating to Character Controller)
+    /// - Camera Override (camera is used only for determining the input frame)
+    /// 
+    /// This behaviour should be attached to the player GameObject's root.  It will move the GameObject's 
+    /// transform.  If the GameObject also has a Unity Character Controller component, the Simple Player 
+    /// Controller will delegate grounded state and movement to it.  If the GameObject does not have a 
+    /// Character Controller, the Simple Player Controller will manage its own movement and do raycasts 
+    /// to test for grounded state.
+    /// 
+    /// Simple Player Controller will do its best to interpret User input in the context of the 
+    /// selected reference frame.  Generally, this works well, but in Camera mode, there is the potential 
+    /// that the player may transition from being upright relative to the camera to being inverted.  
+    /// When this happens, there can be a discontinuity in the interpretation of the input.  
+    /// The Simple Player Controller has an ad-hoc technique of resolving this discontinuity, 
+    /// (you will see this in the code), but it is only used in this very specific situation.
+    /// </summary>
     public class SimplePlayerController : SimplePlayerControllerBase
     {
-        [Tooltip("How long it takes for the player to change velocity")]
+        [Tooltip("How long it takes for the player to change velocity or rotation")]
         public float Damping = 0.5f;
 
         [Tooltip("If true, player will strafe when moving sideways, otherwise will turn to face direction of motion")]
@@ -73,10 +120,10 @@ namespace Unity.Cinemachine.Samples
 
         [Tooltip("Up direction for computing motion:\n"
             + "<b>Player</b>: Will move in the Player's local XZ plane.\n"
-            + "<b>World</b>: will move in global XZ plane.")]
+            + "<b>World</b>: Will move in global XZ plane.")]
         public UpModes UpMode = UpModes.World;
 
-        [Tooltip("Override the main camera. Useful for split-screen games.")]
+        [Tooltip("If non-null, take the input frame from this camera instead of Camera.main. Useful for split-screen games.")]
         public Camera CameraOverride;
 
         [Tooltip("Raycasts for ground will detect these layers")]
