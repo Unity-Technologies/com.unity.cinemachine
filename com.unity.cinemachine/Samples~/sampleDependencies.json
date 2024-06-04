@@ -20,7 +20,8 @@
         "Shared Assets"
       ],
       "PackageDependencies": [
-        "com.unity.timeline"
+        "com.unity.timeline",
+        "com.unity.shadergraph"
       ]
     },
     {
