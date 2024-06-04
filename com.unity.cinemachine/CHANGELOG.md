@@ -15,12 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: The GroupAverage Rotation Mode in CinemachineTargetGroup was not calculated properly.
 - Bugfix: add missing null check in CinemachineTargetGroup.WeightedMemberBoundsForValidMember.
 - Bugfix: add missing null check in CinemachineDeoccluder.PushCameraBack().
+- Bugfix: Cinemachine did not work properly with scaled splines.
 
 ### Changed
 - CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
 
 ### Added
-- Added Recenter Target setting to CinemachinePanTilt
+- New Rotation Control behaviour SplineDollyLookAtTargets lets you specify LookAt points at desird positions along a Spline Dolly trajectory.
+- Added Recenter Target setting to CinemachinePanTilt.
 
 
 ## [3.1.0] - 2024-04-01

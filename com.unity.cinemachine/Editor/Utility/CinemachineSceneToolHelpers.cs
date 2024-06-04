@@ -23,7 +23,6 @@ namespace Unity.Cinemachine.Editor
 
         static string SkinSuffix => EditorGUIUtility.isProSkin ? "Dark" : "Light";
         static string ResourcePath => $"{CinemachineCore.kPackageRoot}/Editor/EditorResources";
-        
         public static string IconPath => $"{ResourcePath}/Icons/{SkinSuffix}";
 
         public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)

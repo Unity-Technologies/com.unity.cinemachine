@@ -359,8 +359,8 @@ namespace Unity.Cinemachine
             // Work on the plane, in eulers
             var qBase = Quaternion.LookRotation(dirA, up);
             var qBaseInv = Quaternion.Inverse(qBase);
-            Quaternion qA1 = qBaseInv * qA;
-            Quaternion qB1 = qBaseInv * qB;
+            var qA1 = qBaseInv * qA;
+            var qB1 = qBaseInv * qB;
             var eA = qA1.eulerAngles;
             var eB = qB1.eulerAngles;
             return qBase * Quaternion.Euler(
@@ -387,8 +387,8 @@ namespace Unity.Cinemachine
                 return Vector2.zero;  // degenerate
 
             // Work in local space
-            Quaternion toLocal = Quaternion.Inverse(orient);
-            Vector3 up = toLocal * worldUp;
+            var toLocal = Quaternion.Inverse(orient);
+            var up = toLocal * worldUp;
             lookAtDir = toLocal * lookAtDir;
 
             // Align yaw based on world up
@@ -397,19 +397,13 @@ namespace Unity.Cinemachine
                 Vector3 targetDirH = lookAtDir.ProjectOntoPlane(up);
                 if (!targetDirH.AlmostZero())
                 {
-                    Vector3 currentDirH = Vector3.forward.ProjectOntoPlane(up);
+                    var currentDirH = Vector3.forward.ProjectOntoPlane(up);
                     if (currentDirH.AlmostZero())
-                    {
-                        // We're looking at the north or south pole
-                        if (Vector3.Dot(currentDirH, up) > 0)
-                            currentDirH = Vector3.down.ProjectOntoPlane(up);
-                        else
-                            currentDirH = Vector3.up.ProjectOntoPlane(up);
-                    }
+                        currentDirH = Vector3.up.ProjectOntoPlane(up);
                     angleH = UnityVectorExtensions.SignedAngle(currentDirH, targetDirH, up);
                 }
             }
-            Quaternion q = Quaternion.AngleAxis(angleH, up);
+            var q = Quaternion.AngleAxis(angleH, up);
 
             // Get local vertical angle
             float angleV = UnityVectorExtensions.SignedAngle(
@@ -432,7 +426,7 @@ namespace Unity.Cinemachine
         {
             if (rot.sqrMagnitude < 0.0001f)
                 return orient;
-            Quaternion q = Quaternion.AngleAxis(rot.x, Vector3.right);
+            var q = Quaternion.AngleAxis(rot.x, Vector3.right);
             return (Quaternion.AngleAxis(rot.y, worldUp) * orient) * q;
         }
     }

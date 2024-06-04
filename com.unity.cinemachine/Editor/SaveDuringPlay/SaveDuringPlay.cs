@@ -126,15 +126,21 @@ namespace Unity.Cinemachine.Editor
         public FilterComponentDelegate FilterComponent;
         public delegate bool FilterComponentDelegate(MonoBehaviour b);
 
-        /// <summary>
-        /// The leafmost UnityEngine.Object
-        /// </summary>
+        /// <summary>The leafmost UnityEngine.Object</summary>
         public UnityEngine.Object LeafObject { get; private set; }
 
-        /// <summary>
-        /// Which fields will be scanned
-        /// </summary>
-        const BindingFlags kBindingFlags = BindingFlags.Public | BindingFlags.Instance;
+
+        List<FieldInfo> GetSerializableFields(Type t)
+        {
+            List<FieldInfo> fields = new ();
+            fields.AddRange(t.GetFields(BindingFlags.Public | BindingFlags.Instance));
+
+            var allFields = t.GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
+            for (int i = 0; i < allFields.Length; ++i)
+                if (allFields[i].GetCustomAttribute(typeof(SerializeField)) != null)
+                    fields.Add(allFields[i]);
+            return fields;
+        }
 
         bool ScanFields(string fullName, Type type, ref object obj)
         {
@@ -209,11 +215,11 @@ namespace Unity.Cinemachine.Editor
                 else if (!typeof(UnityEngine.Object).IsAssignableFrom(obj.GetType()))
                 {
                     // Check if it's a complex type (but don't follow UnityEngine.Object references)
-                    FieldInfo[] fields = obj.GetType().GetFields(kBindingFlags);
-                    if (fields.Length > 0)
+                    var fields = GetSerializableFields(obj.GetType());
+                    if (fields.Count > 0)
                     {
                         isLeaf = false;
-                        for (int i = 0; i < fields.Length; ++i)
+                        for (int i = 0; i < fields.Count; ++i)
                         {
                             string name = fullName + "." + fields[i].Name;
                             if (FilterField == null || FilterField(name, fields[i]))
@@ -222,8 +228,7 @@ namespace Unity.Cinemachine.Editor
                                 if (ScanFields(name, fields[i].FieldType, ref fieldValue))
                                 {
                                     doneSomething = true;
-                                    if (OnFieldValueChanged != null)
-                                        OnFieldValueChanged(name, fields[i], obj, fieldValue);
+                                    OnFieldValueChanged?.Invoke(name, fields[i], obj, fieldValue);
                                 }
                             }
                         }
@@ -249,10 +254,10 @@ namespace Unity.Cinemachine.Editor
             bool doneSomething = false;
             LeafObject = b;
 
-            FieldInfo[] fields = b.GetType().GetFields(kBindingFlags);
-            if (fields.Length > 0)
+            var fields = GetSerializableFields(b.GetType());
+            if (fields.Count > 0)
             {
-                for (int i = 0; i < fields.Length; ++i)
+                for (int i = 0; i < fields.Count; ++i)
                 {
                     string name = fullName + "." + fields[i].Name;
                     if (FilterField == null || FilterField(name, fields[i]))

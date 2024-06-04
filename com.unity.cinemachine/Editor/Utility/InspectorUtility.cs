@@ -530,27 +530,26 @@ namespace Unity.Cinemachine.Editor
         /// <summary>
         /// Add a property dragger to a float or int label, so that dragging it changes the property value.
         /// </summary>
-        public static void AddDelayedFriendlyPropertyDragger(this Label label, SerializedProperty p, VisualElement field, bool noDelayOnDrag)
+        public static void AddDelayedFriendlyPropertyDragger(
+            this Label label, SerializedProperty p, VisualElement field, 
+            Action<IDelayedFriendlyDragger> OnDraggerCreated = null)
         {
-            if (p.propertyType == SerializedPropertyType.Float 
-                || p.propertyType == SerializedPropertyType.Integer)
+            if (p.propertyType == SerializedPropertyType.Float || p.propertyType == SerializedPropertyType.Integer)
             {
                 label.AddToClassList("unity-base-field__label--with-dragger");
                 label.OnInitialGeometry(() =>
                 {
-                    if (noDelayOnDrag)
+                    if (p.propertyType == SerializedPropertyType.Float)
                     {
-                        if (p.propertyType == SerializedPropertyType.Float)
-                            new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                        else if (p.propertyType == SerializedPropertyType.Integer)
-                            new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                        var dragger = new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>());
+                        dragger.SetDragZone(label);
+                        OnDraggerCreated?.Invoke(dragger);
                     }
-                    else
+                    else if (p.propertyType == SerializedPropertyType.Integer)
                     {
-                        if (p.propertyType == SerializedPropertyType.Float)
-                            new FieldMouseDragger<float>(field.Q<FloatField>()).SetDragZone(label);
-                        else if (p.propertyType == SerializedPropertyType.Integer)
-                            new FieldMouseDragger<int>(field.Q<IntegerField>()).SetDragZone(label);
+                        var dragger = new DelayedFriendlyFieldDragger<int>(field.Q<IntegerField>());
+                        dragger.SetDragZone(label);
+                        OnDraggerCreated?.Invoke(dragger);
                     }
                 });
             }
@@ -786,7 +785,7 @@ namespace Unity.Cinemachine.Editor
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 20 } });
                 if (Label != null)
-                    AddDelayedFriendlyPropertyDragger(Label, property, Field, true);
+                    AddDelayedFriendlyPropertyDragger(Label, property, Field, (d) => d.CancelDelayedWhenDragging = true);
             }
         }
 
@@ -799,7 +798,7 @@ namespace Unity.Cinemachine.Editor
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
             var field = propertyField = row.Contents.AddChild(new PropertyField(property, "")
                 { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
-            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, true);
+            AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, (d) => d.CancelDelayedWhenDragging = true);
 
             // Kill any left margin that gets inserted into the property field
             field.OnInitialGeometry(() => 

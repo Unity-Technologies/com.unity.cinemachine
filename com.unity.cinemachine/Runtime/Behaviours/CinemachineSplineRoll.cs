@@ -54,6 +54,11 @@ namespace Unity.Cinemachine
         /// When placed on a SplineContainer, this is going to be a global override that affects all vcams using the Spline.
         /// When placed on a CinemachineCamera, this is going to be a local override that only affects that CinemachineCamera.
         /// </summary>
+        /// <remarks>
+        /// It is not recommended to modify the data array at runtime, because the infrastructure
+        /// expects the array to be in strclty increasing order of distance along the spline.  If you do change
+        /// the array at runtime, you must take care to keep it in this order, or the results will be unpredictable.
+        /// </remarks>
         [HideFoldout]
         public SplineData<RollData> Roll;
 

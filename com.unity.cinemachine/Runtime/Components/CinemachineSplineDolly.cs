@@ -182,7 +182,7 @@ namespace Unity.Cinemachine
             AutomaticDolly.Method = null;
         }
 
-        ///<inheritdoc/>
+        /// <inheritdoc/>
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -253,9 +253,8 @@ namespace Unity.Cinemachine
             m_PreviousSplinePosition = CameraPosition = splinePos;
 
             spline.EvaluateSplineWithRoll(
-                Spline.transform, m_RollCache.GetSplineRoll(this), m_PreviousRotation, 
-                spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
-                out var newPos, out var newSplineRotation);
+                Spline.transform, spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
+                m_PreviousRotation, m_RollCache.GetSplineRoll(this), out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position
             var offsetX = newSplineRotation * Vector3.right;
@@ -280,7 +279,7 @@ namespace Unity.Cinemachine
             curState.RawPosition = m_PreviousPosition = newPos;
 
             // Set the orientation and up
-            var newRot = GetCameraRotationAtSplinePoint(newSplineRotation, curState.ReferenceUp);
+            var newRot = GetCameraRotationAtSplinePoint(newSplineRotation, curState.ReferenceUp, out bool isDefault);
             if (Damping.Enabled && deltaTime >= 0 && VirtualCamera.PreviousStateIsValid)
             {
                 float t = VirtualCamera.DetachedFollowTargetDamp(1, Damping.Angular, deltaTime);
@@ -289,12 +288,13 @@ namespace Unity.Cinemachine
             m_PreviousRotation = newRot;
             curState.RawOrientation = newRot;
 
-            if (CameraRotation != RotationMode.Default)
+            if (!isDefault)
                 curState.ReferenceUp = curState.RawOrientation * Vector3.up;
         }
 
-        Quaternion GetCameraRotationAtSplinePoint(Quaternion splineOrientation, Vector3 up)
+        Quaternion GetCameraRotationAtSplinePoint(Quaternion splineOrientation, Vector3 up, out bool isDefault)
         {
+            isDefault = false;
             switch (CameraRotation)
             {
                 default:
@@ -311,6 +311,7 @@ namespace Unity.Cinemachine
                         return Quaternion.LookRotation(FollowTargetRotation * Vector3.forward, up);
                     break;
             }
+            isDefault = true;
             return Quaternion.LookRotation(VirtualCamera.transform.rotation * Vector3.forward, up);
         }
     }
