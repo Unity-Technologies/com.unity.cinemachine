@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -55,6 +56,7 @@ namespace Unity.Cinemachine.Editor
             // Gather the camera candidates
             var availableCameras = new List<string>();
             Dictionary<string, int> cameraIndexLookup = new();
+            Action onCamerasUpdated = null;
             list.TrackAnyUserActivity(() =>
             {
                 var allCameras = new List<CinemachineVirtualCameraBase>();
@@ -65,28 +67,46 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; i < allCameras.Count; ++i)
                     if (allCameras[i] != null && !availableCameras.Contains(allCameras[i].Name))
                         availableCameras.Add(allCameras[i].Name);
-                list.RefreshItems();  // rebuild the list
+                onCamerasUpdated?.Invoke();
             });
 
-            list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
-            list.bindItem = (row, index) =>
+            list.makeItem = () => 
             {
-                // Remove children - items get recycled
-                for (int i = row.childCount - 1; i >= 0; --i)
-                    row.RemoveAt(i);
-
                 var def = new CinemachineBlenderSettings.CustomBlend();
-                var element = index < elements.arraySize ? elements.GetArrayElementAtIndex(index) : null;
-                if (!IsUnityNull(element))
-                {
-                    var from = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.From)));
-                    var to = row.AddChild(CreateCameraPopup(element.FindPropertyRelative(() => def.To)));
-                    var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
-                    FormatElement(false, from, to, blend);
+                var row = new BindableElement { style = { flexDirection = FlexDirection.Row }};
+                var from = row.AddChild(CreateCameraPopup(SerializedPropertyHelper.PropertyName(() => def.From)));
+                var to = row.AddChild(CreateCameraPopup(SerializedPropertyHelper.PropertyName(() => def.To)));
+                var blend = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.Blend)});
+                FormatElement(false, from, to, blend);
+                return row;
 
-                    ((BindableElement)row).BindProperty(element); // bind must be done at the end
+                // Local function
+                VisualElement CreateCameraPopup(string bindingPath)
+                {
+                    var container = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
+                    var textField = container.AddChild(new TextField { bindingPath = bindingPath, isDelayed = true, style = { flexGrow = 1, flexBasis = 20 }});
+
+                    var warning = container.AddChild(InspectorUtility.MiniHelpIcon($"No in-scene camera matches this name"));
+                    textField.RegisterValueChangedCallback((evt) => OnCameraUpdated());
+                    onCamerasUpdated += OnCameraUpdated;
+                    void OnCameraUpdated()
+                    {
+                        warning.tooltip = $"No in-scene camera matches \"{textField.value}\"";
+                        warning.SetVisible(availableCameras.FindIndex(x => x == textField.value) < 0);
+                    };
+
+                    var popup = container.AddChild(InspectorUtility.MiniDropdownButton(
+                        "Choose from currently-available cameras", new ContextualMenuManipulator((evt) => 
+                    {
+                        for (int i = 0; i < availableCameras.Count; ++i)
+                            evt.menu.AppendAction(availableCameras[i], (action) => textField.value = action.name);
+                    })));
+                    popup.style.marginRight = 5;
+                    return container;
                 }
             };
+
+            return ux;
 
             // Local function
             static void FormatElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)
@@ -101,38 +121,6 @@ namespace Unity.Cinemachine.Editor
                 e3.style.flexBasis = 1; 
                 e3.style.flexGrow = 2;
             }
-
-            // Local function
-            VisualElement CreateCameraPopup(SerializedProperty p)
-            {
-                var row = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                var textField = row.AddChild(new TextField { isDelayed = true, style = { flexGrow = 1, flexBasis = 20 }});
-                textField.BindProperty(p);
-                if (availableCameras.FindIndex(x => x == p.stringValue) < 0)
-                    row.AddChild(InspectorUtility.MiniHelpIcon("No in-scene camera matches this name"));
-                var popup = row.AddChild(InspectorUtility.MiniDropdownButton(
-                    "Choose from currently-available cameras", new ContextualMenuManipulator((evt) => 
-                {
-                    for (int i = 0; i < availableCameras.Count; ++i)
-                        evt.menu.AppendAction(availableCameras[i], 
-                            (action) => 
-                            {
-                                p.stringValue = action.name;
-                                p.serializedObject.ApplyModifiedProperties();
-                            });
-                })));
-                popup.style.marginRight = 5;
-                return row;
-            }
-
-            // Local function
-            static bool IsUnityNull(object obj)
-            {
-                // Checks whether an object is null or Unity pseudo-null
-                // without having to cast to UnityEngine.Object manually
-                return obj == null || ((obj is UnityEngine.Object) && ((UnityEngine.Object)obj) == null);
-            }
-            return ux;
         }
     }
 }
