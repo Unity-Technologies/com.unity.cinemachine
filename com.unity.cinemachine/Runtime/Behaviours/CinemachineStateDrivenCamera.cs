@@ -257,7 +257,7 @@ namespace Unity.Cinemachine
                 for (int i = 0; i < instrList.Count; ++i)
                 {
                     var index = instrList[i];
-                    var cam = Instructions[index].Camera;
+                    var cam = index < Instructions.Length ? Instructions[index].Camera : null;
                     if (cam != null && cam.isActiveAndEnabled && cam.Priority.Value > bestPriority)
                     {
                         newInstrIndex = index;
