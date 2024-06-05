@@ -79,8 +79,8 @@
         },
         {
             "name": "com.unity.splines",
-            "expression": "2.5.0",
-            "define": "CINEMACHINE_SPLINES_2_5"
+            "expression": "2.4.0",
+            "define": "CINEMACHINE_SPLINES_2_4"
         }
     ],
     "noEngineReferences": false
