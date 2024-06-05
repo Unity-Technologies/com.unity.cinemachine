@@ -100,8 +100,7 @@ namespace Unity.Cinemachine.Editor
                     if (embeddedInspectorParent != null)
                         eContext.Inspector = embeddedInspectorParent.AddChild(new InspectorElement(eContext.Editor));
                 }
-                if (unassignedUx != null)
-                    unassignedUx.SetVisible(target == null);
+                unassignedUx?.SetVisible(target == null);
                 if (assignedUx != null)
                     assignedUx.SetVisible(target != null);
             }
@@ -124,8 +123,21 @@ namespace Unity.Cinemachine.Editor
             SerializedProperty property, string label = null, 
             string presetsPath = null, string warningTextIfNull = null) where T : ScriptableObject
         {
-            var row = InspectorUtility.PropertyRow(property, out var selector, label);
-            var contents = row.Contents;
+            VisualElement ux;
+            VisualElement contents;
+            if (label == string.Empty)
+            {
+                contents = new VisualElement { style = { flexGrow = 1, flexDirection = FlexDirection.Row }};
+                ux = contents;
+            }
+            else 
+            {
+                var row = new InspectorUtility.LabeledRow(label ?? property.displayName, property.tooltip);
+                contents = row.Contents;
+                ux = row;
+            }
+
+            var selector = contents.AddChild(new PropertyField(property, "") { style = { flexGrow = 1 }});
 
             Label warningIcon = null;
             if (!string.IsNullOrEmpty(warningTextIfNull))
@@ -208,7 +220,7 @@ namespace Unity.Cinemachine.Editor
                 }
             })));
 
-            row.TrackPropertyWithInitialCallback(property, (p) =>
+            ux.TrackPropertyWithInitialCallback(property, (p) =>
             {
                 if (p.serializedObject == null)
                     return; // object deleted
@@ -227,12 +239,11 @@ namespace Unity.Cinemachine.Editor
                 selector.SetVisible(presetIndex < 0);
             });
 
-            return row;
+            return ux;
 
             // Local function
             static List<Type> GetAssetTypes(Type baseType)
             {
-                // GML todo: optimize with TypeCache
                 var allTypes = ReflectionHelpers.GetTypesDerivedFrom(baseType,
                     (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var list = new List<Type>();

@@ -431,6 +431,7 @@ namespace Unity.Cinemachine.Editor
                 Label = row.Left.AddChild(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
                 Contents = row.Right.AddChild(contents);
                 style.marginRight = 0;
+                style.flexGrow = 1;
                 Contents.tooltip = tooltip;
                 Contents.style.marginRight = 0;
                 Contents.style.flexGrow = 1;

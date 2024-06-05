@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Unity.Cinemachine.Editor
 {
-    // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AddAssetSelectorWithPresets
+    // GML todo: remove this class, replace with EmbeddedAssetEditorUtility.AssetSelectorWithPresets
     // Currently only used by CinemachineImpulseDefinition editor
 
     [CustomPropertyDrawer(typeof(CinemachineEmbeddedAssetPropertyAttribute))]
