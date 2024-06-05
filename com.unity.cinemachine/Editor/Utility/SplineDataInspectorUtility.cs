@@ -147,8 +147,8 @@ namespace Unity.Cinemachine.Editor
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var unit = (PathIndexUnit)Enum.GetValues(typeof(PathIndexUnit)).GetValue(pathUnitProp.enumValueIndex);
 
-            var transform = container is Component component ? component.transform : null;
-            using var nativeSpline = new NativeSpline(container.Splines[splineIndex], transform);
+            var matrix = container is Component component ? component.transform.localToWorldMatrix : Matrix4x4.identity;
+            using var nativeSpline = new NativeSpline(container.Splines[splineIndex], matrix);
             for (int i = 0, c = arrayProp.arraySize; i < c; ++i)
             {
                 var point = arrayProp.GetArrayElementAtIndex(i);

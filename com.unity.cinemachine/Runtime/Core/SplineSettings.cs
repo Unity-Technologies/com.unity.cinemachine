@@ -187,8 +187,10 @@ namespace Unity.Cinemachine
         public float GetCurveInterpolation(int curveIndex, float curveDistance) => m_NativeSpline.GetCurveInterpolation(curveIndex, curveDistance);
         /// <inheritdoc/>
         public float GetCurveLength(int index) => m_NativeSpline.GetCurveLength(index);
+#if CINEMACHINE_SPLINES_2_5
         /// <inheritdoc/>
         public float3 GetCurveUpVector(int index, float t) => m_NativeSpline.GetCurveUpVector(index, t);
+#endif
         /// <inheritdoc/>
         public IEnumerator<BezierKnot> GetEnumerator() => m_NativeSpline.GetEnumerator();
         /// <inheritdoc/>

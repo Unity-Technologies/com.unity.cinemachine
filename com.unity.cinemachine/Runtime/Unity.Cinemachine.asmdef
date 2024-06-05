@@ -76,6 +76,11 @@
             "name": "com.unity.modules.uielements",
             "expression": "1.0.0",
             "define": "CINEMACHINE_UIELEMENTS"
+        },
+        {
+            "name": "com.unity.splines",
+            "expression": "2.5.0",
+            "define": "CINEMACHINE_SPLINES_2_5"
         }
     ],
     "noEngineReferences": false
