@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -41,7 +42,6 @@ namespace Unity.Cinemachine.Editor
 
             var list = container.AddChild(new ListView()
             {
-                name = "InstructionList",
                 reorderable = true,
                 reorderMode = ListViewReorderMode.Animated,
                 showAddRemoveFooter = true,
@@ -53,34 +53,28 @@ namespace Unity.Cinemachine.Editor
             var instructions = serializedObject.FindProperty(() => Target.Instructions);
             list.BindProperty(instructions);
 
-            list.makeItem = () => new BindableElement { style = { flexDirection = FlexDirection.Row }};
-            list.bindItem = (row, index) =>
+            // Available camera candidates
+            var availableCameras = new List<Object>();
+
+            list.makeItem = () => 
             {
-                // Remove children - items get recycled
-                for (int i = row.childCount - 1; i >= 0; --i)
-                    row.RemoveAt(i);
+                var row = new BindableElement { style = { flexDirection = FlexDirection.Row }};
 
                 var def = new CinemachineSequencerCamera.Instruction();
-                var element = instructions.GetArrayElementAtIndex(index);
-
-                var vcamSelProp = element.FindPropertyRelative(() => def.Camera);
-                var vcamSel = row.AddChild(new PopupField<Object> { name = $"vcamSelector{index}", choices = new() });
-                vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.TrackPropertyWithInitialCallback(instructions, (p) => UpdateCameraDropdowns());
+                var vcamSel = row.AddChild(new PopupField<Object> 
+                { 
+                    bindingPath = SerializedPropertyHelper.PropertyName(() => def.Camera), 
+                    choices = availableCameras,
+                    formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name,
+                    formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name
+                });
         
-                var blend = row.AddChild(new PropertyField(element.FindPropertyRelative(() => def.Blend), ""));
-                if (index == 0)
-                    blend.name = "FirstItemBlend";
-                var hold = row.AddChild(
-                    new InspectorUtility.CompactPropertyField(element.FindPropertyRelative(() => def.Hold), " "));
+                var blend = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.Blend), name = "blendSelector" });
+                var hold = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.Hold) });
                 hold.RemoveFromClassList(InspectorUtility.AlignFieldClassName);
                     
                 FormatInstructionElement(false, vcamSel, blend, hold);
-
-                // Bind must be last
-                ((BindableElement)row).BindProperty(element);
-                vcamSel.BindProperty(vcamSelProp);
+                return row;
             };
 
             container.AddSpace();
@@ -88,7 +82,7 @@ namespace Unity.Cinemachine.Editor
 
             container.TrackAnyUserActivity(() =>
             {
-                if (Target == null)
+                if (Target == null || list.itemsSource == null)
                     return; // object deleted
 
                 var isMultiSelect = targets.Length > 1;
@@ -96,33 +90,17 @@ namespace Unity.Cinemachine.Editor
                 container.SetVisible(!isMultiSelect);
 
                 // Hide the first blend if not looped
-                list.Q<VisualElement>("FirstItemBlend")?.SetEnabled(Target.Loop);
+                var index = 0;
+                list.Query<VisualElement>().Where((e) => e.name == "blendSelector").ForEach((e) 
+                    => e.style.visibility = (index++ == 0 && !Target.Loop) ? Visibility.Hidden : Visibility.Visible);
 
-                // Update the list items
-                UpdateCameraDropdowns();
+                // Gather the camera candidates
+                availableCameras.Clear();
+                availableCameras.AddRange(Target.ChildCameras);
             });
             this.AddExtensionsDropdown(ux);
 
             return ux;
-
-            // Local function
-            void UpdateCameraDropdowns()
-            {
-                var children = Target.ChildCameras;
-                int index = 0;
-                var iter = list.itemsSource.GetEnumerator();
-                while (iter.MoveNext())
-                {
-                    var vcamSel = list.Q<PopupField<Object>>($"vcamSelector{index}");
-                    if (vcamSel != null)
-                    {
-                        vcamSel.choices.Clear();
-                        for (int i = 0; i < children.Count; ++i)
-                            vcamSel.choices.Add(children[i]);
-                    }
-                    ++index;
-                }
-            }
 
             // Local function
             static void FormatInstructionElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)
