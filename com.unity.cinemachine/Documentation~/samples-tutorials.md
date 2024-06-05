@@ -9,7 +9,7 @@ The Cinemachine package includes sample scenes that you can [import to your proj
 | Sample | Description |
 | :--- | :--- |
 | 2D Samples | Sample scenes illustrating various ways to use Cinemachine in a 2D setting.<br />Includes: `2D Fighters`, `2D Platformer`, `CameraMagnets`. |
-| 3D Samples | Sample scenes illustrating various ways to use Cinemachine in a 3D setting.<br />Includes: `Brain Update Modes`, `ClearShot`, `Custom Blends`, `Cutscene`, `FadeOutNearbyObjects`, `FreeLook Deoccluder`, `FreeLook on Spherical Surface`, `Impulse Wave`, `Lock-on Target`, `MixingCamera`, `RunningRace`, `SplitScreenCar`, `ThirdPersonWithAimMode`, `ThirdPersonWithRoadieRun`. |
+| 3D Samples | Sample scenes illustrating various ways to use Cinemachine in a 3D setting.<br />Includes: `Brain Update Modes`, `ClearShot`, `Custom Blends`, `Cutscene`, `FreeLook Deoccluder`, `FreeLook on Spherical Surface`, `Impulse Wave`, `Lock-on Target`, `MixingCamera`, `RunningRace`, `SplitScreenCar`, `ThirdPersonWithAimMode`, `ThirdPersonWithRoadieRun`. |
 | Input System Samples | Sample scenes illustrating various ways to use Cinemachine with the input system.<br />Includes: `Split Screen Multiplayer`. |
 
 ## Tutorials
