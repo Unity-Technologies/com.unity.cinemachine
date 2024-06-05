@@ -329,7 +329,7 @@ namespace Unity.Cinemachine.Editor
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
                 width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
-                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                paddingRight = 0, marginRight = 0
             }};
             if (contextMenu != null)
             {
@@ -352,7 +352,7 @@ namespace Unity.Cinemachine.Editor
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
                 width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
-                paddingRight = 0, borderRightWidth = 0, marginRight = 0
+                paddingRight = 0, marginRight = 0
             }};
             if (contextMenu != null)
             {
