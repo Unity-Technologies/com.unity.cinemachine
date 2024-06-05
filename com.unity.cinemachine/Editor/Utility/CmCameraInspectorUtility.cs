@@ -522,50 +522,66 @@ namespace Unity.Cinemachine.Editor
             });
             list.itemsSource = vcam.ChildCameras;
 
-            list.makeItem = () => new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            list.bindItem = (row, index) =>
+            list.makeItem = () => 
             {
-                // Remove children - items seem to get recycled
-                for (int i = row.childCount - 1; i >= 0; --i)
-                    row.RemoveAt(i);
+                var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
 
-                var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
+                warningIcon.name = "warningIcon";
+
                 row.AddChild(new ObjectField 
                 { 
-                    value = element,
+                    name = "vcamSelector",
                     objectType = typeof(CinemachineVirtualCameraBase),
                     style = { flexBasis = 20, flexGrow = 1 }
                 }).SetEnabled(false);
-                if (element == null)
-                    return;
 
-                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
+                var dragger = row.AddChild(new Label("  "));
+                dragger.AddToClassList("unity-base-field__label--with-dragger");
+
+                var priorityField = row.AddChild(new IntegerField 
+                { 
+                    name = "priorityField", 
+                    isDelayed = true, 
+                    style = { flexBasis = floatFieldWidth, flexGrow = 0, marginRight = 4 }
+                });
+                new DelayedFriendlyFieldDragger<int>(priorityField).SetDragZone(dragger);
+
+                return row;
+            };
+
+            list.bindItem = (row, index) =>
+            {
+                var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                row.Q<ObjectField>("vcamSelector").value = element;
+
+                var warningIcon = row.Q<VisualElement>("warningIcon");
                 var warningText = getChildWarning == null ? string.Empty : getChildWarning(element);
                 warningIcon.tooltip = warningText;
                 warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
 
-                var dragger = row.AddChild(new Label(" "));
-                dragger.AddToClassList("unity-base-field__label--with-dragger");
+                if (element != null)
+                {
+                    var so = new SerializedObject(element);
+                    var prop = so.FindProperty("Priority");
+                    var enabledProp = prop.FindPropertyRelative("Enabled");
+                    var priorityProp = prop.FindPropertyRelative("m_Value");
+                    var priorityField = row.Q<IntegerField>("priorityField");
 
-                var so = new SerializedObject(element);
-                var prop = so.FindProperty("Priority");
-                var enabledProp = prop.FindPropertyRelative("Enabled");
-                var priorityProp = prop.FindPropertyRelative("m_Value");
-                var priorityField = row.AddChild(new IntegerField
-                {
-                    value = enabledProp.boolValue ? priorityProp.intValue : 0,
-                    style = { flexBasis = floatFieldWidth, flexGrow = 0, marginRight = 4 }
-                });
-                new DelayedFriendlyFieldDragger<int>(priorityField) { CancelDelayedWhenDragging = true }.SetDragZone(dragger);
-                priorityField.RegisterValueChangedCallback((evt) =>
-                {
-                    if (evt.newValue != 0)
-                        enabledProp.boolValue = true;
-                    priorityProp.intValue = evt.newValue;
-                    so.ApplyModifiedProperties();
-                });
-                priorityField.TrackPropertyValue(priorityProp, (p) => priorityField.value = p.intValue);
-                priorityField.TrackPropertyValue(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
+                    priorityField.Unbind();
+                    priorityField.TrackPropertyWithInitialCallback(priorityProp, (p) => priorityField.value = p.intValue);
+                    priorityField.TrackPropertyWithInitialCallback(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
+
+                    priorityField.UnregisterValueChangedCallback(OnValueChanged);
+                    priorityField.RegisterValueChangedCallback(OnValueChanged);
+                    void OnValueChanged(ChangeEvent<int> evt)
+                    {
+                        if (evt.newValue != 0)
+                            enabledProp.boolValue = true;
+                        priorityProp.intValue = evt.newValue;
+                        so.ApplyModifiedProperties();
+                    }
+                }
             };
 
             list.itemsAdded += (added) =>
