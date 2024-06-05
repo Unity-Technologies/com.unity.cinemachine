@@ -497,7 +497,7 @@ namespace Unity.Cinemachine.Editor
             if (vcam == null)
                 return;
 
-            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
 
             var helpBox = ux.AddChild(new HelpBox(
                 "Child Cameras cannot be displayed when multiple objects are selected.", 
@@ -536,7 +536,7 @@ namespace Unity.Cinemachine.Editor
                     style = { flexBasis = 20, flexGrow = 1 }
                 }).SetEnabled(false);
 
-                var dragger = row.AddChild(new Label("  "));
+                var dragger = row.AddChild(new Label(" "));
                 dragger.AddToClassList("unity-base-field__label--with-dragger");
 
                 var priorityField = row.AddChild(new IntegerField 

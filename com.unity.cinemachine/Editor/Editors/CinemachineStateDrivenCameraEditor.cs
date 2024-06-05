@@ -143,9 +143,26 @@ namespace Unity.Cinemachine.Editor
                     formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name
                 });
         
-                var wait = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.ActivateAfter) });
-                var hold = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.MinDuration) });
-                    
+                var waitTooltip = "How long to wait (in seconds) before activating the camera. This filters out very short state durations";
+                var waitDragger = row.AddChild(new Label(" ") { tooltip = waitTooltip });
+                waitDragger.AddToClassList("unity-base-field__label--with-dragger");
+                var wait = row.AddChild(new FloatField 
+                { 
+                    tooltip = waitTooltip,
+                    bindingPath = SerializedPropertyHelper.PropertyName(() => def.ActivateAfter)
+                });
+                new DelayedFriendlyFieldDragger<float>(wait).SetDragZone(waitDragger);
+
+                var holdTooltip = "The minimum length of time (in seconds) to keep a camera active";
+                var holdDragger = row.AddChild(new Label(" ") { tooltip = holdTooltip });
+                holdDragger.AddToClassList("unity-base-field__label--with-dragger");
+                var hold = row.AddChild(new FloatField 
+                { 
+                    tooltip = holdTooltip,
+                    bindingPath = SerializedPropertyHelper.PropertyName(() => def.MinDuration) 
+                });
+                new DelayedFriendlyFieldDragger<float>(hold).SetDragZone(holdDragger);
+
                 FormatInstructionElement(false, stateSel, vcamSel, wait, hold);
 
                 return row;
@@ -184,13 +201,12 @@ namespace Unity.Cinemachine.Editor
                 e2.style.flexBasis = floatFieldWidth + InspectorUtility.SingleLineHeight; 
                 e2.style.flexGrow = 1;
 
+                floatFieldWidth += isHeader ? InspectorUtility.SingleLineHeight/2 - 1 : 0;
                 e3.style.flexBasis = floatFieldWidth; 
                 e3.style.flexGrow = 0;
 
-                e4.style.marginRight = 4;
                 e4.style.flexBasis = floatFieldWidth; 
                 e4.style.flexGrow = 0;
-                e4.style.unityTextAlign = TextAnchor.MiddleRight;
             }
         }
 
