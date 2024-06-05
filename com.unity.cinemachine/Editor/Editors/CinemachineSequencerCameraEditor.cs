@@ -71,7 +71,6 @@ namespace Unity.Cinemachine.Editor
         
                 var blend = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.Blend), name = "blendSelector" });
 
-
                 var holdTooltip = "How long to wait (in seconds) before activating the next camera in the list (if any)";
                 var holdDragger = row.AddChild(new Label(" ") { tooltip = holdTooltip });
                 holdDragger.AddToClassList("unity-base-field__label--with-dragger");
@@ -120,12 +119,11 @@ namespace Unity.Cinemachine.Editor
                 e1.style.flexBasis = floatFieldWidth + InspectorUtility.SingleLineHeight; 
                 e1.style.flexGrow = 1;
                 
-                floatFieldWidth += isHeader ? InspectorUtility.SingleLineHeight/2 - 1 : 0;
-
-                e2.style.flexBasis = floatFieldWidth; 
+                e2.style.marginLeft = isHeader ? 4 * InspectorUtility.SingleLineHeight - 3 : 0;
+                e2.style.flexBasis = floatFieldWidth + InspectorUtility.SingleLineHeight; 
                 e2.style.flexGrow = 1;
-                e2.style.unityTextAlign = TextAnchor.MiddleCenter;
 
+                floatFieldWidth += isHeader ? InspectorUtility.SingleLineHeight/2 - 1 : 0;
                 e3.style.flexBasis = floatFieldWidth; 
                 e3.style.flexGrow = 0;
             }

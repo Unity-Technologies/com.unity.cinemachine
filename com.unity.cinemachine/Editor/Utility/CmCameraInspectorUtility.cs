@@ -508,8 +508,7 @@ namespace Unity.Cinemachine.Editor
             var header = container.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, marginBottom = -2 } });
             header.AddToClassList("unity-collection-view--with-border");
             header.AddChild(new Label("Child Cameras") { style = { marginLeft = 3, flexGrow = 1, flexBasis = 10  }});
-            header.AddChild(new Label("Priority") 
-                { style = { marginRight = 4, flexGrow = 1, flexBasis = floatFieldWidth, unityTextAlign = TextAnchor.MiddleRight }});
+            header.AddChild(new Label("Priority") { style = { flexGrow = 0, flexBasis = floatFieldWidth + 4}});
 
             var list = container.AddChild(new ListView()
             {
@@ -538,7 +537,6 @@ namespace Unity.Cinemachine.Editor
 
                 var dragger = row.AddChild(new Label(" "));
                 dragger.AddToClassList("unity-base-field__label--with-dragger");
-
                 var priorityField = row.AddChild(new IntegerField 
                 { 
                     name = "priorityField", 
