@@ -13,6 +13,9 @@ namespace Unity.Cinemachine.Editor
         public delegate ISplineContainer GetSplineDelegate();
         public delegate T GetDefaultValueDelegate<T>();
 
+        public const string ItemIndexTooltip = "The position on the Spline at which this data point will take effect.  "
+            + "The value is interpreted according to the Index Unit setting.";
+
         public static VisualElement CreatePathUnitField(SerializedProperty splineDataProp, GetSplineDelegate getSpline)
         {
             var indexUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");

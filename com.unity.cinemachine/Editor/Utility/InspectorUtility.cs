@@ -293,14 +293,14 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        public static VisualElement CreateDraggableField(Expression<Func<object>> exp, Label label, out BaseFieldMouseDragger dragger)
+        public static VisualElement CreateDraggableField(Expression<Func<object>> exp, Label label, out IDelayedFriendlyDragger dragger)
         {
             var bindingPath = SerializedPropertyHelper.PropertyName(exp);
             var tooltip = SerializedPropertyHelper.PropertyTooltip(exp);
             return CreateDraggableField(SerializedPropertyHelper.PropertyType(exp), bindingPath, tooltip, label, out dragger);
         }
 
-        public static VisualElement CreateDraggableField(Type type, string bindingPath, string tooltip, Label label, out BaseFieldMouseDragger dragger)
+        public static VisualElement CreateDraggableField(Type type, string bindingPath, string tooltip, Label label, out IDelayedFriendlyDragger dragger)
         {
             VisualElement field;
             label.AddToClassList("unity-base-field__label--with-dragger");
@@ -321,7 +321,8 @@ namespace Unity.Cinemachine.Editor
                 field = new PropertyField(null, "") { bindingPath = bindingPath, tooltip = tooltip };
                 dragger = null;
             }
-            dragger?.SetDragZone(label);
+            var d = dragger as BaseFieldMouseDragger;
+            d?.SetDragZone(label);
             return field;
         }
 
