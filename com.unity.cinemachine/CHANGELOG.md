@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - New Rotation Control behaviour SplineDollyLookAtTargets lets you specify LookAt points at desird positions along a Spline Dolly trajectory.
 - Added Recenter Target setting to CinemachinePanTilt.
 
+### Removed
+- FadeOutNearbyObjects sample scene and shader.
+
 
 ## [3.1.0] - 2024-04-01
 
