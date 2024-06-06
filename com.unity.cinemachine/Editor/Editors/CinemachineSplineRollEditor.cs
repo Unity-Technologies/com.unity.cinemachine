@@ -35,57 +35,53 @@ namespace Unity.Cinemachine.Editor
             ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData == null ? null : splineData.SplineContainer));
 
             ux.AddHeader("Data Points");
-            var listField = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
-                splineData.Roll, rollProp, () => splineData?.SplineContainer));
+            var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(splineData.Roll, rollProp, () => splineData?.SplineContainer));
+
             var arrayProp = rollProp.FindPropertyRelative("m_DataPoints");
-            listField.OnInitialGeometry(() => 
+
+            list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
+            list.bindItem = (ux, index) =>
             {
-                var list = listField.Q<ListView>();
+                // Remove children - items get recycled
+                for (int i = ux.childCount - 1; i >= 0; --i)
+                    ux.RemoveAt(i);
 
-                list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
-                list.bindItem = (ux, index) =>
+                const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
+                    + "The value is interpreted according to the Index Unit setting.";
+
+                var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
+                var def = new CinemachineSplineRoll.RollData();
+                var indexProp = element.FindPropertyRelative("m_Index");
+                var valueProp = element.FindPropertyRelative("m_Value");
+
+                ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
+                var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
+                var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 }});
+                indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
+                label.AddDelayedFriendlyPropertyDragger(indexProp, indexField, (dragger) => dragger.OnStartDrag = () => list.selectedIndex = index);
+
+                ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
+                ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll") { style = { flexGrow = 1 }});
+
+                ((BindableElement)ux).BindProperty(element); // bind must be done at the end
+            };
+
+            SplineRollTool.s_OnDataLookAtDragged += OnToolDragged;
+            SplineRollTool.s_OnDataIndexDragged += OnToolDragged;
+            void OnToolDragged(CinemachineSplineRoll data, int index)
+            {
+                EditorApplication.delayCall += () => 
                 {
-                    // Remove children - items get recycled
-                    for (int i = ux.childCount - 1; i >= 0; --i)
-                        ux.RemoveAt(i);
-
-                    const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
-                        + "The value is interpreted according to the Index Unit setting.";
-
-                    var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
-                    var def = new CinemachineSplineRoll.RollData();
-                    var indexProp = element.FindPropertyRelative("m_Index");
-                    var valueProp = element.FindPropertyRelative("m_Value");
-
-                    ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                    var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
-                    var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 }});
-                    indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
-                    label.AddDelayedFriendlyPropertyDragger(indexProp, indexField, (dragger) => dragger.OnStartDrag = () => list.selectedIndex = index);
-
-                    ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                    ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll") { style = { flexGrow = 1 }});
-
-                    ((BindableElement)ux).BindProperty(element); // bind must be done at the end
-                };
-
-                SplineRollTool.s_OnDataLookAtDragged += OnToolDragged;
-                SplineRollTool.s_OnDataIndexDragged += OnToolDragged;
-                void OnToolDragged(CinemachineSplineRoll data, int index)
-                {
-                    EditorApplication.delayCall += () => 
+                    // This is a hack to avoid spurious exceptions thrown by uitoolkit!
+                    // GML TODO: Remove when they fix it
+                    try 
                     {
-                        // This is a hack to avoid spurious exceptions thrown by uitoolkit!
-                        // GML TODO: Remove when they fix it
-                        try 
-                        {
-                            if (data == splineData)
-                                list.selectedIndex = index;
-                        }
-                        catch {} // Ignore exceptions
-                    };
-                }
-            });
+                        if (data == splineData)
+                            list.selectedIndex = index;
+                    }
+                    catch {} // Ignore exceptions
+                };
+            }
 
             ux.TrackPropertyValue(rollProp, (p) => 
             {

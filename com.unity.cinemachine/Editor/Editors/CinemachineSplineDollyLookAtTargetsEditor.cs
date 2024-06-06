@@ -96,7 +96,7 @@ namespace Unity.Cinemachine.Editor
                 => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null));
 
             ux.AddHeader("Data Points");
-            var listField = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
+            var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
                 splineData.Targets, targetsProp, 
                 () => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null,
                 () =>
@@ -113,116 +113,113 @@ namespace Unity.Cinemachine.Editor
                     }
                     return item;
                 }));
+           
 
             var arrayProp = targetsProp.FindPropertyRelative("m_DataPoints");
-            listField.OnInitialGeometry(() => 
+            list.makeItem = () => new BindableElement() { style = { marginRight = 4 }};
+            list.bindItem = (ux, index) =>
             {
-                var list = listField.Q<ListView>();
-                list.makeItem = () => new BindableElement() { style = { marginRight = 4 }};
-                list.bindItem = (ux, index) =>
-                {
-                    // Remove children - items get recycled
-                    for (int i = ux.childCount - 1; i >= 0; --i)
-                        ux.RemoveAt(i);
+                // Remove children - items get recycled
+                for (int i = ux.childCount - 1; i >= 0; --i)
+                    ux.RemoveAt(i);
 
-                    const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
-                        + "The value is interpreted according to the Index Unit setting.";
+                const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
+                    + "The value is interpreted according to the Index Unit setting.";
 
-                    var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
-                    CinemachineSplineDollyLookAtTargets.Item def = new ();
-                    var indexProp = element.FindPropertyRelative("m_Index");
-                    var valueProp = element.FindPropertyRelative("m_Value");
-                    var lookAtProp = valueProp.FindPropertyRelative(() => def.LookAt);
-                    var offsetProp = valueProp.FindPropertyRelative(() => def.Offset);
+                var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
+                CinemachineSplineDollyLookAtTargets.Item def = new ();
+                var indexProp = element.FindPropertyRelative("m_Index");
+                var valueProp = element.FindPropertyRelative("m_Value");
+                var lookAtProp = valueProp.FindPropertyRelative(() => def.LookAt);
+                var offsetProp = valueProp.FindPropertyRelative(() => def.Offset);
 
-                    var overlay = new VisualElement () { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-                    var indexField1 = overlay.AddChild(new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 50 }});
-                    indexField1.OnInitialGeometry(() => indexField1.SafeSetIsDelayed());
+                var overlay = new VisualElement () { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
+                var indexField1 = overlay.AddChild(new PropertyField(indexProp, "") { tooltip = indexTooltip, style = { flexGrow = 1, flexBasis = 50 }});
+                indexField1.OnInitialGeometry(() => indexField1.SafeSetIsDelayed());
 
-                    var lookAtField1 = overlay.AddChild(new PropertyField(lookAtProp, "") { style = { flexGrow = 4, flexBasis = 50, marginLeft = 3 }});
-                    var overlayLabel = new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
-                    overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay, OnIndexDraggerCreated);
+                var lookAtField1 = overlay.AddChild(new PropertyField(lookAtProp, "") { style = { flexGrow = 4, flexBasis = 50, marginLeft = 3 }});
+                var overlayLabel = new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }};
+                overlayLabel.AddDelayedFriendlyPropertyDragger(indexProp, overlay, OnIndexDraggerCreated);
                     
-                    var foldout = new Foldout() { text = $"Target {index}" };
-                    foldout.BindProperty(element);
-                    var row = foldout.AddChild(new InspectorUtility.LabeledRow(indexProp.displayName, indexTooltip));
-                    var indexField2 = row.Contents.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1 }});
-                    indexField2.OnInitialGeometry(() => indexField2.SafeSetIsDelayed());
-                    row.Label.AddDelayedFriendlyPropertyDragger(indexProp, indexField2, OnIndexDraggerCreated);
+                var foldout = new Foldout() { text = $"Target {index}" };
+                foldout.BindProperty(element);
+                var row = foldout.AddChild(new InspectorUtility.LabeledRow(indexProp.displayName, indexTooltip));
+                var indexField2 = row.Contents.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1 }});
+                indexField2.OnInitialGeometry(() => indexField2.SafeSetIsDelayed());
+                row.Label.AddDelayedFriendlyPropertyDragger(indexProp, indexField2, OnIndexDraggerCreated);
 
-                    var lookAtField2 = foldout.AddChild(new PropertyField(lookAtProp));
-                    foldout.Add(new PropertyField(offsetProp));
-                    foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
+                var lookAtField2 = foldout.AddChild(new PropertyField(lookAtProp));
+                foldout.Add(new PropertyField(offsetProp));
+                foldout.Add(new PropertyField(valueProp.FindPropertyRelative(() => def.Easing)));
 
-                    ux.Add(new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel) { style = { marginLeft = 12 }});
+                ux.Add(new InspectorUtility.FoldoutWithOverlay(foldout, overlay, overlayLabel) { style = { marginLeft = 12 }});
 
-                    ux.TrackPropertyValue(lookAtProp, (p) => 
+                ux.TrackPropertyValue(lookAtProp, (p) => 
+                {
+                    // Don't mess with the offset if change was a result of undo/redo
+                    if (m_UndoRedoMonitor.IsUndoRedo)
+                        return;
+
+                    // if lookAt target was set to null, preserve the worldspace location
+                    if (GetInspectorStateCache(splineData).GetCachedValue(index, out var previous))
                     {
-                        // Don't mess with the offset if change was a result of undo/redo
-                        if (m_UndoRedoMonitor.IsUndoRedo)
-                            return;
+                        var newData = p.objectReferenceValue;
+                        if (newData == null && previous.Value.LookAt != null)
+                            SetOffset(previous.Value.WorldLookAt);
 
-                        // if lookAt target was set to null, preserve the worldspace location
-                        if (GetInspectorStateCache(splineData).GetCachedValue(index, out var previous))
+                        // if lookAt target was changed, zero the offset
+                        else if (newData != null && newData != previous.Value.LookAt)
+                            SetOffset(Vector3.zero);
+
+                        // local function
+                        void SetOffset(Vector3 offset)
                         {
-                            var newData = p.objectReferenceValue;
-                            if (newData == null && previous.Value.LookAt != null)
-                                SetOffset(previous.Value.WorldLookAt);
-
-                            // if lookAt target was changed, zero the offset
-                            else if (newData != null && newData != previous.Value.LookAt)
-                                SetOffset(Vector3.zero);
-
-                            // local function
-                            void SetOffset(Vector3 offset)
-                            {
-                                offsetProp.vector3Value = offset;
-                                p.serializedObject.ApplyModifiedProperties();
-                            }
+                            offsetProp.vector3Value = offset;
+                            p.serializedObject.ApplyModifiedProperties();
                         }
-                    });
-
-                    ((BindableElement)ux).BindProperty(element); // bind must be done at the end
-
-                    // local function
-                    void OnIndexDraggerCreated(IDelayedFriendlyDragger dragger)
-                    {
-                        dragger.OnStartDrag = () => list.selectedIndex = index;
-                        dragger.OnDragValueChangedFloat = (v) => BringCameraToCustomSplinePoint(splineData, v);
                     }
-                };
+                });
 
-                list.TrackPropertyValue(arrayProp, (p) => EditorApplication.delayCall += () => GetInspectorStateCache(splineData).Reset(splineData));
+                ((BindableElement)ux).BindProperty(element); // bind must be done at the end
 
-                // When the list selection changes, cache the index and put the camera at that point on the dolly track
-                list.selectedIndicesChanged += (indices) =>
+                // local function
+                void OnIndexDraggerCreated(IDelayedFriendlyDragger dragger)
                 {
-                    var it = indices.GetEnumerator();
-                    var cache =  GetInspectorStateCache(splineData);
-                    cache.CurrentSelection = it.MoveNext() ? it.Current : -1;
-                    BringCameraToSplinePoint(splineData, cache.CurrentSelection);
-                };
-
-                LookAtDataOnSplineTool.s_OnDataLookAtDragged += OnToolDragged;
-                LookAtDataOnSplineTool.s_OnDataIndexDragged += OnToolDragged;
-                void OnToolDragged(CinemachineSplineDollyLookAtTargets data, int index)
-                {
-                    EditorApplication.delayCall += () => 
-                    {
-                        // GML This is a hack to avoid spurious exceptions thrown by uitoolkit!
-                        // GML TODO: Remove when they fix it
-                        try 
-                        {
-                            if (data == splineData)
-                            {
-                                list.selectedIndex = index;
-                                BringCameraToSplinePoint(data, index);
-                            }
-                        }
-                        catch {} // Ignore exceptions
-                    };
+                    dragger.OnStartDrag = () => list.selectedIndex = index;
+                    dragger.OnDragValueChangedFloat = (v) => BringCameraToCustomSplinePoint(splineData, v);
                 }
-            });
+            };
+
+            list.TrackPropertyValue(arrayProp, (p) => EditorApplication.delayCall += () => GetInspectorStateCache(splineData).Reset(splineData));
+
+            // When the list selection changes, cache the index and put the camera at that point on the dolly track
+            list.selectedIndicesChanged += (indices) =>
+            {
+                var it = indices.GetEnumerator();
+                var cache =  GetInspectorStateCache(splineData);
+                cache.CurrentSelection = it.MoveNext() ? it.Current : -1;
+                BringCameraToSplinePoint(splineData, cache.CurrentSelection);
+            };
+
+            LookAtDataOnSplineTool.s_OnDataLookAtDragged += OnToolDragged;
+            LookAtDataOnSplineTool.s_OnDataIndexDragged += OnToolDragged;
+            void OnToolDragged(CinemachineSplineDollyLookAtTargets data, int index)
+            {
+                EditorApplication.delayCall += () => 
+                {
+                    // GML This is a hack to avoid spurious exceptions thrown by uitoolkit!
+                    // GML TODO: Remove when they fix it
+                    try 
+                    {
+                        if (data == splineData)
+                        {
+                            list.selectedIndex = index;
+                            BringCameraToSplinePoint(data, index);
+                        }
+                    }
+                    catch {} // Ignore exceptions
+                };
+            }
 
             return ux;
         }

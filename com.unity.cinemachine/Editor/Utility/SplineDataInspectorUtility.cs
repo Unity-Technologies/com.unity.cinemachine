@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Editor
             pathUnitProp.enumValueIndex = (int)newIndexUnit;
         }
 
-        public static PropertyField CreateDataListField<T>(
+        public static ListView CreateDataListField<T>(
             SplineData<T> splineData,
             SerializedProperty splineDataProp, 
             GetSplineDelegate getSpline,
@@ -71,67 +71,68 @@ namespace Unity.Cinemachine.Editor
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
 
-            var list = new PropertyField(arrayProp);
-            list.OnInitialGeometry(() => 
+            var list = new ListView 
             {
-                var listView = list.Q<ListView>();
-                listView.reorderable = false;
-                listView.showFoldoutHeader = false;
-                listView.showBoundCollectionSize = false;
-                listView.showAddRemoveFooter = true;
-                listView.showAlternatingRowBackgrounds = AlternatingRowBackground.None;
+                reorderable = false,
+                showBorder = true,
+                showFoldoutHeader = false,
+                showBoundCollectionSize = false,
+                showAddRemoveFooter = true,
+                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
+                showAlternatingRowBackgrounds = AlternatingRowBackground.None
+            };
+            list.BindProperty(arrayProp);
 
-                // When we add the first item, make sure to use the default value
-                var button = list.Q<Button>("unity-list-view__add-button");
-                button.clicked += () => 
+            // When we add the first item, make sure to use the default value
+            var button = list.Q<Button>("unity-list-view__add-button");
+            button.clicked += () => 
+            {
+                if (arrayProp.arraySize == 1)
                 {
-                    if (arrayProp.arraySize == 1)
-                    {
-                        T value = getDefaultValue != null ? getDefaultValue() : splineData.DefaultValue;
-                        setDataPointMethod.Invoke(splineData, new object[] { 0, new DataPoint<T> () { Value = value } });
-                        arrayProp.serializedObject.Update();
-                    }
-                };
+                    T value = getDefaultValue != null ? getDefaultValue() : splineData.DefaultValue;
+                    setDataPointMethod.Invoke(splineData, new object[] { 0, new DataPoint<T> () { Value = value } });
+                    arrayProp.serializedObject.Update();
+                }
+            };
 
-                listView.TrackPropertyValue(arrayProp, (p) => 
-                {
+            list.TrackPropertyValue(arrayProp, (p) => 
+            {
+                p.serializedObject.ApplyModifiedProperties();
+
+                // Make sure the indexes are properly wrapped around at the boundaries of a loop
+                if (SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0))
                     p.serializedObject.ApplyModifiedProperties();
 
-                    // Make sure the indexes are properly wrapped around at the boundaries of a loop
-                    if (SanitizePathUnit(splineDataProp, getSpline?.Invoke(), 0))
-                        p.serializedObject.ApplyModifiedProperties();
-
-                    // Sort the array
-                    bool needsSort = false;
-                    for (int i = 1; !needsSort && i < splineData.Count; ++i)
-                        needsSort = splineData[i].Index < splineData[i - 1].Index;
-                    if (needsSort)
+                // Sort the array
+                bool needsSort = false;
+                for (int i = 1; !needsSort && i < splineData.Count; ++i)
+                    needsSort = splineData[i].Index < splineData[i - 1].Index;
+                if (needsSort)
+                {
+                    // Try to preserve the selected item through the sort
+                    float index = 0;
+                    T value = default;
+                    var selected = list.selectedIndex;
+                    if (selected >= 0)
                     {
-                        // Try to preserve the selected item through the sort
-                        float index = 0;
-                        T value = default;
-                        var selected = listView.selectedIndex;
-                        if (selected >= 0)
-                        {
-                            index = splineData[selected].Index;
-                            value = splineData[selected].Value;
-                        }
+                        index = splineData[selected].Index;
+                        value = splineData[selected].Value;
+                    }
 
-                        Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
-                        sortMethod?.Invoke(splineData, null);
-                        p.serializedObject.Update();
+                    Undo.RecordObject(p.serializedObject.targetObject, "Sort Spline Data");
+                    sortMethod?.Invoke(splineData, null);
+                    p.serializedObject.Update();
 
-                        for (int i = 0; selected >= 0 && i < splineData.Count; ++i)
+                    for (int i = 0; selected >= 0 && i < splineData.Count; ++i)
+                    {
+                        if (index == splineData[i].Index && splineData[i].Value.Equals(value))
                         {
-                            if (index == splineData[i].Index && splineData[i].Value.Equals(value))
-                            {
-                                listView.selectedIndex = i;
-                                EditorApplication.delayCall += () => listView.ScrollToItem(i);
-                                break;
-                            }
+                            list.selectedIndex = i;
+                            EditorApplication.delayCall += () => list.ScrollToItem(i);
+                            break;
                         }
                     }
-                });
+                }
             });
 
             return list;
