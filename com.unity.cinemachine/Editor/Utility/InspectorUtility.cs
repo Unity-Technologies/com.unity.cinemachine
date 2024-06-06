@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using System.Linq.Expressions;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -290,6 +291,35 @@ namespace Unity.Cinemachine.Editor
                     }
                 });
             }
+        }
+
+        public static VisualElement CreateDraggableField(Expression<Func<object>> exp, Label label, out BaseFieldMouseDragger dragger)
+        {
+            VisualElement field;
+            var name = SerializedPropertyHelper.PropertyName(exp);
+            var tooltip = SerializedPropertyHelper.PropertyTooltip(exp);
+
+            label.tooltip = tooltip;
+            label.AddToClassList("unity-base-field__label--with-dragger");
+
+            var type = SerializedPropertyHelper.PropertyType(exp);
+            if (type == typeof(float))
+            {
+                field = new FloatField { bindingPath = name };
+                dragger = new DelayedFriendlyFieldDragger<float>((FloatField)field);
+            }
+            else if (type == typeof(int))
+            {
+                field = new IntegerField { bindingPath = name };
+                dragger = new DelayedFriendlyFieldDragger<int>((IntegerField)field);
+            }
+            else
+            {
+                field = new PropertyField(null, "") { bindingPath = name };
+                dragger = null;
+            }
+            dragger?.SetDragZone(label);
+            return field;
         }
         
         /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>

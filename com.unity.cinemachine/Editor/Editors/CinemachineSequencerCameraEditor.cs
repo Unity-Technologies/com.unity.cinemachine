@@ -70,16 +70,7 @@ namespace Unity.Cinemachine.Editor
                 });
         
                 var blend = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.Blend), name = "blendSelector" });
-
-                var holdTooltip = "How long to wait (in seconds) before activating the next camera in the list (if any)";
-                var holdDragger = row.AddChild(new Label(" ") { tooltip = holdTooltip });
-                holdDragger.AddToClassList("unity-base-field__label--with-dragger");
-                var hold = row.AddChild(new FloatField 
-                { 
-                    tooltip = holdTooltip,
-                    bindingPath = SerializedPropertyHelper.PropertyName(() => def.Hold) 
-                });
-                new DelayedFriendlyFieldDragger<float>(hold).SetDragZone(holdDragger);
+                var hold = row.AddChild(InspectorUtility.CreateDraggableField(() => def.Hold, row.AddChild(new Label(" ")), out _));
                     
                 FormatInstructionElement(false, vcamSel, blend, hold);
                 return row;

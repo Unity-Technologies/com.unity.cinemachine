@@ -143,25 +143,8 @@ namespace Unity.Cinemachine.Editor
                     formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name
                 });
         
-                var waitTooltip = "How long to wait (in seconds) before activating the camera. This filters out very short state durations";
-                var waitDragger = row.AddChild(new Label(" ") { tooltip = waitTooltip });
-                waitDragger.AddToClassList("unity-base-field__label--with-dragger");
-                var wait = row.AddChild(new FloatField 
-                { 
-                    tooltip = waitTooltip,
-                    bindingPath = SerializedPropertyHelper.PropertyName(() => def.ActivateAfter)
-                });
-                new DelayedFriendlyFieldDragger<float>(wait).SetDragZone(waitDragger);
-
-                var holdTooltip = "The minimum length of time (in seconds) to keep a camera active";
-                var holdDragger = row.AddChild(new Label(" ") { tooltip = holdTooltip });
-                holdDragger.AddToClassList("unity-base-field__label--with-dragger");
-                var hold = row.AddChild(new FloatField 
-                { 
-                    tooltip = holdTooltip,
-                    bindingPath = SerializedPropertyHelper.PropertyName(() => def.MinDuration) 
-                });
-                new DelayedFriendlyFieldDragger<float>(hold).SetDragZone(holdDragger);
+                var wait = row.AddChild(InspectorUtility.CreateDraggableField(() => def.ActivateAfter, row.AddChild(new Label(" ")), out _));
+                var hold = row.AddChild(InspectorUtility.CreateDraggableField(() => def.MinDuration, row.AddChild(new Label(" ")), out _));
 
                 FormatInstructionElement(false, stateSel, vcamSel, wait, hold);
 
