@@ -295,32 +295,36 @@ namespace Unity.Cinemachine.Editor
 
         public static VisualElement CreateDraggableField(Expression<Func<object>> exp, Label label, out BaseFieldMouseDragger dragger)
         {
-            VisualElement field;
-            var name = SerializedPropertyHelper.PropertyName(exp);
+            var bindingPath = SerializedPropertyHelper.PropertyName(exp);
             var tooltip = SerializedPropertyHelper.PropertyTooltip(exp);
+            return CreateDraggableField(SerializedPropertyHelper.PropertyType(exp), bindingPath, tooltip, label, out dragger);
+        }
 
-            label.tooltip = tooltip;
+        public static VisualElement CreateDraggableField(Type type, string bindingPath, string tooltip, Label label, out BaseFieldMouseDragger dragger)
+        {
+            VisualElement field;
             label.AddToClassList("unity-base-field__label--with-dragger");
-
-            var type = SerializedPropertyHelper.PropertyType(exp);
+            label.tooltip = tooltip;
+            label.style.alignSelf = Align.Center;
             if (type == typeof(float))
             {
-                field = new FloatField { bindingPath = name };
+                field = new FloatField { bindingPath = bindingPath, tooltip = tooltip };
                 dragger = new DelayedFriendlyFieldDragger<float>((FloatField)field);
             }
             else if (type == typeof(int))
             {
-                field = new IntegerField { bindingPath = name };
+                field = new IntegerField { bindingPath = bindingPath, tooltip = tooltip };
                 dragger = new DelayedFriendlyFieldDragger<int>((IntegerField)field);
             }
             else
             {
-                field = new PropertyField(null, "") { bindingPath = name };
+                field = new PropertyField(null, "") { bindingPath = bindingPath, tooltip = tooltip };
                 dragger = null;
             }
             dragger?.SetDragZone(label);
             return field;
         }
+
         
         /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
         /// <param name="tooltip">The tooltip text</param>

@@ -535,17 +535,13 @@ namespace Unity.Cinemachine.Editor
                     style = { flexBasis = 20, flexGrow = 1 }
                 }).SetEnabled(false);
 
-                var tooltip = "The child camera's Priority";
-                var dragger = row.AddChild(new Label(" ") { tooltip = tooltip });
-                dragger.AddToClassList("unity-base-field__label--with-dragger");
-                var priorityField = row.AddChild(new IntegerField 
-                { 
-                    name = "priorityField", 
-                    tooltip = tooltip,
-                    isDelayed = true, 
-                    style = { flexBasis = floatFieldWidth, flexGrow = 0, marginRight = 4 }
-                });
-                new DelayedFriendlyFieldDragger<int>(priorityField).SetDragZone(dragger);
+                var priorityField = row.AddChild(InspectorUtility.CreateDraggableField(
+                    typeof(int), "", "The child camera's Priority", row.AddChild(new Label(" ")), out _));
+                priorityField.name = "priorityField";
+                priorityField.style.flexBasis = floatFieldWidth;
+                priorityField.style.flexGrow = 0;
+                priorityField.style.marginRight = 4;
+                priorityField.SafeSetIsDelayed();
 
                 return row;
             };

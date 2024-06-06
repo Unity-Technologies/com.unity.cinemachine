@@ -185,7 +185,7 @@ namespace Unity.Cinemachine.Editor
                 // local function
                 void OnIndexDraggerCreated(IDelayedFriendlyDragger dragger)
                 {
-                    dragger.OnStartDrag = () => list.selectedIndex = index;
+                    //dragger.OnStartDrag = () => list.selectedIndex = index;
                     dragger.OnDragValueChangedFloat = (v) => BringCameraToCustomSplinePoint(splineData, v);
                 }
             };

@@ -12,16 +12,19 @@ namespace Unity.Cinemachine.Editor
         public bool CancelDelayedWhenDragging { get; set; }
 
         /// <summary>Called when dragging starts.
-        public Action OnStartDrag { get; set; }
+        public Action<IDelayedFriendlyDragger> OnStartDrag { get; set; }
 
         /// <summary>Called when dragging stops.
-        public Action OnStopDrag { get; set; }
+        public Action<IDelayedFriendlyDragger> OnStopDrag { get; set; }
 
         /// <summary>Called when the value changes during dragging.</summary>
         public Action<int> OnDragValueChangedInt { get; set; }
 
         /// <summary>Called when the value changes during dragging.</summary>
         public Action<float> OnDragValueChangedFloat { get; set; }
+
+        /// <summary>Get the VisualElement being dragged</summary>
+        public VisualElement DragElement { get; }
     }
 
     /// <summary>
@@ -48,23 +51,26 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Is dragging.</summary>
         public bool dragging { get; set; }
 
-        /// <summary>Start value before drag.</summary>
+        /// <inheritdoc/>
         public T startValue { get; set; }
 
-        /// <summary>If true, temporarily disable isDelayed when draggin</summary>
+        /// <inheritdoc/>
         public bool CancelDelayedWhenDragging { get; set; }
 
-        /// <summary>Called when dragging starts.
-        public Action OnStartDrag { get; set; }
+        /// <inheritdoc/>
+        public Action<IDelayedFriendlyDragger> OnStartDrag { get; set; }
 
-        /// <summary>Called when dragging stops.
-        public Action OnStopDrag { get; set; }
+        /// <inheritdoc/>
+        public Action<IDelayedFriendlyDragger> OnStopDrag { get; set; }
 
-        /// <summary>Called when the value changes during dragging.</summary>
+        /// <inheritdoc/>
         public Action<int> OnDragValueChangedInt { get; set; }
 
-        /// <summary>Called when the value changes during dragging.</summary>
+        /// <inheritdoc/>
         public Action<float> OnDragValueChangedFloat { get; set; }
+
+        /// <inheritdoc/>
+        public VisualElement DragElement => m_DragElement;
 
         /// <inheritdoc />
         public sealed override void SetDragZone(VisualElement dragElement, Rect hotZone)
@@ -136,7 +142,7 @@ namespace Unity.Cinemachine.Editor
             m_DrivenField.StartDragging();
             EditorGUIUtility.SetWantsMouseJumping(1);
 
-            OnStartDrag?.Invoke();
+            OnStartDrag?.Invoke(this);
         }
 
         private void UpdateValueOnPointerMove(PointerMoveEvent evt)
@@ -175,7 +181,7 @@ namespace Unity.Cinemachine.Editor
         {
             if (dragging)
             {
-                OnStopDrag?.Invoke();
+                OnStopDrag?.Invoke(this);
                 dragging = false;
                 m_DragElement.UnregisterCallback<PointerMoveEvent>(UpdateValueOnPointerMove);
                 m_DragElement.ReleasePointer(pointerId);

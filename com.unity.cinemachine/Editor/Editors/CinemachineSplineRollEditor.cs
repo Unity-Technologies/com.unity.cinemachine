@@ -39,31 +39,49 @@ namespace Unity.Cinemachine.Editor
 
             var arrayProp = rollProp.FindPropertyRelative("m_DataPoints");
 
-            list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
-            list.bindItem = (ux, index) =>
+            list.makeItem = () => 
             {
-                // Remove children - items get recycled
-                for (int i = ux.childCount - 1; i >= 0; --i)
-                    ux.RemoveAt(i);
+                var itemRootName = "ItemRoot";
+                var row = new BindableElement() { name = itemRootName, style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
 
                 const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
                     + "The value is interpreted according to the Index Unit setting.";
 
-                var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
+                row.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { flexBasis = 12 }}); // pass-through for selecting row in list
+                var indexField = row.AddChild(InspectorUtility.CreateDraggableField(
+                    typeof(float), "m_Index", indexTooltip, row.AddChild(new Label("Index")), out var dragger));
+                indexField.style.flexGrow = 1;
+                indexField.style.flexBasis = 50;
+                indexField.SafeSetIsDelayed();
+                if (dragger is IDelayedFriendlyDragger delayedDragger)
+                    delayedDragger.OnStartDrag = (d) => SelectListElementContainingAnElement(list, d.DragElement, itemRootName);
+
                 var def = new CinemachineSplineRoll.RollData();
-                var indexProp = element.FindPropertyRelative("m_Index");
-                var valueProp = element.FindPropertyRelative("m_Value");
+                var rollTooltip = SerializedPropertyHelper.PropertyTooltip(() => def.Value);
+                row.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { flexBasis = 12 }}); // pass-through for selecting row in list
+                var rollField = row.AddChild(InspectorUtility.CreateDraggableField(
+                    typeof(float), "m_Value.Value", rollTooltip, row.AddChild(new Label("Roll")), out dragger));
+                rollField.style.flexGrow = 1;
+                rollField.style.flexBasis = 50;
+                if (dragger is IDelayedFriendlyDragger delayedDragger2)
+                    delayedDragger2.OnStartDrag = (d) => SelectListElementContainingAnElement(list, d.DragElement, itemRootName);
 
-                ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
-                var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 }});
-                indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
-                label.AddDelayedFriendlyPropertyDragger(indexProp, indexField, (dragger) => dragger.OnStartDrag = () => list.selectedIndex = index);
+                return row;
 
-                ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll") { style = { flexGrow = 1 }});
-
-                ((BindableElement)ux).BindProperty(element); // bind must be done at the end
+                static void SelectListElementContainingAnElement(ListView list, VisualElement element, string itemRootName)
+                {
+                    var container = list.Q("unity-content-container");
+                    if (container == null)
+                        return;
+                    while (element != null && element.name != itemRootName)
+                        element = element.parent;
+                    if (element != null)
+                    {
+                        var index = container.IndexOf(element);
+                        if (index >= 0)
+                            list.selectedIndex = index;
+                    }
+                }
             };
 
             SplineRollTool.s_OnDataLookAtDragged += OnToolDragged;
