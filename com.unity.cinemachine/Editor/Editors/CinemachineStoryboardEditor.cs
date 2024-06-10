@@ -35,7 +35,7 @@ namespace Unity.Cinemachine.Editor
             var showImageProp = serializedObject.FindProperty(() => Target.ShowImage);
             var row = ux.AddChild(new InspectorUtility.LabeledRow("Show Image", showImageProp.tooltip));
             var imageToggle = row.Contents.AddChild(new Toggle("") 
-                { style = { flexGrow = 0, marginTop = 3, marginLeft = 6, alignSelf = Align.Center }});
+                { style = { flexGrow = 0, marginTop = 3, marginLeft = 3, alignSelf = Align.Center }});
             imageToggle.BindProperty(showImageProp);
             var imageField = row.Contents.AddChild(new PropertyField(serializedObject.FindProperty(() => Target.Image), "")
                 { style = { flexGrow = 1, marginLeft = 4 }});

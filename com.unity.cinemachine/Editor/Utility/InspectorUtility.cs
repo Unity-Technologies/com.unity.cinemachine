@@ -455,16 +455,15 @@ namespace Unity.Cinemachine.Editor
         /// This creates a row with a properly-sized label in front of it.
         /// The label's width is locked to the inspector field label size, for proper alignment.
         /// </summary>
-        public class LabeledRow : VisualElement
+        public class LabeledRow : LeftRightRow
         {
             public Label Label { get; private set; }
             public VisualElement Contents { get; private set; } 
 
             public LabeledRow(string label, string tooltip, VisualElement contents)
             {
-                var row = this.AddChild(new LeftRightRow() { style = { flexGrow = 1 }});
-                Label = row.Left.AddChild(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
-                Contents = row.Right.AddChild(contents);
+                Label = Left.AddChild(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
+                Contents = Right.AddChild(contents);
                 style.marginRight = 0;
                 style.flexGrow = 1;
                 Contents.tooltip = tooltip;

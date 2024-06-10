@@ -164,7 +164,7 @@ namespace Unity.Cinemachine
 
     /// <summary>
     /// Attribute applied to a CinemachineVirtualCameraBase property to produce
-    /// a child camera selector in the inspectoe.
+    /// a child camera selector in the inspector.
     /// </summary>
     public sealed class ChildCameraPropertyAttribute : PropertyAttribute {}
 

@@ -16,8 +16,8 @@ namespace Unity.Cinemachine.Editor
             foldout.BindProperty(property);
 
             var valueProp = property.FindPropertyRelative(() => def.Value);
-            var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
-            var valueField =  new PropertyField(valueProp, "") { style = { flexGrow = 1, marginLeft = 4}};
+            var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2 }};
+            var valueField =  new PropertyField(valueProp, "") { style = { flexGrow = 1, marginLeft = 2 }};
             valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
             valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField, (d) => d.CancelDelayedWhenDragging = true);
 

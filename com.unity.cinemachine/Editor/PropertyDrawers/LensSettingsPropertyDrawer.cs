@@ -89,12 +89,12 @@ namespace Unity.Cinemachine.Editor
             var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip };
             foldout.BindProperty(property);
 
-            var outerFovControl = new FovPropertyControl(property, true) { style = { flexGrow = 1 }};
+            var outerFovControl = new FovPropertyControl(property, true);
             ux.Add(new InspectorUtility.FoldoutWithOverlay(
                 foldout, outerFovControl, outerFovControl.ShortLabel) { style = { flexGrow = 1 }});
 
             // Populate the foldout
-            var innerFovControl = foldout.AddChild(new FovPropertyControl(property, false) { style = { flexGrow = 1 }});
+            var innerFovControl = foldout.AddChild(new FovPropertyControl(property, false));
 
             var nearClip = property.FindPropertyRelative(() => s_Def.NearClipPlane);
             foldout.AddChild(new PropertyField(nearClip)).RegisterValueChangeCallback((evt) =>
@@ -179,8 +179,6 @@ namespace Unity.Cinemachine.Editor
 
             public FovPropertyControl(SerializedProperty property, bool hideLabel) : base(hideLabel ? "" : "(fov)")
             {
-                style.flexDirection = FlexDirection.Row;
-
                 m_LensProperty = property;
                 var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
                 m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
