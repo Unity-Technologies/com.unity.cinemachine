@@ -470,7 +470,7 @@ namespace Unity.Cinemachine.Editor
             public Label Label { get; private set; }
             public VisualElement Contents { get; private set; } 
 
-            public LabeledRow(string label, string tooltip, VisualElement contents = null) 
+            public LabeledRow(string label, string tooltip = "", VisualElement contents = null) 
                 : base(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }}, contents)
             {
                 Label = Left as Label;
@@ -481,9 +481,6 @@ namespace Unity.Cinemachine.Editor
                 Contents.style.marginRight = 0;
                 Contents.style.flexGrow = 1;
             }
-
-            public LabeledRow(string label, string tooltip = "") 
-                : this(label, tooltip, new VisualElement { style = { flexDirection = FlexDirection.Row }}) {}
         }
 
         /// <summary>

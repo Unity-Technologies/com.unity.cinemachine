@@ -24,12 +24,7 @@ namespace Unity.Cinemachine.Editor
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
             // We want dynamic dragging on the value, even if isDelayed is set
-            var valueField2 = new FloatField("") { isDelayed = true };
-            var valueFieldRow = foldout.AddChild(new InspectorUtility.LabeledRow(valueProp.displayName, valueProp.tooltip, valueField2));
-            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueField2, (d) => d.CancelDelayedWhenDragging = true);
-            valueField2.BindProperty(valueProp);
-            valueField2.style.marginLeft = 5;
-            valueField2.style.marginRight = -2;
+            foldout.AddChild(InspectorUtility.PropertyRow(valueProp, out _));
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
