@@ -184,7 +184,7 @@ namespace Unity.Cinemachine.Editor
                 m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
 
                 m_Control = Contents.AddChild(new FloatField("") 
-                    { style = { flexBasis = 20, flexGrow = 2, marginLeft = hideLabel ? -3 : 3 }});
+                    { style = { flexBasis = 20, flexGrow = 2, marginLeft = hideLabel ? 0 : 3 }});
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
                 Label.AddToClassList("unity-base-field__label--with-dragger");
