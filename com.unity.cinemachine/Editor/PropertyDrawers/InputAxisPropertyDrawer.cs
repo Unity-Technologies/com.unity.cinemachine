@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
 
             var valueProp = property.FindPropertyRelative(() => def.Value);
             var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
-            var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1, marginLeft = 4}};
+            var valueField =  new PropertyField(valueProp, "") { style = { flexGrow = 1, marginLeft = 4}};
             valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
             valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField, (d) => d.CancelDelayedWhenDragging = true);
 

@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
                 {
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var actionName = "";
-#pragma warning restore CS0219 // Variable is assigned but its value is never used
+#pragma warning restore CS0219
                     var inputName = "";
                     var invertY = false;
                     bool isMomentary = (axis.DrivenAxis().Restrictions & InputAxis.RestrictionFlags.Momentary) != 0;
@@ -115,7 +115,7 @@ namespace Unity.Cinemachine.Editor
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
             overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.LegacyInput), "") 
-                { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight, marginLeft = 6}} );
+                { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight }} );
 #endif
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip };
             foldout.BindProperty(property);
@@ -128,7 +128,7 @@ namespace Unity.Cinemachine.Editor
                 foldout.Add(new PropertyField(childProperty));
                 childProperty.NextVisible(false);
             }
-            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null) { style = { marginLeft = 12 }};
+            return new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null) { style = { marginLeft = 12, marginRight = 3 }};
         }
     }
 
@@ -151,7 +151,7 @@ namespace Unity.Cinemachine.Editor
                 showBoundCollectionSize = false,
                 showFoldoutHeader = false,
                 virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
-                style = { marginLeft = -12 }
+                style = { marginLeft = -12, marginRight = -3 }
             });
             list.BindProperty(property);
 

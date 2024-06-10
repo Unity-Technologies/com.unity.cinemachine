@@ -506,9 +506,9 @@ namespace Unity.Cinemachine.Editor
                 if (!string.IsNullOrEmpty(label))
                     Label = AddChild(this, new Label(label) 
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
-                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 10 } });
+                Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 50 } });
                 Field.style.marginLeft = Field.style.marginLeft.value.value - 1;
-                if (Label != null)
+                if (Label != null && property != null)
                     AddDelayedFriendlyPropertyDragger(Label, property, Field, (d) => d.CancelDelayedWhenDragging = true);
             }
         }
