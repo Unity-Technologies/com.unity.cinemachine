@@ -108,7 +108,7 @@ namespace Unity.Cinemachine.Editor
             InspectorUtility.HelpBoxWithButton(
                 "The InputSystem package is installed, but it is not used to control this vcam.", 
                 MessageType.Info,
-                new GUIContent("Add Input\nProvider"), () =>
+                new GUIContent("Add Input Provider"), () =>
                 {
                     Undo.SetCurrentGroupName("Add CinemachineInputProvider");
                     for (int i = 0; i < targets.Length; ++i)

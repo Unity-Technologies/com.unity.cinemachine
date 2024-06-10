@@ -125,24 +125,16 @@ namespace Unity.Cinemachine.Editor
             string message, MessageType messageType,
             GUIContent buttonContent, Action onClicked)
         {
+            EditorGUILayout.HelpBox(message + "\n\n", messageType, true);
+            var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect(false, 2));
+
             float lineHeight = EditorGUIUtility.singleLineHeight;
             var buttonSize = GUI.skin.label.CalcSize(buttonContent);
             buttonSize.x += lineHeight;
 
-            var rect = EditorGUI.IndentedRect(EditorGUILayout.GetControlRect(false, 2));
-
-            var boxContent = new GUIContent(message + "\n"); // to make room for the button
-            var boxWidth = rect.width;
-            var boxHeight = GUI.skin.GetStyle("helpbox").CalcHeight(boxContent, rect.width - 3 * lineHeight) + buttonSize.y;
-
-            rect = EditorGUILayout.GetControlRect(false, boxHeight);
-            rect = EditorGUI.IndentedRect(rect);
-            rect.width = boxWidth; rect.height = boxHeight;
-            EditorGUI.HelpBox(rect, boxContent.text, messageType);
-
             rect.x += rect.width - buttonSize.x - 6; rect.width = buttonSize.x;
-            rect.y += rect.height - buttonSize.y - 6; rect.height = buttonSize.y;
-            if (GUI.Button(rect, buttonContent, EditorStyles.miniButton))
+            rect.y += rect.height - buttonSize.y - 12; rect.height = buttonSize.y + 3;
+            if (GUI.Button(rect, buttonContent))
                 onClicked();
         }
 
