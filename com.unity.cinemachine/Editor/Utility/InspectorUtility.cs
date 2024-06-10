@@ -417,7 +417,7 @@ namespace Unity.Cinemachine.Editor
             /// </summary>
             public bool KillLeftMargin;
 
-            public LeftRightRow()
+            public LeftRightRow(VisualElement left = null, VisualElement right = null)
             {
                 // This is to peek at the resolved label width
                 Add(new AlignFieldSizer { OnLabelWidthChanged = (w) => 
@@ -427,10 +427,20 @@ namespace Unity.Cinemachine.Editor
                     Left.style.width = w + DivisionOffset;
                 }});
 
-                style.marginLeft = 3;
+                // Actual contents will live in this row
                 var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
-                Left = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 0 }});
-                Right = row.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginLeft = 2 }});
+                style.marginLeft = 3;
+
+                left ??= new VisualElement();
+                Left = row.AddChild(left);
+                Left.style.flexDirection = FlexDirection.Row;
+                Left.style.flexGrow = 0;
+
+                right ??= new VisualElement();
+                Right = row.AddChild(right);
+                Right.style.flexDirection = FlexDirection.Row;
+                Right.style.flexGrow = 1;
+                Right.style.marginLeft = 2;
             }
 
             // This is a hacky thing to create custom inspector rows with labels that are the correct size
@@ -460,10 +470,11 @@ namespace Unity.Cinemachine.Editor
             public Label Label { get; private set; }
             public VisualElement Contents { get; private set; } 
 
-            public LabeledRow(string label, string tooltip, VisualElement contents)
+            public LabeledRow(string label, string tooltip, VisualElement contents = null) 
+                : base(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }}, contents)
             {
-                Label = Left.AddChild(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }});
-                Contents = Right.AddChild(contents);
+                Label = Left as Label;
+                Contents = Right;
                 style.marginRight = 0;
                 style.flexGrow = 1;
                 Contents.tooltip = tooltip;

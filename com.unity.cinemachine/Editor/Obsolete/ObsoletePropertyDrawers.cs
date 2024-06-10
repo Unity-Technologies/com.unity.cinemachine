@@ -158,7 +158,7 @@ namespace Unity.Cinemachine.Editor
         }
     }
 
-    partial class InputAxisWithNamePropertyDrawer : PropertyDrawer
+    partial class InputAxisPropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {

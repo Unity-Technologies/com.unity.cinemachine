@@ -5,7 +5,7 @@ using UnityEditor.UIElements;
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(InputAxis))]
-    partial class InputAxisWithNamePropertyDrawer : PropertyDrawer
+    partial class InputAxisPropertyDrawer : PropertyDrawer
     {
         InputAxis def = new (); // to access name strings
 
@@ -24,17 +24,19 @@ namespace Unity.Cinemachine.Editor
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
             // We want dynamic dragging on the value, even if isDelayed is set
-            var valueFieldRow = foldout.AddChild(new InspectorUtility.LabeledRow(
-                valueProp.displayName, valueProp.tooltip, new PropertyField(valueProp, "") { style = { marginLeft = 0 }}));
-            valueFieldRow.Contents.OnInitialGeometry(() => valueFieldRow.Contents.SafeSetIsDelayed());
-            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueFieldRow.Contents, (d) => d.CancelDelayedWhenDragging = true);
+            var valueField2 = new FloatField("") { isDelayed = true };
+            var valueFieldRow = foldout.AddChild(new InspectorUtility.LabeledRow(valueProp.displayName, valueProp.tooltip, valueField2));
+            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueField2, (d) => d.CancelDelayedWhenDragging = true);
+            valueField2.BindProperty(valueProp);
+            valueField2.style.marginLeft = 5;
+            valueField2.style.marginRight = -2;
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
             rangeContainer.Add(new PropertyField(property.FindPropertyRelative(() => def.Range)) { style = { flexGrow = 1 }});
             var wrapProp = property.FindPropertyRelative(() => def.Wrap);
             var wrap = rangeContainer.AddChild(new PropertyField(wrapProp, "") 
-                { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5 }});
+                { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5, marginTop = 2 }});
             var wrapLabel = rangeContainer.AddChild(new Label(wrapProp.displayName) 
                 { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
             var recentering = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
