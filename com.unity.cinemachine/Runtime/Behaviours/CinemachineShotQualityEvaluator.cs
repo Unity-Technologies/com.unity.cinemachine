@@ -10,6 +10,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineShotQualityEvaluator.html")]
     public class CinemachineShotQualityEvaluator : CinemachineExtension, IShotQualityEvaluator
     {
