@@ -12,7 +12,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
-    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.LookAt)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFollowZoom.html")]
     public class CinemachineFollowZoom : CinemachineExtension
     {
@@ -34,13 +34,13 @@ namespace Unity.Cinemachine
         /// <summary>Range for the FOV that this behaviour will generate.</summary>
         [MinMaxRangeSlider(1f, 179f)]
         [Tooltip("Range for the FOV that this behaviour will generate.")]
-        public Vector2 FovRange = new Vector2(3f, 60f);
+        public Vector2 FovRange = new (3f, 60f);
 
         void Reset()
         {
             Width = 2f;
             Damping = 1f;
-            FovRange = new Vector2(3f, 60f);
+            FovRange = new (3f, 60f);
         }
 
         void OnValidate()
