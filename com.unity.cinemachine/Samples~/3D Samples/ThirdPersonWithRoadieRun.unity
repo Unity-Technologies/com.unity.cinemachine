@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1092,6 +1091,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
+  IgnoreTimeScale: 0
   m_ControllerManager:
     Controllers:
     - Name: CursorLock
@@ -1102,6 +1102,7 @@ MonoBehaviour:
         Gain: 1
         LegacyInput: Cancel
         LegacyGain: 1
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -1426,7 +1427,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BulletPrefab: {fileID: 3056719325741855433, guid: 31d678dfd458ff84d95d644dd3730cca, type: 3}
   MaxBulletsPerSec: 6
-  PlayerRotationTime: 0.2
   Fire:
     Value: 0
     Center: 0
@@ -2513,13 +2513,25 @@ PrefabInstance:
       value: Fire3
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[4].Input.InputAction
+      value: 
+      objectReference: {fileID: -1608118824973676762, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[4].Input.LegacyInput
       value: Mouse X
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[5].Input.InputAction
+      value: 
+      objectReference: {fileID: -1608118824973676762, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[5].Input.LegacyInput
       value: Mouse Y
       objectReference: {fileID: 0}
+    - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[6].Input.InputAction
+      value: 
+      objectReference: {fileID: -1608118824973676762, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[6].Input.LegacyInput
       value: Fire1
@@ -3082,7 +3094,7 @@ Transform:
   m_GameObject: {fileID: 2076565716644322336}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.559051, y: 0.77348024, z: -3.1799998}
+  m_LocalPosition: {x: 1.559051, y: 0.57348025, z: -3.1799998}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3119,7 +3131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Damping: {x: 0.1, y: 0.5, z: 0.3}
   ShoulderOffset: {x: 0.40905112, y: -0.41026962, z: 0}
-  VerticalArmLength: 0.3
+  VerticalArmLength: 0.1
   CameraSide: 1
   CameraDistance: 3.8
   AvoidObstacles:
@@ -3191,18 +3203,16 @@ MonoBehaviour:
     Camera: {fileID: 334051334}
     ActivateAfter: 0
     MinDuration: 0
-  - FullHash: 1965258778
+  - FullHash: -827840423
     Camera: {fileID: 2076565716644322337}
-    ActivateAfter: 0.4
+    ActivateAfter: 0.1
     MinDuration: 0
-  - FullHash: -203094115
+  - FullHash: 1068812385
     Camera: {fileID: 2076565716644322337}
-    ActivateAfter: 0.4
+    ActivateAfter: 0.1
     MinDuration: 0
   HashOfParent:
   - Hash: 1432961145
-    HashOfParent: 756556552
-  - Hash: -916648961
     HashOfParent: 756556552
   - Hash: 81563449
     HashOfParent: 756556552
@@ -3212,9 +3222,7 @@ MonoBehaviour:
     HashOfParent: 81563449
   - Hash: -1759641626
     HashOfParent: 81563449
-  - Hash: -1729575745
-    HashOfParent: 756556552
-  - Hash: -203094115
+  - Hash: 788460410
     HashOfParent: 756556552
   - Hash: -827840423
     HashOfParent: 756556552
@@ -3224,6 +3232,8 @@ MonoBehaviour:
     HashOfParent: -827840423
   - Hash: -382662320
     HashOfParent: -827840423
+  - Hash: 1068812385
+    HashOfParent: 756556552
   m_LegacyLookAt: {fileID: 0}
   m_LegacyFollow: {fileID: 0}
 --- !u!4 &2076565717059590787
