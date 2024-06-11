@@ -56,8 +56,8 @@ namespace Unity.Cinemachine.Samples
         }
         
         /// <summary>
-        /// We use LateUpdate so we normally don't have to worry about script execution order:
-        /// we can assume that the player has already been moved.
+        /// LateUpdate is used to avoid having to worry about script execution order:
+        /// it can be assumed that the player has already been moved.
         /// </summary>
         virtual protected void LateUpdate()
         {
