@@ -35,6 +35,7 @@
 * [Use Input System with Cinemachine](InputSystemComponents.md)
 * [Samples and tutorials](samples-tutorials.md)
   * [Import samples to your project](samples-import.md)
+  * [Simple Player Controller](SimplePlayerController.md)
 * [Reference](Reference.md)
   * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
   * [Cinemachine Basic Multi Channel Perlin](CinemachineBasicMultiChannelPerlin.md)

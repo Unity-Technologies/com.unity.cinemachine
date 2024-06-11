@@ -3,10 +3,21 @@ using UnityEngine;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// Add-on for SimplePlayerController that controls animation for the Cameron character.
-    /// It is hardcoded specifically to drive the CameronSimpleController animation controller asset.
-    /// If the SimplePlayerController behaviour is present, this behaviour will work with it, otherwise
-    /// it will monitor player velocity and apply the appropriate animation based on player movement.
+    /// This is a behaviour whose job it is to drive animation based on the player's motion.  
+    /// It is a sample implementation that you can modify or replace with your own.  As shipped, it is 
+    /// hardcoded to work specifically with the sample `CameronSimpleController` Animation controller, which 
+    /// is set up with states that the SimplePlayerAnimator knows about.  You can modify 
+    /// this class to work with your own animation controller.
+    /// 
+    /// SimplePlayerAnimator works with or without a SimplePlayerControllerBase alongside.  
+    /// Without one, it monitors the transform's position and drives the animation accordingly.  
+    /// You can see it used like this in some of the sample scenes, such as RunningRace or ClearShot.  
+    /// In this mode, is it unable to detect the player's grounded state, and so it always 
+    /// assumes that the player is grounded.
+    /// 
+    /// When a SimplePlayerControllerBase is detected, the SimplePlayerAnimator installs callbacks 
+    /// and expects to be driven by the SimplePlayerControllerBase using the STartJump, EndJump, 
+    /// and PostUpdate callbacks.
     /// </summary>
     [RequireComponent(typeof(Animator))]
     public class SimplePlayerAnimator : MonoBehaviour
@@ -38,15 +49,17 @@ namespace Unity.Cinemachine.Samples
             if (m_Controller != null)
             {
                 // Install our callbacks to handle jump and animation based on velocity
-                m_Controller.StartJump += () => m_Animator.SetTrigger("Jump");
-                m_Controller.EndJump += () => m_Animator.SetTrigger("Land");
+                m_Controller.StartJump += () => OnJump(true);
+                m_Controller.EndJump += () => OnJump(false);
                 m_Controller.PostUpdate += (vel, jumpAnimationScale) => UpdateAnimation(vel, jumpAnimationScale);
             }
         }
         
-        // We use LateUpdate so we normally don't have to worry about script execution order:
-        // we can assume that the player has already been moved.
-        void LateUpdate()
+        /// <summary>
+        /// LateUpdate is used to avoid having to worry about script execution order:
+        /// it can be assumed that the player has already been moved.
+        /// </summary>
+        virtual protected void LateUpdate()
         {
             // In no-controller mode, we monitor the player's motion and deduce the appropriate animation.
             // We don't support jumping in this mode.
@@ -59,9 +72,22 @@ namespace Unity.Cinemachine.Samples
                 UpdateAnimation(vel, 1);
             }
         }
+
+        /// <summary>
+        /// Called by the SimplePlayerControllerBase when the player starts or ends a jump.
+        /// Override this to interact appropriately with your animation controller.
+        /// </summary>
+        /// <param name="jumping">True when jump starts, false when it ends.</param>
+        virtual protected void OnJump(bool jumping) => m_Animator.SetTrigger(jumping ? "Jump" : "Land");
         
-        // Set animation params for current velocity
-        void UpdateAnimation(Vector3 vel, float jumpAnimationScale)
+        /// <summary>
+        /// Update the animation based on the player's velocity.
+        /// Override this to interact appropriately with your animation controller.
+        /// </summary>
+        /// <param name="vel">Player's velocity, in player-local coordinates.</param>
+        /// <param name="jumpAnimationScale">Scale factor to apply to the jump animation.  
+        /// It can be used to slow down the jump animation for longer jumps.</param>
+        virtual protected void UpdateAnimation(Vector3 vel, float jumpAnimationScale)
         {
             vel.y = 0; // we don't consider vertical movement
             var speed = vel.magnitude;

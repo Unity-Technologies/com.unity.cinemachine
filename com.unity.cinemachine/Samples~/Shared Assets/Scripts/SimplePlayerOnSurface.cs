@@ -6,11 +6,21 @@ using UnityEngine.Events;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This script keeps a player upright on surfaces.
-    /// It rotates the player up to match the surface normal.
-    /// This script assumes that the pivot point of the player is at the bottom.
+    /// This behaviour keeps a player upright on surfaces.  It can be used to make the player walk 
+    /// on walls and ceilings or on the surfaces of arbitrary meshes.  It rotates the player 
+    /// up to match the surface normal.  This script assumes that the pivot point of the player is at the bottom.
+    /// 
+    /// Raycasts are used to detect walkable surfaces.
+    /// 
+    /// When using this component, SimpleSplayerController's Up Mode should be set to _Player_, and it 
+    /// should not have a Character Controller component, as that does not play nicely with 
+    /// nonstandard Up directions.
+    /// 
+    /// Also, when CinemachineCameras are being used to track the character, the 
+    /// [CinemachineBrain](CinemachineBrain.md)'s World Up Override setting should be set to the Player, 
+    /// so that the Camera's Up matches the Player's Up.
     /// </summary>
-    public class PlayerOnSurface : MonoBehaviour
+    public class SimplePlayerOnSurface : MonoBehaviour
     {
         [Tooltip("How fast the player rotates to match the surface normal")]
         public float RotationDamping = 0.2f;
