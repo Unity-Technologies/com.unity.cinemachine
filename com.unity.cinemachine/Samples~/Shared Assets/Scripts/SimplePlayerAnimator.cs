@@ -86,7 +86,7 @@ namespace Unity.Cinemachine.Samples
         /// </summary>
         /// <param name="vel">Player's velocity, in player-local coordinates.</param>
         /// <param name="jumpAnimationScale">Scale factor to apply to the jump animation.  
-        /// We slow down the jump animation for longer jumps.</param>
+        /// It can be used to slow down the jump animation for longer jumps.</param>
         virtual protected void UpdateAnimation(Vector3 vel, float jumpAnimationScale)
         {
             vel.y = 0; // we don't consider vertical movement
