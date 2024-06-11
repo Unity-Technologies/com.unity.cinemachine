@@ -71,6 +71,7 @@ namespace Unity.Cinemachine.Editor
         
                 var blend = row.AddChild(new PropertyField(null, "") { bindingPath = SerializedPropertyHelper.PropertyName(() => def.Blend), name = "blendSelector" });
                 var hold = row.AddChild(InspectorUtility.CreateDraggableField(() => def.Hold, row.AddChild(new Label(" ")), out _));
+                hold.SafeSetIsDelayed();
                     
                 FormatInstructionElement(false, vcamSel, blend, hold);
                 return row;

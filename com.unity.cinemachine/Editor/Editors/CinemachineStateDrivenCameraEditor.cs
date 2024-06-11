@@ -144,7 +144,9 @@ namespace Unity.Cinemachine.Editor
                 });
         
                 var wait = row.AddChild(InspectorUtility.CreateDraggableField(() => def.ActivateAfter, row.AddChild(new Label(" ")), out _));
+                wait.SafeSetIsDelayed();
                 var hold = row.AddChild(InspectorUtility.CreateDraggableField(() => def.MinDuration, row.AddChild(new Label(" ")), out _));
+                hold.SafeSetIsDelayed();
 
                 FormatInstructionElement(false, stateSel, vcamSel, wait, hold);
 
