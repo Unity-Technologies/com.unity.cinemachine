@@ -1,6 +1,6 @@
 # Simple Player Controller
 
-Cinemachine's Simple Player Controller is a suite of scripts that can be combined and configured to create character controllers which can be used in different contexts to implement several types of character movement. All of these scripts are provided as educational sample code, and the expectation is that you will use them as a starting point, modifying and customizing them to suit your needs.
+Cinemachine's Simple Player Controller is a suite of scripts that can be combined and configured to create character controllers which can be used in different contexts to implement several types of character movement. All of these scripts are provided as educational sample code, and the expectation is that you use them as a starting point, modifying and customizing them to suit your needs.
 
 The Simple Player Controller can work with Unity's [Character Controller](https://docs.unity3d.com/ScriptReference/CharacterController.html) behaviour or without it, according to on your requirements.  When the Character controller is present, character movement and grounded state are delegated to the Character Controller.  Otherwise, the Simple Player Controller manages its own position and will do a raycast to locate the ground.
 
