@@ -7,16 +7,16 @@ namespace Unity.Cinemachine.Samples
     /// It is a sample implementation that you can modify or replace with your own.  As shipped, it is 
     /// hardcoded to work specifically with the sample `CameronSimpleController` Animation controller, which 
     /// is set up with states that the SimplePlayerAnimator knows about.  You can modify 
-    /// the this classto work with your own animation controller.
+    /// this class to work with your own animation controller.
     /// 
-    /// SimplePlayerAnimator will work with or without a SimplePlayerControllerBase alongside.  
-    /// Without one, it will monitor the transform's position and drive the animation accordingly.  
+    /// SimplePlayerAnimator works with or without a SimplePlayerControllerBase alongside.  
+    /// Without one, it monitors the transform's position and drives the animation accordingly.  
     /// You can see it used like this in some of the sample scenes, such as RunningRace or ClearShot.  
-    /// In this mode, is it unable to detect the player's grounded state, and so it will always 
-    /// assume the player is grounded.
+    /// In this mode, is it unable to detect the player's grounded state, and so it always 
+    /// assumes that the player is grounded.
     /// 
-    /// When a SimplePlayerControllerBase is detected, the SimplePlayerAnimator will install callbacks 
-    /// and expect to be driven by the SimplePlayerControllerBase using the STartJump, EndJump, 
+    /// When a SimplePlayerControllerBase is detected, the SimplePlayerAnimator installs callbacks 
+    /// and expects to be driven by the SimplePlayerControllerBase using the STartJump, EndJump, 
     /// and PostUpdate callbacks.
     /// </summary>
     [RequireComponent(typeof(Animator))]
@@ -84,7 +84,7 @@ namespace Unity.Cinemachine.Samples
         /// Update the animation based on the player's velocity.
         /// Override this to interact appropriately with your animation controller.
         /// </summary>
-        /// <param name="vel">Player's velocity, in player-local coords.</param>
+        /// <param name="vel">Player's velocity, in player-local coordinates.</param>
         /// <param name="jumpAnimationScale">Scale factor to apply to the jump animation.  
         /// We slow down the jump animation for longer jumps.</param>
         virtual protected void UpdateAnimation(Vector3 vel, float jumpAnimationScale)

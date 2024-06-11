@@ -88,25 +88,25 @@ namespace Unity.Cinemachine.Samples
     /// - Ground Detection (using raycasts, or delegating to Character Controller)
     /// - Camera Override (camera is used only for determining the input frame)
     /// 
-    /// This behaviour should be attached to the player GameObject's root.  It will move the GameObject's 
+    /// This behaviour should be attached to the player GameObject's root.  It moves the GameObject's 
     /// transform.  If the GameObject also has a Unity Character Controller component, the Simple Player 
-    /// Controller will delegate grounded state and movement to it.  If the GameObject does not have a 
-    /// Character Controller, the Simple Player Controller will manage its own movement and do raycasts 
+    /// Controller delegates grounded state and movement to it.  If the GameObject does not have a 
+    /// Character Controller, the Simple Player Controller manages its own movement and does raycasts 
     /// to test for grounded state.
     /// 
-    /// Simple Player Controller will do its best to interpret User input in the context of the 
-    /// selected reference frame.  Generally, this works well, but in Camera mode, there is the potential 
-    /// that the player may transition from being upright relative to the camera to being inverted.  
+    /// Simple Player Controller does its best to interpret User input in the context of the 
+    /// selected reference frame.  Generally, this works well, but in Camera mode, the user
+    /// may potentially transition from being upright relative to the camera to being inverted.  
     /// When this happens, there can be a discontinuity in the interpretation of the input.  
     /// The Simple Player Controller has an ad-hoc technique of resolving this discontinuity, 
-    /// (you will see this in the code), but it is only used in this very specific situation.
+    /// (you can see this in the code), but it is only used in this very specific situation.
     /// </summary>
     public class SimplePlayerController : SimplePlayerControllerBase
     {
-        [Tooltip("How long it takes for the player to change velocity or rotation")]
+        [Tooltip("Transition duration (in seconds) when the player changes velocity or rotation.")]
         public float Damping = 0.5f;
 
-        [Tooltip("If true, player will strafe when moving sideways, otherwise will turn to face direction of motion")]
+        [Tooltip("Makes the player strafe when moving sideways, otherwise it turns to face the direction of motion.")]
         public bool Strafe = false;
 
         public enum ForwardModes { Camera, Player, World };
@@ -119,14 +119,14 @@ namespace Unity.Cinemachine.Samples
         public ForwardModes InputForward = ForwardModes.Camera;
 
         [Tooltip("Up direction for computing motion:\n"
-            + "<b>Player</b>: Will move in the Player's local XZ plane.\n"
-            + "<b>World</b>: Will move in global XZ plane.")]
+            + "<b>Player</b>: Move in the Player's local XZ plane.\n"
+            + "<b>World</b>: Move in global XZ plane.")]
         public UpModes UpMode = UpModes.World;
 
         [Tooltip("If non-null, take the input frame from this camera instead of Camera.main. Useful for split-screen games.")]
         public Camera CameraOverride;
 
-        [Tooltip("Raycasts for ground will detect these layers")]
+        [Tooltip("Layers to include in ground detection via Raycasts.")]
         public LayerMask GroundLayers = 1;
         
         [Tooltip("Force of gravity in the down direction (m/s^2)")]

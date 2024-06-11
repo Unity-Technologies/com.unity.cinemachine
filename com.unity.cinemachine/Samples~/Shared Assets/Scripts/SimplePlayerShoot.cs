@@ -8,8 +8,8 @@ namespace Unity.Cinemachine.Samples
     /// This component manages player shooting.  It is expected to be on the player object, 
     /// or on a child SimplePlayerAimController object of the player.
     /// 
-    /// If an AimTargetManager is specified, then the behaviour will aim at that target.
-    /// Otherwise, the behaviour will aim in the forward direction of the player object,
+    /// If an AimTargetManager is specified, then the behaviour aims at that target.
+    /// Otherwise, the behaviour aims in the forward direction of the player object,
     /// or of the SimplePlayerAimController object if it exists and is not decoupled
     /// from the player rotation.
     /// </summary>

@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Samples
     /// 
     /// Also, when CinemachineCameras are being used to track the character, the 
     /// [CinemachineBrain](CinemachineBrain.md)'s World Up Override setting should be set to the Player, 
-    /// so that the Camera's Up will match the Player's Up.
+    /// so that the Camera's Up matches the Player's Up.
     /// </summary>
     public class SimplePlayerOnSurface : MonoBehaviour
     {
