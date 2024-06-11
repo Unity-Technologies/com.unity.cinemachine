@@ -124,7 +124,7 @@ namespace Unity.Cinemachine
         List<VcamExtraState> m_ExtraStateCache;
         ShapeCache m_ShapeCache;
         
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_MaxWindowSize")]
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_MaxWindowSize")]
         float m_LegacyMaxWindowSize = -2; // -2 means there's no legacy upgrade to do
 
         const float k_CornerAngleThreshold = 10f;

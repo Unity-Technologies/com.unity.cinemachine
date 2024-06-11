@@ -81,7 +81,7 @@ namespace Unity.Cinemachine
             public int HashOfParent;
         }
         /// <summary>Internal API for the Inspector editor</summary>
-        [HideInInspector][SerializeField] private List<ParentHash> HashOfParent = new();
+        [HideInInspector, SerializeField, NoSaveDuringPlay] private List<ParentHash> HashOfParent = new();
 
         /// <summary>Internal API for the Inspector editor</summary>
         internal void SetParentHash(List<ParentHash> list)
@@ -90,8 +90,8 @@ namespace Unity.Cinemachine
             HashOfParent.AddRange(list);
         }
 
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
         float m_ActivationTime = 0;
         int m_ActiveInstructionIndex;

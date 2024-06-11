@@ -113,9 +113,9 @@ namespace Unity.Cinemachine
         CinemachineSplineRoll.RollCache m_RollCache;
 
         // In-editor only: CM 3.0.x Legacy support =================================
-        [SerializeField, HideInInspector, FormerlySerializedAs("CameraPosition")] private float m_LegacyPosition = -1;
-        [SerializeField, HideInInspector, FormerlySerializedAs("PositionUnits")] private PathIndexUnit m_LegacyUnits;
-        [SerializeField, HideInInspector, FormerlySerializedAs("Spline")] private SplineContainer m_LegacySpline;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("CameraPosition")] private float m_LegacyPosition = -1;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("PositionUnits")] private PathIndexUnit m_LegacyUnits;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("Spline")] private SplineContainer m_LegacySpline;
         void PerformLegacyUpgrade()
         {
             if (m_LegacyPosition != -1)

@@ -162,7 +162,7 @@ namespace Unity.Cinemachine
             }
         }
 
-        [HideInInspector, SerializeField, FormerlySerializedAs("m_Priority")]
+        [HideInInspector, SerializeField, NoSaveDuringPlay, FormerlySerializedAs("m_Priority")]
         int m_LegacyPriority = 0;
 
         //============================================================================

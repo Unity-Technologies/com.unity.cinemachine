@@ -53,8 +53,8 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_Instructions")]
         public List<Instruction> Instructions = new ();
 
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
         float m_ActivationTime = -1; // The time at which the current instruction went live
         int m_CurrentInstruction = 0;

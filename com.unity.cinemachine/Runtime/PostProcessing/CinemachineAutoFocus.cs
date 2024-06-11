@@ -77,7 +77,7 @@ namespace Unity.Cinemachine
         CustomPassVolume m_CustomPassVolume;
 
         /// <summary>Serialized so that the compute shader is included in the build.</summary>
-        [SerializeField]
+        [SerializeField, NoSaveDuringPlay]
         ComputeShader m_ComputeShader;
 
         void OnDisable()
