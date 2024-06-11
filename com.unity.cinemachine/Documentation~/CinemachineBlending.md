@@ -1,10 +1,8 @@
-# Cinemachine Blender Settings
+# Cinemachine Blender Settings asset 
 
-Use blending properties to specify how the Cinemachine Brain component performs a blend between CinemachineCameras.
+Use a Cinemachine Blender Settings asset from the [Cinemachine Brain component](CinemachineBrain.md) to define **Custom Blends** (overriding the **Default Blend** setting) between specific pairs of Cinemachine Cameras.
 
-A Cinemachine blend is not a fade, wipe, or dissolve. Rather, Cinemachine Brain performs a smooth animation of the position, rotation, and other settings of the Unity camera from one CinemachineCamera to the next.
-
-For blends between specific CinemachineCameras, use the __Custom Blends__ list in the Cinemachine Brain component. Use the __Default Blend__ property in Cinemachine Brain to specify blends between CinemachineCameras that do not have custom blends.
+For more information about blends, refer to [Camera control and transitions](concept-camera-control-transitions.md).
 
 ![Custom Blends list in Cinemachine Brain](images/CinemachineCustomBlends.png)
 
