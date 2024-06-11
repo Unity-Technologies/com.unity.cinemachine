@@ -159,7 +159,7 @@ If an AimTargetManager is specified, then the behaviour aims at that target.  Ot
 | :--- | :--- |
 | **Bullet Prefab** | The bullet prefab to instantiate when firing. |
 | **Max Bullets Per Sec** | Maximum bullets to fire per second. |
-| **Fire** | Input Axis for firing.  Value is 0 or 1. |
+| **Fire** | Boolean Input Axis for firing.  Value is 0 (not firing) or 1 (firing). |
 | **AimTarget Manager** | Target to Aim towards. If null, the aim is defined by the forward vector of this GameObject. |
 | **Fire Event** | Event that's triggered when firing. |
 
