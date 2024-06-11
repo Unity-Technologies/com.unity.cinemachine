@@ -1,6 +1,6 @@
 # Cinemachine Decollider
 
-__Cinemachine Decollider__ is an [extension](CinemachineVirtualCameraExtensions.md) for the [Camera](CinemachineCamera.md). It post-processes the final position of the CinemachineCamera to pull the camera out of colliding objects.  Although collisions will be resolved in the direction of the camera target, no attempt will be made to preserve the line of sight to the target.  For that, please use [CinemachineDeoccluder](CinemachineDeoccluder.md).
+__Cinemachine Decollider__ is an [extension](concept-procedural-motion.md#extensions) for the [Camera](CinemachineCamera.md). It post-processes the final position of the CinemachineCamera to pull the camera out of colliding objects.  Although collisions will be resolved in the direction of the camera target, no attempt will be made to preserve the line of sight to the target.  For that, please use [CinemachineDeoccluder](CinemachineDeoccluder.md).
 
 The Decollider combines two algorithms:
 1. **Terrain Resolution**.  A ray is cast from above the camera in the downwards direction.  If it hits a collider above the camera and the collider is on one of the specified Terrain Layers, the camera is moved upwards to the hit point, placing the camera on top of the collider.
