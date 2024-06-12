@@ -27,12 +27,14 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         public static void AddMissingCmCameraHelpBox(this UnityEditor.Editor editor, VisualElement ux)
         {
-            // Look for a RequiredTargetAttribute
+            // Look for a RequiredTargetAttribute, but only if component is on a CinemachineCamera
             var requiredTargets = RequiredTargetAttribute.RequiredTargets.None;
-            var a = editor.target.GetType().GetCustomAttribute<RequiredTargetAttribute>();
-            if (a != null)
-                requiredTargets = a.RequiredTarget;
-
+            if (editor.target is Component c && c.TryGetComponent<CinemachineCamera>(out _))
+            {
+                var a = editor.target.GetType().GetCustomAttribute<RequiredTargetAttribute>();
+                if (a != null)
+                    requiredTargets = a.RequiredTarget;
+            }
             var targets = editor.targets;
             var noCameraHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
                 k_NeedCamera, HelpBoxMessageType.Warning,

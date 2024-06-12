@@ -5,47 +5,33 @@ using UnityEditor.UIElements;
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(InputAxis))]
-    partial class InputAxisWithNamePropertyDrawer : PropertyDrawer
+    partial class InputAxisPropertyDrawer : PropertyDrawer
     {
         InputAxis def = new (); // to access name strings
 
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
             // When foldout is closed, we display the axis value on the same line, for convenience
-            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip, value = property.isExpanded };
-            foldout.RegisterValueChangedCallback((evt) => 
-            {
-                if (evt.target == foldout)
-                {
-                    property.isExpanded = evt.newValue;
-                    property.serializedObject.ApplyModifiedProperties();
-                    evt.StopPropagation();
-                }
-            });
+            var foldout = new Foldout { text = property.displayName, tooltip = property.tooltip };
+            foldout.BindProperty(property);
+
             var valueProp = property.FindPropertyRelative(() => def.Value);
-            var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2}};
-            var valueField =  new InspectorUtility.CompactPropertyField(valueProp, "") { style = { flexGrow = 1}};
+            var valueLabel = new Label(" ") { style = { minWidth = InspectorUtility.SingleLineHeight * 2 }};
+            var valueField =  new PropertyField(valueProp, "") { style = { flexGrow = 1, marginLeft = 2 }};
             valueField.OnInitialGeometry(() => valueField.SafeSetIsDelayed());
             valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField, (d) => d.CancelDelayedWhenDragging = true);
 
             var ux = new InspectorUtility.FoldoutWithOverlay(foldout, valueField, valueLabel);
 
-            // We want dynamic dragging on the value, even if isDelayed is set
-            var valueFieldRow = foldout.AddChild(new InspectorUtility.LabeledRow(
-                valueProp.displayName, valueProp.tooltip, new PropertyField(valueProp, "")));
-            valueFieldRow.Contents.OnInitialGeometry(() => 
-            {
-                valueFieldRow.Contents.SafeSetIsDelayed();
-                valueFieldRow.Contents.Q<FloatField>().style.marginLeft = 0;
-            });
-            valueFieldRow.Label.AddDelayedFriendlyPropertyDragger(valueProp, valueFieldRow.Contents, (d) => d.CancelDelayedWhenDragging = true);
+            // We want dynamic dragging on the value, even if isDelayed is set. PropertyRow puts a delayed-friendly dragger.
+            foldout.AddChild(InspectorUtility.PropertyRow(valueProp, out _));
 
             var centerField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Center)));
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
             rangeContainer.Add(new PropertyField(property.FindPropertyRelative(() => def.Range)) { style = { flexGrow = 1 }});
             var wrapProp = property.FindPropertyRelative(() => def.Wrap);
             var wrap = rangeContainer.AddChild(new PropertyField(wrapProp, "") 
-                { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5 }});
+                { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5, marginTop = 2 }});
             var wrapLabel = rangeContainer.AddChild(new Label(wrapProp.displayName) 
                 { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
             var recentering = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));

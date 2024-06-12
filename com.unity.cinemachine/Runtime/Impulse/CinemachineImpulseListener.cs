@@ -99,7 +99,7 @@ namespace Unity.Cinemachine
 
             bool m_Initialized;
 
-            [SerializeField, HideInInspector]
+            [SerializeField, HideInInspector, NoSaveDuringPlay]
             Vector3 m_NoiseOffsets;
 
             /// <summary>Generate a new random seed</summary>

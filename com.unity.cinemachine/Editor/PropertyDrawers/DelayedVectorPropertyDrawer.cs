@@ -21,7 +21,7 @@ namespace Unity.Cinemachine.Editor
                 if (p == null)
                     return new VisualElement { style = { flexBasis = 30, flexGrow = 1, marginLeft = 6 } };
                 var f = new InspectorUtility.CompactPropertyField(p) 
-                    { style = { flexBasis = 30, flexGrow = 1, marginLeft = 6 } };
+                    { style = { flexBasis = 30, flexGrow = 1, marginLeft = 9 } };
                 f.Label.style.minWidth = 15;
                 f.OnInitialGeometry(() => 
                 {

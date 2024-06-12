@@ -55,6 +55,12 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_FrequencyGain")]
         public float FrequencyGain = 1f;
 
+        private bool m_Initialized = false;
+        private float m_NoiseTime = 0;
+
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("mNoiseOffsets")]
+        private Vector3 m_NoiseOffsets = Vector3.zero;
+        
         (float, float) CinemachineFreeLookModifier.IModifiableNoise.NoiseAmplitudeFrequency 
         { 
             get => (AmplitudeGain, FrequencyGain);
@@ -77,22 +83,22 @@ namespace Unity.Cinemachine
         {
             if (!IsValid || deltaTime < 0)
             {
-                mInitialized = false;
+                m_Initialized = false;
                 return;
             }
 
-            if (!mInitialized)
+            if (!m_Initialized)
                 Initialize();
 
             if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Playback
                     && TargetPositionCache.HasCurrentTime)
-                mNoiseTime = TargetPositionCache.CurrentTime * FrequencyGain;
+                m_NoiseTime = TargetPositionCache.CurrentTime * FrequencyGain;
             else
-                mNoiseTime += deltaTime * FrequencyGain;
+                m_NoiseTime += deltaTime * FrequencyGain;
             curState.PositionCorrection += curState.GetCorrectedOrientation() * NoiseSettings.GetCombinedFilterResults(
-                    NoiseProfile.PositionNoise, mNoiseTime, mNoiseOffsets) * AmplitudeGain;
+                    NoiseProfile.PositionNoise, m_NoiseTime, m_NoiseOffsets) * AmplitudeGain;
             Quaternion rotNoise = Quaternion.Euler(NoiseSettings.GetCombinedFilterResults(
-                    NoiseProfile.OrientationNoise, mNoiseTime, mNoiseOffsets) * AmplitudeGain);
+                    NoiseProfile.OrientationNoise, m_NoiseTime, m_NoiseOffsets) * AmplitudeGain);
             if (PivotOffset != Vector3.zero)
             {
                 Matrix4x4 m = Matrix4x4.Translate(-PivotOffset);
@@ -103,16 +109,10 @@ namespace Unity.Cinemachine
             curState.OrientationCorrection = curState.OrientationCorrection * rotNoise;
         }
 
-        private bool mInitialized = false;
-        private float mNoiseTime = 0;
-
-        [SerializeField][HideInInspector]
-        private Vector3 mNoiseOffsets = Vector3.zero;
-
         /// <summary>Generate a new random seed</summary>
         public void ReSeed()
         {
-            mNoiseOffsets = new Vector3(
+            m_NoiseOffsets = new Vector3(
                     Random.Range(-1000f, 1000f),
                     Random.Range(-1000f, 1000f),
                     Random.Range(-1000f, 1000f));
@@ -120,9 +120,9 @@ namespace Unity.Cinemachine
 
         void Initialize()
         {
-            mInitialized = true;
-            mNoiseTime = CinemachineCore.CurrentTime * FrequencyGain;
-            if (mNoiseOffsets == Vector3.zero)
+            m_Initialized = true;
+            m_NoiseTime = CinemachineCore.CurrentTime * FrequencyGain;
+            if (m_NoiseOffsets == Vector3.zero)
                 ReSeed();
         }
     }

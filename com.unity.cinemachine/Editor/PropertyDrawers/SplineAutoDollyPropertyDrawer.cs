@@ -27,7 +27,7 @@ namespace Unity.Cinemachine.Editor
                 choices = AutoDollyMenuItems.s_ItemNames,
                 style = { flexGrow = 1 }
             });
-            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+            dropdown.AddToClassList(InspectorUtility.AlignFieldClassName);
             dropdown.RegisterValueChangedCallback((evt) => 
             {
                 var index = AutoDollyMenuItems.GetTypeIndex(evt.newValue);

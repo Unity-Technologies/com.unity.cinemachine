@@ -39,6 +39,8 @@ namespace Unity.Cinemachine
         public static IEnumerable<Type> GetTypesDerivedFrom(Type type, Predicate<Type> predicate)
         {
             var list = new List<Type>();
+            if (predicate(type))
+                list.Add(type);
             var iter = TypeCache.GetTypesDerivedFrom(type).GetEnumerator();
             while (iter.MoveNext())
             {

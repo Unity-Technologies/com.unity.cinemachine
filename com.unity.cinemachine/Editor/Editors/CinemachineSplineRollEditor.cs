@@ -35,57 +35,67 @@ namespace Unity.Cinemachine.Editor
             ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData == null ? null : splineData.SplineContainer));
 
             ux.AddHeader("Data Points");
-            var listField = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
-                splineData.Roll, rollProp, () => splineData?.SplineContainer));
+            var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(splineData.Roll, rollProp, () => splineData?.SplineContainer));
+
             var arrayProp = rollProp.FindPropertyRelative("m_DataPoints");
-            listField.OnInitialGeometry(() => 
+
+            list.makeItem = () => 
             {
-                var list = listField.Q<ListView>();
+                var itemRootName = "ItemRoot";
+                var row = new BindableElement() { name = itemRootName, style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
 
-                list.makeItem = () => new BindableElement() { style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
-                list.bindItem = (ux, index) =>
+                row.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { flexBasis = 12 }}); // pass-through for selecting row in list
+                var indexField = row.AddChild(InspectorUtility.CreateDraggableField(
+                    typeof(float), "m_Index", SplineDataInspectorUtility.ItemIndexTooltip, 
+                        row.AddChild(new Label("Index")), out var dragger));
+                indexField.style.flexGrow = 1;
+                indexField.style.flexBasis = 50;
+                indexField.SafeSetIsDelayed();
+                dragger.OnStartDrag = (d) => list.selectedIndex = GetIndexInList(list, d.DragElement, itemRootName);
+
+                var def = new CinemachineSplineRoll.RollData();
+                var rollTooltip = SerializedPropertyHelper.PropertyTooltip(() => def.Value);
+                row.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { flexBasis = 12 }}); // pass-through for selecting row in list
+                var rollField = row.AddChild(InspectorUtility.CreateDraggableField(
+                    typeof(float), "m_Value.Value", rollTooltip, row.AddChild(new Label("Roll")), out dragger));
+                rollField.style.flexGrow = 1;
+                rollField.style.flexBasis = 50;
+                dragger.OnStartDrag = (d) => list.selectedIndex = GetIndexInList(list, d.DragElement, itemRootName);
+
+                return row;
+
+                // Sneaky way to find out which list element we are
+                static int  GetIndexInList(ListView list, VisualElement element, string itemRootName)
                 {
-                    // Remove children - items get recycled
-                    for (int i = ux.childCount - 1; i >= 0; --i)
-                        ux.RemoveAt(i);
-
-                    const string indexTooltip = "The position on the Spline at which this data point will take effect.  "
-                        + "The value is interpreted according to the Index Unit setting.";
-
-                    var element = index < arrayProp.arraySize ? arrayProp.GetArrayElementAtIndex(index) : null;
-                    var def = new CinemachineSplineRoll.RollData();
-                    var indexProp = element.FindPropertyRelative("m_Index");
-                    var valueProp = element.FindPropertyRelative("m_Value");
-
-                    ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                    var label = ux.AddChild(new Label(indexProp.displayName) { tooltip = indexTooltip, style = { alignSelf = Align.Center }});
-                    var indexField = ux.AddChild(new PropertyField(indexProp, "") { style = { flexGrow = 1, flexBasis = 20 } });
-                    indexField.OnInitialGeometry(() => indexField.SafeSetIsDelayed());
-                    label.AddDelayedFriendlyPropertyDragger(indexProp, indexField, (dragger) => dragger.OnStartDrag = () => list.selectedIndex = index);
-
-                    ux.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { width = 12 }}); // pass-through for selecting row in list
-                    ux.Add(new InspectorUtility.CompactPropertyField(valueProp.FindPropertyRelative(() => def.Value), "Roll"));
-
-                    ((BindableElement)ux).BindProperty(element); // bind must be done at the end
-                };
-
-                SplineRollTool.s_OnDataLookAtDragged += OnToolDragged;
-                SplineRollTool.s_OnDataIndexDragged += OnToolDragged;
-                void OnToolDragged(CinemachineSplineRoll data, int index)
-                {
-                    EditorApplication.delayCall += () => 
+                    var container = list.Q("unity-content-container");
+                    if (container != null)
                     {
-                        // This is a hack to avoid spurious exceptions thrown by uitoolkit!
-                        // GML TODO: Remove when they fix it
-                        try 
-                        {
-                            if (data == splineData)
-                                list.selectedIndex = index;
-                        }
-                        catch {} // Ignore exceptions
-                    };
+                        while (element != null && element.name != itemRootName)
+                            element = element.parent;
+                        if (element != null)
+                            return container.IndexOf(element);
+                    }
+                    return - 1;
                 }
-            });
+
+            };
+
+            SplineRollTool.s_OnDataLookAtDragged += OnToolDragged;
+            SplineRollTool.s_OnDataIndexDragged += OnToolDragged;
+            void OnToolDragged(CinemachineSplineRoll data, int index)
+            {
+                EditorApplication.delayCall += () => 
+                {
+                    // This is a hack to avoid spurious exceptions thrown by uitoolkit!
+                    // GML TODO: Remove when they fix it
+                    try 
+                    {
+                        if (data == splineData)
+                            list.selectedIndex = index;
+                    }
+                    catch {} // Ignore exceptions
+                };
+            }
 
             ux.TrackPropertyValue(rollProp, (p) => 
             {

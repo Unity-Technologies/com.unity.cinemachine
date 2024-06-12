@@ -263,7 +263,7 @@ namespace Unity.Cinemachine
 
         [Header("Driven Axes")]
         [InputAxisControllerManager]
-        [SerializeField] internal InputAxisControllerManager<T> m_ControllerManager = new ();
+        [SerializeField, NoSaveDuringPlay] internal InputAxisControllerManager<T> m_ControllerManager = new ();
 
         /// <summary>This list is dynamically populated based on the discovered axes</summary>
         public List<Controller> Controllers

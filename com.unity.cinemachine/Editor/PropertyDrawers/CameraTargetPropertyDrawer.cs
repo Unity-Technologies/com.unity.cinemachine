@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Editor
         VisualElement CreateTargetProperty(SerializedProperty property, SerializedProperty customProp)
         {
             var row = InspectorUtility.PropertyRow(property, out _);
-            row.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
+            row.Contents.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
             {
                 evt.menu.AppendAction("Convert to TargetGroup", 
                     (action) => 

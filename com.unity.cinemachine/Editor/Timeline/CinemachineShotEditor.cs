@@ -105,7 +105,7 @@ namespace Unity.Cinemachine.Editor
                 tooltip = CinemachineTimelinePrefs.s_AutoCreateLabel.tooltip,
                 value = CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value
             });
-            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+            toggle.AddToClassList(InspectorUtility.AlignFieldClassName);
             toggle.RegisterValueChangedCallback((evt) => CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value = evt.newValue);
 
             // Cached scrubbing

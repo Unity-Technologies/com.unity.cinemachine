@@ -44,9 +44,12 @@ namespace Unity.Cinemachine.Editor
 
             var defaultTargetLabel = new ObjectField("");
             defaultTargetLabel.SetEnabled(false);
-            var defaultTargetRow = ux.AddChild(new InspectorUtility.LabeledRow("Default Target", "", defaultTargetLabel));
-            defaultTargetRow.tooltip = "The default target is set in the parent object, and will be used if the Tracking Target is None";
+            var defaultTargetRow = ux.AddChild(new InspectorUtility.LabeledRow(
+                "Default Target", "The default target is set in the parent object, and will be used if the Tracking Target is None", 
+                defaultTargetLabel));
             defaultTargetRow.focusable = false;
+            defaultTargetLabel.style.marginLeft = 5;
+            defaultTargetLabel.style.marginRight = -2;
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
 
             ux.AddHeader("Global Settings");

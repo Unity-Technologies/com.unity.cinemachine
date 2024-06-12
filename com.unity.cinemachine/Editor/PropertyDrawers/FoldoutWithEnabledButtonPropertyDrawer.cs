@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
 
             var row = new InspectorUtility.LabeledRow(preferredLabel, enabledProp.tooltip);
             var toggle = row.Contents.AddChild(new Toggle("") 
-                { style = { flexGrow = 0, marginTop = 2, marginLeft = 0, alignSelf = Align.Center }});
+                { style = { flexGrow = 0, marginTop = 2, marginLeft = 3, alignSelf = Align.Center }});
             toggle.BindProperty(enabledProp);
 
             Label disabledText = null;
@@ -88,7 +88,7 @@ namespace Unity.Cinemachine.Editor
             var childField = row.Contents.AddChild(new PropertyField(childProperty, "")
                 { style = { flexGrow = 1, marginTop = -1, marginLeft = 5, marginBottom = -1 }});
             childLabel.AddDelayedFriendlyPropertyDragger(childProperty, childField, (d) => d.CancelDelayedWhenDragging = true);
-            childField.RemoveFromClassList(InspectorUtility.kAlignFieldClass);
+            childField.RemoveFromClassList(InspectorUtility.AlignFieldClassName);
 
             row.TrackPropertyWithInitialCallback(enabledProp, (p) => 
             {

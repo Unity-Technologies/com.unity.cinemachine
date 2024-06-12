@@ -57,7 +57,7 @@ namespace Unity.Cinemachine.Editor
             { 
                 text = "Solo", 
                 style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
-                    marginLeft = 0, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
+                    marginLeft = 3, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
             });
             var updateMode = row.Contents.AddChild(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
             updateMode.SetEnabled(false);
@@ -290,7 +290,7 @@ namespace Unity.Cinemachine.Editor
                 text = "(select)", 
                 style = 
                 { 
-                    flexGrow = 1, marginRight = 0, marginLeft = 3, 
+                    flexGrow = 1, marginRight = -2, marginLeft = 3, 
                     paddingTop = 0, paddingBottom = 0, paddingLeft = 1,
                     height = InspectorUtility.SingleLineHeight + 2, 
                     unityTextAlign = TextAnchor.MiddleLeft
@@ -392,7 +392,7 @@ namespace Unity.Cinemachine.Editor
                 tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
                 value = SaveDuringPlay.Enabled
             });
-            toggle.AddToClassList(InspectorUtility.kAlignFieldClass);
+            toggle.AddToClassList(InspectorUtility.AlignFieldClassName);
             toggle.RegisterValueChangedCallback((evt) => 
             {
                 SaveDuringPlay.Enabled = evt.newValue;
@@ -409,7 +409,7 @@ namespace Unity.Cinemachine.Editor
                 index = index,
                 style = { flexGrow = 1 }
             });
-            dropdown.AddToClassList(InspectorUtility.kAlignFieldClass);
+            dropdown.AddToClassList(InspectorUtility.AlignFieldClassName);
             dropdown.RegisterValueChangedCallback((evt) => 
             {
                 CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue != choices[0];
@@ -497,7 +497,7 @@ namespace Unity.Cinemachine.Editor
             if (vcam == null)
                 return;
 
-            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 2.5f;
+            var floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
 
             var helpBox = ux.AddChild(new HelpBox(
                 "Child Cameras cannot be displayed when multiple objects are selected.", 
@@ -508,8 +508,7 @@ namespace Unity.Cinemachine.Editor
             var header = container.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, marginBottom = -2 } });
             header.AddToClassList("unity-collection-view--with-border");
             header.AddChild(new Label("Child Cameras") { style = { marginLeft = 3, flexGrow = 1, flexBasis = 10  }});
-            header.AddChild(new Label("Priority") 
-                { style = { marginRight = 4, flexGrow = 1, flexBasis = floatFieldWidth, unityTextAlign = TextAnchor.MiddleRight }});
+            header.AddChild(new Label("Priority") { style = { flexGrow = 0, flexBasis = floatFieldWidth + 4}});
 
             var list = container.AddChild(new ListView()
             {
@@ -522,50 +521,63 @@ namespace Unity.Cinemachine.Editor
             });
             list.itemsSource = vcam.ChildCameras;
 
-            list.makeItem = () => new VisualElement { style = { flexDirection = FlexDirection.Row }};
-            list.bindItem = (row, index) =>
+            list.makeItem = () => 
             {
-                // Remove children - items seem to get recycled
-                for (int i = row.childCount - 1; i >= 0; --i)
-                    row.RemoveAt(i);
+                var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
 
-                var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
+                warningIcon.name = "warningIcon";
+
                 row.AddChild(new ObjectField 
                 { 
-                    value = element,
+                    name = "vcamSelector",
                     objectType = typeof(CinemachineVirtualCameraBase),
                     style = { flexBasis = 20, flexGrow = 1 }
                 }).SetEnabled(false);
-                if (element == null)
-                    return;
 
-                var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
+                var priorityField = row.AddChild(InspectorUtility.CreateDraggableField(
+                    typeof(int), "", "The child camera's Priority", row.AddChild(new Label(" ")), out _));
+                priorityField.name = "priorityField";
+                priorityField.style.flexBasis = floatFieldWidth;
+                priorityField.style.flexGrow = 0;
+                priorityField.style.marginRight = 4;
+                priorityField.SafeSetIsDelayed();
+
+                return row;
+            };
+
+            list.bindItem = (row, index) =>
+            {
+                var element = list.itemsSource[index] as CinemachineVirtualCameraBase;
+                row.Q<ObjectField>("vcamSelector").value = element;
+
+                var warningIcon = row.Q<VisualElement>("warningIcon");
                 var warningText = getChildWarning == null ? string.Empty : getChildWarning(element);
                 warningIcon.tooltip = warningText;
                 warningIcon.SetVisible(!string.IsNullOrEmpty(warningText));
 
-                var dragger = row.AddChild(new Label(" "));
-                dragger.AddToClassList("unity-base-field__label--with-dragger");
+                if (element != null)
+                {
+                    var so = new SerializedObject(element);
+                    var prop = so.FindProperty("Priority");
+                    var enabledProp = prop.FindPropertyRelative("Enabled");
+                    var priorityProp = prop.FindPropertyRelative("m_Value");
+                    var priorityField = row.Q<IntegerField>("priorityField");
 
-                var so = new SerializedObject(element);
-                var prop = so.FindProperty("Priority");
-                var enabledProp = prop.FindPropertyRelative("Enabled");
-                var priorityProp = prop.FindPropertyRelative("m_Value");
-                var priorityField = row.AddChild(new IntegerField
-                {
-                    value = enabledProp.boolValue ? priorityProp.intValue : 0,
-                    style = { flexBasis = floatFieldWidth, flexGrow = 0, marginRight = 4 }
-                });
-                new DelayedFriendlyFieldDragger<int>(priorityField) { CancelDelayedWhenDragging = true }.SetDragZone(dragger);
-                priorityField.RegisterValueChangedCallback((evt) =>
-                {
-                    if (evt.newValue != 0)
-                        enabledProp.boolValue = true;
-                    priorityProp.intValue = evt.newValue;
-                    so.ApplyModifiedProperties();
-                });
-                priorityField.TrackPropertyValue(priorityProp, (p) => priorityField.value = p.intValue);
-                priorityField.TrackPropertyValue(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
+                    priorityField.Unbind();
+                    priorityField.TrackPropertyWithInitialCallback(priorityProp, (p) => priorityField.value = p.intValue);
+                    priorityField.TrackPropertyWithInitialCallback(enabledProp, (p) => priorityField.value = p.boolValue ? priorityProp.intValue : 0);
+
+                    priorityField.UnregisterValueChangedCallback(OnValueChanged);
+                    priorityField.RegisterValueChangedCallback(OnValueChanged);
+                    void OnValueChanged(ChangeEvent<int> evt)
+                    {
+                        if (evt.newValue != 0)
+                            enabledProp.boolValue = true;
+                        priorityProp.intValue = evt.newValue;
+                        so.ApplyModifiedProperties();
+                    }
+                }
             };
 
             list.itemsAdded += (added) =>

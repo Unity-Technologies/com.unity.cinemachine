@@ -174,7 +174,7 @@ namespace Unity.Cinemachine
         //============================================
         // Legacy support 
 
-        [SerializeField, FormerlySerializedAs("m_Targets")]
+        [HideInInspector, SerializeField, NoSaveDuringPlay, FormerlySerializedAs("m_Targets")]
         Target[] m_LegacyTargets;
 
         void Awake()

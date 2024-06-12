@@ -45,8 +45,8 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_RandomizeChoice")]
         public bool RandomizeChoice = false;
 
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
-        [SerializeField, HideInInspector, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_LookAt")] Transform m_LegacyLookAt;
+        [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_Follow")] Transform m_LegacyFollow;
 
         float m_ActivationTime = 0;
         float m_PendingActivationTime = 0;
