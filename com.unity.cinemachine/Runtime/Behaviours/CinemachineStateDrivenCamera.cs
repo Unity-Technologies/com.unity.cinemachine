@@ -21,6 +21,7 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
+    [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Cinemachine State Driven Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineStateDrivenCamera.html")]
     public class CinemachineStateDrivenCamera : CinemachineCameraManagerBase

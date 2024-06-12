@@ -15,6 +15,7 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
+    [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Cinemachine Sequencer Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSequencerCamera.html")]
     public class CinemachineSequencerCamera : CinemachineCameraManagerBase

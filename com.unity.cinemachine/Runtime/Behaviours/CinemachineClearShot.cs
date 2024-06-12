@@ -24,6 +24,7 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [ExcludeFromPreset]
+    [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Cinemachine ClearShot")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineClearShot.html")]
     public class CinemachineClearShot : CinemachineCameraManagerBase

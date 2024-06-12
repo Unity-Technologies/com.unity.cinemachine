@@ -48,6 +48,7 @@ namespace Unity.Cinemachine
     /// 
     [DisallowMultipleComponent]
     [ExecuteAlways]
+    [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Cinemachine Camera")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineCamera.html")]
     public sealed class CinemachineCamera : CinemachineVirtualCameraBase
