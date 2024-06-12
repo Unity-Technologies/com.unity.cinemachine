@@ -86,6 +86,9 @@ namespace Unity.Cinemachine.Samples
                 if (AimTargetManager != null)
                     fwd = AimTargetManager.GetAimDirection(transform.position, fwd).normalized;
 
+                var pos = transform.position + fwd;
+                var rot = Quaternion.LookRotation(fwd, transform.up);
+
                 // Because creating and destroying GameObjects is costly, we pool them and recycle
                 // the deactivated ones.  The bullets deactivate themselves after a time.
                 GameObject bullet = null;
@@ -94,17 +97,16 @@ namespace Unity.Cinemachine.Samples
                     if (!m_BulletPool[i].activeInHierarchy) 
                     {
                         bullet = m_BulletPool[i];
+                        bullet.transform.SetPositionAndRotation(pos, rot);
                         m_BulletPool.Remove(bullet);
                     }
                 }
                 // Instantiate a new bullet if none are found in the pool
                 if (bullet == null)
-                    bullet = Instantiate(BulletPrefab);
+                    bullet = Instantiate(BulletPrefab, pos, rot);
 
                 // Off it goes!
                 m_BulletPool.Add(bullet);
-                bullet.transform.SetPositionAndRotation(
-                    transform.position + fwd, Quaternion.LookRotation(fwd, transform.up));
                 bullet.SetActive(true);
                 FireEvent.Invoke();
             }

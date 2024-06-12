@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -169,13 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -186,6 +178,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &14930838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,13 +240,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 5, z: -10}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 5, z: -10}
 --- !u!1 &26679981
 GameObject:
   m_ObjectHideFlags: 0
@@ -636,13 +635,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -653,6 +645,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &194279535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -665,13 +664,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 5, z: -10}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 5, z: -10}
 --- !u!4 &194279536
 Transform:
   m_ObjectHideFlags: 0
@@ -937,6 +936,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 381337818}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: m_SplineSettings.Spline
+      value: 
+      objectReference: {fileID: 381337818}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (1)
@@ -1066,13 +1069,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -1083,6 +1079,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &689268013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1095,13 +1098,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 5, z: -10}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 5, z: -10}
 --- !u!4 &689268014
 Transform:
   m_ObjectHideFlags: 0
@@ -1316,15 +1319,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 20, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
   CameraDistance: 10
   DeadZoneDepth: 0
-  Damping: {x: 1, y: 1, z: 1}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -1335,6 +1331,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 20, z: 0}
+  Damping: {x: 1, y: 1, z: 1}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &926545935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1618,6 +1621,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 909308763}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: m_SplineSettings.Spline
+      value: 
+      objectReference: {fileID: 909308763}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (2)
@@ -1632,6 +1639,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7394770885881608385, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
   m_PrefabInstance: {fileID: 1188149635}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1188149637 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7394770885881608384, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+  m_PrefabInstance: {fileID: 1188149635}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1253974827
 GameObject:
   m_ObjectHideFlags: 0
@@ -1743,17 +1761,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6339991416873971457, guid: cb2ad19a440512b469ff0d5f39a8075d, type: 3}
   m_PrefabInstance: {fileID: 394391430}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1348193507 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7394770885881608384, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
-  m_PrefabInstance: {fileID: 460140531}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1411556680
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1820,6 +1827,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6339991416873971457, guid: cb2ad19a440512b469ff0d5f39a8075d, type: 3}
   m_PrefabInstance: {fileID: 1950721340}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1595898288 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7394770885881608384, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+  m_PrefabInstance: {fileID: 460140531}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1707911442
 GameObject:
   m_ObjectHideFlags: 0
@@ -1894,13 +1912,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -1911,6 +1922,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &1707911445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1923,13 +1941,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 5, z: -10}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 5, z: -10}
 --- !u!4 &1707911446
 Transform:
   m_ObjectHideFlags: 0
@@ -2049,7 +2067,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 1348193507}
+        - m_Target: {fileID: 1595898288}
           m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.RunnerController, Assembly-CSharp
           m_MethodName: ResetRace
           m_Mode: 1
@@ -2061,7 +2079,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 2121353336}
+        - m_Target: {fileID: 1188149637}
           m_TargetAssemblyTypeName: Unity.Cinemachine.Samples.RunnerController, Assembly-CSharp
           m_MethodName: ResetRace
           m_Mode: 1
@@ -2221,6 +2239,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 119660182}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: m_SplineSettings.Spline
+      value: 
+      objectReference: {fileID: 119660182}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (3)
@@ -2363,6 +2385,10 @@ PrefabInstance:
       propertyPath: Spline
       value: 
       objectReference: {fileID: 1293460385}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: m_SplineSettings.Spline
+      value: 
+      objectReference: {fileID: 1293460385}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: m_Name
       value: Runner (4)
@@ -2462,13 +2488,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -2479,6 +2498,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &1975165803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2491,13 +2517,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 5, z: -10}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 1, y: 1, z: 1}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
+  FollowOffset: {x: 0, y: 5, z: -10}
 --- !u!4 &1975165804
 Transform:
   m_ObjectHideFlags: 0
@@ -2641,17 +2667,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab5c7d4c32e743048dfca98e2d5914f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2121353336 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7394770885881608384, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
-  m_PrefabInstance: {fileID: 1188149635}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29d5b71c25a12441dbb6f920533a92df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &7394770886618730977
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2706,6 +2721,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
       propertyPath: Spline
+      value: 
+      objectReference: {fileID: 2090653184}
+    - target: {fileID: 7394770885881608446, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}
+      propertyPath: m_SplineSettings.Spline
       value: 
       objectReference: {fileID: 2090653184}
     - target: {fileID: 7394770885881608447, guid: 6d9bd862503df4c5cb138f7efac40a12, type: 3}

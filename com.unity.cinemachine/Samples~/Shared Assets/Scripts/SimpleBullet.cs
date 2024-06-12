@@ -10,10 +10,10 @@ namespace Unity.Cinemachine.Samples
         public float Lifespan = 3;
 
         [Tooltip("Stretch factor in the direction of motion while flying")]
-        public float Stretch = 4;
+        public float Stretch = 6;
 
         float m_Speed;
-        float m_ScaleZ;
+        Vector3 m_SpawnPoint;
 
         void OnValidate()
         {
@@ -21,15 +21,11 @@ namespace Unity.Cinemachine.Samples
             Lifespan = Mathf.Max(0.2f, Lifespan);
         }
 
-        void Awake()
-        {
-            m_ScaleZ = transform.localScale.z;
-        }
-
         void OnEnable()
         {
             m_Speed = Speed;
-            SetStretch(Stretch);
+            m_SpawnPoint = transform.position;
+            SetStretch(1);
             StartCoroutine(DeactivateAfter());
         }
 
@@ -46,14 +42,19 @@ namespace Unity.Cinemachine.Samples
                     m_Speed = 0;
                     SetStretch(1);
                 }
-                t.position += m_Speed * Time.deltaTime * t.forward;
+                var deltaPos = m_Speed * Time.deltaTime;
+                t.position += deltaPos * t.forward;
+
+                // Clamp the stretch to avoid the bullet stretching back past the spawn point.
+                // This code assumes that the bullet length is 1.
+                SetStretch(Mathf.Min(1 + deltaPos * Stretch, Vector3.Distance(t.position, m_SpawnPoint)));
             }
         }
 
         void SetStretch(float stretch)
         {
             var scale = transform.localScale;
-            scale.z = m_ScaleZ * stretch;
+            scale.z = stretch;
             transform.localScale = scale;
         }
 
