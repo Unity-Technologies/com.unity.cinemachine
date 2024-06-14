@@ -4,28 +4,26 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.1] - 2025-01-01
-
-### Fixed
-- Bugfix: InputAxis.TriggerRecentering() function caused the axis to immediately snap to its recenter value.
-- Bugfix: When multiple CM Brains were present, FixedUpdte cameras were sometimes being updated too frequently, resulting in jittery motion.
-- SimplePlayerController no longer uses PlayerController.isGrounded because it's not reliable outside of FixedUpdate.
-- Regression fix: StateDrivenCamera inspector was failing to correctly set the states in the instruction list.
-- Decollider ignores terrain layers when resolving obstacles.
-- Bugfix: The GroupAverage Rotation Mode in CinemachineTargetGroup was not calculated properly.
-- Bugfix: add missing null check in CinemachineTargetGroup.WeightedMemberBoundsForValidMember.
-- Bugfix: add missing null check in CinemachineDeoccluder.PushCameraBack().
-- Bugfix: Cinemachine did not work properly with scaled splines.
-
-### Changed
-- CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
+## [3.1.1] - 2024-06-15
 
 ### Added
 - New Rotation Control behaviour SplineDollyLookAtTargets lets you specify LookAt points at desird positions along a Spline Dolly trajectory.
 - Added Recenter Target setting to CinemachinePanTilt.
 
-### Removed
-- FadeOutNearbyObjects sample scene and shader.
+### Fixed
+- Bugfix: InputAxis.TriggerRecentering() function caused the axis to immediately snap to its recenter value.
+- Bugfix: When multiple CM Brains were present, FixedUpdte cameras were sometimes being updated too frequently, resulting in jittery motion.
+- Regression fix: StateDrivenCamera inspector was failing to correctly set the states in the instruction list.
+- Bugfix: Decollider ignored terrain layers when resolving obstacles.
+- Bugfix: The GroupAverage Rotation Mode in CinemachineTargetGroup was not calculated properly.
+- Bugfix: added missing null check in CinemachineTargetGroup.WeightedMemberBoundsForValidMember.
+- Bugfix: added missing null check in CinemachineDeoccluder.PushCameraBack().
+- Bugfix: Cinemachine did not work properly with scaled splines.
+
+### Changed
+- CinemachineGroupFraming now has a compatibility mode so that it can work with CinemachineConfiner2D out of the box.
+- Removed FadeOutNearbyObjects sample scene and shader, because they do not show anythng useful.
+- SimplePlayerController no longer uses PlayerController.isGrounded because it's not reliable outside of FixedUpdate.
 
 
 ## [3.1.0] - 2024-04-01
