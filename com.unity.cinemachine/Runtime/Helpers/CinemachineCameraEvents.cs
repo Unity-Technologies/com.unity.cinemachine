@@ -94,7 +94,7 @@ namespace Unity.Cinemachine
         void OnCameraDeactivated(ICinemachineMixer mixer, ICinemachineCamera cam)
         {
             if (cam == (ICinemachineCamera)EventTarget)
-                CameraActivatedEvent.Invoke(mixer, cam);
+                CameraDeactivatedEvent.Invoke(mixer, cam);
         }
     }
 }
