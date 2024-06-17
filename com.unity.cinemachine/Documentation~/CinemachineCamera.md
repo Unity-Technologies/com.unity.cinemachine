@@ -12,7 +12,10 @@ The CinemachineCamera is a component that you add to an empty GameObject. It rep
 | **Priority And Channel** || This setting controls how the output of this CinemachineCamera is used by the CinemachineBrain.  Enable this to use Priorities or custom CM output channels. |
 || _Channel_ | This is used to control which CinemachineBrain will be driven by this camera.  It is needed when there are multiple CinemachineBrains in the scene (for example, when implementing split-screen). |
 || _Priority_ | This is used to control which of several active CinemachineCameras should be live, when not controlled by Timeline. By default, priority is 0.  Use this to specify a custom priority value. A higher value indicates a higher priority. Negative values are also allowed. Cinemachine Brain chooses the next live CinemachineCamera from all CinemachineCameras that are activated and have the same or higher priority as the current live CinemachineCamera. This property has no effect when using a CinemachineCamera with Timeline. |
-| **Standby Update** || Controls how often the CinemachineCamera is updated when the CinemachineCamera is not live. |
+| **Standby Update** || Controls how often the Cinemachine Camera is updated when the Cinemachine Camera is not Live. Use this property to tune for performance. |
+|  | _Never_ | Only update if the Cinemachine Camera is Live. Don't set this value if you're using the Cinemachine Camera in shot evaluation context. |
+|  | _Always_ | Update the Cinemachine Camera every frame, even when it is not Live. |
+|  | _Round Robin_ | Update the Cinemachine Camera occasionally, at a frequency that depends on how many other Cinemachine Cameras are in Standby. |
 | **Blend Hint** || Provides hints for blending positions to and from the CinemachineCamera. Values can be combined together. |
 | | _Spherical Position_ | During a blend, camera will take a spherical path around the Tracking target. |
 | | _Cylindrical Position_ | During a blend, camera will take a cylindrical path around the Tracking target (vertical co-ordinate is linearly interpolated). |
