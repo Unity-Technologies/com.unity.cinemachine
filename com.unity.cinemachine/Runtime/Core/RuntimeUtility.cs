@@ -119,9 +119,6 @@ namespace Unity.Cinemachine
                 // Collect overlapping items
                 if (h.distance == 0 && h.normal == -dir)
                 {
-                    if (s_PenetrationIndexBuffer.Length > numPenetrations + 1)
-                        s_PenetrationIndexBuffer[numPenetrations++] = i;
-
                     // hitInfo for overlapping colliders will have special
                     // values that are not helpful to the caller.  Fix that here.
                     var scratchCollider = GetScratchCollider();
@@ -137,7 +134,12 @@ namespace Unity.Cinemachine
                         h.distance = offsetDistance - radius; // will be -ve
                         h.normal = offsetDir;
                         s_HitBuffer[i] = h;
-                        penetrationDistanceSum += h.distance;
+                        if (h.distance < -0.0001f)
+                        {
+                            penetrationDistanceSum += h.distance;
+                            if (s_PenetrationIndexBuffer.Length > numPenetrations + 1)
+                                s_PenetrationIndexBuffer[numPenetrations++] = i;
+                        }
                     }
                     else
                     {
@@ -169,9 +171,6 @@ namespace Unity.Cinemachine
             if (closestHit >= 0)
             {
                 hitInfo = s_HitBuffer[closestHit];
-                if (numHits == s_HitBuffer.Length)
-                    s_HitBuffer = new RaycastHit[s_HitBuffer.Length * 2]; // full! grow for next time
-
                 return true;
             }
             hitInfo = new RaycastHit();
