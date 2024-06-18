@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: The GroupAverage Rotation Mode in CinemachineTargetGroup was not calculated properly.
 - Bugfix: PostProcessing and VolumeSettings were not blending correctly to and from empty profiles.
 - Bugfix: added missing null check in CinemachineTargetGroup.WeightedMemberBoundsForValidMember.
+- Bugfix: RuntimeUtility.SphereCastIgnoreTag was sometimes retruning NaN result.
 
 
 ## [2.10.0] - 2024-01-01
