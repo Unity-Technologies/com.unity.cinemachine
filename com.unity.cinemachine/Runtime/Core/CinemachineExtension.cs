@@ -51,7 +51,7 @@ namespace Unity.Cinemachine
         protected virtual void OnEnable() {}
 
 #if UNITY_EDITOR
-        [UnityEditor.Callbacks.DidReloadScripts]
+        [Scripting.LifecycleManagement.AfterAssemblyLoaded]
         static void OnScriptReload()
         {
             var extensions = Resources.FindObjectsOfTypeAll<CinemachineExtension>();

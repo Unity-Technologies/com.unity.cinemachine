@@ -517,7 +517,7 @@ namespace Unity.Cinemachine
         }
 
 #if UNITY_EDITOR
-        [UnityEditor.Callbacks.DidReloadScripts]
+        [Scripting.LifecycleManagement.AfterAssemblyLoaded]
         static void OnScriptReload()
         {
             var vcams = Resources.FindObjectsOfTypeAll(
