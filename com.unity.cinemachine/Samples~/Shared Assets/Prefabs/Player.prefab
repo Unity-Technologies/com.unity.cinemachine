@@ -167,11 +167,12 @@ MonoBehaviour:
   Damping: 0.5
   Strafe: 0
   InputForward: 0
-  UpMode: 0
+  UpMode: 1
   CameraOverride: {fileID: 0}
   GroundLayers:
     serializedVersion: 2
     m_Bits: 1
+  Gravity: 10
 --- !u!114 &7804758404662293724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,6 +187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
+  IgnoreTimeScale: 0
   m_ControllerManager:
     Controllers:
     - Name: Move X
