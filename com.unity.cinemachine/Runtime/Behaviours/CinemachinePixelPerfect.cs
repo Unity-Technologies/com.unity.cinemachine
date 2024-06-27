@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-#if CINEMACHINE_URP || CINEMACHINE_PIXEL_PERFECT_2_0_3
+#if CINEMACHINE_URP
 
 namespace Unity.Cinemachine
 {
@@ -35,15 +35,7 @@ namespace Unity.Cinemachine
             if (brain == null || !brain.IsLiveChild(vcam))
                 return;
 
-#if CINEMACHINE_URP
-  #if UNITY_2023_2_OR_NEWER
             UnityEngine.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
-  #else
-            UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
-  #endif
-#elif CINEMACHINE_PIXEL_PERFECT_2_0_3
-            UnityEngine.U2D.PixelPerfectCamera pixelPerfectCamera;
-#endif
             brain.TryGetComponent(out pixelPerfectCamera);
             if (pixelPerfectCamera == null || !pixelPerfectCamera.isActiveAndEnabled)
                 return;

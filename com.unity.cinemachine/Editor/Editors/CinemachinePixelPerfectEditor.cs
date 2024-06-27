@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
 
-#if CINEMACHINE_URP || CINEMACHINE_PIXEL_PERFECT_2_0_3
+#if CINEMACHINE_URP
             this.AddMissingCmCameraHelpBox(ux);
 #else
             ux.Add(new HelpBox("This component is only valid within URP projects", HelpBoxMessageType.Warning));

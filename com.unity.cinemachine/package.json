@@ -30,7 +30,7 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.0.0"
+    "com.unity.splines": "2.3.0"
   },
   "samples": [
     {

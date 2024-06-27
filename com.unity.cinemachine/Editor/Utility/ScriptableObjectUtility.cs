@@ -103,8 +103,8 @@ namespace Unity.Cinemachine.Editor
             for (int n = 0; n < 9999; n++)
             {
                 string assetPath = string.Format("{0}/{1}{2}.asset", folder, assetName, (n == 0 ? "" : n.ToString()));
-                string existingGUID = AssetDatabase.AssetPathToGUID(assetPath);
-                if (string.IsNullOrEmpty(existingGUID))
+                var existingGUID = AssetDatabase.GUIDFromAssetPath(assetPath);
+                if (existingGUID.Empty())
                 {
                     return assetPath;
                 }

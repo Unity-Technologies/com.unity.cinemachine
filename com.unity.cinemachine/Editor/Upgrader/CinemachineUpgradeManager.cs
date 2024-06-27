@@ -757,7 +757,7 @@ namespace Unity.Cinemachine.Editor
 
             public SceneManager()
             {
-                var allSceneGuids = new List<string>();
+                var allSceneGuids = new List<GUID>();
                 allSceneGuids.AddRange(AssetDatabase.FindAssets("t:scene", new[] { "Assets" }));
 
                 for (var i = allSceneGuids.Count - 1; i >= 0; --i)

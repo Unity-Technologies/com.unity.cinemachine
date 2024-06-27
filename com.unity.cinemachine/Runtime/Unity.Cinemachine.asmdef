@@ -58,11 +58,6 @@
             "define": "CINEMACHINE_URP"
         },
         {
-            "name": "com.unity.2d.pixel-perfect",
-            "expression": "2.0.3",
-            "define": "CINEMACHINE_PIXEL_PERFECT_2_0_3"
-        },
-        {
             "name": "com.unity.inputsystem",
             "expression": "1.0.0-preview",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"

@@ -43,9 +43,9 @@ namespace Unity.Cinemachine
             driver.AddFromName<Transform>("m_LocalRotation.z");
             driver.AddFromName<Transform>("m_LocalRotation.w");
 
-            driver.AddFromName<Camera>("field of view");
-            driver.AddFromName<Camera>("near clip plane");
-            driver.AddFromName<Camera>("far clip plane");
+            driver.AddFromName<Camera>("m_FieldOfView");
+            driver.AddFromName<Camera>("m_NearClip");
+            driver.AddFromName<Camera>("m_FarClip");
         }
     }
 }
