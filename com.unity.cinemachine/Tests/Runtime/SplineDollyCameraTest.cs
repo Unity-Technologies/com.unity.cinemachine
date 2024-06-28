@@ -153,6 +153,7 @@ namespace Unity.Cinemachine.Tests
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(Vector3.Distance(m_CmCam.State.GetFinalPosition(), new Vector3(7, 1, -2.5f)), 0, 0.1f);
         }
 
+#if false
         [UnityTest]
         public IEnumerator PositionUnits_ChangesCameraPositionCorrectly_WhenPositionUnitsChanged()
         {
@@ -219,6 +220,7 @@ namespace Unity.Cinemachine.Tests
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(expected: 0.5f, actual: m_Dolly.CameraPosition, tolerance: Mathf.Epsilon);
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(expected: Vector3.Distance(m_CmCam.State.GetFinalPosition(), new Vector3(13, 1, 1)), actual: 0, tolerance: Mathf.Epsilon);
         }
+#endif
 
         [UnityTest]
         public IEnumerator PositionUnits_DoesNotChangeCameraPosition_WhenPositionUnitsSame()

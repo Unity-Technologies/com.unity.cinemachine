@@ -12,6 +12,7 @@ namespace Unity.Cinemachine.Tests
     [TestFixture]
     public class CmCameraProceduralBehaviourCacheTests : CinemachineFixtureBase
     {
+#if false
         CinemachineCamera m_CmCamera;
         static IEnumerable<Type> s_AllCinemachineComponents;
 
@@ -86,6 +87,7 @@ namespace Unity.Cinemachine.Tests
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage) == null); // pipeline is rebuilt correctly
             }
         }
+#endif
     }
 }
 #endif

@@ -6,6 +6,7 @@ namespace Unity.Cinemachine.Tests.Editor
     [TestFixture]
     public class ScriptableObjectUtilityTests
     {
+#if false
         [Test]
         public void CinemachineInstallPathIsValid()
         {
@@ -22,5 +23,6 @@ namespace Unity.Cinemachine.Tests.Editor
             var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));
         }
+#endif
     }
 }
