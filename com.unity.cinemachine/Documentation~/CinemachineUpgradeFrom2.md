@@ -11,9 +11,9 @@ Here are the steps to take when upgrading an existing project from CM 2.X:
    1. Update the `using Cinemachine` declarations.  The namespaces have been changed to `Unity.Cinemachine`.
    1. Update any references to the renamed components.
    1. Update the broken CM field names. For the most part, this just means removing the m_ prefix. In other cases, there might be a bit more to do, but the appropriate action to take should be clear by looking at the code in each case.
-   1. At this point your project should more-or-less run as before, using the obsolete classes.
+   1. At this point your project should more-or-less run as before, using the obsolete classes.  Do not leave it this way!  Continue on to the next steps.
 1. The new `CinemachineCamera` class that replaces `CinemachineVirtualCamera` and `CinemachineFreeLook` inherits from `CinemachineVirtualCameraBase`.  Where possible, replace your script references to use this base class rather than the derived type. If you do this, the CM upgrader tool will be able to preserve existing object references, since the old and new classes all inherit from this same base class.
-1. Upgrade the project data by running the Cinemachine Upgrader. You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLook inspector.
+1. Upgrade the project data by running the Cinemachine Upgrader. You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLook inspector.  If all the relevant inspectors are inside prefabs, then you can make a temporary CinemachineVirtualCamera object and upgrade from its inspector.
 1. Because CM component types have changed, you will have to manually go through your scripts and update any specific references to be to the new type. The console log is your friend: "obsolete" warnings will point you to the places that need attention.
 1. After the data upgrade, object references might be broken. You will need to check and repair them if necessary.
 1. If you are using layers to filter cameras into separate split-screen brains, that filtering will stop working until after you have upgraded to CinemachineCameras and switched the filtering over to Channels.
