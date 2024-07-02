@@ -67,13 +67,13 @@ The _SimpleFollowWithWorldUp_ binding mode has been renamed to _LazyFollow_.
 ### CinemachineCore.Instance is removed
 
 Most methods and properties that used to be accessed via the `CinemachineCore.Instance` singleton are now direct static methods and properties on `CinemachineCore`.
-There are some exceptions, notably `ActiveBrainCount` and `GetActiveBrain()`.  These are now static methods in `CinemachineBrain`.
+There are some exceptions, notably `ActiveBrainCount` and `GetActiveBrain()` which are now static methods in `CinemachineBrain`.
 
 ### Cleaner Object Structure, No Hidden GameObjects
 
 Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the vcam, named "cm". This has been removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CinemachineCamera GameObject. You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.
 
-You will now see the `cm` child objects of your legacy CM vcams in the hierarchy, because CM3 unhides them. This is not a license to mess with these objects - they were hidden for a reason. We recommend that you get rid of them by upgrading the parent objects to their CM3 equivalents.
+You will now see the `cm` child objects of your legacy CM vcams in the hierarchy, because CM3 unhides them. This is not a license to mess with these objects - they were hidden for a reason. We recommend that you get rid of them by upgrading the parent objects to their CM3 equivalents.  If any of them are still there after the components have been upgraded, it is safe to simply delete them.
 
 ### New Input Handling
 User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller by inheriting InputAxisControllerBase.
@@ -119,5 +119,7 @@ You can also choose to update all the CM objects in the current scene. Again, th
 
 ### Upgrading the Whole Project
 The "Upgrade Entire Project" option will upgrade all the objects in all the scenes and all the prefabs. There is logic to handle animation tracks, script references, and prefab instances. It's a major operation and every scene and prefab in the project will be opened and saved multiple times. Undo is not supported, so be sure to make a complete backup first.
+
+Select this option if you have prefabs to upgrade, or in any case other than the simplest of scenes.
 
 
