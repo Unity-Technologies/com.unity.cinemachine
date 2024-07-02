@@ -66,7 +66,8 @@ The _SimpleFollowWithWorldUp_ binding mode has been renamed to _LazyFollow_.
 
 ### CinemachineCore.Instance is removed
 
-Methods and properties that used to be accessed via the `CinemachineCore.Instance` singleton are now direct static methods and properties on `CinemachineCore`.
+Most methods and properties that used to be accessed via the `CinemachineCore.Instance` singleton are now direct static methods and properties on `CinemachineCore`.
+There are some exceptions, notably `ActiveBrainCount` and `GetActiveBrain()`.  These are now static methods in `CinemachineBrain`.
 
 ### Cleaner Object Structure, No Hidden GameObjects
 
