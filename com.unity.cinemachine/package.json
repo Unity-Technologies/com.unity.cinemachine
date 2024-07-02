@@ -30,23 +30,14 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.3.0"
+    "com.unity.splines": "2.3.0",
+    "com.unity.inputsystem": "1.8.3"
   },
   "samples": [
     {
-      "displayName": "2D Samples",
-      "description": "Sample scenes illustrating various ways to use Cinemachine in a 2D setting",
-      "path": "Samples~/2D Samples"
-    },
-    {
-      "displayName": "3D Samples",
-      "description": "Sample scenes illustrating various ways to use Cinemachine in a 3D setting",
-      "path": "Samples~/3D Samples"
-    },
-    {
-      "displayName": "Input System Samples",
-      "description": "Sample scenes illustrating various ways to use Cinemachine with the input system.",
-      "path": "Samples~/Input System Samples"
+      "displayName": "Samples",
+      "description": "Sample scenes illustrating various ways to use Cinemachine",
+      "path": "Samples~"
     }
   ]
 }
