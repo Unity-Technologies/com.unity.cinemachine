@@ -30,8 +30,7 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.3.0",
-    "com.unity.inputsystem": "1.8.3"
+    "com.unity.splines": "2.3.0"
   },
   "samples": [
     {
