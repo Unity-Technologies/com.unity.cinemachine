@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Editor
 {
     [CanEditMultipleObjects]
     [CustomEditor(typeof(CinemachineStateDrivenCamera))]
-    class CinemachineStateDrivenCameraEditor : UnityEditor.Editor
+    class CinemachineStateDrivenCameraEditor : CinemachineVirtualCameraBaseEditor
     {
         CinemachineStateDrivenCamera Target => target as CinemachineStateDrivenCamera;
 
@@ -20,15 +20,8 @@ namespace Unity.Cinemachine.Editor
         List<string> m_TargetStateNames = new();
         Dictionary<int, int> m_StateIndexLookup;
 
-        public override VisualElement CreateInspectorGUI()
+        protected override void AddInspectorProperties(VisualElement ux)
         {
-            var ux = new VisualElement();
-
-            var noTargetHelp = ux.AddChild(new HelpBox("An Animated Target is required.", HelpBoxMessageType.Warning));
-
-            this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux);
-
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
 
@@ -36,8 +29,8 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
 
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.AnimatedTarget)));
             var layerProp = serializedObject.FindProperty(() => Target.LayerIndex);
             var layerSel = ux.AddChild(new PopupField<string>(layerProp.displayName) { tooltip = layerProp.tooltip });
             layerSel.AddToClassList(InspectorUtility.AlignFieldClassName);
@@ -46,6 +39,7 @@ namespace Unity.Cinemachine.Editor
                 layerProp.intValue = Mathf.Max(0, m_LayerNames.FindIndex(v => v == evt.newValue));
                 serializedObject.ApplyModifiedProperties();
             });
+            var noTargetHelp = ux.AddChild(new HelpBox("An Animated Target is required.", HelpBoxMessageType.Warning));
 
             ux.TrackAnyUserActivity(() =>
             {
@@ -166,12 +160,6 @@ namespace Unity.Cinemachine.Editor
                 availableCameras.Clear();
                 availableCameras.AddRange(Target.ChildCameras);
             });
-            container.AddSpace();
-            this.AddChildCameras(container, null);
-            container.AddSpace();
-            this.AddExtensionsDropdown(ux);
-
-            return ux;
 
             // Local function
             static void FormatInstructionElement(

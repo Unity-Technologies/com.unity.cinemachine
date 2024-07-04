@@ -8,17 +8,12 @@ namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineSequencerCamera))]
     [CanEditMultipleObjects]
-    class CinemachineSequencerCameraEditor : UnityEditor.Editor
+    class CinemachineSequencerCameraEditor : CinemachineVirtualCameraBaseEditor
     {
         CinemachineSequencerCamera Target => target as CinemachineSequencerCamera;
 
-        public override VisualElement CreateInspectorGUI()
+        protected override void AddInspectorProperties(VisualElement ux)
         {
-            var ux = new VisualElement();
-
-            this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux);
-
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
 
@@ -77,9 +72,6 @@ namespace Unity.Cinemachine.Editor
                 return row;
             };
 
-            container.AddSpace();
-            this.AddChildCameras(container, null);
-
             container.TrackAnyUserActivity(() =>
             {
                 if (Target == null || list.itemsSource == null)
@@ -98,9 +90,6 @@ namespace Unity.Cinemachine.Editor
                 availableCameras.Clear();
                 availableCameras.AddRange(Target.ChildCameras);
             });
-            this.AddExtensionsDropdown(ux);
-
-            return ux;
 
             // Local function
             static void FormatInstructionElement(bool isHeader, VisualElement e1, VisualElement e2, VisualElement e3)

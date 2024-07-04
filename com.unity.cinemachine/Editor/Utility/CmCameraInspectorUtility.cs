@@ -151,19 +151,6 @@ namespace Unity.Cinemachine.Editor
             });
         }
 
-        public static void AddTransitionsSection(
-            this UnityEditor.Editor editor, VisualElement ux, 
-            List<SerializedProperty> otherProperties = null)
-        {
-            var serializedObject = editor.serializedObject;
-            var target = editor.target as CinemachineVirtualCameraBase;
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
-            for (int i = 0; otherProperties != null && i < otherProperties.Count; ++i)
-                ux.Add(new PropertyField(otherProperties[i]));
-        }
-
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>
         public static void AddPipelineDropdowns(this UnityEditor.Editor editor, VisualElement ux)
         {

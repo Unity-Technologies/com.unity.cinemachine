@@ -7,19 +7,14 @@ using UnityEditor.UIElements;
 namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineMixingCamera))]
-    class CinemachineMixingCameraEditor : UnityEditor.Editor
+    class CinemachineMixingCameraEditor : CinemachineVirtualCameraBaseEditor
     {
         CinemachineMixingCamera Target => target as CinemachineMixingCamera;
 
         static string WeightPropertyName(int i) => "Weight" + i;
 
-        public override VisualElement CreateInspectorGUI()
+        protected override void AddInspectorProperties(VisualElement ux)
         {
-            var ux = new VisualElement();
-
-            this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux);
-
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
 
@@ -47,9 +42,6 @@ namespace Unity.Cinemachine.Editor
                 DrawProportionIndicator(children, numCameras, totalWeight);
             }));
 
-            ux.AddSpace();
-            this.AddExtensionsDropdown(ux);
-
             ux.TrackAnyUserActivity(() =>
             {
                 if (Target == null)
@@ -67,8 +59,6 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; i < weights.Count; ++i)
                     weights[i].SetVisible(i < numCameras);
             });
-
-            return ux;
         }
 
         void DrawProportionIndicator(
