@@ -36,6 +36,7 @@ namespace Unity.Cinemachine.Editor
             });
             enumField.TrackPropertyValue(indexUnitProp, (p) => enumField.value = (PathIndexUnit)indexUnitProp.enumValueIndex);
             enumField.TrackAnyUserActivity(() => enumField.SetEnabled(getSpline?.Invoke() != null));
+            enumField.AddToClassList(InspectorUtility.AlignFieldClassName);
 
             return enumField;
         }
