@@ -253,7 +253,7 @@ namespace Unity.Cinemachine.Editor
             row.focusable = false;
             row.Label.style.flexGrow = 1;
             row.Label.style.paddingTop = verticalPad;
-            row.Label.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing - 2;
+            row.Label.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
         }
 
         /// <summary>

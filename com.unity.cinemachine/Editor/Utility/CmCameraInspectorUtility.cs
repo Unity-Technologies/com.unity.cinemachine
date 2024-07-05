@@ -519,7 +519,7 @@ namespace Unity.Cinemachine.Editor
                 { 
                     name = "vcamSelector",
                     objectType = typeof(CinemachineVirtualCameraBase),
-                    style = { flexBasis = 20, flexGrow = 1 }
+                    style = { flexBasis = floatFieldWidth * 2, flexGrow = 1, flexShrink = 0 }
                 }).SetEnabled(false);
 
                 var priorityField = row.AddChild(InspectorUtility.CreateDraggableField(
@@ -527,6 +527,7 @@ namespace Unity.Cinemachine.Editor
                 priorityField.name = "priorityField";
                 priorityField.style.flexBasis = floatFieldWidth;
                 priorityField.style.flexGrow = 0;
+                priorityField.style.flexShrink = 0;
                 priorityField.style.marginRight = 4;
                 priorityField.SafeSetIsDelayed();
 
