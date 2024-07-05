@@ -57,7 +57,7 @@ namespace Unity.Cinemachine.Samples
             }
         }
 
-        void Start()
+        protected virtual void Start()
         {
             m_PreviousPosition = transform.position;
             m_Controller = GetComponentInParent<SimplePlayerControllerBase>();
@@ -74,7 +74,7 @@ namespace Unity.Cinemachine.Samples
         /// LateUpdate is used to avoid having to worry about script execution order:
         /// it can be assumed that the player has already been moved.
         /// </summary>
-        virtual protected void LateUpdate()
+        protected virtual void LateUpdate()
         {
             // In no-controller mode, we monitor the player's motion and deduce the appropriate animation.
             // We don't support jumping in this mode.
@@ -95,7 +95,7 @@ namespace Unity.Cinemachine.Samples
         /// <param name="vel">Player's velocity, in player-local coordinates.</param>
         /// <param name="jumpAnimationScale">Scale factor to apply to the jump animation.  
         /// It can be used to slow down the jump animation for longer jumps.</param>
-        virtual protected void UpdateAnimation(Vector3 vel, float jumpAnimationScale)
+        protected virtual void UpdateAnimation(Vector3 vel, float jumpAnimationScale)
         {
             if (!TryGetComponent(out Animator animator))
             {
