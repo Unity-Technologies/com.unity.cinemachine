@@ -1,6 +1,8 @@
 using System;
 using UnityEditor;
+using UnityEditor.EditorTools;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -24,6 +26,37 @@ namespace Unity.Cinemachine.Editor
         static string SkinSuffix => EditorGUIUtility.isProSkin ? "Dark" : "Light";
         static string ResourcePath => $"{CinemachineCore.kPackageRoot}/Editor/EditorResources";
         public static string IconPath => $"{ResourcePath}/Icons/{SkinSuffix}";
+
+        static Color s_NormalBkgColor = Color.black;
+
+        /// <summary>Create a button for the inspector that activates a scene tool</summary>
+        public static VisualElement CreateSceneToolActivationButtonForInspector(Type toolType, string iconPath, string tooltip)
+        {
+            var toolButton = new Button(() => ToolManager.SetActiveTool(toolType))
+            { 
+                tooltip = tooltip,
+                style = 
+                { 
+                    flexGrow = 0,
+                    flexBasis = 2 * InspectorUtility.SingleLineHeight,
+                    height = InspectorUtility.SingleLineHeight + 3,
+                },
+            };
+            toolButton.Add(new Image { image = AssetDatabase.LoadAssetAtPath<Texture2D>(iconPath) });
+
+            // Capture "normal" colors
+            if (s_NormalBkgColor == Color.black)
+                toolButton.OnInitialGeometry(() => s_NormalBkgColor = toolButton.resolvedStyle.backgroundColor);
+
+            toolButton.ContinuousUpdate(() => 
+            {
+                if (ToolManager.activeToolType == toolType)
+                    toolButton.style.backgroundColor = Color.Lerp(s_NormalBkgColor, new Color(0.1f, 0.3f, 0.6f, 1), 0.5f);
+                else
+                    toolButton.style.backgroundColor = s_NormalBkgColor;
+            });
+            return toolButton;
+        }
 
         public static float SliderHandleDelta(Vector3 newPos, Vector3 oldPos, Vector3 forward)
         {

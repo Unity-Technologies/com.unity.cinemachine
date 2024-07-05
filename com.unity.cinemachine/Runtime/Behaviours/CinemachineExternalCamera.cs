@@ -14,14 +14,6 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {
-        /// <summary>The object that the camera is looking at.  Setting this may improve the
-        /// quality of the blends to and from this camera</summary>
-        [Tooltip("The object that the camera is looking at.  Setting this may improve the "
-            + "quality of the blends to and from this camera")]
-        [NoSaveDuringPlay]
-        [FormerlySerializedAs("m_LookAt")]
-        public Transform LookAtTarget = null;
-
         /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
         /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
         /// make an arbitrary choice.</summary>
@@ -31,6 +23,14 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_PositionBlending")]
         [FormerlySerializedAs("m_BlendHint")]
         public CinemachineCore.BlendHints BlendHint = 0;
+
+        /// <summary>The object that the camera is looking at.  Setting this may improve the
+        /// quality of the blends to and from this camera</summary>
+        [Tooltip("The object that the camera is looking at.  Setting this may improve the "
+            + "quality of the blends to and from this camera")]
+        [NoSaveDuringPlay]
+        [FormerlySerializedAs("m_LookAt")]
+        public Transform LookAtTarget = null;
 
         Camera m_Camera;
         CameraState m_State = CameraState.Default;

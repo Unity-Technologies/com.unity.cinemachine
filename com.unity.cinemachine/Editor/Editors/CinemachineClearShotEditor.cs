@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineClearShot))]
     [CanEditMultipleObjects]
-    class CinemachineClearShotEditor : UnityEditor.Editor
+    class CinemachineClearShotEditor : CinemachineVirtualCameraBaseEditor
     {
         CinemachineClearShot Target => target as CinemachineClearShot;
         EvaluatorState m_EvaluatorState;
@@ -22,16 +22,12 @@ namespace Unity.Cinemachine.Editor
             return "Available Shot Quality Evaluators are: " + names;
         }
 
-        public override VisualElement CreateInspectorGUI()
+        protected override void AddInspectorProperties(VisualElement ux)
         {
-            var ux = new VisualElement();
-
-            var helpBox = ux.AddChild(new HelpBox());
-            this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux);
-
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
+
+            var helpBox = ux.AddChild(new HelpBox());
 
             ux.AddHeader("Clear Shot");
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultTarget)));
@@ -40,10 +36,6 @@ namespace Unity.Cinemachine.Editor
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.RandomizeChoice)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.DefaultBlend)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.CustomBlends)));
-
-            ux.AddSpace();
-            this.AddChildCameras(ux, GetChildWarningMessage);
-            this.AddExtensionsDropdown(ux);
 
             ux.TrackAnyUserActivity(() =>
             {
@@ -80,7 +72,6 @@ namespace Unity.Cinemachine.Editor
                         break;
                 }
             });
-            return ux;
         }
 
         enum EvaluatorState

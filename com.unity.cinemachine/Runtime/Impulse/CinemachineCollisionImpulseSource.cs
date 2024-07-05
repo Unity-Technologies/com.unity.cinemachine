@@ -10,13 +10,15 @@ namespace Unity.Cinemachine
     public class CinemachineCollisionImpulseSource : CinemachineImpulseSource {}
 #else
     /// <summary>
-    /// Generate an Impulse Event this object's Collider collides with something
+    /// Generate an Impulse Event when this object's Collider collides with something
     /// or its trigger zone is entered.
     ///
     /// This component should be attached to a GameObject with a Collider or a Collider2D.
     /// Objects colliding with this (or entering its trigger zone if it's a trigger) will be
     /// filtered according to the layer and tag settings defined here, and if they
     /// pass the filter, they will cause an impulse event to be generated.
+    ///
+    /// Use CinemachineImpulseSource.ImpulseDefinition to define the characteristics of the impulse.
     /// </summary>
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Collision Impulse Source")]

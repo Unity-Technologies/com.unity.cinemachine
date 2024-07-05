@@ -11,9 +11,9 @@ Here are the steps to take when upgrading an existing project from CM 2.X:
    1. Update the `using Cinemachine` declarations.  The namespaces have been changed to `Unity.Cinemachine`.
    1. Update any references to the renamed components.
    1. Update the broken CM field names. For the most part, this just means removing the m_ prefix. In other cases, there might be a bit more to do, but the appropriate action to take should be clear by looking at the code in each case.
-   1. At this point your project should more-or-less run as before, using the obsolete classes.
+   1. At this point your project should more-or-less run as before, using the obsolete classes.  Do not leave it this way!  Continue on to the next steps.
 1. The new `CinemachineCamera` class that replaces `CinemachineVirtualCamera` and `CinemachineFreeLook` inherits from `CinemachineVirtualCameraBase`.  Where possible, replace your script references to use this base class rather than the derived type. If you do this, the CM upgrader tool will be able to preserve existing object references, since the old and new classes all inherit from this same base class.
-1. Upgrade the project data by running the Cinemachine Upgrader. You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLook inspector.
+1. Upgrade the project data by running the Cinemachine Upgrader. You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLook inspector.  If all the relevant inspectors are inside prefabs, then you can make a temporary CinemachineVirtualCamera object and upgrade from its inspector.
 1. Because CM component types have changed, you will have to manually go through your scripts and update any specific references to be to the new type. The console log is your friend: "obsolete" warnings will point you to the places that need attention.
 1. After the data upgrade, object references might be broken. You will need to check and repair them if necessary.
 1. If you are using layers to filter cameras into separate split-screen brains, that filtering will stop working until after you have upgraded to CinemachineCameras and switched the filtering over to Channels.
@@ -66,13 +66,14 @@ The _SimpleFollowWithWorldUp_ binding mode has been renamed to _LazyFollow_.
 
 ### CinemachineCore.Instance is removed
 
-Methods and properties that used to be accessed via the `CinemachineCore.Instance` singleton are now direct static methods and properties on `CinemachineCore`.
+Most methods and properties that used to be accessed via the `CinemachineCore.Instance` singleton are now direct static methods and properties on `CinemachineCore`.
+There are some exceptions, notably `ActiveBrainCount` and `GetActiveBrain()` which are now static methods in `CinemachineBrain`.
 
 ### Cleaner Object Structure, No Hidden GameObjects
 
 Cinemachine 2.x implemented the CM pipeline on a hidden GameObject child of the vcam, named "cm". This has been removed in CM 3.0, and CM pipeline components (such as OrbitalFollow or RotationComposer) are now implemented directly as components on the CinemachineCamera GameObject. You can access them as you would any other components: `GetCinemcachineComponent()` is no longer necessary, just use `GetComponent()`.
 
-You will now see the `cm` child objects of your legacy CM vcams in the hierarchy, because CM3 unhides them. This is not a license to mess with these objects - they were hidden for a reason. We recommend that you get rid of them by upgrading the parent objects to their CM3 equivalents.
+You will now see the `cm` child objects of your legacy CM vcams in the hierarchy, because CM3 unhides them. This is not a license to mess with these objects - they were hidden for a reason. We recommend that you get rid of them by upgrading the parent objects to their CM3 equivalents.  If any of them are still there after the components have been upgraded, it is safe to simply delete them.
 
 ### New Input Handling
 User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller by inheriting InputAxisControllerBase.
@@ -118,5 +119,7 @@ You can also choose to update all the CM objects in the current scene. Again, th
 
 ### Upgrading the Whole Project
 The "Upgrade Entire Project" option will upgrade all the objects in all the scenes and all the prefabs. There is logic to handle animation tracks, script references, and prefab instances. It's a major operation and every scene and prefab in the project will be opened and saved multiple times. Undo is not supported, so be sure to make a complete backup first.
+
+Select this option if you have prefabs to upgrade, or in any case other than the simplest of scenes.
 
 

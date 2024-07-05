@@ -38,7 +38,10 @@ To create a State-Driven camera:
 | __Custom Output__ || This setting controls how the output of this CinemachineCamera is used by the CinemachineBrain.  Enable this to use Priorities or custom CM output channels. |
 || _Channel_ | This controls which CinemachineBrain will be driven by this camera.  It is needed when there are multiple CinemachineBrains in the scene (for example, when implementing split-screen). |
 || _Priority_ | This is used to control which of several active CinemachineCameras should be live, when not controlled by Timeline. By default, priority is 0.  Use this to specify a custom priority value. A higher value indicates a higher priority. Negative values are also allowed. Cinemachine Brain chooses the next live CinemachineCamera from all CinemachineCameras that are activated and have the same or higher priority as the current live CinemachineCamera. This property has no effect when using a CinemachineCamera with Timeline. |
-| __Standby Update__ || Controls how often the CinemachineCamera is updated when the CinemachineCamera is not live. |
+| __Standby Update__ || Controls how often the Cinemachine Camera is updated when the Cinemachine Camera is not Live. Use this property to tune for performance. |
+|  | _Never_ | Only update if the Cinemachine Camera is Live. Don't set this value if you're using the Cinemachine Camera in shot evaluation context. |
+|  | _Always_ | Update the Cinemachine Camera every frame, even when it is not Live. |
+|  | _Round Robin_ | Update the Cinemachine Camera occasionally, at a frequency that depends on how many other Cinemachine Cameras are in Standby. |
 | __Default Target__ || If enabled, this target will be used as fallback if child CinemachineCameras don't specify a Tracking Target of their own |
 | __Show Debug Text__ || If enabled, the current state information will be displayed in the Game View. |
 | __Animated Target__ || The GameObject that contains the Animator Controller. The State-Drive camera reacts to the animation state changes from this GameObject. |
@@ -50,5 +53,3 @@ To create a State-Driven camera:
 | __Wait__ || The delay to activate the CinemachineCamera (in seconds) once this state is entered. For example, the animation target moves from an active Walk state, to a Jog state, to a Run state. If the Jog Wait time is set to four seconds, the Walk CinemachineCamera remains active for those four seconds even though the Jog state is now active. If the Jog state duration is less than the Wait time before the animation target passes into another state, the Jog CinemachineCamera will not activate and is bypassed. |
 | __Min__ || The minimum length of time (in seconds) the CinemachineCamera must remain active once it is activated. For example, the animation target enters the Run state from the Jog state. It has spent five seconds in the Jog state before moving to the Run state. The Jog Min is set to 12 seconds. This means that the Jog CinemachineCamera remains the active camera for an additional seven seconds even though the animation target is in the Run state. |
 | __CinemachineCamera Children__ || The list of CinemachineCameras that are children of the State-Driven camera. |
-
-
