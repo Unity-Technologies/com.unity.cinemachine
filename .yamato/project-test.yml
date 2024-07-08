@@ -16,7 +16,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRP project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
@@ -35,7 +35,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRP project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows:
@@ -53,7 +53,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRP project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
@@ -71,7 +71,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRP project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
@@ -90,7 +90,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRP project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows:
@@ -108,7 +108,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRPInputSystem project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos:
@@ -126,7 +126,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRPInputSystem project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu:
@@ -145,7 +145,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRPInputSystem project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows:
@@ -163,7 +163,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRPInputSystem project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos:
@@ -181,7 +181,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRPInputSystem project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu:
@@ -200,7 +200,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run HDRPInputSystem project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows:
@@ -218,7 +218,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run Standalone project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
@@ -236,7 +236,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run Standalone project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
@@ -255,7 +255,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run Standalone project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_standalone_-_2022_3_-_windows:
@@ -273,7 +273,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run Standalone project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
@@ -291,7 +291,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run Standalone project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
@@ -310,7 +310,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run Standalone project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_standalone_-_6000_0_-_windows:
@@ -328,7 +328,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run StandaloneInputSystem project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos:
@@ -346,7 +346,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run StandaloneInputSystem project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu:
@@ -365,7 +365,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run StandaloneInputSystem project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows:
@@ -383,7 +383,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run StandaloneInputSystem project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos:
@@ -401,7 +401,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run StandaloneInputSystem project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu:
@@ -420,7 +420,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run StandaloneInputSystem project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows:
@@ -438,7 +438,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URP project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
@@ -456,7 +456,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URP project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
@@ -475,7 +475,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URP project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_urp_-_2022_3_-_windows:
@@ -493,7 +493,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URP project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
@@ -511,7 +511,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URP project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
@@ -530,7 +530,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URP project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_urp_-_6000_0_-_windows:
@@ -548,7 +548,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URPInputSystem project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos:
@@ -566,7 +566,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URPInputSystem project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu:
@@ -585,7 +585,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URPInputSystem project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows:
@@ -603,7 +603,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URPInputSystem project tests for Cinemachine on MacOS
 test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos:
@@ -621,7 +621,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URPInputSystem project tests for Cinemachine on Ubuntu
 test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu:
@@ -640,7 +640,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 
 # Run URPInputSystem project tests for Cinemachine on Windows
 test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows:
@@ -658,5 +658,5 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows:
       paths:
       - artifacts/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
 

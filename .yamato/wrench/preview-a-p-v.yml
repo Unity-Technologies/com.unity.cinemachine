@@ -19,7 +19,7 @@ all_preview_apv_jobs:
     cancel_old_ci: true
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 2021.3 manifest (MacOS).
 preview_apv_-_2021_3_-_macos:
@@ -63,12 +63,12 @@ preview_apv_-_2021_3_-_macos:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 2021.3 manifest (Ubuntu).
 preview_apv_-_2021_3_-_ubuntu:
@@ -112,12 +112,12 @@ preview_apv_-_2021_3_-_ubuntu:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 2021.3 manifest (Windows).
 preview_apv_-_2021_3_-_windows:
@@ -161,12 +161,12 @@ preview_apv_-_2021_3_-_windows:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 2022.3 manifest (MacOS).
 preview_apv_-_2022_3_-_macos:
@@ -210,12 +210,12 @@ preview_apv_-_2022_3_-_macos:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 2022.3 manifest (Ubuntu).
 preview_apv_-_2022_3_-_ubuntu:
@@ -259,12 +259,12 @@ preview_apv_-_2022_3_-_ubuntu:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 2022.3 manifest (Windows).
 preview_apv_-_2022_3_-_windows:
@@ -308,12 +308,12 @@ preview_apv_-_2022_3_-_windows:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (MacOS).
 preview_apv_-_6000_0_-_macos:
@@ -357,12 +357,12 @@ preview_apv_-_6000_0_-_macos:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (Ubuntu).
 preview_apv_-_6000_0_-_ubuntu:
@@ -406,12 +406,12 @@ preview_apv_-_6000_0_-_ubuntu:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (Windows).
 preview_apv_-_6000_0_-_windows:
@@ -455,10 +455,10 @@ preview_apv_-_6000_0_-_windows:
       paths:
       - upm-ci~/pvp/**/*
   dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#pack_and_sign_-_cinemachine
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.8.22.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.8.22.0
+    Wrench: 0.10.2.0
 
