@@ -43,9 +43,9 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// When enabled, roll eases into and out of the data point values
+        /// When enabled, roll eases into and out of the data point values.  Otherwise, interpolation is linear.
         /// </summary>
-        [Tooltip("When enabled, roll eases into and out of the data point values.")]
+        [Tooltip("When enabled, roll eases into and out of the data point values.  Otherwise, interpolation is linear.")]
         public bool Easing = true;
 
         /// <summary>
