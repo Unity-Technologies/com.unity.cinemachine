@@ -23,8 +23,8 @@ package_pack_-_cinemachine:
       - upm-ci~/packages/**/*
   variables:
     UPMCI_ACK_LARGE_PACKAGE: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.2.0
+    UPMPVP_CONTEXT_WRENCH: 0.10.3.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.2.0
+    Wrench: 0.10.3.0
 

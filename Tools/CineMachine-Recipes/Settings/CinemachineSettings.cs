@@ -6,7 +6,7 @@ namespace Cinemachine.Cookbook.Settings;
 public class CinemachineSettings
 {
     // Path from the root of the repository where packages are located.
-    string[] PackagesRootPath = { "." };
+    string[] PackagesRootPaths = { "." };
 
     // update this to list all packages in this repo that you want to release.
     Dictionary<string, PackageOptions> PackageOptions = new()
@@ -30,7 +30,7 @@ public class CinemachineSettings
     public CinemachineSettings()
     {
         Wrench = new WrenchSettings(
-            PackagesRootPath,
+            PackagesRootPaths,
             PackageOptions,
             useLocalPvpExemptions: true
         );
