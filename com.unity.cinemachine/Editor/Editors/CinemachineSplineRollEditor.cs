@@ -37,6 +37,7 @@ namespace Unity.Cinemachine.Editor
 
             var rollProp = serializedObject.FindProperty(() => splineData.Roll);
             ux.Add(SplineDataInspectorUtility.CreatePathUnitField(rollProp, () => splineData == null ? null : splineData.SplineContainer));
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => splineData.Easing)));
 
             ux.AddHeader("Data Points");
             var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(splineData.Roll, rollProp, () => splineData?.SplineContainer));

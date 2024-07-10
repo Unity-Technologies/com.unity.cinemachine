@@ -42,11 +42,36 @@ namespace Unity.Cinemachine
             public static implicit operator RollData(float roll) => new () { Value = roll };
         }
 
-        /// <summary>Interpolator for the RollData</summary>
+        /// <summary>
+        /// When enabled, roll eases into and out of the data point values
+        /// </summary>
+        [Tooltip("When enabled, roll eases into and out of the data point values.")]
+        public bool Easing = true;
+
+        /// <summary>
+        /// Get the appropriate interpolator for the RollData, depending on the Easing setting
+        /// </summary>
+        /// <returns>The appropriate interpolator for the RollData, depending on the Easing setting.</returns>
+        public IInterpolator<RollData> GetInterpolator() => Easing ? new LerpRollDataWithEasing() : new LerpRollData();
+
+        /// <summary>Interpolator for the RollData, with no easing between data points.</summary>
         public struct LerpRollData : IInterpolator<RollData>
         {
             /// <inheritdoc/>
             public RollData Interpolate(RollData a, RollData b, float t) => new() { Value = Mathf.Lerp(a.Value, b.Value, t) };
+        }
+
+        /// <summary>Interpolator for the RollData, with easing between data points</summary>
+        public struct LerpRollDataWithEasing : IInterpolator<RollData>
+        {
+            /// <inheritdoc/>
+            public RollData Interpolate(RollData a, RollData b, float t) 
+            {
+                var t2 = t * t;
+                var d = 1f - t;
+                t = 3f * d * t2 + t * t2;
+                return new() { Value = Mathf.Lerp(a.Value, b.Value, t) };
+            }
         }
 
         /// <summary>
@@ -78,6 +103,12 @@ namespace Unity.Cinemachine
             }
         }
 #endif
+        void Reset()
+        {
+            Roll.Clear();
+            Easing = true;
+        }
+
         void OnEnable() {} // Needed so we can disable it in the editor
 
         /// <summary>Cache for clients that use CinemachineSplineRoll</summary>
