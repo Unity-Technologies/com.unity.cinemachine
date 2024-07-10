@@ -7,15 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.1.2] - 2025-01-01
 
 ### Added
-- Added CinemachineVirtualCameraBaseEditor, to make it easier to make conformant inspectors for custom virtual cameras and virtual camera managers.
-- Added Easing option to CinemachineSplineRoll.
+- Added CinemachineVirtualCameraBaseEditor, to facilitate making conformant inspectors for custom virtual cameras and virtual camera managers.
 - Added CinemachineSplineSmoother for creating smooth splines suitable for camera paths.  This replicates the behaviour of CinemachineSmoothPath in CM2.
+- Added Easing option to CinemachineSplineRoll.
 
 
 ## [3.1.1] - 2024-06-15
 
 ### Added
-- New Rotation Control behaviour SplineDollyLookAtTargets lets you specify LookAt points at desird positions along a Spline Dolly trajectory.
+- New Rotation Control behaviour SplineDollyLookAtTargets lets you specify LookAt points at desired positions along a Spline Dolly trajectory.
 - Added Recenter Target setting to CinemachinePanTilt.
 
 ### Fixed
