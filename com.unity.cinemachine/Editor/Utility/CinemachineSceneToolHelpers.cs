@@ -30,9 +30,15 @@ namespace Unity.Cinemachine.Editor
         static Color s_NormalBkgColor = Color.black;
 
         /// <summary>Create a button for the inspector that activates a scene tool</summary>
-        public static VisualElement CreateSceneToolActivationButtonForInspector(Type toolType, string iconPath, string tooltip)
+        public static VisualElement CreateSceneToolActivationButtonForInspector(
+            Type toolType, UnityEngine.Object target, string iconPath, string tooltip)
         {
-            var toolButton = new Button(() => ToolManager.SetActiveTool(toolType))
+            var toolButton = new Button(() => 
+            {
+                if (Selection.activeObject != target)
+                    Selection.activeObject = target;
+                EditorApplication.delayCall += () => ToolManager.SetActiveTool(toolType);
+            })
             { 
                 tooltip = tooltip,
                 style = 

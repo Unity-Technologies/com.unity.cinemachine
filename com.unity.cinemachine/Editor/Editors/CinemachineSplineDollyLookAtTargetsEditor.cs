@@ -87,7 +87,7 @@ namespace Unity.Cinemachine.Editor
             var buttonRow = ux.AddChild(new InspectorUtility.LabeledRow("Edit in Scene View", tooltip));
             var toolButton = buttonRow.Contents.AddChild(
                 CinemachineSceneToolHelpers.CreateSceneToolActivationButtonForInspector(
-                    typeof(LookAtDataOnSplineTool), LookAtDataOnSplineTool.IconPath, tooltip));
+                    typeof(LookAtDataOnSplineTool), target, LookAtDataOnSplineTool.IconPath, tooltip));
 
             ux.TrackAnyUserActivity(() =>
             {
