@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added CinemachineVirtualCameraBaseEditor, to make it easier to make conformant inspectors for custom virtual cameras and virtual camera managers.
 - Added Easing option to CinemachineSplineRoll.
+- Added CinemachineSplineSmoother for creating smooth splines suitable for camera paths.  This replicates the behaviour of CinemachineSmoothPath in CM2.
 
 
 ## [3.1.1] - 2024-06-15

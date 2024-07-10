@@ -105,7 +105,7 @@ namespace Unity.Cinemachine
 #endif
         void Reset()
         {
-            Roll.Clear();
+            Roll?.Clear();
             Easing = true;
         }
 

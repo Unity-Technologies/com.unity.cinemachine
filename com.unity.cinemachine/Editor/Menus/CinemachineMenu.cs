@@ -194,7 +194,7 @@ namespace Unity.Cinemachine.Editor
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
             Undo.AddComponent<CinemachineRotationComposer>(vcam.gameObject);
             var splineContainer = ObjectFactory.CreateGameObject(
-                "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
+                "Dolly Spline", typeof(SplineContainer), typeof(CinemachineSplineSmoother)).GetComponent<SplineContainer>();
             splineContainer.Spline.SetTangentMode(TangentMode.AutoSmooth);
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
@@ -207,7 +207,7 @@ namespace Unity.Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("Dolly Track with Cart");
             var splineContainer = ObjectFactory.CreateGameObject(
-                "Dolly Spline", typeof(SplineContainer)).GetComponent<SplineContainer>();
+                "Dolly Spline", typeof(SplineContainer), typeof(CinemachineSplineSmoother)).GetComponent<SplineContainer>();
             splineContainer.Spline.SetTangentMode(TangentMode.AutoSmooth);
             splineContainer.Spline.Add(new BezierKnot(Vector3.zero));
             splineContainer.Spline.Add(new BezierKnot(Vector3.right));
