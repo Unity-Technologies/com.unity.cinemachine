@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
 
                 for (int i = 0; i < numPoints; i++)
                 {
-                    spline.SetTangentMode(i, TangentMode.Mirrored);
+                    spline.SetTangentMode(i, TangentMode.Broken);
                     var knot = spline[i];
                     knot.Rotation = quaternion.identity;
                     knot.TangentIn =  (i == 0 && !spline.Closed) ? default : p2[i > 0 ? i - 1 : numPoints - 1] - knots[i];

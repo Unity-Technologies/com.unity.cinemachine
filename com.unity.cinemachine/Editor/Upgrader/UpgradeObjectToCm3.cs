@@ -746,9 +746,8 @@ namespace Unity.Cinemachine.Editor
                             Position = waypoints[i].position,
                             Rotation = Quaternion.identity,
                             TangentIn = -tangent,
-                            TangentOut = tangent,
+                            TangentOut = tangent
                         });
-                        spline.Spline.SetTangentMode(i, TangentMode.Mirrored);
                         if (waypoints[i].roll != 0 && splineRoll == null)
                         {
                             splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
