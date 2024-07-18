@@ -3,7 +3,7 @@ using RecipeEngine.Platforms;
 
 namespace Cinemachine.Cookbook;
 
-public class CineMachineBuilder
+public class CinemachineBuilder
 {
     static IJobBuilder Create(string name, Platform platform)
     {
