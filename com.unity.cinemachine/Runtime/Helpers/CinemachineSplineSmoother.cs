@@ -23,52 +23,24 @@ namespace Unity.Cinemachine
     [RequireComponent(typeof(SplineContainer))]
     public class CinemachineSplineSmoother : MonoBehaviour
     {
-#if UNITY_EDITOR
         /// <summary>
         /// If checked, the spline will be automatically smoothed whenever it is modified.
         /// </summary>
-        [Tooltip("If checked, the spline will be automatically smoothed whenever it is modified.")]
+        [Tooltip("If checked, the spline will be automatically smoothed whenever it is modified (editor only).")]
         public bool AutoSmooth = true;
 
-        List<float3> m_KnotPositionCache = new ();
-        bool m_ClosedCache;
-
+#if UNITY_EDITOR
         internal static Action<CinemachineSplineSmoother> OnEnableCallback;
         internal static Action<CinemachineSplineSmoother> OnDisableCallback;
 
-        void OnEnable()
-        {
-            OnEnableCallback?.Invoke(this);
-            CacheState();
-        }
+        void OnEnable() => OnEnableCallback?.Invoke(this);
+        void OnDisable() => OnDisableCallback?.Invoke(this);
 
-        void OnDisable()
-        {
-            OnDisableCallback?.Invoke(this);
-        }
-
-        void CacheState()
-        {
-            if (TryGetComponent<SplineContainer>(out var container) && container.Spline != null)
-            {
-                var spline = container.Spline;
-                m_KnotPositionCache.Clear();
-                for (int i = 0; i < spline.Count; i++)
-                    m_KnotPositionCache.Add(spline[i].Position);
-                m_ClosedCache = spline.Closed;
-            }
-        }
-
+        // Editor only, implements auto-smooth
         internal void OnSplineModified(Spline spline)
         {
-            if (AutoSmooth && TryGetComponent<SplineContainer>(out var container) && spline == container.Spline)
-            {
-                bool changed = spline.Closed != m_ClosedCache || spline.Count != m_KnotPositionCache.Count;
-                for (int i = 0; i < spline.Count && !changed; i++)
-                    changed |= math.lengthsq(spline[i].Position - m_KnotPositionCache[i]) > 0.00001f;
-                if (changed)
-                    SmoothSplineNow();
-            }
+            if (enabled && AutoSmooth && TryGetComponent(out SplineContainer container) && spline == container.Spline)
+                SmoothSplineNow();
         }
 #endif
 
@@ -83,9 +55,6 @@ namespace Unity.Cinemachine
         {
             if (TryGetComponent<SplineContainer>(out var container) && container.Spline != null)
             {
-#if UNITY_EDITOR
-                UnityEditor.Undo.RecordObject(container, "Smooth Spline");
-#endif
                 var spline = container.Spline;
                 int numPoints = spline.Count;
 
@@ -108,9 +77,6 @@ namespace Unity.Cinemachine
                     knot.TangentOut = (i == numPoints - 1 && !spline.Closed) ? default : p1[i] - knots[i];
                     spline[i] = knot;
                 }
-#if UNITY_EDITOR
-                CacheState();
-#endif
             }
         }
     }

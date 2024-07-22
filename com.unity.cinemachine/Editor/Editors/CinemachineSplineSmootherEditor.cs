@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEditor.Splines;
 using UnityEditor.UIElements;
+using UnityEngine.Splines;
 using UnityEngine.UIElements;
 
 namespace Unity.Cinemachine.Editor
@@ -12,11 +13,32 @@ namespace Unity.Cinemachine.Editor
         {
             var ux = new VisualElement();
             ux.Add(new HelpBox("Spline Smoother adjusts the spline's knot settings to maintain smoothness "
-            + "suitable for camera paths.  Do not adjust the tangents manually; they will be overwritten by the smoother.", 
+                + "suitable for camera paths.  Do not adjust the tangents manually; they will be overwritten by the smoother.", 
             HelpBoxMessageType.Info));
-            ux.Add(new PropertyField(serializedObject.FindProperty("AutoSmooth")));
-            ux.Add(new Button(() => (target as CinemachineSplineSmoother).SmoothSplineNow()) { text = "Smooth Spline Now" });
+
+            var autoSmoothProp = serializedObject.FindProperty(nameof(CinemachineSplineSmoother.AutoSmooth));
+            ux.Add(new PropertyField(autoSmoothProp));
+            ux.TrackPropertyValue(autoSmoothProp, (p) => 
+            {
+                if (p.boolValue)
+                {
+                    var smoother = target as CinemachineSplineSmoother;
+                    if (smoother != null && smoother.enabled)
+                        SmoothSplineNow(smoother);
+                }
+            });
+
+            ux.Add(new Button(() => SmoothSplineNow(target as CinemachineSplineSmoother)) { text = "Smooth Spline Now" });
             return ux;
+        }
+
+        static void SmoothSplineNow(CinemachineSplineSmoother smoother) 
+        {
+            if (smoother != null && smoother.TryGetComponent(out SplineContainer container))
+            {
+                Undo.RecordObject(container, "Smooth Spline");
+                smoother.SmoothSplineNow();
+            }
         }
 
         [InitializeOnLoad]
@@ -28,7 +50,12 @@ namespace Unity.Cinemachine.Editor
                 CinemachineSplineSmoother.OnDisableCallback += OnSmootherDisable;
             }
 
-            static void OnSmootherEnable(CinemachineSplineSmoother smoother) => EditorSplineUtility.AfterSplineWasModified += smoother.OnSplineModified;
+            static void OnSmootherEnable(CinemachineSplineSmoother smoother)
+            {
+                EditorSplineUtility.AfterSplineWasModified += smoother.OnSplineModified;
+                if (smoother.AutoSmooth)
+                    SmoothSplineNow(smoother);
+            }
             static void OnSmootherDisable(CinemachineSplineSmoother smoother) => EditorSplineUtility.AfterSplineWasModified -= smoother.OnSplineModified;
         }
     }
