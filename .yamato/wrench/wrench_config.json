@@ -1,0 +1,27 @@
+{
+  "project_path": "Tools/Cinemachine-Recipes",
+  "schema_version": 0.5,
+  "packages": {
+    "com.unity.cinemachine": {
+      "directory": "com.unity.cinemachine/",
+      "prePackCommands": [],
+      "preTestCommands": {},
+      "InternalOnly": false,
+      "NeverPublish": false
+    }
+  },
+  "releasing_packages": [
+    "com.unity.cinemachine"
+  ],
+  "jobs_to_monitor": {
+    "com.unity.cinemachine": [
+      ".yamato/wrench/preview-a-p-v.yml#all_preview_apv_jobs",
+      ".yamato/wrench/api-validation-jobs.yml#api_validation_-_cinemachine_-_2022_3_-_windows",
+      ".yamato/wrench/promotion-jobs.yml#publish_dry_run_cinemachine"
+    ]
+  },
+  "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_cinemachine",
+  "branch_pattern": "ReleaseSlash",
+  "wrench_version": "0.10.3.0",
+  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json"
+}
