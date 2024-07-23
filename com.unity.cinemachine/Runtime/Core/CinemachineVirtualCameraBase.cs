@@ -10,7 +10,8 @@ namespace Unity.Cinemachine
     ///
     /// This is intended to be attached to an empty Transform GameObject.
     /// Inherited classes can be either standalone virtual cameras such
-    /// as CinemachineCamera, or meta-cameras derived from CinemachineManagerCamera.
+    /// as CinemachineCamera, or meta-cameras such as
+    /// CinemachineClearShot or CinemachineBlendListCamera.
     ///
     /// A CinemachineVirtualCameraBase exposes an OutputChannel property.  When the behaviour is
     /// enabled in the game, the Virtual Camera is automatically placed in a queue
