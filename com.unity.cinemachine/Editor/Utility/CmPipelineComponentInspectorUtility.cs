@@ -29,7 +29,7 @@ namespace Unity.Cinemachine.Editor
         {
             // Look for a RequiredTargetAttribute, but only if component is on a CinemachineCamera
             var requiredTargets = RequiredTargetAttribute.RequiredTargets.None;
-            if (editor.target is Component c && c.TryGetComponent<CinemachineCamera>(out _))
+            if (editor.target is Component c && c != null && c.TryGetComponent<CinemachineCamera>(out _))
             {
                 var a = editor.target.GetType().GetCustomAttribute<RequiredTargetAttribute>();
                 if (a != null)
