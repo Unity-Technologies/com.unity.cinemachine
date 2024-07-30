@@ -76,6 +76,7 @@
   * [Cinemachine Spline Dolly](CinemachineSplineDolly.md)
   * [Cinemachine Spline Dolly LookAt Targets](CinemachineSplineDollyLookAtTargets.md)
   * [Cinemachine Spline Roll](CinemachineSplineRoll.md)
+  * [Cinemachine Spline Smoother](CinemachineSplineSmoother.md)
   * [Cinemachine State-Driven camera](CinemachineStateDrivenCamera.md)
   * [Cinemachine Storyboard](CinemachineStoryboard.md)
   * [Cinemachine Target Group](CinemachineTargetGroup.md)

@@ -29,7 +29,9 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Input Axis Controller](CinemachineInputAxisController.md)
 * Splines
   * [Cinemachine Spline Cart](CinemachineSplineCart.md)
+  * [Cinemachine Spline Dolly LookAt Targets](CinemachineSplineDollyLookAtTargets.md)
   * [Cinemachine Spline Roll](CinemachineSplineRoll.md)
+  * [Cinemachine Spline Smoother](CinemachineSplineSmoother.md)
 * Target grouping
   * [Cinemachine Target Group](CinemachineTargetGroup.md)
   <!---* Cinemachine Group Weight Manipulator (component, missing in docs)--->

@@ -700,8 +700,7 @@ namespace Unity.Cinemachine.Editor
                 return; // already converted
 
             spline = Undo.AddComponent<SplineContainer>(go);
-            var splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
-            splineRoll.Roll = new SplineData<CinemachineSplineRoll.RollData>();
+            CinemachineSplineRoll splineRoll = null;
 
             Undo.RecordObject(pathBase, "Upgrader: disable obsolete");
             pathBase.enabled = false;
@@ -721,12 +720,21 @@ namespace Unity.Cinemachine.Editor
                             TangentIn = -waypoints[i].tangent,
                             TangentOut = waypoints[i].tangent,
                         });
-                        splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
+                        if (waypoints[i].roll != 0 && splineRoll == null)
+                        {
+                            splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
+                            splineRoll.Roll = new SplineData<CinemachineSplineRoll.RollData>();
+                            if (i > 0)
+                                splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i - 1, 0));
+                        }
+                        if (splineRoll != null)
+                            splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
                     }
                     break;
                 }
                 case CinemachineSmoothPath smoothPath:
                 {
+                    Undo.AddComponent<CinemachineSplineSmoother>(go);
                     var waypoints = smoothPath.m_Waypoints;
                     spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
                     for (var i = 0; i < waypoints.Length; i++)
@@ -738,9 +746,17 @@ namespace Unity.Cinemachine.Editor
                             Position = waypoints[i].position,
                             Rotation = Quaternion.identity,
                             TangentIn = -tangent,
-                            TangentOut = tangent,
+                            TangentOut = tangent
                         });
-                        splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
+                        if (waypoints[i].roll != 0 && splineRoll == null)
+                        {
+                            splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
+                            splineRoll.Roll = new SplineData<CinemachineSplineRoll.RollData>();
+                            if (i > 0)
+                                splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i - 1, 0));
+                        }
+                        if (splineRoll != null)
+                            splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
                     }
                     break;
                 }

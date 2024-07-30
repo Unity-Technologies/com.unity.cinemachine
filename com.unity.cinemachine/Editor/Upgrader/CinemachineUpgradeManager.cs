@@ -159,7 +159,7 @@ namespace Unity.Cinemachine.Editor
         {
             EditorUtility.DisplayDialog(
                 "Cinemachine Upgrader", 
-                "The upgrade was unsuccessful, and your project may be correupted.  It would be wise to restore the backup.\n\n"
+                "The upgrade was unsuccessful, and your project may be corrupted.  It would be wise to restore the backup.\n\n"
                 + "Please see the console messages for details.", 
                 "ok");
         }
