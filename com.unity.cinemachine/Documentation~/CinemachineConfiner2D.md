@@ -40,7 +40,7 @@ There are several ways to set up a [Composite Collider 2D](https://docs.unity3d.
 4. Add one or more child GameObjects. These child GameObjects are going to hold the Collider2Ds for the Composite Collider 2D.
 5. Add [Collider2Ds](https://docs.unity3d.com/Manual/Collider2D.html) to these GameObjects. Set the `Composite Operation` on the Collider2D components to **`Merge`**.
 
-When assigning a GameObject that contains a Collider2D to Bounding Shape 2D, Unity is going to select the top-most Collider2D.
+When assigning a GameObject that contains a Collider2D to Bounding Shape 2D, Unity is going to select the topmost Collider2D.
 
 # Properties:
 
@@ -50,3 +50,4 @@ When assigning a GameObject that contains a Collider2D to Bounding Shape 2D, Uni
 | __Damping__           |Damping Is applied around corners to avoid jumps. Higher numbers are more gradual.|
 | __Slowing Distance__  | Size of the slow-down zone at the edge of the bounding shape.  When the camera is moving towards an edge and is within this distance of it, it will slow down gradually until the edge is reached. |
 | __Max Window Size__   |To optimize computation and memory performance, set this to the largest view size that the camera is expected to have. The Confiner 2D does not compute a polygon cache for frustum sizes larger than this. This refers to the size in world units of the frustum at the confiner plane (for orthographic cameras, this is just the orthographic size). If set to 0, then Cinemachine ignores this parameter and calculates a polygon cache for all potential window sizes.|
+| __Padding__   | For large window sizes, the confiner will potentially generate polygons with zero area.  The padding may be used to add a small amount of area to these polygons, to prevent them from being a series of disconnected dots.|
