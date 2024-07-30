@@ -52,6 +52,7 @@ namespace Unity.Cinemachine
             /// <summary>The virtual camera to activate when the animation state becomes active</summary>
             [Tooltip("The virtual camera to activate when the animation state becomes active")]
             [FormerlySerializedAs("m_VirtualCamera")]
+            [ChildCameraProperty]
             public CinemachineVirtualCameraBase Camera;
             /// <summary>How long to wait (in seconds) before activating the camera.
             /// This filters out very short state durations</summary>

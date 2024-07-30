@@ -151,19 +151,6 @@ namespace Unity.Cinemachine.Editor
             });
         }
 
-        public static void AddTransitionsSection(
-            this UnityEditor.Editor editor, VisualElement ux, 
-            List<SerializedProperty> otherProperties = null)
-        {
-            var serializedObject = editor.serializedObject;
-            var target = editor.target as CinemachineVirtualCameraBase;
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.Priority)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.OutputChannel)));
-            ux.Add(new PropertyField(serializedObject.FindProperty(() => target.StandbyUpdate)));
-            for (int i = 0; otherProperties != null && i < otherProperties.Count; ++i)
-                ux.Add(new PropertyField(otherProperties[i]));
-        }
-
         /// <summary>Add the pipeline control dropdowns in the inspector</summary>
         public static void AddPipelineDropdowns(this UnityEditor.Editor editor, VisualElement ux)
         {
@@ -532,7 +519,7 @@ namespace Unity.Cinemachine.Editor
                 { 
                     name = "vcamSelector",
                     objectType = typeof(CinemachineVirtualCameraBase),
-                    style = { flexBasis = 20, flexGrow = 1 }
+                    style = { flexBasis = floatFieldWidth * 2, flexGrow = 1, flexShrink = 0 }
                 }).SetEnabled(false);
 
                 var priorityField = row.AddChild(InspectorUtility.CreateDraggableField(
@@ -540,6 +527,7 @@ namespace Unity.Cinemachine.Editor
                 priorityField.name = "priorityField";
                 priorityField.style.flexBasis = floatFieldWidth;
                 priorityField.style.flexGrow = 0;
+                priorityField.style.flexShrink = 0;
                 priorityField.style.marginRight = 4;
                 priorityField.SafeSetIsDelayed();
 

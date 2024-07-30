@@ -82,8 +82,13 @@ namespace Unity.Cinemachine.Editor
                 "This component requires a CinemachineSplineDolly component referencing a nonempty Spline", 
                 HelpBoxMessageType.Warning);
             ux.Add(invalidHelp);
-            var toolButton = ux.AddChild(new Button(() => ToolManager.SetActiveTool(typeof(LookAtDataOnSplineTool))) 
-                { text = "Edit Targets in Scene View" });
+
+            var tooltip = "Use the Scene View tool to Edit the LookAt targets on the spline";
+            var buttonRow = ux.AddChild(new InspectorUtility.LabeledRow("Edit in Scene View", tooltip));
+            var toolButton = buttonRow.Contents.AddChild(
+                CinemachineSceneToolHelpers.CreateSceneToolActivationButtonForInspector(
+                    typeof(LookAtDataOnSplineTool), target, LookAtDataOnSplineTool.IconPath, tooltip));
+
             ux.TrackAnyUserActivity(() =>
             {
                 var haveSpline = splineData != null && splineData.GetGetSplineAndDolly(out _, out _);
@@ -309,11 +314,13 @@ namespace Unity.Cinemachine.Editor
         public static Action<CinemachineSplineDollyLookAtTargets, int> s_OnDataIndexDragged;
         public static Action<CinemachineSplineDollyLookAtTargets, int> s_OnDataLookAtDragged;
 
+        public static string IconPath => $"{CinemachineSceneToolHelpers.IconPath}/CmSplineLookAtTargetsTool@256.png";
+
         void OnEnable()
         {
             m_IconContent = new ()
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/CmSplineLookAtTargetsTool@256.png"),
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(IconPath),
                 tooltip = "Assign LookAt targets to positions on the spline."
             };
         }

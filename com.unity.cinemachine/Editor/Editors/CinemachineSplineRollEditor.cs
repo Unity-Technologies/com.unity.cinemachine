@@ -21,9 +21,13 @@ namespace Unity.Cinemachine.Editor
                 "This component should be associated with a non-empty spline", 
                 HelpBoxMessageType.Warning);
             ux.Add(invalidHelp);
-            var toolButton = ux.AddChild(new Button(() => ToolManager.SetActiveTool(typeof(SplineRollTool))) 
-                { text = "Edit Data Points in Scene View" });
 
+            var tooltip = "Use the Scene View tool to adjust the roll data points";
+            var buttonRow = ux.AddChild(new InspectorUtility.LabeledRow("Edit in Scene View", tooltip));
+            var toolButton = buttonRow.Contents.AddChild(
+                CinemachineSceneToolHelpers.CreateSceneToolActivationButtonForInspector(
+                    typeof(SplineRollTool), target, SplineRollTool.IconPath, tooltip));
+                    
             ux.TrackAnyUserActivity(() =>
             {
                 var haveSpline = splineData != null && splineData.SplineContainer != null;
@@ -244,11 +248,13 @@ namespace Unity.Cinemachine.Editor
         public static Action<CinemachineSplineRoll, int> s_OnDataIndexDragged;
         public static Action<CinemachineSplineRoll, int> s_OnDataLookAtDragged;
 
+        public static string IconPath => $"{CinemachineSceneToolHelpers.IconPath}/CmSplineRollTool@256.png";
+
         void OnEnable()
         {
             m_IconContent = new GUIContent
             {
-                image = AssetDatabase.LoadAssetAtPath<Texture2D>($"{CinemachineSceneToolHelpers.IconPath}/CmSplineRollTool@256.png"),
+                image = AssetDatabase.LoadAssetAtPath<Texture2D>(IconPath),
                 tooltip = "Adjust the roll data points along the spline"
             };
         }

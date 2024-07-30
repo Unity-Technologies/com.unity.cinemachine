@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Editor
 {
     [CustomEditor(typeof(CinemachineCamera))]
     [CanEditMultipleObjects]
-    class CinemachineCameraEditor : UnityEditor.Editor 
+    class CinemachineCameraEditor : CinemachineVirtualCameraBaseEditor
     {
         CinemachineCamera Target => target as CinemachineCamera;
 
@@ -34,12 +34,9 @@ namespace Unity.Cinemachine.Editor
         void OnEnable() => Undo.undoRedoPerformed += ResetTarget;
         void OnDisable() => Undo.undoRedoPerformed -= ResetTarget;
 
-        public override VisualElement CreateInspectorGUI()
+        protected override void AddInspectorProperties(VisualElement ux)
         {
-            var ux = new VisualElement();
-
-            this.AddCameraStatus(ux);
-            this.AddTransitionsSection(ux, new () { serializedObject.FindProperty(() => Target.BlendHint) });
+            ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.BlendHint)));
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Lens)));
 
             var defaultTargetLabel = new ObjectField("");
@@ -58,9 +55,6 @@ namespace Unity.Cinemachine.Editor
             ux.AddHeader("Procedural Components");
             this.AddPipelineDropdowns(ux);
 
-            ux.AddSpace();
-            this.AddExtensionsDropdown(ux);
-
             ux.TrackAnyUserActivity(() => 
             {
                 if (Target == null)
@@ -74,8 +68,6 @@ namespace Unity.Cinemachine.Editor
                     defaultTargetLabel.value = Target.Follow;
                 CmCameraInspectorUtility.SortComponents(target as CinemachineVirtualCameraBase);
             });
-
-            return ux;
         }
 
         [EditorTool("Field of View Tool", typeof(CinemachineCamera))]

@@ -51,6 +51,7 @@ namespace Unity.Cinemachine
         public CinemachineBlenderSettings CustomBlends = null;
 
         List<CinemachineVirtualCameraBase> m_ChildCameras;
+        int m_ChildCountCache; // used for invalidating child cache
         readonly BlendManager m_BlendManager = new ();
         CameraState m_State = CameraState.Default;
         ICinemachineCamera m_TransitioningFrom;
@@ -282,10 +283,12 @@ namespace Unity.Cinemachine
         /// <returns>True if a cache rebuild was performed, false if cache is up to date.</returns>
         protected virtual bool UpdateCameraCache()
         {
-            if (m_ChildCameras != null)
+            var childCount = transform.childCount;
+            if (m_ChildCameras != null && m_ChildCountCache == childCount)
                 return false;
             PreviousStateIsValid = false;
             m_ChildCameras = new();
+            m_ChildCountCache = childCount;
             GetComponentsInChildren(true, m_ChildCameras);
             for (int i = m_ChildCameras.Count-1; i >= 0; --i)
                 if (m_ChildCameras[i].transform.parent != transform)
