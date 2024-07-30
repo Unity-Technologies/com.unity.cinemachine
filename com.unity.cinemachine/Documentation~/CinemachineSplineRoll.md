@@ -11,6 +11,7 @@ If you add this behavior to the Spline itself, then any [Cinemachine Camera](Cin
 | Property | Field | Description |
 | --- | --- | --- |
 | __Index Unit__ |  | Defines how to interpret the _Index_ field for each data point.  _Knot_ is the recommended value because it remains robust if the spline points change. |
+| __Easing__ |  | When enabled, roll value will ease in and out of the data point values.  Otherwise, interpolation is linear. |
 | __Data Points__ |  | The list of Roll points on the spline.  At these postions on the spline, it will take on the specified roll value. |
 | | _Index_ | The position on the Spline where it should assume the specified roll.  The value is interpreted according to the _Index Unit_ setting. |
 | | _Roll_ | The roll value for the spline.  This is specified in degrees, and the axis of rotation is the spline tangent at that point. |

@@ -64,8 +64,7 @@ namespace Unity.Cinemachine
             // Apply extra roll
             if (roll != null && roll.enabled)
             {
-                float rollValue = roll.Roll.Evaluate(spline, tNormalized, 
-                    PathIndexUnit.Normalized, new CinemachineSplineRoll.LerpRollData());
+                float rollValue = roll.Roll.Evaluate(spline, tNormalized, PathIndexUnit.Normalized, roll.GetInterpolator());
                 rotation = Quaternion.AngleAxis(-rollValue, fwd) * rotation;
             }
             return true;
