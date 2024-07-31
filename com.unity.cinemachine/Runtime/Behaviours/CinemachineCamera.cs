@@ -223,13 +223,7 @@ namespace Unity.Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
-            var pos = transform.position;
-            var rot = transform.rotation;
-            if (Follow != null)
-                pos = m_State.RawPosition;
-            if (LookAt != null)
-                rot = m_State.RawOrientation;
-            transform.ConservativeSetPositionAndRotation(pos, rot);
+            transform.ConservativeSetPositionAndRotation(m_State.RawPosition, m_State.RawOrientation);
             
             // Signal that it's all done
             PreviousStateIsValid = true;
