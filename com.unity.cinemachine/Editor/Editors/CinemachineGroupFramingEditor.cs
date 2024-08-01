@@ -82,14 +82,14 @@ namespace Unity.Cinemachine.Editor
             return ux;
         }
 
-        protected virtual void OnGuiHandler()
+        protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
             var vcam = Target.ComponentOwner;
-            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
-            if (brain == null || !brain.IsLiveChild(vcam) || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
+            if (brain == null || brain != CinemachineCore.FindPotentialTargetBrain(vcam)
+                || !brain.IsLiveChild(vcam) || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
                 return;
 
             var group = vcam.LookAtTargetAsGroup;

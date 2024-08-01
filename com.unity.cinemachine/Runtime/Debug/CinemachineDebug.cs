@@ -120,7 +120,7 @@ namespace Unity.Cinemachine
         /// Delegate for OnGUI debugging.  
         /// This will be called by the CinemachineDebugDisplay in its OnGUI (editor only)
         /// </summary>
-        public static Action OnGUIHandlers;
+        public static Action<CinemachineBrain> OnGUIHandlers;
 
         /// <summary>
         /// Tracks CinemachineCorePrefs.ShowInGameGuides.Value, so it can be accessed at runtime

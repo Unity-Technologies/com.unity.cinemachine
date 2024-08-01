@@ -307,9 +307,9 @@ namespace Unity.Cinemachine
         }
 
     #if CINEMACHINE_UIELEMENTS
-        void OnGuiHandler()
+        void OnGuiHandler(CinemachineBrain brain)
         {
-            if (!ShowDebugText)
+            if (!ShowDebugText || brain != this)
                 return;
 
             m_DebugText ??= new DebugText(OutputCamera);

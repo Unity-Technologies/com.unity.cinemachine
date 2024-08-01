@@ -10,10 +10,14 @@ using UnityEngine;
 [ExecuteAlways]
 class CinemachineDebugDisplay : MonoBehaviour
 {
+    CinemachineBrain m_Brain;
+
     void OnGUI()
     {
-        if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
-            CinemachineDebug.OnGUIHandlers();
+        if (m_Brain == null)
+            TryGetComponent(out m_Brain);
+        if (m_Brain != null && CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
+            CinemachineDebug.OnGUIHandlers(m_Brain);
     }
 }
 #endif

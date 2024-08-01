@@ -33,14 +33,14 @@ namespace Unity.Cinemachine.Editor
                 InspectorUtility.RepaintGameView();
         }
 
-        protected virtual void OnGuiHandler()
+        protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value || !Target.isActiveAndEnabled)
                 return;
 
             var vcam = Target.VirtualCamera;
-            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
-            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
+            if (brain == null || brain != CinemachineCore.FindPotentialTargetBrain(vcam)
+                || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
                 return;
 
             // Screen guides
