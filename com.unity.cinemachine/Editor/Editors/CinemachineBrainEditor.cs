@@ -22,14 +22,14 @@ namespace Unity.Cinemachine.Editor
             var row = ux.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.Add(new Label("Live Camera")
                 { tooltip = "The Cm Camera that is currently active", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            var liveCamera = row.Right.AddChild(new ObjectField("") 
-                { objectType = typeof(CinemachineVirtualCameraBase), style = { flexGrow = 1 }});
+            var liveCamera = row.Right.AddChild(new ObjectField() 
+                { objectType = typeof(CinemachineVirtualCameraBase), style = { flexGrow = 1, flexShrink = 1 }});
             row.SetEnabled(false);
 
             row = ux.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.Add(new Label("Live Blend")
                 { tooltip = "The state of currently active blend, if any", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            var liveBlend = row.Right.AddChild(new TextField("") { style = { flexGrow = 1 }});
+            var liveBlend = row.Right.AddChild(new TextField() { style = { flexGrow = 1, flexShrink = 1, height = InspectorUtility.SingleLineHeight }});
             row.SetEnabled(false);
 
             var prop = serializedObject.GetIterator();

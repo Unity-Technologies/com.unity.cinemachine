@@ -164,6 +164,7 @@ namespace Unity.Cinemachine
 
 #if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
         DebugText m_DebugText;
+        CinemachineDebugDisplay m_DebugDisplay;
 #endif
         
         void OnValidate()
@@ -223,6 +224,8 @@ namespace Unity.Cinemachine
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             m_DebugText?.Dispose();
             m_DebugText = null;
+            if (m_DebugDisplay != null)
+                m_DebugDisplay.enabled = false;
 #endif
             s_ActiveBrains.Remove(this);
 
@@ -244,6 +247,33 @@ namespace Unity.Cinemachine
                 ManualUpdate();
         }
         
+#if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
+        void Update()
+        {
+            if (ShowDebugText || CinemachineDebug.GameViewGuidesEnabled)
+            {
+                // Make sure we have a CinemachineDebugDisplay component
+                if (m_DebugDisplay == null && !TryGetComponent(out m_DebugDisplay))
+                {
+                    m_DebugDisplay = gameObject.AddComponent<CinemachineDebugDisplay>();
+                    m_DebugDisplay.hideFlags = HideFlags.DontSave | HideFlags.HideInInspector;
+                }
+                m_DebugDisplay.enabled = true;
+            }
+            else if (m_DebugDisplay != null)
+            {
+                // Get rid of the CinemachineDebugDisplay component, so no OnGUI calls are made
+                RuntimeUtility.DestroyObject(m_DebugDisplay);
+                m_DebugDisplay = null;
+            }
+            if (!ShowDebugText && m_DebugText != null)
+            {
+                m_DebugText.Dispose();
+                m_DebugText = null;
+            }
+       }
+#endif
+
         void LateUpdate()
         {
             if (UpdateMethod != UpdateMethods.ManualUpdate)
@@ -276,26 +306,10 @@ namespace Unity.Cinemachine
             }
         }
 
-        // We don't want this in runtime because it's only for debugging and it can generate garbage
-        void OnGUI()
-        {
-            if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
-                CinemachineDebug.OnGUIHandlers(this);
-        }
-
     #if CINEMACHINE_UIELEMENTS
-        void OnGuiHandler(CinemachineBrain brain)
+        void OnGuiHandler()
         {
             if (!ShowDebugText)
-            {
-                if (m_DebugText != null)
-                {
-                    m_DebugText.Dispose();
-                    m_DebugText = null;
-                }
-                return;
-            }
-            if (ActiveVirtualCamera == null || brain != this)
                 return;
 
             m_DebugText ??= new DebugText(OutputCamera);

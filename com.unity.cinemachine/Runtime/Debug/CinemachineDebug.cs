@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
+using System;
+
 #if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
 using UnityEditor;
 using UnityEngine.UIElements;
@@ -116,15 +118,14 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Delegate for OnGUI debugging.  
-        /// This will be called by the CinemachineBrain in its OnGUI (editor only)
+        /// This will be called by the CinemachineDebugDisplay in its OnGUI (editor only)
         /// </summary>
-        public delegate void OnGUIDelegate(CinemachineBrain brain);
+        public static Action OnGUIHandlers;
 
         /// <summary>
-        /// Delegate for OnGUI debugging.  
-        /// This will be called by the CinemachineBrain in its OnGUI (editor only)
+        /// Tracks CinemachineCorePrefs.ShowInGameGuides.Value, so it can be accessed at runtime
         /// </summary>
-        public static OnGUIDelegate OnGUIHandlers;
+        public static bool GameViewGuidesEnabled;
 
         /// <summary>Get a pre-allocated StringBuilder from the pool</summary>
         /// <returns>The pre-allocated StringBuilder from the pool.  

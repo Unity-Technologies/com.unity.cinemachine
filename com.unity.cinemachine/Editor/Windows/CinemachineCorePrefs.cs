@@ -5,12 +5,24 @@ namespace Unity.Cinemachine.Editor
 {
     static class CinemachineCorePrefs
     {
+        // Specialization for game view guides setting: keep a shadow copy of the value in CinemachineDebug
+        public class GameViewGuidesItem : CinemachineSettings.BoolItem
+        {
+            public GameViewGuidesItem(string key, bool defaultValue) : base(key, defaultValue) {}
+            protected override bool ReadPrefs() => CinemachineDebug.GameViewGuidesEnabled = base.ReadPrefs();
+            protected override void WritePrefs(bool value) 
+            {
+                base.WritePrefs(value);
+                CinemachineDebug.GameViewGuidesEnabled = value;
+            }
+        }
+        
         static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Core_Folded", true);
 
         public static CinemachineSettings.BoolItem StoryboardGlobalMute = new ("CNMCN_StoryboardMute_Enabled", false);
         public static CinemachineSettings.BoolItem DraggableComposerGuides = new ("CNMCN_DraggableComposerGuides_Enabled", true);
         public static CinemachineSettings.BoolItem ShowBrainIconInHierarchy = new ("CNMCN_Core_Brain_icon_in_hierarchy", true);
-        public static CinemachineSettings.BoolItem ShowInGameGuides = new ("CNMCN_Core_ShowInGameGuides", true);
+        public static GameViewGuidesItem ShowInGameGuides = new ("CNMCN_Core_ShowInGameGuides", true);
         public static CinemachineSettings.ColorItem ActiveGizmoColour = new ("CNMCN_Core_Active_Gizmo_Colour", new Color32(255, 0, 0, 100));
         public static CinemachineSettings.ColorItem InactiveGizmoColour = new ("CNMCN_Core_Inactive_Gizmo_Colour", new Color32(9, 54, 87, 100));
         public static CinemachineSettings.ColorItem BoundaryObjectGizmoColour = new ("CNMCN_Core_BoundaryObject_Gizmo_Colour", Color.yellow);

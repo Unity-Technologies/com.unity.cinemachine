@@ -114,7 +114,7 @@ namespace Unity.Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
         
-        protected virtual void OnGuiHandler(CinemachineBrain brain)
+        protected virtual void OnGuiHandler()
         {
             // Draw the camera guides
             if (Target == null || !CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -124,11 +124,9 @@ namespace Unity.Cinemachine.Editor
             if (!VcamStageEditor.ActiveEditorRegistry.IsActiveEditor(this))
                 return;
 
-            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
-                return;
-
             var vcam = Target.VirtualCamera;
-            if (!brain.IsValidChannel(vcam))
+            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
+            if (brain == null || (brain.OutputCamera.activeTexture != null && CinemachineBrain.ActiveBrainCount > 1))
                 return;
 
             // Screen guides
