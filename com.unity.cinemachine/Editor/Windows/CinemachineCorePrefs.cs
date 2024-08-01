@@ -9,7 +9,12 @@ namespace Unity.Cinemachine.Editor
         public class GameViewGuidesItem : CinemachineSettings.BoolItem
         {
             public GameViewGuidesItem(string key, bool defaultValue) : base(key, defaultValue) {}
-            protected override bool ReadPrefs() => CinemachineDebug.GameViewGuidesEnabled = base.ReadPrefs();
+            protected override bool ReadPrefs() 
+            {
+                var value = base.ReadPrefs();
+                CinemachineDebug.GameViewGuidesEnabled = value;
+                return value;
+            }
             protected override void WritePrefs(bool value) 
             {
                 base.WritePrefs(value);
