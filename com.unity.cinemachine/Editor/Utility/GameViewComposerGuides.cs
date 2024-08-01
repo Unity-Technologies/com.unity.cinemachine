@@ -211,21 +211,21 @@ namespace Unity.Cinemachine.Editor
 
             const float kBarSize = 2;
 
-            m_DragBars[(int)DragBar.HardLeft] = new Rect(hard.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
-            m_DragBars[(int)DragBar.HardTop] = new Rect(0f, hard.yMin, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
-            m_DragBars[(int)DragBar.HardRight] = new Rect(hard.xMax, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
-            m_DragBars[(int)DragBar.HardBottom] = new Rect(0f, hard.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
+            m_DragBars[(int)DragBar.HardLeft] = ClipToCamera(new Rect(hard.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0)));
+            m_DragBars[(int)DragBar.HardTop] = ClipToCamera(new Rect(0f, hard.yMin, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize)));
+            m_DragBars[(int)DragBar.HardRight] = ClipToCamera(new Rect(hard.xMax, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0)));
+            m_DragBars[(int)DragBar.HardBottom] = ClipToCamera(new Rect(0f, hard.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize)));
 
             var dead = composition.DeadZoneRect;
             dead = new (dead.xMin * cameraRect.width, dead.yMin * cameraRect.height, 
                 dead.width * cameraRect.width, dead.height * cameraRect.height);
 
-            m_DragBars[(int)DragBar.DeadLeft] = new Rect(dead.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
-            m_DragBars[(int)DragBar.DeadTop] = new Rect(0f, dead.yMin, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
-            m_DragBars[(int)DragBar.DeadRight] = new Rect(dead.xMax, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0));
-            m_DragBars[(int)DragBar.DeadBottom] = new Rect(0f, dead.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize));
+            m_DragBars[(int)DragBar.DeadLeft] = ClipToCamera(new Rect(dead.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0)));
+            m_DragBars[(int)DragBar.DeadTop] = ClipToCamera(new Rect(0f, dead.yMin, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize)));
+            m_DragBars[(int)DragBar.DeadRight] = ClipToCamera(new Rect(dead.xMax, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0)));
+            m_DragBars[(int)DragBar.DeadBottom] = ClipToCamera(new Rect(0f, dead.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize)));
 
-            m_DragBars[(int)DragBar.Center] = new Rect(dead.xMin, dead.yMin, dead.xMax - dead.xMin, dead.yMax - dead.yMin);
+            m_DragBars[(int)DragBar.Center] = ClipToCamera(new Rect(dead.xMin, dead.yMin, dead.xMax - dead.xMin, dead.yMax - dead.yMin));
 
             // Handle dragging bars
             if (CinemachineCorePrefs.DraggableComposerGuides.Value && isLive)
@@ -237,13 +237,10 @@ namespace Unity.Cinemachine.Editor
             if (composition.HardLimits.Enabled)
             {
                 GUI.color = hardBarsColour;
-                var left = new Rect(0, hard.yMin, Mathf.Max(0, hard.xMin), hard.height);
-                var right = new Rect(hard.xMax, hard.yMin, Mathf.Max(0, cameraRect.width - hard.xMax), hard.height);
-                var top = new Rect(Mathf.Min(0, hard.xMin), 0, 
-                    Mathf.Max(cameraRect.width, hard.xMax) - Mathf.Min(0, hard.xMin), Mathf.Max(0, hard.yMin));
-                var bottom = new Rect(Mathf.Min(0, hard.xMin), hard.yMax,
-                    Mathf.Max(cameraRect.width, hard.xMax) - Mathf.Min(0, hard.xMin),
-                    Mathf.Max(0, cameraRect.height - hard.yMax));
+                var left = ClipToCamera(new Rect(0, hard.yMin, hard.xMin, hard.height));
+                var right = ClipToCamera(new Rect(hard.xMax, hard.yMin, cameraRect.width - hard.xMax, hard.height));
+                var top = ClipToCamera(new Rect(0, 0, cameraRect.width, hard.yMin));
+                var bottom = ClipToCamera(new Rect(0, hard.yMax, cameraRect.width, cameraRect.height - hard.yMax));
                 GUI.DrawTexture(left, tex, ScaleMode.StretchToFill);
                 GUI.DrawTexture(top, tex, ScaleMode.StretchToFill);
                 GUI.DrawTexture(right, tex, ScaleMode.StretchToFill);
@@ -252,10 +249,10 @@ namespace Unity.Cinemachine.Editor
             GUI.color = softBarsColour;
             if (composition.DeadZone.Enabled)
             {
-                var left = new Rect(hard.xMin, dead.yMin, dead.xMin - hard.xMin, dead.height);
-                var top = new Rect(hard.xMin, hard.yMin, hard.xMax - hard.xMin, dead.yMin - hard.yMin);
-                var right = new Rect(dead.xMax, dead.yMin, hard.xMax - dead.xMax, dead.yMax - dead.yMin);
-                var bottom = new Rect(hard.xMin, dead.yMax, hard.xMax - hard.xMin, hard.yMax - dead.yMax);
+                var left = ClipToCamera(new Rect(hard.xMin, dead.yMin, dead.xMin - hard.xMin, dead.height));
+                var top = ClipToCamera(new Rect(hard.xMin, hard.yMin, hard.xMax - hard.xMin, dead.yMin - hard.yMin));
+                var right = ClipToCamera(new Rect(dead.xMax, dead.yMin, hard.xMax - dead.xMax, dead.yMax - dead.yMin));
+                var bottom = ClipToCamera(new Rect(hard.xMin, dead.yMax, hard.xMax - hard.xMin, hard.yMax - dead.yMax));
                 GUI.DrawTexture(left, tex, ScaleMode.StretchToFill);
                 GUI.DrawTexture(top, tex, ScaleMode.StretchToFill);
                 GUI.DrawTexture(right, tex, ScaleMode.StretchToFill);
@@ -286,6 +283,10 @@ namespace Unity.Cinemachine.Editor
 
             GUI.matrix = oldMatrix;
             GUI.color = oldColor;
+
+            Rect ClipToCamera(Rect r) => Rect.MinMaxRect(
+                Mathf.Clamp(r.xMin, 0, cameraRect.width), Mathf.Clamp(r.yMin, 0, cameraRect.height),
+                Mathf.Clamp(r.xMax, 0, cameraRect.width), Mathf.Clamp(r.yMax, 0, cameraRect.height));
         }
 
         void OnGuiHandleBarDragging(float screenWidth, float screenHeight, ref ScreenComposerSettings composition)
