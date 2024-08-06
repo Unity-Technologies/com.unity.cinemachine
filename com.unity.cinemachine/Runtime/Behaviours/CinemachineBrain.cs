@@ -279,11 +279,8 @@ namespace Unity.Cinemachine
         // We don't want this in runtime because it's only for debugging and it can generate garbage
         void OnGUI()
         {
-            if ((ShowDebugText || CinemachineDebug.GameViewGuidesEnabled)
-                 && CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
-            {
+            if (CinemachineDebug.OnGUIHandlers != null && Event.current.type != EventType.Layout)
                 CinemachineDebug.OnGUIHandlers(this);
-            }
         }
 
     #if CINEMACHINE_UIELEMENTS
