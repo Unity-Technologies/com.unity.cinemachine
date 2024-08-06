@@ -276,7 +276,6 @@ namespace Unity.Cinemachine
             }
         }
 
-    #if CINEMACHINE_UIELEMENTS
         // We don't want this in runtime because it's only for debugging and it can generate garbage
         void OnGUI()
         {
@@ -287,6 +286,7 @@ namespace Unity.Cinemachine
             }
         }
 
+    #if CINEMACHINE_UIELEMENTS
         void OnGuiHandler(CinemachineBrain brain)
         {
             if (!ShowDebugText && m_DebugText != null)
