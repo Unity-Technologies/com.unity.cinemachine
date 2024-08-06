@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Easing option to CinemachineSplineRoll.
 - Added Padding option to CinemachineConfiner2D.
 
+### Changed
+- The presence of a tracking target no longer affects whether the CinemachineCamera state's position and rotation are pushed back to the transform.
+
 
 ## [3.1.1] - 2024-06-15
 
