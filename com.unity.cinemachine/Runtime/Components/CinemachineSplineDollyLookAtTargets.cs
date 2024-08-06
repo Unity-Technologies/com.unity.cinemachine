@@ -101,7 +101,8 @@ namespace Unity.Cinemachine
         /// <returns></returns>
         internal bool GetGetSplineAndDolly(out SplineContainer spline, out CinemachineSplineDolly dolly)
         {
-            if (TryGetComponent(out dolly))
+            dolly = null;
+            if (this != null && TryGetComponent(out dolly))
             {
                 spline = dolly.Spline;
                 return spline != null && spline.Spline != null;
