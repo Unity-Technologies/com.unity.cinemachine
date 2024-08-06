@@ -354,12 +354,18 @@ namespace Unity.Cinemachine.Editor
             scanner.OnLeafField = (string fullName, Type type, ref object value) =>
                 {
                     // Lookup the value in the dictionary
-                    if (m_Values.TryGetValue(fullName, out string savedValue)
-                        && StringFromLeafObject(value) != savedValue)
+                    if (m_Values.TryGetValue(fullName, out string savedStringValue)
+                        && StringFromLeafObject(value) != savedStringValue)
                     {
-                        //Debug.Log("Put " + m_ObjectFullPath + "." + fullName + " = " + m_Values[fullName] + " --- was " + StringFromLeafObject(value));
-                        value = LeafObjectFromString(type, m_Values[fullName].Trim(), roots);
-                        return true; // changed
+                        //Debug.Log("Put " + m_ObjectFullPath + "." + fullName + " = " + savedStringValue + " --- was " + StringFromLeafObject(value));
+                        var newValue = LeafObjectFromString(type, savedStringValue.Trim(), roots);
+
+                        // Ignore path mismatches due to reparenting during the game, but don't ignore if the value was deliberately set to null 
+                        if (newValue != null || savedStringValue.Length == 0)
+                        {
+                            value = newValue;
+                            return true; // changed
+                        }
                     }
                     return false;
                 };
@@ -425,14 +431,9 @@ namespace Unity.Cinemachine.Editor
                 return (go != null) ? go.GetComponent(type) : null;
             }
             if (typeof(GameObject).IsAssignableFrom(type))
-            {
-                // Try to find the named game object
-                return GameObject.Find(value);
-            }
+                return GameObject.Find(value); // Try to find the named game object
             if (typeof(ScriptableObject).IsAssignableFrom(type))
-            {
                 return AssetDatabase.LoadAssetAtPath(value, type);
-            }
             return null;
         }
 
