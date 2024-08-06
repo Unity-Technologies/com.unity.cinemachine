@@ -22,7 +22,7 @@ namespace Unity.Cinemachine
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
     /// automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateLensCache().
     ///
-    /// Confiner2D pre-calculates a cache to speed up calculation.
+    /// Confiner2D pre-calculates a cache to speed up subsequent calculation.
     /// The cache needs to be recomputed in the following circumstances:
     ///  - when the input polygon's points change
     ///  - when the input polygon is non-uniformly scaled
@@ -101,6 +101,17 @@ namespace Unity.Cinemachine
                 + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
                 + "potential window sizes.")]
             public float MaxWindowSize;
+
+            /// <summary>
+            /// For large window sizes, the confiner will potentially generate polygons with zero area.  
+            /// The padding may be used to add a small amount of area to these polygons, to prevent them from being 
+            /// a series of disconnected dots.
+            /// </summary>
+            [Tooltip("For large window sizes, the confiner will potentially generate polygons with zero area.  "
+                + "The padding may be used to add a small amount of area to these polygons, to prevent them from "
+                + "being a series of disconnected dots.")]
+            [Range(0, 100)]
+            public float Padding;
         }
 
         /// <summary>
@@ -134,7 +145,7 @@ namespace Unity.Cinemachine
             const float maxComputationTimePerFrameInSeconds = 1f / 120f;
             Damping = Mathf.Max(0, Damping);
             SlowingDistance = Mathf.Max(0, SlowingDistance);
-            m_ShapeCache.maxComputationTimePerFrameInSeconds = maxComputationTimePerFrameInSeconds;
+            m_ShapeCache.MaxComputationTimePerFrameInSeconds = maxComputationTimePerFrameInSeconds;
             OversizeWindow.MaxWindowSize = Mathf.Max(0, OversizeWindow.MaxWindowSize);
 
             // Legacy upgrade
@@ -291,8 +302,7 @@ namespace Unity.Cinemachine
         Vector3 ConfinePoint(Vector3 pos, VcamExtraState extra, Vector3 fwd)
         {
             var posLocal = m_ShapeCache.DeltaWorldToBaked.MultiplyPoint3x4(pos);
-            var newPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(
-                extra.BakedSolution.ConfinePoint(posLocal));
+            var newPos = m_ShapeCache.DeltaBakedToWorld.MultiplyPoint3x4(extra.BakedSolution.ConfinePoint(posLocal));
 
             // Don't move the point along the fwd axis
             return newPos - fwd * Vector3.Dot(fwd, newPos - pos);
@@ -343,7 +353,7 @@ namespace Unity.Cinemachine
             public float AspectRatio;
             
             OversizeWindowSettings m_OversizeWindowSettings;
-            internal float maxComputationTimePerFrameInSeconds;
+            internal float MaxComputationTimePerFrameInSeconds;
 
             Matrix4x4 m_BakedToWorld; // defines baked space
             Collider2D m_BoundingShape2D;
@@ -383,7 +393,7 @@ namespace Unity.Cinemachine
                     // Advance confiner baking
                     if (ConfinerOven.State == ConfinerOven.BakingState.BAKING)
                     {
-                        ConfinerOven.BakeConfiner(maxComputationTimePerFrameInSeconds);
+                        ConfinerOven.BakeConfiner(MaxComputationTimePerFrameInSeconds);
 
                         // If no longer baking, then confinerStateChanged
                         confinerStateChanged = ConfinerOven.State != ConfinerOven.BakingState.BAKING;
@@ -463,7 +473,7 @@ namespace Unity.Cinemachine
                 if (!HasAnyPoints(OriginalPath))
                     return false; // polygon or composite collider with 0 points
 
-                ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1);
+                ConfinerOven = new ConfinerOven(OriginalPath, aspectRatio, oversize.Enabled ? oversize.MaxWindowSize : -1, oversize.Padding);
                 m_BoundingShape2D = boundingShape2D;
                 m_OversizeWindowSettings = oversize;
                 AspectRatio = aspectRatio;
@@ -489,7 +499,8 @@ namespace Unity.Cinemachine
                     && OriginalPath != null // first time?
                     && ConfinerOven != null // cache not empty? 
                     && Math.Abs(AspectRatio - aspectRatio) < Epsilon // aspect ratio changed?
-                    && m_OversizeWindowSettings.Enabled == oversize.Enabled // max ortho changed?
+                    && m_OversizeWindowSettings.Enabled == oversize.Enabled // oversize settings changed?
+                    && m_OversizeWindowSettings.Padding == oversize.Padding 
                     && Mathf.Abs(m_OversizeWindowSettings.MaxWindowSize - oversize.MaxWindowSize) < Epsilon;
             }
 

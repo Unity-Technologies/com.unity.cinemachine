@@ -166,8 +166,7 @@ namespace Unity.Cinemachine
                         for (var j = 0; j < numPoints; j++)
                         {
                             // Restore the original aspect ratio
-                            pathSegment.Add(m_AspectStretcher.Unstretch(
-                                new Vector2(srcPoly[j].X, srcPoly[j].Y) * k_IntToFloatScaler));
+                            pathSegment.Add(m_AspectStretcher.Unstretch(new Vector2(srcPoly[j].X, srcPoly[j].Y) * k_IntToFloatScaler));
                         }
 
                         m_Vector2Path.Add(pathSegment);
@@ -233,6 +232,7 @@ namespace Unity.Cinemachine
         }
 
         float m_MinFrustumHeightWithBones;
+        float m_SkeletonPadding;
 
         List<List<IntPoint>> m_OriginalPolygon;
         IntPoint m_MidPoint;
@@ -240,18 +240,16 @@ namespace Unity.Cinemachine
 
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1f / k_FloatToIntScaler;
-        const float k_MinStepSize = 500f / k_FloatToIntScaler;
-        const int k_MitterLimit = 10;
-        const int k_SkeletonPadding = 5;
+        const float k_MinStepSize = 50f / k_FloatToIntScaler;
+        const int k_MiterLimit = 2; // this is the minimum allowed value.  We want to square the spikes.
+        const float k_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
         Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new(1, 0);
 
-        const float k_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
-
-        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight, float skeletonPadding)
         {
-            Initialize(inputPath, aspectRatio, maxFrustumHeight);
+            Initialize(inputPath, aspectRatio, maxFrustumHeight, Mathf.Max(0, skeletonPadding) + 1);
         }
 
         /// <summary>
@@ -269,7 +267,7 @@ namespace Unity.Cinemachine
                     m_OriginalPolygon, m_Cache.theoreticalMaxCandidate);
 
             // Inflate with clipper to frustumHeight
-            var offsetter = new ClipperOffset(k_MitterLimit);
+            var offsetter = new ClipperOffset(k_MiterLimit);
             offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             var solution = offsetter.Execute(-1f * frustumHeight * k_FloatToIntScaler);
             if (solution.Count == 0) 
@@ -339,11 +337,12 @@ namespace Unity.Cinemachine
 
         BakingStateCache m_Cache;
 
-        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight, float skeletonPadding)
         {
             m_Skeleton.Clear();
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
+            m_SkeletonPadding = skeletonPadding;
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
@@ -369,7 +368,7 @@ namespace Unity.Cinemachine
             
             // calculate mid point and use it as the most shrank down version at theoretical max
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
-            m_Cache.theoreticalMaxCandidate = new List<List<Point64>> { new() { m_MidPoint } };
+            m_Cache.theoreticalMaxCandidate = new List<List<IntPoint>> { new() { m_MidPoint } };
 
             // Skip the expensive skeleton calculation if it's not wanted
             if (m_Cache.userSetMaxFrustumHeight < 0)
@@ -378,7 +377,7 @@ namespace Unity.Cinemachine
                 return;
             }
             
-            m_Cache.offsetter = new ClipperOffset(k_MitterLimit);
+            m_Cache.offsetter = new ClipperOffset(k_MiterLimit);
             m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
 
             // exact comparison to 0 is intentional!
@@ -390,14 +389,14 @@ namespace Unity.Cinemachine
             }
             else
             {
-                m_Cache.userSetMaxCandidate = new List<List<Point64>>(
+                m_Cache.userSetMaxCandidate = new List<List<IntPoint>>(
                     m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
                 if (m_Cache.userSetMaxCandidate.Count == 0) 
                     m_Cache.userSetMaxCandidate = m_Cache.theoreticalMaxCandidate;
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
             
-            var solution = new List<List<Point64>>(m_Cache.offsetter.Execute(0));
+            var solution = new List<List<IntPoint>>(m_Cache.offsetter.Execute(0));
             m_Cache.solutions = new List<PolygonSolution>();
             m_Cache.solutions.Add(new PolygonSolution
             {
@@ -477,7 +476,7 @@ namespace Unity.Cinemachine
                 {
                     m_Cache.rightCandidate = new PolygonSolution
                     {
-                        polygons = new List<List<Point64>>(candidate),
+                        polygons = new List<List<IntPoint>>(candidate),
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
                     m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
@@ -486,7 +485,7 @@ namespace Unity.Cinemachine
                 {
                     m_Cache.leftCandidate = new PolygonSolution
                     {
-                        polygons = new List<List<Point64>>(candidate),
+                        polygons = new List<List<IntPoint>>(candidate),
                         frustumHeight = m_Cache.currentFrustumHeight,
                     };
 
@@ -546,24 +545,23 @@ namespace Unity.Cinemachine
             void ComputeSkeleton(in List<PolygonSolution> solutions)
             {
                 var clipper = new Clipper64();
-                var offsetter = new ClipperOffset(k_MitterLimit);
+                var offsetter = new ClipperOffset(k_MiterLimit);
                 // At each state change point (1-2, 3-4, ...), collect geometry that gets lost over the transition
                 for (var i = 1; i < solutions.Count - 1; i += 2)
                 {
                     var prev = solutions[i]; // solution before state change
                     var next = solutions[i+1]; // solution after state change
 
-                    double step = k_SkeletonPadding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
-
                     // Grow the larger polygon to inflate marginal regions
+                    double step = m_SkeletonPadding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
                     offsetter.Clear();
                     offsetter.AddPaths(prev.polygons, JoinType.Miter, EndType.Polygon);
-                    var expandedPrev = new List<List<Point64>>(offsetter.Execute(step));
+                    var expandedPrev = new List<List<IntPoint>>(offsetter.Execute(step));
 
                     // Grow the smaller polygon to be a bit bigger than the expanded larger one
                     offsetter.Clear();
                     offsetter.AddPaths(next.polygons, JoinType.Miter, EndType.Polygon);
-                    var expandedNext = new List<List<Point64>>(offsetter.Execute(step * 2));
+                    var expandedNext = new List<List<IntPoint>>(offsetter.Execute(step * 2));
 
                     // Compute the difference - this is the lost geometry
                     var solution = new List<List<IntPoint>>();
