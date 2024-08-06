@@ -239,6 +239,7 @@ namespace Cinemachine
         }
 
         float m_MinFrustumHeightWithBones;
+        float m_SkeletonPadding; // to counteract precision problems - inflates small regions
 
         List<List<IntPoint>> m_OriginalPolygon;
         IntPoint m_MidPoint;
@@ -246,16 +247,16 @@ namespace Cinemachine
 
         const long k_FloatToIntScaler = 100000;
         const float k_IntToFloatScaler = 1.0f / k_FloatToIntScaler;
-        const float k_MinStepSize = 0.005f;
+        const float k_MinStepSize = 0.0005f;
 
         Rect m_PolygonRect;
         AspectStretcher m_AspectStretcher = new AspectStretcher(1, 0);
 
         float m_MaxComputationTimeForFullSkeletonBakeInSeconds = 5f;
 
-        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        public ConfinerOven(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight, float skeletonPadding)
         {
-            Initialize(inputPath, aspectRatio, maxFrustumHeight);
+            Initialize(inputPath, aspectRatio, maxFrustumHeight, Mathf.Max(0, skeletonPadding) + 1);
         }
 
         /// <summary>
@@ -349,11 +350,12 @@ namespace Cinemachine
 
         BakingStateCache m_Cache;
 
-        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight)
+        void Initialize(in List<List<Vector2>> inputPath, in float aspectRatio, float maxFrustumHeight, float skeletonPadding)
         {
             m_Skeleton.Clear();
             m_Cache.userSetMaxFrustumHeight = maxFrustumHeight;
             m_MinFrustumHeightWithBones = float.MaxValue;
+            m_SkeletonPadding = skeletonPadding;
 
             // calculate mid point and use it as the most shrank down version
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
@@ -568,8 +570,7 @@ namespace Cinemachine
                     var prev = solutions[i];
                     var next = solutions[i+1];
 
-                    const int padding = 5; // to counteract precision problems - inflates small regions
-                    double step = padding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
+                    double step = m_SkeletonPadding * k_FloatToIntScaler * (next.frustumHeight - prev.frustumHeight);
 
                     // Grow the larger polygon to inflate marginal regions
                     var expandedPrev = new List<List<IntPoint>>();

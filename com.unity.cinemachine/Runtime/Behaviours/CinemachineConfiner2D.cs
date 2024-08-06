@@ -89,6 +89,17 @@ namespace Cinemachine
             + "potential window sizes.")]
         public float m_MaxWindowSize;
 
+        /// <summary>
+        /// For large window sizes, the confiner will potentially generate polygons with zero area.  
+        /// The padding may be used to add a small amount of area to these polygons, to prevent them from being 
+        /// a series of disconnected dots.
+        /// </summary>
+        [Tooltip("For large window sizes, the confiner will potentially generate polygons with zero area.  "
+            + "The padding may be used to add a small amount of area to these polygons, to prevent them from "
+            + "being a series of disconnected dots.")]
+        [Range(0, 100)]
+        public float m_Padding;
+
         float m_MaxComputationTimePerFrameInSeconds = 1f / 120f;
 
         /// <summary>Invalidates cache and consequently trigger a rebake at next iteration.</summary>
@@ -102,7 +113,7 @@ namespace Cinemachine
         /// <returns>Returns true if the cache could be validated. False, otherwise.</returns>
         public bool ValidateCache(float cameraAspectRatio)
         {
-            return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, out _);
+            return m_shapeCache.ValidateCache(m_BoundingShape2D, m_MaxWindowSize, cameraAspectRatio, m_Padding, out _);
         }
 
         const float k_cornerAngleTreshold = 10f;
@@ -122,7 +133,7 @@ namespace Cinemachine
             {
                 var aspectRatio = state.Lens.Aspect;
                 if (!m_shapeCache.ValidateCache(
-                    m_BoundingShape2D, m_MaxWindowSize, aspectRatio, out bool confinerStateChanged))
+                    m_BoundingShape2D, m_MaxWindowSize, aspectRatio, m_Padding, out bool confinerStateChanged))
                 {
                     return; // invalid path
                 }
@@ -219,6 +230,7 @@ namespace Cinemachine
 
             float m_aspectRatio;
             float m_maxWindowSize;
+            float m_skeletonPadding;
             internal float m_maxComputationTimePerFrameInSeconds;
 
             Matrix4x4 m_bakedToWorld; // defines baked space
@@ -250,10 +262,10 @@ namespace Cinemachine
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(
                 Collider2D boundingShape2D, float maxWindowSize, 
-                float aspectRatio, out bool confinerStateChanged)
+                float aspectRatio, float skeletonPadding, out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
-                if (IsValid(boundingShape2D, aspectRatio, maxWindowSize))
+                if (IsValid(boundingShape2D, aspectRatio, maxWindowSize, skeletonPadding))
                 {
                     // Advance confiner baking
                     if (m_confinerOven.State == ConfinerOven.BakingState.BAKING)
@@ -317,24 +329,26 @@ namespace Cinemachine
                     return false; // input collider is invalid
                 }
                 
-                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize);
+                m_confinerOven = new ConfinerOven(m_OriginalPath, aspectRatio, maxWindowSize, skeletonPadding);
                 m_aspectRatio = aspectRatio;
                 m_boundingShape2D = boundingShape2D;
                 m_maxWindowSize = maxWindowSize;
+                m_skeletonPadding = skeletonPadding;
 
                 CalculateDeltaTransformationMatrix();
 
                 return true;
             }
 
-            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize)
+            bool IsValid(in Collider2D boundingShape2D, in float aspectRatio, in float maxOrthoSize, in float padding)
             {
                 return boundingShape2D != null && m_boundingShape2D != null && 
                        m_boundingShape2D == boundingShape2D && // same boundingShape?
                        m_OriginalPath != null && // first time?
                        m_confinerOven != null && // cache not empty? 
                        Mathf.Abs(m_aspectRatio - aspectRatio) < UnityVectorExtensions.Epsilon && // aspect changed?
-                       Mathf.Abs(m_maxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon; // max ortho changed?
+                       Mathf.Abs(m_maxWindowSize - maxOrthoSize) < UnityVectorExtensions.Epsilon && // max ortho changed?
+                       Mathf.Abs(m_skeletonPadding - padding) < UnityVectorExtensions.Epsilon;
             }
 
             void CalculateDeltaTransformationMatrix()

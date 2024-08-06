@@ -28,19 +28,13 @@ namespace Cinemachine.Editor
         {
             base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.m_MaxWindowSize));
+            excluded.Add(FieldPath(x => x.m_Padding));
         }
 
         private void OnEnable()
         {
             m_MaxWindowSizeProperty = FindProperty(x => x.m_MaxWindowSize);
-            m_MaxWindowSizeLabel = new GUIContent(
-                m_MaxWindowSizeProperty.displayName, 
-                "To optimize computation and memory costs, set this to the largest view size that the "
-                + "camera is expected to have.  The confiner will not compute a polygon cache for frustum "
-                + "sizes larger than this.  This refers to the size in world units of the frustum at the "
-                + "confiner plane (for orthographic cameras, this is just the orthographic size).  If set "
-                + "to 0, then this parameter is ignored and a polygon cache will be calculated for all "
-                + "potential window sizes.");
+            m_MaxWindowSizeLabel = new GUIContent(m_MaxWindowSizeProperty.displayName, m_MaxWindowSizeProperty.tooltip);
         }
 
         public override void OnInspectorGUI()
@@ -93,6 +87,8 @@ namespace Cinemachine.Editor
             float maxSize = m_MaxWindowSizeProperty.floatValue;
             bool computeSkeleton = maxSize >= 0;
             var rect = EditorGUILayout.GetControlRect(true, (lineHeight + vSpace) * (computeSkeleton ? 2 : 1));
+
+            EditorGUI.BeginChangeCheck();
             EditorGUI.BeginProperty(rect, m_ComputeSkeletonLabel, m_MaxWindowSizeProperty);
             {
                 var r = rect; r.height = lineHeight;
@@ -102,13 +98,15 @@ namespace Cinemachine.Editor
                 else
                 {
                     r.y += lineHeight + vSpace;
-                    maxSize = Mathf.Max(0, EditorGUI.FloatField(
-                        r, m_MaxWindowSizeLabel, Mathf.Max(0, maxSize)));
+                    maxSize = Mathf.Max(0, EditorGUI.FloatField(r, m_MaxWindowSizeLabel, Mathf.Max(0, maxSize)));
                 }
                 m_MaxWindowSizeProperty.floatValue = maxSize;
-                m_MaxWindowSizeProperty.serializedObject.ApplyModifiedProperties();
                 EditorGUI.EndProperty();
             }
+            if (computeSkeleton)
+                EditorGUILayout.PropertyField(FindProperty(x => x.m_Padding));
+            if (EditorGUI.EndChangeCheck())
+                serializedObject.ApplyModifiedProperties();
 
             rect = EditorGUILayout.GetControlRect(true);
             if (GUI.Button(rect, m_InvalidateCacheLabel))

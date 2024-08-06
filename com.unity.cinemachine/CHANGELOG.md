@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [2.10.2] - 2025-01-01
+- Added Padding option to CinemachineConfiner2D.
+
+
 ## [2.10.1] - 2024-06-21
 - Bugfix: Solo was not updating when brain was in FixedUpdate.
 - Bugfix: Target Groups with zero active members now report their last valid position and dimensions.

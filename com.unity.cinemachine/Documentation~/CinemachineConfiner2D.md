@@ -38,3 +38,4 @@ It is much more efficient to have more Cinemachine Cameras with different input 
 |Bounding Shape 2D|Set the 2D shape you want to confine the camera viewport to.|
 |Damping|Damping Is applied around corners to avoid jumps. Higher numbers are more gradual.|
 |Max Window Size|To optimize computation and memory performance, set this to the largest view size that the camera is expected to have. The Confiner 2D does not compute a polygon cache for frustum sizes larger than this. This refers to the size in world units of the frustum at the confiner plane (for orthographic cameras, this is just the orthographic size). If set to 0, then Cinemachine ignores this parameter and calculates a polygon cache for all potential window sizes.|
+|Padding|For large window sizes, the confiner will potentially generate polygons with zero area.  The padding may be used to add a small amount of area to these polygons, to prevent them from being a series of disconnected dots.|
