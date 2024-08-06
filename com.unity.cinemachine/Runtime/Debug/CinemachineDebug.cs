@@ -118,7 +118,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Delegate for OnGUI debugging.  
-        /// This will be called by the CinemachineDebugDisplay in its OnGUI (editor only)
+        /// This will be called by the CinemachineDebugBrain in its OnGUI (editor only)
         /// </summary>
         public static Action<CinemachineBrain> OnGUIHandlers;
 
