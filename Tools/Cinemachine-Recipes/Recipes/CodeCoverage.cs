@@ -37,6 +37,7 @@ public class CodeCoverage :RecipeBase
                     .Add("npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm")
                     .Add("upm-ci package test -u trunk --package-path com.unity.cinemachine --type package-tests --enable-code-coverage --code-coverage-options \"generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine*\" --extra-utr-arg=--coverage-results-path=${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults")
                     .Add("curl -Os https://uploader.codecov.io/latest/linux/codecov")
+                    .Add("chmod a+x ./codecov")
                     .Add("./codecov -v -t \"${CODECOV_TOKEN}\" -B \"${GIT_BRANCH}\" -T \"${GIT_TAG}\" -P \"${YAMATO_PR_ID}\" -f \"upm-ci~/test-results/CoverageResults/**/*.xml\"")
                     )
                 .WithUpmCiArtifacts()
