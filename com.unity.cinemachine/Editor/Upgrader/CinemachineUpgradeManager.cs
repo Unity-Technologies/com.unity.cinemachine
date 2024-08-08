@@ -215,6 +215,8 @@ namespace Unity.Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                if (!scene.isLoaded)
+                    continue;
 
                 // Make timeline names unique
                 var timelineManager = new TimelineManager(scene);
@@ -297,38 +299,46 @@ namespace Unity.Cinemachine.Editor
 #if DEBUG_HELPERS
                 Debug.Log("Upgrading prefab asset: " + m_CurrentSceneOrPrefab);
 #endif
-                using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
-                var prefabContents = editingScope.prefabContentsRoot;
-                if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabContents))
-                    continue;
-                    
-                var timelineManager = new TimelineManager(prefabContents, m_CurrentSceneOrPrefab);
-
-                // Note: this logic relies on the fact FreeLooks will be added first in the component list
-                var components = new List<Component>();
-                foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
-                    components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
-                    
-                // upgrade all
-                foreach (var c in components)
+                try
                 {
-                    if (c == null || c.gameObject == null)
-                        continue; // was a hidden rig
-                    if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
-                        continue; // is a backup copy
+                    using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
+                    var prefabContents = editingScope.prefabContentsRoot;
+                    if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabContents))
+                        continue;
+                    
+                    var timelineManager = new TimelineManager(prefabContents, m_CurrentSceneOrPrefab);
 
-                    // Upgrade prefab and fix timeline references
-                    UpgradeObjectComponents(c.gameObject, timelineManager);
+                    // Note: this logic relies on the fact FreeLooks will be added first in the component list
+                    var components = new List<Component>();
+                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                    
+                    // upgrade all
+                    foreach (var c in components)
+                    {
+                        if (c == null || c.gameObject == null)
+                            continue; // was a hidden rig
+                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                            continue; // is a backup copy
+
+                        // Upgrade prefab and fix timeline references
+                        UpgradeObjectComponents(c.gameObject, timelineManager);
+                    }
+
+                    // Fix object references
+                    UpgradeObjectReferences(new[] { editingScope.prefabContentsRoot });
+
+    #if CINEMACHINE_TIMELINE
+                    // Fix animation references
+                    foreach (var playableDirector in timelineManager.PlayableDirectors)
+                        UpdateAnimationBindings(playableDirector);
+    #endif
                 }
-
-                // Fix object references
-                UpgradeObjectReferences(new[] { editingScope.prefabContentsRoot });
-
-#if CINEMACHINE_TIMELINE
-                // Fix animation references
-                foreach (var playableDirector in timelineManager.PlayableDirectors)
-                    UpdateAnimationBindings(playableDirector);
-#endif
+                catch (Exception e) 
+                {
+                    Debug.LogAssertion("CinemachineUpgradeManager: Failed to open " + m_CurrentSceneOrPrefab + ": " + e.Message);
+                    continue;
+                }
             }
             m_CurrentSceneOrPrefab = string.Empty;
         }
@@ -346,6 +356,8 @@ namespace Unity.Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                if (!scene.isLoaded) 
+                    continue;
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
                 UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, true);
@@ -374,6 +386,8 @@ namespace Unity.Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
+                if (!scene.isLoaded)
+                    continue;
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
                 
@@ -425,27 +439,35 @@ namespace Unity.Cinemachine.Editor
             for (var p = 0; p < m_PrefabManager.PrefabCount; ++p)
             {
                 m_CurrentSceneOrPrefab = m_PrefabManager.GetPrefabAssetPath(p);
-                using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
-                var prefabContents = editingScope.prefabContentsRoot;
-                var components = new List<Component>();
-                foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
-                    components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                try
+                {
+                    using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
+                    var prefabContents = editingScope.prefabContentsRoot;
+                    var components = new List<Component>();
+                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
                 
-                foreach (var c in components)
-                {
-                    if (c == null)
-                        continue; // ignore
-                    if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
-                        continue; // is a backup copy
+                    foreach (var c in components)
+                    {
+                        if (c == null)
+                            continue; // ignore
+                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                            continue; // is a backup copy
 
-                    m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
-                }
+                        m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
+                    }
                     
-                var managers = prefabContents.GetComponentsInChildren<CinemachineCameraManagerBase>();
-                foreach (var manager in managers)
+                    var managers = prefabContents.GetComponentsInChildren<CinemachineCameraManagerBase>();
+                    foreach (var manager in managers)
+                    {
+                        manager.InvalidateCameraCache();
+                        var justToUpdateCache = manager.ChildCameras;
+                    }
+                }
+                catch (Exception e) 
                 {
-                    manager.InvalidateCameraCache();
-                    var justToUpdateCache = manager.ChildCameras;
+                    Debug.LogAssertion("CinemachineUpgradeManager: Failed to open " + m_CurrentSceneOrPrefab + ": " + e.Message);
+                    continue;
                 }
             }
             m_CurrentSceneOrPrefab = string.Empty;
@@ -661,7 +683,15 @@ namespace Unity.Cinemachine.Editor
 #if DEBUG_HELPERS
             Debug.Log("Opening scene: " + m_CurrentSceneOrPrefab);
 #endif
-            return EditorSceneManager.OpenScene(m_CurrentSceneOrPrefab, OpenSceneMode.Single);
+            try
+            {
+                return EditorSceneManager.OpenScene(m_CurrentSceneOrPrefab, OpenSceneMode.Single);
+            }
+            catch (Exception e)
+            {
+                Debug.LogAssertion("CinemachineUpgradeManager: Failed to open " + m_CurrentSceneOrPrefab + ": " + e.Message);
+                return default;
+            }
         }
 
         static string GetFullName(GameObject go, string pathToRoot)
@@ -824,7 +854,16 @@ namespace Unity.Cinemachine.Editor
 
                     bool IsXPartOfY(GameObject x, GameObject y)
                     {
-                        var prefab = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(y));
+                        GameObject prefab;
+                        try 
+                        {
+                            prefab = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(y));
+                        }
+                        catch (Exception e) 
+                        {
+                            Debug.LogAssertion("CinemachineUpgradeManager: Failed to load prefab contents for " + y.name + ": " + e.Message);
+                            return false;
+                        }
                         var components = new List<Component>();
                         foreach (var type in upgradeComponentTypes)
                             components.AddRange(prefab.GetComponentsInChildren(type, true).ToList());
