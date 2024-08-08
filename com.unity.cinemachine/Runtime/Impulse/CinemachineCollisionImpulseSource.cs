@@ -176,7 +176,11 @@ namespace Unity.Cinemachine
                     if (ScaleImpactWithMass)
                         mass *= m_RigidBody2D.mass;
                     if (getVelocity)
+#if UNITY_2023_3_OR_NEWER
+                        vel = -m_RigidBody2D.linearVelocity;
+#else
                         vel = -m_RigidBody2D.velocity;
+#endif
                 }
 
                 var rb2d = other2d != null ? other2d.attachedRigidbody : null;
@@ -186,7 +190,11 @@ namespace Unity.Cinemachine
                         mass *= rb2d.mass;
                     if (getVelocity)
                     {
+#if UNITY_2023_3_OR_NEWER
+                        Vector3 v = rb2d.linearVelocity;
+#else
                         Vector3 v = rb2d.velocity;
+#endif
                         vel += v;
                     }
                 }
