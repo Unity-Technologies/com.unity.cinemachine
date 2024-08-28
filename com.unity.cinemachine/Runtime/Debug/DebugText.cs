@@ -14,6 +14,7 @@ namespace Unity.Cinemachine
         {
             m_DebugLabel = new Label
             {
+                pickingMode = PickingMode.Ignore,
                 style =
                 {
                     backgroundColor = new StyleColor(new Color(0.5f, 0.5f, 0.5f, 0.5f)),

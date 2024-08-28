@@ -44,6 +44,7 @@ namespace Unity.Cinemachine
             var viewportContainer = new VisualElement
             {
                 name = "CinemachineDebugUI_ViewportContainer",
+                pickingMode = PickingMode.Ignore,
                 style =
                 {
                     position = new StyleEnum<Position>(Position.Absolute),
