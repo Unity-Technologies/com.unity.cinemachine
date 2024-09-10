@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.10.2] - 2025-01-01
 - Added Padding option to CinemachineConfiner2D.
+- Sometimes a deeply-nested passive camera's position would creep due to precision inaccuracies.
 
 
 ## [2.10.1] - 2024-06-21

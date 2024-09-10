@@ -218,6 +218,9 @@ namespace Cinemachine.Utility
 
         internal static void ConservativeSetPositionAndRotation(this Transform t, Vector3 pos, Quaternion rot)
         {
+            // Avoid precision creep
+            if (t.position == pos && t.rotation == rot) 
+                return;
 #if UNITY_EDITOR
             // Avoid dirtying the scene with insignificant diffs
             if (Application.isPlaying)
