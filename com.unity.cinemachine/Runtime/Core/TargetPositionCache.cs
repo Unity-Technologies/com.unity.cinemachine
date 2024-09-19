@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This class is used to support caching of Cinemachine target positions and rotations for the 
-    /// purposes of timeline scrubbing in the editor.  At runtime, the public methods in this class
+    /// Use this class to support caching of Cinemachine target positions and rotations for the 
+    /// purposes of timeline scrubbing in the Editor.  At runtime, the public methods in this class
     /// simply return the uncached values from the target's transform.
     /// 
     /// Cinemachine behaviours and extensions that support timeline scrubbing should use the 
@@ -220,14 +220,14 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// When using Timeline in Edit mode:
-        ///  - If Recording, will log the target position at the CurrentTime.
-        ///  - Otherwise, will fetch the cached position at CurrentTime.
+        ///  - If you're Recording, the method logs the target position at the CurrentTime.
+        ///  - Otherwise, it fetches the cached position at CurrentTime.
         ///  
-        /// In Play mode, and when not scrubbing timeline:
-        ///  - will return the position directly from the transform.
+        /// When using Timeline in Play mode, and when you're not scrubbing it:
+        ///  - The method returns the position directly from the Transform.
         /// </summary>
         /// <param name="target">Target whose transform is tracked</param>
-        /// <returns>The effective position of the target</returns>
+        /// <returns>The effective position of the target.</returns>
         public static Vector3 GetTargetPosition(Transform target)
         {
             if (!UseCache || CacheMode == Mode.Disabled)
@@ -265,14 +265,14 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// When using Timeline in Edit mode:
-        ///  - If Recording, will log the target rotation at the CurrentTime.
-        ///  - Otherwise, will fetch the cached rotation at CurrentTime.
+        ///  - If you're Recording, the method logs the target position at the CurrentTime.
+        ///  - Otherwise, it fetches the cached position at CurrentTime.
         ///  
-        /// In Play mode, and when not scrubbing timeline:
-        ///  - will return the rotation directly from the transform.
+        /// When using Timeline in Play mode, and when you're not scrubbing it:
+        ///  - The method returns the position directly from the Transform.
         /// </summary>
         /// <param name="target">Target whose transform is tracked</param>
-        /// <returns>The effective position of the target</returns>
+        /// <returns>The effective position of the target.</returns>
         public static Quaternion GetTargetRotation(Transform target)
         {
             if (CacheMode == Mode.Disabled)
