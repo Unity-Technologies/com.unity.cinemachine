@@ -102,7 +102,7 @@ namespace Unity.Cinemachine
 
         // Current game state is always frame 0, overrides are subsequent frames
         readonly List<StackFrame> m_FrameStack = new ();
-        int m_NextFrameId = 1;
+        int m_NextFrameId = 0;
 
         // To avoid GC memory alloc every frame
         static readonly AnimationCurve s_DefaultLinearAnimationCurve = AnimationCurve.Linear(0, 0, 1, 1);
@@ -119,7 +119,7 @@ namespace Unity.Cinemachine
             float weightB, float deltaTime)
         {
             if (overrideId < 0)
-                overrideId = m_NextFrameId++;
+                overrideId = ++m_NextFrameId;
 
             if (m_FrameStack.Count == 0)
                 m_FrameStack.Add(new StackFrame());
@@ -187,7 +187,7 @@ namespace Unity.Cinemachine
         public void OnDisable()
         {
             m_FrameStack.Clear();
-            m_NextFrameId = -1;
+            m_NextFrameId = 0;
         }
 
         /// <summary>Has OnEnable been called?</summary>
