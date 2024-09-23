@@ -301,38 +301,46 @@ namespace Unity.Cinemachine.Editor
 #endif
                 try
                 {
-                    using var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab);
-                    var prefabContents = editingScope.prefabContentsRoot;
-                    if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabContents))
-                        continue;
-                    
-                    var timelineManager = new TimelineManager(prefabContents, m_CurrentSceneOrPrefab);
-
-                    // Note: this logic relies on the fact FreeLooks will be added first in the component list
-                    var components = new List<Component>();
-                    foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
-                        components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
-                    
-                    // upgrade all
-                    foreach (var c in components)
+                    using (var editingScope = new PrefabUtility.EditPrefabContentsScope(m_CurrentSceneOrPrefab))
                     {
-                        if (c == null || c.gameObject == null)
-                            continue; // was a hidden rig
-                        if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
-                            continue; // is a backup copy
+                        var prefabContents = editingScope.prefabContentsRoot;
 
-                        // Upgrade prefab and fix timeline references
-                        UpgradeObjectComponents(c.gameObject, timelineManager);
-                    }
+                        // Destroy any lingering invisible CM pipeline objects with invalid scripts, or prefab won't save
+                        var removed = RemoveInvalidComponents(prefabContents.transform);
+                        if (removed > 0)
+                            EditorUtility.SetDirty(prefabContents);
 
-                    // Fix object references
-                    UpgradeObjectReferences(new[] { editingScope.prefabContentsRoot });
+                        if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabContents))
+                           continue; 
 
-    #if CINEMACHINE_TIMELINE
-                    // Fix animation references
-                    foreach (var playableDirector in timelineManager.PlayableDirectors)
-                        UpdateAnimationBindings(playableDirector);
-    #endif
+                        var timelineManager = new TimelineManager(prefabContents, m_CurrentSceneOrPrefab);
+
+                        // Note: this logic relies on the fact FreeLooks will be added first in the component list
+                        var components = new List<Component>();
+                        foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
+                            components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
+                
+                        // upgrade all
+                        foreach (var c in components)
+                        {
+                            if (c == null || c.gameObject == null)
+                                continue; // was a hidden rig
+                            if (c.GetComponentInParent<CinemachineDoNotUpgrade>(true) != null)
+                                continue; // is a backup copy
+
+                            // Upgrade prefab and fix timeline references
+                            UpgradeObjectComponents(c.gameObject, timelineManager);
+                        }
+
+                        // Fix object references
+                        UpgradeObjectReferences(new[] { editingScope.prefabContentsRoot });
+
+#if CINEMACHINE_TIMELINE
+                        // Fix animation references
+                        foreach (var playableDirector in timelineManager.PlayableDirectors)
+                            UpdateAnimationBindings(playableDirector);
+#endif
+                    }  // Prefabs are automatically saved when exiting the scope
                 }
                 catch (Exception e) 
                 {
@@ -341,6 +349,14 @@ namespace Unity.Cinemachine.Editor
                 }
             }
             m_CurrentSceneOrPrefab = string.Empty;
+
+            static int RemoveInvalidComponents(Transform root)
+            {
+                int count = GameObjectUtility.RemoveMonoBehavioursWithMissingScript(root.gameObject);
+                for (int i = 0; i < root.childCount; ++i)
+                    count += RemoveInvalidComponents(root.GetChild(i));
+                return count;
+            }
         }
 
         /// <summary>

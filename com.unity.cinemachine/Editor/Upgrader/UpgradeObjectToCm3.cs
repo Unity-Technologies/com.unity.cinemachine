@@ -253,7 +253,7 @@ namespace Unity.Cinemachine.Editor
             
             foreach (var t in ObsoleteComponentTypesToDelete)
             {
-                var components = go.GetComponentsInChildren(t);
+                var components = go.GetComponentsInChildren(t, true);
                 foreach (var c in components) 
                     Undo.DestroyObjectImmediate(c);
             }
@@ -333,10 +333,9 @@ namespace Unity.Cinemachine.Editor
                     if (c != null)
                         CopyValues(c, Undo.AddComponent(go, c.GetType()) as CinemachineComponentBase);
 
-            // Destroy the hidden child object
-            var owner = vcam.GetComponentOwner();
-            if (owner != null && owner.gameObject != go)
-                UnparentAndDestroy(owner);
+            // Destroy the hidden child object, clean up any leftover pipeline components lurking in the shadows
+            for (var child = vcam.transform.Find("cm"); child != null; child = vcam.transform.Find("cm"))
+                UnparentAndDestroy(child);
 
             return null;
         }
