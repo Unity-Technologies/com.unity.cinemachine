@@ -329,9 +329,9 @@ namespace Unity.Cinemachine.Editor
                 spline.Evaluate(t, out var position, out var tangent, out var up);
 
                 var id = GUIUtility.GetControlID(FocusType.Passive);
-                if (DrawDataPoint(id, position, tangent, up, dataPoint.Value, out var result))
+                if (DrawDataPoint(id, position, tangent, up, -dataPoint.Value, out var result))
                 {
-                    dataPoint.Value = result;
+                    dataPoint.Value = -result;
                     splineData.SetDataPoint(i, dataPoint);
                     changed = i;
                 }

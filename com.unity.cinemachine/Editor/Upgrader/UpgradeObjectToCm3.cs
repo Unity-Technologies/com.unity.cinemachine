@@ -722,7 +722,7 @@ namespace Unity.Cinemachine.Editor
                         if (waypoints[i].roll != 0 && splineRoll == null)
                         {
                             splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
-                            splineRoll.Roll = new SplineData<CinemachineSplineRoll.RollData>();
+                            splineRoll.Roll = new ();
                             if (i > 0)
                                 splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i - 1, 0));
                         }
@@ -733,7 +733,6 @@ namespace Unity.Cinemachine.Editor
                 }
                 case CinemachineSmoothPath smoothPath:
                 {
-                    Undo.AddComponent<CinemachineSplineSmoother>(go);
                     var waypoints = smoothPath.m_Waypoints;
                     spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
                     for (var i = 0; i < waypoints.Length; i++)
@@ -750,13 +749,14 @@ namespace Unity.Cinemachine.Editor
                         if (waypoints[i].roll != 0 && splineRoll == null)
                         {
                             splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
-                            splineRoll.Roll = new SplineData<CinemachineSplineRoll.RollData>();
+                            splineRoll.Roll = new ();
                             if (i > 0)
                                 splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i - 1, 0));
                         }
                         if (splineRoll != null)
                             splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
                     }
+                    Undo.AddComponent<CinemachineSplineSmoother>(go);
                     break;
                 }
                 default:
