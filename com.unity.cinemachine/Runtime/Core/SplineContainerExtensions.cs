@@ -1,4 +1,3 @@
-//#define CINEMACHINE_IGNORE_SPLINE_UP // Define this to ignore the spline's internal up vector
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -30,17 +29,8 @@ namespace Unity.Cinemachine
             CinemachineSplineRoll roll,
             out Vector3 position, out Quaternion rotation)
         {
-#if CINEMACHINE_IGNORE_SPLINE_UP
-            // Use a constant up vector when calculating the spline's rotation
-            var up = Vector3.up;
-            var fwd = spline.EvaluateTangent(tNormalized);
-            var splinePosition = spline.EvaluatePosition(tNormalized);
-            if (splinePosition.x == float.PositiveInfinity)
-#else
-            // Ask the spline to evaluate its own up vector for computing rotation
             if (spline == null || !SplineUtility.Evaluate(
                 spline, tNormalized, out var splinePosition, out var fwd, out var up))
-#endif
             {
                 position = Vector3.zero;
                 rotation = Quaternion.identity;
