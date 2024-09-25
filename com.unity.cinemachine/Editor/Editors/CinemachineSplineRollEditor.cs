@@ -322,7 +322,6 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        int DrawIndexPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         int DrawIndexPointHandles(ISpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         {
             int anchorId = GUIUtility.GetControlID(FocusType.Passive);
