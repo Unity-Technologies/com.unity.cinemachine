@@ -15,6 +15,7 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Spline Roll")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineRoll.html")]
+    [SaveDuringPlay]
     public class CinemachineSplineRoll : MonoBehaviour
     {
         /// <summary>Structure to hold roll value for a specific location on the track.</summary>
