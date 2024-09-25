@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Added CinemachineVirtualCameraBaseEditor, to facilitate making conformant inspectors for custom virtual cameras and virtual camera managers.
+- Added Padding option to CinemachineConfiner2D.
 - Added CinemachineSplineSmoother for creating smooth splines suitable for camera paths.  This replicates the behaviour of CinemachineSmoothPath in CM2.
 - Added Easing option to CinemachineSplineRoll.
-- Added Padding option to CinemachineConfiner2D.
 - Added missing SaveDuringPlay to CinemchineSplineRoll.
+- Added preference option to show spline normals instead of railroad track gizmo.
 
 ### Changed
 - The presence of a tracking target no longer affects whether the CinemachineCamera state's position and rotation are pushed back to the transform.

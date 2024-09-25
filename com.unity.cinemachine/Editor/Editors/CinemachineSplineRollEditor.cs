@@ -1,5 +1,3 @@
-//#define CINEMACHINE_DRAW_SPLINE_NORMALS // Define this to draw spline normals in the gizmo instead of the railroad track
-
 using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
@@ -123,11 +121,12 @@ namespace Unity.Cinemachine.Editor
             if (Selection.activeGameObject == splineRoll.gameObject)
             {
                 DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor.Value, 
-                    CinemachineSplineDollyPrefs.SplineWidth.Value, CinemachineSplineDollyPrefs.SplineResolution.Value);
+                    CinemachineSplineDollyPrefs.SplineWidth.Value, CinemachineSplineDollyPrefs.SplineResolution.Value,
+                    CinemachineSplineDollyPrefs.ShowSplineNormals.Value);
             }
         }
 
-        static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution)
+        static void DrawSplineGizmo(CinemachineSplineRoll splineRoll, Color pathColor, float width, int resolution, bool showNormals)
         {
             var splineContainer = splineRoll == null ? null : splineRoll.SplineContainer as SplineContainer;
             if (!splineContainer.IsValid())
@@ -144,7 +143,8 @@ namespace Unity.Cinemachine.Editor
                 || SplineGizmoCache.Instance.RollData != splineRoll.Roll
                 || SplineGizmoCache.Instance.Width != width
                 || SplineGizmoCache.Instance.Resolution != resolution
-                || SplineGizmoCache.Instance.Enabled != splineRoll.enabled)
+                || SplineGizmoCache.Instance.Enabled != splineRoll.enabled
+                || SplineGizmoCache.Instance.ShowNormals != showNormals)
             {
                 var numKnots = splineContainer.Spline.Count;
                 var numSteps = numKnots * resolution;
@@ -158,58 +158,60 @@ namespace Unity.Cinemachine.Editor
                 numSteps++; // ceil
                 var vertices = new Vector3[3 * numSteps];
                 var normals = new Vector3[vertices.Length];
+                var indices = new int[showNormals ? 2 * 2 * numSteps : 2 * 3 * numSteps];
                 int vIndex = 0;
 
-#if CINEMACHINE_DRAW_SPLINE_NORMALS
-                // Draw line with normals
-                var w = q * Vector3.up * width;
-                var indices = new int[2 * 2 * numSteps];
-
-                vertices[vIndex] = p; normals[vIndex++] = Vector3.up;
-                vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
-
-                int iIndex = 0;
-                for (int i = 1; i < numSteps; ++i)
+                if (showNormals)
                 {
-                    var t = i * stepSize;
-                    scaledSpline.LocalEvaluateSplineWithRoll(t, splineRoll, out p, out q);
-                    w = q * Vector3.up * width;
-                    indices[iIndex++] = vIndex - 2;
-                    indices[iIndex++] = vIndex - 1;
+                    // Draw line with normals
+                    var w = q * Vector3.up * width;
 
                     vertices[vIndex] = p; normals[vIndex++] = Vector3.up;
                     vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
 
-                    indices[iIndex++] = vIndex - 4;
-                    indices[iIndex++] = vIndex - 2;
+                    int iIndex = 0;
+                    for (int i = 1; i < numSteps; ++i)
+                    {
+                        var t = i * stepSize;
+                        scaledSpline.LocalEvaluateSplineWithRoll(t, splineRoll, out p, out q);
+                        w = q * Vector3.up * width;
+                        indices[iIndex++] = vIndex - 2;
+                        indices[iIndex++] = vIndex - 1;
+
+                        vertices[vIndex] = p; normals[vIndex++] = Vector3.up;
+                        vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
+
+                        indices[iIndex++] = vIndex - 4;
+                        indices[iIndex++] = vIndex - 2;
+                    }
                 }
-#else
-                // Draw railroad track
-                var w = q * Vector3.right * halfWidth;
-                var indices = new int[2 * 3 * numSteps];
-
-                vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
-                vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
-
-                int iIndex = 0;
-                for (int i = 1; i < numSteps; ++i)
+                else
                 {
-                    var t = i * stepSize;
-                    scaledSpline.LocalEvaluateSplineWithRoll(t, splineRoll, out p, out q);
-                    w = q * Vector3.right * halfWidth;
-
-                    indices[iIndex++] = vIndex - 2;
-                    indices[iIndex++] = vIndex - 1;
+                    // Draw railroad track
+                    var w = q * Vector3.right * halfWidth;
 
                     vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
                     vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
 
-                    indices[iIndex++] = vIndex - 4;
-                    indices[iIndex++] = vIndex - 2;
-                    indices[iIndex++] = vIndex - 3;
-                    indices[iIndex++] = vIndex - 1;
+                    int iIndex = 0;
+                    for (int i = 1; i < numSteps; ++i)
+                    {
+                        var t = i * stepSize;
+                        scaledSpline.LocalEvaluateSplineWithRoll(t, splineRoll, out p, out q);
+                        w = q * Vector3.right * halfWidth;
+
+                        indices[iIndex++] = vIndex - 2;
+                        indices[iIndex++] = vIndex - 1;
+
+                        vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
+                        vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
+
+                        indices[iIndex++] = vIndex - 4;
+                        indices[iIndex++] = vIndex - 2;
+                        indices[iIndex++] = vIndex - 3;
+                        indices[iIndex++] = vIndex - 1;
+                    }
                 }
-#endif
 
                 var mesh = new Mesh();
                 mesh.SetVertices(vertices);
@@ -223,7 +225,8 @@ namespace Unity.Cinemachine.Editor
                     RollData = splineRoll.Roll,
                     Width = width,
                     Resolution = resolution,
-                    Enabled = splineRoll.enabled
+                    Enabled = splineRoll.enabled,
+                    ShowNormals = showNormals
                 };
             }
             // Draw the path
@@ -245,6 +248,7 @@ namespace Unity.Cinemachine.Editor
             public float Width;
             public int Resolution;
             public bool Enabled;
+            public bool ShowNormals;
 
             public static SplineGizmoCache Instance;
 
