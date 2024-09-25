@@ -19,8 +19,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes
 - Sometimes a deeply-nested passive camera's position would creep due to precision inaccuracies.
 - Coming out of a cutscene would sometimes fail to restore the original camera.
-- The upgrader would sometimes fail to delete all obsolete components.
 - Spline roll was applied backwards.
+- The upgrader would sometimes fail to delete all obsolete components.
+- Path upgrader was creating knots using Broken instead of Mirrored mode, and was not setting knot rotations correctly.
 
 
 ## [3.1.1] - 2024-06-15

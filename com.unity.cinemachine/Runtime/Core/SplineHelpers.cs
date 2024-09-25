@@ -289,7 +289,7 @@ namespace Unity.Cinemachine
                 return;
             }
 
-            int margin = Mathf.Min(5, numPoints);
+            int margin = Mathf.Min(4, numPoints-1);
             float3[] knotLooped = new float3[numPoints + 2 * margin];
             float3[] ctrl1Looped = new float3[numPoints + 2 * margin];
             float3[] ctrl2Looped = new float3[numPoints + 2 * margin];

@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine.Splines;
 
@@ -57,6 +56,8 @@ namespace Unity.Cinemachine
             {
                 var spline = container.Spline;
                 int numPoints = spline.Count;
+                if (numPoints < 3)
+                    return; // doesn't work if too few points
 
                 float3[] p1 = new float3[numPoints];
                 float3[] p2 = new float3[numPoints];
@@ -70,11 +71,17 @@ namespace Unity.Cinemachine
 
                 for (int i = 0; i < numPoints; i++)
                 {
-                    spline.SetTangentMode(i, TangentMode.Broken);
+                    spline.SetTangentMode(i, TangentMode.Mirrored);
                     var knot = spline[i];
-                    knot.Rotation = quaternion.identity;
-                    knot.TangentIn =  (i == 0 && !spline.Closed) ? default : p2[i > 0 ? i - 1 : numPoints - 1] - knots[i];
-                    knot.TangentOut = (i == numPoints - 1 && !spline.Closed) ? default : p1[i] - knots[i];
+
+                    var up = math.mul(knot.Rotation, new float3(0, 1, 0));
+                    var fwd = p1[i] - knots[i];
+                    var back = p2[i > 0 ? i - 1 : numPoints - 1] - knots[i];
+                    var len = (math.length(back) + math.length(fwd)) * 0.5f;
+
+                    knot.Rotation = quaternion.LookRotationSafe(fwd, up);
+                    knot.TangentIn =  (i == 0 && !spline.Closed) ? default : new float3(0, 0, -len);
+                    knot.TangentOut = (i == numPoints - 1 && !spline.Closed) ? default : new float3(0, 0, len);
                     spline[i] = knot;
                 }
             }

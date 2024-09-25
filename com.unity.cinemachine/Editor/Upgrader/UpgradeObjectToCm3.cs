@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -712,13 +713,16 @@ namespace Unity.Cinemachine.Editor
                     spline.Spline = new Spline(waypoints.Length, path.Looped);
                     for (var i = 0; i < waypoints.Length; i++)
                     {
+                        var fwd = waypoints[i].tangent; 
+                        var len = fwd.magnitude;
                         spline.Spline.Add(new BezierKnot
                         {
                             Position = waypoints[i].position,
-                            Rotation = Quaternion.identity,
-                            TangentIn = -waypoints[i].tangent,
-                            TangentOut = waypoints[i].tangent,
+                            Rotation = quaternion.LookRotation(fwd, new float3(0, 1, 0)),
+                            TangentIn = (i == 0 && !path.Looped) ? default : new float3(0, 0, -len),
+                            TangentOut = (i == waypoints.Length - 1 && !path.Looped) ? default : new float3(0, 0, len),
                         });
+                        spline.Spline.SetTangentMode(i, TangentMode.Mirrored);
                         if (waypoints[i].roll != 0 && splineRoll == null)
                         {
                             splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
@@ -737,15 +741,16 @@ namespace Unity.Cinemachine.Editor
                     spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
                     for (var i = 0; i < waypoints.Length; i++)
                     {
-                        var tangent = smoothPath.EvaluateLocalTangent(i); 
-                        tangent /= 3f; // divide by magic number to match spline tangent scale correctly
+                        var fwd = smoothPath.EvaluateLocalTangent(i); 
+                        var len = fwd.magnitude / 3f; // divide by magic number to match spline tangent scale correctly
                         spline.Spline.Add(new BezierKnot
                         {
                             Position = waypoints[i].position,
-                            Rotation = Quaternion.identity,
-                            TangentIn = -tangent,
-                            TangentOut = tangent
+                            Rotation = quaternion.LookRotation(fwd, new float3(0, 1, 0)),
+                            TangentIn = (i == 0 && !smoothPath.Looped) ? default : new float3(0, 0, -len),
+                            TangentOut = (i == waypoints.Length - 1 && !smoothPath.Looped) ? default : new float3(0, 0, len)
                         });
+                        spline.Spline.SetTangentMode(i, TangentMode.Mirrored);
                         if (waypoints[i].roll != 0 && splineRoll == null)
                         {
                             splineRoll = Undo.AddComponent<CinemachineSplineRoll>(go);
