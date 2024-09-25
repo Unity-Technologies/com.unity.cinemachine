@@ -112,7 +112,7 @@ namespace Unity.Cinemachine.Editor
                     {
                         // No LookAt?  Find a point to look at near the spline
                         dolly.SplineSettings.GetCachedSpline().EvaluateSplineWithRoll(
-                            spline.transform, 0, Quaternion.identity, null, out var pos, out var rot);
+                            spline.transform, 0, null, out var pos, out var rot);
                         item.WorldLookAt = pos + rot * Vector3.right * 3;
                     }
                     return item;
@@ -292,7 +292,7 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; i < splineData.Targets.Count; i++)
                 {
                     var t = SplineUtility.GetNormalizedInterpolation(spline, splineData.Targets[i].Index, indexUnit);
-                    spline.EvaluateSplinePosition(splineContainer.transform, t, out var position);
+                    var position = spline.EvaluateSplinePosition(splineContainer.transform, t);
                     var p = splineData.Targets[i].Value.WorldLookAt;
                     if (inspectorCache != null && inspectorCache.CurrentSelection == i)
                         Gizmos.color = CinemachineCorePrefs.BoundaryObjectGizmoColour.Value;
@@ -345,7 +345,7 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        int DrawIndexPointHandles(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData)
+        int DrawIndexPointHandles(ISpline spline, CinemachineSplineDollyLookAtTargets splineData)
         {
             int anchorId = GUIUtility.GetControlID(FocusType.Passive);
             spline.DataPointHandles(splineData.Targets);
@@ -366,7 +366,7 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        int DrawDataPointHandles(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData)
+        int DrawDataPointHandles(ISpline spline, CinemachineSplineDollyLookAtTargets splineData)
         {
             int changed = -1;
             for (var i = 0; i < splineData.Targets.Count; ++i)
@@ -395,7 +395,7 @@ namespace Unity.Cinemachine.Editor
             return changed;
         }
 
-        void DrawTooltip(NativeSpline spline, CinemachineSplineDollyLookAtTargets splineData, int index, bool useLookAt)
+        void DrawTooltip(ISpline spline, CinemachineSplineDollyLookAtTargets splineData, int index, bool useLookAt)
         {
             var dataPoint = splineData.Targets[index];
             var haveLookAt = dataPoint.Value.LookAt != null;
@@ -405,7 +405,7 @@ namespace Unity.Cinemachine.Editor
             var text = $"Target {index}\nIndex: {dataPoint.Index}\nLookAt: {targetText}";
 
             var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.Targets.PathIndexUnit);
-            spline.Evaluate(t, out var p0, out _, out _);
+            var p0 = spline.EvaluatePosition(t);
             var p1 = dataPoint.Value.WorldLookAt;
             CinemachineSceneToolHelpers.DrawLabel(useLookAt ? p1 : p0, text);
 

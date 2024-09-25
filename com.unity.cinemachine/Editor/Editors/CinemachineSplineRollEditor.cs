@@ -1,3 +1,5 @@
+//#define CINEMACHINE_DRAW_SPLINE_NORMALS // Define this to draw spline normals in the gizmo instead of the railroad track
+
 using System;
 using UnityEditor;
 using UnityEditor.EditorTools;
@@ -151,23 +153,49 @@ namespace Unity.Cinemachine.Editor
 
                 // For efficiency, we create a mesh with the track and draw it in one shot
                 var scaledSpline = new CachedScaledSpline(splineContainer.Spline, transform, Collections.Allocator.Temp);
-                scaledSpline.LocalEvaluateSplineWithRoll(0, Quaternion.identity, splineRoll, out var p, out var q);
-                var w = q * Vector3.right * halfWidth;
+                scaledSpline.LocalEvaluateSplineWithRoll(0, splineRoll, out var p, out var q);
 
-                var indices = new int[2 * 3 * numSteps];
                 numSteps++; // ceil
-                var vertices = new Vector3[2 * numSteps];
+                var vertices = new Vector3[3 * numSteps];
                 var normals = new Vector3[vertices.Length];
                 int vIndex = 0;
+
+#if CINEMACHINE_DRAW_SPLINE_NORMALS
+                // Draw line with normals
+                var w = q * Vector3.up * width;
+                var indices = new int[2 * 2 * numSteps];
+
+                vertices[vIndex] = p; normals[vIndex++] = Vector3.up;
+                vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
+
+                int iIndex = 0;
+                for (int i = 1; i < numSteps; ++i)
+                {
+                    var t = i * stepSize;
+                    scaledSpline.LocalEvaluateSplineWithRoll(t, splineRoll, out p, out q);
+                    w = q * Vector3.up * width;
+                    indices[iIndex++] = vIndex - 2;
+                    indices[iIndex++] = vIndex - 1;
+
+                    vertices[vIndex] = p; normals[vIndex++] = Vector3.up;
+                    vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
+
+                    indices[iIndex++] = vIndex - 4;
+                    indices[iIndex++] = vIndex - 2;
+                }
+#else
+                // Draw railroad track
+                var w = q * Vector3.right * halfWidth;
+                var indices = new int[2 * 3 * numSteps];
+
                 vertices[vIndex] = p - w; normals[vIndex++] = Vector3.up;
                 vertices[vIndex] = p + w; normals[vIndex++] = Vector3.up;
 
                 int iIndex = 0;
-
                 for (int i = 1; i < numSteps; ++i)
                 {
                     var t = i * stepSize;
-                    scaledSpline.LocalEvaluateSplineWithRoll(t, Quaternion.identity, splineRoll, out p, out q);
+                    scaledSpline.LocalEvaluateSplineWithRoll(t, splineRoll, out p, out q);
                     w = q * Vector3.right * halfWidth;
 
                     indices[iIndex++] = vIndex - 2;
@@ -181,6 +209,7 @@ namespace Unity.Cinemachine.Editor
                     indices[iIndex++] = vIndex - 3;
                     indices[iIndex++] = vIndex - 1;
                 }
+#endif
 
                 var mesh = new Mesh();
                 mesh.SetVertices(vertices);
@@ -294,6 +323,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         int DrawIndexPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
+        int DrawIndexPointHandles(ISpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         {
             int anchorId = GUIUtility.GetControlID(FocusType.Passive);
             spline.DataPointHandles(splineData);
@@ -318,7 +348,7 @@ namespace Unity.Cinemachine.Editor
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
 
-        int DrawDataPointHandles(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
+        int DrawDataPointHandles(ISpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
         {
             int changed = -1;
             int tooltipIndex = -1;
@@ -326,10 +356,10 @@ namespace Unity.Cinemachine.Editor
             {
                 var dataPoint = splineData[i];
                 var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.PathIndexUnit);
-                spline.Evaluate(t, out var position, out var tangent, out var up);
+                spline.LocalEvaluateSplineWithRoll(t, null, out var position, out var rotation); // don't consider roll
 
                 var id = GUIUtility.GetControlID(FocusType.Passive);
-                if (DrawDataPoint(id, position, tangent, up, -dataPoint.Value, out var result))
+                if (DrawDataPoint(id, position, rotation, -dataPoint.Value, out var result))
                 {
                     dataPoint.Value = -result;
                     splineData.SetDataPoint(i, dataPoint);
@@ -343,13 +373,10 @@ namespace Unity.Cinemachine.Editor
             return changed;
 
             // local function
-            bool DrawDataPoint(int controlID, Vector3 position, Vector3 tangent, Vector3 up, float rollData, out float result)
+            bool DrawDataPoint(int controlID, Vector3 position, Quaternion rotation, float rollData, out float result)
             {
                 result = 0;
-                if (tangent == Vector3.zero)
-                    return false;
-
-                var drawMatrix = Handles.matrix * Matrix4x4.TRS(position, Quaternion.LookRotation(tangent, up), Vector3.one);
+                var drawMatrix = Handles.matrix * Matrix4x4.TRS(position, rotation, Vector3.one);
                 using (new Handles.DrawingScope(drawMatrix)) // use draw matrix, so we work in local space
                 {
                     var localRot = Quaternion.Euler(0, rollData, 0);
@@ -382,13 +409,13 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        void DrawTooltip(NativeSpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, int index)
+        void DrawTooltip(ISpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, int index)
         {
             var dataPoint = splineData[index];
             var text = $"Index: {dataPoint.Index}\nRoll: {dataPoint.Value.Value}";
 
             var t = SplineUtility.GetNormalizedInterpolation(spline, dataPoint.Index, splineData.PathIndexUnit);
-            spline.Evaluate(t, out var position, out _, out _);
+            var position = spline.EvaluatePosition(t);
             CinemachineSceneToolHelpers.DrawLabel(position, text);
         }
     }

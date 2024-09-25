@@ -254,7 +254,7 @@ namespace Unity.Cinemachine
 
             spline.EvaluateSplineWithRoll(
                 Spline.transform, spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
-                m_PreviousRotation, m_RollCache.GetSplineRoll(this), out var newPos, out var newSplineRotation);
+                m_RollCache.GetSplineRoll(this), out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position
             var offsetX = newSplineRotation * Vector3.right;

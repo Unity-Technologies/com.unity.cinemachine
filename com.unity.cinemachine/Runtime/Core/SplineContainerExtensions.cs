@@ -1,3 +1,5 @@
+//#define CINEMACHINE_IGNORE_SPLINE_UP // Define this to ignore the spline's internal up vector
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -14,101 +16,98 @@ namespace Unity.Cinemachine
         public static bool IsValid(this ISplineContainer spline) => spline != null && spline.Splines != null && spline.Splines.Count > 0;
 
         /// <summary>
-        /// Apply to a <see cref="CachedScaledSpline"/>additional roll from <see cref="CinemachineSplineRoll"/>
+        /// Apply to a <see cref="ISpline"/>additional roll from <see cref="CinemachineSplineRoll"/>
         /// </summary>
         /// <param name="spline">The spline in question</param>
-        /// <param name="roll">The additional roll to apply</param>
         /// <param name="tNormalized">The normalized position on the spline</param>
-        /// <param name="defaultRotation">Used to resolve cases where spline tangent is undefined</param>
+        /// <param name="roll">The additional roll to apply, or null</param>
         /// <param name="position">returned point on the spline, in spline-local coords</param>
         /// <param name="rotation">returned rotation at the point on the spline, in spline-local coords</param>
         /// <returns>True if the spline position is valid</returns>
         public static bool LocalEvaluateSplineWithRoll(
             this ISpline spline,
             float tNormalized, 
-            Quaternion defaultRotation,
             CinemachineSplineRoll roll,
             out Vector3 position, out Quaternion rotation)
         {
+#if CINEMACHINE_IGNORE_SPLINE_UP
+            // Use a constant up vector when calculating the spline's rotation
+            var up = Vector3.up;
+            var fwd = spline.EvaluateTangent(tNormalized);
+            var splinePosition = spline.EvaluatePosition(tNormalized);
+            if (splinePosition.x == float.PositiveInfinity)
+#else
+            // Ask the spline to evaluate its own up vector for computing rotation
             if (spline == null || !SplineUtility.Evaluate(
-                spline, tNormalized, out var localPosition, out var localTangent, out var localUp))
+                spline, tNormalized, out var splinePosition, out var fwd, out var up))
+#endif
             {
                 position = Vector3.zero;
                 rotation = Quaternion.identity;
                 return false;
             }
 
-            position = localPosition;
-            Vector3 fwd = localTangent;
-            Vector3 up = localUp;
-
-            // Try to fix tangent when 0
-            if (fwd.AlmostZero())
-            {
-                const float delta = 0.01f;
-                var atEnd = tNormalized > 1.0f - delta;
-                var t1 = atEnd ? tNormalized - delta : tNormalized + delta;
-                var p = spline.EvaluatePosition(t1);
-                fwd = atEnd ? localPosition - p : p - localPosition;
-            }
-
-            // Use supplied defaults if spline rotation is still undefined
+            // Use defaults if spline rotation is undefined
             var cross = Vector3.Cross(fwd, up);
             if (cross.AlmostZero() || cross.IsNaN())
             {
-                fwd = defaultRotation * Vector3.forward;
-                up = defaultRotation * Vector3.up;
+                fwd = Vector3.forward;
+                up = Vector3.up;
             }
-            rotation = Quaternion.LookRotation(fwd, up);
 
-            // Apply extra roll
-            if (roll != null && roll.enabled)
+            // Apply extra roll if present
+            if (roll == null || !roll.enabled)
+                rotation = Quaternion.LookRotation(fwd, up);
+            else
             {
                 float rollValue = roll.Roll.Evaluate(spline, tNormalized, PathIndexUnit.Normalized, roll.GetInterpolator());
-                rotation = Quaternion.AngleAxis(rollValue, fwd) * rotation;
+                rotation = Quaternion.LookRotation(fwd, up) * RollAroundForward(rollValue);
+
+                // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
+                static Quaternion RollAroundForward(float angle)
+                {
+                    float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
+                    return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
+                }
             }
+        
+            position = splinePosition;
             return true;
         }
 
         /// <summary>
-        /// Apply to a <see cref="CachedScaledSpline"/>additional roll from <see cref="CinemachineSplineRoll"/>
+        /// Apply to a <see cref="ISpline"/>additional roll from <see cref="CinemachineSplineRoll"/>
         /// </summary>
         /// <param name="spline">The spline in question</param>
+        /// <param name="transform">The transform of the spline</param>
         /// <param name="tNormalized">The normalized position on the spline</param>
-        /// <param name="defaultRotation">Used to resolve cases where spline tangent is undefined</param>
-        /// <param name="roll">The additional roll to apply</param>
+        /// <param name="roll">The additional roll to apply, or null</param>
         /// <param name="position">returned point on the spline, in world coords</param>
         /// <param name="rotation">returned rotation at the point on the spline, in world coords</param>
         /// <returns>True if the spline position is valid</returns>
         public static bool EvaluateSplineWithRoll(
-            this CachedScaledSpline spline,
+            this ISpline spline,
             Transform transform,
             float tNormalized, 
-            Quaternion defaultRotation,
             CinemachineSplineRoll roll,
             out Vector3 position, out Quaternion rotation)
         {
-            var result = LocalEvaluateSplineWithRoll(spline, tNormalized, defaultRotation, roll, out position, out rotation);
+            var result = LocalEvaluateSplineWithRoll(spline, tNormalized, roll, out position, out rotation);
             position = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one).MultiplyPoint3x4(position);
             rotation = transform.rotation * rotation;
             return result;
         }
-
-        /// <summary>Evaluate a spline's world position and rotation at a normalized spline index</summary>
+        
+        /// <summary>Evaluate a spline's world position at a normalized spline index</summary>
         /// <param name="spline">The spline in question</param>
+        /// <param name="transform">The transform of the spline, or null</param>
         /// <param name="tNormalized">The normalized position on the spline</param>
-        /// <param name="position">returned point on the spline, in world coords</param>
         /// <returns>True if the spline position is valid</returns>
-        public static bool EvaluateSplinePosition(
-            this CachedScaledSpline spline, Transform transform, float tNormalized, out Vector3 position)
+        public static Vector3 EvaluateSplinePosition(
+            this ISpline spline, Transform transform, float tNormalized)
         {
-            if (spline == null || !SplineUtility.Evaluate(spline, tNormalized, out var localPosition, out _, out _))
-            {
-                position = Vector3.zero;
-                return false;
-            }
-            position = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one).MultiplyPoint3x4(localPosition);
-            return true;
+            float3 position = spline == null ? default : SplineUtility.EvaluatePosition(spline, tNormalized);
+            return transform == null ? position : Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one).MultiplyPoint3x4(position);
         }
         
         /// <summary>
