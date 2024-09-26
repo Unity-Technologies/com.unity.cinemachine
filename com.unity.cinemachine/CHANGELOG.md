@@ -11,19 +11,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Padding option to CinemachineConfiner2D.
 - Added CinemachineSplineSmoother for creating smooth splines suitable for camera paths.  This replicates the behaviour of CinemachineSmoothPath in CM2.
 - Added Easing option to CinemachineSplineRoll.
-- Added missing SaveDuringPlay to CinemchineSplineRoll.
-- Added preference option to show spline normals instead of railroad track gizmo.
+- Added SaveDuringPlay support to CinemchineSplineRoll.
+- Added preference option to show spline normals instead of the railroad-track gizmo.
 
 ### Changed
 - The presence of a tracking target no longer affects whether the CinemachineCamera state's position and rotation are pushed back to the transform.
-- Made TargetPositionCache.GetTargetPosition() and TargetPositionCache.GetTargetRotation() public, so that custom classes can support cached timeline scrubbing.
+- TargetPositionCache.GetTargetPosition() and TargetPositionCache.GetTargetRotation() are now public, so that custom classes can support cached timeline scrubbing.
 
 ### Bugfixes
 - Sometimes a deeply-nested passive camera's position would creep due to precision inaccuracies.
-- Coming out of a cutscene would sometimes fail to restore the original camera.
-- Spline roll was applied backwards.
-- The upgrader would sometimes fail to delete all obsolete components.
-- Path upgrader was creating knots using Broken instead of Mirrored mode, and was not setting knot rotations correctly.
+- When coming out of a cutscene, sometimes the original camera would fail to be restored.
+- Spline roll direction was inverted.
+- The upgrader sometimes failed to delete all obsolete components.
+- The path upgrader was creating knots using Broken instead of Mirrored mode, and was not setting knot rotations correctly.  This resulted in spline Up vectors not always being smooth.
 
 
 ## [3.1.1] - 2024-06-15
