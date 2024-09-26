@@ -218,7 +218,7 @@ namespace Unity.Cinemachine
         internal static void ConservativeSetPositionAndRotation(this Transform t, Vector3 pos, Quaternion rot)
         {
             // Avoid precision creep
-            if (t.position == pos && t.rotation == rot) 
+            if (t.position.Equals(pos) && t.rotation.Equals(rot)) 
                 return;
 #if UNITY_EDITOR
             // Avoid dirtying the scene with insignificant diffs
