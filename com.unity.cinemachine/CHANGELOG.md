@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - The presence of a tracking target no longer affects whether the CinemachineCamera state's position and rotation are pushed back to the transform.
+- Made TargetPositionCache.GetTargetPosition() and TargetPositionCache.GetTargetRotation() public, so that custom classes can support cached timeline scrubbing.
 
 ### Bugfixes
 - Sometimes a deeply-nested passive camera's position would creep due to precision inaccuracies.
