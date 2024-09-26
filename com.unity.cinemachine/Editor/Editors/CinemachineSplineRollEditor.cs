@@ -120,7 +120,8 @@ namespace Unity.Cinemachine.Editor
             // For performance reasons, we only draw a gizmo for the current active game object
             if (Selection.activeGameObject == splineRoll.gameObject)
             {
-                DrawSplineGizmo(splineRoll, CinemachineSplineDollyPrefs.SplineRollColor.Value, 
+                DrawSplineGizmo(splineRoll, 
+                    splineRoll.enabled ? CinemachineSplineDollyPrefs.SplineRollColor.Value : Color.gray, 
                     CinemachineSplineDollyPrefs.SplineWidth.Value, CinemachineSplineDollyPrefs.SplineResolution.Value,
                     CinemachineSplineDollyPrefs.ShowSplineNormals.Value);
             }
@@ -235,7 +236,7 @@ namespace Unity.Cinemachine.Editor
             Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
             Gizmos.color = pathColor;
             Gizmos.DrawWireMesh(SplineGizmoCache.Instance.Mesh);
-            Gizmos.matrix =matrixOld;
+            Gizmos.matrix = matrixOld;
             Gizmos.color = colorOld;
         }
 
@@ -294,33 +295,37 @@ namespace Unity.Cinemachine.Editor
             };
         }
 
-        bool GetTargets(out CinemachineSplineRoll splineData, out SplineContainer spline)
+        bool GetTargets(out CinemachineSplineRoll splineData, out SplineContainer spline, out bool enabled)
         {
             splineData = target as CinemachineSplineRoll;
             if (splineData != null)
             {
+                enabled = splineData.enabled;
                 spline = splineData.SplineContainer as SplineContainer;
                 return spline != null && spline.Spline != null;
             }
+            enabled = false;
             spline = null;
             return false;
         }
 
         public override void OnToolGUI(EditorWindow window)
         {
-            if (!GetTargets(out var splineData, out var spline))
+            if (!GetTargets(out var splineData, out var spline, out var enabled))
                 return;
 
             Undo.RecordObject(splineData, "Modifying Roll RollData");
-            var color = Handles.selectedColor;
+            var color = enabled ? Handles.selectedColor : Color.gray;
             using (new Handles.DrawingScope(color))
             {
                 var nativeSpline = new NativeSpline(spline.Spline, spline.transform.localToWorldMatrix);
 
-                int changedIndex = DrawIndexPointHandles(nativeSpline, splineData.Roll);
+                int changedIndex = -1;
+                if (enabled)
+                    changedIndex = DrawIndexPointHandles(nativeSpline, splineData.Roll);
                 if (changedIndex >= 0)
                     s_OnDataIndexDragged?.Invoke(splineData, changedIndex);
-                changedIndex = DrawDataPointHandles(nativeSpline, splineData.Roll);
+                changedIndex = DrawDataPointHandles(nativeSpline, splineData.Roll, enabled);
                 if (changedIndex >= 0)
                     s_OnDataLookAtDragged?.Invoke(splineData, changedIndex);
             }
@@ -351,7 +356,7 @@ namespace Unity.Cinemachine.Editor
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
 
-        int DrawDataPointHandles(ISpline spline, SplineData<CinemachineSplineRoll.RollData> splineData)
+        int DrawDataPointHandles(ISpline spline, SplineData<CinemachineSplineRoll.RollData> splineData, bool enabled)
         {
             int changed = -1;
             int tooltipIndex = -1;
@@ -362,13 +367,13 @@ namespace Unity.Cinemachine.Editor
                 spline.LocalEvaluateSplineWithRoll(t, null, out var position, out var rotation); // don't consider roll
 
                 var id = GUIUtility.GetControlID(FocusType.Passive);
-                if (DrawDataPoint(id, position, rotation, -dataPoint.Value, out var result))
+                if (DrawDataPoint(id, position, rotation, -dataPoint.Value, out var result) && enabled)
                 {
                     dataPoint.Value = -result;
                     splineData.SetDataPoint(i, dataPoint);
                     changed = i;
                 }
-                if (tooltipIndex < 0 && id == HandleUtility.nearestControl || id == GUIUtility.hotControl)
+                if (enabled && tooltipIndex < 0 && id == HandleUtility.nearestControl || id == GUIUtility.hotControl)
                     tooltipIndex = i;
             }
             if (tooltipIndex >= 0)
