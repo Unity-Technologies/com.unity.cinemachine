@@ -19,7 +19,7 @@ namespace Unity.Cinemachine.Samples
             MaxSpeed = Mathf.Max(1, MaxSpeed);
         }
 
-        void Update()
+        void FixedUpdate()
         {
             if (Rigidbody == null)
                 return;

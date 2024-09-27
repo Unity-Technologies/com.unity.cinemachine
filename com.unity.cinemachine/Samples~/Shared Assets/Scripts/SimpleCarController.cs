@@ -41,7 +41,7 @@ namespace Unity.Cinemachine.Samples
             axes.Add(new () { DrivenAxis = () => ref Brake, Name = "Brake" });
         }
 
-        void Update()
+        void FixedUpdate()
         {
             // Acceleration
             var force = MotorStrength * MoveZ.Value;
