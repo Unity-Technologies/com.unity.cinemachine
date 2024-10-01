@@ -731,7 +731,7 @@ namespace Unity.Cinemachine.Editor
                                 splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i - 1, 0));
                         }
                         if (splineRoll != null)
-                            splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
+                            splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, -waypoints[i].roll));
                     }
                     break;
                 }
@@ -759,7 +759,7 @@ namespace Unity.Cinemachine.Editor
                                 splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i - 1, 0));
                         }
                         if (splineRoll != null)
-                            splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, waypoints[i].roll));
+                            splineRoll.Roll.Add(new DataPoint<CinemachineSplineRoll.RollData>(i, -waypoints[i].roll));
                     }
                     Undo.AddComponent<CinemachineSplineSmoother>(go);
                     break;

@@ -21,7 +21,7 @@ namespace Unity.Cinemachine
     public static class CinemachineCore
     {
         /// <summary>Data version string.  Used to upgrade from legacy projects</summary>
-        internal const int kStreamingVersion = 20230301;
+        internal const int kStreamingVersion = 20241001;
 
         /// <summary>
         /// The root directory where Cinemachine is installed

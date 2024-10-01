@@ -16,7 +16,7 @@ namespace Unity.Cinemachine
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Spline Roll")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineSplineRoll.html")]
     [SaveDuringPlay]
-    public class CinemachineSplineRoll : MonoBehaviour
+    public class CinemachineSplineRoll : MonoBehaviour, ISerializationCallbackReceiver
     {
         /// <summary>Structure to hold roll value for a specific location on the track.</summary>
         [Serializable]
@@ -48,7 +48,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("When enabled, roll eases into and out of the data point values.  Otherwise, interpolation is linear.")]
         public bool Easing = true;
-
+        
         /// <summary>
         /// Get the appropriate interpolator for the RollData, depending on the Easing setting
         /// </summary>
@@ -104,6 +104,29 @@ namespace Unity.Cinemachine
             }
         }
 #endif
+
+
+        //============================================================================
+        // Legacy streaming support
+
+        [HideInInspector, SerializeField, NoSaveDuringPlay]
+        int m_StreamingVersion;
+
+        void PerformLegacyUpgrade(int streamedVersion)
+        {
+            if (streamedVersion < 20240101)
+            {
+                // roll values were inverted
+                for (int i = 0; i < Roll.Count; ++i)
+                {
+                    var item = Roll[i];
+                    item.Value = -item.Value;
+                    Roll[i] = item;
+                }
+            }
+        }
+        //============================================================================
+
         void Reset()
         {
             Roll?.Clear();
@@ -111,6 +134,16 @@ namespace Unity.Cinemachine
         }
 
         void OnEnable() {} // Needed so we can disable it in the editor
+
+        public void OnBeforeSerialize() {}
+
+        public void OnAfterDeserialize()
+        {
+            // Perform legacy upgrade if necessary
+            if (m_StreamingVersion < CinemachineCore.kStreamingVersion)
+                PerformLegacyUpgrade(m_StreamingVersion);
+            m_StreamingVersion = CinemachineCore.kStreamingVersion;
+        }
 
         /// <summary>Cache for clients that use CinemachineSplineRoll</summary>
         internal struct RollCache
