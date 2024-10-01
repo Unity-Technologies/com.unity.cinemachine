@@ -135,8 +135,10 @@ namespace Unity.Cinemachine
 
         void OnEnable() {} // Needed so we can disable it in the editor
 
+        /// <inheritdoc/>
         public void OnBeforeSerialize() {}
 
+        /// <inheritdoc/>
         public void OnAfterDeserialize()
         {
             // Perform legacy upgrade if necessary
