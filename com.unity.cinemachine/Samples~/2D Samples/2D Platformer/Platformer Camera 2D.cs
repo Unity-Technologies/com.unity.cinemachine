@@ -55,7 +55,11 @@ namespace Unity.Cinemachine.Samples
             {
                 if (m_PlayerAnimator != null)
                     isLeft = Mathf.Abs(m_PlayerAnimator.transform.rotation.eulerAngles.y) > 90;
+#if UNITY_2023_3_OR_NEWER
+                isFalling = m_Player.linearVelocity.y < -FallingSpeedThreshold;
+#else
                 isFalling = m_Player.velocity.y < -FallingSpeedThreshold;
+#endif
             }
             if (isFalling)
                 return isLeft ? PlayerState.FallingLeft : PlayerState.FallingRight;
