@@ -84,19 +84,18 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_HoldForever")]
             public bool HoldForever;
 
-            /// <summary>Get an envelope with default values.</summary>
-            /// <returns>An event with default values</returns>
+            /// <summary>An envelope with default values.</summary>
             public static EnvelopeDefinition Default => new() { DecayTime = 0.7f, SustainTime = 0.2f, ScaleWithImpact = true };
 
             /// <summary>Duration of the envelope, in seconds.  If negative, then duration is infinite.</summary>
-            public float Duration => HoldForever ? -1 : AttackTime + SustainTime + DecayTime;
+            public readonly float Duration => HoldForever ? -1 : AttackTime + SustainTime + DecayTime;
 
             /// <summary>
             /// Get the value of the envelope at a given time relative to the envelope start.
             /// </summary>
             /// <param name="offset">Time in seconds from the envelope start</param>
             /// <returns>Envelope amplitude.  This will range from 0...1</returns>
-            public float GetValueAt(float offset)
+            public readonly float GetValueAt(float offset)
             {
                 if (offset >= 0)
                 {
@@ -408,9 +407,9 @@ namespace Unity.Cinemachine
             return e;
         }
 
-        /// <summary>Activate an impulse event, so that it may begin broadcasting its signal</summary>
+        /// <summary>Activate an impulse event, so that it may begin broadcasting its signal.
         /// Events will be automatically removed after they expire.
-        /// You can tweak the ImpulseEvent fields dynamically if you keep a pointer to it.
+        /// You can tweak the ImpulseEvent fields dynamically if you keep a pointer to it.</summary>
         /// <param name="e">The event to add to the current active events</param>
         public void AddImpulseEvent(ImpulseEvent e)
         {

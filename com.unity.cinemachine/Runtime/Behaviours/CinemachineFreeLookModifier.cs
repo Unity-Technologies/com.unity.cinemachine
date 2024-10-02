@@ -79,10 +79,12 @@ namespace Unity.Cinemachine
             /// <param name="vcam">the virtual camera owner</param>
             public virtual void Reset(CinemachineVirtualCameraBase vcam) {}
 
-            /// <summary>Type of the cached component (null if no cached component).  If this modifier targets
+            /// <summary>
+            /// Type of the cached component (null if no cached component).  If this modifier targets
             /// specific components, this value indicates the type of that component.
-            /// The modifier should cache the component, for performance.  </summary>
+            /// The modifier should cache the component, for performance.
             /// <see cref="ComponentModifier"/> for a base class for implementing this.
+            /// </summary>
             public virtual Type CachedComponentType => null;
 
             /// <summary>Return true if cached vcam component is present or not required</summary>
@@ -126,7 +128,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Modifier for things inside a single CinemachineComponentBase.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the thing for which this a modifier.</typeparam>
         public abstract class ComponentModifier<T> : Modifier
         {
             /// <summary>The CinemachineComponentBase that will be modified.  Cached here for efficiency.</summary>
@@ -140,8 +142,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Called from OnEnable and from the inspector.  Refreshes CachedComponent.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void RefreshCache(CinemachineVirtualCameraBase vcam) 
-                => TryGetVcamComponent(vcam, out CachedComponent);
+            public override void RefreshCache(CinemachineVirtualCameraBase vcam) => TryGetVcamComponent(vcam, out CachedComponent);
         }
 
         /// <summary>
@@ -197,7 +198,6 @@ namespace Unity.Cinemachine
         /// </summary>
         public class LensModifier : Modifier
         {
-            /// <summary>Values for the top and bottom rigs</summary>
             /// <summary>Settings for top orbit</summary>
             [Tooltip("Value to take at the top of the axis range")]
             [LensSettingsHideModeOverrideProperty]
@@ -559,7 +559,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Helper struct to hold settings for Top, Middle, and Bottom orbits.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the object whose value is held.</typeparam>
         [Serializable]
         public struct TopBottomRigs<T>
         {

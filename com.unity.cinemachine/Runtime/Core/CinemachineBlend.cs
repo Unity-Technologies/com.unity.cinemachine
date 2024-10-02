@@ -171,8 +171,8 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Delegate for finding a blend definition to use when blending between 2 cameras.
         /// </summary>
-        /// <param name="fromKey">The outgoing camera</param>
-        /// <param name="toKey">The incoming camera</param>
+        /// <param name="outgoing">The outgoing camera</param>
+        /// <param name="incoming">The incoming camera</param>
         /// <returns>An appropriate blend definition,.  Must not be null.</returns>
         public delegate CinemachineBlendDefinition LookupBlendDelegate(
             ICinemachineCamera outgoing, ICinemachineCamera incoming);

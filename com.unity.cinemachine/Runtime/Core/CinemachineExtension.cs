@@ -150,7 +150,7 @@ namespace Unity.Cinemachine
         /// case be called for all the vcam children, vcam-specific state information
         /// should be stored here.  Just define a class to hold your state info
         /// and use it exclusively when calling this.</summary>
-        /// /// <typeparam name="T">The type of the extra state class</typeparam>
+        /// <typeparam name="T">The type of the extra state class</typeparam>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <returns>The extra state, cast as type T</returns>
         protected T GetExtraState<T>(CinemachineVirtualCameraBase vcam) where T : VcamExtraStateBase, new()

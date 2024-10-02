@@ -113,7 +113,6 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Get LookAt target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        /// GML todo: rename this
         public ICinemachineTargetGroup LookAtTargetAsGroup => VirtualCamera.LookAtTargetAsGroup;
 
         /// <summary>Get the position of the LookAt target.  Special handling: If the LookAt target is

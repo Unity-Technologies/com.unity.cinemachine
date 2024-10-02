@@ -133,8 +133,8 @@ namespace Unity.Cinemachine
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
         /// <summary>Does nothing</summary>
-        /// <param name="state"></param>
-        /// <param name="deltaTime"></param>
+        /// <param name="state">ignored</param>
+        /// <param name="deltaTime">ignored</param>
         public override void PrePipelineMutateCameraState(ref CameraState state, float deltaTime) {}
 
         /// <summary>Applies the axis values and orients the camera accordingly</summary>

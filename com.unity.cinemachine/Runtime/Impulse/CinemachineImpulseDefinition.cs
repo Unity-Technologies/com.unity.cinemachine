@@ -36,13 +36,13 @@ namespace Unity.Cinemachine
         {
             /// <summary>Custom shape</summary>
             Custom,
-            /// <summary></summary>
+            /// <summary>A shape suitable for a recaol, for example from a gunshot.</summary>
             Recoil,
-            /// <summary></summary>
+            /// <summary>A shape suitable for a bump.</summary>
             Bump,
-            /// <summary></summary>
+            /// <summary>A shape suitable for an explosion.</summary>
             Explosion,
-            /// <summary></summary>
+            /// <summary>A shape suitable for a longish rumble.</summary>
             Rumble
         };
 

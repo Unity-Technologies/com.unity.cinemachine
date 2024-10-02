@@ -78,6 +78,7 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_Transitions")]
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
+        /// <inheritdoc/>
         internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {
             base.PerformLegacyUpgrade(streamedVersion);
@@ -233,6 +234,10 @@ namespace Unity.Cinemachine
         /// The override must do exactly the same thing as the CreatePipeline method in
         /// the CinemachineVirtualCamera class.
         /// </summary>
+        /// <param name="vcam">The vcam whose pipeline is to be created.</param>
+        /// <param name="name">The name to use for the pipeline object.</param>
+        /// <param name="copyFrom">The components to use for the pipeline.</param>
+        /// <returns>The transform of the created pipeline object</returns>
         public delegate Transform CreatePipelineDelegate(
             CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom);
 
@@ -246,6 +251,7 @@ namespace Unity.Cinemachine
         /// Override component pipeline destruction.
         /// This needs to be done by the editor to support Undo.
         /// </summary>
+        /// <param name="pipeline">The pipeline object to destroy</param>
         public delegate void DestroyPipelineDelegate(GameObject pipeline);
 
         /// <summary>Destroy any existing pipeline container.</summary>

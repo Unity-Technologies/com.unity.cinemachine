@@ -98,6 +98,8 @@ namespace Unity.Cinemachine
 
         /// <summary>Delegate for overriding Unity's default input system.  Returns the value
         /// of the named axis.</summary>
+        /// <param name="axisName">The name of the axis being queried.</param>
+        /// <returns>The value of the axis.</returns>
         public delegate float AxisInputDelegate(string axisName);
 
         /// <summary>Delegate for overriding Unity's default input system.

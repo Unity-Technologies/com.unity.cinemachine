@@ -208,7 +208,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Is the vector within Epsilon of zero length?</summary>
-        /// <param name="v"></param>
+        /// <param name="v">The vector to test.</param>
         /// <returns>True if the square magnitude of the vector is within Epsilon of zero</returns>
         public static bool AlmostZero(this Vector3 v)
         {
@@ -378,7 +378,7 @@ namespace Unity.Cinemachine
         /// This represents the tripod head movement needed to look at the target.
         /// This formulation makes it easy to interpolate without introducing spurious roll.
         /// </summary>
-        /// <param name="orient"></param>
+        /// <param name="orient">The Quaternion to examine.</param>
         /// <param name="lookAtDir">The world-space target direction in which we want to look</param>
         /// <param name="worldUp">Which way is up.  Must have a length of 1.</param>
         /// <returns>Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
@@ -419,7 +419,7 @@ namespace Unity.Cinemachine
         /// Apply rotations, first about world up, then about (travelling) local right.
         /// rot.y is rotation about worldUp, and rot.x is second rotation, about local right.
         /// </summary>
-        /// <param name="orient"></param>
+        /// <param name="orient">The quaternion to which to apply the rotation.</param>
         /// <param name="rot">Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
         /// about local right.</param>
         /// <param name="worldUp">Which way is up</param>
@@ -438,7 +438,7 @@ namespace Unity.Cinemachine
     public static class UnityRectExtensions
     {
         /// <summary>Inflate a rect</summary>
-        /// <param name="r"></param>
+        /// <param name="r">The rect to inflate.</param>
         /// <param name="delta">x and y are added/subtracted to/from the edges of
         /// the rect, inflating it in all directions</param>
         /// <returns>The inflated rect</returns>

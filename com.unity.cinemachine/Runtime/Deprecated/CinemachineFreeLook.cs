@@ -90,7 +90,8 @@ namespace Unity.Cinemachine
         public TargetTracking.BindingMode m_BindingMode
             = TargetTracking.BindingMode.LazyFollow;
 
-        /// <summary></summary>
+        /// <summary>Controls how taut is the line that connects the rigs' orbits, which 
+        /// determines final placement on the Y axis</summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which "
             + "determines final placement on the Y axis")]
         [Range(0f, 1f)]
@@ -136,6 +137,7 @@ namespace Unity.Cinemachine
         }
         [SerializeField, HideInInspector] LegacyTransitionParams m_LegacyTransitions;
 
+        /// <inheritdoc/>
         internal protected override void PerformLegacyUpgrade(int streamedVersion)
         {
             base.PerformLegacyUpgrade(streamedVersion);
@@ -562,6 +564,10 @@ namespace Unity.Cinemachine
         /// This needs to be done by the editor to support Undo.
         /// The override must do exactly the same thing as the CreatePipeline method in this class.
         /// </summary>
+        /// <param name="copyFrom">The rig template.</param>
+        /// <param name="name">The rig name.</param>
+        /// <param name="vcam">The FreeLook owner of the rig.</param>
+        /// <returns>The created rig instance.</returns>
         public delegate CinemachineVirtualCamera CreateRigDelegate(
             CinemachineFreeLook vcam, string name, CinemachineVirtualCamera copyFrom);
 
@@ -575,6 +581,7 @@ namespace Unity.Cinemachine
         /// Override component pipeline destruction.
         /// This needs to be done by the editor to support Undo.
         /// </summary>
+        /// <param name="rig">The rig to destroy.</param>
         public delegate void DestroyRigDelegate(GameObject rig);
 
         private void DestroyRigs()

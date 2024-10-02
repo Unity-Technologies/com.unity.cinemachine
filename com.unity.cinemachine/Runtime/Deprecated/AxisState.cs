@@ -102,15 +102,15 @@ namespace Unity.Cinemachine
         int m_LastUpdateFrame;
 
         /// <summary>Constructor with specific values</summary>
-        /// <param name="minValue"></param>
-        /// <param name="maxValue"></param>
-        /// <param name="wrap"></param>
-        /// <param name="rangeLocked"></param>
-        /// <param name="maxSpeed"></param>
-        /// <param name="accelTime"></param>
-        /// <param name="decelTime"></param>
-        /// <param name="name"></param>
-        /// <param name="invert"></param>
+        /// <param name="minValue">minimum value</param>
+        /// <param name="maxValue">maximum value</param>
+        /// <param name="wrap">whether range wraps</param>
+        /// <param name="rangeLocked">whether range is locked</param>
+        /// <param name="maxSpeed">maximum value change speed</param>
+        /// <param name="accelTime">acceleration time</param>
+        /// <param name="decelTime">deceleration time</param>
+        /// <param name="name">input manager axis name</param>
+        /// <param name="invert">whether axis value is inverted</param>
         public AxisState(
             float minValue, float maxValue, bool wrap, bool rangeLocked,
             float maxSpeed, float accelTime, float decelTime,
@@ -383,9 +383,9 @@ namespace Unity.Cinemachine
             float m_LastUpdateTime;
 
             /// <summary>Constructor with specific field values</summary>
-            /// <param name="enabled"></param>
-            /// <param name="waitTime"></param>
-            /// <param name="recenteringTime"></param>
+            /// <param name="enabled">whether recentering is enabled</param>
+            /// <param name="waitTime">wait this long before recentering</param>
+            /// <param name="recenteringTime">time to complete the recentering</param>
             public Recentering(bool enabled, float waitTime,  float recenteringTime)
             {
                 m_enabled = enabled;
@@ -411,7 +411,7 @@ namespace Unity.Cinemachine
             /// <summary>
             /// Copy Recentering state from another Recentering component.
             /// </summary>
-            /// <param name="other"></param>
+            /// <param name="other">the source from which to copy</param>
             public void CopyStateFrom(ref Recentering other)
             {
                 if (mLastAxisInputTime != other.mLastAxisInputTime)
