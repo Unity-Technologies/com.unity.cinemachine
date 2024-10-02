@@ -35,20 +35,6 @@ namespace Unity.Cinemachine
         /// 
         /// The default priority value is 0. Often it is sufficient to leave the default setting.  
         /// In special cases where you want a CinemachineCamera to have a higher or lower priority value than 0, you can set it here.
-        ///
-        /// <b>Example of setting priority value directly:</b>
-        /// <para>
-        /// <c>
-        /// cam.Priority.Value = 5;
-        /// </c>
-        /// </para>
-        /// 
-        /// <b>Example of using the implicit operator to set priority value:</b>
-        /// <para>
-        /// <c>
-        /// cam.Priority = 5;
-        /// </c>
-        /// </para>
         /// </summary>
         [NoSaveDuringPlay]
         [Tooltip("Priority can be used to control which Cm Camera is live when multiple CM Cameras are "
