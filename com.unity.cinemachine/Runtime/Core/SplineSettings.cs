@@ -12,7 +12,7 @@ namespace Unity.Cinemachine
     public interface ISplineReferencer
     {
         /// <summary>Get a reference to the SplineSettings struct contained in this object.</summary>
-        /// <returns>A reference to the embedded SplineSettings struct</returns>
+        /// <value>A reference to the embedded SplineSettings struct</value>
         public ref SplineSettings SplineSettings { get; }
     }
 

@@ -66,6 +66,7 @@ namespace Unity.Cinemachine
             CustomBlends = null;
         }
 
+        /// <inheritdoc/>
         protected internal override void PerformLegacyUpgrade(int streamedVersion)
         {
             base.PerformLegacyUpgrade(streamedVersion);

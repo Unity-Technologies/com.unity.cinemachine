@@ -142,7 +142,7 @@ namespace Unity.Cinemachine
         /// <param name="a">First settings object</param>
         /// <param name="b">Second settings object</param>
         /// <param name="t">Interpolation amount: 0 is a, 1 is b</param>
-        /// <returns></returns>
+        /// <returns>The interpolated value.</returns>
         public static ScreenComposerSettings Lerp(in ScreenComposerSettings a, in ScreenComposerSettings b, float t)
         {
             return new ScreenComposerSettings

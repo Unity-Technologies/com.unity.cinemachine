@@ -108,7 +108,7 @@ namespace Unity.Cinemachine
             /// Affects how many segments to split a spline into when calculating the nearest point.
             /// Higher values mean smaller and more segments, which increases accuracy at the cost of 
             /// processing time.  In most cases, the default resolution is appropriate. Use 
-            /// with <seealso cref="SearchIteration"/> to fine-tune point accuracy.
+            /// with <see cref="SearchIteration"/> to fine-tune point accuracy.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
             [Tooltip("Affects how many segments to split a spline into when calculating the nearest point.  " 
@@ -119,7 +119,7 @@ namespace Unity.Cinemachine
 
             /// <summary>
             /// The nearest point is calculated by finding the nearest point on the entire length
-            /// of the spline using <seealso cref="SearchResolution"/> to divide into equally spaced line segments. 
+            /// of the spline using <see cref="SearchResolution"/> to divide into equally spaced line segments. 
             /// Successive iterations will then subdivide further the nearest segment, producing more 
             /// accurate results. In most cases, the default value is sufficient.
             /// For more information, see SplineUtility.GetNearestPoint.

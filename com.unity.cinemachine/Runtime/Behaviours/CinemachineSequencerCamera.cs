@@ -81,6 +81,7 @@ namespace Unity.Cinemachine
             }
         }
 
+        /// <inheritdoc/>
         protected internal override void PerformLegacyUpgrade(int streamedVersion)
         {
             base.PerformLegacyUpgrade(streamedVersion);

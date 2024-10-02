@@ -17,12 +17,12 @@ namespace Unity.Cinemachine
         public float Smoothing;
 
         /// <summary>Have any positions been logged for smoothing?</summary>
-        /// <returns>True if no positions have yet been logged, in which case smoothing is impossible</returns>
+        /// <value>True if no positions have yet been logged, in which case smoothing is impossible</value>
         public bool IsEmpty => !m_HavePos;
 
         /// <summary>Get the current position of the tracked object, as set by the last call to AddPosition().
         /// This is only valid if IsEmpty returns false.</summary>
-        /// <returns>The current position of the tracked object, as set by the last call to AddPosition()</returns>
+        /// <value>The current position of the tracked object, as set by the last call to AddPosition()</value>
         public Vector3 CurrentPosition => m_Pos;
 
         /// <summary>

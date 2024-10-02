@@ -481,9 +481,9 @@ namespace Unity.Cinemachine
             set => m_BlendManager.ActiveBlend = value;
         }
 
-        /// <summary>Returns true if camera is on a channel that is handles by this Brain.</summary>
+        /// <summary>Returns true if camera is on a channel that is handled by this Brain.</summary>
         /// <param name="vcam">The camera to check</param>
-        /// <returns></returns>
+        /// <returns>True if the camera is on a channel that is handled by this Brain.</returns>
         public bool IsValidChannel(CinemachineVirtualCameraBase vcam) 
             => vcam != null && ((uint)vcam.OutputChannel & (uint)ChannelMask) != 0;
 

@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
         public void UnregisterResetHandler(Action handler);
 
         /// <summary>Checks whether any reset handlers have been registered</summary>
-        /// <returns>True if at least one reset handler is registered</returns>
+        /// <value>True if at least one reset handler is registered</value>
         public bool HasResetHandler { get; }
     }
 
