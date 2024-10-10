@@ -57,9 +57,9 @@ namespace Unity.Cinemachine.Editor
                 });
                 ux.AddChild(new TextElement()
                 {
-                    text = "Unity can upgrade the Cinemachine data in this project to the new format.  However, custom "
-                        + "scripts that interact with these objects will not necessarily be upgraded.  If your custom scripts "
-                        + "reference obsolete classes and APIs, they will probably break.  "
+                    text = "Unity can upgrade the deprecated Cinemachine 2.X components in this project to their Cinemachine 3 equivalents.  "
+                        + "However, custom scripts that interact with these components will not necessarily be upgraded.  If your custom scripts "
+                        + "reference deprecated classes and APIs, they will probably break.  "
                         + "Please see the <a href=\"" + Documentation.BaseURL + "manual/CinemachineUpgradeFrom2.html\">Cinemachine Upgrade Guide</a> "
                         + "for tips and techniques to smooth the upgrade process.\n\n"
                         + "<b>NOTE:</b> Error and warning messages may be logged to the console window during this process.",
@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
                 // Upgrade current object
                 ux.AddChild(new TextElement()
                 {
-                    text = "Unity can upgrade the objects currently being inspected, but only if none of them "
+                    text = "<b>Option 1:</b> Upgrade the objects currently being inspected, but only if none of them "
                         + "are prefabs or prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine.Editor
                 // Upgrade current scene
                 ux.AddChild(new TextElement()
                 {
-                    text = "Unity can upgrade all the Cinemachine objects in the current scene, but only if none of them "
+                    text = "<b>Option 2:</b> Upgrade all the objects in the current scene, but only if none of them "
                         + "are prefabs or prefab instances.  Undo is supported for this operation.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 20, marginBottom = 10, alignSelf = Align.Center }
                 });
@@ -111,8 +111,8 @@ namespace Unity.Cinemachine.Editor
                 // Upgrade project
                 ux.AddChild(new TextElement()
                 {
-                    text = "Unity can upgrade all the Cinemachine objects in the project's scenes and prefabs "
-                        + "to the new data format.  Undo is NOT supported for this operation, so be sure to make a backup first.",
+                    text = "<b>Option 3:</b> Upgrade all of the deprecated Cinemachine 2.X components in the project's scenes and prefabs "
+                        + "to their Cinemachine 3 equivalents.  Undo is NOT supported for this operation, so be sure to make a backup first.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 20, marginBottom = 10, alignSelf = Align.Center }
                 });
                 ux.AddChild(new Button(() =>
