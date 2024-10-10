@@ -99,7 +99,7 @@ If your project is using virtual cameras with a Lens Mode Override (e.g. changin
 
 ![Default Lens Mode](images/DefaultLensMode.png)
 
-## Upgrading the Project's Deprecated Components
+## Converting the Project's Deprecated Components
 
 Once the scripts are using the new API, you can upgrade the project's scenes and prefabs to convert deprecated CM components to their CM3 equivalents. Cinemachine comes with a project upgrade tool to facilitate this. It's not a trivial operation, because in addition to the vcam objects in your scene, it's also necessary to upgrade prefabs and animation assets that might be referencing them.
 
