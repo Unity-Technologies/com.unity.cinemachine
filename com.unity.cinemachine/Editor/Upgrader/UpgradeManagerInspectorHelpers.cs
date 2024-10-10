@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
             {
                 var pos = EditorGUILayout.GetControlRect(false, 1);
                 InspectorUtility.HelpBoxWithButton(
-                    "Cinemachine can upgrade your project data automatically.", MessageType.Info,
+                    "Cinemachine can upgrade your project's components automatically.", MessageType.Info,
                     new GUIContent("Upgrade Now..."), () =>
                     {
                         UnityEditor.PopupWindow.Show(pos, new UpgraderPopup() { Editor = editor, ClassName = className });
@@ -57,12 +57,13 @@ namespace Unity.Cinemachine.Editor
                 });
                 ux.AddChild(new TextElement()
                 {
-                    text = "Unity can upgrade the deprecated Cinemachine 2.X components in this project to their Cinemachine 3 equivalents.  "
-                        + "However, custom scripts that interact with these components will not necessarily be upgraded.  If your custom scripts "
+                    text = "Unity can convert the deprecated Cinemachine 2.X components in this project to their Cinemachine 3 equivalents.  "
+                        + "However, custom scripts that interact with these components will not be altered.  If your custom scripts "
                         + "reference deprecated classes and APIs, they will probably break.  "
                         + "Please see the <a href=\"" + Documentation.BaseURL + "manual/CinemachineUpgradeFrom2.html\">Cinemachine Upgrade Guide</a> "
                         + "for tips and techniques to smooth the upgrade process.\n\n"
-                        + "<b>NOTE:</b> Error and warning messages may be logged to the console window during this process.",
+                        + "<b>NOTE:</b> Error and warning messages may be logged to the console window during this process."
+                        + "\n\nUndo is supported for options 1 and 2, but not for option 3.",
                     enableRichText = true,
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
@@ -75,11 +76,11 @@ namespace Unity.Cinemachine.Editor
                 // Upgrade current object
                 ux.AddChild(new TextElement()
                 {
-                    text = "<b>Option 1:</b> Upgrade the objects currently being inspected, but only if none of them "
-                        + "are prefabs or prefab instances.  Undo is supported for this operation.",
+                    text = "<b>Option 1:</b> Convert the objects currently being inspected, but only if none of them "
+                        + "are prefabs or prefab instances.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 10, marginBottom = 10, alignSelf = Align.Center }
                 });
-                var text = "Upgrade this object to " + ClassName;
+                var text = "Convert this object to " + ClassName;
                 ux.AddChild(new Button(() =>
                 {
                     Undo.SetCurrentGroupName(text);
@@ -94,24 +95,25 @@ namespace Unity.Cinemachine.Editor
                 // Upgrade current scene
                 ux.AddChild(new TextElement()
                 {
-                    text = "<b>Option 2:</b> Upgrade all the objects in the current scene, but only if none of them "
-                        + "are prefabs or prefab instances.  Undo is supported for this operation.",
+                    text = "<b>Option 2:</b> Convert all the objects in the current scene, but only if none of them "
+                        + "are prefabs or prefab instances.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 20, marginBottom = 10, alignSelf = Align.Center }
                 });
+                text = "Convert all objects in scene";
                 ux.AddChild(new Button(() =>
                 {
-                    Undo.SetCurrentGroupName("Upgrade all objects in Scene");
+                    Undo.SetCurrentGroupName(text);
                     CinemachineUpgradeManager.UpgradeObjectsInCurrentScene();
                     editorWindow.Close();
                 }) { 
-                    text = "Upgrade all objects in Scene", 
+                    text = text, 
                     style = { flexGrow = 0, alignSelf = Align.Center } 
                 }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
 
                 // Upgrade project
                 ux.AddChild(new TextElement()
                 {
-                    text = "<b>Option 3:</b> Upgrade all of the deprecated Cinemachine 2.X components in the project's scenes and prefabs "
+                    text = "<b>Option 3:</b> Convert all of the deprecated Cinemachine 2.X components in the project's scenes and prefabs "
                         + "to their Cinemachine 3 equivalents.  Undo is NOT supported for this operation, so be sure to make a backup first.",
                     style = { marginLeft = 10, marginRight = 10, marginTop = 20, marginBottom = 10, alignSelf = Align.Center }
                 });
@@ -119,7 +121,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     CinemachineUpgradeManager.UpgradeProject();
                     editorWindow.Close();
-                }) { text = "Upgrade Entire Project to Cinemachine 3...", style = { flexGrow = 0, alignSelf = Align.Center } });
+                }) { text = "Convert entire project...", style = { flexGrow = 0, alignSelf = Align.Center } });
                 
                 ux.AddSpace();
             }
