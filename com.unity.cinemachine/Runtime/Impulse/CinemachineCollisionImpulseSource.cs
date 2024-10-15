@@ -163,7 +163,11 @@ namespace Cinemachine
                     if (m_ScaleImpactWithMass)
                         mass *= mRigidBody2D.mass;
                     if (getVelocity)
+#if UNITY_2023_3_OR_NEWER
+                        vel = -mRigidBody2D.linearVelocity;
+#else
                         vel = -mRigidBody2D.velocity;
+#endif
                 }
 
                 var rb2d = other2d != null ? other2d.attachedRigidbody : null;
@@ -173,7 +177,11 @@ namespace Cinemachine
                         mass *= rb2d.mass;
                     if (getVelocity)
                     {
+#if UNITY_2023_3_OR_NEWER
+                        Vector3 v = rb2d.linearVelocity;
+#else
                         Vector3 v = rb2d.velocity;
+#endif
                         vel += v;
                     }
                 }
