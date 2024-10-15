@@ -118,7 +118,7 @@ Note that any script references to this object will be lost (because the class w
 You can also choose to convert all the CM objects in the current scene. Again, this will not update any assets outside of the scene, so it is not appropriate for any but the simplest of scenes. Undo is also supported for this operation.
 
 ### Option 3: Converting the Whole Project
-The "Upgrade Entire Project" option will upgrade all the objects in all the scenes and all the prefabs. There is logic to handle animation tracks, script references, and prefab instances. It's a major operation and every scene and prefab in the project will be opened and saved multiple times. Undo is not supported, so be sure to make a complete backup first.
+This option will upgrade all the objects in all the scenes and all the prefabs. There is logic to handle animation tracks, script references, and prefab instances. It's a major operation and every scene and prefab in the project will be opened and saved multiple times. Undo is not supported, so be sure to make a complete backup first.
 
 Select this option if you have prefabs to upgrade, or animation tracks that reference Cinemachine cameras or paths or dolly carts, or in any case other than the simplest of scenes.
 
