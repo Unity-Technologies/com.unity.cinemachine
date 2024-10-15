@@ -3,33 +3,7 @@
         {
             "ValidationTest": "API Validation",
             "ExceptionMessage": "Additions require a new minor or major version.",
-            "PackageVersion": "2.10.1"
-        },
-        {
-            "ValidationTest": "API Validation",
-            "ExceptionMessage": "New assembly \"com.unity.cinemachine.Tests\" may only be added in a new minor or major version.",
-
-            "PackageVersion": "2.10.1"
-        },
-        {
-            "ValidationTest": "API Validation",
-            "ExceptionMessage": "New assembly \"com.unity.cinemachine.EditorTests\" may only be added in a new minor or major version.",
-            "PackageVersion": "2.10.1"
-        },
-        {
-            "ValidationTest": "API Validation",
-            "ExceptionMessage": "Breaking changes require a new major version.",
-            "PackageVersion": "2.10.1"
-        },
-        {
-            "ValidationTest": "API Validation",
-            "ExceptionMessage": "New assembly \"Cinemachine.Runtime.Tests\" may only be added in a new minor or major version.",
-            "PackageVersion": "2.10.1"
-        },
-        {
-            "ValidationTest": "API Validation",
-            "ExceptionMessage": "New assembly \"Cinemachine.Editor.Tests\" may only be added in a new minor or major version.",
-            "PackageVersion": "2.10.1"
+            "PackageVersion": "2.10.2"
         }
     ],
     "WarningExceptions": []
