@@ -8,6 +8,8 @@ To enable the functionality of the Cinemachine Group Framing component, you must
   * Make sure the Cinemachine Target Group has at least one member, and has a nonzero size.
 * Set the Cinemachine Camera's Tracking Target property to target the created Cinemachine Target Group.
 
+![](images/ref-component-cinemachine-group-framing.png)
+
 ## Properties
 
 > [!NOTE]
@@ -32,6 +34,3 @@ To enable the functionality of the Cinemachine Group Framing component, you must
 | **Fov Range** || Clamps the camera's Field of View to the specified range.<br />Only available when including Zoom in **Size Adjustment**. |
 | **Dolly Range** || Limits the camera movements to the specified range when achieving the desired framing. A negative distance is towards the target, and a positive distance is away from the target.<br />Only available when including Dolly in **Size Adjustment**. |
 | **Ortho Size Range** || Clamps the camera's Orthographic Size to the specified range.<br />Only available when using an orthographic Unity Camera. |
-
-
-
