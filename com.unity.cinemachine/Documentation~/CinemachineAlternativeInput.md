@@ -6,17 +6,17 @@ When alternative input systems are used in a project, this default behaviour mus
 
 Cinemachine has defined an interface: `Cinemachine.AxisState.IInputAxisProvider`.  If a `MonoBehaviour` implementing this interface is added to a Virtual Camera or FreeLook, then it will be queried for input instead of the standard input system.
 
-Cinemachine ships with an example of such a behaviour that uses the new __UnityEngine.Input__ package: **CinemachineInputProvider**. It has dual purpose:
-1. Provide a simple out-of-the-box adapter for the new UnityEngine.Input package, to cover common usecases
-2. To serve as a source code example of how to integrate Cinemachine with custom or 3rd-party input systems
+Cinemachine ships with an example of such a behaviour that uses the new [__UnityEngine.InputSystem__ package](https://docs.unity3d.com/Packages/com.unity.inputsystem@latest): **CinemachineInputProvider**. It has dual purpose:
+1. Provide a simple out-of-the-box adapter for the new UnityEngine.InputSystem package, to cover common use cases.
+2. To serve as a source code example of how to integrate Cinemachine with custom or 3rd-party input systems.
 
 # CinemachineInputProvider
 
 ![CinemachineInputProvider inspector.](images/CinemachineInputProvider.png)
 
-This is a behaviour that is intended to be added to a virtual camera or FreeLook.  It is an input source override, which causes the virtual camera to obtain input using the new __UnityEngine.Input__ package instead of the standard Unity Input system.
+This is a behaviour that is intended to be added to a virtual camera or FreeLook.  It is an input source override, which causes the virtual camera to obtain input using the new __UnityEngine.InputSystem__ package instead of the standard Unity Input system.
 
-This behaviour is available when the __UnityEngine.Input__ package is installed in the project.
+This behaviour is available when the __UnityEngine.InputSystem__ package is installed in the project.
 
 ## Properties:
 
