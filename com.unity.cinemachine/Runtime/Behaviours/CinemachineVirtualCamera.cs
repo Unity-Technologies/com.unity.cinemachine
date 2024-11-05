@@ -158,8 +158,12 @@ namespace Cinemachine
 
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
+#if UNITY_2021_3_OR_NEWER
+            transform.GetPositionAndRotation(out var pos, out var rot);
+#else
             var pos = transform.position;
             var rot = transform.rotation;
+#endif
             if (Follow != null)
                 pos = m_State.RawPosition;
             if (LookAt != null)
