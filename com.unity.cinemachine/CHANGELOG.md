@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [2.10.3] - 2024-11-05
+- Regression fix: Small changes to camera position and rotation were being filtered out.
+
+
 ## [2.10.2] - 2024-10-15
 - Added Padding option to CinemachineConfiner2D.
 - Regression fix: Sometimes a deeply-nested passive camera's position would creep due to precision inaccuracies.
