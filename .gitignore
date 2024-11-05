@@ -18,3 +18,7 @@ npm-debug.log.meta
 /projects/**/Temp
 *.csproj
 *.sln
+!Tools/**/*sln
+!Tools/**/*csproj
+bin
+obj

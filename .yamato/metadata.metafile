@@ -14,16 +14,16 @@ all_platforms:
 
 all_tests:
   - name: isolation_tests
-    editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk]
+    editors: [2019.4, 2020.3, 2021.3, 2022.3, 2023.3, trunk]
     args: --type isolation-tests --enable-load-and-test-isolation
     variables:
   - name: vetting_tests
-    editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk]
+    editors: [2019.4, 2020.3, 2021.3, 2022.3, 2023.3, trunk]
     args: --type vetting-tests --platform editmode
     variables:
      - "UPMCI_PROMOTION: 1"
   - name: promotion_tests
-    editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk]
+    editors: [2019.4, 2020.3, 2021.3, 2022.3, 2023.3, trunk]
     args: --type promotion-audit --platform editmode
     variables:
       - "UPMCI_PROMOTION: 1"
@@ -31,13 +31,13 @@ all_tests:
 all_testprojects:
     - name: URP
       path: Projects/URP
-      editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk]
+      editors: [2019.4, 2020.3, 2021.3, 2022.3, 2023.3, trunk]
     - name: Standalone
       path: Projects/Standalone
-      editors: [2019.4, 2020.3, 2021.3, 2022.2, trunk]
+      editors: [2019.4, 2020.3, 2021.3, 2022.3, 2023.3, trunk]
     - name: HDRP
       path: Projects/HDRP
-      editors: [2020.3, 2021.3, 2022.2, trunk]
+      editors: [2020.3, 2021.3, 2022.3, 2023.3, trunk]
     - name: HDRP2019.4
       path: Projects/HDRP2019.4
       editors: [2019.4]
