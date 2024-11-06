@@ -26,7 +26,6 @@ test_project_-_cinemachine_-_hdrp_-_2019_4_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2019.4 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -81,7 +80,6 @@ test_project_-_cinemachine_-_hdrp_-_2021_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2021.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -136,7 +134,6 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2022.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -191,7 +188,6 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 6000.0 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -246,7 +242,6 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2019_4_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2019.4 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -301,7 +296,6 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2021_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2021.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -356,7 +350,6 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2022.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -411,7 +404,6 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 6000.0 -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -466,7 +458,6 @@ test_project_-_cinemachine_-_standalone_-_2019_4_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2019.4 -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -521,7 +512,6 @@ test_project_-_cinemachine_-_standalone_-_2021_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2021.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -576,7 +566,6 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2022.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -631,7 +620,6 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 6000.0 -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -686,7 +674,6 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2019_4_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2019.4 -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -741,7 +728,6 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2021_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2021.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -796,7 +782,6 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2022.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -851,7 +836,6 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 6000.0 -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -906,7 +890,6 @@ test_project_-_cinemachine_-_urp_-_2019_4_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2019.4 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -961,7 +944,6 @@ test_project_-_cinemachine_-_urp_-_2021_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2021.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -1016,7 +998,6 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2022.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -1071,7 +1052,6 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 6000.0 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -1126,7 +1106,6 @@ test_project_-_cinemachine_-_urpinputsystem_-_2019_4_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2019.4 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -1181,7 +1160,6 @@ test_project_-_cinemachine_-_urpinputsystem_-_2021_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2021.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -1236,7 +1214,6 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 2022.3 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
@@ -1291,7 +1268,6 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: 'rm com.unity.cinemachine/Tests/.tests.json '
   - command: unity-downloader-cli -u 6000.0 -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts_path=artifacts --suite=editor --suite=PlayMode
