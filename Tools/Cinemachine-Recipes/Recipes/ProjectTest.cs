@@ -46,9 +46,9 @@ public class ProjectTest : RecipeBase
                     {
                         IJobBuilder job = JobBuilder.Create(GetJobName(settings.Wrench.Packages[packageName].ShortName, project, editorVersion, platform.Key))
                             .WithPlatform(platform.Value)
-                            .WithOptionalCommands(
-                                platform.Value.RunsOnLinux(), c => c
-                                    .Add("rm com.unity.cinemachine/Tests/.tests.json "))
+                            //.WithOptionalCommands(
+                            //    platform.Value.RunsOnLinux(), c => c
+                            //        .Add("rm com.unity.cinemachine/Tests/.tests.json "))
                             .WithCommands(c => c
                                 .Add($"unity-downloader-cli -u {editorVersion} -c Editor --fast")
                                 // Use the package tarball for testing.
