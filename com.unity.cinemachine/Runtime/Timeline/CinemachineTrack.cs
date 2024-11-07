@@ -20,13 +20,7 @@ using Cinemachine;
     [TrackColor(0.53f, 0.0f, 0.08f)]
     public class CinemachineTrack : TrackAsset
     {
-        /// <summary>
-        /// TrackAsset implementation
-        /// </summary>
-        /// <param name="graph"></param>
-        /// <param name="go"></param>
-        /// <param name="inputCount"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override Playable CreateTrackMixer(
             PlayableGraph graph, GameObject go, int inputCount)
         {

@@ -187,7 +187,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">World Up, set by the CinemachineBrain</param>
-        /// <param name="axis"></param>
+        /// <param name="axis">The axis whoe heading to update</param>
         /// <returns>Axis value</returns>
         public float UpdateHeading(float deltaTime, Vector3 up, ref AxisState axis)
         {
