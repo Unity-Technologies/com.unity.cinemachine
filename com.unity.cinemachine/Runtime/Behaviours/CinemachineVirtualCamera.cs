@@ -239,6 +239,10 @@ namespace Cinemachine
         /// The override must do exactly the same thing as the CreatePipeline method in
         /// the CinemachineVirtualCamera class.
         /// </summary>
+        /// <param name="vcam">The virtual cmera for which to create a pipeline</param>
+        /// <param name="name">The name to give to the pipeline object</param>
+        /// <param name="copyFrom">The components to add to the pipeline</param>
+        /// <returns>The newly created pipeline object</returns>
         public delegate Transform CreatePipelineDelegate(
             CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom);
 
@@ -252,6 +256,7 @@ namespace Cinemachine
         /// Override component pipeline destruction.
         /// This needs to be done by the editor to support Undo.
         /// </summary>
+        /// <param name="pipeline">The pipeline object to destroy</param>
         public delegate void DestroyPipelineDelegate(GameObject pipeline);
 
         /// <summary>Destroy any existing pipeline container.</summary>
