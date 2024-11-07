@@ -1,4 +1,15 @@
 apiRules:
   - exclude:
-      uidRegex: \.Tests$
+      uidRegex: Tests$
       type: Namespace
+  - exclude:
+    uidRegex: ^Global Namespace.*
+    type: Namespace
+  - exclude:
+      hasAttribute:
+        uid: System.ObsoleteAttribute
+      type: Member
+  - exclude:
+      hasAttribute:
+        uid: System.ObsoleteAttribute
+      type: Type
