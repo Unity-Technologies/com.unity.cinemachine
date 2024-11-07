@@ -200,10 +200,10 @@ namespace Cinemachine
         /// </summary>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         /// <param name="up">World Up, set by the CinemachineBrain</param>
-        /// <param name="axis"></param>
-        /// <param name="recentering"></param>
+        /// <param name="axis">The axis to update</param>
+        /// <param name="recentering">The recentering used on the axis</param>
         /// <param name="isLive">true if the vcam is live</param>
-        /// <returns>Axis value</returns>
+        /// <returns>New axis value</returns>
         public float UpdateHeading(
             float deltaTime, Vector3 up, ref AxisState axis,
             ref AxisState.Recentering recentering, bool isLive)

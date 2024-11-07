@@ -102,15 +102,15 @@ namespace Cinemachine
         int m_LastUpdateFrame;
 
         /// <summary>Constructor with specific values</summary>
-        /// <param name="minValue"></param>
-        /// <param name="maxValue"></param>
-        /// <param name="wrap"></param>
-        /// <param name="rangeLocked"></param>
-        /// <param name="maxSpeed"></param>
-        /// <param name="accelTime"></param>
-        /// <param name="decelTime"></param>
-        /// <param name="name"></param>
-        /// <param name="invert"></param>
+        /// <param name="minValue">The minimum value for the axis</param>
+        /// <param name="maxValue">The maximum value for the axis</param>
+        /// <param name="wrap">If true, then the axis will wrap around at the min/max values, forming a loop</param>
+        /// <param name="rangeLocked">If true, axis range will be immutable</param>
+        /// <param name="maxSpeed">The maximum speed of this axis in units/second, or the input value multiplier, depending on the Speed Mode</param>
+        /// <param name="accelTime">The amount of time in seconds it takes to accelerate to MaxSpeed with the supplied Axis at its maximum value</param>
+        /// <param name="decelTime">The amount of time in seconds it takes to decelerate the axis to zero if the supplied axis is in a neutral position</param>
+        /// <param name="name">The name of this axis as specified in Unity Input manager. Setting to an empty string will disable the automatic updating of this axis</param>
+        /// <param name="invert">If true, then the raw value of the input axis will be inverted before it is used</param>
         public AxisState(
             float minValue, float maxValue, bool wrap, bool rangeLocked,
             float maxSpeed, float accelTime, float decelTime,
@@ -371,9 +371,9 @@ namespace Cinemachine
             float m_LastUpdateTime;
 
             /// <summary>Constructor with specific field values</summary>
-            /// <param name="enabled"></param>
-            /// <param name="waitTime"></param>
-            /// <param name="recenteringTime"></param>
+            /// <param name="enabled">If true, will enable automatic recentering of the axis. If unchecked, recenting is disabled</param>
+            /// <param name="waitTime">If no user input has been detected on the axis, the axis will wait this long in seconds before recentering</param>
+            /// <param name="recenteringTime">How long it takes to reach destination once recentering has started</param>
             public Recentering(bool enabled, float waitTime,  float recenteringTime)
             {
                 m_enabled = enabled;
@@ -399,7 +399,7 @@ namespace Cinemachine
             /// <summary>
             /// Copy Recentering state from another Recentering component.
             /// </summary>
-            /// <param name="other"></param>
+            /// <param name="other">The Recentering component from which to copy</param>
             public void CopyStateFrom(ref Recentering other)
             {
                 if (mLastAxisInputTime != other.mLastAxisInputTime)

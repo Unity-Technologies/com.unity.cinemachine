@@ -774,7 +774,7 @@ namespace Cinemachine
         /// </summary>
         /// <param name="worldUp">Current World Up direction, as provided by the brain</param>
         /// <param name="lens">Lens settings to serve as base, will be combined with lens from brain, if any</param>
-        /// <returns></returns>
+        /// <returns>The cameraState pulled from the Camera</returns>
         protected CameraState PullStateFromVirtualCamera(Vector3 worldUp, ref LensSettings lens)
         {
             CameraState state = CameraState.Default;

@@ -24,10 +24,7 @@ using Cinemachine;
         /// <summary>The virtual camera to activate</summary>
         public ExposedReference<CinemachineVirtualCameraBase> VirtualCamera;
 
-        /// <summary>PlayableAsset implementation</summary>
-        /// <param name="graph"></param>
-        /// <param name="owner"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
         {
             var playable = ScriptPlayable<CinemachineShotPlayable>.Create(graph);
@@ -35,9 +32,7 @@ using Cinemachine;
             return playable;
         }
 
-        /// <summary>IPropertyPreview implementation</summary>
-        /// <param name="director"></param>
-        /// <param name="driver"></param>
+        /// <inheritdoc/>
         public void GatherProperties(PlayableDirector director, IPropertyCollector driver)
         {
             driver.AddFromName<Transform>("m_LocalPosition.x");

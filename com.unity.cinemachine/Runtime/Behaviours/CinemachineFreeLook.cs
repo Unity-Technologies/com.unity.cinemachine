@@ -95,7 +95,8 @@ namespace Cinemachine
         public CinemachineOrbitalTransposer.BindingMode m_BindingMode
             = CinemachineOrbitalTransposer.BindingMode.SimpleFollowWithWorldUp;
 
-        /// <summary></summary>
+        /// <summary>Controls how taut is the line that connects the rigs' orbits, 
+        /// which determines final placement on the Y axis</summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which "
             + "determines final placement on the Y axis")]
         [Range(0f, 1f)]

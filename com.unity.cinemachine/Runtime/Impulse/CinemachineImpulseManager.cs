@@ -415,9 +415,9 @@ namespace Cinemachine
             return e;
         }
 
-        /// <summary>Activate an impulse event, so that it may begin broadcasting its signal</summary>
+        /// <summary>Activate an impulse event, so that it may begin broadcasting its signal
         /// Events will be automatically removed after they expire.
-        /// You can tweak the ImpulseEvent fields dynamically if you keep a pointer to it.
+        /// You can tweak the ImpulseEvent fields dynamically if you keep a pointer to it.</summary>
         /// <param name="e">The event to add to the current active events</param>
         public void AddImpulseEvent(ImpulseEvent e)
         {

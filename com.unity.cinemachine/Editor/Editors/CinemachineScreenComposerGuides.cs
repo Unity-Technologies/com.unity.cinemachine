@@ -122,7 +122,7 @@ namespace Cinemachine.Editor
         public delegate Rect RectGetter();
 
         /// <summary>Delegate for setting the hard/soft guide rects</summary>
-        /// <param name="rcam">The value to set</param>
+        /// <param name="r">The value to set</param>
         public delegate void RectSetter(Rect r);
 
         /// <summary>Delegate to get the current object whose guides are being drawn</summary>

@@ -46,7 +46,7 @@ namespace Cinemachine
         /// <param name="fromCameraName">The game object name of the from camera</param>
         /// <param name="toCameraName">The game object name of the to camera</param>
         /// <param name="defaultBlend">Blend to return if no custom blend found.</param>
-        /// <returns></returns>
+        /// <returns>The blend definition to use</returns>
         public CinemachineBlendDefinition GetBlendForVirtualCameras(
             string fromCameraName, string toCameraName, CinemachineBlendDefinition defaultBlend)
         {

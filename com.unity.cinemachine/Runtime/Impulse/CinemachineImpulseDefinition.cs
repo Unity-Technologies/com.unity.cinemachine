@@ -42,13 +42,13 @@ namespace Cinemachine
         {
             /// <summary>Custom shape</summary>
             Custom,
-            /// <summary></summary>
+            /// <summary>Simple recoil</summary>
             Recoil,
-            /// <summary></summary>
+            /// <summary>Basic bump</summary>
             Bump,
-            /// <summary></summary>
+            /// <summary>Noisy explosion</summary>
             Explosion,
-            /// <summary></summary>
+            /// <summary>Low rumble</summary>
             Rumble
         };
 

@@ -66,7 +66,7 @@ namespace Cinemachine.Utility
         /// Returns a non-normalized projection of the supplied vector onto a plane
         /// as described by its normal
         /// </summary>
-        /// <param name="vector"></param>
+        /// <param name="vector">The vector to project</param>
         /// <param name="planeNormal">The normal that defines the plane.  Must have a length of 1.</param>
         /// <returns>The component of the vector that lies in the plane</returns>
         public static Vector3 ProjectOntoPlane(this Vector3 vector, Vector3 planeNormal)
@@ -209,7 +209,7 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>Is the vector within Epsilon of zero length?</summary>
-        /// <param name="v"></param>
+        /// <param name="v">The vector to check</param>
         /// <returns>True if the square magnitude of the vector is within Epsilon of zero</returns>
         public static bool AlmostZero(this Vector3 v)
         {
@@ -356,7 +356,7 @@ namespace Cinemachine.Utility
         }
 
         /// <summary>Normalize a quaternion</summary>
-        /// <param name="q"></param>
+        /// <param name="q">The quaternion to normalize</param>
         /// <returns>The normalized quaternion.  Unit length is 1.</returns>
         public static Quaternion Normalized(this Quaternion q)
         {
@@ -370,7 +370,7 @@ namespace Cinemachine.Utility
         /// This represents the tripod head movement needed to look at the target.
         /// This formulation makes it easy to interpolate without introducing spurious roll.
         /// </summary>
-        /// <param name="orient"></param>
+        /// <param name="orient">The quaternion to examine</param>
         /// <param name="lookAtDir">The worldspace target direction in which we want to look</param>
         /// <param name="worldUp">Which way is up.  Must have a length of 1.</param>
         /// <returns>Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
@@ -417,7 +417,7 @@ namespace Cinemachine.Utility
         /// Apply rotations, first about world up, then about (travelling) local right.
         /// rot.y is rotation about worldUp, and rot.x is second rotation, about local right.
         /// </summary>
-        /// <param name="orient"></param>
+        /// <param name="orient">The quaterntion to which the rotation will be applied</param>
         /// <param name="rot">Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
         /// about local right.</param>
         /// <param name="worldUp">Which way is up</param>
@@ -436,7 +436,7 @@ namespace Cinemachine.Utility
     public static class UnityRectExtensions
     {
         /// <summary>Inflate a rect</summary>
-        /// <param name="r"></param>
+        /// <param name="r">The Rect to inflate</param>
         /// <param name="delta">x and y are added/subtracted fto/from the edges of
         /// the rect, inflating it in all directions</param>
         /// <returns>The inflated rect</returns>

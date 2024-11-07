@@ -105,9 +105,7 @@ namespace Cinemachine
             }
         }
 
-        /// <summary>Does nothing</summary>
-        /// <param name="state"></param>
-        /// <param name="deltaTime"></param>
+        /// <inheritdoc/>
         public override void PrePipelineMutateCameraState(ref CameraState state, float deltaTime) {}
 
         /// <summary>Applies the axis values and orients the camera accordingly</summary>

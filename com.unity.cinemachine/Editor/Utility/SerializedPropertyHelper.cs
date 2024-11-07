@@ -9,21 +9,13 @@ namespace Cinemachine.Editor
     /// </summary>
     public static class SerializedPropertyHelper
     {
+
         /// <summary>
         /// This is a way to get a field name string in such a manner that the compiler will
         /// generate errors for invalid fields.  Much better than directly using strings.
-        /// Usage: instead of
-        /// <code>
-        /// "m_MyField";
-        /// </code>
-        /// do this:
-        /// <code>
-        /// MyClass myclass = null;
-        /// SerializedPropertyHelper.PropertyName( () => myClass.m_MyField);
-        /// </code>
         /// </summary>
         /// <param name="exp">Magic expression that resolves to a field: () => myClass.m_MyField</param>
-        /// <returns></returns>
+        /// <returns>The property name as a string</returns>
         public static string PropertyName(Expression<Func<object>> exp)
         {
             var body = exp.Body as MemberExpression;

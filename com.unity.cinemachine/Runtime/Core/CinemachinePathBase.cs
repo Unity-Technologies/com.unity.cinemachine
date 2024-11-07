@@ -256,7 +256,7 @@ namespace Cinemachine
         /// <summary>Get the length of the path in distance units.
         /// If the distance cache is not valid, then calling this will
         /// trigger a potentially costly regeneration of the path distance cache</summary>
-        /// <returns>The length of the path in distance units, when sampled at this rate</returns>
+        /// <value>The length of the path in distance units, when sampled at this rate</value>
         public float PathLength
         {
             get
