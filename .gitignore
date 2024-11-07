@@ -22,3 +22,6 @@ npm-debug.log.meta
 !Tools/**/*csproj
 bin
 obj
+Tools/**/bin
+Tools/**/obj
+Tools/**/.vs

@@ -10,20 +10,16 @@ using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Platforms;
 using RecipeEngine.Api.Dependencies;
 
-
 namespace Cinemachine.Cookbook.Recipes;
 
 public class ProjectTest : RecipeBase
 {
-    
-
     protected override ISet<Job> LoadJobs()
         => Combine.Collections(GetJobs()).SelectJobs();
 
     public string GetJobName(string packageShortName, string project, string editorVersion, SystemType systemType)
         => $"Test Project - {packageShortName} - {project} - {editorVersion} - {systemType}";
 
-    
     public IEnumerable<Dependency> AsDependencies()
     {
         return this.Jobs.ToDependencies(this);
@@ -44,6 +40,9 @@ public class ProjectTest : RecipeBase
                 {
                     foreach (var project in settings.ProjectNames)
                     {
+                        if (!settings.ProjectAndEditorAreCompatible(project, editorVersion))
+                            continue;
+
                         IJobBuilder job = JobBuilder.Create(GetJobName(settings.Wrench.Packages[packageName].ShortName, project, editorVersion, platform.Key))
                             .WithPlatform(platform.Value)
                             //.WithOptionalCommands(
