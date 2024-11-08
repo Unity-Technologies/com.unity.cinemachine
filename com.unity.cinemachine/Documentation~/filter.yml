@@ -1,6 +1,6 @@
 apiRules:
   - exclude:
-      uidRegex: Tests
+      uidRegex: ^Tests
       type: Namespace
   - exclude:
       hasAttribute:
