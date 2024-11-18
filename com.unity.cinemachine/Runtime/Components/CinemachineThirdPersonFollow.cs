@@ -270,6 +270,10 @@ namespace Unity.Cinemachine
             // Set state
             curState.RawPosition = camPos;
             curState.RawOrientation = targetRot; // not necessary, but left in to avoid breaking scenes that depend on this
+
+            // Correct the case where by default we're looking at the follow target
+            if (!curState.HasLookAt() || curState.ReferenceLookAt.Equals(targetPos))
+                curState.ReferenceLookAt = camPos + targetRot * new Vector3(0, 0, 3); // so that there's something
         }
         
         /// <summary>
