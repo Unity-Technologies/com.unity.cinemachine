@@ -102,8 +102,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Compute the current blend, taking into account
-        /// the in-game camera and all the active overrides.  Caller may optionally
-        /// exclude n topmost overrides.
+        /// the in-game camera and all the active overrides.  
         /// </summary>
         public void ComputeCurrentBlend() 
         {
@@ -129,8 +128,6 @@ namespace Unity.Cinemachine
         public ICinemachineCamera ProcessActiveCamera(ICinemachineMixer mixer, Vector3 up, float deltaTime)
         {
             // Send deactivation events
-            m_CameraCache.Clear();
-            CollectLiveCameras(m_PreviousLiveCameras, ref m_CameraCache);
             for (int i = 0; i < m_CameraCache.Count; ++i)
                 if (!IsLive(m_CameraCache[i]))
                     CinemachineCore.CameraDeactivatedEvent.Invoke(mixer, m_CameraCache[i]);
@@ -146,7 +143,7 @@ namespace Unity.Cinemachine
 
                 if (incomingCamera == outgoingCamera)
                 {
-                    // Send a blend completeed event if appropriate
+                    // Send a blend completed event if appropriate
                     if (m_PreviousLiveCameras.CamA != null && m_CurrentLiveCameras.CamA == null)
                         CinemachineCore.BlendFinishedEvent.Invoke(mixer, incomingCamera);
                 }
@@ -176,7 +173,10 @@ namespace Unity.Cinemachine
                     incomingCamera.UpdateCameraState(up, deltaTime);
                 }
             }
-            return incomingCamera;
+
+            // Collect cameras that are live this frame, for processing next frame
+            m_CameraCache.Clear();
+            CollectLiveCameras(m_CurrentLiveCameras, ref m_CameraCache);
 
             // local method - find all the live cameras in a blend
             static void CollectLiveCameras(CinemachineBlend blend, ref List<ICinemachineCamera> cams)
@@ -191,6 +191,8 @@ namespace Unity.Cinemachine
                 else if (blend.CamB != null)
                     cams.Add(blend.CamB);
             }
+
+            return incomingCamera;
         }
     }
 }
