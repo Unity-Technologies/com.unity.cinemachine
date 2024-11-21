@@ -160,7 +160,7 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.AreEqual(0, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.True);
 
-            // After first blend is finished, check the counters
+            // After first blend time has elapsed, check the counters
             ProcessFrame(m_Cam3, 0.5f);
             Assert.AreEqual(3, m_ActivatedEventCount);
             Assert.AreEqual(1, m_DeactivatedEventCount);
