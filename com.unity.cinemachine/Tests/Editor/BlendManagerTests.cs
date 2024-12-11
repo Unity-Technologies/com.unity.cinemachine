@@ -62,7 +62,7 @@ namespace Unity.Cinemachine.Tests.Editor
         {
             m_BlendManager.LookupBlendDelegate = (outgoing, incoming)
                 => new (CinemachineBlendDefinition.Styles.EaseInOut, blendTime); // constant blend time
-            m_BlendManager.ResetRootFrame();
+            m_BlendManager.OnEnable();
             ProcessFrame(null, 0.1f);
             ResetCounters();
         }
@@ -173,6 +173,54 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.AreEqual(3, m_ActivatedEventCount);
             Assert.AreEqual(2, m_DeactivatedEventCount);
             Assert.AreEqual(2, m_BlendCreatedCount);
+            Assert.AreEqual(1, m_BlendFinishedCount);
+            Assert.That(m_BlendManager.IsBlending, Is.False);
+        }
+
+        [Test]
+        public void TestEventsBlendToNestedBlend()
+        {
+            var customBlend = new NestedBlendSource(new CinemachineBlend()
+            {
+                CamA = m_Cam1,
+                CamB = m_Cam2,
+                BlendCurve = AnimationCurve.Linear(0, 0, 1, 1),
+                Duration = 1,
+                TimeInBlend = 0.1f
+            });
+
+            Reset(1); // constant blend time of 1
+
+            // We should get an initial activation event, no blend
+            ProcessFrame(m_Cam1, 0.1f);
+            Assert.AreEqual(1, m_ActivatedEventCount);
+            Assert.AreEqual(0, m_DeactivatedEventCount);
+            Assert.AreEqual(0, m_BlendFinishedCount);
+            Assert.AreEqual(0, m_BlendCreatedCount);
+            Assert.That(m_BlendManager.IsBlending, Is.False);
+
+            // Activate nested blend camera, blend will take 1 sec
+            ProcessFrame(customBlend, 0.1f);
+            Assert.AreEqual(2, m_ActivatedEventCount);
+            Assert.AreEqual(0, m_DeactivatedEventCount);
+            Assert.AreEqual(1, m_BlendCreatedCount);
+            Assert.AreEqual(0, m_BlendFinishedCount);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+
+            // change camera in the custom blend - we expect activation and deactivation events
+            customBlend.Blend.CamB = m_Cam3;
+            ProcessFrame(customBlend, 0.1f);
+            Assert.AreEqual(3, m_ActivatedEventCount);
+            Assert.AreEqual(1, m_DeactivatedEventCount);
+            Assert.AreEqual(1, m_BlendCreatedCount);
+            Assert.AreEqual(0, m_BlendFinishedCount);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+
+            customBlend.Blend.CamA = null;
+            ProcessFrame(customBlend, 1);
+            Assert.AreEqual(3, m_ActivatedEventCount);
+            Assert.AreEqual(2, m_DeactivatedEventCount);
+            Assert.AreEqual(1, m_BlendCreatedCount);
             Assert.AreEqual(1, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.False);
         }
