@@ -176,7 +176,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Call this when object is enabled</summary>
-        public void OnEnable()
+        public virtual void OnEnable()
         {
             // Make sure there is a first stack frame
             m_FrameStack.Clear();
@@ -184,7 +184,7 @@ namespace Unity.Cinemachine
         }
 
          /// <summary>Call this when object is disabled</summary>
-        public void OnDisable()
+        public virtual void OnDisable()
         {
             m_FrameStack.Clear();
             m_NextFrameId = 0;

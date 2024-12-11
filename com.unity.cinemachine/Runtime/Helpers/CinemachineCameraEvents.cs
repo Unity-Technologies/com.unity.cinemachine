@@ -81,7 +81,7 @@ namespace Unity.Cinemachine
 
         void OnBlendCreated(CinemachineCore.BlendEventParams evt)
         {
-            if (evt.Blend.CamA == (ICinemachineCamera)EventTarget || evt.Blend.CamB == (ICinemachineCamera)EventTarget)
+            if (evt.Blend.CamB == (ICinemachineCamera)EventTarget)
                 BlendCreatedEvent.Invoke(evt);
         }
 
