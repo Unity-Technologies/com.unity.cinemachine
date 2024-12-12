@@ -145,8 +145,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
         public static string AlignFieldClassName => BaseField<bool>.alignedFieldUssClassName;
 
-        // this is a hack to get around some vertical alignment issues in UITK
-        public static float SingleLineHeight => EditorGUIUtility.singleLineHeight - EditorGUIUtility.standardVerticalSpacing;
+        public static float SingleLineHeight => EditorGUIUtility.singleLineHeight;
 
         /// <summary>
         /// Convenience extension for UserDidSomething callbacks, making it easier to use lambdas.
@@ -248,12 +247,19 @@ namespace Unity.Cinemachine.Editor
         /// <param name="tooltip">optional tooltip for the header</param>
         public static void AddHeader(this VisualElement ux, string text, string tooltip = "")
         {
-            var verticalPad = SingleLineHeight / 2;
-            var row = ux.AddChild(new LabeledRow($"<b>{text}</b>", tooltip, new VisualElement { style = { flexBasis = 0} }));
-            row.focusable = false;
-            row.Label.style.flexGrow = 1;
-            row.Label.style.paddingTop = verticalPad;
-            row.Label.style.paddingBottom = EditorGUIUtility.standardVerticalSpacing;
+            ux.AddChild(new Label()
+            { 
+                text = $"<b>{text}</b>", 
+                tooltip = tooltip,
+                focusable = false,
+                style = 
+                { 
+                    //height = SingleLineHeight,
+                    marginLeft = 3, // GML TODO: remove hardcoded margin
+                    marginTop = SingleLineHeight / 2,
+                    marginBottom = EditorGUIUtility.standardVerticalSpacing / 2,
+                }
+            });
         }
 
         /// <summary>
@@ -359,12 +365,10 @@ namespace Unity.Cinemachine.Editor
         {
             var button = new Button { tooltip = tooltip, style = 
             {
-                flexGrow = 0,
-                flexBasis = SingleLineHeight + 3,
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
-                width = SingleLineHeight, height = SingleLineHeight + 3,
+                width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
-                paddingRight = 0, marginRight = 0
+                paddingLeft = 1, paddingRight = 1, marginRight = 0
             }};
             if (contextMenu != null)
             {
@@ -382,10 +386,8 @@ namespace Unity.Cinemachine.Editor
         {
             var button = new Button { tooltip = tooltip, style = 
             {
-                flexGrow = 0,
-                flexBasis = SingleLineHeight + 3,
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
-                width = SingleLineHeight, height = SingleLineHeight + 3,
+                width = SingleLineHeight, height = SingleLineHeight,
                 alignSelf = Align.Center,
                 paddingRight = 0, marginRight = 0
             }};
@@ -417,30 +419,30 @@ namespace Unity.Cinemachine.Editor
             /// </summary>
             public bool KillLeftMargin;
 
+            VisualElement Row;
+
             public LeftRightRow(VisualElement left = null, VisualElement right = null)
             {
                 // This is to peek at the resolved label width
                 Add(new AlignFieldSizer { OnLabelWidthChanged = (w) => 
                 {
                     if (KillLeftMargin)
-                        style.marginLeft = 0;
+                        Row.style.marginLeft = 0;
                     Left.style.width = w + DivisionOffset;
                 }});
 
                 // Actual contents will live in this row
-                var row = AddChild(this, new VisualElement { style = { flexDirection = FlexDirection.Row }});
-                style.marginLeft = 3;
+                Row = AddChild(this, new VisualElement { style = { marginLeft = 3, flexDirection = FlexDirection.Row }});
 
                 left ??= new VisualElement();
-                Left = row.AddChild(left);
+                Left = Row.AddChild(left);
                 Left.style.flexDirection = FlexDirection.Row;
                 Left.style.flexGrow = 0;
 
                 right ??= new VisualElement();
-                Right = row.AddChild(right);
+                Right = Row.AddChild(right);
                 Right.style.flexDirection = FlexDirection.Row;
                 Right.style.flexGrow = 1;
-                Right.style.marginLeft = 2;
             }
 
             // This is a hacky thing to create custom inspector rows with labels that are the correct size
@@ -452,8 +454,8 @@ namespace Unity.Cinemachine.Editor
                     focusable = false;
                     style.flexDirection = FlexDirection.Row;
                     style.flexGrow = 1;
-                    style.height = 1;
-                    style.marginTop = -2;
+                    style.height = 0;
+                    style.marginTop = -EditorGUIUtility.standardVerticalSpacing;
                     AddToClassList(AlignFieldClassName);
                     labelElement.RegisterCallback<GeometryChangedEvent>((_) 
                         => OnLabelWidthChanged?.Invoke(labelElement.resolvedStyle.width));
@@ -475,11 +477,7 @@ namespace Unity.Cinemachine.Editor
             {
                 Label = Left as Label;
                 Contents = Right;
-                style.marginRight = 0;
-                style.flexGrow = 1;
                 Contents.tooltip = tooltip;
-                Contents.style.marginRight = 0;
-                Contents.style.flexGrow = 1;
             }
         }
 
@@ -490,6 +488,7 @@ namespace Unity.Cinemachine.Editor
             SerializedProperty property, out PropertyField propertyField, string label = null)
         {
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
+            row.Contents.style.marginLeft = -2;
             propertyField = row.Contents.AddChild(new PropertyField(property, "")
                 { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
             AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, (d) => d.CancelDelayedWhenDragging = true);

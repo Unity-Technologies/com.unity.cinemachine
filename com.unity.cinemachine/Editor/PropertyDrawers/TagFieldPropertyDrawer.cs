@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Editor
         {
             var row = new InspectorUtility.LabeledRow(property.displayName, property.tooltip);
 
-            var enabled = row.Contents.AddChild(new Toggle() { style = { marginTop = 2, marginLeft = 3 }});
+            var enabled = row.Contents.AddChild(new Toggle() { style = { marginTop = 3, marginLeft = 2, marginBottom = 3 }});
             enabled.RegisterValueChangedCallback((evt) => 
             {
                 property.stringValue = evt.newValue ? "Untagged" : string.Empty;

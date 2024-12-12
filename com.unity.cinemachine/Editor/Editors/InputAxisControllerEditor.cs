@@ -105,13 +105,13 @@ namespace Unity.Cinemachine.Editor
 
             var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
             overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "") 
-                { style = {flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
+                { style = { marginLeft = 2, flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
 
             // Draw the input value on the same line as the foldout, for convenience
             var inputProperty = property.FindPropertyRelative(() => def.Input);
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.InputAction), "") 
-                { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
+                { style = { marginLeft = -3, flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
             overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.LegacyInput), "") 

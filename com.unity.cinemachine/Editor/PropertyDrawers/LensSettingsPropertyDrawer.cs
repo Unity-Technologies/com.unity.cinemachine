@@ -179,12 +179,13 @@ namespace Unity.Cinemachine.Editor
 
             public FovPropertyControl(SerializedProperty property, bool hideLabel) : base(hideLabel ? "" : "(fov)")
             {
+                style.flexGrow = 1;
+
                 m_LensProperty = property;
                 var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
                 m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
 
-                m_Control = Contents.AddChild(new FloatField("") 
-                    { style = { flexBasis = 20, flexGrow = 2, marginLeft = hideLabel ? 0 : 3 }});
+                m_Control = Contents.AddChild(new FloatField("") { style = { flexBasis = 20, flexGrow = 2, marginLeft = 2 }});
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
                 Label.AddToClassList("unity-base-field__label--with-dragger");
