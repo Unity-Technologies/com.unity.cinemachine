@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CameraDeactivated events were not sent consistently when a blend interrupted another blend before completion.
 - CameraActivated events were not sent consistently when activation was due to timeline blends.
 
+### Changed
+- Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
+
 
 ## [3.1.2] - 2024-10-01
 
