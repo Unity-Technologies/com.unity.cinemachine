@@ -258,7 +258,7 @@ namespace Unity.Cinemachine
                 var v = Quaternion.FromToRotation(Vector3.forward, fwd).eulerAngles;
                 return new Vector2(NormalizeAngle(v.y), NormalizeAngle(v.x));
             }
-            return Vector2.zero;
+            return new Vector2(PanAxis.Center, TiltAxis.Center);
 
             static float NormalizeAngle(float angle) => ((angle + 180) % 360) - 180; 
         }
