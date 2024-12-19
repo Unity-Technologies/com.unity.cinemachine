@@ -319,7 +319,7 @@ namespace Unity.Cinemachine
                         realTargetPos - cameraOffset, hardGuideOrtho);
                 }
             }
-            curState.RawPosition = localToWorld * (cameraPos + cameraOffset);
+            curState.RawPosition = camPosWorld + localToWorld * cameraOffset;
             m_PreviousCameraPosition = curState.RawPosition;
 
             m_InheritingPosition = false;
