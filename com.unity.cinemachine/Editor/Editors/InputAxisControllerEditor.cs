@@ -33,7 +33,7 @@ namespace Unity.Cinemachine.Editor
 
                     if (axis.Name.Contains("Look"))
                     {
-                        actionName = "Player/Look";
+                        actionName = "CM Default/Look";
                         inputName = axis.Hint switch
                         {
                            IInputAxisOwner.AxisDescriptor.Hints.X => "Mouse X",
@@ -45,12 +45,12 @@ namespace Unity.Cinemachine.Editor
                     }
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
                     {
-                        actionName = "Player/Zoom";
+                        actionName = "CM Default/Zoom";
                         inputName = "Mouse ScrollWheel";
                     }
                     if (axis.Name.Contains("Move"))
                     {
-                        actionName = "Player/Move";
+                        actionName = "CM Default/Move";
                         inputName = axis.Hint switch
                         {
                            IInputAxisOwner.AxisDescriptor.Hints.X => "Horizontal",
@@ -60,17 +60,17 @@ namespace Unity.Cinemachine.Editor
                     }
                     if (axis.Name.Contains("Fire"))
                     {
-                        actionName = "Player/Fire";
+                        actionName = "CM Default/Fire";
                         inputName = "Fire1";
                     }
                     if (axis.Name.Contains("Jump"))
                     {
-                        actionName = "Player/Jump";
+                        actionName = "CM Default/Jump";
                         inputName = "Jump";
                     }
                     if (axis.Name.Contains("Sprint"))
                     {
-                        actionName = "Player/Sprint";
+                        actionName = "CM Default/Sprint";
                         inputName = "Fire3"; // best we can do
                     }
 
