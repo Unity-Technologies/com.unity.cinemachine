@@ -47,6 +47,7 @@ namespace Unity.Cinemachine.Editor
                     {
                         actionName = "CM Default/Zoom";
                         inputName = "Mouse ScrollWheel";
+                        invertY = true;
                     }
                     if (axis.Name.Contains("Move"))
                     {
@@ -88,7 +89,7 @@ namespace Unity.Cinemachine.Editor
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
                     controller.Input.LegacyInput = inputName;
-                    controller.Input.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
+                    controller.Input.LegacyGain = isMomentary ? 1 : 50 * (invertY ? -1 : 1);
 #endif
                     controller.Enabled = true;
                 };
