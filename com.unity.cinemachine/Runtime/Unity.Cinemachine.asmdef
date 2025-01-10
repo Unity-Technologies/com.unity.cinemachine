@@ -81,6 +81,11 @@
             "name": "com.unity.splines",
             "expression": "2.4.0",
             "define": "CINEMACHINE_SPLINES_2_4"
+        },
+        {
+            "name": "Unity",
+            "expression": "6000.0.11f1",
+            "define": "CINEMACHINE_UNITY_6000_0_11F1_OR_NEWER"
         }
     ],
     "noEngineReferences": false

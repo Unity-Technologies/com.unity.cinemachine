@@ -558,7 +558,7 @@ namespace Unity.Cinemachine
             {
                 case Heading.HeadingDefinition.Velocity:
 #if CINEMACHINE_PHYSICS
-    #if UNITY_2023_3_OR_NEWER
+    #if UNITY_6000_0_OR_NEWER
                     velocity = m_TargetRigidBody.linearVelocity;
     #else
                     velocity = m_TargetRigidBody.velocity;
