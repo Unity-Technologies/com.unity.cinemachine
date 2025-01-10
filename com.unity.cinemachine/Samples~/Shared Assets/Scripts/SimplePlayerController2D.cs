@@ -26,10 +26,12 @@ namespace Unity.Cinemachine.Samples
         bool m_IsGrounded;
         Rigidbody2D m_Rigidbody2D;
 
-#if UNITY_2023_3_OR_NEWER
+#if UNITY_6000_1_OR_NEWER
         public override bool IsMoving => Mathf.Abs(m_Rigidbody2D.linearVelocity.x) > 0.01f;
 #else
+        #pragma warning disable CS0618 // obsolete for 6000.0.0f11 and newer
         public override bool IsMoving => Mathf.Abs(m_Rigidbody2D.velocity.x) > 0.01f;
+        #pragma warning restore CS0618
 #endif
 
         public bool IsSprinting => m_IsSprinting;
@@ -45,10 +47,12 @@ namespace Unity.Cinemachine.Samples
         void FixedUpdate()
         {
             PreUpdate?.Invoke();
-#if UNITY_2023_3_OR_NEWER
+#if UNITY_6000_1_OR_NEWER
             var vel = m_Rigidbody2D.linearVelocity;
 #else
+            #pragma warning disable CS0618 // obsolete for 6000.0.0f11 and newer
             var vel = m_Rigidbody2D.velocity;
+            #pragma warning restore CS0618
 #endif
 
             // Compute the new velocity and move the player, but only if not mid-jump
@@ -69,10 +73,12 @@ namespace Unity.Cinemachine.Samples
                 if (vel.x < -Speed * 0.5f)
                     PlayerGeometry.rotation = Quaternion.Euler(new Vector3(0, -90, 0));
             }                
-#if UNITY_2023_3_OR_NEWER
+#if UNITY_6000_1_OR_NEWER
             m_Rigidbody2D.linearVelocity = vel;
 #else
+            #pragma warning disable CS0618 // obsolete for 6000.0.0f11 and newer
             m_Rigidbody2D.velocity = vel;
+            #pragma warning restore CS0618
 #endif
             PostUpdate?.Invoke(
                 new Vector3(0, vel.y, Mathf.Abs(vel.x)), 
