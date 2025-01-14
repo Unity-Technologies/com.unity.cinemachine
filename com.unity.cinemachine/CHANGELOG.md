@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: CinemachinePanTilt recentering was ignoring axis Center setting.
 - CameraDeactivated events were not sent consistently when a blend interrupted another blend before completion.
 - CameraActivated events were not sent consistently when activation was due to timeline blends.
-- Bugfix: FramingTransposer with a dead zone would sometimes drift.
+- FramingTransposer with a dead zone would sometimes drift.
 - Decollider would sometimes cause camera to slip inside cracks between adjacent colliders.
 
 ### Changed
