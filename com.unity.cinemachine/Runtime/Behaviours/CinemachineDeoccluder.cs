@@ -243,13 +243,21 @@ namespace Unity.Cinemachine
             ShotQualityEvaluation = QualityEvaluation.Default;
         }
 
-        /// <summary>
-        /// Cleanup
-        /// </summary>
+        /// <summary>Cleanup</summary>
         protected override void OnDestroy()
         {
             RuntimeUtility.DestroyScratchCollider();
             base.OnDestroy();
+        }
+
+        /// <summary>Called ehn the behaviour is enabled</summary>
+        protected override void OnEnable() 
+        {
+            base.OnEnable();
+            var states = new List<VcamExtraState>();
+            GetAllExtraStates(states);
+            for (int i = 0; i < states.Count; ++i)
+                states[i].StateIsValid = false;
         }
 
         /// This must be small but greater than 0 - reduces false results due to precision
@@ -268,6 +276,7 @@ namespace Unity.Cinemachine
             public Vector3 PreviousCameraOffset;
             public Vector3 PreviousCameraPosition;
             public float PreviousDampTime;
+            public bool StateIsValid;
 
             public void AddPointToDebugPath(Vector3 p, Collider c)
             {
@@ -369,9 +378,12 @@ namespace Unity.Cinemachine
             {
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.TargetObscured = false;
-                extra.DebugResolutionPath?.RemoveRange(0, extra.DebugResolutionPath.Count);
+                extra.DebugResolutionPath?.Clear();
+                extra.OccludingObjects?.Clear();
             
-                if (AvoidObstacles.Enabled)
+                if (!AvoidObstacles.Enabled)
+                    extra.StateIsValid = false;
+                else
                 {
                     var initialCamPos = state.GetCorrectedPosition();
                     var up = state.ReferenceUp;
@@ -383,7 +395,8 @@ namespace Unity.Cinemachine
 
                     // Rotate the previous collision correction along with the camera
                     var dampingBypass = state.RotationDampingBypass;
-                    extra.PreviousDisplacement = dampingBypass * extra.PreviousDisplacement;
+                    if (extra.StateIsValid)
+                        extra.PreviousDisplacement = dampingBypass * extra.PreviousDisplacement;
 
                     // Calculate the desired collision correction
                     var displacement = hasResolutionTarget 
@@ -398,7 +411,7 @@ namespace Unity.Cinemachine
                         {
                             if (extra.OcclusionStartTime <= 0)
                                 extra.OcclusionStartTime = now; // occlusion timer starts now
-                            if (now - extra.OcclusionStartTime < AvoidObstacles.MinimumOcclusionTime)
+                            if (extra.StateIsValid && now - extra.OcclusionStartTime < AvoidObstacles.MinimumOcclusionTime)
                                 displacement = extra.PreviousDisplacement;
                         }
                     }
@@ -430,7 +443,7 @@ namespace Unity.Cinemachine
 
                     // Apply damping
                     float dampTime = AvoidObstacles.DampingWhenOccluded;
-                    if (deltaTime >= 0 && vcam.PreviousStateIsValid 
+                    if (deltaTime >= 0 && vcam.PreviousStateIsValid && extra.StateIsValid
                         && AvoidObstacles.DampingWhenOccluded + AvoidObstacles.Damping > Epsilon)
                     {
                         // To ease the transition between damped and undamped regions, we damp the damp time
@@ -456,7 +469,7 @@ namespace Unity.Cinemachine
                             var q = Quaternion.LookRotation(lookAtPoint - newCamPos, up);
                             state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
                         }
-                        if (vcam.PreviousStateIsValid)
+                        if (vcam.PreviousStateIsValid && extra.StateIsValid)
                         {
                             var dir0 = extra.PreviousCameraPosition - lookAtPoint;
                             var dir1 = newCamPos - lookAtPoint;
@@ -469,6 +482,7 @@ namespace Unity.Cinemachine
                     extra.PreviousCameraOffset = newCamPos - resolutionTargetPoint;
                     extra.PreviousCameraPosition = newCamPos;
                     extra.PreviousDampTime = dampTime;
+                    extra.StateIsValid = true;
                 }
             }
             // Rate the shot after the aim was set
@@ -479,7 +493,7 @@ namespace Unity.Cinemachine
 
                 if (extra.TargetObscured)
                     state.ShotQuality *= 0.2f;
-                if (!extra.PreviousDisplacement.AlmostZero())
+                if (extra.StateIsValid && !extra.PreviousDisplacement.AlmostZero())
                     state.ShotQuality *= 0.8f;
 
                 float nearnessBoost = 0;

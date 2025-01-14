@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CameraDeactivated events were not sent consistently when a blend interrupted another blend before completion.
 - CameraActivated events were not sent consistently when activation was due to timeline blends.
 - Bugfix: FramingTransposer with a dead zone would sometimes drift.
-- Bugfix: Fixed the Radial Axis input axis in the CinemachineOrbitalFollow component to map to the y axis.
+- Fixed the Radial Axis input axis in the CinemachineOrbitalFollow component to map to the y axis.
+- The Deoccluder failed to reset its state when initially enabled.
 
 ### Changed
 - Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
