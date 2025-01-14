@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CameraDeactivated events were not sent consistently when a blend interrupted another blend before completion.
 - CameraActivated events were not sent consistently when activation was due to timeline blends.
 - Bugfix: FramingTransposer with a dead zone would sometimes drift.
+- The Deoccluder failed to reset its state when initially enabled.
 
 ### Changed
 - Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
