@@ -1,5 +1,6 @@
 #if CINEMACHINE_PHYSICS
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -103,7 +104,18 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public TerrainSettings TerrainResolution;
 
-        static Collider[] s_ColliderBuffer = new Collider[10];
+        const int kColliderBufferSize = 10;
+        static Collider[] s_ColliderBuffer = new Collider[kColliderBufferSize];
+        static float[] s_ColliderDistanceBuffer = new float[kColliderBufferSize];
+        static int[] s_ColliderOrderBuffer = new int[kColliderBufferSize];
+
+        // Farthest stuff comes first
+        static readonly IComparer<int> s_ColliderBufferSorter = Comparer<int>.Create((a, b) => 
+        {
+            if (s_ColliderDistanceBuffer[a] == s_ColliderDistanceBuffer[b])
+                return 0;
+            return s_ColliderDistanceBuffer[a] > s_ColliderDistanceBuffer[b] ? -1 : 1;
+        });
 
         void OnValidate()
         {
@@ -143,28 +155,22 @@ namespace Unity.Cinemachine
             public Vector3 PreviousCorrectedCameraPosition;
 
             float m_SmoothedDistance;
-            float m_SmoothedTime;
-            public float ApplyDistanceSmoothing(float distance, float smoothingTime)
+            float m_SmoothingStartTime;
+            public float UpdateDistanceSmoothing(float distance, float smoothingTime, bool haveDisplacement)
             {
-                if (m_SmoothedTime != 0 && smoothingTime > Epsilon)
-                {
-                    if (CinemachineCore.CurrentTime - m_SmoothedTime < smoothingTime)
-                        return Mathf.Min(distance, m_SmoothedDistance);
-                }
-                return distance;
-            }
-            public void UpdateDistanceSmoothing(float distance)
-            {
-                if (m_SmoothedDistance == 0 || distance < m_SmoothedDistance)
+                if (haveDisplacement && (m_SmoothedDistance == 0 || distance <= m_SmoothedDistance))
                 {
                     m_SmoothedDistance = distance;
-                    m_SmoothedTime = CinemachineCore.CurrentTime;
+                    m_SmoothingStartTime = CinemachineCore.CurrentTime;
                 }
-            }
-            public void ResetDistanceSmoothing(float smoothingTime)
-            {
-                if (CinemachineCore.CurrentTime - m_SmoothedTime >= smoothingTime)
-                    m_SmoothedDistance = m_SmoothedTime = 0;
+
+                if (m_SmoothingStartTime != 0 && CinemachineCore.CurrentTime - m_SmoothingStartTime < smoothingTime)
+                    distance = Mathf.Min(distance, m_SmoothedDistance);
+
+                if (!haveDisplacement && CinemachineCore.CurrentTime - m_SmoothingStartTime >= smoothingTime)
+                    m_SmoothedDistance = m_SmoothingStartTime = 0;
+                    
+                return distance;
             }
         };
 
@@ -293,41 +299,47 @@ namespace Unity.Cinemachine
             var capsuleLength = dir.magnitude;
             if (capsuleLength < Epsilon)
                 return Vector3.zero;
-
-            dir /= capsuleLength;
-            capsuleLength = Mathf.Max(Epsilon, capsuleLength - CameraRadius * 2);
-            lookAtPoint = cameraPos - dir * capsuleLength;
-
-            Vector3 newCamPos = cameraPos;
             int numObstacles = Physics.OverlapCapsuleNonAlloc(
                 lookAtPoint, cameraPos, CameraRadius - Epsilon, s_ColliderBuffer,
                 layers, QueryTriggerInteraction.Ignore);
+            if (numObstacles == 0)
+                return Vector3.zero;
 
-            // Find the one that the camera is intersecting that is closest to the target
-            if (numObstacles > 0)
+            dir /= capsuleLength; // normalize
+
+            // Sort the colliders fartherst-to-nearest
+            for (int i = 0; i < numObstacles; ++i)
             {
-                var scratchCollider = RuntimeUtility.GetScratchCollider();
-                scratchCollider.radius = CameraRadius - Epsilon;
-                float bestDistance = float.MaxValue;
-                for (int i = 0; i < numObstacles; ++i)
+                var c = s_ColliderBuffer[i];
+                s_ColliderOrderBuffer[i] = i;
+                s_ColliderDistanceBuffer[i] = 0; // if raycast fails then target is inside collider - we will ignore those colliders
+                if (c.Raycast(new Ray(lookAtPoint, dir), out var hitInfo, capsuleLength + CameraRadius))
                 {
-                    var c = s_ColliderBuffer[i];
-                    if (Physics.ComputePenetration(
-                        scratchCollider, newCamPos, Quaternion.identity,
-                        c, c.transform.position, c.transform.rotation,
-                        out var _, out var _))
-                    {
-                        // Camera is intersecting - decollide in direction of lookAtPoint
-                        if (c.Raycast(new Ray(lookAtPoint, dir), out var hitInfo, capsuleLength))
-                        {
-                            var distance = Mathf.Max(0, hitInfo.distance - CameraRadius);
-                            if (distance < bestDistance)
-                            {
-                                bestDistance = distance;
-                                newCamPos = lookAtPoint + dir * distance;
-                            }
-                        }
-                    }
+                    var distance = hitInfo.distance - CameraRadius;
+                    if (distance < CameraRadius)
+                        distance = Mathf.Max(0.01f, distance + (CameraRadius - distance) * 0.5f);
+                    s_ColliderDistanceBuffer[i] = distance;
+                }
+            }
+            Array.Sort(s_ColliderOrderBuffer, 0, numObstacles, s_ColliderBufferSorter);
+
+            // Move camera in front of any overlapping obstacles
+            var newCamPos = cameraPos;
+            var scratchCollider = RuntimeUtility.GetScratchCollider();
+            scratchCollider.radius = CameraRadius - Epsilon;
+            for (int i = 0; i < numObstacles; ++i)
+            {
+                var index = s_ColliderOrderBuffer[i];
+                if (s_ColliderDistanceBuffer[index] == 0)
+                    continue; // ignore colliders that are on the target
+                var c = s_ColliderBuffer[index];
+                if (Physics.ComputePenetration(
+                    scratchCollider, newCamPos, Quaternion.identity,
+                    c, c.transform.position, c.transform.rotation,
+                    out var _, out var _))
+                {
+                    // Camera overlaps - move it in front
+                    newCamPos = lookAtPoint + dir * s_ColliderDistanceBuffer[index];
                 }
             }
             return newCamPos - cameraPos;
@@ -338,35 +350,26 @@ namespace Unity.Cinemachine
             Vector3 oldCamPos, VcamExtraState extra, float deltaTime)
         {
             var dir = oldCamPos + displacement - lookAtPoint;
-            var distance = float.MaxValue;;
+            var distance = float.MaxValue;
             if (deltaTime >= 0)
             {
                 distance = dir.magnitude;
-                if (distance > Epsilon)
+                if (distance > CameraRadius)
                 {
                     // Apply smoothing
                     dir /= distance;
                     if (Decollision.SmoothingTime > Epsilon)
                     {
-                        if (!displacement.AlmostZero())
-                            extra.UpdateDistanceSmoothing(distance);
-                        distance = extra.ApplyDistanceSmoothing(distance, Decollision.SmoothingTime);
+                        distance = extra.UpdateDistanceSmoothing(distance, Decollision.SmoothingTime, !displacement.AlmostZero());
                         displacement = (lookAtPoint + dir * distance) - oldCamPos;
                     }
-                    if (displacement.AlmostZero())
-                    {
-                        extra.ResetDistanceSmoothing(Decollision.SmoothingTime);
 
-                        // Apply damping
-                        if (Decollision.Damping > Epsilon)
-                        {
-                            if (distance > extra.PreviousObstacleDisplacement)
-                            {
-                                distance = extra.PreviousObstacleDisplacement 
-                                    + Damper.Damp(distance - extra.PreviousObstacleDisplacement, Decollision.Damping, deltaTime);
-                                displacement = (lookAtPoint + dir * distance) - oldCamPos;
-                            }
-                        }
+                    // Apply damping
+                    if (Decollision.Damping > Epsilon && distance > extra.PreviousObstacleDisplacement)
+                    {
+                        distance = extra.PreviousObstacleDisplacement 
+                            + Damper.Damp(distance - extra.PreviousObstacleDisplacement, Decollision.Damping, deltaTime);
+                        displacement = (lookAtPoint + dir * distance) - oldCamPos;
                     }
                 }
             }
