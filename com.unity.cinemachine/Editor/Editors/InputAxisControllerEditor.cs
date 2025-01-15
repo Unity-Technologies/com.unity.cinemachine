@@ -87,7 +87,7 @@ namespace Unity.Cinemachine.Editor
                     }
                     controller.Input.Gain = invertY ? -1 : 1;
 #endif
-#if ENABLE_LEGACY_INPUT_MANAGER
+#if ENABLE_LEGACY_INPUT_MANAGER && !CINEMACHINE_UNITY_INPUTSYSTEM
                     controller.Input.LegacyInput = inputName;
                     controller.Input.LegacyGain = isMomentary ? 1 : 50 * (invertY ? -1 : 1);
 #endif

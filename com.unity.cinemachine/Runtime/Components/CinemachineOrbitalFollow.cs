@@ -142,7 +142,7 @@ namespace Unity.Cinemachine
         
         static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
         static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f, Recentering = InputAxis.RecenteringSettings.Default };
-        static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 3), Wrap = false, Center = 1, Recentering = InputAxis.RecenteringSettings.Default };
+        static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 1), Wrap = false, Center = 1, Recentering = InputAxis.RecenteringSettings.Default };
 
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid => enabled && FollowTarget != null;
