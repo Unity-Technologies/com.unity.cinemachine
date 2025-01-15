@@ -498,7 +498,7 @@ PrefabInstance:
       objectReference: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.LegacyInput
-      value: Mouse X
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.InputAction
@@ -506,7 +506,7 @@ PrefabInstance:
       objectReference: {fileID: 1120369429361536294, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.LegacyInput
-      value: Fire1
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.InputAction
@@ -514,7 +514,7 @@ PrefabInstance:
       objectReference: {fileID: -1608118824973676762, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.LegacyInput
-      value: Fire2
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1570214454041857243, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -982,9 +982,21 @@ PrefabInstance:
       value: RedCar
       objectReference: {fileID: 0}
     - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Input.LegacyInput
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Input.LegacyInput
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.InputAction
       value: 
       objectReference: {fileID: 6539296782897260151, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
+    - target: {fileID: 878341184440332471, guid: 1ae780fa68e1a2d4fbf8ccd042067f66, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[2].Input.LegacyInput
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

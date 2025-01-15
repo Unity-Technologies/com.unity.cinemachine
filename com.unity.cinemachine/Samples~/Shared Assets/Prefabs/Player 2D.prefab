@@ -148,7 +148,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -1680190386980627800, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: Horizontal
+        LegacyInput: 
         LegacyGain: 1
       InputValue: 0
       Driver:
@@ -160,7 +160,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -1680190386980627800, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: Vertical
+        LegacyInput: 
         LegacyGain: 1
       InputValue: 0
       Driver:
@@ -172,7 +172,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: 6539296782897260151, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: Jump
+        LegacyInput: 
         LegacyGain: 1
       InputValue: 0
       Driver:
@@ -184,7 +184,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -3285510275856705445, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: Fire3
+        LegacyInput: 
         LegacyGain: 1
       InputValue: 0
       Driver:
