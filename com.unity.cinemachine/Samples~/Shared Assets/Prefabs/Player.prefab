@@ -196,7 +196,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -1680190386980627800, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Horizontal
         LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
@@ -209,7 +209,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -1680190386980627800, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Vertical
         LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
@@ -222,7 +222,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: 6539296782897260151, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Jump
         LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -3285510275856705445, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
-        LegacyInput: 
+        LegacyInput: Fire2
         LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
