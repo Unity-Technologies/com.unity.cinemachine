@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -319,13 +318,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 737942603}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.037952796, y: 0.0000000021492599, z: -8.1629224e-11, w: 0.99927956}
   m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &838339814
 GameObject:
@@ -364,7 +363,7 @@ MonoBehaviour:
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20230301
+  m_StreamingVersion: 20241001
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 1519050427}
@@ -397,13 +396,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838339814}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.037952796, y: 0.0000000021492599, z: -8.1629224e-11, w: 0.99927956}
   m_LocalPosition: {x: 0, y: 2.25, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &838339820
 MonoBehaviour:
@@ -417,13 +416,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0.2}
     DeadZone:
@@ -434,6 +426,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &838339821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
+  IgnoreTimeScale: 0
   m_ControllerManager:
     Controllers:
     - Name: Look Orbit X
@@ -457,7 +457,8 @@ MonoBehaviour:
         InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
         LegacyInput: Mouse X
-        LegacyGain: 200
+        LegacyGain: 50
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0.2
@@ -469,7 +470,8 @@ MonoBehaviour:
         InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: -1
         LegacyInput: Mouse Y
-        LegacyGain: -200
+        LegacyGain: -50
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0.2
@@ -479,9 +481,10 @@ MonoBehaviour:
       Enabled: 1
       Input:
         InputAction: {fileID: 5082991133974614888, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
-        Gain: 1
+        Gain: -1
         LegacyInput: Mouse ScrollWheel
-        LegacyGain: 200
+        LegacyGain: -50
+        CancelDeltaTime: 0
       InputValue: 0
       Driver:
         AccelTime: 0
@@ -500,6 +503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -619,13 +623,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1106812490}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.018435882, y: -0.000000018095653, z: 3.3366604e-10, w: 0.99983007}
   m_LocalPosition: {x: 0, y: 2.75, z: -29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1106812495
 MonoBehaviour:
@@ -639,13 +643,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0.05}
     DeadZone:
@@ -656,6 +653,13 @@ MonoBehaviour:
       Size: {x: 0.1, y: 0.2}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &1106812496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -668,13 +672,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FollowOffset: {x: 0, y: 2, z: -4}
   TrackerSettings:
     BindingMode: 1
     PositionDamping: {x: 0.5, y: 0.5, z: 0.5}
     AngularDampingMode: 1
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 0.5
+  FollowOffset: {x: 0, y: 2, z: -4}
 --- !u!4 &1445711055 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 358930478696116476, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
@@ -846,13 +850,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2072584704}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.4285714, z: 0}
   m_LocalScale: {x: 0.57142854, y: 0.57142854, z: 0.57142854}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1519050427}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2072584706
 MonoBehaviour:
@@ -963,3 +967,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a93965bc906a245c49b8905bf8b48fec, type: 3}
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 2064093838}
+  - {fileID: 443530339}
+  - {fileID: 737942607}
+  - {fileID: 1519050426}
+  - {fileID: 3813926105656355491}
+  - {fileID: 838339818}
+  - {fileID: 1106812492}
