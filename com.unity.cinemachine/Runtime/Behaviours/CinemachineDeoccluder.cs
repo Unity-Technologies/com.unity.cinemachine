@@ -461,14 +461,11 @@ namespace Unity.Cinemachine
                     newCamPos = state.GetCorrectedPosition();
 
                     // Adjust the damping bypass to account for the displacement
-                    if (hasLookAt)
+                    if (hasLookAt && displacement.sqrMagnitude > Epsilon)
                     {
                         // Restore the lookAt offset
-                        if (displacement.sqrMagnitude > Epsilon)
-                        {
-                            var q = Quaternion.LookRotation(lookAtPoint - newCamPos, up);
-                            state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
-                        }
+                        var q = Quaternion.LookRotation(lookAtPoint - newCamPos, up);
+                        state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
                         if (vcam.PreviousStateIsValid && extra.StateIsValid)
                         {
                             var dir0 = extra.PreviousCameraPosition - lookAtPoint;
