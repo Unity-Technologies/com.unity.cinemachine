@@ -15,7 +15,7 @@ namespace Unity.Cinemachine.Editor
     {
         const float vSpace = 2;
         const float kIndentAmount = 15;
-        const float kBoxMargin = 3;
+        const float kBoxMargin = 0; //3;
         float HelpBoxHeight => EditorGUIUtility.singleLineHeight * 2.5f;
         bool m_Expanded = false;
 
@@ -81,7 +81,7 @@ namespace Unity.Cinemachine.Editor
         {
             bool hasCustomEditor = AssetHasCustomEditor(property);
             rect.y += vSpace; rect.height -= 2 * vSpace;
-            GUI.Box(rect, GUIContent.none, GUI.skin.box);
+            //GUI.Box(rect, GUIContent.none, GUI.skin.box);
             rect.y += kBoxMargin;
 
             rect.height = EditorGUIUtility.singleLineHeight;
