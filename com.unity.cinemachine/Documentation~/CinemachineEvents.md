@@ -1,8 +1,8 @@
 # Cinemachine Events
 
-Cinemachine will generate events whenever cameras are activated and deactivated, and also when blends are started and when they finish.  Furthermore, an event is generted when there is a camera cut - that is, when the active cinemachine camera changes without blending.
+Cinemachine generates events whenever cameras are activated and deactivated, and also when blends are started and when they finish.  Furthermore, an event is generated when there is a camera cut - that is, when the active Cinemachine Camera changes without blending.
 
-When Cinemachine sends an event, it is sent globally via CinemachineCore.  Scripts can add listeners to those events and take action based on them.  Listeners will receive events for all cameras.
+When Cinemachine sends an event, it is sent globally via CinemachineCore.  Scripts can add listeners to those events and take action based on them.  Listeners receive events for all cameras.
 
 Events are generated in every context that manages blends.  This includes the CinemachineBrain, which handles blends at the highest level, but it also applies to Cinemachine Manager Cameras, which thenselves manage blends between their child cameras.
 
