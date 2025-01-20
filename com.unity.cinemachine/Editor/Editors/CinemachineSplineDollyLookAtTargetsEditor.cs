@@ -83,17 +83,23 @@ namespace Unity.Cinemachine.Editor
                 HelpBoxMessageType.Warning);
             ux.Add(invalidHelp);
 
-            var tooltip = "Use the Scene View tool to Edit the LookAt targets on the spline";
-            var buttonRow = ux.AddChild(new InspectorUtility.LabeledRow("Edit in Scene View", tooltip));
-            var toolButton = buttonRow.Contents.AddChild(
-                CinemachineSceneToolHelpers.CreateSceneToolActivationButtonForInspector(
-                    typeof(LookAtDataOnSplineTool), target, LookAtDataOnSplineTool.IconPath, tooltip));
+            var toolHelp = ux.AddChild(new HelpBox(
+                "Use the Scene View tool to Edit the LookAt targets on the spline", HelpBoxMessageType.Info));
+            toolHelp.OnInitialGeometry(() =>
+            {
+                var icon = toolHelp.Q(className: "unity-help-box__icon");
+                if (icon != null)
+                {
+                    icon.style.backgroundImage = AssetDatabase.LoadAssetAtPath<Texture2D>(LookAtDataOnSplineTool.IconPath);
+                    icon.style.marginRight = 12;
+                }
+            });
+            ux.AddSpace();
 
             ux.TrackAnyUserActivity(() =>
             {
                 var haveSpline = splineData != null && splineData.GetGetSplineAndDolly(out _, out _);
                 invalidHelp.SetVisible(!haveSpline);
-                toolButton.SetEnabled(haveSpline);
             });
 
             var targetsProp = serializedObject.FindProperty(() => splineData.Targets);

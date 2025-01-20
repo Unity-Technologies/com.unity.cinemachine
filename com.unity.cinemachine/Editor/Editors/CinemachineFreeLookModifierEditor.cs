@@ -96,8 +96,7 @@ namespace Unity.Cinemachine
                 var foldout = new Foldout() { text = typeName, tooltip = property.tooltip };
                 foldout.BindProperty(property);
 
-                var noComponentsMsg = foldout.AddChild(new HelpBox(warningText, 
-                    HelpBoxMessageType.Warning));
+                var noComponentsMsg = foldout.AddChild(new HelpBox(warningText, HelpBoxMessageType.Warning));
 
                 var childProperty = property.Copy();
                 var endProperty = childProperty.GetEndProperty();
@@ -117,6 +116,7 @@ namespace Unity.Cinemachine
 
                 var ux = new InspectorUtility.FoldoutWithOverlay(foldout, overlay, null);
                 ux.style.marginLeft = 12;
+                ux.style.marginRight = 6;
                 return ux;
             }
         }
