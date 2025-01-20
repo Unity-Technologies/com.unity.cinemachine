@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
             return t != null && PrefabUtility.IsPartOfPrefabAsset(t);
         }
 
-        static Color s_NormalColor = Color.black;
+        static Color s_NormalColor = Color.white;
         static Color s_NormalBkgColor = Color.black;
         
         /// <summary>Add the camera status controls and indicators in the inspector</summary>
@@ -114,13 +114,10 @@ namespace Unity.Cinemachine.Editor
                     return;
 
                 bool isSolo = CinemachineCore.SoloCamera == (ICinemachineCamera)target;
-                var color = isSolo ? Color.Lerp(s_NormalColor, CinemachineCore.SoloGUIColor(), 0.5f) : s_NormalColor;
-
                 bool isLive = CinemachineCore.IsLive(target);
                 statusText.text = isLive ? "Status: Live"
                     : target.isActiveAndEnabled ? "Status: Standby" : "Status: Disabled";
                 statusText.SetEnabled(isLive);
-                statusText.style.color = color;
 
                 if (!Application.isPlaying)
                     updateMode.SetVisible(false);
@@ -131,9 +128,15 @@ namespace Unity.Cinemachine.Editor
                     updateMode.SetVisible(true);
                 }
 
-                soloButton.style.color = color;
-                soloButton.style.backgroundColor = isSolo 
-                    ? Color.Lerp(s_NormalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : s_NormalBkgColor;
+                if (s_NormalBkgColor != Color.black)
+                {
+                    // Do this only if we have captured the "normal" colors
+                    var color = isSolo ? Color.Lerp(s_NormalColor, CinemachineCore.SoloGUIColor(), 0.5f) : s_NormalColor;
+                    statusText.style.color = color;
+                    soloButton.style.color = color;
+                    soloButton.style.backgroundColor = isSolo 
+                        ? Color.Lerp(s_NormalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : s_NormalBkgColor;
+                }
 
                 // Refresh the game view if solo and not playing
                 if (isSolo && !Application.isPlaying)
