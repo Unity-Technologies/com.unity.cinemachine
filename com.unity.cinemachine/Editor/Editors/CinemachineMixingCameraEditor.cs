@@ -13,12 +13,6 @@ namespace Unity.Cinemachine.Editor
 
         GUIStyle m_MixResultStyle;
 
-        protected void OnEnable()
-        {
-            m_MixResultStyle = new GUIStyle(EditorStyles.miniLabel);
-            m_MixResultStyle.alignment = TextAnchor.MiddleCenter;
-        }
-
         static string WeightPropertyName(int i) => "Weight" + i;
 
         protected override void AddInspectorProperties(VisualElement ux)
@@ -72,6 +66,12 @@ namespace Unity.Cinemachine.Editor
         void DrawProportionIndicator(
             List<CinemachineVirtualCameraBase> children, int numCameras, float totalWeight)
         {
+            if (m_MixResultStyle == null)
+            {
+                m_MixResultStyle = new GUIStyle(EditorStyles.miniLabel);
+                m_MixResultStyle.alignment = TextAnchor.MiddleCenter;
+            }
+
             Color bkg = new Color(0.27f, 0.27f, 0.27f); // ack! no better way than this?
             Color fg = Color.Lerp(CinemachineCore.SoloGUIColor(), bkg, 0.8f);
             float totalHeight = (m_MixResultStyle.lineHeight + m_MixResultStyle.margin.vertical) * numCameras;
