@@ -11,6 +11,14 @@ namespace Unity.Cinemachine.Editor
     {
         CinemachineMixingCamera Target => target as CinemachineMixingCamera;
 
+        GUIStyle m_MixResultStyle;
+
+        protected void OnEnable()
+        {
+            m_MixResultStyle = new GUIStyle(EditorStyles.miniLabel);
+            m_MixResultStyle.alignment = TextAnchor.MiddleCenter;
+        }
+
         static string WeightPropertyName(int i) => "Weight" + i;
 
         protected override void AddInspectorProperties(VisualElement ux)
@@ -64,10 +72,9 @@ namespace Unity.Cinemachine.Editor
         void DrawProportionIndicator(
             List<CinemachineVirtualCameraBase> children, int numCameras, float totalWeight)
         {
-            GUIStyle style = EditorStyles.centeredGreyMiniLabel;
             Color bkg = new Color(0.27f, 0.27f, 0.27f); // ack! no better way than this?
             Color fg = Color.Lerp(CinemachineCore.SoloGUIColor(), bkg, 0.8f);
-            float totalHeight = (style.lineHeight + style.margin.vertical) * numCameras;
+            float totalHeight = (m_MixResultStyle.lineHeight + m_MixResultStyle.margin.vertical) * numCameras;
             Rect r = EditorGUILayout.GetControlRect(true, totalHeight);
             r.height /= numCameras; r.height -= 1;
             float fullWidth = r.width;
@@ -91,7 +98,7 @@ namespace Unity.Cinemachine.Editor
                 EditorGUI.DrawRect(r2, bkg);
 
                 r.width = fullWidth;
-                EditorGUI.LabelField(r, label, style);
+                EditorGUI.LabelField(r, label, m_MixResultStyle);
 
                 r.y += r.height + 1;
             }
