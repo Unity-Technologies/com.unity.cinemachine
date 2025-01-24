@@ -1,4 +1,5 @@
 # Third Person Follow
+
 Use Cinemachine CinemachineCamera’s **Third Person Follow** to keep the camera at a constant position and distance relative to a Tracking Target (subject to damping controls), tracking the target’s movement and rotation.
 
 The Third Person Follow’s mini-rig setup defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a third-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.
@@ -6,32 +7,22 @@ The Third Person Follow’s mini-rig setup defines the camera position and dista
 For example, a rig set up with these values:
 
 
-| **Property:**           | **Value:**               |
-| :---------------------- | :----------------------- |
-| Damping                 | X= 0.1   Y= 0.5   Z= 0.3 |
-| Shoulder Offset         | X= 0.4   Y= 1   Z= -0.5  |
-| Vertical Arm Length     | 0.27                     |
-| Camera Side             | 1                        |
-| Camera Distance         | 2                        |
-| Camera Collision Filter | Default                  |
-| Camera Radius           | 0.2                      |
+| **Property:**           | **Value:**                    |
+| :---------------------- | :---------------------------- |
+| Shoulder Offset         | X = 0.7 ; Y = 0.3 ; Z = -0.5  |
+| Vertical Arm Length     | 0.5                           |
+| Camera Side             | 1                             |
+| Camera Distance         | 2                             |
+| Camera Collision Filter | Default                       |
+| Camera Radius           | 0.2                           |
 
 Produces this virtual rig in the Scene view:
-
-
-
 
 ![](images/CinemachineRigSceneView.png)
 
 Which results in this Game view:
 
-
-
 ![](images/CinemachineRigGameViewExample.png)
-
-
-
-
 
 The rig and the camera position are defined by three pivot points (the origin, the shoulder, and the hand) as well as by a camera that is positioned behind the hand.
 
@@ -49,13 +40,9 @@ Note the rotations on the rig;</br>
    ![](images/CMVerticalDistanceexample.png) 
 
 
-
 ## Controlling the Camera
 
 There is no direct input control for the camera. You must have a controller script that moves and rotates the tracking target; the camera will position and orient itself relative to that. When the tracking target is the character itself, the camera’s rotation always matches the character’s rotation. When the tracking target is an invisible GameObject that can rotate independently of the character, the camera will then be able to rotate around the character.
-
-For an example, see the **AimingRig** sample scene.
-
 
 ## Built-in Collision Resolution
 
@@ -64,6 +51,10 @@ The Third-person Follow component has a built-in collision resolution system, so
 ## Shaky Movement, Steady Aim
 
 When combined with the [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md) extension, the result is a powerful rig that can maintain steady aim for a shooter-type game, even when the camera movement is shaky or noisy. CinemachineThirdPersonAim re-adjusts the camera orientation to maintain a fixed point at the center of the screen, correcting for variations due to camera noise.
+
+## Sample Scene
+
+To experiment with a Third Person Follow set up that includes camera control, shaky movement, and aim mode, open and run the `ThirdPersonWithAimMode` sample Scene from the [3D samples available with the Cinemachine package](samples-tutorials.md).
 
 ## Properties:
 
