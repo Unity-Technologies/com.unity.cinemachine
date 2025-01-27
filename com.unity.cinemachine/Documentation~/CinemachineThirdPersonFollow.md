@@ -13,8 +13,6 @@ For example, a rig set up with these values:
 | Vertical Arm Length     | 0.5                           |
 | Camera Side             | 1                             |
 | Camera Distance         | 2                             |
-| Camera Collision Filter | Default                       |
-| Camera Radius           | 0.2                           |
 
 Produces this virtual rig in the Scene view:
 
