@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
 - Updated the gamepad inputs in the CinemachineDefaultInputActions asset to closer match standard gamepad conventions. Renamed the Player action map to CM Default.
 
+### Added
+- CinemachineConfiner2D.BoundingShapeIsBaked can be used to check if the confiner's bounding shape is baked.
+- CinemachineConfiner2D.BakeBoundingShape() can be used to force-complete the confiner's baking of the bounding shape.
+
 
 ## [3.1.2] - 2024-10-01
 
