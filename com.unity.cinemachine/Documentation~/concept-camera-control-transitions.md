@@ -17,7 +17,7 @@ At any time, each Cinemachine Camera may be in one of three different states, bu
 The conditions that make a Cinemachine Camera the live one depend on the context in which you're using Cinemachine.  By default, the Cinemachine Brain is responsible for handling the live Cinemachine Camera selection.
 
 - The Brain chooses the active [Cinemachine Camera component](CinemachineCamera.md) with the highest Priority and makes it Live.
-- If multiple active CinemchineCameras share the same highest priority, then the ost recently [activated](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) of them will be chosen.
+- If multiple active CinemchineCameras share the same highest priority, then the most recently [activated](https://docs.unity3d.com/Manual/DeactivatingGameObjects.html) of them will be chosen.
 - Deactivated or lower-priority CinemachineCameras can be Live if they are part of a blend, until the blend is finished.
 - If a Timeline is active with Cinemachine tracks, it overrides the Brain's priority system and drives the Live cameras and blends explicitly, regardless of their Priority and active state.
 

@@ -6,6 +6,7 @@ namespace Unity.Cinemachine.Samples
     /// Will match a GameObject's position and rotation to a target's position 
     /// and rotation, with damping
     /// </summary>
+    [ExecuteAlways]
     public class DampedTracker : MonoBehaviour
     {
         [Tooltip("The target to track")]
@@ -25,12 +26,21 @@ namespace Unity.Cinemachine.Samples
         {
             if (Target != null)
             {
+                // Match the player's position
                 float t = Damper.Damp(1, PositionDamping, Time.deltaTime);
                 var pos = Vector3.Lerp(transform.position, Target.position, t);
 
+                // Rotate my transform to make my up match the target's up
+                var rot = transform.rotation;
                 t = Damper.Damp(1, RotationDamping, Time.deltaTime);
-                var rot = Quaternion.Slerp(transform.rotation, Target.rotation, t);
-
+                var srcUp = transform.up;
+                var dstUp = Target.up;
+                var axis = Vector3.Cross(srcUp, dstUp);
+                if (axis.sqrMagnitude > 0.001f)
+                {
+                    var angle = UnityVectorExtensions.SignedAngle(srcUp, dstUp, axis) * t;
+                    rot = Quaternion.AngleAxis(angle, axis) * rot;
+                }
                 transform.SetPositionAndRotation(pos, rot);
             }
         }
