@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: CinemachinePanTilt recentering was ignoring axis Center setting.
 - CameraDeactivated events were not sent consistently when a blend interrupted another blend before completion.
 - CameraActivated events were not sent consistently when activation was due to timeline blends.
-- Bugfix: FramingTransposer with a dead zone would sometimes drift.
-- Fixed the Radial Axis input axis in the CinemachineOrbitalFollow component to map to the y axis.
+- FramingTransposer with a dead zone would sometimes drift.
+- Decollider would sometimes cause camera to slip inside cracks between adjacent colliders.
 - The Deoccluder failed to reset its state when initially enabled, and sometimes caused small spurious camera rotations.
+- Fixed the Radial Axis input axis in the CinemachineOrbitalFollow component to map to the y axis.
 
 ### Changed
 - Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
