@@ -182,6 +182,7 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         public override void InternalUpdateCameraState(Vector3 worldUp, float deltaTime)
         {
+            UpdateTargetCache();
             UpdateCameraCache();
             if (!PreviousStateIsValid)
                 ResetLiveChild();

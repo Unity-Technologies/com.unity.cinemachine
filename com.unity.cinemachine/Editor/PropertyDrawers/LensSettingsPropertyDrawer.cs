@@ -97,7 +97,9 @@ namespace Unity.Cinemachine.Editor
             var innerFovControl = foldout.AddChild(new FovPropertyControl(property, false));
 
             var nearClip = property.FindPropertyRelative(() => s_Def.NearClipPlane);
-            foldout.AddChild(new PropertyField(nearClip)).RegisterValueChangeCallback((evt) =>
+            var nearClipField = foldout.AddChild(new PropertyField(nearClip));
+            nearClipField.OnInitialGeometry(() => nearClipField.SafeSetIsDelayed());
+            nearClipField.RegisterValueChangeCallback((evt) =>
             {
                 if (!IsOrtho(property) && nearClip.floatValue < 0.01f)
                 {
@@ -105,7 +107,8 @@ namespace Unity.Cinemachine.Editor
                     property.serializedObject.ApplyModifiedPropertiesWithoutUndo();
                 }
             });
-            foldout.Add(new PropertyField(property.FindPropertyRelative(() => s_Def.FarClipPlane)));
+            var farClipField = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => s_Def.FarClipPlane)));
+            farClipField.OnInitialGeometry(() => farClipField.SafeSetIsDelayed());
             foldout.Add(new PropertyField(property.FindPropertyRelative(() => s_Def.Dutch)));
 
             var physical = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => s_Def.PhysicalProperties)));
@@ -179,12 +182,13 @@ namespace Unity.Cinemachine.Editor
 
             public FovPropertyControl(SerializedProperty property, bool hideLabel) : base(hideLabel ? "" : "(fov)")
             {
+                style.flexGrow = 1;
+
                 m_LensProperty = property;
                 var physicalProp = property.FindPropertyRelative(() => s_Def.PhysicalProperties);
                 m_SensorSizeProperty = physicalProp.FindPropertyRelative(() => s_Def.PhysicalProperties.SensorSize);
 
-                m_Control = Contents.AddChild(new FloatField("") 
-                    { style = { flexBasis = 20, flexGrow = 2, marginLeft = hideLabel ? 0 : 3 }});
+                m_Control = Contents.AddChild(new FloatField("") { style = { flexBasis = 20, flexGrow = 2, marginLeft = 2 }});
                 m_Control.RegisterValueChangedCallback(OnControlValueChanged);
                 Label.SetVisible(!hideLabel);
                 Label.AddToClassList("unity-base-field__label--with-dragger");

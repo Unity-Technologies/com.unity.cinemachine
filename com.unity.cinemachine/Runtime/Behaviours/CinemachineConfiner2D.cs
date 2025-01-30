@@ -227,6 +227,42 @@ namespace Unity.Cinemachine
 
         [Obsolete("Call InvalidateBoundingShapeCache() instead.", false)]
         public void InvalidateCache() => InvalidateBoundingShapeCache();
+
+        /// <summary>
+        /// Before it can be used, the bounding shape must be baked.  Baking happens whenever the bounding 
+        /// shape cache gets invalidated.  The expensive baking operation is spread out over a number of frames.  
+        /// The confiner will have no effect until the bounding shape is baked.
+        /// This property can be polled to determine whether the baking operation is complete.
+        /// </summary>
+        /// <value>True if the bouding shape cache has been fully baked.</value>
+        public bool BoundingShapeIsBaked => m_ShapeCache.ConfinerOven?.State == ConfinerOven.BakingState.BAKED;
+
+        /// <summary>
+        /// Normally, confiner baking will happen automatically when the camera is activated.  This expensive
+        /// operation will be spread out over a number of frames, up to a maximum total baking time of 5 seconds.
+        /// If it's not fully baked in 5 seconds, it will give up because the bounding shape is too complex to be baked.
+        /// 
+        /// Sometimes it is necessary to force the completion of baking immediately (for instance, if a level begins
+        /// with a confined camera, it needs to be fully baked on the first frame).
+        /// 
+        /// In those cases, this method can be called to advance the baking.
+        /// </summary>
+        /// <param name="vcam">The virtual camera context.  This is needed for the lens information.</param>
+        /// <param name="maxTimeInSeconds">Maximum time in seconds to devote to baking during this blocking call.  
+        /// If it's not enough to finish the job, then this method can be called repeatedly over several frames.  
+        /// When the total accumulated time is more than 5 seconds, this method will do nothing.</param>
+        /// <returns>True if baking is complete, false if more baking is needed or if more 
+        /// than 5 baking seconds have elapsed.</returns>
+        public bool BakeBoundingShape(CinemachineVirtualCameraBase vcam, float maxTimeInSeconds)
+        {
+            if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, vcam.State.Lens.Aspect, out _))
+                return false; // invalid path
+            if (m_ShapeCache.ConfinerOven == null)
+                return false;
+            if (m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKING)
+                m_ShapeCache.ConfinerOven.BakeConfiner(maxTimeInSeconds);
+            return m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKED;
+        }
         
         /// <summary>
         /// Callback to do the camera confining
@@ -257,6 +293,15 @@ namespace Unity.Cinemachine
                     extra.FrustumHeight = 
                         CalculateHalfFrustumHeight(state.Lens, deltaW.MultiplyPoint3x4(camPos).z) * deltaW.lossyScale.x;
                     extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(extra.FrustumHeight);
+                }
+
+                // If the confining shape isn't baked, do nothing
+                if (m_ShapeCache.ConfinerOven.State != ConfinerOven.BakingState.BAKED)
+                {
+                    extra.PreviousDisplacement = Vector3.zero;
+                    extra.DampedDisplacement = Vector3.zero;
+                    extra.PreviousCameraPosition = camPos;
+                    return;
                 }
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
                 var newPos = ConfinePoint(camPos, extra, fwd);

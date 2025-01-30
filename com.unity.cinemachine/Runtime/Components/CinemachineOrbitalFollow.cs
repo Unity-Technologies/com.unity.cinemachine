@@ -163,7 +163,7 @@ namespace Unity.Cinemachine
         {
             axes.Add(new () { DrivenAxis = () => ref HorizontalAxis, Name = "Look Orbit X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
             axes.Add(new () { DrivenAxis = () => ref VerticalAxis, Name = "Look Orbit Y", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
-            axes.Add(new () { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale" });
+            axes.Add(new () { DrivenAxis = () => ref RadialAxis, Name = "Orbit Scale", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
         }
 
         /// <summary>Register a handler that will be called when input needs to be reset</summary>

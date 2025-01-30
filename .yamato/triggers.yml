@@ -11,42 +11,63 @@ all_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_1_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_windows
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_macos
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_ubuntu
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_windows
   triggers:
     expression: NOT pull_request.draft
 
@@ -60,42 +81,63 @@ nightly_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrpinputsystem_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standaloneinputsystem_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_1_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_1_-_macos
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_1_-_ubuntu
+  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_1_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_windows
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_macos
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_ubuntu
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_windows
 
 # Tests to run on PRs and mainline branches.
 package_ci:
@@ -105,6 +147,9 @@ package_ci:
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_windows
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_macos
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_ubuntu
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_windows
   triggers:
     branches:
       only:

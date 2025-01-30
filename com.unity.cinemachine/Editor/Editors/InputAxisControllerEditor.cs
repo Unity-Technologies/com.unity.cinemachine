@@ -33,7 +33,7 @@ namespace Unity.Cinemachine.Editor
 
                     if (axis.Name.Contains("Look"))
                     {
-                        actionName = "Player/Look";
+                        actionName = "CM Default/Look";
                         inputName = axis.Hint switch
                         {
                            IInputAxisOwner.AxisDescriptor.Hints.X => "Mouse X",
@@ -45,12 +45,13 @@ namespace Unity.Cinemachine.Editor
                     }
                     if (axis.Name.Contains("Zoom") || axis.Name.Contains("Scale"))
                     {
-                        actionName = "Player/Zoom";
+                        actionName = "CM Default/Zoom";
                         inputName = "Mouse ScrollWheel";
+                        invertY = true;
                     }
                     if (axis.Name.Contains("Move"))
                     {
-                        actionName = "Player/Move";
+                        actionName = "CM Default/Move";
                         inputName = axis.Hint switch
                         {
                            IInputAxisOwner.AxisDescriptor.Hints.X => "Horizontal",
@@ -60,17 +61,17 @@ namespace Unity.Cinemachine.Editor
                     }
                     if (axis.Name.Contains("Fire"))
                     {
-                        actionName = "Player/Fire";
+                        actionName = "CM Default/Fire";
                         inputName = "Fire1";
                     }
                     if (axis.Name.Contains("Jump"))
                     {
-                        actionName = "Player/Jump";
+                        actionName = "CM Default/Jump";
                         inputName = "Jump";
                     }
                     if (axis.Name.Contains("Sprint"))
                     {
-                        actionName = "Player/Sprint";
+                        actionName = "CM Default/Sprint";
                         inputName = "Fire3"; // best we can do
                     }
 
@@ -86,9 +87,9 @@ namespace Unity.Cinemachine.Editor
                     }
                     controller.Input.Gain = invertY ? -1 : 1;
 #endif
-#if ENABLE_LEGACY_INPUT_MANAGER
+#if ENABLE_LEGACY_INPUT_MANAGER && !CINEMACHINE_UNITY_INPUTSYSTEM
                     controller.Input.LegacyInput = inputName;
-                    controller.Input.LegacyGain = isMomentary ? 1 : 200 * (invertY ? -1 : 1);
+                    controller.Input.LegacyGain = isMomentary ? 1 : 100 * (invertY ? -1 : 1);
 #endif
                     controller.Enabled = true;
                 };
@@ -105,13 +106,13 @@ namespace Unity.Cinemachine.Editor
 
             var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
             overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "") 
-                { style = {flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
+                { style = { marginLeft = 2, flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
 
             // Draw the input value on the same line as the foldout, for convenience
             var inputProperty = property.FindPropertyRelative(() => def.Input);
 #if CINEMACHINE_UNITY_INPUTSYSTEM
             overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.InputAction), "") 
-                { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
+                { style = { marginLeft = -3, flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
             overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.LegacyInput), "") 

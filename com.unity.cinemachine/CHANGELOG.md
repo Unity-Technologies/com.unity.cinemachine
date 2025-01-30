@@ -4,6 +4,27 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.3] - 2025-02-01
+
+### Bugfixes
+- Regression fix: CinemachinePanTilt recentering was ignoring axis Center setting.
+- CameraDeactivated events were not sent consistently when a blend interrupted another blend before completion.
+- CameraActivated events were not sent consistently when activation was due to timeline blends.
+- FramingTransposer with a dead zone would sometimes drift.
+- Decollider would sometimes cause camera to slip inside cracks between adjacent colliders.
+- The Deoccluder failed to reset its state when initially enabled, and sometimes caused small spurious camera rotations.
+- Fixed the Radial Axis input axis in the CinemachineOrbitalFollow component to map to the y axis.
+- Desired blend time is respected when interrupting blends with heterogeneous blend-in and blend-out times.
+
+### Changed
+- Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
+- Updated the gamepad inputs in the CinemachineDefaultInputActions asset to closer match standard gamepad conventions. Renamed the Player action map to CM Default.
+
+### Added
+- CinemachineConfiner2D.BoundingShapeIsBaked can be used to check if the confiner's bounding shape is baked.
+- CinemachineConfiner2D.BakeBoundingShape() can be used to force-complete the confiner's baking of the bounding shape.
+
+
 ## [3.1.2] - 2024-10-01
 
 ### Added

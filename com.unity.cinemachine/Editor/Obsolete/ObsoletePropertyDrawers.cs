@@ -348,5 +348,13 @@ namespace Unity.Cinemachine.Editor
             }
         }
     }
+
+    partial class OutputChannelsPropertyDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
+        {
+            EditorGUI.PropertyField(rect, property, label);
+        }
+    }
 }
 #endif

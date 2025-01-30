@@ -7,7 +7,7 @@ using System;
 namespace Unity.Cinemachine.Editor
 {
     [CustomPropertyDrawer(typeof(OutputChannels))]
-    class OutputChannelsPropertyDrawer : PropertyDrawer
+    partial class OutputChannelsPropertyDrawer : PropertyDrawer
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Editor
 
             var row = new InspectorUtility.LabeledRow(preferredLabel, property.tooltip);
             var selector = row.Contents.AddChild(new MaskField(choices, 1) 
-                { tooltip = property.tooltip, style = { flexBasis = 100, flexGrow = 1, marginLeft = 3 }});
+                { tooltip = property.tooltip, style = { flexBasis = 100, flexGrow = 1, marginLeft = 2 }});
             selector.BindProperty(property);
 
             row.Contents.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
