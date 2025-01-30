@@ -269,7 +269,7 @@ namespace Unity.Cinemachine.Editor
                         (status) => 
                         {
                             var target = editor.target as CinemachineVirtualCameraBase;
-                            var disable = target == null || target.GetComponent(type) != null;
+                            var disable = target == null || HasExtension(target, type);
                             return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                         }
                     );
@@ -290,6 +290,36 @@ namespace Unity.Cinemachine.Editor
             menu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
             button.AddManipulator(menu);
             ux.Add(row);
+
+            var groupHelp = ux.AddChild(new HelpBox(
+                "Consider adding a Cinemachine Group Framing extension to frame the members of the Target Group.", 
+                HelpBoxMessageType.Info));
+            groupHelp.SetVisible(false);
+            ux.TrackAnyUserActivity(() =>
+            {
+                var visible = false;
+                if (editor.target is CinemachineVirtualCameraBase target)
+                {
+                    target.UpdateTargetCache();
+                    if (target.LookAtTargetAsGroup != null)
+                        visible = !HasExtension(target, typeof(CinemachineGroupFraming));
+                }
+                groupHelp.SetVisible(visible);
+            });
+
+            static bool HasExtension(CinemachineVirtualCameraBase vcam, Type type)
+            {
+                var extensions = vcam.Extensions;
+                if (extensions != null)
+                {
+                    for (int i = 0; i < extensions.Count; ++i)
+                        if (extensions[i].GetType() == type)
+                            return true;
+                }
+                if (vcam.ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                    return HasExtension(vcamParent, type);
+                return false;
+            }
         }
         
         [InitializeOnLoad]
