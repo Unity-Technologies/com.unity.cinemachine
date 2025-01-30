@@ -234,6 +234,7 @@ namespace Unity.Cinemachine
             if (activeCamera != outgoingCamera)
             {
                 bool backingOutOfBlend = false;
+                float backingOutPercentCompleted = 0;
                 float duration = 0;
 
                 // Do we need to create a game-play blend?
@@ -246,6 +247,8 @@ namespace Unity.Cinemachine
                     {
                         // Are we backing out of a blend-in-progress?
                         backingOutOfBlend = frame.Source.CamA == activeCamera && frame.Source.CamB == outgoingCamera;
+                        if (backingOutOfBlend && frame.Blend.Duration > kEpsilon)
+                            backingOutPercentCompleted = frame.Blend.TimeInBlend / frame.Blend.Duration;
 
                         frame.Source.CamA = outgoingCamera;
                         frame.Source.BlendCurve = blendDef.BlendCurve;
@@ -289,11 +292,15 @@ namespace Unity.Cinemachine
                     if (backingOutOfBlend)
                     {
                         snapshot = true; // always use a snapshot for this to prevent pops
-                        duration = frame.Blend.TimeInBlend;
+                        var adjustedDuration = frame.Blend.TimeInBlend;
                         if (nbs != null)
-                            duration += nbs.Blend.Duration - nbs.Blend.TimeInBlend;
+                            adjustedDuration += nbs.Blend.Duration - nbs.Blend.TimeInBlend;
                         else if (frame.Blend.CamA is SnapshotBlendSource sbs)
-                            duration += sbs.RemainingTimeInBlend;
+                            adjustedDuration += sbs.RemainingTimeInBlend;
+
+                        // In the event that the blend times in the different directions are different,
+                        // don't make the blend longer than it would otherwise have been
+                        duration = Mathf.Min(duration * backingOutPercentCompleted, adjustedDuration);
                     }
 
                     // Chain to existing blend

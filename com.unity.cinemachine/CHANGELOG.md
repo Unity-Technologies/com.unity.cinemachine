@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Decollider would sometimes cause camera to slip inside cracks between adjacent colliders.
 - The Deoccluder failed to reset its state when initially enabled, and sometimes caused small spurious camera rotations.
 - Fixed the Radial Axis input axis in the CinemachineOrbitalFollow component to map to the y axis.
+- Desired blend time is respected when interrupting blends with heterogeneous blend-in and blend-out times.
 
 ### Changed
 - Added delayed processing to near and far clip plane inspector fields for the CinemachineCamera lens.
