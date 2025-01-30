@@ -137,6 +137,7 @@ namespace Unity.Cinemachine.Tests
             boxCollider2D.size = new Vector2(2f, 2f);
             
             m_Confiner2D.InvalidateBoundingShapeCache();
+            m_Confiner2D.BakeBoundingShape(m_Vcam, 5);
 
             m_Vcam.transform.position = Vector3.zero;
             yield return null; // wait one frame

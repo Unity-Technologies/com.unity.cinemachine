@@ -247,13 +247,16 @@ namespace Unity.Cinemachine
         /// 
         /// In those cases, this method can be called to advance the baking.
         /// </summary>
+        /// <param name="vcam">The virtual camera context.  This is needed for the lens information.</param>
         /// <param name="maxTimeInSeconds">Maximum time in seconds to devote to baking during this blocking call.  
         /// If it's not enough to finish the job, then this method can be called repeatedly over several frames.  
         /// When the total accumulated time is more than 5 seconds, this method will do nothing.</param>
         /// <returns>True if baking is complete, false if more baking is needed or if more 
         /// than 5 baking seconds have elapsed.</returns>
-        public bool BakeBoundingShape(float maxTimeInSeconds)
+        public bool BakeBoundingShape(CinemachineVirtualCameraBase vcam, float maxTimeInSeconds)
         {
+            if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, vcam.State.Lens.Aspect, out _))
+                return false; // invalid path
             if (m_ShapeCache.ConfinerOven == null)
                 return false;
             if (m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKING)
