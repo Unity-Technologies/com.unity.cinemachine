@@ -269,7 +269,7 @@ namespace Unity.Cinemachine.Editor
                         (status) => 
                         {
                             var target = editor.target as CinemachineVirtualCameraBase;
-                            var disable = target == null || HasExtension(target, type);
+                            var disable = target == null || target.HasExtension(type);
                             return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                         }
                     );
@@ -290,7 +290,10 @@ namespace Unity.Cinemachine.Editor
             menu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
             button.AddManipulator(menu);
             ux.Add(row);
-
+        }
+        
+        public static void AddGroupTargetInfoBox(this UnityEditor.Editor editor, VisualElement ux)
+        {
             var groupHelp = ux.AddChild(new HelpBox(
                 "Consider adding a Cinemachine Group Framing extension to frame the members of the Target Group.", 
                 HelpBoxMessageType.Info));
@@ -302,26 +305,30 @@ namespace Unity.Cinemachine.Editor
                 {
                     target.UpdateTargetCache();
                     if (target.LookAtTargetAsGroup != null)
-                        visible = !HasExtension(target, typeof(CinemachineGroupFraming));
+                        visible = !target.HasExtension(typeof(CinemachineGroupFraming));
                 }
                 groupHelp.SetVisible(visible);
             });
-
-            static bool HasExtension(CinemachineVirtualCameraBase vcam, Type type)
-            {
-                var extensions = vcam.Extensions;
-                if (extensions != null)
-                {
-                    for (int i = 0; i < extensions.Count; ++i)
-                        if (extensions[i].GetType() == type)
-                            return true;
-                }
-                if (vcam.ParentCamera is CinemachineVirtualCameraBase vcamParent)
-                    return HasExtension(vcamParent, type);
-                return false;
-            }
         }
-        
+
+        /// <summary>
+        /// Checks whether a vcam or its vcam parent has an extension of a given type.
+        /// </summary>
+        /// <param name="type">The type of the extension to check for</param>
+        /// <returns>True if the vcam or its parent has an extension of that type</returns>
+        static bool HasExtension(this CinemachineVirtualCameraBase vcam, Type type)
+        {
+            if (vcam.Extensions != null)
+            {
+                for (int i = 0; i < vcam.Extensions.Count; ++i)
+                    if (vcam.Extensions[i].GetType() == type)
+                        return true;
+            }
+            if (vcam.ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                return vcamParent.HasExtension(type);
+            return false;
+        }
+
         [InitializeOnLoad]
         static class PipelineStageMenu
         {
