@@ -45,9 +45,10 @@ namespace Unity.Cinemachine.Editor
                 "Default Target", "The default target is set in the parent object, and will be used if the Tracking Target is None", 
                 defaultTargetLabel));
             defaultTargetRow.focusable = false;
-            defaultTargetLabel.style.marginLeft = 5;
+            defaultTargetLabel.style.marginLeft = 2;
             defaultTargetLabel.style.marginRight = -2;
             ux.Add(new PropertyField(serializedObject.FindProperty(() => Target.Target)));
+            this.AddGroupTargetInfoBox(ux);
 
             ux.AddHeader("Global Settings");
             this.AddGlobalControls(ux);
