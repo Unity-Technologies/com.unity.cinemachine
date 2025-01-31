@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Splines;
 using UnityEngine.UIElements;

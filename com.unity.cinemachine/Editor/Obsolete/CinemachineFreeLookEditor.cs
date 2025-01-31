@@ -1,4 +1,4 @@
-﻿#if !CINEMACHINE_NO_CM2_SUPPORT
+#if !CINEMACHINE_NO_CM2_SUPPORT
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;

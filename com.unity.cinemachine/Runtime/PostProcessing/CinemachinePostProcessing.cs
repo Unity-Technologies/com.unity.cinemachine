@@ -1,4 +1,4 @@
-﻿#if CINEMACHINE_POST_PROCESSING_V2
+#if CINEMACHINE_POST_PROCESSING_V2
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;

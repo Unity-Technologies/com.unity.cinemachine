@@ -1,4 +1,4 @@
-﻿#if (CINEMACHINE_HDRP || CINEMACHINE_URP)
+#if (CINEMACHINE_HDRP || CINEMACHINE_URP)
 
 using UnityEngine;
 using UnityEngine.Serialization;

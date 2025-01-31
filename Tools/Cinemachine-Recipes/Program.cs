@@ -1,4 +1,4 @@
-﻿using Cinemachine.Cookbook.Settings;
+using Cinemachine.Cookbook.Settings;
 using RecipeEngine;
 using RecipeEngine.Modules.Wrench.Helpers;
 

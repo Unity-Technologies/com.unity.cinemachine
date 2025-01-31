@@ -1,4 +1,4 @@
-﻿using RecipeEngine.Modules.Wrench.Models;
+using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Modules.Wrench.Settings;
 
 namespace Cinemachine.Cookbook.Settings;

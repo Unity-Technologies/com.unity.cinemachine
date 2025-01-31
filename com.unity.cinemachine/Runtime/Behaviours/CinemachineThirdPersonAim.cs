@@ -1,4 +1,4 @@
-﻿#if CINEMACHINE_PHYSICS
+#if CINEMACHINE_PHYSICS
 using UnityEngine;
 
 namespace Unity.Cinemachine
