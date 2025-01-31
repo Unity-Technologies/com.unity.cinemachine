@@ -187,7 +187,7 @@ namespace Unity.Cinemachine
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private PointD TranslatePoint(PointD pt, double dx, double dy)
     {
-	    return new PointD(pt.x + dx, pt.y + dy);
+        return new PointD(pt.x + dx, pt.y + dy);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -211,17 +211,17 @@ namespace Unity.Cinemachine
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private PointD NormalizeVector(PointD vec)
     {
-	    double h = Hypotenuse(vec.x, vec.y);
-	    if (AlmostZero(h)) return new PointD(0,0);
+        double h = Hypotenuse(vec.x, vec.y);
+        if (AlmostZero(h)) return new PointD(0,0);
         double inverseHypot = 1 / h;
-	    return new PointD(vec.x* inverseHypot, vec.y* inverseHypot);
+        return new PointD(vec.x* inverseHypot, vec.y* inverseHypot);
     }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private PointD GetAvgUnitVector(PointD vec1, PointD vec2)
     {
-	    return NormalizeVector(new PointD(vec1.x + vec2.x, vec1.y + vec2.y));
+        return NormalizeVector(new PointD(vec1.x + vec2.x, vec1.y + vec2.y));
     }
 
     private PointD IntersectPoint(PointD pt1a, PointD pt1b, PointD pt2a, PointD pt2b)

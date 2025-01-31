@@ -618,9 +618,9 @@ namespace Unity.Cinemachine
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool OutrecIsAscending(Active hotEdge)
-	  {
-		  return (hotEdge == hotEdge.outrec!.frontEdge);
-	  }
+      {
+          return (hotEdge == hotEdge.outrec!.frontEdge);
+      }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SwapFrontBackSides(OutRec outrec)
@@ -3370,7 +3370,7 @@ namespace Unity.Cinemachine
       return true;
     }
 
-	  private bool Path1InsidePath2(OutRec or1, OutRec or2)
+      private bool Path1InsidePath2(OutRec or1, OutRec or2)
     {
       PointInPolygonResult result;
       OutPt op = or1.pts!;
@@ -3384,21 +3384,21 @@ namespace Unity.Cinemachine
     }
 
     private Rect64 GetBounds(Path64 path)
-	  {
-		  if (path.Count == 0) return new Rect64();
+      {
+          if (path.Count == 0) return new Rect64();
       Rect64 result = new Rect64(long.MaxValue, long.MaxValue, -long.MaxValue, -long.MaxValue);
-		  foreach (Point64 pt in path)
-		  {
-			  if (pt.X < result.left) result.left = pt.X;
-			  if (pt.X > result.right) result.right = pt.X;
-			  if (pt.Y < result.top) result.top = pt.Y;
-			  if (pt.Y > result.bottom) result.bottom = pt.Y;
-		  }
-		  return result;
-	  }
+          foreach (Point64 pt in path)
+          {
+              if (pt.X < result.left) result.left = pt.X;
+              if (pt.X > result.right) result.right = pt.X;
+              if (pt.Y < result.top) result.top = pt.Y;
+              if (pt.Y > result.bottom) result.bottom = pt.Y;
+          }
+          return result;
+      }
 
     private bool DeepCheckOwner(OutRec outrec, OutRec owner)
-	  {
+      {
       if (owner.bounds.IsEmpty()) 
         owner.bounds = GetBounds(owner.path);
       bool isInsideOwnerBounds = owner.bounds.Contains(outrec.bounds);
@@ -3419,11 +3419,11 @@ namespace Unity.Cinemachine
           if (split.bounds.IsEmpty()) split.bounds = GetBounds(split.path);
 
           if (split.bounds.Contains(outrec.bounds) && Path1InsidePath2(outrec, split))
-			    {
-				    outrec.owner = split;
-				    return true;
-			    }
-		    }
+                {
+                    outrec.owner = split;
+                    return true;
+                }
+            }
 
       // only continue when not inside recursion
       if (owner != outrec.owner) return false;
@@ -3865,7 +3865,7 @@ namespace Unity.Cinemachine
     {
       double result = Polygon == null ? 0 : Clipper.Area(Polygon);
       foreach (PolyPath64 child in _childs)
-			result += child.Area();
+            result += child.Area();
       return result;
     }
   }

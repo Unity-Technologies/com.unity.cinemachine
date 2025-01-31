@@ -1,7 +1,7 @@
 # Cinemachine Auto Focus
 
 This CinemachineCamera extension drives the Camera's focusDistance property.  It can be used to lock focus onto a specific object, or (in HDRP) to auto-detect what is in front of the camera and focus on that.
-	
+    
 FocusDistance is only relevant for physical cameras, and appropriate processing must be installed for it to have any visible effect.
 
 As of this writing, only HDRP provides out-of-the-box handling to process the Camera's focusDistance.  In HDRP:
@@ -29,4 +29,3 @@ With these settings, the focus distance set by Cinemachine Auto Focus will have 
 | __Focus Depth Offset__ || Offsets the sharpest point away in depth from the focus target location.  |
 | __Damping__ || The value corresponds approximately to the time the focus will take to adjust to the new value.  |
 | __Auto Detection Radius__ || HDRP-only: Radius of the AutoFocus sensor in the center of the screen, used when _Focus Target_ is set to _ScreenCenter_.  A value of 1 would fill the screen.  It's recommended to keep this quite small.  Default value is 0.02.  |
-

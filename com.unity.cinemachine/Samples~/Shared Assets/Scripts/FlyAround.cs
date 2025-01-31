@@ -84,7 +84,7 @@ namespace Unity.Cinemachine.Samples
 
         void Update()
         {
-    	    // Calculate the move direction and speed based on input
+            // Calculate the move direction and speed based on input
             var rot = Quaternion.Euler(Tilt.Value, Pan.Value, 0);
             var movement = rot * new Vector3(Sideways.Value, UpDown.Value, Forward.Value);
             var speed = Sprint.Value < 0.01f ? Speed : Speed * SprintMultiplier;

@@ -132,6 +132,3 @@ void CSMain(uint3 id : SV_DispatchThreadID)
 
     _FocusDistanceOutput[0].FocusDistance = targetFocusDistance;
 }
-
-
-
