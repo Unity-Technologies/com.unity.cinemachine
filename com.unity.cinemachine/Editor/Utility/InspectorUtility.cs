@@ -488,7 +488,7 @@ namespace Unity.Cinemachine.Editor
             SerializedProperty property, out PropertyField propertyField, string label = null)
         {
             var row = new LabeledRow(label ?? property.displayName, property.tooltip);
-            row.Contents.style.marginLeft = -2;
+            row.Contents.style.marginLeft = -1;
             propertyField = row.Contents.AddChild(new PropertyField(property, "")
                 { style = { flexGrow = 1, flexBasis = SingleLineHeight * 5 }});
             AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, (d) => d.CancelDelayedWhenDragging = true);
